@@ -1,0 +1,8 @@
+# Log harian operasional - isi satu baris per hari (baris yang diawali # diabaikan, boleh dihapus)
+# Kolom wajib: tanggal. Kolom lain boleh dihapus/ditambah/diganti nama (mis. pesanan, retur, downtime_menit).
+# Baris TARGET: batas MAKSIMAL untuk hal buruk (reject, keluhan, telat, absen) dan MINIMAL untuk hal baik (output, penjualan). Kosongkan bila belum ada target.
+# Hari libur: tulis "libur" atau biarkan kosong. Jangan diisi 0 kalau memang tidak dicatat.
+# Stok: isi sisa stok AKHIR hari + pemakaian hari itu. Nama kolom pasangan: stok_<nama> dan pakai_<nama>.
+tanggal,output_pcs,reject_pcs,penjualan_rp,stok_bahan_kg,pakai_bahan_kg,keluhan,telat_kirim,absen,catatan
+TARGET,,,,,,,,,
+2026-10-01,,,,,,,,,

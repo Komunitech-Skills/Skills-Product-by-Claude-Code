@@ -1,0 +1,15 @@
+{
+  "_petunjuk": "Toko fashion/hijab/sepatu online. Salin jadi tema.json lalu sesuaikan. tambah_kata = menambah kata ke tema bawaan tanpa menghapus kata lamanya.",
+  "hapus_tema": ["rasa", "keamanan", "fasilitas", "waktu_tunggu", "bau_aroma"],
+  "tambah_kata": {
+    "kualitas_produk": ["jahitan", "benang", "nerawang", "menerawang", "bulu", "berbulu", "gatal", "melar", "susut", "kaku", "adem"],
+    "porsi_ukuran": ["size chart", "lingkar dada", "panjang", "lebar", "kekecilan", "kebesaran", "all size", "nomor"],
+    "stok_ketersediaan": ["restock", "sold", "kapan ready"],
+    "layanan": ["dibales", "fast respon", "slow respon"]
+  },
+  "tema": [
+    {"id": "warna_foto", "label": "Warna / sesuai foto", "kata": ["warna", "warnanya", "beda foto", "gelap", "terang", "pudar", "luntur"], "dampak": 4}
+  ],
+  "kata_positif": ["adem", "jatuh", "flowy", "nyaman dipakai"],
+  "kata_negatif": ["nerawang", "menerawang", "berbulu", "susut", "kaku"]
+}

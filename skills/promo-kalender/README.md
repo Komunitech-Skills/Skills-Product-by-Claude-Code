@@ -47,3 +47,7 @@ Bisa. Pakai tanggal perkiraan, dan jadwal akan diberi label "perkiraan" sampai a
 
 **Apakah boleh menaikkan harga dulu lalu diberi diskon besar?**
 Tidak. Itu dilarang UU Perlindungan Konsumen. Skill selalu memakai harga normal yang benar-benar berlaku dan menghitung persen hemat yang jujur.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+- Temuan uji OpenClaw: target dihitung untuk promo 3 hari, tetapi linimasa & S&K memakai 1 hari; S&K memuat janji "dikirim maks 2 hari kerja" yang tidak disebut pemilik.
+- Durasi promo kini ditetapkan sekali di awal dan wajib sama di target, linimasa, dan S&K (ada butir checklist). Hal operasional yang tidak diberikan pemilik (waktu kirim, kuota, retur) ditulis `[isi: …]`, bukan dikarang. Script tidak berubah.

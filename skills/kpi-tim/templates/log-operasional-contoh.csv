@@ -1,0 +1,14 @@
+tanggal,divisi,orang,kpi,nilai,cara,catatan
+2026-09-01,Sales,Dewi Lestari,Waktu respons pertama,6,rata-rata,chat toko Bu Ani
+2026-09-01,Sales,Dewi Lestari,Waktu respons pertama,11,rata-rata,chat toko Makmur
+2026-09-02,Sales,Dewi Lestari,Waktu respons pertama,7,rata-rata,
+2026-09-02,Sales,Dewi Lestari,Komplain selesai <=2 hari,ya,persen,kurang 1 dus mi
+2026-09-05,Sales,Dewi Lestari,Komplain selesai <=2 hari,ya,persen,salah varian
+2026-09-09,Sales,Dewi Lestari,Komplain selesai <=2 hari,tidak,persen,retur menunggu supplier
+2026-09-10,Sales,Dewi Lestari,Komplain selesai <=2 hari,ya,persen,
+2026-09-01,Gudang & Pengiriman,Eko Saputra,Pengiriman tepat waktu,ya,persen,rute Waru
+2026-09-01,Gudang & Pengiriman,Eko Saputra,Pengiriman tepat waktu,tidak,persen,ban bocor
+2026-09-02,Gudang & Pengiriman,Eko Saputra,Pengiriman tepat waktu,ya,persen,
+2026-09-02,Gudang & Pengiriman,Eko Saputra,Pengiriman tepat waktu,ya,persen,
+2026-09-03,Gudang & Pengiriman,Joko Susilo,Salah kirim,1,jumlah,toko Sinar
+2026-09-12,Gudang & Pengiriman,Joko Susilo,Salah kirim,2,jumlah,2 pesanan tertukar

@@ -146,6 +146,24 @@ Kemenkes: https://kms.kemkes.go.id/contents/1715917225382-bukuperaturaniklanpubl
   cek kebijakan platform iklan (biasanya ada pembatasan khusus kategori kesehatan) dan, bila
   perlu, konsultasi ke organisasi profesi (IDI/PDGI/dst.)/konsultan kepatuhan setempat.
 
+## 4. Tanpa imbalan rujukan untuk layanan kesehatan ("ajak teman", referral)
+
+**Status: PERLU REVIEW tenaga medis/hukum** (dasar umum; nomor pasal kode etik tidak dikutip di sini).
+
+- Klinik/fasyankes **tidak** memberi diskon, poin, voucher, hadiah, merchandise, komisi, uang,
+  atau layanan gratis (mis. "cek tensi gratis", "konsultasi gratis") kepada pasien yang
+  mengajak, merujuk, atau membawa pasien lain - juga tidak hadiah "non-medis" untuk pengajak.
+- Dasar umum: Permenkes 1787/2010 Pasal 5 huruf (l) dan (m) di bagian 3 (mendorong penggunaan
+  jasa; promosi penjualan termasuk diskon) dan kode etik profesi kedokteran/kedokteran gigi yang
+  melarang menarik pasien dengan janji/imbalan.
+- Alternatif aman: edukasi kesehatan umum bersumber resmi, pengingat kontrol berupa draf yang
+  dikirim staf ke pasien yang sudah setuju diingatkan (izin pengingat **bukan** izin promosi),
+  dan info layanan/tarif yang jujur. Untuk rancangan lengkap pakai skill
+  `program-referral-loyalitas` (versi faskes tanpa imbalan) bila terpasang.
+- **Nomor pasal:** sebut hanya pasal yang tertulis di file ini. Jangan mengutip nomor pasal lain
+  (mis. UU 17/2023 atau PP 28/2024 selain yang tercantum di bagian 2-3) dari ingatan; tulis
+  dasar umumnya saja.
+
 ## Ringkasan sikap skill ini
 - Menulis materi berdasarkan **fakta yang diberikan klinik**, bukan mengarang klaim medis.
 - Tidak pernah menyalin data pasien individual ke output.

@@ -7,6 +7,8 @@ Yang diperiksa:
 - Kata berisiko: klaim superlatif, klaim kesehatan, label resmi (halal/BPOM/SNI) yang wajib punya bukti.
 - Judul: huruf kapital berlebihan, kata diulang (keyword stuffing), simbol/emoji.
 - Kata kunci: mana yang sudah masuk judul/deskripsi, dan apakah kata kunci utama ada di awal judul.
+- Klaim sifat/ketahanan/layanan ("ga gampang buyar", "awet", "anti air", "dikirim cepat") yang TIDAK ada
+  di fakta pengguna (--fakta / --fakta-file) -> GAGAL. Tanpa --fakta, frasa itu ditandai CEK.
 
 Hanya memakai library standar Python (3.8+). Tidak ada akses jaringan.
 Contoh:
@@ -66,6 +68,49 @@ POLA_TIRUAN = [
     (r"\b(?:kw\s*\d*|kw\s*super|replika|replica|grade\s*ori|ori\s*grade|mirror|premium\s+copy|1\s*:\s*1)\b"
      r"|\bmirip\s+(?:aslinya|asli|original|[A-Z][\w]+)", "indikasi barang tiruan — marketplace melarang"),
 ]
+# Klaim sifat/ketahanan/layanan yang sering ditambahkan sendiri oleh AI. Grup "k" = kata inti yang harus
+# ada di fakta pengguna; tanpa grup "k", semua kata frasa harus ada di fakta.
+_NEG = r"\b(?:tidak|tak|ga|gak|nggak|ngga|enggak|engga|g|nda|ndak)"
+POLA_SIFAT = [
+    _NEG + r"\s+(?:mudah|gampang|cepat|bikin|pernah)\s+(?P<k>[a-z]+)",
+    r"\banti\s*-?\s*(?P<k>[a-z]+)",
+    r"\btahan\s+(?P<k>lama|air|panas|banting|cuaca|luntur|noda|gores|pecah|karat|bocor)\b",
+    r"\b(?P<k>awet|kuat|kokoh|bandel|tebal|lembut|halus|adem|sejuk|nyaman|elastis|ringan|empuk|wangi|harum"
+    r"|waterproof|premium|berkualitas|bermutu|mewah|rapi|presisi|lentur|stretch|melar)\b",
+    r"\b(?:dikirim|pengiriman|kirim)\s+(?:cepat|kilat|hari\s+ini|same\s+day)\b",
+    r"\b(?:packing|kemasan|pengemasan)\s+(?:aman|rapi|tebal|bubble)\b",
+    r"\bsesuai\s+(?:foto|gambar|deskripsi)\b",
+    r"\b(?:repeat\s+order|best\s*seller|banyak\s+(?:peminat|pembeli|pelanggan)|laris\s+manis)\b",
+    r"\b(?:dijamin|pasti|garansi)\b",
+]
+
+
+def _ada_di_fakta(kata, fakta_l):
+    """Kata dianggap ada di fakta bila muncul utuh atau sebagai awalan kata (adem ~ ademnya)."""
+    return re.search(r"(?<![a-z])" + re.escape(kata), fakta_l) is not None
+
+
+def cek_sifat(teks, fakta):
+    """Kembalikan daftar frasa sifat/klaim di teks. Jika fakta diberikan, hanya yang tidak didukung fakta."""
+    fakta_l = (fakta or "").lower()
+    hasil, lihat = [], set()
+    for pola in POLA_SIFAT:
+        for m in re.finditer(pola, teks, flags=re.IGNORECASE):
+            frasa = m.group(0).strip()
+            if frasa.lower() in lihat:
+                continue
+            lihat.add(frasa.lower())
+            if fakta is not None:
+                if "k" in m.groupdict() and m.group("k"):
+                    kunci = [m.group("k").lower()]
+                else:
+                    kunci = re.findall(r"[a-z]+", frasa.lower())
+                if all(_ada_di_fakta(k, fakta_l) for k in kunci):
+                    continue
+            hasil.append(frasa)
+    return hasil
+
+
 POLA_SIMBOL = re.compile(r"[^\w\s\-/&+,.()'\"%:]", re.UNICODE)
 
 
@@ -106,7 +151,7 @@ def cari(pola_list, teks):
     return unik
 
 
-def periksa(platform, judul, deskripsi, kata_kunci, batas):
+def periksa(platform, judul, deskripsi, kata_kunci, batas, fakta=None):
     temuan = []  # (tingkat, pesan)
     info = {}
 
@@ -140,6 +185,13 @@ def periksa(platform, judul, deskripsi, kata_kunci, batas):
         temuan.append(("GAGAL", "'{}' — {}. Jangan dibuatkan listing untuk barang tiruan.".format(h["teks"], h["alasan"])))
     for h in cari(POLA_BERISIKO, gabungan):
         temuan.append(("CEK", "'{}' — {}.".format(h["teks"], h["alasan"])))
+    for frasa in cek_sifat(gabungan, fakta):
+        if fakta is not None:
+            temuan.append(("GAGAL", "'{}' — klaim sifat/layanan yang tidak ada di fakta pengguna. Hapus, atau "
+                                    "tanyakan dulu ke pengguna lalu tambahkan ke --fakta.".format(frasa)))
+        else:
+            temuan.append(("CEK", "'{}' — klaim sifat/layanan; pastikan disebut pengguna (pakai --fakta agar "
+                                  "dicek otomatis).".format(frasa)))
 
     huruf = [c for c in judul if c.isalpha()]
     if len(huruf) >= 10 and sum(c.isupper() for c in huruf) / len(huruf) > 0.5:
@@ -219,6 +271,8 @@ def main():
     p.add_argument("--kata-kunci", help="daftar kata kunci dipisah koma; yang pertama = kata kunci utama")
     p.add_argument("--batas-judul", type=int, help="ganti batas maksimal judul (mis. batas terbaru dari Seller Center)")
     p.add_argument("--batas-deskripsi", type=int, help="ganti batas maksimal deskripsi")
+    p.add_argument("--fakta", help="fakta produk dari pengguna (salin kata-katanya), untuk cek klaim yang dikarang")
+    p.add_argument("--fakta-file", help="file .txt berisi fakta produk dari pengguna")
     p.add_argument("--json", action="store_true", help="keluarkan hasil dalam JSON")
     a = p.parse_args()
 
@@ -246,6 +300,9 @@ def main():
     if deskripsi is not None:
         deskripsi = deskripsi.strip()
     kk = [k.strip() for k in (a.kata_kunci or "").split(",") if k.strip()]
+    if a.fakta is not None and a.fakta_file:
+        galat("Pilih salah satu: --fakta atau --fakta-file.")
+    fakta = a.fakta if a.fakta is not None else (baca_file(a.fakta_file) if a.fakta_file else None)
 
     hasil = []
     for pf in dict.fromkeys(platforms):
@@ -254,7 +311,7 @@ def main():
             b["judul_maks"] = a.batas_judul
         if a.batas_deskripsi:
             b["deskripsi_maks"] = a.batas_deskripsi
-        hasil.append(periksa(pf, judul, deskripsi, kk, b))
+        hasil.append(periksa(pf, judul, deskripsi, kk, b, fakta))
 
     if a.json:
         print(json.dumps(hasil, ensure_ascii=False, indent=2))

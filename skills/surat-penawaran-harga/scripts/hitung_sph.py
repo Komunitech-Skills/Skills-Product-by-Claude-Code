@@ -245,7 +245,7 @@ def hitung(args):
     asumsi = []
     if args.ppn == "tidak":
         dpp, dpp_nilai_lain, ppn, total = dasar, 0, 0, dasar
-        catatan.append("Tanpa PPN (penjual bukan PKP / tidak memungut PPN).")
+        catatan.append("Harga final; penjual bukan PKP sehingga tidak memungut PPN.")
     elif args.harga_termasuk_ppn:
         # PPN dikeluarkan HANYA dari harga item; ongkir dianggap nilai bersih (belum termasuk PPN).
         dpp_item = dpp_dari_termasuk_ppn(setelah_diskon, efektif)

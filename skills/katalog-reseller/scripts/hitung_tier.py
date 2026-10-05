@@ -24,12 +24,13 @@ Contoh:
       --tier "Dropshipper:1:15" --tier "Reseller:12:25" --tier "Agen:60:35"
   python3 hitung_tier.py --produk "Kopi 250g" --hpp 32.000 --mode margin \
       --tier "Dropshipper:1:45" --tier "Reseller:10:35" --tier "Agen:50:25"
-  python3 hitung_tier.py --config produk.json --csv-keluar daftar-harga-mitra.csv
+  python3 hitung_tier.py --config produk.json --csv-keluar ~/folder-kerja/daftar-harga-mitra.csv
 """
 import argparse
 import csv
 import io
 import json
+import os
 import re
 import sys
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
@@ -40,7 +41,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 NOL = Decimal(0)
 SERATUS = Decimal(100)
 TIER_DEFAULT = {"diskon": ["Dropshipper:1:20", "Reseller:12:25", "Agen:60:35"],
@@ -478,6 +479,7 @@ def main():
                 h["catatan"].insert(0, "Tier memakai CONTOH default ({}) — sesuaikan dengan kebijakanmu.".format(
                     ", ".join(TIER_DEFAULT[mode])))
         if a.csv_keluar:
+            a.csv_keluar = os.path.abspath(a.csv_keluar)
             tulis_csv(a.csv_keluar, hasil)
         if a.format == "json":
             print(json.dumps(ke_json({"versi_script": VERSI, "mode": mode, "produk": hasil,

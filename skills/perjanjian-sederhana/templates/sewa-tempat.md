@@ -3,7 +3,7 @@ PANDUAN AGENT (hapus blok ini dari hasil akhir)
 Jenis: sewa tempat usaha (kios, ruko, lapak, rumah untuk usaha, gudang, booth).
 PIHAK PERTAMA = pemilik/yang menyewakan. PIHAK KEDUA = penyewa.
 Info wajib: identitas kedua pihak, alamat & luas objek, bukti kepemilikan (jenis & nomor sertifikat atau dasar hak menyewakan), peruntukan usaha, jangka waktu, harga sewa & cara bayar, uang jaminan (deposit), siapa bayar listrik/air/PBB/iuran, kota sengketa.
-Default: sewa 1 tahun dibayar penuh di muka; deposit 1 bulan sewa dikembalikan 14 hari setelah serah terima kembali; listrik/air/iuran lingkungan ditanggung penyewa; PBB ditanggung pemilik; renovasi harus izin tertulis.
+Default: sewa 1 tahun dibayar penuh di muka; deposit 1 bulan sewa dikembalikan 14 hari setelah serah terima kembali; listrik/air/iuran lingkungan ditanggung penyewa; PBB ditanggung pemilik; renovasi harus izin tertulis. Kios pasar: iuran/retribusi pengelola pasar default ditanggung penyewa (Pasal 5); tulis pihak yang SAMA di daftar asumsi, jangan disebut di kewajiban pemilik. Pengakhiran default (Pasal 7): teguran tertulis → tenggat → pemberitahuan pengakhiran → musyawarah/pengadilan. Klausul pengosongan/pengambilalihan sepihak (kunci, segel, bongkar, sisa sewa hangus) JANGAN dipakai sebagai default; hanya bila pengguna sendiri memintanya, ambil dari references/klausul-pilihan.md bagian "Pengosongan sepihak" lengkap dengan peringatan ⚠ TINJAU PENGACARA.
 Peringatan wajib ditampilkan ke pengguna:
 - Jika yang menyewakan BUKAN pemilik di sertifikat → minta surat kuasa/izin pemilik; jika sewa ulang (sublet) → minta izin tertulis pemilik asli.
 - Jika objek harta bersama suami-istri → persetujuan tertulis pasangan pemilik.
@@ -81,9 +81,9 @@ Apabila Objek Sewa dijual atau dialihkan selama masa sewa, sewa tetap berlaku sa
 ### Wanprestasi dan Pengakhiran
 (1) Suatu Pihak dianggap wanprestasi apabila tidak melaksanakan kewajibannya dan tetap tidak memperbaikinya dalam waktu [[14]] ([[empat belas]]) hari kalender setelah menerima teguran tertulis.
 (2) Keterlambatan pembayaran sewa bertahap dikenakan denda [[0,1]]% ([[nol koma satu persen]]) per hari dari jumlah yang terlambat, paling banyak [[5]]% ([[lima persen]]).
-(3) Apabila PIHAK KEDUA wanprestasi, PIHAK PERTAMA berhak mengakhiri sewa dan PIHAK KEDUA wajib mengosongkan Objek Sewa paling lambat [[14]] ([[empat belas]]) hari setelah pemberitahuan pengakhiran. Sisa uang sewa yang telah dibayar untuk periode setelah pengakhiran [[PILIH: dikembalikan secara proporsional / tidak dikembalikan]].
-> ⚠ TINJAU PENGACARA: pilihan sisa uang sewa tidak dikembalikan, serta pengosongan tanpa putusan pengadilan, sebaiknya dikonsultasikan. Pengosongan paksa tanpa proses hukum dapat menimbulkan masalah hukum baru.
-(4) Apabila PIHAK PERTAMA wanprestasi sehingga Objek Sewa tidak dapat digunakan, PIHAK KEDUA berhak mengakhiri sewa dan menerima kembali sisa uang sewa secara proporsional beserta uang jaminan.
+(3) Apabila PIHAK KEDUA tetap wanprestasi setelah teguran tertulis dan tenggat pada ayat (1) lewat, PIHAK PERTAMA dapat menyampaikan pemberitahuan tertulis pengakhiran sewa, dan PIHAK KEDUA diminta mengosongkan serta menyerahkan kembali Objek Sewa paling lambat [[14]] ([[empat belas]]) hari setelah pemberitahuan tersebut diterima. Sisa uang sewa yang telah dibayar untuk periode setelah pengakhiran dikembalikan secara proporsional setelah dikurangi tunggakan dan denda yang sah.
+(4) Apabila PIHAK KEDUA tidak menyerahkan kembali Objek Sewa dalam tenggat ayat (3), Para Pihak menyelesaikannya secara musyawarah sesuai Pasal 9; bila musyawarah tidak berhasil, PIHAK PERTAMA menempuh jalur hukum sesuai Pasal 9. PIHAK PERTAMA tidak akan mengunci, menyegel, membongkar, mengambil alih Objek Sewa, atau memindahkan barang PIHAK KEDUA tanpa persetujuan PIHAK KEDUA atau putusan/penetapan pengadilan.
+(5) Apabila PIHAK PERTAMA wanprestasi sehingga Objek Sewa tidak dapat digunakan, PIHAK KEDUA berhak mengakhiri sewa dan menerima kembali sisa uang sewa secara proporsional beserta uang jaminan.
 
 ## Pasal 8
 ### Keadaan Memaksa

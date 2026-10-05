@@ -29,6 +29,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Joko lembur 3 jam kemarin, disuruh Bu Rina"
 - "Rekap absensi September, sekalian file lembur untuk slip gaji"
 - "Kirim rekap absen ke Telegram saya setiap jam 10 pagi" (OpenClaw)
+- "Hitung gaji harian minggu ini: Agus 120 ribu sehari masuk 6 hari lembur 2 jam, Budi 110 ribu 5 hari kasbon 200 ribu" — upah pekerja harian lepas langsung dihitung (tanpa perlu mencatat absen dulu), lengkap dengan cek upah lembur minimum PP 35/2021
 
 Setiap perubahan data selalu ditunjukkan dulu dan baru disimpan setelah kamu setuju.
 
@@ -58,3 +59,6 @@ Karena PP 35/2021 Pasal 28 mensyaratkan perintah pengusaha dan persetujuan peker
 
 **Apakah angkanya dijamin sama dengan hitungan Disnaker?**
 Rumusnya mengikuti PP 35/2021 Pasal 31–33 (dikutip lengkap dengan pasalnya) dan dibulatkan ke rupiah terdekat. Ini alat bantu hitung, bukan nasihat hukum. Aturan perusahaanmu (PP/PK/PKB) yang lebih menguntungkan pekerja tetap berlaku. Untuk sektor khusus, golongan jabatan tertentu, atau sengketa, konsultasikan ke Disnaker atau konsultan.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: kini data karyawan selalu ditampilkan sebagai pratinjau dan baru disimpan setelah Anda membalas "ya"; tanggal yang kosong untuk semua karyawan ditandai "kemungkinan libur — konfirmasi" (bukan dianggap bolong per orang).

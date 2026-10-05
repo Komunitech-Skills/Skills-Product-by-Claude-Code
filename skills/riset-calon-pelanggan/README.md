@@ -6,7 +6,7 @@
 - ✅ Profil pelanggan ideal (ICP) tersusun jelas, bukan sekadar tebakan
 - ✅ Arahan sumber pencarian publik & sah — tanpa scraping ilegal, tanpa beli database
 - ✅ Skor kualifikasi prospek dihitung script, bukan dikira-kira, langsung terurut Panas/Hangat/Dingin
-- ✅ Pesan pembuka WA/email/LinkedIn yang personal dan patuh UU PDP (bukan spam)
+- ✅ Draf sapaan singkat per prospek (WA/email/LinkedIn) yang patuh UU PDP — untuk pesan pertama lengkap 3 varian + cek otomatis, pakai `pesan-prospek-wa`
 - ✅ Terhubung ke `follow-up-prospek` dan `proposal-kerjasama` untuk tahap berikutnya
 
 ## Cocok untuk siapa
@@ -46,4 +46,7 @@ Tidak. Skill ini tidak melakukan koneksi internet atau scraping. Kamu yang mengu
 Dari penilaian 0-5 yang kamu/tim sales isi sendiri untuk 4 hal: kecocokan profil ideal, kejelasan kebutuhan, kemampuan bayar, dan akses ke pengambil keputusan. Script menghitung skor akhirnya secara konsisten, bukan agent menebak.
 
 **Bedanya dengan `follow-up-prospek`?**
-Skill ini untuk **mencari & menemukan** calon pelanggan baru serta pesan pembuka pertama. `follow-up-prospek` dipakai setelah prospek sudah dihubungi tapi belum deal/belum balas.
+Skill ini untuk **mencari & menyaring** calon pelanggan baru, plus draf sapaan singkat. Untuk menyusun & memeriksa pesan pertama ke satu prospek secara mendalam → `pesan-prospek-wa`. `follow-up-prospek` dipakai setelah prospek sudah dihubungi tapi belum deal/belum balas.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: AI sempat menyarankan memasang skill lain "dari ClawHub" (keliru). Kini hanya menyebut nama skill Komunitech terkait bila relevan dan sudah terpasang, tanpa menyebut cara/sumber instalasi.

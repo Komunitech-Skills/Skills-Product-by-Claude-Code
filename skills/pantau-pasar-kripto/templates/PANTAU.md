@@ -9,6 +9,8 @@ Contoh/fiktif -- ganti dengan koin & ambang Anda sendiri. Isi tabel ini, lalu mi
 | ETH | 10% | 10% | US$ 2.000 (harga beli saya) | ethereum, upgrade jaringan | 07:00 WIB |
 
 ## Catatan
+- Angka ambang **selalu dari Anda sendiri**; AI tidak mengisinya. Koin yang hanya ingin
+  dilihat harganya di ringkasan pagi: tulis "tanpa ambang" di kolom ambang.
 - Ambang naik/turun boleh diganti dengan harga absolut, mis. "di atas Rp 1,6 M" atau
   "di bawah US$ 2.500".
 - Kosongkan "Harga acuan" kalau ingin dibandingkan dengan 24 jam terakhir (data bawaan

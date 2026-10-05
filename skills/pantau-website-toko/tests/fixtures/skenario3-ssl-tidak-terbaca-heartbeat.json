@@ -1,0 +1,11 @@
+{
+  "heartbeatList": {
+    "20": [
+      {"status": 0, "time": "2026-09-26 08:00:00.000", "msg": "", "ping": null},
+      {"status": 0, "time": "2026-09-26 08:05:00.000", "msg": "", "ping": null}
+    ]
+  },
+  "uptimeList": {
+    "20_24": 0.0
+  }
+}

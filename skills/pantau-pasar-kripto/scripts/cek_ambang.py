@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-"""Cek harga kripto vs ambang yang ditetapkan member, tanpa API key. (v1.0.1)
+"""Cek harga kripto vs ambang yang ditetapkan member, tanpa API key. (v1.0.10)
+
+v1.0.10: `--konfigurasi` boleh berupa TEKS JSON langsung (diawali `{`) selain path file, dan
+`--state` opsional bila `--pratinjau` -- supaya pratinjau harga/status ambang bisa ditampilkan
+SEBELUM `kripto/konfigurasi.json` ditulis (file baru ditulis setelah pengguna menjawab "ya").
+Contoh: cek_ambang.py --pratinjau --konfigurasi '{"koin":[{"kode":"BTC","coingecko_id":"bitcoin",
+"mata_uang":"idr","ambang_harga_di_bawah":1600000000}]}'
+
+v1.0.9: opsi `--pratinjau` (alias `--tanpa-simpan`) -- untuk MENAMPILKAN harga/status ambang
+ke pengguna saat alert baru dipasang. State dibaca (untuk cache) tetapi TIDAK PERNAH ditulis,
+sehingga ambang tidak tercatat "sudah dilaporkan" dan jadwal pertama tidak diredam. Exit
+code pratinjau: 0 bila ok (bukan sinyal automation), 1 bila error input.
+
+v1.0.7 (uji gabungan paket 2026-10-03): (1) SETIAP ambang selalu diberi status di
+`pesan_singkat` & field `status_ambang` per koin -- "SUDAH TERLEWATI" bila harga terkini
+sudah melewati ambang (mis. BTC sudah di bawah ambang bawah saat alert baru dipasang), atau
+"belum terlewati" + jarak ke ambang. (2) Koin yang hanya ingin ditampilkan harganya (mis.
+untuk ringkasan pagi) boleh tanpa ambang dengan `"tanpa_ambang": true` -- agent TIDAK BOLEH
+mengisi angka ambang sendiri; ambang hanya dari pengguna.
 
 Sumber data publik (tanpa kunci):
 - CoinGecko `simple/price`  https://docs.coingecko.com/reference/simple-price
@@ -45,17 +63,28 @@ Keluaran: satu objek JSON ke stdout, termasuk field `pesan_singkat` siap tempel/
 (sudah memuat sumber, jam data, dan peringatan data basi per koin), dan kode keluar (exit
 code) yang berbeda supaya automation OpenClaw tahu kapan harus memanggil agent/mengirim
 pesan (lihat `references/openclaw-jadwal.md` & `scripts/cek_dan_lapor.py`):
-  0 = sukses, TIDAK ADA yang perlu dilaporkan sekarang (tidak ada ambang baru terlewati)
-  2 = sukses, ADA ambang yang BARU terlewati (atau sudah lama & jeda lapor-ulang habis)
-      -- ini yang dipakai automation untuk memutuskan kapan mengumumkan/memanggil agent
-  3 = sukses sebagian: ada koin yang gagal total (tanpa cache) -- tetap cek koin lain
+  0 = sukses, TIDAK ADA yang perlu dilaporkan sekarang (tidak ada ambang baru terlewati,
+      DAN pemantauan sehat atau kondisi bermasalahnya masih dalam masa redam)
+  2 = sukses, ADA ambang HARGA yang BARU terlewati (atau sudah lama & jeda lapor-ulang
+      habis) -- ini yang dipakai automation untuk memutuskan kapan mengumumkan/memanggil
+      agent. Menang atas exit 3 kalau keduanya terjadi bersamaan.
+  3 = sukses sebagian: ADA "pemantauan buta" yang PERLU dilaporkan sekarang -- koin gagal
+      total (tanpa cache), cache lebih tua dari --usia-basi-jam, ambang %/24 jam yang
+      sedang tidak bisa dievaluasi sama sekali, ATAU baru pulih dari salah satu kondisi
+      itu (lihat S2-2, field `perlu_lapor_pemantauan` per koin) -- dengan anti-spam yang
+      sama seperti ambang harga (`--jeda-ulang-jam`), BUKAN dilaporkan setiap kali
+      dipanggil tanpa jeda.
   1 = error input/konfigurasi (file konfigurasi tidak ada/rusak, kolom wajib kurang)
-Catatan: field JSON `ambang_terlewati` (per koin & ringkasan) selalu menunjukkan fakta apa
-adanya (ambang sedang terlampaui atau tidak), TERLEPAS dari apakah sudah pernah dilaporkan.
-Field `perlu_lapor` yang membedakan "baru/perlu diumumkan sekarang" dari "sudah pernah
-dilaporkan, diredam sementara" (anti-spam, lihat `--jeda-ulang-jam`) -- exit code 2 hanya
-mengikuti `perlu_lapor`, bukan `ambang_terlewati` mentah, supaya automation berkala (mis.
-tiap jam) tidak mengumumkan hal yang sama berulang-ulang selama kondisi belum berubah.
+Catatan: field JSON `ambang_terlewati`/`pemantauan_bermasalah` (per koin & ringkasan)
+selalu menunjukkan fakta apa adanya (ambang sedang terlampaui / pemantauan sedang
+bermasalah atau tidak), TERLEPAS dari apakah sudah pernah dilaporkan. Field `perlu_lapor`
+(per jenis ambang) dan `perlu_lapor_pemantauan` (per koin) yang membedakan "baru/perlu
+diumumkan sekarang" dari "sudah pernah dilaporkan, diredam sementara" (anti-spam, lihat
+`--jeda-ulang-jam`) -- exit code hanya mengikuti field `perlu_lapor*`, bukan status mentah,
+supaya automation berkala (mis. tiap jam) tidak mengumumkan hal yang sama berulang-ulang
+selama kondisi belum berubah. Anti-spam kini PER JENIS AMBANG (naik/turun/di_atas/
+di_bawah), bukan per koin (S2-1): ambang lain yang baru terlewati pada koin yang sama
+tidak ikut diredam oleh ambang yang sudah dilaporkan lebih dulu.
 """
 
 import argparse
@@ -120,6 +149,14 @@ def format_angka_ringkas(nilai):
     if nilai == int(nilai):
         return str(int(nilai))
     return f"{nilai}".replace(".", ",")
+
+
+def _jarak_persen(ambang, harga_sekarang):
+    """Jarak (tanpa tanda) dari harga sekarang ke ambang harga, dalam persen harga sekarang."""
+    p = hitung_persen_perubahan(ambang, harga_sekarang)
+    if p is None:
+        return "-"
+    return format_persen(abs(p)).lstrip("+")
 
 
 def format_persen(nilai):
@@ -225,6 +262,9 @@ def muat_json(path, wajib=True, nama="file"):
         raise KesalahanInput(f"{nama} berisi JSON yang rusak ({path}): {e}")
 
 
+STATUS_SUDAH = "SUDAH TERLEWATI"
+STATUS_BELUM = "belum terlewati"
+
 FIELD_ANGKA = ("ambang_naik_persen", "ambang_turun_persen", "ambang_harga_di_atas",
                "ambang_harga_di_bawah", "harga_acuan")
 
@@ -247,11 +287,18 @@ def validasi_konfigurasi(cfg):
             if k.get(field) is not None:
                 k[field] = _parse_angka_konfigurasi(k[field], f"Koin '{k['kode']}', field '{field}'")
         ada_ambang = any(k.get(f) is not None for f in FIELD_ANGKA if f != "harga_acuan")
-        if not ada_ambang:
+        tanpa_ambang = k.get("tanpa_ambang") is True
+        if ada_ambang and tanpa_ambang:
+            raise KesalahanInput(
+                f"Koin '{k['kode']}': 'tanpa_ambang' true tetapi ada field ambang -- pilih salah satu."
+            )
+        if not ada_ambang and not tanpa_ambang:
             raise KesalahanInput(
                 f"Koin '{k['kode']}': tidak ada ambang sama sekali "
                 "(isi minimal salah satu: ambang_naik_persen/ambang_turun_persen/"
-                "ambang_harga_di_atas/ambang_harga_di_bawah)."
+                "ambang_harga_di_atas/ambang_harga_di_bawah). Angka ambang HANYA dari pengguna: "
+                "tanyakan ke pengguna, jangan dikarang. Koin yang hanya ditampilkan harganya "
+                "(mis. ringkasan pagi) tulis \"tanpa_ambang\": true."
             )
     return daftar
 
@@ -378,23 +425,40 @@ def ambil_data_untuk_koin(cfg_koin, harga_file_data, batch_coingecko, batch_erro
 # Evaluasi ambang
 # ---------------------------------------------------------------------------
 
-def evaluasi_ambang(cfg_koin, harga_sekarang, persen_perubahan, mata_uang):
-    """Kembalikan (terlewati, detail_terpicu, tidak_bisa_dicek)."""
+def _evaluasi_ambang_per_label(cfg_koin, harga_sekarang, persen_perubahan, mata_uang):
+    """Kembalikan (items, tidak_bisa). `items` adalah daftar dict {'label', 'aktif', 'teks'}
+    SATU per JENIS ambang yang dikonfigurasi (label salah satu dari 'naik'/'turun'/
+    'di_atas'/'di_bawah'), dievaluasi independen satu sama lain -- dipakai untuk anti-spam
+    PER AMBANG (S2-1, lihat `perbarui_status_notifikasi` & `proses_koin`), bukan hanya
+    ringkasan gabungan per koin."""
     fmt = formatter_untuk(mata_uang)
-    detail = []
+    items = []
     tidak_bisa = []
-    terlewati = False
 
     naik = cfg_koin.get("ambang_naik_persen")
     turun = cfg_koin.get("ambang_turun_persen")
     if naik is not None or turun is not None:
         if persen_perubahan is not None:
-            if naik is not None and persen_perubahan >= naik:
-                terlewati = True
-                detail.append(f"Naik {format_persen(persen_perubahan)} (ambang naik {format_angka_ringkas(naik)}%).")
-            if turun is not None and persen_perubahan <= -abs(turun):
-                terlewati = True
-                detail.append(f"Turun {format_persen(persen_perubahan)} (ambang turun {format_angka_ringkas(turun)}%).")
+            if naik is not None:
+                aktif = persen_perubahan >= naik
+                items.append({
+                    "label": "naik", "aktif": aktif,
+                    "teks": (f"Naik {format_persen(persen_perubahan)} "
+                             f"(ambang naik {format_angka_ringkas(naik)}%).") if aktif else None,
+                    "status_teks": (f"Ambang naik {format_angka_ringkas(naik)}%: "
+                                    f"{STATUS_SUDAH if aktif else STATUS_BELUM} "
+                                    f"(perubahan sekarang {format_persen(persen_perubahan)})"),
+                })
+            if turun is not None:
+                aktif = persen_perubahan <= -abs(turun)
+                items.append({
+                    "label": "turun", "aktif": aktif,
+                    "teks": (f"Turun {format_persen(persen_perubahan)} "
+                             f"(ambang turun {format_angka_ringkas(turun)}%).") if aktif else None,
+                    "status_teks": (f"Ambang turun {format_angka_ringkas(turun)}%: "
+                                    f"{STATUS_SUDAH if aktif else STATUS_BELUM} "
+                                    f"(perubahan sekarang {format_persen(persen_perubahan)})"),
+                })
         else:
             tidak_bisa.append(
                 "ambang naik/turun %: tidak ada dasar pembanding (data dari cache tanpa "
@@ -402,31 +466,66 @@ def evaluasi_ambang(cfg_koin, harga_sekarang, persen_perubahan, mata_uang):
             )
 
     di_atas = cfg_koin.get("ambang_harga_di_atas")
+    if di_atas is not None:
+        aktif = harga_sekarang >= di_atas
+        items.append({
+            "label": "di_atas", "aktif": aktif,
+            "teks": f"Harga sudah {fmt(harga_sekarang)}, >= ambang atas {fmt(di_atas)}." if aktif else None,
+            "status_teks": (f"Ambang atas {fmt(di_atas)}: {STATUS_SUDAH} (harga sekarang {fmt(harga_sekarang)})"
+                            if aktif else
+                            f"Ambang atas {fmt(di_atas)}: {STATUS_BELUM} (harga sekarang "
+                            f"{fmt(harga_sekarang)}, perlu naik "
+                            f"{_jarak_persen(di_atas, harga_sekarang)} lagi)"),
+        })
     di_bawah = cfg_koin.get("ambang_harga_di_bawah")
-    if di_atas is not None and harga_sekarang >= di_atas:
-        terlewati = True
-        detail.append(f"Harga sudah {fmt(harga_sekarang)}, >= ambang atas {fmt(di_atas)}.")
-    if di_bawah is not None and harga_sekarang <= di_bawah:
-        terlewati = True
-        detail.append(f"Harga sudah {fmt(harga_sekarang)}, <= ambang bawah {fmt(di_bawah)}.")
+    if di_bawah is not None:
+        aktif = harga_sekarang <= di_bawah
+        items.append({
+            "label": "di_bawah", "aktif": aktif,
+            "teks": f"Harga sudah {fmt(harga_sekarang)}, <= ambang bawah {fmt(di_bawah)}." if aktif else None,
+            "status_teks": (f"Ambang bawah {fmt(di_bawah)}: {STATUS_SUDAH} (harga sekarang {fmt(harga_sekarang)})"
+                            if aktif else
+                            f"Ambang bawah {fmt(di_bawah)}: {STATUS_BELUM} (harga sekarang "
+                            f"{fmt(harga_sekarang)}, perlu turun "
+                            f"{_jarak_persen(di_bawah, harga_sekarang)} lagi)"),
+        })
 
+    return items, tidak_bisa
+
+
+def evaluasi_ambang(cfg_koin, harga_sekarang, persen_perubahan, mata_uang):
+    """Kembalikan (terlewati, detail_terpicu, tidak_bisa_dicek) -- ringkasan gabungan semua
+    jenis ambang koin ini. Dipertahankan untuk kompatibilitas (dipakai saat hanya butuh
+    ringkasan ya/tidak + teks, bukan status per-jenis ambang). Anti-spam PER AMBANG (S2-1)
+    memakai `_evaluasi_ambang_per_label` langsung, lihat `proses_koin`."""
+    items, tidak_bisa = _evaluasi_ambang_per_label(cfg_koin, harga_sekarang, persen_perubahan, mata_uang)
+    detail = [it["teks"] for it in items if it["aktif"]]
+    terlewati = any(it["aktif"] for it in items)
     return terlewati, detail, tidak_bisa
 
 
-def perbarui_status_notifikasi(notif_map, kk_notif, terlewati, sekarang, jeda_ulang_jam):
+def perbarui_status_notifikasi(notif_map, kk_notif, terlewati, sekarang, jeda_ulang_jam,
+                                beri_tahu_pulih=False):
     """Anti-spam: kembalikan True hanya kalau ambang ini BARU terlewati, atau sudah
     terlewati sejak sebelumnya tapi jeda lapor-ulang (`jeda_ulang_jam`) sudah habis.
-    Direset (boleh lapor lagi kapan saja) begitu kondisi kembali normal."""
+    Direset (boleh lapor lagi kapan saja) begitu kondisi kembali normal.
+
+    `beri_tahu_pulih=True` (dipakai untuk status "pemantauan buta" S2-2, BUKAN untuk ambang
+    harga): kembalikan True SEKALI juga saat kondisi baru PULIH (terlewati True -> False),
+    supaya member diberi tahu saat sumber data/pemantauan kembali normal -- berbeda dari
+    ambang harga, di mana pulih cukup terlihat dari harga normal berikutnya tanpa notifikasi
+    "pulih" terpisah."""
     entri_lama = notif_map.get(kk_notif) or {}
     prev_terlewati = bool(entri_lama.get("terlewati"))
     prev_pada = entri_lama.get("pada")
 
     if not terlewati:
+        baru_pulih = prev_terlewati
         notif_map[kk_notif] = {
             "terlewati": False,
             "pada": sekarang.isoformat() if prev_terlewati else (prev_pada or sekarang.isoformat()),
         }
-        return False
+        return bool(beri_tahu_pulih and baru_pulih)
 
     if not prev_terlewati:
         lapor = True
@@ -458,11 +557,16 @@ def proses_koin(cfg_koin, indeks, sekarang, data_baru, kesalahan, state, usia_ba
         "perubahan_24jam_persen": None,
         "persen_vs_acuan": None,
         "harga_acuan": cfg_koin.get("harga_acuan"),
+        "tanpa_ambang": cfg_koin.get("tanpa_ambang") is True,
+        "status_ambang": [],
         "ambang_terlewati": False,
         "perlu_lapor": False,
         "detail_pemicu": [],
         "ambang_tidak_bisa_dicek": [],
         "peringatan": [],
+        "pemantauan_bermasalah": False,
+        "perlu_lapor_pemantauan": False,
+        "pemantauan_pulih": False,
     }
 
     entri_cache = state.setdefault(kk, {})
@@ -504,6 +608,8 @@ def proses_koin(cfg_koin, indeks, sekarang, data_baru, kesalahan, state, usia_ba
             hasil["status"] = "gagal_total"
             hasil["peringatan"].append(f"GAGAL TOTAL, tidak ada cache tersimpan: {kesalahan}")
 
+    notif_map = state.setdefault("_notifikasi", {})
+
     if hasil["harga"] is not None:
         hasil["harga_format"] = formatter_untuk(mata_uang)(hasil["harga"])
         acuan = cfg_koin.get("harga_acuan")
@@ -512,13 +618,43 @@ def proses_koin(cfg_koin, indeks, sekarang, data_baru, kesalahan, state, usia_ba
             persen_pakai = hasil["persen_vs_acuan"]
         else:
             persen_pakai = hasil["perubahan_24jam_persen"]
-        terlewati, detail, tidak_bisa = evaluasi_ambang(cfg_koin, hasil["harga"], persen_pakai, mata_uang)
-        hasil["ambang_terlewati"] = terlewati
-        hasil["detail_pemicu"] = detail
-        hasil["ambang_tidak_bisa_dicek"] = tidak_bisa
 
-        notif_map = state.setdefault("_notifikasi", {})
-        hasil["perlu_lapor"] = perbarui_status_notifikasi(notif_map, kk_notif, terlewati, sekarang, jeda_ulang_jam)
+        # S2-1: anti-spam PER JENIS AMBANG (bukan per koin) -- ambang lain yang baru
+        # terlewati pada koin yang sama TIDAK ikut diredam oleh ambang yang sudah
+        # dilaporkan lebih dulu, dan status tiap jenis ambang pulih independen.
+        items, tidak_bisa = _evaluasi_ambang_per_label(cfg_koin, hasil["harga"], persen_pakai, mata_uang)
+        hasil["ambang_tidak_bisa_dicek"] = tidak_bisa
+        hasil["status_ambang"] = [it["status_teks"] for it in items]
+        detail_pemicu = []
+        perlu_lapor_ambang = False
+        for it in items:
+            kk_label = f"{kk_notif}#{it['label']}"
+            lapor = perbarui_status_notifikasi(notif_map, kk_label, it["aktif"], sekarang, jeda_ulang_jam)
+            if it["aktif"]:
+                detail_pemicu.append({"teks": it["teks"], "perlu_lapor": lapor})
+                if lapor:
+                    perlu_lapor_ambang = True
+        hasil["ambang_terlewati"] = any(it["aktif"] for it in items)
+        hasil["detail_pemicu"] = detail_pemicu
+        hasil["perlu_lapor"] = perlu_lapor_ambang
+
+    # S2-2: "pemantauan buta" -- gagal total, cache lebih tua dari --usia-basi-jam, atau
+    # ambang %/24 jam yang sedang TIDAK BISA dievaluasi sama sekali -- diperlakukan sebagai
+    # kondisi yang PERLU DILAPORKAN (dengan anti-spam yang sama), bukan didiamkan (kasus
+    # cache/tidak-bisa-dicek) ATAUPUN dilaporkan setiap kali tanpa jeda (kasus gagal_total
+    # murni, sebelumnya tanpa anti-spam sama sekali).
+    bermasalah = (
+        hasil["status"] == "gagal_total"
+        or (hasil["status"] == "cache" and hasil["usia_data_jam"] is not None
+            and hasil["usia_data_jam"] > usia_basi_jam)
+        or bool(hasil["ambang_tidak_bisa_dicek"])
+    )
+    lapor_pemantauan = perbarui_status_notifikasi(
+        notif_map, f"{kk_notif}#pemantauan", bermasalah, sekarang, jeda_ulang_jam, beri_tahu_pulih=True,
+    )
+    hasil["pemantauan_bermasalah"] = bermasalah
+    hasil["perlu_lapor_pemantauan"] = lapor_pemantauan
+    hasil["pemantauan_pulih"] = lapor_pemantauan and not bermasalah
 
     return hasil
 
@@ -533,14 +669,19 @@ def susun_pesan_singkat(daftar_hasil, sekarang, peringatan_global):
         baris.append(f"⚠️ {p}")
 
     ada_pemicu = False
-    koin_bermasalah = []  # (kode, alasan) -- gagal total ATAU ambang % tidak bisa dicek
-    koin_normal_aman = []
 
     for h in daftar_hasil:
+        if h.get("pemantauan_pulih"):
+            baris.append(f"- {h['kode']}: ✅ PEMANTAUAN PULIH -- data & ambang kembali bisa dicek normal.")
+
         if h["status"] == "gagal_total":
             alasan = h["peringatan"][0] if h["peringatan"] else "tidak diketahui"
             baris.append(f"- {h['kode']}: TIDAK BISA DICEK -- {alasan}")
-            koin_bermasalah.append(h["kode"])
+            if h["pemantauan_bermasalah"] and not h["perlu_lapor_pemantauan"]:
+                baris.append(
+                    "  (masih tidak bisa dicek, sudah pernah dilaporkan -- diredam sampai "
+                    "jeda lapor-ulang habis, lihat --jeda-ulang-jam)"
+                )
             continue
 
         tanda = " ⚠️ DATA BASI" if h["status"] == "cache" else ""
@@ -553,32 +694,68 @@ def susun_pesan_singkat(daftar_hasil, sekarang, peringatan_global):
         for p in h["peringatan"]:
             baris.append(f"  ⚠️ {p}")
 
+        # R (ringan): kalau member mengisi harga_acuan sendiri, AMBANG dievaluasi terhadap
+        # persen_vs_acuan (bukan perubahan 24 jam) -- tampilkan juga angka ini secara
+        # eksplisit, supaya member tidak salah kira ambang dinilai dari 24 jam terakhir.
+        if h.get("persen_vs_acuan") is not None:
+            baris.append(
+                f"  (vs harga acuan Anda {formatter_untuk(h['mata_uang'])(h['harga_acuan'])}: "
+                f"{format_persen(h['persen_vs_acuan'])})"
+            )
+
+        # S2-1: setiap jenis ambang yang SEDANG terlewati ditampilkan, dengan tanda
+        # terpisah untuk yang BARU (perlu dilaporkan sekarang) vs yang masih diredam --
+        # bukan cuma dibungkus jadi satu status per koin seperti sebelumnya.
+        if h.get("tanpa_ambang"):
+            baris.append("  (tanpa ambang -- hanya harga; ambang belum ditetapkan pengguna)")
         if h["ambang_terlewati"]:
             ada_pemicu = True
-            if h["perlu_lapor"]:
-                for d in h["detail_pemicu"]:
-                    baris.append(f"  >> AMBANG TERLEWATI: {d}")
-            else:
-                baris.append(
-                    "  (ambang masih terlewati, tapi sudah pernah dilaporkan -- diredam "
-                    "sampai jeda lapor-ulang habis, lihat --jeda-ulang-jam)"
-                )
-        elif h["ambang_tidak_bisa_dicek"]:
-            koin_bermasalah.append(h["kode"])
+            for d in h["detail_pemicu"]:
+                if d["perlu_lapor"]:
+                    baris.append(f"  >> AMBANG TERLEWATI -- {STATUS_SUDAH} sekarang: {d['teks']}")
+                else:
+                    baris.append(
+                        f"  ({STATUS_SUDAH}, sudah pernah dilaporkan -- diredam: {d['teks']})"
+                    )
+        # v1.0.7: ambang yang BELUM terlewati juga diberi status + jarak, supaya pengguna
+        # tahu posisi harga terhadap setiap ambang yang ia tetapkan.
+        for st in h.get("status_ambang", []):
+            if STATUS_BELUM in st:
+                baris.append(f"  Status: {st}")
+
+        # R (ringan, uji ulang v1.0.1): dulu cabang 'elif' -- kalau ambang terlewati DAN
+        # ambang % tidak bisa dicek terjadi bersamaan, keterangan "tidak bisa dicek" tidak
+        # pernah tampil. Sekarang independen dari status ambang_terlewati.
+        if h["ambang_tidak_bisa_dicek"]:
             for t in h["ambang_tidak_bisa_dicek"]:
                 baris.append(f"  (tidak bisa dicek: {t})")
-        else:
-            koin_normal_aman.append(h["kode"])
+            if h["pemantauan_bermasalah"] and not h["perlu_lapor_pemantauan"] and not h["pemantauan_pulih"]:
+                baris.append(
+                    "  (pemantauan masih bermasalah, sudah pernah dilaporkan -- diredam "
+                    "sampai jeda lapor-ulang habis)"
+                )
+        elif (h["pemantauan_bermasalah"] and not h["perlu_lapor_pemantauan"]
+              and not h["pemantauan_pulih"]):
+            # Cache basi (tanpa ambang % yang gagal dicek) yang masih dalam masa redam.
+            baris.append(
+                "  (data basi masih berlanjut, sudah pernah dilaporkan -- diredam sampai "
+                "jeda lapor-ulang habis)"
+            )
 
+    bermasalah_kodes = [h["kode"] for h in daftar_hasil if h.get("pemantauan_bermasalah")]
+    aman_kodes = [h["kode"] for h in daftar_hasil if not h.get("pemantauan_bermasalah")]
     if not ada_pemicu:
-        if koin_bermasalah:
+        if bermasalah_kodes:
             baris.append(
                 f"Tidak ada ambang yang terlewati untuk koin yang berhasil dicek "
-                f"({', '.join(koin_normal_aman) if koin_normal_aman else '-'}); "
-                f"TIDAK bisa dicek untuk: {', '.join(koin_bermasalah)}."
+                f"({', '.join(aman_kodes) if aman_kodes else '-'}); "
+                f"TIDAK bisa dicek/dipantau penuh untuk: {', '.join(bermasalah_kodes)}."
             )
         else:
             baris.append("Tidak ada ambang yang terlewati (semua koin berhasil dicek).")
+    else:
+        sudah = [h["kode"] for h in daftar_hasil if h["ambang_terlewati"]]
+        baris.append(f"Ambang {STATUS_SUDAH} saat ini: {', '.join(sudah)}.")
 
     baris.append("Informasi, bukan nasihat investasi. Keputusan & risiko sepenuhnya milik Anda.")
     return "\n".join(baris)
@@ -590,8 +767,10 @@ def susun_pesan_singkat(daftar_hasil, sekarang, peringatan_global):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Cek harga kripto vs ambang member (tanpa API key).")
-    ap.add_argument("--konfigurasi", required=True, help="Path ke konfigurasi.json (daftar koin & ambang).")
-    ap.add_argument("--state", required=True, help="Path ke state.json (cache harga & status notifikasi, dibuat otomatis).")
+    ap.add_argument("--konfigurasi", required=True,
+                     help="Path ke konfigurasi.json, ATAU teks JSON langsung diawali '{' (untuk pratinjau sebelum file ditulis).")
+    ap.add_argument("--state", default=None,
+                     help="Path ke state.json (cache & status notifikasi). Wajib kecuali --pratinjau.")
     ap.add_argument("--harga-file", default=None,
                      help="Mode offline/uji: path JSON berisi harga simulasi, tanpa jaringan sama sekali.")
     ap.add_argument("--timeout", type=float, default=8.0, help="Timeout per permintaan (detik). Default 8.")
@@ -603,10 +782,22 @@ def main(argv=None):
     ap.add_argument("--keluaran", choices=["json", "teks"], default="json",
                      help="json = satu objek JSON (default, untuk automation/agent). "
                           "teks = hanya pesan_singkat ke stdout.")
+    ap.add_argument("--pratinjau", "--tanpa-simpan", dest="pratinjau", action="store_true",
+                     help="Pratinjau untuk pengguna: JANGAN menulis/mengubah file state (tanpa mencatat 'sudah "
+                          "dilaporkan'), exit code 0 bila ok. Wajib dipakai saat menampilkan harga ke pengguna "
+                          "waktu memasang/mengubah alert.")
     args = ap.parse_args(argv)
 
     try:
-        cfg = muat_json(args.konfigurasi, wajib=True, nama="Konfigurasi")
+        if not args.state and not args.pratinjau:
+            raise KesalahanInput("--state wajib diisi (mis. kripto/state.json), kecuali saat --pratinjau.")
+        if args.konfigurasi.lstrip().startswith("{"):
+            try:
+                cfg = json.loads(args.konfigurasi)
+            except json.JSONDecodeError as e:
+                raise KesalahanInput(f"Teks JSON konfigurasi rusak: {e}")
+        else:
+            cfg = muat_json(args.konfigurasi, wajib=True, nama="Konfigurasi")
         daftar_koin = validasi_konfigurasi(cfg)
         harga_file_data = None
         if args.harga_file:
@@ -619,13 +810,13 @@ def main(argv=None):
 
     peringatan_global = []
     try:
-        state = muat_json(args.state, wajib=False, nama="State")
+        state = muat_json(args.state, wajib=False, nama="State") if args.state else {}
         if not isinstance(state, dict):
             raise KesalahanInput("State bukan objek JSON (dict), melainkan tipe lain.")
     except KesalahanInput as e:
         state = {}
         try:
-            if os.path.exists(args.state):
+            if args.state and os.path.exists(args.state) and not args.pratinjau:
                 cadangan = f"{args.state}.rusak-{int(time.time())}"
                 os.replace(args.state, cadangan)
                 peringatan_global.append(
@@ -662,24 +853,40 @@ def main(argv=None):
             proses_koin(k, indeks, sekarang, data_baru, kesalahan, state, args.usia_basi_jam, args.jeda_ulang_jam)
         )
 
-    try:
-        with open(args.state, "w", encoding="utf-8") as f:
-            json.dump(state, f, ensure_ascii=False, indent=2)
-    except OSError as e:
-        peringatan_global.append(f"Gagal menyimpan cache state: {e}")
+    if args.pratinjau:
+        peringatan_global.append(
+            "PRATINJAU: state tidak disimpan -- status notifikasi 'sudah dilaporkan' tidak dicatat, "
+            "jadi jadwal pertama tetap bisa mengirim notifikasi bila ambang sudah terlewati.")
+    else:
+        try:
+            with open(args.state, "w", encoding="utf-8") as f:
+                json.dump(state, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            peringatan_global.append(f"Gagal menyimpan cache state: {e}")
 
     pesan_singkat = susun_pesan_singkat(daftar_hasil, sekarang, peringatan_global)
 
     ada_terlewati = any(h["ambang_terlewati"] for h in daftar_hasil)
-    ada_perlu_lapor = any(h["ambang_terlewati"] and h["perlu_lapor"] for h in daftar_hasil)
+    ada_perlu_lapor_ambang = any(h["ambang_terlewati"] and h["perlu_lapor"] for h in daftar_hasil)
     ada_gagal_total = any(h["status"] == "gagal_total" for h in daftar_hasil)
+    # S2-2: "pemantauan buta" (gagal total / cache basi / ambang % tak bisa dicek) sekarang
+    # PUNYA anti-spam sendiri (lihat proses_koin) -- baru dilaporkan saat pertama terjadi,
+    # sudah pernah pulih & terjadi lagi, jeda lapor-ulang habis, atau baru pulih. Ini
+    # menggantikan `ada_gagal_total` mentah sebagai pemicu exit 3 (sebelumnya gagal_total
+    # dilaporkan SETIAP kali tanpa jeda, sementara cache basi/ambang tak bisa dicek TIDAK
+    # PERNAH dilaporkan sama sekali).
+    ada_perlu_lapor_pemantauan = any(h.get("perlu_lapor_pemantauan") for h in daftar_hasil)
+    ada_pemantauan_bermasalah = any(h.get("pemantauan_bermasalah") for h in daftar_hasil)
+    perlu_lapor_sekarang = ada_perlu_lapor_ambang or ada_perlu_lapor_pemantauan
 
     keluaran = {
         "status": "ok",
+        "pratinjau": bool(args.pratinjau),
         "jam_cek": sekarang.isoformat(),
         "ambang_terlewati": ada_terlewati,
-        "perlu_lapor_sekarang": ada_perlu_lapor,
+        "perlu_lapor_sekarang": perlu_lapor_sekarang,
         "ada_koin_gagal_total": ada_gagal_total,
+        "ada_pemantauan_bermasalah": ada_pemantauan_bermasalah,
         "koin": daftar_hasil,
         "peringatan_global": peringatan_global,
         "pesan_singkat": pesan_singkat,
@@ -691,9 +898,11 @@ def main(argv=None):
     else:
         print(json.dumps(keluaran, ensure_ascii=False, indent=2))
 
-    if ada_perlu_lapor:
+    if args.pratinjau:
+        return 0
+    if ada_perlu_lapor_ambang:
         return 2
-    if ada_gagal_total:
+    if ada_perlu_lapor_pemantauan:
         return 3
     return 0
 

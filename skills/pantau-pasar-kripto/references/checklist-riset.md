@@ -14,7 +14,10 @@ formulir kosong.
 ## 2. Tokenomics (ekonomi token)
 - Total suplai, suplai beredar saat ini, jadwal *unlock*/vesting ke depan (sumber:
   whitepaper/dokumentasi resmi + explorer blockchain).
-- Alokasi token: berapa persen ke tim, investor, komunitas, treasury?
+- Alokasi token: berapa persen ke tim, investor, komunitas, treasury? **Hanya dari sumber
+  resmi proyek versi terbaru, dengan tanggal sumbernya** (alokasi sering direvisi; angka
+  Wikipedia/artikel lama bisa usang). Tidak bisa dicek → "belum bisa dicek dari sumber resmi
+  terbaru".
 - Ada mekanisme *burn*/deflasi, atau justru inflasi berkelanjutan?
 
 ## 3. Audit kontrak & keamanan
@@ -26,7 +29,8 @@ formulir kosong.
 - Terdaftar di exchange mana saja? Berizin resmi Indonesia (PAKD OJK) atau hanya
   exchange luar negeri?
 - Volume perdagangan 24 jam & kedalaman *order book* (dari data publik CoinGecko/
-  exchange, sebutkan sumbernya & jam datanya -- jangan dari ingatan).
+  exchange, sebutkan sumbernya & jam datanya dalam WIB hasil `scripts/jam_wib.py` --
+  `last_updated` CoinGecko adalah UTC -- jangan dari ingatan).
 
 ## 5. Status legal di Indonesia
 Lihat `references/regulasi.md` untuk dasar hukum yang sudah diverifikasi (per tanggal di
@@ -66,7 +70,7 @@ Tandai kalau ditemukan (jelaskan sebagai fakta yang perlu diketahui, tanpa menyi
 
 ## Format penutup wajib
 ```
-Sumber yang dipakai: <daftar tautan>
+Sumber yang dipakai: <daftar URL lengkap https://... per halaman yang dikutip>
 Kolom yang belum bisa diverifikasi: <daftar, kalau ada>
 Informasi, bukan nasihat investasi. Keputusan & risiko sepenuhnya milik Anda.
 ```

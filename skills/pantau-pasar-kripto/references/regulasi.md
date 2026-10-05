@@ -79,20 +79,32 @@ ulang kalau sudah lama sejak tanggal di atas.
   tanggal penetapan persis, arahkan cek langsung ke halaman resmi di bawah.
   Sumber: https://ojk.go.id/id/regulasi/Pages/PADK-Nomor-3-Tahun-2026-Penyelenggaraan-Perdagangan-Aset-Keuangan-Digital-termasuk-Aset-Kripto.aspx
 
-## 4. Pajak: PPh final 0,21%
+## 4. Pajak: PPh Pasal 22 final atas penjualan aset kripto (dicek ulang 2026-10-01, status T)
 - **PMK 50/2025** (Peraturan Menteri Keuangan Nomor 50 Tahun 2025), berlaku sejak
-  **1 Agustus 2025**: PPh final atas transaksi aset kripto.
-  - **0,21%** dari nilai transaksi -- untuk transaksi lewat sistem elektronik PAKD
-    **dalam negeri** (berizin OJK).
-  - **1%** dari nilai transaksi -- untuk transaksi lewat platform **luar negeri** (yang
-    belum ditunjuk sebagai pemungut pajak).
-  - Tarif domestik sengaja dibuat lebih rendah untuk mendorong trader pindah ke PAKD resmi
-    Indonesia.
-  Sumber: https://www.pajak.go.id/index.php/en/node/117234
-- Skill ini **tidak menghitung/melaporkan** SPT atau kewajiban pajak individu -- hanya
-  menyebut info tarif ini kalau ditanya, dan menyarankan potongan pajak dimasukkan ke
-  kolom `biaya` di `JURNAL.csv` (lihat `SKILL.md` Langkah D.5) supaya P/L yang dihitung
-  sudah bersih. Untuk kepastian kewajiban pajak, arahkan ke konsultan pajak/DJP.
+  **1 Agustus 2025**. Ringkasan resmi DJP (31 Juli 2025), dibaca ulang 2026-10-01:
+  https://www.pajak.go.id/index.php/en/node/117234
+  - **Yang dikenai: PENJUAL.** "Penghasilan yang diterima atau diperoleh penjual aset kripto
+    sehubungan dengan transaksi aset kripto merupakan objek PPh." Jadi basisnya **nilai
+    transaksi JUAL** (jumlah koin × harga satuan). **Transaksi BELI tidak dikenai PPh.**
+  - **0,21%** (PPh Pasal 22 final) dari nilai transaksi -- bila lewat sarana elektronik PPMSE
+    yang merupakan **PAKD dalam negeri** (berizin OJK); dipungut oleh PAKD.
+  - **1%** dari nilai transaksi -- bila lewat PPMSE yang **bukan PAKD dalam negeri** (exchange
+    luar negeri). Bila PPMSE itu **belum ditunjuk sebagai pemungut**, PPh tersebut **wajib
+    disetor sendiri oleh penjual**.
+  - **PPN atas penyerahan aset kripto tidak dipungut** lagi (aset kripto dipersamakan dengan
+    surat berharga). Yang tetap kena PPN (12%) adalah **jasa** platform/PPMSE (bagian dari
+    biaya exchange) -- itu bukan PPh di atas, dan skill tidak menghitungnya.
+- **Contoh (kasus uji 03):** jual BTC Rp1.820.000 + SOL Rp5.700.000 + ETH Rp1.330.000 = nilai
+  jual Rp8.850.000 × 0,21% = **Rp18.585**. SALAH bila beli ikut dihitung (Rp23.310.000 ×
+  0,21% = Rp48.951).
+- **Hanya `scripts/hitung_pl_jurnal.py` yang menghitung** (field `estimasi_pajak`, opsi
+  `--platform dalam-negeri|luar-negeri`); agent mengutip angkanya, tidak menghitung sendiri.
+- **Jangan menyimpulkan** apakah PPh sudah termasuk dalam kolom `biaya` yang dicatat member
+  (kemiripan angka fee vs pajak bukan bukti). Minta member mengecek kolom pajak/PPh di riwayat
+  transaksi exchange.
+- Skill ini **tidak menghitung/melaporkan SPT** atau kewajiban pajak tahunan individu. Untuk
+  kepastian, arahkan ke konsultan pajak/DJP. Pembulatan estimasi per transaksi ke bawah
+  (rupiah penuh, sama dengan `bot-trading-kripto`); pembulatan exchange bisa berbeda beberapa rupiah.
 
 ## 5. Cara pakai bagian ini di checklist riset (Langkah C SKILL.md)
 - Kutip **hanya** fakta di atas yang bertanda status **T** (langsung dari ojk.go.id/
@@ -108,3 +120,16 @@ ulang kalau sudah lama sejak tanggal di atas.
   Kalau agent punya akses pencarian web, cari ke ojk.go.id / peraturan.bpk.go.id langsung.
   Kalau tidak ada akses, tulis jujur "perlu dicek ke ojk.go.id" dan jangan mengarang nomor
   peraturan atau tanggal.
+
+## 6. Kanal pengaduan & cek legalitas (dicek 2026-10-01)
+- **Kontak OJK 157** adalah nomor layanan konsumen OJK (telepon 157, WhatsApp 081-157-157-157),
+  BUKAN nomor peraturan -- jangan menulis "POJK 157" atau "OJK 157" seolah aturan.
+- **Satgas PASTI** (Satuan Tugas Pemberantasan Aktivitas Keuangan Ilegal, dahulu Satgas Waspada
+  Investasi) menerima laporan penawaran investasi/kripto ilegal & janji imbal hasil tidak wajar:
+  sipasti.ojk.go.id, Kontak OJK 157, email satgaspasti@ojk.go.id.
+  Sumber: https://ojk.go.id/waspada-investasi/id/default.aspx ·
+  https://ojk.go.id/waspada-investasi/id/hubungikami.aspx
+- Kalimat baku saat menolak permintaan sinyal (tanpa menambah sinyal): *"Perdagangan aset kripto
+  di Indonesia diawasi OJK (POJK 27/2024, diubah POJK 23/2025). Pastikan platform Anda ada di
+  daftar PAKD berizin di situs OJK, dan waspadai grup sinyal/janji profit -- bisa dilaporkan ke
+  Satgas PASTI atau Kontak OJK 157."*

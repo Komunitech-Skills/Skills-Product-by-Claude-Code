@@ -1,0 +1,21 @@
+{
+  "mode": "paper",
+  "bursa": "indodax",
+  "pasangan": "eth_idr",
+  "strategi": {
+    "jenis": "tp_sl",
+    "nominal_beli": "500000",
+    "take_profit_persen": "15",
+    "stop_loss_persen": "8",
+    "harga_masuk_maks": ""
+  },
+  "batas_risiko": {
+    "modal_maks_per_order": "500000",
+    "modal_maks_total": "500000",
+    "stop_loss_persen": "10",
+    "rugi_harian_maks": "100000",
+    "order_terbuka_maks": 1
+  },
+  "biaya": {"fee_persen": "0.2", "pajak": "domestik"},
+  "kunci": {"file": "~/.komunitech/kunci-bot.json"}
+}

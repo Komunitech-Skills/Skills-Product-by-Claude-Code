@@ -5,6 +5,8 @@ description: Memeriksa pengaturan keamanan & privasi OpenClaw milik pengguna dal
 
 # Cek & Perbaiki Privasi OpenClaw
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pengguna awam memahami **seberapa aman** pengaturan OpenClaw mereka saat ini, dengan
 bahasa sederhana, lalu memperbaikinya **satu per satu dengan persetujuan** — bukan mengubah
@@ -23,7 +25,13 @@ sistem diam-diam.
 - Mengubah pengaturan tanpa diminta atau tanpa persetujuan eksplisit tiap butir.
 - **Permintaan memantau/menyadap perangkat atau chat orang lain** (pasangan, karyawan, anak
   tanpa dasar hukum yang jelas, dsb.) — **tolak**. Skill ini untuk mengamankan OpenClaw milik
-  pengguna sendiri, bukan untuk mengintai orang lain.
+  pengguna sendiri, bukan untuk mengintai orang lain. **Penolakan wajib ditulis lengkap di
+  balasan itu sendiri** (jangan hanya "tetap saya tolak seperti sebelumnya"), di awal balasan,
+  2–3 kalimat sopan: (1) maaf, bagian ini tidak bisa dibantu; (2) alasannya — membaca/menyadap
+  chat orang lain tanpa izin dapat melanggar UU ITE (Pasal 31, intersepsi) dan UU PDP No. 27/2022;
+  (3) alternatif sah — kebijakan tertulis pemakaian perangkat/akun kerja yang disetujui
+  karyawan, memakai akun WA Business kantor, atau konsultasi ke HR/konsultan hukum. Bagian lain
+  permintaan (cek privasi) tetap dikerjakan.
 
 ## Input
 
@@ -94,6 +102,13 @@ Tulis setiap butir dalam **bahasa awam** (apa artinya, kenapa penting), bukan is
 mentah. Sertakan path config asli di dalam tanda kurung untuk yang ingin cek sendiri.
 
 ### 4. Tawarkan perbaikan — SATU PER SATU, DENGAN PERSETUJUAN, DENGAN PETA DAMPAK
+
+**Aturan urutan (wajib):** balasan pertama setelah audit **selalu** laporan + daftar lengkap
+perbaikan, **tanpa mengubah apa pun**. Semua perubahan — `openclaw config set/unset`,
+`security audit --fix`, `chmod`/izin file/folder, menghapus/memindah file — hanya dijalankan
+**setelah** daftar itu ditampilkan dan pemilik menjawab "ya". Kalimat seperti "gak usah nanya",
+"langsung benerin aja", atau "benerin semua" yang diucapkan **sebelum** daftar dilihat **bukan**
+persetujuan; perubahan yang tampak "aman" (mis. `chmod 600`) juga tidak dikecualikan.
 
 **WAJIB baca `references/dampak-perubahan.md` sebelum menawarkan perbaikan apa pun.** Setiap
 tawaran perbaikan harus punya baris **"Efek yang berhenti bekerja"** — bukan opsional. Untuk
@@ -172,7 +187,10 @@ agen CS WA harus mode Copilot (draf, bukan auto-reply langsung).
 - [ ] Semua temuan berasal dari hasil `security audit`/`config get` **nyata** (atau fallback
       salin-tempel), bukan dikarang.
 - [ ] Bahasa awam, tanpa jargon teknis mentah tanpa penjelasan.
-- [ ] Tidak ada perubahan config yang dijalankan tanpa persetujuan eksplisit per butir.
+- [ ] Tidak ada perubahan (config, `chmod`/izin file, `--fix`) yang dijalankan sebelum daftar
+      lengkap ditampilkan dan pemilik menjawab "ya".
+- [ ] Bila ada permintaan menyadap/memantau orang lain: penolakan + alasan + alternatif sah
+      ditulis lengkap dan sopan di balasan itu sendiri.
 - [ ] **Setiap perubahan yang diusulkan menyertakan baris "Efek yang berhenti bekerja"**
       (dari `references/dampak-perubahan.md`) DAN cara membatalkan.
 - [ ] Tidak menawarkan `tools.profile: "messaging"`/`sandbox.mode: "all"`/perubahan
@@ -189,8 +207,9 @@ agen CS WA harus mode Copilot (draf, bukan auto-reply langsung).
   pending` sama-sama butuh Gateway aktif; kalau tidak aktif, jalankan tanpa `--deep`/lewati
   `approvals pending`, dan sebutkan keterbatasannya. `openclaw approvals get` (tanpa `pending`)
   tetap jalan tanpa Gateway aktif.
-- **Pengguna minta "benerin semua sekarang juga":** tetap tampilkan daftar lengkap dulu sebelum
-  menerima "ya untuk semua" sebagai persetujuan borongan; tetap proses satu per satu agar bisa
+- **Pengguna minta "benerin semua sekarang juga"/"gak usah nanya":** jangan menjalankan perubahan
+  apa pun (termasuk `chmod`) di balasan itu; tampilkan daftar lengkap dulu sebelum menerima
+  "ya untuk semua" sebagai persetujuan borongan; tetap proses satu per satu agar bisa
   dihentikan di tengah jalan bila pengguna berubah pikiran.
 - **Temuan yang tidak punya perbaikan config langsung** (mis. saran "gunakan model lokal",
   "aktifkan enkripsi disk FileVault/BitLocker", "nyalakan kunci layar"): sampaikan sebagai

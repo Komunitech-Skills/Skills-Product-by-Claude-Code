@@ -1,0 +1,103 @@
+{
+  "ok": true,
+  "file_keluaran": {
+    "daftar_ambil_md": "/home/user/Skills/skills/resi-picking/examples/01-picking-dasar/daftar-ambil.md",
+    "urutan_resi_md": "/home/user/Skills/skills/resi-picking/examples/01-picking-dasar/urutan-resi.md"
+  },
+  "file_pesanan": "/home/user/Skills/skills/resi-picking/examples/01-picking-dasar/input-pesanan.csv",
+  "encoding": "utf-8-sig",
+  "pemetaan_kolom": {
+    "No. pesanan": "No. Pesanan",
+    "SKU": "Nomor Referensi SKU",
+    "Nama produk": "Nama Produk",
+    "Variasi": "Nama Variasi",
+    "Jumlah": "Jumlah",
+    "Kurir": "Opsi Pengiriman",
+    "No. resi": "No. Resi",
+    "Catatan pembeli": "Catatan dari Pembeli",
+    "Status pesanan": "Status Pesanan"
+  },
+  "pemetaan_lokasi": {
+    "sku": "SKU",
+    "lokasi": "Lokasi"
+  },
+  "pemetaan_stok": {
+    "sku": "sku",
+    "stok": "stok",
+    "lokasi": "lokasi",
+    "nama": "nama"
+  },
+  "jumlah_baris_dibaca": 10,
+  "jumlah_pesanan_total": 5,
+  "jumlah_pesanan_aktif": 4,
+  "jumlah_sku_unik": 4,
+  "total_barang": 12.0,
+  "kurir": {
+    "JNE": 2,
+    "SiCepat": 1,
+    "J&T": 1
+  },
+  "jumlah_pesanan_catatan_khusus": 1,
+  "jumlah_resi_kosong": 1,
+  "dilewati_status": {
+    "batal": 1
+  },
+  "baris_dilewati": {
+    "jumlah_tidak_terbaca": 1,
+    "jumlah_nol_atau_negatif": 1,
+    "baris_duplikat": 1,
+    "baris_ringkasan_diabaikan": 1
+  },
+  "peringatan": [
+    "SKU tidak ada di file stok (input-stok-buku-stok.csv): GANTUNGAN-X. Kemungkinan salah ketik atau produk baru.",
+    "1 baris 'jumlah tidak terbaca' dilewati (baris 9).",
+    "1 baris 'jumlah nol atau negatif' dilewati (baris 8).",
+    "1 baris 'baris duplikat' dilewati (baris 10).",
+    "1 baris 'baris ringkasan diabaikan' dilewati (baris 11).",
+    "1 pesanan tanpa nomor resi (lihat kelompok '(Resi belum ada)' di urutan-resi).",
+    "Pesanan dilewati karena status: batal (1). Tidak masuk daftar ambil/urutan resi."
+  ],
+  "urut_dipakai": "resi",
+  "daftar_ambil": [
+    {
+      "sku": "KAOS-HT-M",
+      "nama": "Kaos Polos Pria",
+      "varian": "Hitam - M",
+      "lokasi": "A1",
+      "qty": 3.0,
+      "jumlah_pesanan": 2,
+      "sku_dikenal": true,
+      "stok_tercatat": 3.0
+    },
+    {
+      "sku": "KAOS-HT-L",
+      "nama": "Kaos Polos Pria",
+      "varian": "Hitam - L",
+      "lokasi": "A2",
+      "qty": 3.0,
+      "jumlah_pesanan": 1,
+      "sku_dikenal": true,
+      "stok_tercatat": 20.0
+    },
+    {
+      "sku": "TOPI-01",
+      "nama": "Topi Bucket",
+      "varian": "Krem",
+      "lokasi": "B3",
+      "qty": 1.0,
+      "jumlah_pesanan": 1,
+      "sku_dikenal": true,
+      "stok_tercatat": 10.0
+    },
+    {
+      "sku": "GANTUNGAN-X",
+      "nama": "Gantungan Kunci Lucu",
+      "varian": "",
+      "lokasi": "",
+      "qty": 5.0,
+      "jumlah_pesanan": 1,
+      "sku_dikenal": false,
+      "stok_tercatat": null
+    }
+  ]
+}

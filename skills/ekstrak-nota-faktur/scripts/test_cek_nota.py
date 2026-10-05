@@ -109,6 +109,34 @@ class UjiRegresiHasilUji(unittest.TestCase):
         self.assertNotIn("TIDAK TERBACA", baris.values())
         self.assertIsNone(d["total_rekap"])
 
+    def test_v104_digit_buram_tetap_isi_seharusnya(self):
+        d = cek({"jenis": "faktur_pajak", "tanggal": "2026-09-15", "dpp": "8.400.000", "ppn": "92?.000",
+                 "total": "9.32?.000"})
+        self.assertEqual(d["ppn"], cn.TIDAK_TERBACA)
+        self.assertEqual(d["ppn_seharusnya"], 924000)
+        self.assertEqual(d["total_seharusnya"], 9324000)
+        self.assertIsNone(d["total_rekap"])
+        self.assertIn("[cek: ppn]", pesan(d))
+        self.assertIn("sesuai pola terbaca '92?.000'", pesan(d))
+        baris = list(csv.DictReader(io.StringIO(cn.ke_csv([d], "dokumen", ";", "koma", False)), delimiter=";"))[0]
+        self.assertEqual(baris["PPN"], "[cek: 92?.000]")
+        self.assertEqual(baris["Total"], "[cek: 9.32?.000]")
+        self.assertEqual(baris["PPN Seharusnya"], "924000")
+        self.assertEqual(baris["Total Seharusnya"], "9324000")
+        # pola tidak cocok -> disebut jelas
+        d = cek({"jenis": "invoice", "tanggal": "2026-09-15", "dpp": "8.400.000", "ppn": "1.00?.000"})
+        self.assertIn("TIDAK sesuai pola", pesan(d))
+        # PPN TIDAK_TERBACA, total terbaca -> PPN & total seharusnya tetap terisi
+        d = cek({"jenis": "invoice", "tanggal": "2026-09-15", "subtotal": "1.500.000", "ppn": "TIDAK_TERBACA",
+                 "total": "1.665.000"})
+        self.assertEqual(d["ppn_seharusnya"], 165000)
+        self.assertEqual(d["total_seharusnya"], 1665000)
+        self.assertEqual(d["total_rekap"], 1665000)
+        # total buram, PPN terbaca
+        d = cek({"jenis": "invoice", "tanggal": "2026-09-15", "dpp": "1.500.000", "ppn": "165.000", "total": "buram"})
+        self.assertEqual(d["total_seharusnya"], 1665000)
+        self.assertIn("[cek: total]", pesan(d))
+
     def test_satu_dokumen_rusak_tidak_gagalkan_batch(self):
         data = {"dokumen": [
             {"id": "OK1", "tanggal": "2026-09-01", "total": "10.000"},

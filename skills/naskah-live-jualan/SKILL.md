@@ -1,9 +1,11 @@
 ---
 name: naskah-live-jualan
-description: Membuat naskah live selling siap baca untuk TikTok Live, Shopee Live, atau live IG/FB — rundown per segmen waktu (pembukaan, hook, demo, harga & promo, urgensi jujur, CTA checkout, rekap penonton baru, penutup) plus bank jawaban pertanyaan penonton, dengan angka promo dihitung script. Gunakan saat pengguna minta naskah/script live, rundown live, atau kata-kata host saat jualan live (live selling script, livestream shopping, live commerce). Bukan untuk caption posting atau deskripsi produk marketplace.
+description: Membuat naskah live selling siap baca untuk TikTok Live, Shopee Live, atau live IG/FB — rundown per segmen waktu (pembukaan, hook, demo, harga & promo, urgensi jujur, CTA checkout, rekap penonton baru, penutup) plus bank jawaban pertanyaan penonton. Gunakan saat pengguna minta naskah/script live, rundown live, atau kata-kata host saat jualan live (live selling script, livestream shopping, live commerce). Bukan untuk caption posting atau deskripsi produk marketplace.
 ---
 
 # Naskah Live Jualan
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Memberi host (pemilik toko, admin, atau host sewaan) naskah live yang runtut per menit, sehingga semua
@@ -36,22 +38,37 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 pakai default dan sebutkan asumsinya di akhir.
 
 ## Langkah kerja
-1. **Baca `references/etika-promo.md`.** Urgensi hanya boleh dari fakta nyata (stok di sistem, batas
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+0. **Tulis "Fakta dari pengguna" dulu (wajib, sebelum menulis naskah).** Daftar butir yang *benar-benar*
+   disebut pengguna, dengan kata-kata pengguna (produk, harga, promo, kota & konteksnya, jam, COD, host, stok).
+   Contoh: "Kirim dari Pekanbaru" ditulis persis begitu — itu kota **kirim**, bukan asal madu. Setiap klaim
+   tentang produk, asal/proses, ukuran/isi, reputasi, manfaat, jam, tanggal, dan layanan di naskah **harus bisa
+   ditelusuri ke satu butir di daftar ini**; yang tidak ada → `[isi: ...]` atau arahan aksi, atau disebut sebagai
+   Asumsi. Salinan persis pesan pengguna (semua giliran) dipakai untuk pemeriksaan internal di langkah 7.
+   Larangan yang paling sering dilanggar AI:
+   - Jam mulai tidak disebut → **jangan menulis jam** (19:00 dll.). Pakai `menit 0–3` atau `[isi: jam mulai]`.
+   - "Kirim dari X" / "toko di X" ≠ "berasal/diambil/dipanen/khas X".
+   - Manfaat kesehatan umum ("jaga stamina", "daya tahan tubuh"), "asli/murni", "favorit", ukuran isi
+     (250ml/500gr) hanya bila disebut pengguna.
+1. **Baca `references/etika-promo.md`.** Jangan mengklaim popularitas/kelangkaan tanpa data ("paling banyak diambil malam ini", "stok terbatas", "laris", "terlaris") kecuali diberikan pengguna; kalau perlu tulis `[isi: ...]`. Urgensi hanya boleh dari fakta nyata (stok di aplikasi, batas
    waktu voucher yang benar). Tolak kelangkaan palsu dan tawarkan versi jujurnya.
 2. **Hitung semua angka promo** per produk (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
    python3 <folder-skill-ini>/scripts/hitung_promo.py --nama "Hijab Voal" --harga-normal "Rp 89.000" \
      --harga-live "Rp 69.000" --bundling "3=Rp 189.000"
    ```
-   Atau `--diskon-persen 10 --bulatkan 1000` bila promo berupa persen. Produk tanpa promo tidak perlu
+   Atau `--diskon-persen 10 --bulatkan 1000` bila promo berupa persen. Bila pengguna menyebut persen, jalankan script dulu dengan `--bulatkan 1` (tanpa pembulatan); pembulatan hanya bila pengguna ingin harga "cantik". **Persen dan harga akhir harus konsisten:** jika harga dibulatkan, host DILARANG mengucapkan persen asli yang disebut pengguna (mis. "diskon 15%, jadi Rp39.000" padahal potongan sebenarnya 13%); ucapkan persen sebenarnya dari script (`persen_hemat_boleh_diucapkan`) atau cukup "hemat RpX". Tanpa Python: rumus pada langkah 6. Produk tanpa promo tidak perlu
    script: sebut harga normalnya saja. Pakai `kalimat_live` dan
    `persen_hemat_boleh_diucapkan` dari output. Script menolak harga live ≥ harga normal dan memberi
    peringatan untuk diskon ≥ 50% dan bundling yang per pcs-nya tidak lebih murah dari harga live
    (paket seperti itu hanya boleh disebut hemat dibanding harga normal) — sampaikan ke pengguna.
 3. **Susun rundown**:
    ```bash
-   python3 <folder-skill-ini>/scripts/susun_segmen.py --durasi 60 --produk "Hijab Voal,Pashmina Kaos" --mulai 19:00
+   python3 <folder-skill-ini>/scripts/susun_segmen.py --durasi 60 --produk "Hijab Voal,Pashmina Kaos"
    ```
+   Tambahkan `--mulai 19:00` **hanya** bila pengguna menyebut jamnya (mis. "mulai jam 7 malam"). Tanpa
+   `--mulai`, rundown keluar sebagai `menit 0–3`, `menit 3–4`, … — pakai persis itu di naskah.
    Urutkan produk dari yang paling diandalkan. Script otomatis memakai pola ringkas bila waktu sempit,
    menyisipkan rekap 1 menit kira-kira tiap 15 menit (bisa di tengah blok produk, tidak di antara Hook
    dan Demo) selama waktunya muat, dan menolak durasi yang terlalu pendek. Jika produk sedikit sehingga
@@ -59,6 +76,8 @@ pakai default dan sebutkan asumsinya di akhir.
    perbandingan varian, jawab komentar).
 4. **Tulis naskah per segmen** mengikuti rundown: kalimat siap ucap (bukan poin), dengan arahan aksi
    dalam kurung siku, mis. `[angkat produk ke kamera]`, `[pin produk no. 1]`, `[baca komentar]`.
+   - **Detail demo yang tidak diberikan pengguna** (tekstur, rasa/level pedas, bahan, "favorit pelanggan", asal/proses, jumlah terbatas) jangan ditulis sebagai klaim; tulis arahan aksi `[tunjukkan tekstur]` atau `[isi: bahan/keunggulan produk]`.
+   - Jika jam mulai tidak diberikan, rundown & label naskah memakai menit relatif (`[menit 0–3]`) dan Asumsi menulis "jam mulai belum disebut — isi sendiri".
    - Hook: pertanyaan/masalah pembeli dalam 1–2 kalimat. Demo: tunjukkan bukti (tekstur, ukuran, dipakai).
    - Harga: sebut harga normal → harga live → hemat (dari script). CTA: langkah checkout yang konkret
      ("klik keranjang kuning, pilih nomor 1, pilih warna, checkout").
@@ -71,22 +90,38 @@ pakai default dan sebutkan asumsinya di akhir.
    bundling = harga paket ÷ isi, **dibulatkan ke atas**. Rundown manual: pembukaan 3, per produk 11 menit
    (Hook 1, Demo 4, Harga 2, CTA 2, Tanya-jawab 2), rekap 1 menit tiap ±15 menit, penutup 3.
    Beri tahu pengguna bahwa hitungan dilakukan manual.
-7. Periksa dengan checklist, lalu tawarkan revisi (lebih santai, bahasa daerah, durasi lain).
+7. **Pemeriksaan internal sebelum kirim (wajib bila Python bisa jalan; jangan disebut ke pengguna).**
+   Tulis naskah final dan salinan persis pesan pengguna ke file kerja sementara bernama netral di folder
+   temp sistem (mis. `.cek-naskah.tmp` dan `.cek-fakta.tmp`), lalu:
+   ```bash
+   python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file <file-naskah-sementara> --fakta-file <file-fakta-sementara>
+   ```
+   Fakta = salinan **persis** pesan pengguna (bukan ringkasan, jangan ditambah). Script menandai GAGAL
+   untuk: jam yang tidak disebut pengguna, asal/produksi ("diambil dari X", "khas X") yang tidak disebut,
+   ukuran/isi, klaim reputasi/sifat/kesehatan/urgensi/layanan yang tidak ada di fakta. **Semua GAGAL wajib
+   diperbaiki** (hapus, ganti `[isi: ...]`, atau tanyakan ke pengguna), lalu jalankan ulang sampai tidak ada
+   GAGAL. **Hapus kedua file sementara setelah selesai.** Tanpa Python: periksa manual memakai daftar
+   "Pemeriksaan internal" di bawah.
+   **Semua ini urusan dapur agent, bukan isi balasan.** Jangan menyebut file, nama script, hasil
+   pemeriksaan, atau bahwa ada pemeriksaan. Balasan **langsung dimulai dengan naskah**. Bila ada hal yang
+   tetap perlu info dari pengguna, tulis dengan bahasa awam di "Hal yang perlu dilengkapi"
+   (mis. "ukuran Sambal Cumi belum Anda sebut, jadi saya tandai [isi: ukuran]").
+8. Periksa dengan checklist, lalu tawarkan revisi (lebih santai, bahasa daerah, durasi lain).
 
 ## Format output
 ```
-## Naskah Live <platform> — <nama toko>, <durasi> menit (<jam mulai>)
+## Naskah Live <platform> — <nama toko>, <durasi> menit (<jam mulai dari pengguna, atau "jam mulai: [isi]">)
 
 ### Rundown
 | Waktu | Segmen | Produk |
 |---|---|---|
 
-### Angka promo (dihitung script)
+### Angka promo
 | Produk | Normal | Harga live | Hemat | Bundling |
 |---|---|---|---|---|
 
 ### Naskah
-**[19:00–19:03] Pembukaan**
+**[menit 0–3] Pembukaan**        ← pakai jam (mis. [19:00–19:03]) hanya bila pengguna menyebut jam
 "..." [arahan aksi]
 ...
 
@@ -95,6 +130,7 @@ pakai default dan sebutkan asumsinya di akhir.
 |---|---|
 
 ### Catatan untuk host
+- Fakta dari pengguna yang dipakai: <butir singkat, kata-kata pengguna>
 - Angka `[stok nyata]` dibaca dari layar, jangan dikarang.
 - Hal yang perlu dilengkapi: <[isi: ...]>
 - Asumsi: <...>
@@ -107,11 +143,11 @@ Produk: Hijab Voal normal 89 ribu, live 69 ribu, paket 3 jadi 189 ribu. Pashmina
 
 **Output (cuplikan):**
 ```
-### Angka promo (dihitung script)
+### Angka promo
 | Produk | Normal | Harga live | Hemat | Bundling |
 |---|---|---|---|---|
 | Hijab Voal | Rp 89.000 | Rp 69.000 | Rp 20.000 (22%) | Isi 3 Rp 189.000 → Rp 63.000/pcs |
-| Pashmina Kaos | Rp 65.000 | Rp 59.000 (10%, dibulatkan ke atas ke Rp 1.000) | Rp 6.000 (9%) | – |
+| Pashmina Kaos | Rp 65.000 | Rp 59.000 (10% dibulatkan ke atas ke Rp 1.000; persen sebenarnya 9%) | Rp 6.000 (9%) | – |
 | Inner Ninja | Rp 25.000 | – | – | – |
 
 **[19:00–19:03] Pembukaan**
@@ -130,8 +166,20 @@ Mau COD bisa, pilih saat checkout. Semua pesanan dikirim tiap hari dari Bandung.
 ```
 Catatan asumsi: host `[nama host]`; stok & voucher tidak disebut karena tidak diberikan.
 
+## Pemeriksaan internal (wajib, sebelum mengirim — jangan disebut ke pengguna)
+Telusuri setiap kalimat naskah, rundown, bank jawaban, dan catatan terhadap daftar "Fakta dari pengguna":
+- [ ] Jam (19:00 dll.) hanya ada bila pengguna menyebut jam; selain itu `menit 0–3` / `[isi: jam mulai]`
+- [ ] Asal/proses produk ("dari hutan X", "diambil/dipanen dari X", "khas X") persis disebut pengguna; "kirim dari X" tetap ditulis "dikirim dari X"
+- [ ] Ukuran/isi/berat (ml, gr, kg) persis dari pengguna, selain itu `[isi: ukuran]`
+- [ ] Reputasi ("favorit", "terlaris", "banyak pelanggan"), sifat ("asli", "murni", "tanpa pengawet"), manfaat kesehatan, urgensi, layanan (gratis ongkir, COD, jadwal kirim) masing-masing punya butir fakta
+- [ ] Pemeriksaan script bersih (atau daftar manual di atas sudah dilakukan); hasilnya hanya untuk agent
+
 ## Checklist sebelum mengirim hasil
-- [ ] Semua angka harga/potongan/persen/per pcs berasal dari script (atau hitung manual tertulis)
+- [ ] Balasan tidak memuat kata: cek, script, sistem, file, .md, LULUS/GAGAL; tidak ada label "(dihitung ...)"; balasan langsung dimulai dengan naskah
+- [ ] Tidak ada klaim popularitas/kelangkaan tanpa data ("paling banyak diambil", "stok terbatas", "laris", "terlaris", "favorit") kecuali diberikan pengguna; selain itu `[isi: ...]`
+- [ ] Semua angka harga/potongan/persen/per pcs berasal dari hasil hitungan (script atau rumus manual), tidak dikira
+- [ ] Persen yang diucapkan cocok dengan harga akhir (setelah pembulatan, pakai persen sebenarnya atau "hemat RpX")
+- [ ] Detail demo/produk yang tidak diberikan pengguna jadi `[isi: ...]` atau arahan aksi
 - [ ] Tidak ada kelangkaan palsu: stok/kuota hanya `[stok nyata]` atau angka dari pengguna
 - [ ] Harga normal adalah harga jual yang benar-benar berlaku sebelumnya (tanya bila ragu), bukan harga yang dinaikkan untuk dicoret
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, original, terlaris, klaim kesehatan)

@@ -4,3 +4,4 @@ hitung-thr
 absensi-lokal
 lowongan-kerja
 surat-peringatan-karyawan
+gaji-umkm

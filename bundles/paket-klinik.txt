@@ -1,5 +1,7 @@
 edukasi-pasien-klinik
 agen-cs-toko
+balas-chat-cs
 balas-ulasan-pelanggan
 konten-mingguan
 laporan-status-kantor
+pengingat-pasien-klinik

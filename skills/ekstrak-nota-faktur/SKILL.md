@@ -5,6 +5,8 @@ description: Membaca foto/teks nota, struk, kuitansi, invoice, dan faktur pajak 
 
 # Ekstrak Nota & Faktur
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah tumpukan nota, struk, kuitansi, invoice, dan faktur pajak (foto atau teks) menjadi data rapi yang sudah dicek angkanya: tabel ringkas, CSV siap tempel ke Excel/Google Sheets, JSON, dan rekap pengeluaran. Kolom yang tidak terbaca ditandai, **tidak ditebak**.
 
@@ -37,9 +39,11 @@ Bila pengguna hanya **mengetik angka** tanpa foto (mis. "DPP 10 juta, PPN 1,2 ju
 Jika dokumen belum dikirim atau tidak bisa dibuka, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jangan bertanya hal yang ada defaultnya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Baca tiap dokumen** dan isi data mengikuti `references/skema-data.md` (contoh lengkap: `templates/contoh-input.json`). Aturan membaca:
    - Salin angka, nomor, NPWP, dan terbilang **persis** seperti tertulis.
-   - Kolom yang tidak ada di dokumen → `null`. Kolom yang ada tapi buram/terpotong → `"TIDAK_TERBACA"`, lalu tulis bagian yang terlihat di `catatan` (mis. "total terlihat 3?1.500"). **Jangan menebak digit, jangan mengarang item.**
+   - Kolom yang tidak ada di dokumen → `null`. Kolom yang ada tapi buram/terpotong → `"TIDAK_TERBACA"`; bila hanya sebagian digit buram, tulis angkanya dengan `?` untuk digit buram (mis. `"ppn": "92?.000"`) — script memperlakukannya sebagai TIDAK TERBACA, menandainya `[cek: 92?.000]` di CSV, dan mencocokkan pola itu dengan hitungannya. **Jangan menebak digit, jangan mengarang item.**
    - Penjual = yang menerima uang ("Pengusaha Kena Pajak" di faktur). Pembeli = pengguna/usahanya.
    - Struk kasir yang mencetak DPP & PPN di bawah total → `"harga_termasuk_ppn": true`.
    - Bukti transfer atas nota yang juga dikirim → biarkan `jenis: "bukti_transfer"` (otomatis tidak dihitung dobel).
@@ -89,11 +93,14 @@ Dasar: UU HPP & PMK 131/2024, berlaku per 23 September 2026. Detail & sumber: `r
 
 **Yang perlu Anda cek**
 - N1: jumlah telur dan total tidak terbaca (terlihat "3?1.500"). Mohon cek nota aslinya atau kirim foto ulang.
+- F2: [cek: ppn] PPN buram ("92?.000"). Pembanding hitungan script: Rp 924.000 (dihitung dari DPP, bukan dibaca) — cocokkan dengan dokumen asli.
 - I1: PPN ditulis 12% penuh (Rp 960.000). Untuk jasa biasa seharusnya Rp 880.000. Tanyakan ke penjual sebelum membayar.
 
 **Rekap pengeluaran** (bila > 1 dokumen)
 Total: Rp ... · PPN tercantum: Rp ... · per kategori / per penjual / per bulan (tabel)
 Belum masuk total: <id dokumen yang totalnya tidak terbaca>
+
+📝 Kategori ditebak dari isi dokumen (mis. "Bahan kemasan") — ubah bila perlu.
 
 **CSV (siap tempel ke Excel, pemisah ;)**
 ```csv
@@ -104,7 +111,7 @@ Belum masuk total: <id dokumen yang totalnya tidak terbaca>
 _Dasar PPN: UU HPP & PMK 131/2024, per 23 September 2026. Format NPWP/NITKU/nomor faktur: belum terverifikasi dari dokumen resmi, hanya peringatan. Alat bantu cek, bukan nasihat pajak; untuk kepastian hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
 ````
 - Tabel untuk dibaca; CSV untuk disalin. Tanggal di tabel `DD-MM-YYYY`, di CSV/JSON `YYYY-MM-DD`.
-- Kolom CSV Subtotal/DPP/PPN/Total = angka **dokumen** saja. Hasil script ada di kolom terpisah: Subtotal/DPP Dihitung Script, PPN Seharusnya, Total Seharusnya, Total Untuk Rekap. Kolom tak terbaca berisi `TIDAK_TERBACA`.
+- Kolom CSV Subtotal/DPP/PPN/Total = angka **dokumen** saja. Hasil script ada di kolom terpisah: Subtotal/DPP Dihitung Script, PPN Seharusnya, Total Seharusnya, Total Untuk Rekap. Kolom tak terbaca berisi `TIDAK_TERBACA`, atau `[cek: 92?.000]` bila sebagian digit terlihat. PPN/Total Seharusnya tetap diisi dari hitungan bila angka lain (DPP/subtotal) terbaca — itu pembanding, bukan angka dokumen; Total Untuk Rekap tetap kosong sampai total dicocokkan.
 - Angka di CSV tanpa titik ribuan (agar Excel membacanya sebagai angka). NPWP/nomor murni angka ditulis `="0012…"` agar angka 0 di depan tidak hilang di Excel (`--id-polos` untuk mematikan).
 - Cara tempel: simpan CSV sebagai file `.csv` lalu buka di Excel, atau pakai `--pemisah tab` lalu tempel langsung ke sel A1.
 

@@ -283,6 +283,37 @@ def main():
             not any("beban_pajak_lain" in q for q in d["pertanyaan"]) and
             any("--titipan-pajak-awal" in q for q in d["pertanyaan"]), d["pertanyaan"])
 
+        # --- v1.3.3: modal negatif, arus kas, ekspor HTML/CSV
+        fb = os.path.join(tmp, "bakso.csv")
+        with open(fb, "w", encoding="utf-8") as f:
+            f.write("Tanggal,Keterangan,Masuk,Keluar\n01/09/2026,Penjualan minggu 1,6250000,\n"
+                    "02/09/2026,Belanja bahan bakso,,3000000\n03/09/2026,Beli kompor baru (peralatan),,1800000\n"
+                    "04/09/2026,Setoran modal dari suami,2000000,\n05/09/2026,Bayar SPP anak,,750000\n"
+                    "06/09/2026,Angsuran KUR BRI,,1025000\n")
+        dasar = [fb, "--kas-awal", "4500000", "--utang-bank-awal", "18000000", "--bunga", "7=125000",
+                 "--umur-aset-tahun", "5"]
+        d = jalan(dasar + ["--format", "json"])
+        cek("modal negatif: peringatan aset belum dicatat, tanpa kata 'wajar' sebagai alasan",
+            d["modal_negatif"] and "ASET YANG BELUM DICATAT" in d["modal_negatif"] and
+            any("NEGATIF" in x for x in d["peringatan"]), d.get("modal_negatif"))
+        ak = d["arus_kas"]
+        cek("arus kas: operasi 3.125.000, investasi -1.800.000, pendanaan 350.000",
+            ak["bersih"] == {"operasi": 3125000, "investasi": -1800000, "pendanaan": 350000}, ak["bersih"])
+        cek("arus kas: kas awal + kenaikan = kas akhir neraca",
+            ak["cocok_dengan_buku"] and ak["kas_akhir"] == d["posisi_keuangan"]["aset"]["kas_dan_setara_kas"] == 6175000)
+        d2 = jalan(dasar + ["--aset-tetap-awal", "20000000", "--format", "json"])
+        cek("aset lama diisi: modal tidak negatif, tanpa peringatan", d2["modal_negatif"] is None)
+        fh, fc = os.path.join(tmp, "lap.html"), os.path.join(tmp, "ak.csv")
+        p = jalan(dasar + ["--html", fh, "--csv-arus-kas", fc])
+        with open(fh, encoding="utf-8") as f:
+            isi_h = f.read()
+        with open(fc, encoding="utf-8-sig") as f:
+            isi_c = f.read()
+        cek("ekspor HTML siap cetak: tabel, arus kas, tanda tangan [isi: tanggal]",
+            "<table>" in isi_h and "Laporan Arus Kas" in isi_h and "[isi: tanggal]" in isi_h and
+            "Laporan Arus Kas" in p.stdout)
+        cek("ekspor CSV arus kas", "Kas akhir periode,6175000" in isi_c, isi_c)
+
         # --- file rusak
         kosong = os.path.join(tmp, "kosong.csv")
         open(kosong, "w").close()

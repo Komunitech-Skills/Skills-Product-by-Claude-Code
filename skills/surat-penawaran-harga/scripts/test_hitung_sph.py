@@ -53,6 +53,17 @@ class UjiPPN(unittest.TestCase):
             self.assertGreater(lebih + int((Decimal(lebih) * Decimal("0.11")).quantize(Decimal(1), ROUND_FLOOR)), harga)
 
 
+class UjiRedaksiNonPKP(unittest.TestCase):
+    def test_catatan_non_pkp_tidak_menyesatkan(self):
+        r = subprocess.run([sys.executable, SCRIPT, "--item", "Jasa|1|paket|Rp 7.500.000", "--tanggal", "2026-10-01"],
+                           capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0)
+        low = r.stdout.lower()
+        self.assertIn("bukan pkp", low)
+        self.assertNotIn("belum kena", low)
+        self.assertNotIn("belum termasuk ppn", low)
+
+
 class UjiInput(unittest.TestCase):
     def test_angka_format_indonesia(self):
         kode, h = jalan("--item", "Kaos|12|pcs|Rp 85.000,-")

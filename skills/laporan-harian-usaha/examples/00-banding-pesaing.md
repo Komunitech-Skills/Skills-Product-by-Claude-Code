@@ -1,35 +1,39 @@
-# 00 — Uji banding pesaing (skenario 01)
+# Uji banding pesaing — skenario 01
 
-Pencarian (24 Sep 2026): WebSearch "openclaw skill daily report business owner SKILL.md sales inventory", "clawhub daily business briefing skill SQLite sales report telegram". Sumber yang dibuka: clawskills.sh (cermin ClawHub), VoltAgent/awesome-openclaw-skills (kategori marketing-and-sales), dokumentasi Datasette & Metabase. Script pihak ketiga tidak dijalankan dan tidak ada teks yang disalin.
+**Penguji:** agent independen, 2026-09-24. Skill pesaing hanya **dibaca untuk dinilai**, tidak disalin atau dipasang (dua di antaranya ditandai "Suspicious" oleh pemindai ClawHub/VirusTotal).
 
-## Kandidat yang ditemukan
-| Pesaing | Sumber / lisensi | Sinyal | Relevansi |
+## Pencarian
+| Sumber | Kata kunci | Temuan |
+|---|---|---|
+| Web / clawskills.sh / ClawHub | "clawhub skill daily business report owner dashboard sales summary" | `visualdeptcreative/daily-report`, `mariusfit/oc-daily-business-report` |
+| VoltAgent/awesome-openclaw-skills (52,8k bintang) | daily report, business report, sales summary, KPI, briefing | `ariktulcha/biz-reporter`, `daily-report`, `ai-daily-briefing` |
+| GitHub / skills.sh / skills.lc | "claude skill daily sales report SKILL.md POS inventory small business", "openclaw skill shopify daily sales summary telegram owner" | `majiayu000/claude-skill-registry` commerce-inventory, `mardab96/ecommerce-claude-skills`, `sellerai-com/sellerclaw` owner-notifications |
+| anthropics/skills | business report / sales | tidak ada skill laporan usaha |
+
+## Kandidat yang dinilai
+| Skill | Bukti pemakaian | Isi | Relevansi |
 |---|---|---|---|
-| `daily-report` (@visualdeptcreative) | https://clawskills.sh/skills/visualdeptcreative-daily-report, lisensi tidak disebut | ±3,6 rb unduhan, bintang 4. Ditandai "suspicious" oleh pemindai OpenClaw | Laporan pipeline **lead** (jumlah lead, email, biaya), butuh Ollama + token Telegram. **Bukan** penjualan/stok/karyawan |
-| `oc-daily-business-report` (@mariusfit) | https://clawskills.sh/skills/mariusfit-oc-daily-business-report, lisensi tidak disebut | 345 unduhan, v1.0.0 | Cuaca, kripto, berita, kesehatan server. **Tidak** ada penjualan/stok/karyawan/piutang |
-| `daily-briefing` (berbagai) | lobehub/termo | Populer | Email, kalender, cuaca. Bukan data usaha |
-| **Datasette** (open-source) | github.com/simonw/datasette, Apache-2.0 | ±10 rb bintang (perkiraan), dipelihara sejak 2017 | Penjelajah SQLite di browser. Mode immutable `-i` mematikan penguncian |
-| **Metabase** (open-source) | github.com/metabase/metabase, AGPL | ±40 rb bintang (perkiraan) | Dashboard BI. Mendukung file SQLite (tidak di Cloud), dashboard subscription |
+| **biz-reporter** (@ariktulcha, ClawHub, MIT-0, v1.0.0) https://clawhub.ai/ariktulcha/biz-reporter | 758 unduhan; clawskills.sh menandai "Suspicious" | Laporan KPI harian/mingguan/bulanan dari GA4, Search Console, Stripe, PayPal, HubSpot, Airtable, media sosial, CSV/Sheets; tandai anomali > 20%; jadwal cron ke Slack/Notion/email | **Paling dekat** (laporan harian + banding minggu lalu + jadwal). Tidak ada script; angka dirangkum LLM; butuh kredensial API |
+| **daily-report** (@visualdeptcreative) https://clawskills.sh/skills/visualdeptcreative-daily-report | 3,6k unduhan; OpenClaw "Suspicious" | Laporan pagi/sore/mingguan untuk **pipeline lead generation** (jumlah lead, outreach, biaya); butuh Ollama + token bot Telegram | Domain lain (lead gen), bukan omzet/stok/karyawan |
+| **oc-daily-business-report** (@mariusfit) https://clawskills.sh/skills/mariusfit-oc-daily-business-report | 345 unduhan; VirusTotal "Suspicious" | Cuaca, harga kripto, berita, kutipan, disk/RAM | Tidak menghitung penjualan, tidak relevan |
+| **sellerclaw owner-notifications** (sellerai-com, MIT) https://skills.lc/sellerai-com/sellerclaw/… | 1 instal | Notifikasi Telegram ke pemilik toko Shopify dropship: order baru/terkirim/tertunda, saldo supplier | Terikat ke sistem SellerClaw + Shopify; tanpa kasir/stok lokal/absensi |
 
-Tidak ditemukan skill publik yang menggabungkan kasir, stok, absensi, dan piutang lokal menjadi satu laporan pemilik. Pembanding yang paling setara fungsinya adalah **dashboard open-source (Datasette/Metabase)** yang diarahkan ke file SQLite yang sama.
+## Banding berdampingan (skenario 01, data Kedai Kopi Senja)
+Simulasi agent yang mengikuti **biz-reporter** dengan sumber "Custom: CSV files / any API": tidak ada konektor untuk SQLite kasir/stok/absensi, sehingga agent menebak skema sendiri (hasilnya sama dengan "tanpa skill" di `00-pembanding-tanpa-skill.md`), lalu memformat "Daily KPI Snapshot" berbahasa Inggris dengan metrik web/Stripe yang kosong.
 
-## Skenario 01 dengan pesaing (disimulasikan dari dokumentasinya, tidak diinstal: CLAUDE.md meminta izin pemilik sebelum memasang paket baru)
-- **Datasette:** `pip install datasette` → `datasette -i kasir.db stok.db absensi.db`. Pemilik mendapat tabel mentah `nota`, `bayar`, `nota_item`. Untuk mendapat "omzet bersih 276.600" pemilik atau agent harus menulis SQL sendiri (`SUM(netto)` termasuk baris void/retur bernilai negatif). Kesalahan umum `SUM(total) WHERE jenis='jual'` menghasilkan 371.580 (lihat 00-pembanding-tanpa-skill). Tidak ada perbandingan %, tidak ada "perlu perhatian", tidak ada pengiriman ke Telegram. Nama pelanggan tampil utuh dari CSV bila dimuat. Catatan: `-i` (immutable) di file yang sedang ditulis kasir bisa membaca data setengah jadi, karena penguncian dimatikan.
-- **Metabase:** butuh Java/Docker (±1–2 GB RAM), setup koneksi SQLite per file, menyusun pertanyaan/dashboard sendiri. Dashboard subscription dikirim lewat email/Slack, bukan Telegram. Angka hanya benar bila query-nya benar. PBJT, void, retur, dan selisih kas harus dimodelkan sendiri.
+| Kriteria (bobot sama) | biz-reporter | laporan-harian-usaha |
+|---|---|---|
+| Sumber data cocok untuk UMKM Indonesia (kasir lokal, stok, absen, piutang) | 1/5 (Stripe/GA4/HubSpot) | 5/5 |
+| Angka dihitung pasti (script, rumus tertulis) | 1/5 (LLM) | 5/5 (perintah resmi alat + rumus % eksplisit, cocok 100% dengan hitung manual) |
+| Perbandingan periode | 3/5 (WoW, anomali 20%) | 5/5 (kemarin, hari yang sama minggu lalu, mingguan adil untuk minggu berjalan) |
+| Masalah operasional (selisih kas, stok minus, lembur, piutang) | 1/5 | 5/5 |
+| Privasi & keamanan data | 2/5 (kredensial API; ditandai suspicious) | 5/5 (hanya baca, tanpa internet, tanpa nama pelanggan, `--samarkan`) |
+| Bahasa & konteks lokal (Rp, WIB, Telegram, PBJT) | 1/5 (Inggris, USD) | 5/5 |
+| Setup untuk awam | 2/5 (kredensial beberapa layanan) | 4/5 (butuh Python + alat Komunitech di folder yang sama) |
+| Kelebihan pesaing | Banyak sumber online, bulanan/YoY, rekomendasi strategis | Tidak ada (sengaja dibatasi alat lokal) |
+| **Total** | **11/35** | **34/35** |
 
-## Penilaian untuk UMKM awam (skala 1–5)
-| Kriteria | Datasette | Metabase | Skill pesaing ClawHub | **laporan-harian-usaha** |
-|---|---|---|---|---|
-| Kualitas isi laporan pemilik | 2 (tabel mentah) | 3 (bila disusun ahli) | 1 (topik lain) | **5** |
-| Konteks Indonesia (Rp, PBJT, WIB, lembur, piutang) | 1 | 2 | 1 | **5** |
-| Akurasi tanpa keahlian SQL | 2 | 2 | – | **5** (angka dari perintah resmi, diverifikasi) |
-| Siap pakai / kirim ke HP | 1 | 3 (email) | 3 (Telegram) | **5** (Telegram via OpenClaw, teruji hingga percobaan kirim) |
-| Setup untuk awam | 2 | 1 | 2 | **4** (butuh Python + alat di folder yang sama) |
-| Eksplorasi bebas / grafik | **5** | **5** | 1 | 2 (teks saja) |
+## Yang bisa dipelajari dari pesaing (tanpa menyalin)
+- biz-reporter menandai **anomali otomatis** (mis. perubahan > 20%) dan laporan bulanan. Laporan kita menampilkan % tetapi tidak menandai "turun tajam" di PERLU PERHATIAN. Ide untuk versi berikut: butir perhatian bila omzet turun ≥ X% dari hari yang sama minggu lalu.
 
-**Hasil:** skill kita **menang** untuk kebutuhan pemilik UMKM. Pesaing dashboard unggul untuk eksplorasi dan grafik, tetapi butuh keahlian SQL. Skill ClawHub yang ada tidak menyentuh data usaha.
-
-## Yang bisa dipelajari (ide, bukan salinan)
-- Dari Datasette/Metabase: sediakan **tautan/ekspor detail** (mis. CSV per jam/per produk) untuk pemilik yang ingin menggali lebih dalam, dan opsi grafik tren 7 hari sederhana (teks sparkline atau PNG) di laporan mingguan.
-- Dari dashboard subscription Metabase: **ambang peringatan** yang bisa diatur (mis. "kirim hanya jika omzet turun > 20%" atau "selisih kas > Rp 10.000").
-- Dari daily-briefing ClawHub: urutan "yang harus dilakukan hari ini" di bagian atas pesan, bukan di bawah. Pemilik yang sibuk hanya membaca 5 baris pertama.
+**Kesimpulan:** tidak ditemukan skill publik yang setara (laporan gabungan kasir + stok + absensi + piutang lokal untuk pemilik UMKM). Pesaing terdekat (biz-reporter) kalah jauh untuk target ini. **Skill kita tidak kalah.**

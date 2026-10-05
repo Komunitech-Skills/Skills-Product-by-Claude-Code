@@ -1,9 +1,29 @@
 ---
 name: edukasi-pasien-klinik
-description: Merapikan materi edukasi pasien (leaflet pasca-tindakan, pengingat kontrol/vaksin, FAQ klinik, konten medsos kesehatan bersumber resmi), balasan chat non-diagnosis, dan rekap operasional klinik (kunjungan, jam ramai, agregat tanpa nama/diagnosis) untuk dokter praktik mandiri, klinik pratama/gigi/kecantikan/fisioterapi, bidan, apotek. Gunakan saat diminta buatkan leaflet perawatan setelah tindakan, pesan pengingat kontrol pasien, FAQ jam buka/biaya/BPJS, konten edukasi kesehatan untuk Instagram/WA klinik, balasan chat pasien soal jadwal/biaya, atau rekap kunjungan harian klinik. JANGAN gunakan untuk diagnosis, skrining, kalkulator medis (BMI/dosis), atau interpretasi hasil lab — patient education leaflet, appointment reminder, clinic FAQ, health content writing, non-diagnostic clinic chat replies, clinic visit report (aggregate, no diagnosis).
+description: Draf balasan AMAN untuk chat pasien/admin klinik yang tanya gejala, obat, dosis, atau demam (mis. "obatnya apa?", "dosisnya berapa?", "paracetamol boleh berapa sendok?", "anak saya demam", "chat pasien ini gimana jawabnya") - TANPA dosis & TANPA diagnosis, mengarahkan ke dokter/apoteker plus tanda bahaya kapan ke IGD/119; juga leaflet pasca-tindakan, pengingat kontrol/vaksin, FAQ jam/biaya/BPJS, konten medsos kesehatan bersumber resmi (tanpa testimoni, diskon, atau imbalan rujukan), dan rekap kunjungan agregat untuk klinik pratama/gigi/kecantikan/fisioterapi, dokter/bidan mandiri, apotek. Bukan untuk diagnosis, skrining, kalkulator medis, atau tafsir hasil lab - patient asks medication dose, symptoms or fever via chat, safe clinic chat reply (no dosing, no diagnosis), when to go to the ER, patient education leaflet, appointment reminder, clinic FAQ, health content, clinic visit report.
 ---
 
 # Edukasi Pasien & Operasional Klinik
+
+> **ATURAN WAJIB (berlaku untuk SEMUA hasil skill ini, termasuk catatan untuk admin):**
+> 1. **TANPA DOSIS.** Jangan pernah menulis takaran obat apa pun: mg, mg/kg, mL, sendok, tetes,
+>    tablet, "tiap X jam", "maksimal X kali sehari" - juga tidak "sebagai referensi", "dosis
+>    umum", "untuk dicek dokter", atau setelah tahu merek/kadar sirup. Jangan menanyakan
+>    merek/kadar/berat badan untuk menghitung dosis. Satu-satunya pengecualian: menyalin persis
+>    instruksi yang **sudah ditulis dokter** untuk pasien tertentu (mis. dari resep) ke leaflet.
+> 2. **TANPA DIAGNOSIS.** Jangan menebak penyakit, menilai gejala, menafsir hasil lab, atau
+>    menilai gawat-tidaknya kondisi (bukan triase). Jangan menyarankan nama obat.
+> 3. **Pertanyaan obat/dosis/gejala dari pasien** -> pakai "Templat balasan aman" di bawah
+>    (A = demam anak/bayi; B = umum: dewasa, gigi, nyeri, keluhan lain):
+>    arahkan ke dokter/dokter gigi/apoteker + tawarkan jadwal periksa + daftar tanda bahaya umum kapan ke
+>    IGD/119 (sama untuk semua pasien, bukan penilaian kegawatan).
+> 4. **Selalu DRAF.** Pesan ke pasien disiapkan di chat; staf/tenaga kesehatan yang meninjau
+>    dan mengirim. Tidak ada kirim otomatis, auto-reply, atau broadcast.
+> 5. **Tanpa imbalan rujukan.** Untuk layanan kesehatan tidak ada diskon, poin, voucher,
+>    hadiah, merchandise, komisi, atau layanan gratis (mis. "cek tensi gratis") bagi pasien
+>    yang mengajak/merujuk orang lain (lihat `references/aturan-privasi-dan-iklan.md` bagian 4).
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Mengubah poin/instruksi yang **sudah ditentukan tenaga kesehatan** menjadi materi siap kirim
@@ -21,6 +41,9 @@ tanpa pernah membuat diagnosis, skrining, kalkulator medis, atau rekomendasi oba
   WHO, IDAI, PDGI, dll.) dan tanggal yang dicantumkan.
 - Menyusun balasan chat untuk pertanyaan jadwal/biaya/daftar, atau menenangkan & mengarahkan
   keluhan gejala ke jadwal konsultasi dokter (tanpa menilai gejala).
+- **Pasien/admin bertanya obat, dosis, takaran sirup, gejala, atau demam lewat chat** ("obatnya
+  apa?", "dosisnya berapa?", "gimana jawabnya chat pasien ini?") -> draf balasan aman tanpa
+  dosis memakai templat di bawah.
 - Merekap kunjungan/operasional klinik dari data yang diberikan (per hari/poli/penjamin, jam
   ramai, pasien tidak datang) — hasil selalu agregat, tanpa nama/NIK/diagnosis.
 
@@ -54,14 +77,18 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan berisi daftar perta
 2. **Cek batasan medis dulu** (`references/batasan-medis.md`). Kalau permintaan menyentuh
    diagnosis/skrining/kalkulator medis/dosis/interpretasi lab/triase → **tolak** dengan sopan,
    jelaskan alasan singkat, tawarkan alternatif aman (arahkan ke dokter, buatkan jadwal
-   konsultasi, atau kalimat baku darurat).
+   konsultasi, atau kalimat baku darurat). Bila pasien menanyakan obat sisa/milik orang lain
+   (mis. antibiotik sisa), selalu sertakan kalimat baku "jangan memakai obat resep milik orang
+   lain atau obat sisa, termasuk antibiotik sisa" dari `references/batasan-medis.md` (tanpa dosis;
+   **PERLU REVIEW tenaga medis**).
 3. **Kumpulkan input wajib** sesuai tabel di atas. Untuk leaflet/pengingat/FAQ: minta poin dari
    tenaga kesehatan/klinik bila belum diberikan — jangan menebak.
 4. **Susun materi** memakai template yang sesuai (`templates/`) dan gaya bahasa
    `references/bahasa-awam-pasien.md`. Untuk konten medsos, cari/kutip sumber resmi dari
    `references/sumber-resmi-kesehatan.md` dan cantumkan sumber + tanggal.
-5. **Untuk rekap operasional:** jalankan `scripts/rekap_kunjungan.py` pada file CSV yang
-   diberikan (lihat Format Output). Jika Python tidak bisa dijalankan, ikuti panduan manual di
+5. **Untuk rekap operasional:** jalankan `scripts/rekap_kunjungan.py` (script ada di subfolder
+   `scripts/` di folder yang sama dengan SKILL.md ini; jangan mencarinya ke seluruh disk dengan
+   `find /`) pada file CSV yang diberikan (lihat Format Output). Jika Python tidak bisa dijalankan, ikuti panduan manual di
    `templates/rekap-operasional.md`.
 6. **Periksa checklist** di bawah sebelum mengirim hasil.
 7. Sertakan catatan singkat di akhir bila ada bagian yang butuh isian klinik (mis. "[isi dari
@@ -114,10 +141,84 @@ segera ke IGD terdekat atau hubungi 119 — jangan menunggu balasan chat ini.
 ```
 *(Asumsi: nomor kontak klinik belum diberikan, ditandai `[nomor klinik]` — mohon dilengkapi.)*
 
+## Templat balasan aman: pasien tanya obat/dosis/gejala (PERLU REVIEW tenaga medis)
+Pilih templat dari **jenis chat**, bukan dari penilaian gawat-tidaknya: **A. Demam anak/bayi**
+(chat menyebut anak/bayi + demam) atau **B. Umum** (dewasa, sakit gigi, nyeri, keluhan lain, atau
+tidak jelas). Isi `[...]` dari klinik; jangan menambah obat/dosis/penilaian gejala.
+
+### A. Demam anak/bayi
+Pakai untuk chat seperti "anak saya demam 39, obatnya apa dan dosisnya berapa?".
+```
+Terima kasih sudah menghubungi [nama klinik], Bu/Pak. Untuk obat dan takarannya, mohon maaf
+kami tidak bisa menentukannya lewat chat - obat dan dosis perlu ditentukan dokter atau apoteker
+setelah [anak Ibu/Bapak / Ibu/Bapak] diperiksa langsung. Kami sarankan diperiksakan ke dokter.
+Mau kami bantu daftarkan jadwal periksa [hari ini, jam praktik: ISI]?
+
+Segera ke IGD terdekat atau hubungi 119 (jangan menunggu balasan chat ini) bila ada salah satu:
+- kejang
+- sesak atau sulit bernapas, bibir/kuku kebiruan
+- sangat lemas, sulit dibangunkan, atau tidak sadar
+- tidak mau/tidak bisa minum, atau muntah terus setiap makan/minum
+- muncul bintik/ruam keunguan seperti memar, atau leher kaku
+- bayi di bawah 3 bulan yang demam
+```
+Sumber daftar tanda bahaya (umum, tanpa dosis): WHO, *IMCI Chart Booklet* (Maret 2014) -
+"general danger signs"; IDAI, "Demam: Kapan Harus ke Dokter?" (idai.or.id, diakses 2 Oktober
+2026). Rincian & tautan: `references/sumber-resmi-kesehatan.md`. Daftar ini dikirim **sama ke
+semua penanya** - skill tidak menilai apakah pasien tertentu gawat.
+
+### B. Umum - dewasa/anak, sakit gigi, nyeri, keluhan lain (PERLU REVIEW tenaga medis)
+Pakai untuk chat seperti "sakit gigi, boleh minum asam mefenamat berapa tablet?" atau "pusing
+dan nyeri, obatnya apa?". Pilih `[dokter / dokter gigi]` sesuai layanan yang ditanyakan (gigi →
+dokter gigi). Jangan menyebut nama obat yang ditanyakan pasien di draf.
+```
+Terima kasih sudah menghubungi [nama klinik], Bu/Pak. Untuk obat dan takarannya, mohon maaf
+kami tidak bisa menentukannya lewat chat - obat dan dosis perlu ditentukan [dokter / dokter
+gigi] atau apoteker setelah [Ibu/Bapak / anak Ibu/Bapak] diperiksa langsung. Kami sarankan
+diperiksakan ke [dokter / dokter gigi]. Mau kami bantu daftarkan jadwal periksa [hari ini, jam
+praktik: ISI]?
+
+Segera ke IGD terdekat atau hubungi 119 (jangan menunggu balasan chat ini) bila ada salah satu:
+- nyeri dada berat seperti tertindih, bisa menjalar ke lengan, rahang, atau punggung, disertai
+  keringat dingin
+- sesak atau sulit bernapas, bibir/kuku kebiruan
+- wajah tiba-tiba mencong, lengan/tungkai lemah atau baal sebelah, bicara pelo, atau sakit
+  kepala hebat mendadak
+- kejang, pingsan, sangat lemas, atau sulit dibangunkan
+- bengkak di mulut, wajah, atau leher; sulit menelan, berbicara, atau membuka mulut; mata
+  bengkak/nyeri
+- tidak mau/tidak bisa minum, atau muntah terus setiap makan/minum
+```
+Sumber daftar tanda bahaya umum (tanpa dosis): Kemenkes (Ayo Sehat), "Kenali Gejala Stroke
+dengan SeGeRa Ke RS" (28 Oktober 2023); Kemenkes (UPK), "Jangan Abaikan Nyeri Dada: Ancaman
+Serangan Jantung Bisa Datang Mendadak" (diakses 2 Oktober 2026); NHS, "Dental abscess" (ditinjau
+18 Maret 2026); WHO, *IMCI Chart Booklet* (Maret 2014). Tautan: `references/sumber-resmi-kesehatan.md`.
+Daftar ini dikirim **sama ke semua penanya** dewasa/gigi/nyeri - bukan penilaian kasus.
+**PERLU REVIEW tenaga medis** sebelum dipakai sebagai templat tetap.
+
+Catatan untuk admin (di luar draf), contoh: "Ini draf; mohon dicek tenaga kesehatan/staf klinik
+sebelum dikirim. Draf **tidak** memberi nama obat/dosis dan **tidak** menilai gejala; hanya
+mengarahkan periksa + tanda bahaya umum IGD/119." Jangan menambahkan dosis "untuk dokter" di
+catatan ini.
+
+## Catatan untuk admin (konsisten dengan draf)
+Saat membalas chat pasien yang keluar cakupan, catatan untuk admin (di luar draf) **harus menggambarkan isi draf apa adanya**:
+- **Pembuka balasan ke pengguna:** jangan menulis "boleh langsung dikirim" atau izin kirim sejenis. Tulis: "Ini draf; mohon dicek tenaga kesehatan/staf klinik sebelum dikirim ke pasien." (skill ini PERLU REVIEW tenaga medis).
+- Tulis: "Draf **tidak** memberi izin/dosis/takaran dan **tidak** menebak diagnosis; hanya memuat pesan keselamatan baku (mis. jangan memberikan obat resep sisa/milik orang lain sebelum diperiksa dokter, jalur IGD/119)."
+- **Dilarang** menulis "tidak menjawab soal obat sisa/amoxicillin" bila drafnya memuat larangan itu — itu bertentangan dengan draf dan membingungkan admin.
+- Jangan menulis klaim "aman dikirim tanpa dokter"; tulis "kalimat keselamatan ini PERLU REVIEW tenaga medis klinik sebelum dipakai sebagai template tetap".
+- Larangan obat sisa memakai kata baku "sebelum diperiksa dokter" (bukan "dulu").
+
 ## Checklist sebelum mengirim hasil
-- [ ] Tidak ada diagnosis/skrining/kalkulator medis/dosis rekaan/interpretasi lab.
+- [ ] Tidak ada diagnosis/skrining/kalkulator medis/dosis rekaan/interpretasi lab — cari kata
+      "mg", "mL", "sendok", "tetes", "tiap ... jam", "kali sehari" di draf **dan** catatan admin;
+      ada (selain salinan persis instruksi dokter) → hapus.
+- [ ] Tidak ada diskon/poin/hadiah/komisi/layanan gratis untuk yang mengajak/merujuk pasien.
 - [ ] Semua instruksi medis (obat, pantangan, tanda bahaya) persis dari yang diberikan dokter —
-      tidak ditambah/ditebak skill.
+      tidak ditambah/ditebak skill, tanpa kata penguat/promosi baru ("kuat", "ampuh", "maksimal");
+      baris tambahan template (IGD/119, catatan) disebut ke admin sebagai tambahan template.
+- [ ] Pembuka menyatakan draf perlu dicek tenaga kesehatan/staf sebelum dikirim (tidak ada "boleh langsung dikirim").
+- [ ] Catatan untuk admin sesuai isi draf (tidak mengaku "tidak menjawab" hal yang drafnya larang).
 - [ ] Semua jadwal & biaya berasal dari isian klinik — tidak dikarang.
 - [ ] Tidak ada nama/NIK/tanggal lahir/diagnosis pasien sungguhan di output (pakai contoh/anonim
       bila perlu ilustrasi).

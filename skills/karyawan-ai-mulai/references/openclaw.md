@@ -1,5 +1,7 @@
 # Perintah OpenClaw yang dipakai skill ini
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Semua perintah di bawah **diverifikasi** dengan `--help` di OpenClaw **2026.9.5** (mesin uji
 terisolasi, tanpa login kanal apa pun). Kalau versi OpenClaw pengguna berbeda dan perintah
 gagal, jalankan `<perintah> --help` dulu untuk memastikan opsinya masih sama, lalu beri tahu
@@ -45,6 +47,10 @@ ZIP-nya diekstrak. Langkah:
    Unduhan. Kalau tidak diizinkan, minta pengguna menyebut/menyeret lokasi foldernya.
 3. Pastikan path yang dipakai di perintah install adalah folder skill itu sendiri, bukan folder
    ZIP pembungkusnya.
+4. **Batas pencarian:** hanya folder Unduhan/Downloads dan folder yang disebut pengguna. Jangan
+   menelusuri `/tmp`, folder skills instalasi OpenClaw lain, home lain, atau seluruh disk, dan
+   jangan menyalin skill dari sana. Tidak ketemu → tanyakan lokasinya ke pengguna. Sebutkan path
+   sumber lengkap di pesan persetujuan sebelum minta "ya".
 
 ```bash
 openclaw skills install ./<path-folder-skill> --global
@@ -66,7 +72,8 @@ openclaw skills install ./<path-folder-skill> --global
 
 Contoh dialog persetujuan sebelum memasang:
 > "Saya akan pasang skill `rekap-penjualan-csv`, `balas-chat-cs`, dan `caption-sosmed-umkm` dari
-> Starter Kit ke folder skill global OpenClaw Anda (`~/.openclaw/skills`). Lanjut? (ya/tidak)"
+> `~/Downloads/<folder-paket>/` ke folder skill global OpenClaw Anda (`~/.openclaw/skills`).
+> Lanjut? (ya/tidak)"
 
 ## 3. Menjalankan tugas pertama (quick win)
 

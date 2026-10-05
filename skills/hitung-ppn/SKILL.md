@@ -5,6 +5,8 @@ description: Kalkulator PPN Indonesia 12% (DPP nilai lain 11/12, efektif 11% unt
 
 # Hitung PPN
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menghitung PPN dengan benar sesuai aturan 2025–2026 (tarif 12% dengan DPP nilai lain 11/12) dan menjelaskan hasilnya dengan bahasa sederhana, siap ditempel ke penawaran, chat, atau catatan.
 
@@ -32,6 +34,8 @@ Menghitung PPN dengan benar sesuai aturan 2025–2026 (tarif 12% dengan DPP nila
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Ambil angka dari pesan pengguna. Format Indonesia diterima: `Rp 1.250.000`, `1,5jt`, `15.000,50`.
 2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: ganti `python3` dengan `python` atau `py`):
    ```bash
@@ -79,6 +83,16 @@ Pembulatan: PPN dibulatkan ke bawah sekali ke rupiah penuh (belum dicocokkan den
 
 _Dasar: UU HPP & PMK 131/2024, berlaku per 23 September 2026. Alat bantu hitung, bukan nasihat pajak; untuk kasus khusus hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
 ```
+**Teks siap tempel** (untuk penawaran/chat/invoice; ambil dari blok "Teks siap tempel" output script) **wajib
+memuat baris DPP nilai lain** untuk non-mewah — jangan hanya "PPN 12% = Rp ...", karena pembaca bisa mengira
+12% × harga salah hitung:
+```
+Harga sebelum PPN (DPP)  : Rp 5.250.000
+DPP nilai lain (11/12)   : Rp 4.812.500
+PPN 12% x DPP nilai lain : Rp 577.500
+Total                    : Rp 5.827.500
+```
+Untuk penjual non-PKP tidak ada teks siap tempel (PPN tidak boleh ditagihkan).
 
 ## Contoh
 **Input pengguna:** "Harga jasa desain 7,5 juta sudah termasuk PPN. PPN-nya berapa? Saya PKP."
@@ -104,6 +118,7 @@ _Dasar: UU HPP & PMK 131/2024, berlaku per 23 September 2026. Alat bantu hitung,
 - [ ] Angka berasal dari script (atau ditandai "dihitung manual").
 - [ ] Jelas apakah harga awal termasuk/belum termasuk PPN, dan asumsinya disebut.
 - [ ] Non-mewah memakai 11/12; mewah memakai 12% penuh.
+- [ ] Teks siap tempel (bila dibuat) memuat baris "DPP nilai lain (11/12)" untuk non-mewah.
 - [ ] Peringatan PKP muncul bila status non-PKP atau belum diketahui.
 - [ ] Pembulatan dijelaskan; format Rupiah `Rp 1.250.000`.
 - [ ] Disclaimer + tanggal berlaku ada.

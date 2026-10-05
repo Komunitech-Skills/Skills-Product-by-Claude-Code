@@ -66,3 +66,9 @@ Kualitas draf, keseimbangan klausul, dan penanganan kasus berisiko sudah setara 
 ## Ringkasan uji tambahan
 - **A/B (00-pembanding-tanpa-skill.md):** tanpa skill, agent menulis klausul harga jual minimum + denda Rp 5 juta + pemutusan sepihak, tanpa retur/kerahasiaan/checklist, dengan ejaan "materai". Skill **jelas lebih baik**.
 - **Pesaing (00-banding-pesaing.md):** `adamriofc/spk-generator` (MIT) hanya 4 pasal inti, ikut menulis klausul MAP, dan menjadikan pengesampingan Ps. 1266 "wajib" tanpa catatan. Skill kita **menang** di semua kriteria. Ide yang bisa dipelajari: BAST sebagai syarat pelunasan, teguran bertahap, pertanyaan eksplisit status PPN/PPh 23.
+
+## Uji ulang OpenClaw v1.0.6 (2026-10-03)
+- Penguji independen, OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5, home bersih per skenario; rincian di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.6".
+- Skor sebelum → sesudah: sewa kios 5,5 → 9; jebakan utang + BPKB 3 → 9; varian titip jual (sesudah saja) 9. Rata-rata berpasangan 4,25 → 9,0 (selisih +4,75).
+- Tiga cacat tampilan Telegram gelombang 5 sudah teratasi: naskah utuh tampil di chat (dipecah Bagian 1/4–4/4), beban biaya (PBB pemilik; listrik/air/iuran pasar penyewa) konsisten antar pasal & asumsi, pengakhiran bertahap tanpa pengosongan sepihak. Disclaimer ada; angka sewa, jaminan, dan jadwal bayar terverifikasi Python.
+- **VERDIK: LULUS** (acuan pemilik 2026-10-03: sesudah ≥ 8, selisih ≥ 1,5). Cacat tersisa minor: "pemilik sah" di latar belakang saat status hak kios belum diketahui, satu butir checklist meterai kurang jelas, satu bagian chat ±4.090 karakter.

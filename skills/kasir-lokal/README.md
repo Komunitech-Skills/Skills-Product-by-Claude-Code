@@ -41,6 +41,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Tutup kasir, uang di laci 1.250.000"
 - "Rekap kasir hari ini" / "rekap bulan September" / "omzet tahun ini untuk pajak"
 - "Kirim rekap kasir ke Telegram saya tiap jam 9 malam" (OpenClaw)
+- "Ini nota hari ini (tempel daftar nota), rekap + cocokkan laci + bikinin laporan buat grup karyawan" — tanpa perlu database: nota batal tidak dihitung, porsi & jumlah nota dipisah, dan ringkasan untuk grup tidak memuat nama/nomor pelanggan atau bon per orang
 
 **Mencetak struk ke printer thermal:** agent membuat file struk (HTML). Buka file itu di browser (Chrome/Edge) → tekan **Ctrl+P** (Mac: Cmd+P) → pilih printer thermal → ukuran kertas 58 mm atau 80 mm → Margin: **None/Tidak ada** → Skala **100%** → matikan **Header dan footer** → Cetak. Pastikan driver printer thermal sudah terpasang di komputer. Pengaturan ini cukup sekali; browser biasanya mengingatnya.
 
@@ -73,3 +74,6 @@ Bilang saja "batalkan nota N-… karena salah input" atau "retur 1 es teh dari n
 
 **Printer saya thermal 80 mm / hanya punya printer biasa, bisa?**
 Bisa. Pilih struk 80 mm untuk printer 80 mm. Untuk printer biasa (A4), struk tetap bisa dicetak, atau kirim struk sebagai teks/foto ke WhatsApp pembeli. Yang penting printer terpasang di komputer dan bisa mencetak dari browser.
+
+**Ada pembeli yang belum bayar (ngutang/bon)?**
+Kasir ini sengaja hanya mencatat penjualan yang sudah dibayar. Kalau ada pelanggan bon, catat di skill **Buku Piutang** — nanti kelihatan siapa berutang berapa, kapan jatuh temponya, dan ada draf pesan tagihan siap kirim. Belum pasang Buku Piutang? Cara lama masih bisa: buat tagihannya dengan skill **Buat Invoice**, lalu kalau sudah lewat jatuh tempo, susun pesan penagihannya dengan skill **Tagih Piutang**.

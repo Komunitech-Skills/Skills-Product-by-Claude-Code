@@ -1,0 +1,365 @@
+{
+ "_keterangan": "Kalimat berlabel untuk uji akurasi cek_kebijakan.py. 'frasa_hasil_uji' (45) dan 'unsur_hasil_uji' (13) diambil apa adanya dari set uji penguji independen (HASIL-UJI.md §2b-2c, 2026-09-25). 'tambahan' = set kontrol dari pembuat revisi v1.0.1 (bukan dari penguji). Label frasa: true = harus ditandai berisiko.",
+ "frasa_hasil_uji": [
+  {
+   "kalimat": "Kami tidak pernah menjual data pribadi Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak akan pernah menjual atau menyewakan data Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak menjual, dan tidak akan menjual, data pribadi Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak dapat menjual data Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Data Anda tidak akan dijual.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Data Anda tidak dapat dijual kepada siapa pun.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "We do not sell your personal data.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "We will never sell your data.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "We will not sell, rent or trade your personal information.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami bukan perusahaan yang dapat menjual data Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak menjual data Anda, tetapi kami dapat menjual data agregat pelanggan kepada mitra.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami dapat menjual data pelanggan kepada mitra.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami berhak memperdagangkan data pelanggan kepada mitra.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami dapat mengalihkan data pelanggan kepada mitra dengan imbalan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami dapat menukar database pelanggan dengan mitra.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami dapat memonetisasi data Anda.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "We may sell your data.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "We may share and sell your data to partners.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "We may sell or rent your personal information.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "We may disclose your information to advertisers for payment.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Persetujuan dianggap diberikan dengan menggunakan situs.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Dengan menggunakan situs ini, Anda dianggap setuju.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Dengan mengakses situs ini, Anda menyetujui kebijakan ini.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Anda dianggap menyetujui kebijakan ini bila terus berbelanja.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak menganggap Anda setuju hanya karena menggunakan situs.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Persetujuan tidak dianggap diberikan hanya karena Anda membuka situs.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Data disimpan selamanya.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Data disimpan secara permanen.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Data disimpan tanpa batas waktu.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Data tidak disimpan selamanya.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "We keep your data forever.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak bertanggung jawab atas kebocoran data.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak bertanggung jawab atas segala kebocoran data.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak bertanggung jawab jika data bocor.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami dibebaskan dari tanggung jawab atas kebocoran data.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kebijakan ini dapat diubah tanpa pemberitahuan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kebijakan dapat diubah sewaktu-waktu tanpa pemberitahuan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kebijakan dapat berubah sewaktu-waktu.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Perubahan tidak akan dilakukan tanpa pemberitahuan.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak akan mengubah kebijakan ini tanpa pemberitahuan terlebih dahulu.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Data dapat dibagikan kepada pihak ketiga mana pun.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak membagikan data kepada pihak ketiga mana pun tanpa persetujuan Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Data Anda 100% aman.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami <b>dapat</b> menjual data Anda.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami dapat&nbsp;menjual data Anda.",
+   "berisiko": true
+  }
+ ],
+ "unsur_hasil_uji": [
+  {
+   "kalimat": "Toko Kue Mawar adalah usaha milik Ibu Rina yang mengelola situs ini.",
+   "unsur": "identitas",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Kebijakan ini berlaku untuk Toko Kue Mawar.",
+   "unsur": "identitas",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Hubungi kami di 0812-1111-2222.",
+   "unsur": "cara_ajukan",
+   "status": "TIDAK ADA"
+  },
+  {
+   "kalimat": "Kami menyimpan data Anda selama 2 tahun.",
+   "unsur": "masa_simpan",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Data kami simpan 2 tahun sejak transaksi terakhir.",
+   "unsur": "masa_simpan",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Data disimpan selama diperlukan.",
+   "unsur": "masa_simpan",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Server kami berada di Singapura.",
+   "unsur": "transfer_ln",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Data disimpan di server Amerika Serikat milik Google.",
+   "unsur": "transfer_ln",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Kami tidak akan memberi tahu Anda bila terjadi kebocoran.",
+   "unsur": "kebocoran",
+   "status": "TIDAK ADA"
+  },
+  {
+   "kalimat": "Bila terjadi kebocoran data, kami akan segera menginformasikan kepada Anda.",
+   "unsur": "kebocoran",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Kami menggunakan HTTPS dan membatasi akses admin.",
+   "unsur": "keamanan",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Anda dapat meminta kami menghapus data Anda.",
+   "unsur": "hak_subjek",
+   "status": "SEBAGIAN"
+  },
+  {
+   "kalimat": "Anda dapat mencabut persetujuan kapan saja.",
+   "unsur": "hak_subjek",
+   "status": "SEBAGIAN"
+  }
+ ],
+ "frasa_tambahan": [
+  {
+   "kalimat": "Kami menjual produk fashion secara online dan melindungi data Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Jika Anda tidak menolak, kami dapat menjual data Anda.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak menyimpan data kartu, dan data pesanan disimpan selamanya.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kebijakan ini dapat diperbarui sewaktu-waktu; perubahan akan kami umumkan 7 hari sebelum berlaku.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Anda dapat mengubah pilihan cookie kapan saja.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Tidak ada sistem yang 100% aman, tetapi kami membatasi akses.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "We do not sell or rent your personal information.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "We don't sell your data.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami tidak pernah dan tidak akan pernah memperjualbelikan data Anda.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami menjual data pelanggan kepada mitra.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Kami tidak akan memberi tahu Anda jika data bocor.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "Informasi Anda tidak kami jual kepada siapa pun.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Kami dapat menyewakan informasi kontak Anda kepada pengiklan.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "We may share your information with third parties for their marketing purposes.",
+   "berisiko": true
+  },
+  {
+   "kalimat": "With your consent, we may share your information with partners for their marketing purposes.",
+   "berisiko": false
+  },
+  {
+   "kalimat": "Data Anda tidak akan dijual, namun kami dapat menjual data agregat.",
+   "berisiko": true
+  }
+ ],
+ "unsur_tambahan": [
+  {
+   "kalimat": "Data pesanan kami simpan 10 tahun.",
+   "unsur": "masa_simpan",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Jika terjadi kebocoran yang tidak disengaja, kami akan memberi tahu Anda dalam 3x24 jam.",
+   "unsur": "kebocoran",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Kami tidak akan mengubah kebijakan ini tanpa memberi tahu Anda terlebih dahulu.",
+   "unsur": "perubahan",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Kami tidak memberi tahu perubahan kebijakan.",
+   "unsur": "perubahan",
+   "status": "TIDAK ADA"
+  },
+  {
+   "kalimat": "Data disimpan paling lama 1 tahun lalu dihapus.",
+   "unsur": "masa_simpan",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Seluruh data kami simpan di Indonesia dan tidak kami kirim ke luar negeri.",
+   "unsur": "transfer_ln",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Anda tidak dapat menghapus data Anda.",
+   "unsur": "hak_subjek",
+   "status": "TIDAK ADA"
+  },
+  {
+   "kalimat": "Website kami di-hosting di server yang berada di Singapura.",
+   "unsur": "transfer_ln",
+   "status": "ADA"
+  },
+  {
+   "kalimat": "Bila pasien berusia di bawah 18 tahun: Nama orang tua/wali.",
+   "unsur": "data_anak",
+   "status": "ADA"
+  }
+ ]
+}

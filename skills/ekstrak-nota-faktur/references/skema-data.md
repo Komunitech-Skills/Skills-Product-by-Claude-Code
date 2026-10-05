@@ -8,7 +8,8 @@ Contoh lengkap berisi 6 dokumen ada di `templates/contoh-input.json`.
 |---|---|---|
 | Kolom memang **tidak ada** di dokumen | `null` | Nota warung tanpa NPWP → `"npwp": null` |
 | Kolom **ada tapi tidak terbaca** (buram, terlipat, tertutup jari, tinta luntur) | `"TIDAK_TERBACA"` | `"total": "TIDAK_TERBACA"` |
-| Terbaca sebagian | `"TIDAK_TERBACA"` + tulis yang terlihat di `catatan` | `"catatan": "total terlihat '3?1.500'"` |
+| Terbaca sebagian (angka) | digit buram diganti `?` (dihitung TIDAK TERBACA, CSV `[cek: ...]`) | `"total": "3?1.500"` |
+| Terbaca sebagian (teks) | `"TIDAK_TERBACA"` + tulis yang terlihat di `catatan` | `"catatan": "nomor terlihat '04?026...'"` |
 
 **Jangan menebak.** Jangan melengkapi digit yang kabur, jangan menghitung total sendiri lalu menuliskannya sebagai angka dokumen, jangan mengarang item. Angka hasil hitungan hanya boleh muncul sebagai "dihitung script", terpisah dari angka dokumen.
 

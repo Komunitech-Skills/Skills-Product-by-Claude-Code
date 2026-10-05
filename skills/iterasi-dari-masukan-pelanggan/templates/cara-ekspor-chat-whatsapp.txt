@@ -1,0 +1,8 @@
+CARA MENGEKSPOR CHAT WHATSAPP (tanpa media)
+1. Buka chat atau grup pelanggan di WhatsApp.
+2. Android: titik tiga > Lainnya > Ekspor chat > Tanpa media.
+   iPhone: ketuk nama chat > Ekspor Chat > Tanpa Media.
+3. Simpan/kirim file .txt ke komputer (mis. lewat Telegram "Pesan Tersimpan" atau email ke diri sendiri).
+4. Beri nama jelas: chat-pelanggan-2026-09.txt
+Catatan: nama & nomor pelanggan otomatis disamarkan sebelum dianalisis. Pesan tim Anda bisa dilewati
+dengan menyebut nama Anda di WhatsApp ("pesan saya dan admin jangan dihitung").

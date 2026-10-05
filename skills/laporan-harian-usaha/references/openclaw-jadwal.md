@@ -9,23 +9,25 @@
 - ✅ Pilihan 2 (agent) diterima Gateway: `payload.kind: agentTurn`, `toolsAllow: ["exec","read"]`. Isi jawabannya **tidak** diuji (butuh API key model).
 - ⚠️ **Pesan sampai di Telegram belum diuji** (butuh bot token asli). Tanpa token: `deliveryStatus: not-delivered`, `Telegram bot token missing`. Artinya job memang mencoba mengirim.
 - ⚠️ Gateway Windows belum diuji untuk `--command-argv`; di Windows pakai Pilihan 2.
+- ✅ **Bagian PROSPEK (crm-wa, ditambahkan versi 1.1.0)** diuji ulang oleh penguji independen 25 September 2026 (OpenClaw 2026.9.6, Gateway `--dev` lokal): `automations add` harian 21.00 & Senin 07.00 WIB + `automations run <id> --wait` → `summary` memuat teks PROSPEK lengkap (lihat `examples/HASIL-UJI.md`, bagian Uji v1.1.0).
 
 ## 0. Aturan kanal (keputusan pemilik Komunitech, 2026-09-23)
-- **Telegram (bot resmi) = default.** `--to` selalu ID chat **pemilik**.
+- **Telegram (bot resmi) = default.** `--to` = ID chat **pemilik**. Penerima tambahan hanya **pemilik bersama/pengelola yang pemilik tunjuk secara eksplisit**, masing-masing lewat **jadwal terpisah** ke chat pribadinya sendiri (`--to` = ID chat orang itu), tidak pernah ke grup.
 - **WhatsApp** hanya jika: (1) **nomor terpisah** milik pemilik, bukan nomor toko/CS; (2) laporan hanya ke pemilik sendiri; (3) pemilik membalas "ya, saya mengerti risikonya" setelah membaca: *"OpenClaw memakai WhatsApp Web (tidak resmi, scan QR). Pesan otomatis bisa membuat nomor diblokir. Untuk laporan ke diri sendiri risikonya rendah, tapi tetap ada. Telegram tidak punya risiko ini."*
-- **Tidak ada broadcast**, tidak ke grup, tidak ke pelanggan/karyawan.
-- Tunjukkan perintah + "Lanjut? (ya/tidak)" sebelum membuat jadwal apa pun.
+- **Tidak ada broadcast**, tidak ke grup, tidak ke pelanggan/karyawan (kecuali pengelola yang ditunjuk eksplisit seperti di atas).
+- **Gerbang konfirmasi (wajib):** tunjukkan perintah persis + jam & zona waktu + tujuan, tanya "Lanjut? (ya/tidak)", lalu **berhenti dan tunggu**. `automations add` hanya dijalankan setelah pengguna menjawab "ya" di pesan berikutnya.
+- **JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial** dari environment (`env | grep ...`, `printenv`), file konfigurasi (`openclaw.json`, `.env`), atau riwayat. Kanal Telegram diatur lewat pairing/konfigurasi OpenClaw **oleh pengguna** (§1 langkah 3). Jika `automations add` ditolak atau kanal belum siap → berhenti dan berikan langkah §1/§6 kepada pengguna; jangan menyelidiki sendiri.
 
 ## 1. Siapkan (sekali)
 1. Gateway OpenClaw berjalan di **komputer yang sama dengan database kasir/stok/absensi**, dan menyala saat jadwal (komputer toko yang tidak dimatikan, mini PC, atau VPS milik pemilik). Jika mati jam 21.00, laporan **tidak terkirim** dan tidak ada pesan error. Opsi: komputer selalu menyala, VPS sendiri, atau jasa setup Komunitech.
-2. Skill ini dan alat-alatnya terpasang di folder yang sama, mis. `openclaw skills install ./laporan-harian-usaha --global` (juga `kasir-lokal`, `buku-stok`, `absensi-lokal`, `pengingat-follow-up` yang dipakai).
-3. Telegram: buat bot di @BotFather → `openclaw channels add --channel telegram --token <token>` → kirim "halo" ke bot dari akun pemilik → `openclaw pairing list telegram` lalu `openclaw pairing approve telegram <KODE>`. Cara mencari ID chat: skill `laporan-otomatis-terjadwal`, `references/openclaw.md`.
+2. Skill ini dan alat-alatnya terpasang di folder yang sama, mis. `openclaw skills install ./laporan-harian-usaha --global` (juga `kasir-lokal`, `buku-stok`, `absensi-lokal`, `pengingat-follow-up`, `crm-wa` yang dipakai).
+3. Telegram (**dilakukan pengguna sendiri**; agent hanya memandu, tidak pernah meminta token ditempel di chat atau mencarinya): buat bot di @BotFather → `openclaw channels add --channel telegram --token <token>` → kirim "halo" ke bot dari akun pemilik → `openclaw pairing list telegram` lalu `openclaw pairing approve telegram <KODE>`. Cara mencari ID chat: skill `laporan-otomatis-terjadwal`, `references/openclaw.md`.
 4. Cari path lengkap (argv tidak mengenal `~`):
    ```bash
    python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/laporan-harian-usaha/scripts/laporan.py'))"
    python3 -c "import os; print(os.path.expanduser('~/.openclaw/workspace'))"
    ```
-5. Uji dulu dari terminal: `python3 <path laporan.py>` harus menampilkan laporan. Bagian "Belum ada data" padahal alatnya dipakai → lokasi data berbeda; tambahkan `--kasir-db`/`--stok-db`/`--absensi-db`/`--pengingat` ke argv.
+5. Uji dulu dari terminal: `python3 <path laporan.py>` harus menampilkan laporan. Bagian "Belum ada data" padahal alatnya dipakai → lokasi data berbeda; tambahkan `--kasir-db`/`--stok-db`/`--absensi-db`/`--pengingat`/`--crm-db` ke argv.
 
 ## 2. Pilihan 1 (disarankan): perintah langsung, tanpa AI
 Script dijalankan Gateway, teksnya dikirim apa adanya. Tidak memakai kuota model, hasil selalu sama, tidak ada AI yang bisa salah mengubah angka.
@@ -50,7 +52,7 @@ openclaw automations add --name "Laporan mingguan usaha" --cron "0 7 * * 1" --tz
 - Toko tutup lewat tengah malam: jadwalkan `--cron "0 7 * * *"` dan tambahkan `"--tanggal","kemarin"`.
 - WITA/WIT: ganti `--tz Asia/Makassar` / `Asia/Jayapura` **dan** tambahkan `"--tz","Asia/Makassar"` ke argv.
 - Jadwal setelah tengah malam tanpa `"--tanggal","kemarin"` akan melaporkan tanggal baru (masih kosong).
-- Payload perintah = fitur admin Gateway (pemilik Gateway). Tanpa hak itu: `requires credentials` → jalankan dari perangkat yang sudah dipasangkan atau dengan `--token` Gateway pemilik.
+- Payload perintah = fitur admin Gateway (pemilik Gateway). Tanpa hak itu: `requires credentials` → **agent berhenti**; minta pengguna menjalankan perintah itu sendiri dari perangkat yang sudah dipasangkan (atau dengan `--token` Gateway yang ia ketik sendiri). Agent tidak mencari token itu.
 
 ## 3. Pilihan 2: lewat agent AI (Windows, atau ingin saran tambahan)
 Memakai kuota model; `--tools exec,read` membatasi alat; `--session isolated` memisahkan dari chat utama.
@@ -77,7 +79,8 @@ Ganti baris terakhir menjadi `--announce --channel whatsapp --to "+62<nomor pemi
 
 ## 6. Jika bermasalah
 - `Gateway not reachable` → Gateway/komputer belum menyala.
-- `deliveryStatus: not-delivered` + `Telegram bot token missing` → kanal Telegram belum disiapkan (§1 langkah 3).
+- `deliveryStatus: not-delivered` + `Telegram bot token missing` → kanal Telegram belum disiapkan (§1 langkah 3); pengguna yang menyiapkannya, agent tidak mencari token.
+- Pertama kali Gateway dijalankan dengan bot asli, OpenClaw mengatur menu perintah bot (setMyCommands) dan mengambil pesan bot yang tertunda. Ini normal; beri tahu pengguna bila bot itu sudah dipakai untuk hal lain.
 - `summary` berisi "Belum ada data (...)" padahal alat dipakai → path data di jadwal beda dengan saat chat; samakan (§2).
 - `summary` berisi "sedang dipakai program lain" → saat jadwal ada transaksi yang sedang disimpan; data aman, `automations run <id> --wait` lagi.
 - `summary` berisi "Jam komputer ini bukan Asia/Jakarta" → atur zona waktu komputer Gateway ke WIB/WITA/WIT yang benar.

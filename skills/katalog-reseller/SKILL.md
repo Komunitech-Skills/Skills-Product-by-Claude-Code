@@ -5,6 +5,8 @@ description: Menyusun program mitra untuk produsen/brand UMKM — daftar harga b
 
 # Katalog & Program Reseller
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu produsen/pemilik brand membuka jaringan mitra yang **sehat**: harga bertingkat yang tetap menguntungkan produsen, untung mitra yang cukup untuk bertahan (tanpa terpaksa banting harga), aturan main yang jelas, dan ajakan rekrut yang jujur — tanpa bonus rekrut berjenjang.
 
@@ -34,6 +36,8 @@ Membantu produsen/pemilik brand membuka jaringan mitra yang **sehat**: harga ber
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai default dan tulis asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Pilih mode hitung.** Sudah punya harga eceran → mode `diskon` (harga mitra = eceran × (1 − diskon)). Belum punya harga eceran atau ingin menjamin margin produsen → mode `margin` (harga mitra = modal ÷ (1 − target margin)).
 2. **Jalankan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
@@ -43,8 +47,10 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    python3 <folder-skill-ini>/scripts/hitung_tier.py --produk "Kopi 250g" --hpp 32.000 --mode margin \
      --tier "Dropshipper:1:45" --tier "Reseller:12:35" --tier "Agen:60:25"
    # banyak produk: --config produk.json (contoh: templates/produk-contoh.json / .csv)
-   # daftar harga untuk dibagikan ke mitra (tanpa HPP & margin produsen): --csv-keluar daftar-harga-mitra.csv
+   # daftar harga untuk dibagikan ke mitra (tanpa HPP & margin produsen):
+   #   --csv-keluar "<folder-kerja-pengguna>/daftar-harga-mitra.csv"
    ```
+   **File CSV ditulis ke folder kerja pengguna** (workspace OpenClaw atau folder yang disepakati), **bukan** ke folder skill/`scripts/` atau `/tmp` — selalu beri path lengkap di `--csv-keluar`. Di balasan, sebut **lokasi lengkap** file (script mencetaknya sebagai path absolut).
    Opsi lain: `--biaya-produsen` (packing/label per unit), `--ongkir-ke-mitra` (Rp/unit; otomatis **tidak** dikenakan ke tier yang namanya mengandung "drop", karena dropshipper tidak menerima kiriman stok), `--min-margin-mitra 15`, `--min-margin-dropship 10`, `--min-margin-produsen 15`, `--bulatkan 100`, `--format json`. Tier boleh punya batas sendiri: `"Agen:60:35:20"`.
 3. **Baca status & peringatan.** Jangan menyajikan tier berstatus `PRODUSEN RUGI`, `MITRA RUGI`, atau `HARGA MITRA ≥ ECERAN` sebagai final. Untuk `MARGIN MITRA TIPIS` / `RUGI DI HARGA MINIMUM` / selisih tier terlalu kecil: jalankan ulang dengan usulan perbaikan (diskon tier lebih besar, harga eceran lebih tinggi, tier dikurangi) dan tampilkan perbandingannya.
 4. **Susun dokumen** dengan format di bawah: tabel internal (dengan margin produsen) **terpisah** dari daftar harga untuk mitra (tanpa HPP/margin produsen).
@@ -103,6 +109,7 @@ Pesan WA: "...Reseller beli 12 pcs (modal ±Rp 800.400), jika semua terjual di h
 ## Checklist sebelum mengirim hasil
 - [ ] Semua harga & untung berasal dari script (atau hitung manual yang disebut); tidak ada tier rugi yang disajikan final.
 - [ ] Tabel internal (HPP, margin produsen) terpisah dari daftar harga untuk mitra.
+- [ ] Bila CSV dibuat: tersimpan di folder kerja pengguna (bukan folder skill) dan path lengkapnya disebut di balasan.
 - [ ] Tier ditentukan dari jumlah beli sendiri; **tidak ada** bonus rekrut, biaya pendaftaran berbayar, atau komisi downline.
 - [ ] "Larangan banting harga" ditulis sebagai harga minimum anjuran + konsekuensi kebijakan, bukan denda.
 - [ ] Pesan rekrut memakai "±" & "jika terjual di harga eceran"; tanpa "pasti untung"/"passive income"; ada opt-out.

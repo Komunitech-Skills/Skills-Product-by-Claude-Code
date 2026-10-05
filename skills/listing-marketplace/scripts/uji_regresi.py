@@ -58,6 +58,39 @@ class Uji(unittest.TestCase):
         r, _ = cek("Kaos", None, "shopee", "--batas-judul", "0")
         self.assertEqual(r.returncode, 1)
 
+    def test_klaim_sifat_di_luar_fakta_gagal(self):
+        # Temuan uji OpenClaw 2026-10-01: "ga gampang buyar" ditambah sendiri, script tetap LULUS.
+        fakta = ("115x115 voal premium, tepi lasercut, motif bunga dusty pink, sage, mocca, navy. "
+                 "adem, ga licin, gampang dibentuk, ga nerawang. isi 1 pcs, cuci tangan aja jgn dipemutih")
+        desk = ("Hijab voal premium yang adem, ga licin, gampang dibentuk, dan ga nerawang. "
+                "Tepi lasercut ga gampang buyar. Dikirim cepat & packing aman. Awet dipakai.")
+        _, h = cek("Hijab Voal Motif Bunga 115x115 Tepi Lasercut", desk, "shopee", "--fakta", fakta)
+        self.assertFalse(h["lulus"])
+        gagal = " ".join(t["pesan"] for t in h["temuan"] if t["tingkat"] == "GAGAL")
+        for frasa in ("ga gampang buyar", "Dikirim cepat", "packing aman", "Awet"):
+            self.assertIn(frasa, gagal, frasa)
+        for frasa in ("premium", "adem"):
+            self.assertNotIn("'" + frasa, gagal.lower(), frasa)
+
+    def test_klaim_sifat_sesuai_fakta_lulus(self):
+        fakta = "bahan adem, tepi lasercut ga gampang buyar, voal premium"
+        desk = "Bahan voal premium, adem dipakai. Tepi lasercut ga gampang buyar. " * 8
+        _, h = cek("Hijab Voal Motif Bunga 115x115 Tepi Lasercut", desk, "shopee", "--fakta", fakta)
+        self.assertTrue(h["lulus"], h["temuan"])
+
+    def test_klaim_sifat_tanpa_fakta_cek(self):
+        _, h = cek("Tumbler Stainless 500 ml", "Tumbler anti bocor, awet. " * 15)
+        self.assertTrue(h["lulus"])
+        self.assertIn("CEK", tingkat(h, "anti bocor"))
+        # "kering cepat" tidak boleh terbaca sebagai negasi "g cepat ..."
+        _, h = cek("Handuk Microfiber 70x140", "Handuk kering cepat kering dipakai. " * 15, "shopee",
+                   "--fakta", "handuk microfiber 70x140")
+        self.assertTrue(h["lulus"], h["temuan"])
+
+    def test_fakta_ganda_ditolak(self):
+        r, _ = cek("Kaos", None, "shopee", "--fakta", "a", "--fakta-file", "x.txt")
+        self.assertEqual(r.returncode, 1)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

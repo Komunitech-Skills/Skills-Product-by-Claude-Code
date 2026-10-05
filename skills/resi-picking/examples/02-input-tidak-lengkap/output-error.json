@@ -1,0 +1,14 @@
+{
+  "ok": false,
+  "error": "Kolom wajib tidak ketemu: Jumlah. Sebutkan manual, mis. --kolom-no-pesanan \"Nama Kolom\".",
+  "kolom_ada": [
+    "No. Pesanan",
+    "SKU",
+    "Nama Produk"
+  ],
+  "pemetaan_terdeteksi": {
+    "No. pesanan": "No. Pesanan",
+    "SKU": "SKU",
+    "Nama produk": "Nama Produk"
+  }
+}

@@ -2,11 +2,12 @@
 """Uji regresi laporan-harian-usaha.
 
 Data contoh DIBUAT dengan menjalankan script alat asli (kasir-lokal, buku-stok, absensi-lokal,
-pengingat-follow-up) di folder sementara, bukan meniru skema dengan tangan. Alat dicari di folder
+pengingat-follow-up, crm-wa) di folder sementara, bukan meniru skema dengan tangan. Alat dicari di folder
 skills yang sama (../kasir-lokal, dst.); jika tidak ada, uji yang membutuhkannya dilewati.
 
 Jalankan: python3 tests/uji_regresi.py   (Windows: python / py)
 """
+import csv
 import hashlib
 import json
 import os
@@ -28,7 +29,8 @@ STOK = SKILLS / "buku-stok" / "scripts" / "stok.py"
 ABSENSI = SKILLS / "absensi-lokal" / "scripts" / "absensi.py"
 PENGINGAT = SKILLS / "pengingat-follow-up" / "scripts" / "cek_jatuh_tempo.py"
 DAFTAR_CONTOH = SKILLS / "pengingat-follow-up" / "templates" / "DAFTAR.csv"
-SEMUA_ALAT = all(p.is_file() for p in (KASIR, STOK, ABSENSI, PENGINGAT, DAFTAR_CONTOH))
+CRM = SKILLS / "crm-wa" / "scripts" / "crm.py"
+SEMUA_ALAT = all(p.is_file() for p in (KASIR, STOK, ABSENSI, PENGINGAT, DAFTAR_CONTOH, CRM))
 SEKARANG = "2026-09-24T21:00:00+07:00"
 
 sys.path.insert(0, str(SINI / "scripts"))
@@ -41,6 +43,7 @@ def alat(script, *argv, data=None):
     env.pop("KOMUNITECH_KASIR_DB", None)
     env.pop("KOMUNITECH_STOK_DB", None)
     env.pop("KOMUNITECH_ABSENSI_DB", None)
+    env.pop("KOMUNITECH_CRM_DB", None)
     p = subprocess.run([sys.executable, str(script)] + [str(a) for a in argv], stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE, env=env)
     if p.returncode != 0:
@@ -92,6 +95,24 @@ def buat_data(akar):
 
     (akar / "kerja" / "pengingat").mkdir(parents=True)
     shutil.copyfile(str(DAFTAR_CONTOH), str(akar / "kerja" / "pengingat" / "DAFTAR.csv"))
+
+    # crm-wa: 5 prospek dengan tanggal masuk/follow-up/deal berbeda, dipakai untuk verifikasi PROSPEK
+    # (angka dicocokkan dengan `crm.py rekap --json` langsung di uji, bukan ditebak).
+    HC = ["--json", "--hari-ini", "2026-09-24"]
+    C = lambda *a: alat(CRM, *(list(a) + HC), data=data)  # noqa: E731
+    C("init", "--nama-usaha", "Warung Uji", "--pengirim", "Sari", "--zona", "WIB", "--ya")
+    C("tambah", "--nama", "Bu Rina", "--wa", "0812-3000-0001", "--sumber", "ig", "--tahap", "dihubungi",
+      "--masuk", "2026-09-20", "--followup", "2026-09-22")                                  # terlambat 2 hari
+    C("tambah", "--nama", "Pak Budi", "--wa", "0812-3000-0002", "--sumber", "tiktok", "--tahap", "ditawar",
+      "--nilai", "4,5 jt", "--masuk", "2026-09-23", "--followup", "2026-09-24")              # follow-up hari ini
+    C("tambah", "--nama", "Bu Sari Toko", "--wa", "0812-3000-0003", "--sumber", "ig", "--tahap", "ditawar",
+      "--masuk", "2026-09-18")
+    C("catat", "--kontak", "Bu Sari Toko", "--tahap", "deal", "--nilai", "6 jt", "--tanggal", "2026-09-24")
+    C("tambah", "--nama", "Mbak Dewi", "--wa", "0812-3000-0005", "--sumber", "tokopedia", "--tahap", "baru",
+      "--masuk", "2026-09-24")                                                              # follow-up hari ini
+    C("tambah", "--nama", "Mas Andi", "--wa", "0812-3000-0006", "--sumber", "ig", "--tahap", "ditawar",
+      "--masuk", "2026-09-22")
+    C("catat", "--kontak", "Mas Andi", "--tahap", "deal", "--nilai", "2 jt", "--tanggal", "2026-09-23")
 
 
 def md5_folder(fol):
@@ -198,7 +219,8 @@ class UjiRumus(unittest.TestCase):
 
 
 # ------------------------------------------------------------------ uji dengan alat asli
-@unittest.skipUnless(SEMUA_ALAT, "alat kasir-lokal/buku-stok/absensi-lokal/pengingat-follow-up tidak ada di folder skills")
+@unittest.skipUnless(SEMUA_ALAT,
+                     "alat kasir-lokal/buku-stok/absensi-lokal/pengingat-follow-up/crm-wa tidak ada di folder skills")
 class UjiGabungan(Dasar):
     def test_semua_alat_harian_angka_dari_kasir(self):
         akar = self.salin("semua")
@@ -212,7 +234,7 @@ class UjiGabungan(Dasar):
         # verifikasi independen: 69.000 / 2 = 34.500
         self.assertEqual(pj["rata_rata_per_nota"], 34500)
         self.assertEqual(pj["terlaris"][0]["nama"], "Kopi Susu Gula Aren")
-        for n in ("kasir", "stok", "absensi", "pengingat"):
+        for n in ("kasir", "stok", "absensi", "pengingat", "crm"):
             self.assertEqual(d["alat"][n]["status"], "ada", d["alat"][n])
 
     def test_perbandingan_persen_kemarin_dan_minggu_lalu(self):
@@ -345,7 +367,7 @@ class UjiGabungan(Dasar):
     def test_tidak_ada_alat_sama_sekali(self):
         akar = self.kosong("nihil")
         teks = self.jalan(akar)
-        self.assertEqual(teks.count("Belum ada data ("), 4)
+        self.assertEqual(teks.count("Belum ada data ("), 5)  # + PROSPEK (crm-wa)
         self.assertIn("Belum ada data dari alat mana pun", teks)
 
     def test_script_alat_tidak_ditemukan(self):
@@ -424,6 +446,276 @@ class UjiGabungan(Dasar):
         self.assertIsNone(d["kehadiran"])
         self.assertIsNone(d["tagihan"])
         self.assertIsNotNone(d["penjualan"])
+
+    # ------------------------------------------------------------- S1: impor sebagian kasir -> buku-stok
+    def test_impor_sebagian_kasir_ke_stok_terdeteksi(self):
+        """S1: impor SEBAGIAN nota kasir tanggal 24/9 (hanya N-260924-0001 dari 2 nota sah) harus terdeteksi
+        dengan hitungan benar, dan peringatan hilang begitu semua nota diimpor."""
+        akar = self.salin("imporsebagian")
+        data = akar / "data"
+        penuh = akar / "j24-penuh.csv"
+        alat(KASIR, "ekspor", "--format", "buku-stok", "--tanggal", "2026-09-24", "--csv", penuh, "--json", data=data)
+        with open(penuh, encoding="utf-8-sig", newline="") as f:
+            baris = list(csv.reader(f, delimiter=";"))
+        header, isi = baris[0], baris[1:]
+        self.assertEqual({r[0] for r in isi}, {"N-260924-0001", "N-260924-0002", "N-260924-0003"})  # 0003 = di-void
+        sebagian = akar / "j24-sebagian.csv"
+        with open(sebagian, "w", encoding="utf-8-sig", newline="") as f:
+            w = csv.writer(f, delimiter=";")
+            w.writerow(header)
+            w.writerows(r for r in isi if r[0] == "N-260924-0001")
+        alat(STOK, "impor-pesanan", sebagian, "--platform", "lainnya", "--ya", "--json", data=data)
+        d = self.jalan(akar, "--json")
+        self.assertTrue(any("1 dari 2 nota kasir tanggal 2026-09-24 belum diimpor ke buku-stok (stok belum terpotong)."
+                             in s for s in d["perhatian"]), d["perhatian"])
+        # lengkapi impor (termasuk baris nota yang di-void, berstatus Dibatalkan) -> peringatan hilang
+        alat(STOK, "impor-pesanan", penuh, "--platform", "lainnya", "--ya", "--json", data=data)
+        d2 = self.jalan(akar, "--json")
+        self.assertFalse(any("belum diimpor ke buku-stok" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    # ------------------------------------------------------------- R1: absen tanpa keterangan hari ini
+    def test_tanpa_keterangan_hari_ini_tampil_di_perhatian(self):
+        d = self.jalan(self.salin("r1"), "--json")  # SEKARANG = 21:00, setelah jam pulang shift REG (17:00)
+        self.assertTrue(any("Joko" in s and "tanpa keterangan" in s for s in d["perhatian"]), d["perhatian"])
+        teks = self.jalan(self.salin("r1samar"), "--samarkan")
+        self.assertNotIn("Joko", teks)
+        self.assertIn("tanpa keterangan", teks)
+
+    # ------------------------------------------------------------- R2: sebelum jadwal mulai, jangan alarm
+    def test_belum_waktunya_absen_tidak_memberi_alarm_palsu(self):
+        d = self.jalan(self.salin("r2"), "--json", "--sekarang", "2026-09-25T00:30+07:00")
+        self.assertTrue(any("Belum waktunya absen (jadwal mulai 08.00)." in s for s in d["perhatian"]), d["perhatian"])
+        self.assertFalse(any("Belum ada satu pun data absen" in s for s in d["perhatian"]))
+
+    # ------------------------------------------------------------- R3: zona toko kasir vs --tz laporan
+    def test_zona_toko_kasir_beda_dengan_tz_laporan(self):
+        akar = self.salin("zonatoko")
+        alat(KASIR, "atur", "--zona", "WITA", "--ya", "--json", data=akar / "data")
+        d = self.jalan(akar, "--json")  # --tz default Asia/Jakarta, toko WITA
+        self.assertTrue(any("Toko diatur zona Asia/Makassar" in s and "--tz Asia/Jakarta" in s
+                             for s in d["perhatian"]), d["perhatian"])
+        d2 = self.jalan(akar, "--json", "--tz", "Asia/Makassar")
+        self.assertFalse(any("Toko diatur zona" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    # ------------------------------------------------------------- R4: pesan error DB rusak pakai path asli
+    def test_pesan_db_rusak_pakai_path_asli_bukan_salinan(self):
+        akar = self.salin("dbasli")
+        asli = akar / "data" / "absensi" / "absensi.db"
+        asli.write_bytes(b"")
+        d = self.jalan(akar, "--json")
+        pesan = d["alat"]["absensi"]["pesan"]
+        self.assertIn(str(asli), pesan)  # path file ASLI ada di pesan
+        self.assertNotIn(str(Path(tempfile.gettempdir())), pesan.replace(str(asli), ""))  # bukan path salinan
+
+    # ------------------------------------------------------------- kosmetik: --tz di luar Indonesia ditolak
+    def test_tz_di_luar_indonesia_ditolak(self):
+        akar = self.kosong("tzasing")
+        out = self.jalan(akar, "--tz", "Asia/Tokyo", harap_kode=2)
+        self.assertIn("di luar Indonesia", out)
+
+    # ------------------------------------------------------------- kosmetik: tanpa minus ganda pada void/retur
+    def test_void_retur_tanpa_minus_ganda(self):
+        teks = self.jalan(self.salin("kosmetikminus"))  # master: 1 nota di-void (1 kopi hitam, Rp 12.000)
+        self.assertNotIn("(-Rp", teks)
+        self.assertIn("Retur 0 | void 1 (Rp 12.000)", teks)
+
+    # ------------------------------------------------------------- kosmetik: catatan pajak di per metode bayar
+    def test_per_metode_bayar_berlabel_termasuk_pajak(self):
+        akar = self.kosong("pajak")
+        data = akar / "data"
+        alat(KASIR, "init", "--nama-toko", "Toko Pajak", "--stok", "tidak", "--pajak", "ppn-belum", "--pkp", "ya",
+             "--ya", "--json", data=data)
+        alat(KASIR, "produk", "tambah", "--kode", "A", "--nama", "Barang A", "--harga", "100000", "--ya", "--json",
+             data=data)
+        alat(KASIR, "jual", "--pesan", "1 barang a, bayar tunai", "--waktu", "2026-09-24 10:00", "--ya", "--json",
+             data=data)
+        teks = self.jalan(akar, "--tanpa", "stok,absensi,pengingat")
+        self.assertIn("Per metode bayar (termasuk pajak/service, omzet di atas belum termasuk):", teks)
+
+    # ------------------------------------------------------------- PROSPEK (crm-wa), alat ke-5
+    def test_crm_prospek_cocok_dengan_rekap_langsung(self):
+        """Angka PROSPEK harus SAMA PERSIS dengan `crm.py rekap --json` langsung terhadap data yang sama
+        (tidak dihitung ulang dengan rumus lain di laporan.py)."""
+        akar = self.salin("crmharian")
+        d = self.jalan(akar, "--json")
+        kr = alat(CRM, "rekap", "--dari", "2026-09-24", "--sampai", "2026-09-24", "--hari-ini", "2026-09-24",
+                  "--json", data=akar / "data")
+        pr = d["prospek"]
+        self.assertEqual(d["alat"]["crm"]["status"], "ada")
+        self.assertEqual(pr["lead_masuk"], kr["periode_ini"]["lead_masuk"])
+        self.assertEqual(pr["deal"]["jumlah"], kr["periode_ini"]["deal_baru"]["jumlah"])
+        self.assertEqual(pr["deal"]["nilai"], kr["periode_ini"]["deal_baru"]["nilai"])
+        self.assertEqual(pr["konversi_teks"], kr["periode_ini"]["konversi_teks"])
+        self.assertEqual(pr["kohort"], kr["periode_ini"]["kohort"])
+        for f in ("terlambat", "hari_ini", "besok", "order_perlu_konfirmasi", "nilai_terlambat_dan_hari_ini"):
+            self.assertEqual(pr["followup"][f], kr["followup"][f], f)
+        self.assertEqual(pr["sumber_terbaik"], kr["sumber_terbaik"])
+        # verifikasi independen dari data uji (lihat buat_data): 24/9 hanya Mbak Dewi masuk; Bu Sari Toko deal
+        # (nilai Rp 6 jt) di tanggal 24/9; follow-up: Bu Rina terlambat, Pak Budi & Mbak Dewi hari ini.
+        self.assertEqual(pr["lead_masuk"], 1)
+        self.assertEqual(pr["deal"]["jumlah"], 1)
+        self.assertEqual(pr["deal"]["nilai"], 6000000)
+        self.assertEqual(pr["followup"]["terlambat"], 1)
+        self.assertEqual(pr["followup"]["hari_ini"], 2)
+        self.assertEqual(pr["followup"]["nilai_terlambat_dan_hari_ini"], 4500000)
+        self.assertIn("Prospek baru: 1", d["teks"])
+        self.assertIn("Follow-up terlambat 1 | hari ini 2 | besok 0 | order perlu konfirmasi 0", d["teks"])
+        self.assertIn("Deal periode ini: 1 senilai Rp 6.000.000 (termasuk dari prospek lama)", d["teks"])
+
+    def test_crm_mingguan_banding_minggu_sebelumnya(self):
+        akar = self.salin("crmmingguan")
+        d = self.jalan(akar, "--json", "--periode", "mingguan", "--tanggal", "2026-09-20")
+        kr = alat(CRM, "rekap", "--dari", "2026-09-14", "--sampai", "2026-09-20", "--hari-ini", "2026-09-24",
+                  "--json", data=akar / "data")
+        kr_lalu = alat(CRM, "rekap", "--dari", "2026-09-07", "--sampai", "2026-09-13", "--hari-ini", "2026-09-24",
+                       "--json", data=akar / "data")
+        pr = d["prospek"]
+        self.assertEqual(pr["lead_masuk"], kr["periode_ini"]["lead_masuk"])
+        self.assertEqual(pr["lead_masuk"], 2)  # Bu Rina (masuk 20/9) + Bu Sari Toko (masuk 18/9)
+        self.assertEqual(pr["sumber_terbaik"]["sumber"], "Instagram")
+        b = pr["banding"]["minggu_sebelumnya"]
+        self.assertEqual(b["lead_masuk"], kr_lalu["periode_ini"]["lead_masuk"])
+        self.assertEqual(b["lead_masuk"], 0)
+        self.assertIn("vs minggu sebelumnya", d["teks"])
+
+    def test_crm_tidak_terpasang_bukan_error(self):
+        akar = self.salin("crmtidakada")
+        shutil.rmtree(str(akar / "data" / "crm"))
+        d = self.jalan(akar, "--json")
+        self.assertEqual(d["alat"]["crm"]["status"], "tidak_ada")
+        self.assertIsNone(d["prospek"])
+        self.assertIn("Belum ada data (crm-wa belum dipakai", d["teks"])
+
+    def test_crm_db_rusak_dilewati_dengan_catatan(self):
+        akar = self.salin("crmrusak")
+        (akar / "data" / "crm" / "crm.db").write_bytes(b"bukan database crm" * 20)
+        d = self.jalan(akar, "--json")
+        self.assertEqual(d["alat"]["crm"]["status"], "gagal")
+        self.assertIsNone(d["prospek"])
+        self.assertIn("Belum ada data", d["teks"].split("PROSPEK")[1])
+        self.assertTrue(any("crm-wa tidak terbaca" in s for s in d["perhatian"]), d["perhatian"])
+
+    def test_crm_script_tidak_ditemukan(self):
+        akar = self.salin("crmtanpascript")
+        d = self.jalan(akar, "--json", "--crm-script", str(akar / "tidak-ada.py"))
+        self.assertEqual(d["alat"]["crm"]["status"], "gagal")
+        self.assertIn("script crm.py tidak ditemukan", d["alat"]["crm"]["pesan"])
+
+    def test_tanpa_crm(self):
+        d = self.jalan(self.salin("crmlewati"), "--json", "--tanpa", "crm")
+        self.assertEqual(d["alat"]["crm"]["status"], "dilewati")
+        self.assertIsNone(d["prospek"])
+
+    def test_crm_tanpa_nama_nomor_prospek(self):
+        """Privasi: teks & JSON tidak pernah memuat nama/nomor WA prospek (kontrak `rekap --json` crm-wa
+        sudah tanpa itu; ini menjaga laporan.py tidak menambahkannya sendiri)."""
+        akar = self.salin("crmprivasi")
+        teks = self.jalan(akar)
+        d = self.jalan(akar, "--json")
+        dump = json.dumps(d, ensure_ascii=False)
+        for rahasia in ("Bu Rina", "Pak Budi", "Bu Sari Toko", "Mbak Dewi", "Mas Andi",
+                        "0812-3000-0001", "0812-3000-0002", "0812-3000-0003", "0812-3000-0005", "0812-3000-0006",
+                        "62812", "K0001", "K0002", "K0003", "K0004", "K0005"):
+            self.assertNotIn(rahasia, teks)
+            self.assertNotIn(rahasia, dump)
+
+    def test_crm_db_asli_tidak_berubah(self):
+        """File DB crm-wa asli tidak pernah ditulis (dibuka hanya lewat salinan read-only), sama seperti alat lain."""
+        akar = self.salin("crmhash")
+        dbfile = akar / "data" / "crm" / "crm.db"
+        sebelum = hashlib.md5(dbfile.read_bytes()).hexdigest()
+        self.jalan(akar, "--json")
+        self.jalan(akar, "--json", "--periode", "mingguan")
+        self.assertEqual(hashlib.md5(dbfile.read_bytes()).hexdigest(), sebelum)
+
+    # ------------------------------------------------------------- v1.1.1: perbaikan temuan sisa
+    def test_n1_sebagian_tap_sebelum_jam_masuk_tanpa_alarm(self):
+        """N1: satu karyawan tap 07.45 (shift 08.00), laporan 07.50 -> tidak ada alarm "belum absen tanpa
+        keterangan". Setelah jam masuk (09.00) alarm tetap muncul (perilaku R1 tidak hilang)."""
+        akar = self.salin("n1")
+        alat(ABSENSI, "catat", "--karyawan", "Sari", "--tanggal", "2026-09-25", "--masuk", "07.45", "--json",
+             "--sekarang", "2026-09-25T07:46", "--ya", data=akar / "data")
+        d = self.jalan(akar, "--json", "--sekarang", "2026-09-25T07:50+07:00")
+        self.assertFalse(any("tanpa keterangan" in s or "Belum ada satu pun" in s or "Belum waktunya" in s
+                             for s in d["perhatian"]), d["perhatian"])
+        self.assertIn("Belum absen (4)", d["teks"])  # daftar di KEHADIRAN tetap ada, hanya bukan alarm
+        d2 = self.jalan(akar, "--json", "--sekarang", "2026-09-25T09:00+07:00")
+        self.assertTrue(any("Belum absen tanpa keterangan (4)" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    def test_n2_cek_dilewati_tampil_di_teks(self):
+        """N2: cek impor yang dilewati karena struktur tabel berubah juga tampil di teks (sekali), bukan hanya
+        di JSON catatan."""
+        akar = self.salin("n2")
+        con = sqlite3.connect(str(akar / "data" / "stok.db"))
+        con.execute("ALTER TABLE pesanan RENAME COLUMN no_pesanan TO no_psn")
+        con.commit()
+        con.close()
+        d = self.jalan(akar, "--json")
+        pesan = "Cek impor kasir ke buku-stok dilewati: struktur tabel pesanan berubah."
+        self.assertEqual(d["catatan"], [pesan])
+        self.assertEqual(d["teks"].count(pesan), 1, d["teks"])
+        self.assertIn(pesan, d["perhatian"])
+
+    def test_n3_void_setelah_impor_diingatkan(self):
+        """N3: nota 23/9 sudah diimpor ke buku-stok lalu di-void 24/9 -> diingatkan dengan nomor notanya.
+        Nota yang di-void SEBELUM diimpor (N-260924-0003 di data master) tidak diingatkan. Setelah ekspor ulang
+        23/9 + impor lagi (stok dikembalikan buku-stok), peringatan hilang."""
+        akar = self.salin("n3")
+        data = akar / "data"
+        d0 = self.jalan(akar, "--json")
+        self.assertFalse(any("di-void setelah diimpor" in s for s in d0["perhatian"]), d0["perhatian"])
+        alat(KASIR, "void", "--nota", "N-260923-0001", "--alasan", "uji", "--waktu", "2026-09-24 14:00", "--json",
+             "--hari-ini", "2026-09-24T21:00", "--ya", data=data)
+        d = self.jalan(akar, "--json")
+        self.assertIn("1 nota kasir di-void setelah diimpor ke buku-stok, stoknya belum dikembalikan (N-260923-0001). "
+                      "Ekspor ulang tanggal nota itu dari kasir lalu impor lagi ke buku-stok.", d["perhatian"])
+        self.assertEqual(d["penjualan"]["omzet"], d0["penjualan"]["omzet"] - 36000)  # angka kasir tidak diubah laporan
+        ulang = akar / "j23-ulang.csv"
+        alat(KASIR, "ekspor", "--format", "buku-stok", "--tanggal", "2026-09-23", "--csv", ulang, "--json", data=data)
+        alat(STOK, "impor-pesanan", ulang, "--platform", "lainnya", "--ya", "--json", data=data)
+        d2 = self.jalan(akar, "--json")
+        self.assertFalse(any("di-void setelah diimpor" in s for s in d2["perhatian"]), d2["perhatian"])
+
+    def test_n5_samarkan_tanpa_titik_ganda(self):
+        teks = self.jalan(self.salin("n5"), "--samarkan")
+        self.assertNotIn("..", teks.split("PERLU PERHATIAN")[1])
+        self.assertIn("Belum absen tanpa keterangan (1): J. Tanyakan & catat izin/alpa.", teks)
+        teks2 = self.jalan(self.salin("n5b"))
+        self.assertIn("Belum absen tanpa keterangan (1): Joko. Tanyakan & catat izin/alpa.", teks2)
+
+    def test_crm_samarkan_diteruskan_angka_sama(self):
+        """N-baru: --samarkan diteruskan ke `crm.py rekap`; angka PROSPEK tetap identik."""
+        akar = self.salin("crmsamar")
+        biasa = self.jalan(akar, "--json")["prospek"]
+        samar = self.jalan(akar, "--json", "--samarkan")["prospek"]
+        self.assertEqual(biasa, samar)
+        dipanggil = []
+        asli = laporan.jalankan
+        laporan.jalankan = lambda script, argv, timeout: dipanggil.append(argv) or {}
+        try:
+            per = laporan.tentukan_periode(type("A", (), {"periode": "harian", "tanggal": None})(),
+                                           laporan.date(2026, 9, 24))
+            for sam in (False, True):
+                ctx = {"alat": {"crm": {"script_path": CRM, "snap": "x.db"}}, "periode": per,
+                       "hari_ini": laporan.date(2026, 9, 24), "timeout": 1, "samarkan": sam}
+                laporan.ambil_crm(ctx)
+        finally:
+            laporan.jalankan = asli
+        self.assertNotIn("--samarkan", dipanggil[0])
+        self.assertIn("--samarkan", dipanggil[1])
+
+    def test_order_perlu_konfirmasi_di_perhatian(self):
+        """Kosmetik v1.1.0: order (deal) yang jadwal konfirmasinya hari ini/lewat juga jadi butir PERLU PERHATIAN."""
+        akar = self.salin("crmorder")
+        d0 = self.jalan(akar, "--json")
+        self.assertEqual(d0["prospek"]["followup"]["order_perlu_konfirmasi"], 0)
+        self.assertFalse(any("order (deal)" in s for s in d0["perhatian"]))
+        alat(CRM, "catat", "--kontak", "Mas Andi", "--followup", "2026-09-24", "--json", "--hari-ini", "2026-09-24",
+             data=akar / "data")
+        d = self.jalan(akar, "--json")
+        self.assertEqual(d["prospek"]["followup"]["order_perlu_konfirmasi"], 1)
+        self.assertIn("1 order (deal) sudah waktunya dikonfirmasi ke pelanggan. Ketik 'follow-up hari ini' untuk "
+                      "daftar & draf pesannya.", d["perhatian"])
 
 
 def tearDownModule():

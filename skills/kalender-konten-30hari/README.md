@@ -47,3 +47,26 @@ Bisa. Sebutkan kemampuanmu, nanti jadwalnya disesuaikan.
 
 **File CSV-nya berantakan di Excel?**
 Minta "CSV pakai titik koma" untuk Excel berbahasa Indonesia, atau "pakai koma" untuk Google Sheets.
+
+## Catatan revisi 1.0.8 (2026-10-03)
+- Kemampuan produksi dihitung per minggu kalender (Senin-Minggu): `--maks-video-minggu N` menandai minggu yang kelebihan video.
+- Label "Ramadan H-22" ditolak; yang benar "Ramadan hari ke-22".
+
+## Catatan revisi 1.0.7 (2026-10-03)
+- "Aturan wajib" di awal SKILL.md: fakta produk/harga/klaim hanya dari kamu, selebihnya `[isi: ...]`; hasil default ringkas (tabel 30 baris + tips + asumsi) agar balasan cepat; file hanya di folder kerja.
+- Cek fakta kini wajib: finalisasi tanpa salinan pesanmu dianggap GAGAL, jadi karangan tentang produk tidak lolos.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+- Lebih ringan dan andal di Telegram/OpenClaw: AI cukup menjalankan script 2 kali (kerangka + finalisasi). Satu perintah finalisasi `--selesai` langsung menyimpan file CSV + tabel lengkap, mencetak tabel ringkas untuk chat (1 baris per hari, Hook & CTA 3 hari pertama), dan sekaligus cek-silang tanggal & fakta. Isian ditulis sebagai teks sederhana `No | Format | Ide | Hook | CTA`, bukan JSON besar.
+- Caption lengkap hanya ditulis bila Anda minta (maks. 3–5 hari per balasan).
+- Cek fakta diperluas: rasa/tekstur ("isi nanasnya padat", "renyah", "lumer"), cara buat ("dicetak satu-satu"), janji kirim ("besok dikirim"), dan jadwal toko ("pre-order dibuka", "sudah buka lagi") yang tidak Anda sebut ditandai GAGAL. Kalimat tips ("biar tetap renyah") tidak dianggap klaim.
+- Platform yang tidak Anda sebut dicatat di Asumsi.
+
+## Catatan revisi 1.0.5 (2026-10-01)
+- Ramadan, Idulfitri, dan Imlek kini diisi otomatis oleh script dari tabel perkiraan (berlabel "perkiraan"): tiap hari Ramadan diberi "Ramadan hari ke-N", plus Nuzulul Qur'an, 10 malam terakhir, batas THR ±H-7, Lebaran & H+1, dan pasca-Lebaran. Tidak ada lagi "Tanggal tua" di tengah Ramadan.
+- Cek-silang baru `--cek-teks`: tanggal hari besar yang disebut di tips/catatan harus sama dengan tabel (mis. Idulfitri 10 Mar 2027, bukan "19–20 Mar"); jawaban untuk periode Ramadan wajib menyebut Ramadan.
+- Langkah wajib "Fakta dari pengguna" + `--fakta`: layanan/promo yang tidak Anda sebut (mis. "antar-jemput gratis") ditandai GAGAL.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Tanggal hari besar (Ramadan, Lebaran, Imlek) diambil dari tabel perkiraan di skill, mis. awal Ramadan 2027 sekitar 8 Februari 2027 (perkiraan, menunggu sidang isbat), dan tidak pernah diklaim "sudah dicek".
+- Urgensi palsu ("stok terbatas", "hari terakhir") dilarang kecuali faktanya Anda berikan.

@@ -18,6 +18,7 @@ Angka boleh ditulis gaya Indonesia: `"14.000"`, `"1,5"`, `"1,5jt"`, `"Rp 250.000
 | `biaya_tetap_lain[]` | `nama`, `biaya` per bulan; **hanya untuk BEP**, tidak masuk HPP | — |
 | `target_margin_persen` / `markup_persen` | Pilih salah satu | tabel pilihan margin |
 | `harga_jual` | Harga saat ini untuk cek laba & BEP | — |
+| `banding_harga` | Daftar harga lain yang ingin dibandingkan, mis. `[18000, 19500]` (laba, margin, markup, BEP tiap harga). CLI: `--banding-harga "18000;19500"` | — |
 | `bulatkan` | Kelipatan pembulatan ke atas harga rekomendasi | 500 |
 
 ### Item biaya (pilih salah satu cara)

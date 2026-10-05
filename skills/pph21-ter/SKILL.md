@@ -5,6 +5,8 @@ description: Menghitung PPh 21 karyawan metode TER (PP 58/2023, PMK 168/2023) pe
 
 # PPh 21 Karyawan (Metode TER)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menghitung PPh 21 yang wajib dipotong pemberi kerja dari gaji karyawan dengan angka pasti dari tabel resmi PP 58/2023, lengkap dengan tabel per bulan, hitung ulang Desember (atau bulan berhenti kerja), dan ringkasan setahun yang siap ditempel ke laporan/chat.
 
@@ -36,6 +38,8 @@ Menghitung PPh 21 yang wajib dipotong pemberi kerja dari gaji karyawan dengan an
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, pakai default dan sebutkan asumsinya di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Tentukan jenis pegawai: **tetap** (gaji bulanan teratur), **tidak tetap dibayar bulanan**, atau **tidak tetap harian/borongan**.
 2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: ganti `python3` dengan `python` atau `py`). Angka boleh ditulis `10jt`, `Rp 10.000.000`, `15,5jt`.
    - Satu bulan (Jan–Nov, atau pegawai tidak tetap bulanan):
@@ -45,11 +49,13 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
      (`--iuran` = JHT 2% + JP 1% bagian karyawan per bulan; `--tambahan BULAN=NOMINAL` untuk THR/bonus.)
    - Masuk di tengah tahun: tambah `--mulai 9`. Berhenti kerja: `--akhir 8 --status berhenti`.
    - Gaji berbeda tiap bulan: buat CSV kolom `bulan,bruto,iuran_pensiun,zakat,pph_dipotong,bruto_tetap` (hanya `bulan` & `bruto` yang wajib; `pph_dipotong` = angka yang benar-benar dipotong bila beda) lalu `--data gaji.csv`.
-   - PPh 21 DTP 2026 (hanya bila sektor sudah dikonfirmasi): tambah `--dtp`.
+   - PPh 21 DTP 2026 (hanya bila sektor sudah dikonfirmasi): tambah `--dtp` — berlaku di `bulan` **dan** `setahun`. Contoh satu bulan: `python3 <folder-skill-ini>/scripts/pph21.py bulan --ptkp TK/0 --bruto 6jt --dtp` (opsional `--bruto-tetap` = gaji + tunjangan tetap Januari 2026, `--premi-perusahaan`, `--potongan-lain` untuk iuran BPJS karyawan).
    - WNA yang baru datang/meninggalkan Indonesia di tengah tahun: tambah `--disetahunkan`. **Jangan** dipakai untuk karyawan yang sekadar pindah kerja.
    - Harian/borongan: `python3 <folder-skill-ini>/scripts/pph21.py harian --upah 250rb --hari 20` atau `--total 4,5jt --hari 10`.
    - `--format json` untuk angka mentah; `python3 <folder-skill-ini>/scripts/pph21.py tabel --kategori B` menampilkan tabel TER.
 3. Tulis hasil memakai format di bawah dengan angka dari script **apa adanya**. Sampaikan setiap peringatan script.
+   - **Bila DTP:** kutip apa adanya empat baris script: "PPh 21 dipotong dari gaji", "PPh 21 DTP yang WAJIB dibayar tunai", "Setoran PPh 21 ke negara" (Rp 0), dan "Uang yang diterima pegawai". Mekanismenya (PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B; ringkasan di `references/dtp-pmk105.md`): PPh 21 tetap **dipotong**, lalu nilai yang sama **dibayar tunai** kembali ke pegawai bersama gaji, dan bagian DTP **tidak disetor** ke negara. Contoh: gaji Rp 6.000.000 − PPh dipotong Rp 45.000 + DTP tunai Rp 45.000 = **diterima Rp 6.000.000** (tanpa insentif Rp 5.955.000). **Jangan** menulis "gaji + DTP" (mis. Rp 6.045.000) — itu membuat pemberi kerja membayar lebih dari kantong sendiri. Sebut juga bahwa slip/bukti potong tetap mencantumkan PPh dipotong dan DTP.
+   - Pakai bahasa awam: sebut "KLU (kode jenis usaha di data pajak perusahaan)", "TER (tarif potongan bulanan dari tabel resmi)", "Masa Pajak Terakhir (Desember atau bulan karyawan berhenti)", "DTP (pajak yang dibayar pemerintah)" saat istilah itu pertama muncul.
 4. Bila Desember/bulan berhenti menghasilkan angka negatif: jelaskan bahwa itu kelebihan potong yang wajib dikembalikan ke karyawan paling lambat akhir bulan berikutnya (kecuali DTP).
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah dan tabel di `references/tabel-ter.md` (dibuat otomatis dari tabel resmi), tulis setiap langkah, dan beri tahu pengguna bahwa hasil dihitung manual.
 6. Periksa checklist sebelum mengirim.
@@ -75,6 +81,7 @@ Dasar: PP 58/2023, PMK 168/2023, UU HPP; berlaku per 2026-09-23. Rincian & sumbe
 ... (dari script)
 **Hitung ulang Desember/bulan berhenti** (rincian biaya jabatan, iuran, neto, PTKP, PKP, lapisan tarif)
 **Ringkasan setahun:** total bruto, total PPh 21, kelebihan yang dikembalikan (bila ada)
+(Bila DTP) **PPh 21 dipotong: Rp … · DTP dibayar tunai ke pegawai: Rp … (sama) · Setoran ke negara: Rp 0 · Uang diterima pegawai: Rp …** (dari script; = gaji bila tanpa potongan lain)
 Asumsi: <daftar default yang dipakai>
 ⚠️ <peringatan script>
 _Alat bantu hitung, bukan nasihat pajak. Dasar: PP 58/2023, PMK 168/2023, UU HPP, PMK 105/2025, berlaku per 23 September 2026. Kasus khusus: Kring Pajak 1500200 atau konsultan pajak._
@@ -100,6 +107,7 @@ PKP 112.800.000 − 58.500.000 = 54.300.000; PPh setahun 5% = Rp 2.715.000; diku
 - [ ] Bruto sudah termasuk premi JKK, JKM, BPJS Kesehatan bagian perusahaan bila ada; JHT/JP bagian perusahaan TIDAK dimasukkan.
 - [ ] Desember/bulan berhenti dihitung ulang dengan Pasal 17, bukan TER.
 - [ ] DTP hanya dipakai bila pengguna mengonfirmasi sektor/KLU.
+- [ ] Bila DTP: tertulis PPh 21 **dipotong**, DTP **dibayar tunai** dengan nilai sama, setoran ke negara Rp 0, dan "uang diterima pegawai" = gaji − PPh dipotong + DTP tunai − potongan lain (dikutip dari script), **bukan** gaji + DTP.
 - [ ] Asumsi, peringatan, pembulatan, dan disclaimer ada; format `Rp 1.250.000`.
 
 ## Batasan & penanganan error

@@ -1,0 +1,241 @@
+{
+ "sumber": "@actual-app/api 26.9.0 getBudgetMonth (budget dimuat ulang segar)",
+ "bulan": {
+  "2026-07": {
+   "toBudget": 325000000,
+   "totalBudgeted": -975000000,
+   "totalIncome": 1300000000,
+   "totalSpent": -667000000,
+   "lastMonthOverspent": 0,
+   "kategori": {
+    "Arsip Lama": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 0
+    },
+    "Iklan": {
+     "budgeted": 100000000,
+     "spent": -90000000,
+     "balance": 10000000
+    },
+    "Transportasi": {
+     "budgeted": 100000000,
+     "spent": -77000000,
+     "balance": 23000000
+    },
+    "Software & Langganan": {
+     "budgeted": 60000000,
+     "spent": -25000000,
+     "balance": 35000000
+    },
+    "Internet & Pulsa": {
+     "budgeted": 45000000,
+     "spent": -35000000,
+     "balance": 10000000
+    },
+    "Sewa Coworking": {
+     "budgeted": 150000000,
+     "spent": -150000000,
+     "balance": 0
+    },
+    "Belanja Rumah": {
+     "budgeted": 120000000,
+     "spent": -80000000,
+     "balance": 40000000
+    },
+    "Makan": {
+     "budgeted": 250000000,
+     "spent": -210000000,
+     "balance": 40000000
+    },
+    "Dana Darurat": {
+     "budgeted": 50000000,
+     "spent": 0,
+     "balance": 50000000
+    },
+    "Pajak": {
+     "budgeted": 100000000,
+     "spent": 0,
+     "balance": 100000000
+    }
+   }
+  },
+  "2026-08": {
+   "toBudget": 250000000,
+   "totalBudgeted": -975000000,
+   "totalIncome": 900000000,
+   "totalSpent": -927000000,
+   "lastMonthOverspent": 0,
+   "kategori": {
+    "Arsip Lama": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 0
+    },
+    "Iklan": {
+     "budgeted": 100000000,
+     "spent": 0,
+     "balance": 110000000
+    },
+    "Transportasi": {
+     "budgeted": 100000000,
+     "spent": -127000000,
+     "balance": -4000000
+    },
+    "Software & Langganan": {
+     "budgeted": 60000000,
+     "spent": -25000000,
+     "balance": 70000000
+    },
+    "Internet & Pulsa": {
+     "budgeted": 45000000,
+     "spent": -35000000,
+     "balance": 20000000
+    },
+    "Sewa Coworking": {
+     "budgeted": 150000000,
+     "spent": -150000000,
+     "balance": 0
+    },
+    "Belanja Rumah": {
+     "budgeted": 120000000,
+     "spent": -100000000,
+     "balance": 60000000
+    },
+    "Makan": {
+     "budgeted": 250000000,
+     "spent": -230000000,
+     "balance": 60000000
+    },
+    "Dana Darurat": {
+     "budgeted": 50000000,
+     "spent": 0,
+     "balance": 100000000
+    },
+    "Pajak": {
+     "budgeted": 100000000,
+     "spent": -260000000,
+     "balance": -60000000
+    }
+   }
+  },
+  "2026-09": {
+   "toBudget": 101000000,
+   "totalBudgeted": -985000000,
+   "totalIncome": 840000000,
+   "totalSpent": -1096000050,
+   "lastMonthOverspent": -4000000,
+   "kategori": {
+    "Arsip Lama": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 0
+    },
+    "Iklan": {
+     "budgeted": 100000000,
+     "spent": -320000000,
+     "balance": -110000000
+    },
+    "Transportasi": {
+     "budgeted": 110000000,
+     "spent": -54000000,
+     "balance": 56000000
+    },
+    "Software & Langganan": {
+     "budgeted": 60000000,
+     "spent": -129000000,
+     "balance": 1000000
+    },
+    "Internet & Pulsa": {
+     "budgeted": 45000000,
+     "spent": -38000000,
+     "balance": 27000000
+    },
+    "Sewa Coworking": {
+     "budgeted": 150000000,
+     "spent": -150000000,
+     "balance": 0
+    },
+    "Belanja Rumah": {
+     "budgeted": 120000000,
+     "spent": -165000050,
+     "balance": 14999950
+    },
+    "Makan": {
+     "budgeted": 250000000,
+     "spent": -180000000,
+     "balance": 130000000
+    },
+    "Dana Darurat": {
+     "budgeted": 50000000,
+     "spent": 0,
+     "balance": 150000000
+    },
+    "Pajak": {
+     "budgeted": 100000000,
+     "spent": -60000000,
+     "balance": -20000000
+    }
+   }
+  },
+  "2026-10": {
+   "toBudget": -9000000,
+   "totalBudgeted": 0,
+   "totalIncome": 0,
+   "totalSpent": 0,
+   "lastMonthOverspent": -110000000,
+   "kategori": {
+    "Arsip Lama": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 0
+    },
+    "Iklan": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 0
+    },
+    "Transportasi": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 56000000
+    },
+    "Software & Langganan": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 1000000
+    },
+    "Internet & Pulsa": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 27000000
+    },
+    "Sewa Coworking": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 0
+    },
+    "Belanja Rumah": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 14999950
+    },
+    "Makan": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 130000000
+    },
+    "Dana Darurat": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": 150000000
+    },
+    "Pajak": {
+     "budgeted": 0,
+     "spent": 0,
+     "balance": -20000000
+    }
+   }
+  }
+ }
+}

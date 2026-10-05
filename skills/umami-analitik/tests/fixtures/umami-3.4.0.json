@@ -1,0 +1,1755 @@
+{
+"rekaman": {
+"admin": {
+"GET /api/me": [
+200,
+{
+"apiKey": {
+"id": "df56c21c-9a6b-469b-8a0e-cacf878b8ce3",
+"name": "admin-key"
+},
+"authType": "api-key",
+"token": "***",
+"user": {
+"createdAt": "2026-09-29T09:24:18.485Z",
+"id": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"isAdmin": true,
+"role": "admin",
+"twoFactorRequired": false,
+"username": "admin"
+}
+}
+],
+"GET /api/me/teams?pageSize=100": [
+200,
+{
+"count": 1,
+"data": [
+{
+"_count": {
+"members": 2,
+"websites": 1
+},
+"accessCode": "***",
+"createdAt": "2026-09-29T09:25:29.159Z",
+"deletedAt": null,
+"id": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"logoUrl": null,
+"members": [
+{
+"createdAt": "2026-09-29T09:25:29.161Z",
+"id": "bb1c9a24-cf53-4efd-aaf6-deb56f0d7508",
+"role": "team-owner",
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:25:29.161Z",
+"user": {
+"id": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"username": "admin"
+},
+"userId": "41e2b680-648e-4b09-bcd7-3e2b10c06264"
+},
+{
+"createdAt": "2026-09-29T09:25:36.208Z",
+"id": "e58832bf-7ef1-48a9-8965-beca78f81c62",
+"role": "team-view-only",
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:25:36.208Z",
+"user": {
+"id": "45146caf-634b-420b-9501-bebbff1e6541",
+"username": "agen-baca"
+},
+"userId": "45146caf-634b-420b-9501-bebbff1e6541"
+}
+],
+"name": "Usaha Bu Sri",
+"twoFactorRequired": false,
+"updatedAt": "2026-09-29T09:25:29.159Z"
+}
+],
+"page": 1,
+"pageSize": 100
+}
+],
+"GET /api/teams/3321ec80-89a8-4b55-9ee5-4cd4a51253d8/websites?pageSize=200": [
+200,
+{
+"count": 1,
+"data": [
+{
+"createUser": {
+"id": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"username": "admin"
+},
+"createdAt": "2026-09-29T09:25:02.191Z",
+"createdBy": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"deletedAt": null,
+"domain": "keripikbusri.contoh.id",
+"id": "82bc6b1f-3021-4699-bd48-bd3acd2c86e9",
+"name": "Keripik Bu Sri (landing)",
+"recorderEnabled": false,
+"replayConfig": null,
+"resetAt": null,
+"shareId": null,
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:25:36.144Z",
+"userId": null
+}
+],
+"page": 1,
+"pageSize": 200
+}
+],
+"GET /api/websites/9a6ec2d7-668a-4e66-a2ea-85c6484bc2e2/stats?startAt=1785517200000&endAt=1788080399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 0,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+}
+],
+"GET /api/websites/9a6ec2d7-668a-4e66-a2ea-85c6484bc2e2/stats?startAt=1788109200000&endAt=1790672399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 1,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 1,
+"totaltime": 0,
+"visitors": 1,
+"visits": 1
+}
+],
+"GET /api/websites?includeTeams=true&pageSize=200": [
+200,
+{
+"count": 2,
+"data": [
+{
+"createdAt": "2026-09-29T09:25:02.191Z",
+"createdBy": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"deletedAt": null,
+"domain": "keripikbusri.contoh.id",
+"id": "82bc6b1f-3021-4699-bd48-bd3acd2c86e9",
+"name": "Keripik Bu Sri (landing)",
+"recorderEnabled": false,
+"replayConfig": null,
+"resetAt": null,
+"shareId": null,
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:25:36.144Z",
+"userId": null
+},
+{
+"createdAt": "2026-09-29T09:25:02.240Z",
+"createdBy": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"deletedAt": null,
+"domain": "batiklaras.contoh.id",
+"id": "9a6ec2d7-668a-4e66-a2ea-85c6484bc2e2",
+"name": "Toko Batik Laras",
+"recorderEnabled": false,
+"replayConfig": null,
+"resetAt": null,
+"shareId": null,
+"teamId": null,
+"updatedAt": "2026-09-29T09:25:02.240Z",
+"userId": "41e2b680-648e-4b09-bcd7-3e2b10c06264"
+}
+],
+"orderBy": "name",
+"page": 1,
+"pageSize": 200
+}
+]
+},
+"baca": {
+"GET /api/links?pageSize=200": [
+200,
+{
+"count": 0,
+"data": [],
+"page": 1,
+"pageSize": 200
+}
+],
+"GET /api/me": [
+200,
+{
+"apiKey": {
+"id": "ac07a766-ffb6-4307-95ff-cf1c0dfba6c8",
+"name": "openclaw-laptop"
+},
+"authType": "api-key",
+"token": "***",
+"user": {
+"createdAt": "2026-09-29T09:25:29.357Z",
+"id": "45146caf-634b-420b-9501-bebbff1e6541",
+"isAdmin": false,
+"role": "view-only",
+"twoFactorRequired": false,
+"username": "agen-baca"
+}
+}
+],
+"GET /api/me/teams?pageSize=100": [
+200,
+{
+"count": 1,
+"data": [
+{
+"_count": {
+"members": 2,
+"websites": 1
+},
+"accessCode": "***",
+"createdAt": "2026-09-29T09:25:29.159Z",
+"deletedAt": null,
+"id": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"logoUrl": null,
+"members": [
+{
+"createdAt": "2026-09-29T09:25:29.161Z",
+"id": "bb1c9a24-cf53-4efd-aaf6-deb56f0d7508",
+"role": "team-owner",
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:25:29.161Z",
+"user": {
+"id": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"username": "admin"
+},
+"userId": "41e2b680-648e-4b09-bcd7-3e2b10c06264"
+},
+{
+"createdAt": "2026-09-29T09:25:36.208Z",
+"id": "e58832bf-7ef1-48a9-8965-beca78f81c62",
+"role": "team-view-only",
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:25:36.208Z",
+"user": {
+"id": "45146caf-634b-420b-9501-bebbff1e6541",
+"username": "agen-baca"
+},
+"userId": "45146caf-634b-420b-9501-bebbff1e6541"
+}
+],
+"name": "Usaha Bu Sri",
+"twoFactorRequired": false,
+"updatedAt": "2026-09-29T09:25:29.159Z"
+}
+],
+"page": 1,
+"pageSize": 100
+}
+],
+"GET /api/teams/3321ec80-89a8-4b55-9ee5-4cd4a51253d8/links?pageSize=200": [
+200,
+{
+"count": 1,
+"data": [
+{
+"createdAt": "2026-09-29T09:39:51.120Z",
+"deletedAt": null,
+"id": "fcf5140b-5493-4c54-b5a3-d43f47c7d8fa",
+"name": "WA order (bio IG)",
+"slug": "wa-busri-bio",
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:39:51.120Z",
+"url": "https://wa.me/6281200000000?text=Halo%20Bu%20Sri",
+"userId": null
+}
+],
+"page": 1,
+"pageSize": 200
+}
+],
+"GET /api/teams/3321ec80-89a8-4b55-9ee5-4cd4a51253d8/websites?pageSize=200": [
+200,
+{
+"count": 1,
+"data": [
+{
+"createUser": {
+"id": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"username": "admin"
+},
+"createdAt": "2026-09-29T09:25:02.191Z",
+"createdBy": "41e2b680-648e-4b09-bcd7-3e2b10c06264",
+"deletedAt": null,
+"domain": "keripikbusri.contoh.id",
+"id": "82bc6b1f-3021-4699-bd48-bd3acd2c86e9",
+"name": "Keripik Bu Sri (landing)",
+"recorderEnabled": false,
+"replayConfig": null,
+"resetAt": null,
+"shareId": null,
+"teamId": "3321ec80-89a8-4b55-9ee5-4cd4a51253d8",
+"updatedAt": "2026-09-29T09:25:36.144Z",
+"userId": null
+}
+],
+"page": 1,
+"pageSize": 200
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/events?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta": [
+200,
+[
+{
+"dataType": 2,
+"eventName": "beli",
+"propertyName": "nilai",
+"total": 2
+},
+{
+"dataType": 1,
+"eventName": "beli",
+"propertyName": "produk",
+"total": 2
+},
+{
+"dataType": 1,
+"eventName": "klik-wa",
+"propertyName": "tombol",
+"total": 3
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/events?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta": [
+200,
+[
+{
+"dataType": 2,
+"eventName": "beli",
+"propertyName": "nilai",
+"total": 1
+},
+{
+"dataType": 1,
+"eventName": "beli",
+"propertyName": "produk",
+"total": 1
+},
+{
+"dataType": 1,
+"eventName": "klik-wa",
+"propertyName": "tombol",
+"total": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/values?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&event=beli&propertyName=nilai": [
+200,
+[
+{
+"total": 1,
+"value": "22000"
+},
+{
+"total": 1,
+"value": "25000"
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/values?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&event=beli&propertyName=produk": [
+200,
+[
+{
+"total": 1,
+"value": "Keripik Balado 250 g"
+},
+{
+"total": 1,
+"value": "Keripik Original 250 g"
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/values?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&event=klik-wa&propertyName=tombol": [
+200,
+[
+{
+"total": 2,
+"value": "pesan-balado"
+},
+{
+"total": 1,
+"value": "hero"
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/values?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&event=beli&propertyName=nilai": [
+200,
+[
+{
+"total": 1,
+"value": "50000"
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/values?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&event=beli&propertyName=produk": [
+200,
+[
+{
+"total": 1,
+"value": "Keripik Balado 250 g"
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/event-data/values?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&event=klik-wa&propertyName=tombol": [
+200,
+[
+{
+"total": 1,
+"value": "hero"
+},
+{
+"total": 1,
+"value": "pesan-balado"
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789318800000&endAt=1789923599999&timezone=Asia%2FJakarta&type=event": [
+200,
+[
+{
+"bounces": 1,
+"name": "klik-wa",
+"pageviews": "1",
+"totaltime": "0",
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790067599999&timezone=Asia%2FJakarta&type=event": [
+200,
+[
+{
+"bounces": 1,
+"name": "klik-wa",
+"pageviews": "1",
+"totaltime": "0",
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=channel": [
+200,
+[
+{
+"bounces": 3,
+"name": "organicSocial",
+"pageviews": "8",
+"totaltime": "70",
+"visitors": 6,
+"visits": 6
+},
+{
+"bounces": 0,
+"name": "direct",
+"pageviews": "9",
+"totaltime": "285",
+"visitors": 4,
+"visits": 4
+},
+{
+"bounces": 0,
+"name": "organicSearch",
+"pageviews": "6",
+"totaltime": "225",
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=city": [
+200,
+[
+{
+"bounces": 0,
+"country": "ID",
+"name": "Jakarta",
+"pageviews": "7",
+"totaltime": "205",
+"visitors": 2,
+"visits": 3
+},
+{
+"bounces": 1,
+"country": "ID",
+"name": "Surabaya",
+"pageviews": "2",
+"totaltime": "0",
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"country": "MY",
+"name": "Kuala Lumpur",
+"pageviews": "2",
+"totaltime": "25",
+"visitors": 1,
+"visits": 1
+},
+{
+"bounces": 0,
+"country": "ID",
+"name": "Makassar",
+"pageviews": "2",
+"totaltime": "35",
+"visitors": 1,
+"visits": 1
+},
+{
+"bounces": 1,
+"country": "ID",
+"name": "Medan",
+"pageviews": "1",
+"totaltime": "0",
+"visitors": 1,
+"visits": 1
+},
+{
+"bounces": 0,
+"country": "ID",
+"name": "Semarang",
+"pageviews": "3",
+"totaltime": "150",
+"visitors": 1,
+"visits": 1
+},
+{
+"bounces": 0,
+"country": "ID",
+"name": "Bandung",
+"pageviews": "2",
+"totaltime": "90",
+"visitors": 1,
+"visits": 1
+},
+{
+"bounces": 1,
+"country": "ID",
+"name": "Yogyakarta",
+"pageviews": "1",
+"totaltime": "0",
+"visitors": 1,
+"visits": 1
+},
+{
+"bounces": 0,
+"country": "ID",
+"name": "Denpasar",
+"pageviews": "3",
+"totaltime": "75",
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=country": [
+200,
+[
+{
+"bounces": 3,
+"name": "ID",
+"pageviews": "21",
+"totaltime": "555",
+"visitors": 10,
+"visits": 11
+},
+{
+"bounces": 0,
+"name": "MY",
+"pageviews": "2",
+"totaltime": "25",
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=device": [
+200,
+[
+{
+"bounces": 2,
+"name": "mobile",
+"pageviews": "17",
+"totaltime": "340",
+"visitors": 8,
+"visits": 9
+},
+{
+"bounces": 0,
+"name": "desktop",
+"pageviews": "5",
+"totaltime": "240",
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 1,
+"name": "tablet",
+"pageviews": "1",
+"totaltime": "0",
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=event": [
+200,
+[
+{
+"bounces": 3,
+"name": "klik-wa",
+"pageviews": "3",
+"totaltime": "0",
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 2,
+"name": "beli",
+"pageviews": "2",
+"totaltime": "0",
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=path": [
+200,
+[
+{
+"bounces": 0,
+"name": "/",
+"pageviews": "11",
+"totaltime": 0,
+"visitors": 10,
+"visits": 11
+},
+{
+"bounces": 0,
+"name": "/produk/keripik-balado",
+"pageviews": "5",
+"totaltime": 0,
+"visitors": 5,
+"visits": 5
+},
+{
+"bounces": 0,
+"name": "/cara-pesan",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "/produk/keripik-original",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "/terima-kasih",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=path&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "/",
+"pageviews": "11",
+"totaltime": 0,
+"visitors": 10,
+"visits": 11
+},
+{
+"bounces": 0,
+"name": "/produk/keripik-balado",
+"pageviews": "5",
+"totaltime": 0,
+"visitors": 5,
+"visits": 5
+},
+{
+"bounces": 0,
+"name": "/cara-pesan",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "/produk/keripik-original",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "/terima-kasih",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=path&limit=5": [
+200,
+[
+{
+"bounces": 0,
+"name": "/",
+"pageviews": "11",
+"totaltime": 0,
+"visitors": 10,
+"visits": 11
+},
+{
+"bounces": 0,
+"name": "/produk/keripik-balado",
+"pageviews": "5",
+"totaltime": 0,
+"visitors": 5,
+"visits": 5
+},
+{
+"bounces": 0,
+"name": "/cara-pesan",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "/produk/keripik-original",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "/terima-kasih",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=referrer": [
+200,
+[
+{
+"bounces": 0,
+"name": "l.instagram.com",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "google.com",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "tiktok.com",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "l.facebook.com",
+"pageviews": "1",
+"totaltime": 0,
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=referrer&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "l.instagram.com",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "google.com",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "tiktok.com",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "l.facebook.com",
+"pageviews": "1",
+"totaltime": 0,
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmCampaign": [
+200,
+[
+{
+"bounces": 0,
+"name": "promo-gajian-sep",
+"pageviews": "7",
+"totaltime": 0,
+"visitors": 7,
+"visits": 7
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmCampaign&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "promo-gajian-sep",
+"pageviews": "7",
+"totaltime": 0,
+"visitors": 7,
+"visits": 7
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmContent&limit=10": [
+200,
+[]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmMedium": [
+200,
+[
+{
+"bounces": 0,
+"name": "social",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "status",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "video",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmMedium&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "social",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "status",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "video",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmSource": [
+200,
+[
+{
+"bounces": 0,
+"name": "instagram",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "tiktok",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "whatsapp",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmSource&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "instagram",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "tiktok",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "whatsapp",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&type=event": [
+200,
+[
+{
+"bounces": 2,
+"name": "klik-wa",
+"pageviews": "2",
+"totaltime": "0",
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 1,
+"name": "beli",
+"pageviews": "1",
+"totaltime": "0",
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&type=utmCampaign&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "promo-gajian-sep",
+"pageviews": "4",
+"totaltime": 0,
+"visitors": 4,
+"visits": 4
+},
+{
+"bounces": 0,
+"name": "reseller-okt",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&type=utmContent&limit=10": [
+200,
+[]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&type=utmMedium&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "grup",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "video",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "social",
+"pageviews": "1",
+"totaltime": 0,
+"visitors": 1,
+"visits": 1
+},
+{
+"bounces": 0,
+"name": "status",
+"pageviews": "1",
+"totaltime": 0,
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics/expanded?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta&type=utmSource&limit=10": [
+200,
+[
+{
+"bounces": 0,
+"name": "whatsapp",
+"pageviews": "3",
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+},
+{
+"bounces": 0,
+"name": "tiktok",
+"pageviews": "2",
+"totaltime": 0,
+"visitors": 2,
+"visits": 2
+},
+{
+"bounces": 0,
+"name": "instagram",
+"pageviews": "1",
+"totaltime": 0,
+"visitors": 1,
+"visits": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=browser&limit=10": [
+200,
+[
+{
+"x": "chrome",
+"y": 9
+},
+{
+"x": "ios",
+"y": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=city&limit=10": [
+200,
+[
+{
+"country": "ID",
+"x": "Surabaya",
+"y": 2
+},
+{
+"country": "ID",
+"x": "Jakarta",
+"y": 2
+},
+{
+"country": "MY",
+"x": "Kuala Lumpur",
+"y": 1
+},
+{
+"country": "ID",
+"x": "Makassar",
+"y": 1
+},
+{
+"country": "ID",
+"x": "Medan",
+"y": 1
+},
+{
+"country": "ID",
+"x": "Semarang",
+"y": 1
+},
+{
+"country": "ID",
+"x": "Bandung",
+"y": 1
+},
+{
+"country": "ID",
+"x": "Yogyakarta",
+"y": 1
+},
+{
+"country": "ID",
+"x": "Denpasar",
+"y": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=city&limit=3": [
+200,
+[
+{
+"country": "ID",
+"x": "Surabaya",
+"y": 2
+},
+{
+"country": "ID",
+"x": "Jakarta",
+"y": 2
+},
+{
+"country": "ID",
+"x": "Denpasar",
+"y": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=country&limit=10": [
+200,
+[
+{
+"x": "ID",
+"y": 10
+},
+{
+"x": "MY",
+"y": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=device": [
+200,
+[
+{
+"x": "mobile",
+"y": 8
+},
+{
+"x": "desktop",
+"y": 2
+},
+{
+"x": "tablet",
+"y": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=device&limit=10": [
+200,
+[
+{
+"x": "mobile",
+"y": 8
+},
+{
+"x": "desktop",
+"y": 2
+},
+{
+"x": "tablet",
+"y": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=entry&limit=10": [
+200,
+[
+{
+"x": "/",
+"y": 10
+},
+{
+"x": "/produk/keripik-balado",
+"y": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=exit&limit=10": [
+200,
+[
+{
+"x": "/",
+"y": 4
+},
+{
+"x": "/produk/keripik-balado",
+"y": 3
+},
+{
+"x": "/cara-pesan",
+"y": 2
+},
+{
+"x": "/terima-kasih",
+"y": 2
+},
+{
+"x": "/produk/keripik-original",
+"y": 1
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=language&limit=10": [
+200,
+[
+{
+"x": "id",
+"y": 11
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=os&limit=10": [
+200,
+[
+{
+"x": "Android OS",
+"y": 7
+},
+{
+"x": "Windows 10",
+"y": 2
+},
+{
+"x": "iOS",
+"y": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmCampaign&limit=5": [
+200,
+[
+{
+"x": "promo-gajian-sep",
+"y": 7
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/metrics?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&type=utmSource&limit=5": [
+200,
+[
+{
+"x": "instagram",
+"y": 3
+},
+{
+"x": "tiktok",
+"y": 2
+},
+{
+"x": "whatsapp",
+"y": 2
+}
+]
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/pageviews?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta&unit=day": [
+200,
+{
+"pageviews": [
+{
+"x": "2026-09-21T00:00:00Z",
+"y": 5
+},
+{
+"x": "2026-09-22T00:00:00Z",
+"y": 3
+},
+{
+"x": "2026-09-23T00:00:00Z",
+"y": 2
+},
+{
+"x": "2026-09-24T00:00:00Z",
+"y": 1
+},
+{
+"x": "2026-09-25T00:00:00Z",
+"y": 2
+},
+{
+"x": "2026-09-26T00:00:00Z",
+"y": 3
+},
+{
+"x": "2026-09-27T00:00:00Z",
+"y": 7
+}
+],
+"sessions": [
+{
+"x": "2026-09-21T00:00:00Z",
+"y": 2
+},
+{
+"x": "2026-09-22T00:00:00Z",
+"y": 2
+},
+{
+"x": "2026-09-23T00:00:00Z",
+"y": 1
+},
+{
+"x": "2026-09-24T00:00:00Z",
+"y": 1
+},
+{
+"x": "2026-09-25T00:00:00Z",
+"y": 1
+},
+{
+"x": "2026-09-26T00:00:00Z",
+"y": 2
+},
+{
+"x": "2026-09-27T00:00:00Z",
+"y": 3
+}
+]
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1782838800000&endAt=1785517199999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 0,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1785517200000&endAt=1787993999999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 0,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1785517200000&endAt=1788080399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 0,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1785517200000&endAt=1788195599999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 0,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1788109200000&endAt=1790672399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 7,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 42,
+"totaltime": 960,
+"visitors": 16,
+"visits": 23
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1788195600000&endAt=1790672399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 7,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 42,
+"totaltime": 960,
+"visitors": 16,
+"visits": 23
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1789318800000&endAt=1789923599999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 2,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 6,
+"totaltime": 70,
+"visitors": 4,
+"visits": 4
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1789491600000&endAt=1790067599999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 2,
+"comparison": {
+"bounces": 0,
+"pageviews": 2,
+"totaltime": 40,
+"visitors": 1,
+"visits": 1
+},
+"pageviews": 9,
+"totaltime": 225,
+"visitors": 5,
+"visits": 5
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1789923600000&endAt=1790067599999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 0,
+"comparison": {
+"bounces": 1,
+"pageviews": 1,
+"totaltime": 0,
+"visitors": 1,
+"visits": 1
+},
+"pageviews": 5,
+"totaltime": 195,
+"visitors": 2,
+"visits": 2
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 3,
+"comparison": {
+"bounces": 2,
+"pageviews": 6,
+"totaltime": 70,
+"visitors": 4,
+"visits": 4
+},
+"pageviews": 23,
+"totaltime": 580,
+"visitors": 11,
+"visits": 12
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1790096400000&endAt=1790672399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 4,
+"comparison": {
+"bounces": 3,
+"pageviews": 12,
+"totaltime": 250,
+"visitors": 7,
+"visits": 7
+},
+"pageviews": 28,
+"totaltime": 670,
+"visitors": 14,
+"visits": 15
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1790442000000&endAt=1790528399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 1,
+"comparison": {
+"bounces": 0,
+"pageviews": 3,
+"totaltime": 90,
+"visitors": 2,
+"visits": 2
+},
+"pageviews": 7,
+"totaltime": 180,
+"visitors": 3,
+"visits": 3
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1790528400000&endAt=1790585999999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 1,
+"comparison": {
+"bounces": 1,
+"pageviews": 7,
+"totaltime": 180,
+"visitors": 3,
+"visits": 3
+},
+"pageviews": 3,
+"totaltime": 20,
+"visitors": 2,
+"visits": 2
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1790528400000&endAt=1790614799999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 1,
+"comparison": {
+"bounces": 1,
+"pageviews": 7,
+"totaltime": 180,
+"visitors": 3,
+"visits": 3
+},
+"pageviews": 8,
+"totaltime": 240,
+"visitors": 4,
+"visits": 4
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1790528400000&endAt=1790672399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 2,
+"comparison": {
+"bounces": 1,
+"pageviews": 10,
+"totaltime": 270,
+"visitors": 5,
+"visits": 5
+},
+"pageviews": 13,
+"totaltime": 310,
+"visitors": 7,
+"visits": 7
+}
+],
+"GET /api/websites/82bc6b1f-3021-4699-bd48-bd3acd2c86e9/stats?startAt=1790614800000&endAt=1790672399999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 1,
+"comparison": {
+"bounces": 1,
+"pageviews": 6,
+"totaltime": 220,
+"visitors": 3,
+"visits": 3
+},
+"pageviews": 5,
+"totaltime": 70,
+"visitors": 3,
+"visits": 3
+}
+],
+"GET /api/websites/9a6ec2d7-668a-4e66-a2ea-85c6484bc2e2/stats?startAt=1789923600000&endAt=1790528399999&timezone=Asia%2FJakarta": [
+401,
+{
+"error": {
+"code": "unauthorized",
+"message": "Unauthorized",
+"status": 401
+}
+}
+],
+"GET /api/websites/fcf5140b-5493-4c54-b5a3-d43f47c7d8fa/metrics?startAt=1790096400000&endAt=1790675999999&timezone=Asia%2FJakarta&type=referrer&limit=3": [
+200,
+[
+{
+"x": "l.instagram.com",
+"y": 3
+}
+]
+],
+"GET /api/websites/fcf5140b-5493-4c54-b5a3-d43f47c7d8fa/stats?startAt=1789491600000&endAt=1790071199999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 0,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+}
+],
+"GET /api/websites/fcf5140b-5493-4c54-b5a3-d43f47c7d8fa/stats?startAt=1790096400000&endAt=1790675999999&timezone=Asia%2FJakarta": [
+200,
+{
+"bounces": 3,
+"comparison": {
+"bounces": 0,
+"pageviews": 0,
+"totaltime": 0,
+"visitors": 0,
+"visits": 0
+},
+"pageviews": 3,
+"totaltime": 0,
+"visitors": 3,
+"visits": 3
+}
+],
+"GET /api/websites?includeTeams=true&pageSize=200": [
+200,
+{
+"count": 0,
+"data": [],
+"orderBy": "name",
+"page": 1,
+"pageSize": 200
+}
+]
+},
+"lain": {
+"GET /api/me": [
+401,
+{
+"error": {
+"code": "unauthorized",
+"message": "Unauthorized",
+"status": 401
+}
+}
+],
+"GET /api/websites?includeTeams=true&pageSize=200": [
+401,
+{
+"error": {
+"code": "unauthorized",
+"message": "Unauthorized",
+"status": 401
+}
+}
+]
+},
+"tanpa": {
+"GET /api/heartbeat": [
+200,
+{
+"ok": true
+}
+]
+}
+},
+"sumber": "Umami 3.4.0 (image resmi ghcr.io/umami-software/umami:3.4.0, PostgreSQL 15) di 127.0.0.1, data fiktif tests/isi_data_fiktif.py, direkam 2026-09-29"
+}

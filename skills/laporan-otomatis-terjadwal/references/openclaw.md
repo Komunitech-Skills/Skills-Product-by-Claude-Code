@@ -1,5 +1,7 @@
 # Perintah OpenClaw yang dipakai skill ini
 
+> **Kredensial, kanal & aksi (wajib):** JANGAN membaca token/secrets/kredensial dari environment, `openclaw.json`, `.env`, database/state atau log OpenClaw, dan jangan memanggil `secrets.*`/`config.get`. Cek kanal hanya dengan `openclaw channels status` (resmi; tidak menampilkan kredensial -- docs.openclaw.ai/cli/channels) atau tanya pemilik. Tidak ada kirim pesan (termasuk uji kirim) dan tidak ada pembuatan jadwal sebelum pengguna membalas "ya" atas ringkasan rencana; kanal belum siap atau perintah ditolak → beri panduan singkat dan berhenti, jangan dicoba-coba.
+
 Semua perintah di bawah **diverifikasi lewat `<perintah> --help`** di OpenClaw **2026.9.5
 (ec9c1a1)**. Perintah inti di §1-§3 (`automations add`/`show`/`run`/`disable`/`enable`/`edit`/
 `rm`/`list`) juga **benar-benar dijalankan** terhadap Gateway lokal uji 2026.9.5
@@ -128,8 +130,8 @@ yang bisa dipasang, BUKAN chat id -- jangan pakai itu untuk ini):
 2. Karena ini pesan pertama dari pengguna, OpenClaw meminta persetujuan "pairing" untuk DM itu
    (lihat dokumentasi resmi `channels/pairing`) -- pairing ini biasanya menampilkan/mencatat
    chat id pengirim di Control UI atau log Gateway.
-3. Kalau pengguna/agent bisa membaca Control UI (`Settings → Channels → Telegram`) atau log
-   Gateway, chat id itu yang tercatat di sana dipakai untuk `--to`.
+3. Minta **pengguna sendiri** melihat Control UI (`Settings → Channels → Telegram`) dan
+   menyebutkan chat id yang tercatat di sana untuk `--to` (agent tidak membuka log Gateway).
 4. Kalau tidak ada akses ke Control UI/log, arahkan pengguna ke bot pihak ketiga seperti
    `@userinfobot` di Telegram untuk melihat chat id mereka sendiri, lalu tempel angkanya ke sini.
 

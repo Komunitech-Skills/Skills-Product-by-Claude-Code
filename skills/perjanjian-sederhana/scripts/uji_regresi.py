@@ -112,6 +112,68 @@ def main():
         jalan(["terbilang", "5m"], kode=1)
         jalan(["sampai", "2026-10-01"], kode=1)
         jalan(["retainer", "--per-bulan", "1jt", "--bulan", "2", "--mulai", "2026-01-31"], kode=1)
+        # v1.0.4: tanggal tanda tangan tidak diisi otomatis; [isi: ...] terdeteksi sebagai isian kosong
+        d = jalan(["tanggal"])
+        cek("tanggal tanpa argumen -> [isi: tanggal], bukan hari ini",
+            d["tanggal"] is None and "[isi: tanggal]" in d["kalimat_pembuka"], d)
+        d = jalan(["tanggal", "2026-10-05"])
+        cek("tanggal diberikan -> Senin 5 Oktober 2026", d["hari"] == "Senin" and d["tanggal"] == "2026-10-05")
+        fi = os.path.join(tmp, "isi.md")
+        with open(fi, "w", encoding="utf-8") as f:
+            f.write("# PERJANJIAN SEWA\nPada hari ini, [isi: hari], tanggal [isi: tanggal] ...\n## Pasal 1\n")
+        d = jalan(["cek", fi])
+        cek("cek menandai [isi: tanggal] sebagai isian kosong", "[isi: tanggal]" in json.dumps(d, ensure_ascii=False), d)
+        # v1.0.5: konsistensi beban biaya (satu pihak per pos, tidak bertentangan antar pasal/asumsi)
+        dasar = ("# PERJANJIAN SEWA KIOS\n## Pasal 4\n### Hak dan Kewajiban PIHAK PERTAMA\n(2) PIHAK PERTAMA wajib:\n"
+                 "   a. menanggung perbaikan besar yang bukan akibat kesalahan PIHAK KEDUA;\n"
+                 "## Pasal 5\n### Hak dan Kewajiban PIHAK KEDUA\n(2) PIHAK KEDUA wajib:\n"
+                 "   b. membayar listrik, air, dan iuran pengelola pasar selama masa sewa;\n"
+                 "### Asumsi dari template\n")
+        kasus = {
+            "konflik": (dasar + "- PBB/iuran pengelola pasar ditanggung pemilik (Pasal 4).\n", True),
+            "konsisten": (dasar + "- Iuran pengelola pasar ditanggung penyewa (Pasal 5).\n", False),
+            "masing2": (dasar + "- Biaya keamanan ditanggung masing-masing PIHAK PERTAMA dan PIHAK KEDUA.\n", False),
+            "listrik_dua": (dasar + "(3) Biaya listrik dibayar oleh PIHAK PERTAMA.\n", True),
+        }
+        for nama, (isi, harap) in kasus.items():
+            fk = os.path.join(tmp, "beban_" + nama + ".md")
+            with open(fk, "w", encoding="utf-8") as fh:
+                fh.write(isi)
+            d = jalan(["cek", fk])
+            ada = any("bertentangan" in m for m in d["masalah"])
+            cek("beban biaya {}: konflik={}".format(nama, harap), ada == harap, d["masalah"])
+        d = jalan(["cek", os.path.join(tmp, "beban_konflik.md")])
+        cek("konflik menyebut iuran pasar", any("iuran/retribusi pasar" in m for m in d["masalah"]), d["masalah"])
+        cek("perbaikan besar ke PIHAK PERTAMA (bukan pihak yang disebut di anak kalimat)",
+            d["beban_biaya"].get("perbaikan besar") == ["PIHAK PERTAMA"], d["beban_biaya"])
+        d = jalan(["cek", os.path.join(TEMPLATES, "sewa-tempat.md")])
+        cek("template sewa-tempat konsisten", not any("bertentangan" in m for m in d["masalah"]) and
+            d["beban_biaya"].get("PBB") == ["PIHAK PERTAMA"] and d["beban_biaya"].get("listrik") == ["PIHAK KEDUA"],
+            d["beban_biaya"])
+        for n in sorted(os.listdir(TEMPLATES)):
+            d = jalan(["cek", os.path.join(TEMPLATES, n)])
+            cek("template tanpa konflik beban: " + n, not any("bertentangan" in m for m in d["masalah"]), d["masalah"])
+        # v1.0.6: pengosongan sepihak bukan default; tanpa peringatan -> harus diperbaiki, dengan peringatan -> info
+        kasus = {
+            "sepihak_polos": ("# SEWA KIOS\n## Pasal 7\n(3) PIHAK PERTAMA berhak mengunci kios dan mengeluarkan barang "
+                              "PIHAK KEDUA tanpa proses hukum.\n", "masalah"),
+            "sepihak_diminta": ("# SEWA KIOS\n## Pasal 7\n(3) PIHAK KEDUA menyetujui PIHAK PERTAMA mengunci Objek Sewa.\n"
+                                "> ⚠ TINJAU PENGACARA: risiko perbuatan melawan hukum.\n", "info"),
+            "aman": ("# SEWA KIOS\n## Pasal 7\n(4) PIHAK PERTAMA tidak akan mengunci, menyegel, atau mengambil alih "
+                     "Objek Sewa tanpa persetujuan PIHAK KEDUA atau putusan pengadilan.\n", None),
+        }
+        for nama, (isi, tempat) in kasus.items():
+            fk = os.path.join(tmp, nama + ".md")
+            with open(fk, "w", encoding="utf-8") as fh:
+                fh.write(isi)
+            d = jalan(["cek", fk])
+            di_m = any("sepihak" in m for m in d["masalah"])
+            di_i = any("sepihak" in m for m in d["info"])
+            cek("pengosongan " + nama, (di_m, di_i) == (tempat == "masalah", tempat == "info"), d)
+        for n in sorted(os.listdir(TEMPLATES)):
+            d = jalan(["cek", os.path.join(TEMPLATES, n)])
+            cek("template tanpa pengosongan sepihak default: " + n,
+                not any("sepihak" in m for m in d["masalah"] + d["info"]), d["masalah"] + d["info"])
         kosong = os.path.join(tmp, "kosong.md")
         open(kosong, "w").close()
         jalan(["cek", kosong], kode=1)

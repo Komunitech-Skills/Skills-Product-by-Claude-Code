@@ -70,3 +70,11 @@ Tidak perlu. Skill ini dirancang untuk bekerja langsung dari bahan yang kamu ber
 Bisa. Sebut saja "santai" atau "gaya startup" saat minta, atau agent akan mengikuti gaya
 bahan mentah yang kamu berikan. Defaultnya sopan-formal karena mayoritas kantor Indonesia
 lebih aman dengan nada itu, terutama untuk laporan ke atasan/pemilik dan klien.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: AI sempat memasukkan gaji dan THR per orang ke teks pengumuman grup dan menghitung THR sendiri. Kini pengumuman grup tidak pernah memuat nominal per orang (hanya tanggal bayar & dasar aturan); rincian per orang hanya lewat pesan pribadi/HR. Perhitungan THR diarahkan ke skill `hitung-thr` bila terpasang; bila tidak, AI menjelaskan nominal perlu dihitung terpisah.
+
+## Catatan revisi 1.0.4 (2026-10-02)
+- Aturan privasi pengumuman grup kini ditaruh paling atas dan **tetap berlaku walau skill lain ikut dipakai** (mis. `hitung-thr`, `gaji-umkm`): gaji/THR per orang tidak pernah masuk teks grup; rincian per orang dipisah di blok khusus pemilik/HR. (Temuan uji 2026-10-02: saat dipasang bersama `hitung-thr`, nominal per orang sempat masuk teks grup.)
+- AI tidak menawarkan menyambungkan WhatsApp atau kirim otomatis ke grup — hasilnya draf yang kamu tempel sendiri.
+- Tanggal libur/cuti bersama yang tidak kamu sebut: maksimal satu pencarian, selebihnya ditandai `[isi: ...]` agar balasan tidak macet.

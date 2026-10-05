@@ -24,6 +24,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 from decimal import Decimal
 
 import ter_core as tc
@@ -335,7 +336,8 @@ def hitung_karyawan(r, cfg):
         "dasar_jp": dasar_jp if ikut_jp else Decimal(0), "jkk_persen": jkk_p,
         "pendapatan": pendapatan, "potongan": potongan, "iuran": iur, "lembur": lembur_info,
         "total_pendapatan": total_pendapatan, "total_potongan": total_potongan, "take_home_pay": thp,
-        "iuran_perusahaan": iuran_perusahaan, "biaya_perusahaan": biaya, "pph": pph, "pph_info": pph_info,
+        "penghasilan": penghasilan, "iuran_perusahaan": iuran_perusahaan, "biaya_perusahaan": biaya,
+        "pph": pph, "pph_info": pph_info,
         "dtp": dtp, "pph_disetor": Decimal(0) if dtp else pph_dipotong, "peringatan": peringatan,
     }
 
@@ -419,13 +421,23 @@ def slip_md(h, cfg):
         o.append("_PPh 21: TER kategori {} {} × penghasilan bruto pajak {} (termasuk premi JKK, JKM, BPJS Kesehatan "
                  "perusahaan)._".format(p["kategori"], tc.format_persen(p["tarif"]), tc.format_rp(p["bruto"])))
     if h["dtp"]:
-        o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025) dibayarkan tunai; tidak mengurangi gaji._")
+        o.append(catatan_dtp(h))
     if h["lembur"]:
         setara = sum((x["jam_setara"] for x in h["lembur"]["rincian"]), Decimal(0))
         o.append("_Lembur: upah sejam = 1/173 × {} = {}; {} jam setara × upah sejam = {}._".format(
             tc.format_rp(h["lembur"]["dasar_upah"]), tc.format_rp(h["lembur"]["upah_sejam"], True),
             tc.format_persen(setara).rstrip("%"), tc.format_rp(h["pendapatan"]["Lembur"])))
     return "\n".join(o)
+
+
+def catatan_dtp(h):
+    """PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B: PPh 21 tetap dipotong, lalu nilai yang sama
+    dibayar tunai (DTP) -> gaji bersih tidak berkurang pajak; bagian DTP tidak disetor ke negara."""
+    return ("_PPh 21 Ditanggung Pemerintah (PMK 105/2025): PPh 21 {} tetap dipotong, lalu {} dibayar tunai kembali "
+            "bersama gaji (tidak kena pajak), jadi gaji bersih tidak berkurang karena pajak. Setoran PPh 21 ke negara "
+            "untuk karyawan ini: {}._".format(tc.format_rp(h["potongan"]["PPh 21"]),
+                                              tc.format_rp(h["pendapatan"]["PPh 21 DTP dibayar tunai"]),
+                                              tc.format_rp(h["pph_disetor"])))
 
 
 CSS = """body{font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;margin:0;padding:16px}
@@ -466,7 +478,7 @@ def slip_html(h, cfg):
                                                e(tc.format_persen(h["jkk_persen"])), rp(i["jkk"]), rp(i["jkm"]),
                                                rp(i["jp_perusahaan"])))
     if h["dtp"]:
-        b.append('<p class="kecil">PPh 21 Ditanggung Pemerintah (PMK 105/2025) dibayarkan tunai.</p>')
+        b.append('<p class="kecil">{}</p>'.format(e(catatan_dtp(h).strip("_"))))
     b.append('<table class="info" style="margin-top:24px"><tr><td>Diterima oleh,<br><br><br>{}</td>'
              '<td class="n">Disetujui oleh,<br><br><br>________________</td></tr></table>'.format(e(h["nama"])))
     b.append('<p class="kecil">{}</p></div>'.format(e(DISCLAIMER)))
@@ -493,7 +505,7 @@ def baris_rekap(h):
 
 def total_rekap(hasil):
     t = {}
-    for k in ("total_pendapatan", "take_home_pay", "biaya_perusahaan", "pph_disetor", "iuran_perusahaan"):
+    for k in ("total_pendapatan", "take_home_pay", "biaya_perusahaan", "pph_disetor", "iuran_perusahaan", "penghasilan"):
         t[k] = sum((h[k] for h in hasil), Decimal(0))
     t["iuran_bpjs_kes"] = sum((h["iuran"]["kes_perusahaan"] + h["iuran"]["kes_karyawan"] for h in hasil), Decimal(0))
     t["iuran_bpjs_tk"] = sum((h["iuran"][k] for h in hasil for k in ("jht_perusahaan", "jht_karyawan", "jkk", "jkm",
@@ -502,7 +514,28 @@ def total_rekap(hasil):
     return t
 
 
+def peringatan_folder_sementara(path):
+    """Beri PERINGATAN (stderr) bila path keluaran ada di folder sementara sistem. Tidak memblokir."""
+    try:
+        target = os.path.realpath(path)
+        akar = {tempfile.gettempdir(), "/tmp", "/var/tmp"}
+        for k in ("TEMP", "TMP", "TMPDIR"):
+            if os.environ.get(k):
+                akar.add(os.environ[k])
+        for a in akar:
+            a = os.path.realpath(a)
+            if target == a or target.startswith(a.rstrip(os.sep) + os.sep):
+                print("PERINGATAN: file keluaran ditulis di folder sementara ({}). Data gaji bersifat pribadi; "
+                      "folder sementara bisa dibaca pengguna lain dan terhapus otomatis. Simpan di folder kerja "
+                      "yang disepakati.".format(target), file=sys.stderr)
+                return True
+    except (OSError, ValueError):
+        pass
+    return False
+
+
 def tulis_output(hasil, cfg, folder):
+    peringatan_folder_sementara(folder)
     os.makedirs(folder, exist_ok=True)
     kode = "{}-{:02d}".format(cfg["tahun"], cfg["bulan"])
     md_path = os.path.join(folder, "slip-gaji-{}.md".format(kode))
@@ -525,6 +558,19 @@ def tulis_output(hasil, cfg, folder):
     return {"markdown": md_path, "html": html_path, "csv": csv_path}
 
 
+def baris_biaya_perusahaan(total):
+    """Satu baris siap salin: total biaya gaji perusahaan beserta rumusnya (dihitung script, bukan di kepala).
+
+    Biaya perusahaan = penghasilan kotor (gaji pokok + tunjangan + lembur + bonus) + iuran BPJS porsi perusahaan
+    (BPJS Kes 4% + JHT 3,7% + JKK + JKM 0,3% + JP 2%). Iuran porsi karyawan & PPh 21 TIDAK ditambahkan lagi karena
+    sudah termasuk di dalam penghasilan kotor (dipotong dari gaji).
+    """
+    return ("- Total biaya gaji perusahaan = penghasilan kotor {} + iuran BPJS porsi perusahaan {} = **{}** "
+            "(iuran porsi karyawan & PPh 21 tidak ditambah lagi — sudah termasuk di penghasilan kotor)").format(
+        tc.format_rp(total["penghasilan"]), tc.format_rp(total["iuran_perusahaan"]),
+        tc.format_rp(total["biaya_perusahaan"]))
+
+
 def ringkasan_teks(hasil, cfg, file, total):
     o = ["**Rekap payroll {} — {}** ({} karyawan)".format(nama_periode(cfg), cfg["perusahaan"] or "-", len(hasil)), "",
          "| Nama | Total pendapatan | Potongan | PPh 21 | Take home pay | Biaya perusahaan |",
@@ -537,6 +583,7 @@ def ringkasan_teks(hasil, cfg, file, total):
     o += ["| **Total** | **{}** | | | **{}** | **{}** |".format(
         tc.format_rp(total["total_pendapatan"]), tc.format_rp(total["take_home_pay"]),
         tc.format_rp(total["biaya_perusahaan"])), "",
+        baris_biaya_perusahaan(total),
         "- Setor BPJS Kesehatan (4% + 1%): {}".format(tc.format_rp(total["iuran_bpjs_kes"])),
         "- Setor BPJS Ketenagakerjaan (JHT, JKK, JKM, JP): {}".format(tc.format_rp(total["iuran_bpjs_tk"])),
         "- Setor PPh 21 (tanpa DTP): {}".format(tc.format_rp(total["pph_disetor"]))]

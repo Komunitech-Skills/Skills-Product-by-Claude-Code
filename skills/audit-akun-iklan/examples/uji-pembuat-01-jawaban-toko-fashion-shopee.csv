@@ -1,0 +1,15 @@
+id,status,catatan
+S01,gagal,Hanya lihat ringkasan toko di aplikasi
+S02,gagal,Belum pernah hitung; gamis Rp149.000 modal Rp78.000
+S03,sebagian,2 dari 6 produk diiklankan stoknya tinggal <1 minggu
+S04,lulus,
+S05,sebagian,Ada kata kunci "baju wanita" terlalu umum
+S06,gagal,"Target ROAS 2, padahal ROAS impas 2,92 (biaya Shopee 12% + kemas Rp2.000)"
+S07,gagal,Anggaran Rp50rb/hari habis jam 14.00
+S08,tidak_tahu,
+S09,lulus,
+S10,sebagian,Judul diawali nama toko
+S11,lulus,Rating 4.8
+S12,sebagian,Tabel ukuran belum ada
+S13,lulus,
+S14,gagal,"Kata kunci ""gamis murah"" habis Rp212rb, 0 pesanan"

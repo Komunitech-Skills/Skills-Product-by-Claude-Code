@@ -65,3 +65,6 @@ butuh file PowerPoint yang bisa diedit di Microsoft Office, gunakan alat pembuat
 Bisa. Cukup sebutkan presentasi ini untuk keperluan apa (misalnya "pitch investor" atau
 "pengajuan KUR"), nanti kerangka slide dan contoh isinya dibuatkan otomatis — bagian
 yang perlu kamu lengkapi sendiri (seperti data usaha) akan ditandai jelas.
+
+## Catatan revisi 1.1.5 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: AI sempat menulis klaim di slide yang tidak pernah diberikan pengguna ("pelanggan bertambah tiap tahun", "selesai 1–2 hari"). Kini klaim kinerja/kecepatan/tren hanya dari fakta pengguna; selain itu ditandai `[isi: ...]` untuk dilengkapi.

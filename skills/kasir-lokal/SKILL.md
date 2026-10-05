@@ -1,9 +1,11 @@
 ---
 name: kasir-lokal
-description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite lokal, tanpa langganan/internet), dioperasikan lewat chat: catat penjualan dari kalimat biasa, diskon item/nota, bayar tunai/QRIS/transfer (hanya dicatat), kembalian, retur/void beralasan, struk 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan ke Telegram + CSV, opsi PPN 12% DPP 11/12 atau PBJT resto/kafe. Gunakan untuk "catat penjualan", "cetak struk", "tutup kasir", "rekap kasir", cashier, point of sale, receipt.
+description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite lokal, tanpa langganan/internet), dioperasikan lewat chat: catat penjualan dari kalimat biasa, diskon item/nota, bayar tunai/QRIS/transfer (hanya dicatat), kembalian, retur/void beralasan, struk 58/80 mm, buka/tutup kasir + selisih kas, rekap harian/bulanan ke Telegram + CSV, rekap dari daftar nota yang ditempel di chat (nota batal dikecualikan, ringkasan siap tempel untuk grup karyawan tanpa data pelanggan), opsi PPN 12% DPP 11/12 atau PBJT resto/kafe. Gunakan untuk "catat penjualan", "cetak struk", "tutup kasir", "rekap kasir", "rekap nota hari ini", "laporan harian buat grup karyawan", cashier, point of sale, receipt.
 ---
 
 # Kasir Lokal (POS satu outlet)
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua transaksi ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/kasir.py`. Hasil: nota bernomor urut, struk siap cetak, uang laci tercocokkan, rekap harian siap kirim, dan omzet bulanan siap untuk pajak.
@@ -15,12 +17,13 @@ Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua tr
 - "Batalkan nota tadi, salah input" (void), "pembeli balikin 1 es teh" (retur)
 - "Rekap hari ini / bulan September", "produk paling laku", "jam paling ramai", "omzet setahun untuk pajak"
 - "Kirim rekap kasir ke Telegram saya tiap malam" (OpenClaw)
+- "Ini nota hari ini (ditempel), tolong rekap + cocokkan laci + bikinin laporan buat grup karyawan" → bagian **H** (tanpa database)
 
 ## Kapan TIDAK digunakan
 - Menerima/memproses pembayaran (membuat QRIS dinamis, menarik kartu di EDC, cek uang masuk otomatis) → tidak bisa. Kasir hanya **mencatat** metode bayar; pembayaran tetap lewat QRIS statis/EDC/bank milik toko.
 - Banyak outlet/cabang, banyak kasir di perangkat berbeda secara bersamaan, atau aplikasi di HP kasir → bukan fitur (satu database = satu outlet di satu komputer). Alternatif yang boleh ditawarkan (jujur, bukan sinkron otomatis): **satu database per cabang** (`--db` berbeda di komputer tiap cabang), lalu tiap cabang `ekspor --format penjualan`, file CSV digabung manual dan dianalisis dengan `rekap-penjualan-csv`.
 - Penjualan marketplace (Shopee/TikTok) → `buku-stok`. Analisis file penjualan dari aplikasi lain → `rekap-penjualan-csv`.
-- Bon/utang pelanggan → `tagih-piutang` / `buat-invoice` (kasir hanya mencatat yang sudah dibayar).
+- Bon/utang pelanggan (belum dibayar) → **catat di `buku-piutang`**, bukan di sini (kasir hanya mencatat yang sudah dibayar tunai/QRIS/transfer). Kalau `buku-piutang` belum terpasang, boleh pakai cara lama: buat tagihannya dengan `buat-invoice`. Sudah punya catatan piutangnya dan mau bikin pesan/surat penagihan → `tagih-piutang` (skill itu menyusun pesan tagihan, bukan mencatat siapa berutang berapa).
 - Faktur pajak resmi → dibuat di Coretax. Hitung PPh final → `pph-final-umkm`. Laporan laba rugi → `laporan-keuangan-emkm`.
 
 ## Aturan keamanan data (WAJIB)
@@ -56,6 +59,8 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai ("pakai kasir untuk toko saya")
 1. `info --json`. Jika database belum ada → satu pesan: (1) nama toko, alamat, telepon, dan kota (WIB/WITA/WIT) untuk struk; (2) kirim daftar produk (file atau ketik); (3) jenis usaha & pajak: **restoran/kafe/warung makan dengan tempat makan atau katering** → sudah terdaftar pajak restoran/PBJT di Bapenda? berapa tarif di Perda/SKPD Anda, harga menu sudah termasuk pajak atau belum, ada service charge? — **toko lain** → sudah PKP (memungut PPN)? harga sudah termasuk PPN? (4) mau stok dipotong otomatis? Sudah pakai `buku-stok`? (5) printer struk 58 atau 80 mm?
    - Makanan/minuman objek PBJT **bukan objek PPN**: jangan memakai mode PPN untuk "pajak resto 10%". Tarif PBJT **wajib dari pengguna** (Perda/SKPD); jangan mengarang atau mengasumsikan 10%. Belum terdaftar/omzet di bawah batas Perda → mode `tanpa`, sarankan tanya Bapenda.
@@ -68,7 +73,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - Diskon nota: segmen `diskon 10%` / `diskon 5rb`. Bayar: `bayar tunai 100rb`, `bayar qris`, `bayar pas`, `bayar qris 50rb, tunai 50rb`.
    - Alternatif terstruktur: `--item "2 KSGA" --item "1 RB" --diskon 10% --bayar tunai=100rb`. Catatan: `--catatan "meja 4"`, kasir: `--kasir Rina`.
 2. Tampilkan pratinjau (format di bawah). Setuju → perintah sama + `--ya` (tambah `--struk 58` bila pengguna mau struk langsung).
-3. Script **menolak** dan kamu sampaikan dengan sopan: produk tak dikenal/ambigu (beri saran), jumlah pecahan untuk satuan non-timbang (mis. 1,5 cup), harga 0, diskon lebih besar dari harga, **pembayaran kurang** (sebut kurangnya), non-tunai melebihi total (kembalian hanya dari tunai), bon/utang.
+3. Script **menolak** dan kamu sampaikan dengan sopan: produk tak dikenal/ambigu (beri saran), jumlah pecahan untuk satuan non-timbang (mis. 1,5 cup), harga 0, diskon lebih besar dari harga, **pembayaran kurang** (sebut kurangnya), non-tunai melebihi total (kembalian hanya dari tunai), bon/utang. Untuk bon/utang: jelaskan bahwa kasir hanya mencatat yang sudah dibayar, lalu tawarkan mencatatnya di skill `buku-piutang` (kalau belum terpasang, boleh dibuatkan tagihan dengan `buat-invoice` sebagai cara lama).
 4. Transaksi terlewat: `--waktu "2026-09-24 10:15"`.
 
 ### C. Struk
@@ -91,6 +96,17 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### G. Backup
 Otomatis saat impor produk & tutup kasir (folder `backup-kasir/`). Manual: `backup`; daftar: `backup --daftar`; pulihkan: `restore --dari <file>` (pratinjau → `--ya`).
+
+### H. Rekap dari nota yang DITEMPEL di chat (tanpa database)
+Untuk pemilik yang mengetik/menempel daftar nota (belum memakai database kasir). **Jangan menghitung porsi, jumlah nota, atau rupiah sendiri** — pakai script ini:
+1. Simpan bagian nota saja (bukan stok/resep) ke file di folder kerja (mis. `nota-2026-10-03.txt`), satu nota per baris atau blok "Nota 001" + baris item sampai baris kosong. Boleh juga CSV (kolom nota, menu, qty, harga/subtotal, bayar, status).
+2. `python3 <folder-skill-ini>/scripts/rekap_nota.py nota-2026-10-03.txt --tanggal "Sabtu, 3 Oktober 2026" [--kas-awal 300rb --kas-fisik 441rb] [--kas-keluar 20rb] --json`
+   - Nota bertanda BATAL/void/dibatalkan **dikecualikan** dan didaftar di `nota_batal`; kata "batal" di nota pengganti ("pengganti nota 011 yang batal") tidak membuat nota itu batal. Koreksi: `--batal 011` / `--bukan-batal 012`.
+   - Per menu: **porsi** (jumlah qty) dan **jumlah nota** dihitung terpisah — "terlaris" memakai porsi, jangan menulis jumlah nota sebagai "x".
+   - Harga: `@18rb` = harga satuan; angka lain (`= 36.000`, `36rb`) = jumlah baris. Bon/utang dihitung di omzet tercatat, **tidak** di uang masuk.
+3. Tunjukkan `teks` (untuk pemilik) dan semua `perlu_dicek`/`peringatan` (cara bayar tidak disebut, harga per porsi beda antar nota, nomor nota dobel, item tak terbaca). `diabaikan` = potongan teks yang bukan item; sebutkan bila ada yang mungkin item.
+4. **Teks untuk grup karyawan = `teks_grup` ("RINGKASAN SIAP TEMPEL untuk grup") disalin apa adanya.** Isinya agregat: tanpa nama/nomor pelanggan, tanpa daftar bon per nama, tanpa gaji per orang. Boleh menambah kalimat pembuka/penutup atau info non-angka (stok perlu belanja, menu baru) **tanpa** nama/utang pelanggan; jangan menulis ulang angkanya. `--grup-tanpa-rupiah` bila pemilik tidak mau omzet dibagikan.
+5. Ini draf: pemilik yang mengirim ke grup. Jangan menawarkan kirim otomatis/broadcast. Bon per nama → tawarkan dicatat di `buku-piutang` (untuk pemilik saja).
 
 ## Format output ke pengguna
 **Konfirmasi transaksi** (dari `teks` pratinjau):
@@ -144,6 +160,7 @@ Produk terlaris (penjualan bersih):
 - [ ] Tidak ada void/retur yang tujuannya mengecilkan omzet atau pajak
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan mesin EDC/QRIS dinamis, bukan akuntansi penuh, bukan multi-outlet. Satu database dipakai satu komputer; jangan simpan di folder sinkron (Google Drive/Dropbox) yang dibuka dua komputer sekaligus.
 - Database terkunci (jadwal OpenClaw sedang membaca) → script menunggu 15 detik lalu memberi pesan jelas; ulangi perintah yang sama.
 - File CSV dari Excel (pemisah `;`, BOM, Windows-1252) dibaca otomatis; `.xlsx` diminta disimpan sebagai CSV. CSV hasil ekspor aman dari formula injection (teks diawali `=`,`+`,`@`, atau `-` yang bukan angka, diberi tanda `'`; angka minus seperti `-2,5` tetap angka).

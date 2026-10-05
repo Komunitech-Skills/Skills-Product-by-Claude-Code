@@ -1,0 +1,36 @@
+{
+  "keterangan": "Salinan PERSIS (tidak diubah) script hitung dari skill Komunitech lain. gaji.py memeriksa sha256 sebelum menjalankannya; tests/uji_regresi.py mencocokkannya dengan file asli di repo.",
+  "tanggal_aturan": "2026-09-23",
+  "file": {
+    "payroll.py": {
+      "skill_sumber": "slip-gaji-bpjs",
+      "path_sumber": "scripts/payroll.py",
+      "versi_skill_sumber": "1.0.6",
+      "sha256": "3f4a9d7b72a29334f5203d22104ef506b29e95e1a2e8a6558c1bcc5cdf23a0e4"
+    },
+    "pph21.py": {
+      "skill_sumber": "pph21-ter",
+      "path_sumber": "scripts/pph21.py",
+      "versi_skill_sumber": "1.0.5",
+      "sha256": "2e5d98d6da7e0f5474b1f9a86353a44654b38d7f332c74fc3a0cb86b9d088ff7"
+    },
+    "thr.py": {
+      "skill_sumber": "hitung-thr",
+      "path_sumber": "scripts/thr.py",
+      "versi_skill_sumber": "1.0.9",
+      "sha256": "991d6ca1254b2cdd58b62d3db59764e7f8b16a69c85eada2c2b4046d26fb2aae"
+    },
+    "ter_core.py": {
+      "skill_sumber": "slip-gaji-bpjs",
+      "path_sumber": "scripts/ter_core.py",
+      "versi_skill_sumber": "1.0.1",
+      "sha256": "aeb76bd270210d707ae1d5c1a6f5e7c3d83d266050c599fc8a3afaa429cd2620"
+    },
+    "ter_tabel.json": {
+      "skill_sumber": "slip-gaji-bpjs",
+      "path_sumber": "scripts/ter_tabel.json",
+      "versi_skill_sumber": "1.0.1",
+      "sha256": "26edfe89bda74169a5280317da194cec3194e8c48c661a8e6860ff8b48d5da72"
+    }
+  }
+}

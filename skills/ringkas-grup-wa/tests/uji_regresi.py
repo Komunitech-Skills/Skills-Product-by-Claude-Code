@@ -611,5 +611,40 @@ class CLIIntegrasi(unittest.TestCase):
         self.assertIn("Error", hasil.stderr)
 
 
+class TenggatLewat(unittest.TestCase):
+    """v1.0.4 (uji OpenClaw 2026-10-01): tenggat yang sudah lewat dibanding tanggal acuan ditandai."""
+
+    def test_deteksi_tenggat_berbagai_bentuk(self):
+        from datetime import date
+        tp = date(2026, 9, 25)  # Jumat
+        self.assertEqual(p.deteksi_tenggat("teknisi datang Senin 29/9", tp)[0], date(2026, 9, 29))
+        self.assertEqual(p.deteksi_tenggat("rapat 5 Okt ya", tp)[0], date(2026, 10, 5))
+        self.assertEqual(p.deteksi_tenggat("kirim besok pagi", tp)[0], date(2026, 9, 26))
+        self.assertEqual(p.deteksi_tenggat("paling lambat selasa", tp), (date(2026, 9, 29), "selasa", False))
+        self.assertEqual(p.deteksi_tenggat("bayar 2/1", date(2026, 12, 28))[0], date(2027, 1, 2))
+        self.assertIsNone(p.deteksi_tenggat("jam 17.05 kita makan", tp))
+
+    def test_kandidat_lewat_tenggat_cli(self):
+        import subprocess
+        teks = ("25/09/26, 09.00 - Rina: Teknisi baru bisa datang Senin 29/9 pak\n"
+                "26/09/26, 10.00 - Hendra: Rina minta penawaran palet hari ini ya\n"
+                "26/09/26, 11.00 - Rina: rapat evaluasi 5 Okt ya\n")
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "chat.txt"
+            f.write_text(teks, encoding="utf-8")
+            out = subprocess.run([sys.executable, str(FOLDER_SKILL / "scripts" / "parse_ekspor_wa.py"), str(f),
+                                  "--sekarang", "2026-10-01T09:00", "--indent", "0"],
+                                 capture_output=True, text=True, check=True).stdout
+        data = json.loads(out)
+        k = {x["teks"][:10]: x for x in data["kandidat_perlu_perhatian"]}
+        self.assertEqual(data["tanggal_acuan"], "2026-10-01")
+        self.assertEqual(data["jumlah_lewat_tenggat"], 2)
+        self.assertTrue(k["Teknisi ba"]["lewat_tenggat"])
+        self.assertIn("LEWAT TENGGAT (29/09/2026, 2 hari lalu)", k["Teknisi ba"]["label_tenggat"])
+        self.assertTrue(k["Rina minta"]["lewat_tenggat"])
+        self.assertFalse(k["rapat eval"]["lewat_tenggat"])
+        self.assertTrue(any("Chat terakhir 26/09/2026" in c for c in data["catatan"]))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

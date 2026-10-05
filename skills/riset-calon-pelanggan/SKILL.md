@@ -1,9 +1,11 @@
 ---
 name: riset-calon-pelanggan
-description: Membantu UMKM/B2B menentukan profil pelanggan ideal (ICP), menyusun daftar calon pelanggan dari sumber publik & sah (situs perusahaan, Google Maps, direktori Kadin/asosiasi, marketplace B2B, LinkedIn — tanpa scraping login/beli database), menghitung skor kualifikasi prospek dari CSV (cocok ICP, kebutuhan, kemampuan bayar, akses PIC) lewat script, dan menyusun pesan pembuka personal WA/email/LinkedIn yang patuh UU PDP. Gunakan saat pengguna minta cari calon pelanggan, lead generation, ideal customer profile, daftar prospek B2B, atau qualify leads. Untuk prospek yang SUDAH dihubungi → follow-up-prospek; untuk menyusun penawaran resmi → proposal-kerjasama / surat-penawaran-harga.
+description: Membantu UMKM/B2B menentukan profil pelanggan ideal (ICP), menyusun daftar calon pelanggan dari sumber publik & sah (situs perusahaan, Google Maps, direktori Kadin/asosiasi, marketplace B2B, LinkedIn — tanpa scraping login/beli database), menghitung skor kualifikasi prospek dari CSV (cocok ICP, kebutuhan, kemampuan bayar, akses PIC) lewat script, dan menyiapkan draf pesan pembuka SINGKAT per prospek yang patuh UU PDP (untuk pesan pertama lengkap 3 varian + cek otomatis → pesan-prospek-wa). Gunakan saat pengguna minta cari calon pelanggan, lead generation, ideal customer profile, daftar prospek B2B, atau qualify leads. Untuk prospek yang SUDAH dihubungi → follow-up-prospek; untuk menyusun penawaran resmi → proposal-kerjasama / surat-penawaran-harga.
 ---
 
 # Riset Calon Pelanggan (ICP & Prospecting)
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Membantu pemilik usaha/tim sales menemukan calon pelanggan yang tepat: menentukan profil pelanggan ideal (ICP), menyusun daftar calon pelanggan dari sumber publik yang sah, mengurutkan prospek mana yang paling layak dihubungi dulu (skor kualifikasi lewat script), dan menyiapkan pesan pembuka yang sopan serta patuh UU PDP.
@@ -12,10 +14,11 @@ Membantu pemilik usaha/tim sales menemukan calon pelanggan yang tepat: menentuka
 - "Bantu saya cari calon pelanggan untuk jasa laundry kiloan di area Bandung"
 - "Siapa target pasar ideal untuk software kasir buat resto?"
 - "Saya punya daftar 30 perusahaan di CSV, mana yang paling prioritas dihubungi?"
-- "Bikinkan pesan pembuka WA buat kenalan ke calon klien baru, sopan dan nggak spam"
+- "Cari 20 kafe di Bekasi yang cocok jadi reseller kopi saya, lalu kasih draf sapaan singkat per kafe"
 - "Bantu susun ICP untuk produk kemasan makanan ramah lingkungan"
 
 ## Kapan TIDAK digunakan
+- Pengguna sudah punya SATU calon pelanggan yang jelas dan hanya minta pesan pertamanya dibuatkan/diperiksa ("bikinkan pesan pembuka WA ke Bu Rina dari pameran kemarin") → `pesan-prospek-wa` (3 varian, cek spam/jam kirim/panjang lewat script, tautan wa.me). Batas cakupan: skill INI untuk MENCARI & MENYARING calon pelanggan; draf pesan pembuka di sini hanya singkat (2–3 kalimat per prospek). Jika `pesan-prospek-wa` tidak terpasang, tetap buatkan satu draf singkat dan sebutkan bahwa pesan bisa diperdalam. **Jangan menyebut cara memasang skill lain** (mis. "install dari ClawHub" — keliru, itu skill Komunitech): sebut nama skill Komunitech terkait saja, dan hanya bila sudah terpasang.
 - Prospek yang **sudah** dihubungi dan sedang ditindaklanjuti (belum balas, minta waktu, dll.) → `follow-up-prospek`.
 - Menyusun proposal kerja sama resmi setelah prospek tertarik → `proposal-kerjasama`.
 - Menyusun surat penawaran harga formal → `surat-penawaran-harga`.
@@ -37,6 +40,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Susun atau konfirmasi ICP (Ideal Customer Profile).** Bantu pengguna menjawab: siapa yang paling diuntungkan produk/jasa ini, seberapa besar usahanya (omzet/jumlah karyawan/skala), di mana lokasinya, masalah apa yang mereka punya, siapa pengambil keputusan (owner/manajer/divisi apa), dan berapa kira-kira kemampuan bayar mereka. Tulis ICP dalam 1 paragraf ringkas + daftar ciri (bullet).
 
 2. **Arahkan sumber pencarian yang publik & sah** (lihat `references/sumber-pencarian.md` untuk detail per kategori):
@@ -53,7 +58,7 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 
 5. **Urutkan hasil**: kategori **Panas** (segera hubungi), **Hangat** (follow lanjutan, isi data dulu), **Dingin** (prioritas rendah/lewati dulu).
 
-6. **Susun pesan pembuka personal** untuk prospek kategori Panas/Hangat: sebutkan alasan menghubungi yang spesifik (bukan template generik), sebutkan dari mana info kontak didapat bila relevan (transparansi), cantumkan cara opt-out sederhana ("boleh diabaikan jika tidak relevan / balas STOP jika tidak ingin dihubungi lagi"), dan **jangan** menjanjikan hal yang belum pasti.
+6. **Susun draf pesan pembuka SINGKAT (2–3 kalimat)** untuk prospek kategori Panas/Hangat — versi lengkap per prospek (3 varian + cek otomatis) arahkan ke `pesan-prospek-wa`: sebutkan alasan menghubungi yang spesifik (bukan template generik), sebutkan dari mana info kontak didapat bila relevan (transparansi), cantumkan cara opt-out sederhana ("boleh diabaikan jika tidak relevan / balas STOP jika tidak ingin dihubungi lagi"), dan **jangan** menjanjikan hal yang belum pasti.
 
 7. **Ingatkan aturan UU PDP** setiap kali menyusun pesan outreach: gunakan data kontak yang memang **dipublikasikan sendiri oleh pihak tersebut untuk tujuan bisnis** (situs resmi, listing Google Maps bisnis, direktori publik) sebagai dasar pemrosesan wajar (legitimate interest bisnis), bukan data pribadi individu yang didapat tanpa konteks bisnis; sertakan identitas pengirim yang jelas dan opsi berhenti dihubungi.
 

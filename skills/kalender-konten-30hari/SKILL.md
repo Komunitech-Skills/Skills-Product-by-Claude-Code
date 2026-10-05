@@ -5,6 +5,15 @@ description: Menyusun rencana konten 30 hari (Instagram, TikTok, WA Status) yang
 
 # Kalender Konten 30 Hari
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+## ATURAN WAJIB (baca dulu)
+1. **Fakta hanya dari pengguna.** Nama produk, harga, rasa/isi, layanan, promo, stok, jadwal buka/kirim, testimoni, angka: hanya yang *disebut pengguna*. Selebihnya tulis `[isi: ...]`. Jangan menambah detail "yang wajar" (mis. "renyah", "dicetak satu-satu", "stok terbatas", "gratis ongkir"). Tanggal hari besar hanya dari output script.
+2. **Cek fakta wajib dijalankan:** simpan pesan pengguna persis sebagai `fakta.txt`, finalisasi dengan `--fakta-file fakta.txt`. `HASIL: GAGAL` (termasuk bila fakta tidak diberikan) = perbaiki baris yang disebut, jalankan ulang; jangan kirim hasil yang GAGAL.
+3. **Output ringkas dulu (default):** tempel apa adanya tabel ringkas dari script (30 baris) + tips + asumsi. Tambahkan 3 contoh caption **hanya** bila diminta; detail (hook/CTA semua hari, caption lengkap) hanya bila diminta, maks. 3–5 hari per balasan. Jangan menulis ulang kalender di chat.
+4. **Kemampuan produksi dihitung per minggu kalender (Senin-Minggu)**, bukan per 7 hari dari tanggal mulai: bila pengguna menyebut mis. "2 video seminggu", tambahkan `--maks-video-minggu 2` di finalisasi (minggu yang melebihi = GAGAL). Label Ramadan selalu "hari ke-N", **bukan** "H-N" (H-N = N hari sebelum hari H; script menolaknya).
+5. **File hanya di folder kerja** yang disebut ke pengguna, bukan `/tmp`, bukan folder skill.
+
 ## Tujuan
 Memberi pemilik usaha rencana posting sebulan penuh yang sudah jelas "hari ini posting apa", seimbang
 antara jualan dan konten bernilai, dan memanfaatkan momen lokal — dalam bentuk tabel yang bisa langsung
@@ -29,71 +38,110 @@ ditempel ke Google Sheets/Excel.
 | Target pembeli & kota | Tidak | Disimpulkan dari jenis usaha, disebut sebagai asumsi |
 | Pilar konten | Tidak | Dari tabel jenis usaha di `references/momen-dan-pilar.md` |
 | Tanggal gajian pelanggan | Tidak | Tanggal 25 dan 1 |
-| Momen khusus (promo toko, ulang tahun toko, Ramadan/Lebaran/Imlek tahun itu) | Tidak | Hanya momen tanggal tetap; tanggal yang berubah tiap tahun tidak ditebak |
+| Momen khusus (promo toko, ulang tahun toko, Ramadan/Lebaran/Imlek tahun itu) | Tidak | Momen tanggal tetap + Ramadan/Idulfitri/Imlek dari tabel perkiraan script (berlabel "perkiraan"); hari besar lain tidak ditebak |
 | Kemampuan produksi (mis. hanya sanggup 3 video/minggu) | Tidak | IG/TikTok 1 konten/hari, WA Status harian |
-| Format hasil | Tidak | Tabel markdown + tawaran CSV |
+| Format hasil | Tidak | Tabel ringkas di chat + file `kalender.csv` / `kalender.md` (lengkap) |
 
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat,
 pakai default dan sebutkan asumsinya di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+0. **Tulis "Fakta dari pengguna" dulu (wajib).** Daftar butir yang *benar-benar* disebut pengguna, dengan
+   kata-kata pengguna (usaha, produk, harga, layanan seperti "bisa antar jemput", cara order, kota, kemampuan
+   produksi, promo, tanggal khusus). Setiap klaim layanan/produk/promo, angka, dan **tanggal** di kalender,
+   tips, dan catatan harus bisa ditelusuri ke daftar ini **atau ke output script**; selain itu `[isi: ...]`.
+   Simpan salinan persis pesan pengguna sebagai `fakta.txt` untuk langkah 4.
 1. **Baca `references/momen-dan-pilar.md`**: pilih 4–5 pilar sesuai jenis usaha (promo maks. ±30%),
-   kenali momen di periode itu. Ramadan/Lebaran/Imlek dll. **tidak ditebak**: minta tanggalnya, atau
-   tulis "(perkiraan — cek SKB 3 Menteri)".
-2. **Buat kerangka tanggal** dengan script (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
+   kenali momen di periode itu. Ramadan/Idulfitri/Imlek **tidak ditebak dan tidak dihitung sendiri**: script
+   otomatis mengambilnya dari tabel perkiraan (sama dengan references, berlabel "perkiraan, menunggu sidang
+   isbat / cek SKB 3 Menteri"). Bila pengguna memberi tanggalnya, pakai `--awal-ramadan` / `--idulfitri` /
+   `--imlek`. Tahun di luar tabel → minta tanggal ke pengguna atau `[isi: tanggal]`. Jangan pernah menulis bahwa
+   tanggal "sudah dicek" kecuali pengguna memberi sumbernya.
+   **Satu-satunya sumber tanggal hari besar = kolom Momen dari script.** Tanggal yang disebut di tips, catatan,
+   dan ringkasan wajib disalin dari tabel (bukan nomor baris, bukan ingatan).
+> **Alur ringan (wajib, agar balasan tidak kena batas waktu):** script dipanggil **2 kali saja** — kerangka
+> (langkah 2) dan finalisasi (langkah 4). Jangan menulis JSON besar, jangan mengekspor md/csv/cek terpisah, dan
+> jangan menulis ulang seluruh kalender di chat: tabel chat dicetak oleh script.
+
+2. **Buat kerangka tanggal** (sekali; path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
    python3 <folder-skill-ini>/scripts/buat_kalender.py --mulai 2026-10-01 --hari 31 \
      --pilar "Menu & Promo,Proses Dapur,Ulasan Pelanggan,Tips Kopi,Hiburan" --platform "IG,TikTok,WA Status" \
-     --momen "2026-10-17:Ulang tahun kedai ke-3:promo" --format json
+     --momen "2026-10-17:Ulang tahun kedai ke-3:promo" --format ringkas
    ```
-   Script mengisi tanggal, nama hari, momen (tanggal kembar, Harbolnas, gajian, tanggal tua, hari nasional),
-   dan rotasi pilar: hari promo dipaksa ke pilar promo; hari peringatan (30 Sep, 1 Okt, 10 Nov) dan
-   tanggal tua tidak pernah diberi pilar promo. Jika momen promo pengguna jatuh di hari peringatan, script
-   **tidak** menjadwalkannya sebagai promo dan menulis PERINGATAN — sampaikan ke pengguna dan sarankan geser tanggal.
-   Di hari peringatan, isi dengan konten penghormatan/edukasi, bukan testimoni jualan. Nama pilar promo harus mengandung kata "Promo" atau "Jual" agar dikenali.
-3. **Isi kolom Ide Konten, Hook / Judul, CTA** untuk setiap baris: spesifik untuk produk pengguna
-   (bukan "posting produk"), sesuai pilar & momen, dan realistis untuk UMKM (bisa dibuat dengan HP).
-   Hook ≤ 10 kata. CTA sesuai cara order pengguna. Boleh ubah pilar satu hari bila momen menuntut.
-   Jika kemampuan produksi terbatas (mis. 3 video/minggu), tandai hari sisanya "WA Status/Story saja"
-   di kolom Format — jangan membuat rencana yang tidak sanggup dijalankan.
-4. **Ekspor**: simpan hasil isian sebagai JSON (bentuk sama dengan output `--format json`), lalu:
+   Platform = yang disebut pengguna saja (tidak disebut → default, dan tulis di Asumsi).
+   Script mengisi tanggal, nama hari, momen (tanggal kembar, Harbolnas, gajian, tanggal tua, hari nasional,
+   dan — bila periode menyentuhnya — "Ramadan hari ke-N", Nuzulul Qur'an, 10 malam terakhir, batas THR ±H-7,
+   H-1, Idulfitri, Lebaran H+1, Pasca-Lebaran, Imlek), dan rotasi pilar: hari promo dipaksa ke pilar promo; hari
+   peringatan (30 Sep, 1 Okt, 10 Nov), Idulfitri & H+1, dan tanggal tua tidak pernah diberi pilar promo. Jika
+   momen promo pengguna jatuh di hari peringatan, script menulis PERINGATAN — sampaikan dan sarankan geser tanggal.
+   **Momen dari script tidak boleh dihapus atau diganti**; ide di hari Ramadan harus nyambung dengan fasenya
+   (sahur/buka, THR, 10 malam terakhir, persiapan Lebaran). Nama pilar promo harus mengandung "Promo" atau "Jual".
+3. **Tulis isian ringan `isi.txt`** — satu baris per hari, **tanpa** mengulang tanggal/momen/pilar:
+   ```
+   No | Format | Ide Konten | Hook / Judul | CTA
+   1 | Video IG+TikTok | Video tangan Bu Sari mengoles selai ke adonan nastar | Nastar buat meja Lebaranmu | Order lewat WA
+   2 | Foto IG saja | Foto toples nastar Rp95.000 dari atas, latar kain batik | Satu toples, satu meja tamu | Order lewat WA
+   ```
+   Format `-` = format bawaan kerangka. Tulis per blok **±10 baris per tulis/append** (jangan satu tulisan
+   raksasa). Ide ≤ 15 kata, hook ≤ 10 kata, CTA sesuai cara order pengguna; spesifik untuk produk pengguna dan bisa
+   dibuat dengan HP. Jangan memakai tanda `|` di dalam teks.
+   **Dilarang mengarang** (script menandai GAGAL): urgensi/kelangkaan ("stok terbatas", "hari terakhir"), rasa/
+   tekstur/isi ("renyah", "lumer", "isi nanasnya padat"), cara buat ("dicetak satu-satu", "handmade"), janji kirim/
+   jadwal toko ("besok dikirim", "pre-order dibuka", "toko libur", "sudah buka lagi"), layanan ("gratis ongkir",
+   "tanpa minimal"), testimoni/angka — kecuali disebut pengguna. Yang belum diketahui → `[isi: ...]`.
+   Jika kemampuan produksi terbatas (mis. 2 video/minggu), hanya hari terpilih yang "Video", sisanya "Foto/Story saja".
+   Tulis juga `catatan.txt`: 3–5 tips eksekusi + Asumsi (default yang dipakai: gajian, platform, promo `[isi]`).
+   Tanggal hari besar di catatan **disalin dari kerangka**, bukan dari ingatan atau nomor baris.
+4. **Finalisasi — SATU perintah** (argumen kerangka sama seperti langkah 2):
    ```bash
-   python3 <folder-skill-ini>/scripts/buat_kalender.py --isi kalender.json --format md
-   python3 <folder-skill-ini>/scripts/buat_kalender.py --isi kalender.json --format csv --pemisah ";" --output kalender.csv
+   python3 <folder-skill-ini>/scripts/buat_kalender.py --mulai 2026-10-01 --hari 31 --pilar "..." --platform "..." \
+     --momen "..." --isi isi.txt --catatan catatan.txt --fakta-file fakta.txt \
+     --judul "Kalender Konten Kedai Kopi Lereng" --pemisah ";" --selesai hasil-kalender
    ```
-   `--isi` menghitung ulang nama hari dan momen dari tanggal, memberi tanda baris yang idenya masih kosong,
-   dan memberi PERINGATAN bila ada promo/diskon di hari peringatan atau pilar promo di tanggal tua
-   (sertakan `--momen` & `--gajian` yang sama seperti langkah 2). Perbaiki barisnya sebelum menyerahkan hasil.
-   Pemisah `;` untuk Excel berbahasa Indonesia, `,` untuk Google Sheets. File CSV disimpan UTF-8 (BOM)
-   agar emoji/huruf terbaca di Excel.
+   Script menyimpan `hasil-kalender/kalender.md` (tabel lengkap 11 kolom), `kalender.csv` (UTF-8 BOM; `;` untuk
+   Excel Indonesia, `,` untuk Google Sheets), dan `ringkas.md`, mencetak **tabel ringkas untuk chat** (1 baris per
+   hari + Hook & CTA 3 hari pertama), lalu cek-silang: klaim karangan per baris, tanggal hari besar di tabel &
+   catatan, dan Ramadan yang hilang. Bila `HASIL: GAGAL`, perbaiki **hanya** baris/kalimat yang disebut (edit
+   kecil), lalu jalankan perintah yang sama **sekali lagi** (maks. 2 kali ulang). Bagian "CEK-SILANG" tidak
+   ditempel ke pengguna.
+   (Masih didukung: `--isi kalender.json` hasil `--format json`, dan `--cek-teks jawaban.md`.)
 5. **Jika Python tidak bisa dijalankan:** susun tanggal & nama hari manual (cek hari pertama dengan
-   kalender), tandai momen dari references, rotasi pilar berurutan, lalu tulis tabel/CSV sendiri
-   (bungkus sel yang berisi pemisah dengan tanda kutip). Beri tahu pengguna bahwa tanggal dicek manual.
-6. Tutup dengan 3–5 tips eksekusi (batch produksi konten di akhir pekan, siapkan stok foto, cek
+   kalender), tandai momen dari references, rotasi pilar berurutan, lalu tulis tabel ringkas yang sama sendiri dan
+   tawarkan CSV. Beri tahu pengguna bahwa tanggal dicek manual, dan cek manual dengan "Cek-silang fakta" di bawah.
+6. **Kirim jawaban:** tempel tabel ringkas dari output script + tips + Asumsi + lokasi file. Caption lengkap
+   **tidak** ditulis kecuali diminta; bila diminta, maksimal 3–5 hari per balasan (mulai hari pertama atau hari
+   yang diminta), sisanya ditawarkan.
+7. Tutup dengan 3–5 tips eksekusi (batch produksi konten di akhir pekan, siapkan stok foto, cek
    Insight/Analytics untuk jam posting) dan tawarkan membuat caption lengkap untuk hari tertentu.
 
 ## Format output
+Chat (dicetak script lewat `--selesai`, ditempel apa adanya):
 ```
 ## Kalender Konten <nama usaha> — <tgl mulai> s.d. <tgl selesai>
-Pilar: <pilar 1> (x hari), <pilar 2> (x hari), ...  | Platform: ...
+Pilar: <pilar 1> (x hari), ...  | Platform: ...
 
-| No | Tanggal | Hari | Momen | Pilar | Platform | Format | Ide Konten | Hook / Judul | CTA | Status |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 01 Okt 2026 | Kamis | ... | ... | ... | ... | ... | ... | ... | Belum |
-... (semua hari, jangan dipotong)
+| No | Tanggal | Hari | Momen | Format | Ide Konten |
+|---|---|---|---|---|---|
+| 1 | 01 Okt 2026 | Kamis | ... | ... | ... |
+... (semua hari, 1 baris per hari, jangan dipotong)
 
-📥 Versi CSV: <blok ```csv``` atau nama file hasil --output>
+Hook & CTA 3 hari pertama (semua hari ada di file): ...
+📥 File: hasil-kalender/kalender.csv (+ kalender.md tabel lengkap)
 💡 Tips eksekusi: ...
 📝 Asumsi: ...
 ```
-Jangan menyingkat tabel dengan "dst." — pengguna butuh semua hari.
+File `kalender.md`/`.csv` berisi 11 kolom lengkap: No, Tanggal, Hari, Momen, Pilar, Platform, Format, Ide Konten,
+Hook / Judul, CTA, Status. Jangan menyingkat dengan "dst." — pengguna butuh semua hari.
 
 ## Contoh
 **Input pengguna:** "Tolong bikin kalender konten Oktober 2026 buat Kedai Kopi Lereng di Malang, jual
 kopi susu gula aren 18 ribu dan biji kopi arabika Malang. Order lewat GoFood/GrabFood dan WA. Tanggal 17
 ulang tahun kedai ke-3, ada promo beli 2 gratis 1."
 
-**Output (cuplikan):**
+**Output (cuplikan isi `kalender.md`; di chat tampil versi ringkas 6 kolom):**
 ```
 | No | Tanggal | Hari | Momen | Pilar | Platform | Format | Ide Konten | Hook / Judul | CTA | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -105,18 +153,28 @@ ulang tahun kedai ke-3, ada promo beli 2 gratis 1."
 ```
 📝 Asumsi: gajian tgl 25 & 1; promo 10.10 belum ditentukan pengguna sehingga diberi alternatif non-promo.
 
+## Cek-silang fakta (wajib, sebelum mengirim)
+- [ ] Setiap tanggal hari besar di tabel, tips, catatan, dan asumsi **sama persis** dengan kolom Momen script (tidak memakai nomor baris sebagai tanggal)
+- [ ] Bila periode mencakup Ramadan: label "Ramadan hari ke-N" ada di kolom Momen, tidak diganti "Tanggal tua", dan ide memakai fase Ramadan/THR/Lebaran
+- [ ] Layanan/syarat (gratis antar-jemput, tanpa minimal, express), promo, testimoni, angka — masing-masing punya butir di "Fakta dari pengguna"; selain itu `[isi: ...]`
+- [ ] Tidak ada rasa/tekstur, cara buat, janji kirim, atau jadwal buka/tutup toko yang tidak disebut pengguna
+- [ ] Platform yang tidak disebut pengguna tercantum di Asumsi
+- [ ] `--selesai` menulis `HASIL: LULUS` (atau cek manual sudah dilakukan dan disebut ke pengguna)
+
 ## Checklist sebelum mengirim hasil
 - [ ] Jumlah baris = jumlah hari; tanggal & nama hari dari script (atau dicek manual)
 - [ ] Tiap baris punya ide spesifik, hook, dan CTA; tidak ada "dst."
 - [ ] Porsi promo ±20–30% (script memberi peringatan bila > 40%); hari peringatan tanpa hard-selling
-- [ ] Momen bertanggal tidak tetap diberi label "(perkiraan — cek SKB 3 Menteri)" atau dari pengguna
+- [ ] Momen bertanggal tidak tetap diberi label "(perkiraan, menunggu sidang isbat / cek SKB 3 Menteri)" atau dari pengguna; tidak ada klaim "sudah dicek" tanpa sumber
+- [ ] Tidak ada urgensi/kelangkaan palsu di CTA ("stok terbatas", "hari terakhir") kecuali dari pengguna
 - [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, terlaris) dan promo yang tidak disebut pengguna ditandai `[isi: ...]`
 - [ ] Konten yang memakai foto/ulasan pelanggan diberi catatan "dengan izin"
-- [ ] Opsi CSV ditawarkan, dengan pemisah sesuai aplikasi pengguna
+- [ ] File CSV disebut lokasinya, dengan pemisah sesuai aplikasi pengguna
+- [ ] Script hanya dipanggil untuk kerangka + finalisasi (+ maks. 2 ulang bila GAGAL)
 
 ## Batasan & penanganan error
 - Skill tidak memposting otomatis dan tidak membaca statistik akun; jam posting hanya saran awal.
 - Kampanye marketplace (tanggal kembar, Harbolnas) berubah tiap tahun → selalu label "cek kampanye/jadwal resmi".
-- Script menolak tanggal tidak valid, jumlah hari di luar 7–92, pilar < 2 atau duplikat, dan JSON rusak,
+- Script menolak tanggal tidak valid, jumlah hari di luar 7–92, pilar < 2 atau duplikat, JSON rusak, dan baris `isi.txt` yang kolomnya bukan 4/5 atau nomornya di luar periode,
   dengan pesan bahasa Indonesia. Perbaiki input lalu jalankan ulang.
 - Periode lebih dari 31 hari boleh (maks. 92) tapi sarankan dipecah per bulan agar ide tetap segar.

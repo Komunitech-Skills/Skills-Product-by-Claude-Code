@@ -1,5 +1,7 @@
 # Setup Kanal & Otomasi OpenClaw untuk Agen CS Toko
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Semua perintah & kunci konfigurasi di halaman ini diverifikasi lewat `--help` OpenClaw 2026.9.5, `openclaw config schema`, dan docs.openclaw.ai (channels/whatsapp, channels/pairing). Jangan menambah kunci config baru tanpa memverifikasi ulang lewat cara yang sama.
 
 ## 1. Tiga level risiko — pilih sebelum setup

@@ -1,4 +1,24 @@
-# Perintah OpenClaw untuk automation pantau-pasar-kripto (v1.0.1)
+# Perintah OpenClaw untuk automation pantau-pasar-kripto (v1.0.2; catatan v1.0.10)
+
+> **v1.0.10:** draf siap tempel dibuat oleh `scripts/draf_jadwal.py` (cukup itu; file ini hanya
+> dibaca untuk uji §3 atau bila script tidak bisa dijalankan). Folder kerja default draf =
+> `$HOME/.openclaw/workspace` (Windows `%USERPROFILE%\.openclaw\workspace`). **Jangan** mengisi
+> `--workspace`/`--command-cwd` dengan path tebakan atau path lingkungan agent; `<folder-workspace-member>`
+> di bawah = folder yang disebut pengguna, atau default tadi.
+
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
+**Koreksi v1.0.2 (S2-3, lihat `examples/HASIL-UJI.md` "Uji ulang v1.0.1"):** pola utama
+diganti dari `--command` (string) ke `--command-argv` (array argv). Alasan: `--command`
+dijalankan Gateway lewat `sh -lc <shell>` (login shell) -- di Gateway uji, profil login
+mesin (`nvm`) mencetak teks SEBELUM wrapper sempat jalan, sehingga keluaran menjadi
+`"nvm\nNO_REPLY"` alih-alih `"NO_REPLY"` murni, dan penekanan pengiriman gagal (Gateway
+tetap mencoba mengirim). `--command-argv` tidak lewat shell sama sekali (argv langsung ke
+proses `python3`), jadi kebal dari kontaminasi profil login apa pun -- **terbukti** bersih
+di Gateway uji Linux. Paragraf di bawah yang sebelumnya menandai `--command-argv` "belum
+dicoba" (khusus Windows) sudah diperbaiki: kombinasi lengkapnya (dengan `--command-cwd`,
+`--cron`+`--tz`, `--announce`) **terbukti T di Linux**; Windows tetap **S** (logikanya
+seharusnya sama karena tanpa shell, tapi belum diuji di mesin Windows sungguhan).
 
 Semua perintah di bawah **diuji sungguhan** (bukan hanya `--help`) terhadap Gateway lokal
 OpenClaw **2026.9.5 (ec9c1a1)** (`gateway run --dev --allow-unconfigured --bind loopback
@@ -25,44 +45,61 @@ asli:
 
 Nama subperintah resminya **`automations`** (alias `cron`, keduanya jalan sama).
 
-## 1. Pola UTAMA (T, TERBUKTI di Gateway uji Linux): `--command` + wrapper Python `NO_REPLY`
+## 1. Pola UTAMA (T, TERBUKTI di Gateway uji Linux): `--command-argv` + wrapper Python `NO_REPLY`
 
 Paling sederhana, paling murah (job command tidak memanggil model AI sama sekali kecuali
-ada yang perlu dilaporkan). Bentuk berikut **terbukti jalan** di Gateway uji (macOS/Linux,
-lewat `sh -lc`, lihat `/tmp/uji-kripto-oc/kirim_jika_terlewati.sh` pada sesi uji independen):
+ada yang perlu dilaporkan), dan **tidak lewat shell sama sekali** (lihat S2-3 di atas):
 
 ```bash
 openclaw automations add --cron "0 * * * *" --tz "Asia/Jakarta" \
   --name "Cek ambang kripto (per jam)" --session isolated \
-  --command "cd '<folder-workspace-member>' && python3 '<folder-skill-ini-absolut>/scripts/cek_dan_lapor.py' --konfigurasi kripto/konfigurasi.json --state kripto/state.json" \
+  --command-argv '["python3", "<folder-skill-ini-absolut>/scripts/cek_dan_lapor.py", "--konfigurasi", "kripto/konfigurasi.json", "--state", "kripto/state.json"]' \
+  --command-cwd "<folder-workspace-member>" \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
-`--command` dijalankan Gateway lewat `sh -lc` (dari dokumentasi flag & perilaku yang
-terlihat di Gateway uji) -- ini cocok untuk Gateway yang berjalan di **macOS/Linux**.
+(Windows: ganti `"python3"` jadi `"python"` di elemen pertama array kalau `python3` tidak
+ada di PATH member -- lihat catatan status di bawah.)
 
-**Windows (S, BELUM diuji sungguhan):** Gateway OpenClaw di Windows kemungkinan tidak
-punya `sh`, jadi `--command` mentah di atas berisiko tidak jalan. CLI juga menyediakan
-`--command-argv <json>` ("Command payload argv as JSON array of strings") yang seharusnya
-tidak bergantung shell, mis. `--command-argv '["python", "<path>/cek_dan_lapor.py",
-"--konfigurasi", "kripto/konfigurasi.json", "--state", "kripto/state.json"]'` plus
-`--command-cwd "<folder-workspace-member>"` -- tapi kombinasi ini **belum dicoba** di
-Gateway Windows sungguhan pada sesi uji manapun. Kalau member memakai Windows, jelaskan
-statusnya jujur, uji dulu dengan `automations run <id> --wait` (§3) sebelum mengaktifkan
-jadwal produksi, dan siapkan fallback perintah salin-tempel manual kalau gagal.
+**Kenapa `--command-argv`, bukan `--command`:** `--command <shell>` dijalankan Gateway
+lewat `sh -lc <shell>` (login shell) -- yang berarti file profil login (`.bashrc`,
+`.profile`, skrip `nvm`, dll.) ikut dieksekusi/dicetak SEBELUM `python3` sempat jalan. Di
+Gateway uji, ini membuat keluaran job menjadi `"nvm\nNO_REPLY"` alih-alih `"NO_REPLY"`
+murni, sehingga deteksi "tidak ada balasan" oleh OpenClaw gagal dan Gateway tetap mencoba
+mengirim pesan tiap jam walau kondisinya tenang. `--command-argv` menjalankan `python3`
+langsung sebagai proses (array argv, tanpa shell perantara), jadi kebal dari kontaminasi
+profil login apa pun -- **terbukti bersih** di Gateway uji Linux (lihat
+`examples/HASIL-UJI.md` "Uji ulang v1.0.1", S2-3).
+
+**Windows (S, BELUM diuji di mesin Windows sungguhan):** secara desain `--command-argv`
+seharusnya bekerja sama di Windows (tidak bergantung `sh`), tapi kombinasi ini belum
+dicoba di Gateway Windows sungguhan pada sesi uji manapun -- hanya **T di Linux**. Kalau
+member memakai Windows, jelaskan statusnya jujur, uji dulu dengan `automations run <id>
+--wait` (§3) sebelum mengaktifkan jadwal produksi, dan siapkan fallback perintah
+salin-tempel manual kalau gagal.
+
+**Alternatif `--command` (string shell) -- HANYA kalau versi OpenClaw member tidak
+mendukung `--command-argv`:** bentuk `--command "cd '<folder-workspace-member>' && python3
+'<folder-skill-ini-absolut>/scripts/cek_dan_lapor.py' --konfigurasi kripto/konfigurasi.json
+--state kripto/state.json"` juga **T** (terbukti jalan), TAPI berisiko kena masalah profil
+login di atas -- kalau terpaksa memakainya, jalankan uji manual dulu (§3, langkah 1) dan
+periksa SENDIRI bahwa keluaran kondisi tenang persis `NO_REPLY` (tanpa baris lain di
+depannya) sebelum mengaktifkan ke jadwal produksi.
 
 **Cara kerja:** `cek_dan_lapor.py` (lihat isinya, sudah diuji offline di
-`tests/uji_regresi.py`) menjalankan `cek_ambang.py`. Kalau exit code-nya **2** (ambang baru
-terlewati) atau **3** (ada koin gagal total), wrapper mencetak `pesan_singkat` yang sudah
-jadi (siap diumumkan lewat `--announce`). Kalau tidak, wrapper mencetak literal `NO_REPLY`
--- OpenClaw **tidak memposting apa pun** ke kanal kalau keluaran job persis `NO_REPLY`
-(dikonfirmasi lewat `automations run --wait`, lihat §3). Wrapper **SELALU** keluar dengan
-kode 0, supaya Gateway tidak salah mencatat giliran normal (ambang terlewati/koin gagal)
-sebagai job yang *error*.
+`tests/uji_regresi.py`) menjalankan `cek_ambang.py`. Kalau exit code-nya **2** (ambang
+harga baru terlewati) atau **3** (pemantauan bermasalah yang perlu dilaporkan -- gagal
+total, cache basi, ambang % tak bisa dicek, atau baru pulih, lihat S2-2), wrapper mencetak
+`pesan_singkat` yang sudah jadi (siap diumumkan lewat `--announce`). Kalau tidak, wrapper
+mencetak literal `NO_REPLY` -- OpenClaw **tidak memposting apa pun** ke kanal kalau
+keluaran job persis `NO_REPLY` (dikonfirmasi lewat `automations run --wait`, lihat §3).
+Wrapper **SELALU** keluar dengan kode 0, supaya Gateway tidak salah mencatat giliran normal
+(ambang terlewati/pemantauan bermasalah) sebagai job yang *error*.
 
-Opsi yang dipakai (T = dicoba sungguhan di Gateway uji untuk skill ini):
+Opsi yang dipakai (T = dicoba sungguhan di Gateway uji Linux untuk skill ini):
 - `--cron "0 * * * *"` (T) -- setiap jam tepat. `--tz "Asia/Jakarta"` (T) boleh dipasangkan
   dengan `--cron` (berbeda dari `--every`, lihat catatan koreksi di atas).
-- `--command-argv` (T) -- payload command sebagai array argv (bukan string shell), lintas OS.
+- `--command-argv` (T di Linux, S di Windows) -- payload command sebagai array argv (bukan
+  string shell), supaya tidak melewati `sh -lc` sama sekali.
 - `--command-cwd` (T) -- direktori kerja saat wrapper dijalankan, supaya path relatif
   `kripto/konfigurasi.json`/`kripto/state.json` merujuk ke workspace member yang benar.
 - `--session isolated`, `--announce`, `--channel telegram`, `--to <chat-id>` -- sama seperti
@@ -103,7 +140,7 @@ Catatan status: pola trigger JS ITU SENDIRI (`exec` + `json({fire,...})`) **T** 
 Tapi kombinasi lengkap dengan `--cron`/`--tz` (bukan `--every` detik seperti contoh uji) dan
 dengan pengiriman `--announce` yang sesungguhnya **belum diuji ujung-ke-ujung** untuk skill
 ini -- tandai **S** untuk kombinasi itu, uji dulu dengan cara di §3 sebelum diandalkan penuh.
-Kalau ragu, pakai Pola 1 (`--command` + wrapper) yang sudah terbukti penuh.
+Kalau ragu, pakai Pola 1 (`--command-argv` + wrapper) yang sudah terbukti penuh.
 
 ## 3. Cara UJI YANG BENAR (koreksi dari v1.0.0)
 
@@ -114,12 +151,14 @@ wrapper sebelum mengaktifkan jadwal ke member:
    data tenang lalu data ambang terlewati (`--harga-file` untuk simulasi, lihat
    `SKILL.md`/`tests/uji_regresi.py`) -- pastikan keluarannya `NO_REPLY` vs pesan yang
    benar, sebelum menyambungkannya ke automation.
-2. Untuk Pola 1 (`--command`): `automations run <id> --wait` **valid** dipakai di sini,
-   karena job-nya sendiri (bukan trigger) yang ingin diuji -- job SELALU jalan (tidak ada
-   trigger terpisah), yang membedakan tenang/terpicu adalah isi keluaran wrapper
-   (`NO_REPLY` vs pesan). Jalankan sekali dengan kondisi data tenang (harus `NO_REPLY`
-   masuk riwayat run, TANPA pengiriman ke kanal) dan sekali dengan kondisi ambang
-   terlewati (harus ada pesan terkirim), baru anggap terbukti.
+2. Untuk Pola 1 (`--command-argv`): `automations run <id> --wait` **valid** dipakai di
+   sini, karena job-nya sendiri (bukan trigger) yang ingin diuji -- job SELALU jalan (tidak
+   ada trigger terpisah), yang membedakan tenang/terpicu adalah isi keluaran wrapper
+   (`NO_REPLY` vs pesan). Jalankan sekali dengan kondisi data tenang (harus keluaran job
+   PERSIS `NO_REPLY` -- periksa `completionStatus: succeeded` DAN tidak ada upaya
+   pengiriman/`deliveryError` di `automations runs <id>`, bukan cuma isi `summary`, lihat
+   S2-3) dan sekali dengan kondisi ambang terlewati (harus ada pesan terkirim), baru anggap
+   terbukti.
 3. Untuk Pola 2 (trigger JS): **JANGAN** pakai `run --wait` untuk menguji apakah trigger
    menyala. Biarkan jadwalnya berjalan dengan interval pendek sementara (mis. `--every
    30s`) di lingkungan uji, amati `automations runs <id>` -- hitung berapa kali job benar-

@@ -1,0 +1,33 @@
+periode,divisi,orang,kpi,satuan,arah,bobot,target,ambang,maks_capai,kata_kunci,sumber
+,Sales,Andi Pratama,Omzet penjualan,Rp,naik,40,150000000,120000000,,omzet;penjualan;jualan,crm-wa / rekap-penjualan-csv
+,Sales,Andi Pratama,Jumlah closing,deal,naik,25,15,,,closing;deal,crm-wa
+,Sales,Andi Pratama,Konversi prospek,%,naik,20,25,,,konversi,crm-wa (deal / prospek baru x 100)
+,Sales,Andi Pratama,Follow-up tepat waktu,%,naik,15,90,,,follow-up;follow up;fu,crm-wa
+,Sales,Rina Wulandari,Omzet penjualan,Rp,naik,40,120000000,100000000,,omzet;penjualan;jualan,crm-wa / rekap-penjualan-csv
+,Sales,Rina Wulandari,Jumlah closing,deal,naik,25,15,,,closing;deal,crm-wa
+,Sales,Rina Wulandari,Konversi prospek,%,naik,20,25,,,konversi,crm-wa (deal / prospek baru x 100)
+,Sales,Rina Wulandari,Follow-up tepat waktu,%,naik,15,90,,,follow-up;follow up;fu,crm-wa
+,Sales,Dewi Lestari,Waktu respons pertama,menit,turun,30,10,15,,respons;respon;balas,catatan chat CS
+,Sales,Dewi Lestari,Komplain selesai <=2 hari,%,naik,30,90,,,komplain;selesai,log-operasional.csv
+,Sales,Dewi Lestari,Rating kepuasan,skala 1-5,naik,25,4.7,4.5,,rating;bintang;kepuasan,analisis-ulasan
+,Sales,Dewi Lestari,Chat terjawab hari yang sama,%,naik,15,95,,,terjawab;chat,catatan chat CS
+,Gudang & Pengiriman,Budi Santoso,Akurasi stok,%,naik,35,99,97,,akurasi;opname,buku-stok (opname)
+,Gudang & Pengiriman,Budi Santoso,Pesanan dikemas hari yang sama,%,naik,30,95,,,dikemas;packing;kemas,buku-stok / resi-picking
+,Gudang & Pengiriman,Budi Santoso,Salah kirim,pesanan,turun,20,3,5,,salah kirim;salah ambil,log komplain
+,Gudang & Pengiriman,Budi Santoso,Item stok habis,SKU,turun,15,5,,,stok habis;kosong,buku-stok laporan menipis
+,Gudang & Pengiriman,Joko Susilo,Akurasi stok,%,naik,35,99,97,,akurasi;opname,buku-stok (opname)
+,Gudang & Pengiriman,Joko Susilo,Pesanan dikemas hari yang sama,%,naik,30,95,,,dikemas;packing;kemas,buku-stok / resi-picking
+,Gudang & Pengiriman,Joko Susilo,Salah kirim,pesanan,turun,20,3,5,,salah kirim;salah ambil,log komplain
+,Gudang & Pengiriman,Joko Susilo,Item stok habis,SKU,turun,15,5,,,stok habis;kosong,buku-stok laporan menipis
+,Gudang & Pengiriman,Eko Saputra,Pengiriman tepat waktu,%,naik,40,95,,,tepat waktu;on time,log-operasional.csv
+,Gudang & Pengiriman,Eko Saputra,Paket gagal kirim,%,turun,25,3,,,gagal kirim;retur,log-operasional.csv
+,Gudang & Pengiriman,Eko Saputra,Jumlah pengiriman,paket,naik,20,600,,,kirim;paket;antar,log-operasional.csv
+,Gudang & Pengiriman,Eko Saputra,Setoran COD pas,%,naik,15,100,,,cod;setoran,kas-umkm
+,Keuangan & Admin,Sari Indah,Hari tutup buku,hari,turun,30,5,8,,tutup buku,laporan-keuangan-emkm
+,Keuangan & Admin,Sari Indah,Piutang lewat 30 hari,%,turun,30,10,15,,piutang;overdue,buku-piutang (umur)
+,Keuangan & Admin,Sari Indah,Tagihan terkirim tepat waktu,%,naik,20,95,,,tagihan;invoice,buat-invoice
+,Keuangan & Admin,Sari Indah,Selisih kas,Rp,turun,20,50000,100000,,selisih kas,kas-umkm (opname)
+,Keuangan & Admin,Tono Wijaya,Tugas selesai tepat waktu,%,naik,40,90,,,tugas;deadline,vikunja-tugas
+,Keuangan & Admin,Tono Wijaya,Kesalahan input data,kesalahan,turun,30,3,,,salah input;kesalahan input,cek admin
+,Keuangan & Admin,Tono Wijaya,Nota diarsip lengkap,%,naik,15,95,,,nota;arsip,arsip-nota
+,Keuangan & Admin,Tono Wijaya,Kehadiran tepat waktu,%,naik,15,95,,,hadir;kehadiran;telat,absensi-lokal

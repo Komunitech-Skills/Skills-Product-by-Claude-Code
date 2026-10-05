@@ -48,7 +48,7 @@ Semua fakta PPh 21 (tabel TER, PTKP, Pasal 17, biaya jabatan, Masa Pajak Terakhi
 - Premi JKK, JKM, dan iuran BPJS Kesehatan yang dibayar pemberi kerja **masuk penghasilan bruto** PPh 21 (PMK 168/2023 Pasal 5 ayat (3) huruf d–e).
 - Iuran JHT & JP bagian pemberi kerja **bukan** objek PPh 21 (Pasal 7 huruf c); JHT 2% + JP 1% bagian karyawan menjadi **pengurang** saat hitung ulang Desember (Pasal 10 ayat (1) huruf b).
 - Desember / bulan berhenti kerja wajib hitung ulang setahun, sehingga slip bulan itu butuh data Januari s.d. bulan lalu.
-- PPh 21 DTP dibayar tunai ke karyawan dan tidak dikenai pajak (PMK 105/2025 Pasal 5).
+- PPh 21 DTP: PPh 21 tetap dipotong, lalu nilai yang sama dibayar tunai ke karyawan dan tidak dikenai pajak, sehingga gaji bersih tidak berkurang karena pajak; bagian DTP tidak disetor ke negara (PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B). Rincian & kutipan: `references/dtp-pmk105.md`.
 
 ## Keputusan desain (bukan aturan)
 - Iuran BPJS dan lembur dibulatkan ke rupiah terdekat per komponen; PPh 21 dibulatkan ke bawah. Belum dicocokkan dengan aplikasi BPJS/Coretax; bila berbeda, ikuti sistem resmi.

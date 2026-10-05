@@ -38,6 +38,9 @@ Skema input (semua field opsional kecuali "judul"):
 }
 
 "baris" tampil sebagai "Label: nilai" di bagian atas pesan (angka penting dulu).
+"nilai" rupiah sebaiknya angka JSON (4500000). Bila berupa teks, dibaca format
+Indonesia ("38.000" = 38 ribu, "1.250.000,50", "Rp 38.000", "38rb", "1,5jt");
+teks ragu ("38.5", "1,5", "1,500") membuat script keluar dengan exit 1.
 "daftar" tampil sebagai sub-bagian berjudul dengan bullet -- bagian INI yang
 dipotong lebih dulu bila pesan melebihi --maks-baris.
 "catatan" = info netral (tanpa ikon peringatan, mis. cakupan periode, sumber data).
@@ -54,6 +57,7 @@ import argparse
 import json
 import re
 import sys
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 # Pola deteksi data pribadi -- semua pakai batas kata (\b) atau lookaround supaya
 # tidak salah kena kata yang cuma "kebetulan mengandung" polanya, mis. \bnik\b
@@ -73,10 +77,56 @@ POLA_PDP = [
 ]
 
 
+SATUAN_RUPIAH = (("ribu", 1000), ("rb", 1000), ("k", 1000), ("juta", 10 ** 6), ("jt", 10 ** 6))
+CONTOH_RUPIAH = "Contoh yang benar: 38000, \"38.000\", \"Rp38.000\", \"1.250.000,50\", \"38rb\", \"1,5jt\"."
+
+
+def baca_rupiah_teks(teks):
+    """Nilai rupiah berupa TEKS dibaca format Indonesia: titik = ribuan, koma = desimal.
+    '38.000' / 'Rp 38.000' / '1.250.000,50' / '38rb' / '1,5jt'. Bentuk ragu ('38.5', '1,5', '1,500')
+    ditolak (ValueError), tidak pernah ditebak diam-diam. Angka JSON (bukan teks) tidak lewat sini."""
+    asli = str(teks).strip()
+    s = asli.lower().replace("\u00a0", "").replace(" ", "")
+    neg = s.startswith("-")
+    s = s.lstrip("-")
+    s = re.sub(r"^(rp|idr)\.?", "", s)
+    s = re.sub(r"[,.]-+$", "", s)
+    kali = 1
+    for akhiran, k in SATUAN_RUPIAH:
+        if s.endswith(akhiran) and s[: -len(akhiran)]:
+            s, kali = s[: -len(akhiran)], k
+            break
+    if re.fullmatch(r"\d+", s):
+        pass
+    elif kali != 1 and re.fullmatch(r"\d+[.,]\d+", s):                 # 1,5jt
+        s = s.replace(",", ".")
+    elif re.fullmatch(r"[1-9]\d{0,2}(\.\d{3})+(,\d+)?", s):            # 38.000 / 1.250.000,50
+        s = s.replace(".", "").replace(",", ".")
+    elif re.fullmatch(r"\d{4,}[.,]\d{1,2}", s):                         # 38000.5 / 38000,50
+        s = s.replace(",", ".")
+    elif re.fullmatch(r"\d+[.,]\d+", s):                                # 38.5 / 1,5 / 1,500
+        raise ValueError(f"Nilai rupiah {asli!r} meragukan (titik/koma bisa berarti ribuan atau desimal). "
+                         + CONTOH_RUPIAH)
+    else:
+        raise ValueError(f"Nilai rupiah tidak valid: {asli!r}. " + CONTOH_RUPIAH)
+    d = Decimal(s) * kali
+    return -d if neg else d
+
+
 def format_rupiah(nilai):
+    if isinstance(nilai, bool):
+        raise ValueError(f"Nilai rupiah tidak valid: {nilai!r}")
     try:
-        n = round(float(nilai))
-    except (TypeError, ValueError):
+        if isinstance(nilai, str):
+            d = baca_rupiah_teks(nilai)
+        else:
+            d = Decimal(str(float(nilai))) if isinstance(nilai, float) else Decimal(nilai)
+        if not d.is_finite():
+            raise ValueError
+        n = int(d.quantize(Decimal(1), rounding=ROUND_HALF_UP))
+    except (TypeError, ValueError, InvalidOperation) as e:
+        if isinstance(e, ValueError) and str(e):
+            raise
         raise ValueError(f"Nilai rupiah tidak valid: {nilai!r}")
     negatif = n < 0
     n = abs(n)

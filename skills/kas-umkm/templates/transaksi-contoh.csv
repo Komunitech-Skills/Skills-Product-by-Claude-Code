@@ -1,0 +1,7 @@
+Tanggal;Keterangan;Masuk;Keluar;Kategori;Metode;Akun
+01/09/2026;Jualan tunai;850.000;;penjualan;tunai;
+01/09/2026;Jualan QRIS;210.000;;penjualan;qris;
+01/09/2026;Kulakan ke agen;;1.200.000;beli-stok;tunai;
+05/09/2026;Token listrik;;200.000;listrik-air;transfer;BRI
+07/09/2026;Ambil untuk belanja rumah;;300.000;prive;tunai;
+12/09/2026;Gaji mingguan karyawan;;500.000;gaji;tunai;

@@ -36,7 +36,7 @@ Dipisah koma (bukan koma di dalam angka), titik koma, baris baru, "dan", "sama".
 - Diskon nota: segmen yang diawali `diskon`/`potongan`: `diskon 10%`, `diskon 5rb`, `diskon 10%+2rb`
 - Bayar: `bayar tunai 100rb` · `bayar pas` · `bayar qris` · `bayar qris 50rb, tunai 50rb` · `bayar transfer`. Metode: Tunai, QRIS, Transfer, Debit, Kartu kredit, E-wallet (OVO/GoPay/DANA/ShopeePay/LinkAja), Lainnya. Satu metode boleh tanpa jumlah (= sisa).
 - Catatan: `catatan: meja 4`, `atas nama Budi`.
-- Ditolak: `bon`, `utang`, `bayar nanti`, `tempo`; harga di pesanan (`@15rb`).
+- Ditolak: `bon`, `utang`, `bayar nanti`, `tempo`; harga di pesanan (`@15rb`). Bon/utang dicatat di skill `buku-piutang` (kasir hanya mencatat yang sudah dibayar); belum terpasang → cara lama `buat-invoice`.
 
 Pencocokan produk: kode persis → nama+varian persis → nama persis (satu produk) → semua kata ada di tepat satu produk (disebut di pratinjau "dibaca sebagai"). Selain itu **ditolak** dengan saran produk mirip; tidak pernah ditebak.
 
@@ -50,6 +50,13 @@ Pencocokan produk: kode persis → nama+varian persis → nama persis (satu prod
 
 ## Zona waktu
 Waktu nota = jam **zona toko** (`--zona`, default WIB/Asia/Jakarta; WITA = Asia/Makassar, WIT = Asia/Jayapura, juga Asia/Pontianak), bukan jam komputer — penting di VPS yang memakai UTC. Offset (+07:00/+08:00/+09:00) disimpan di setiap nota dan label WIB/WITA/WIT dicetak di struk. Memakai `zoneinfo` bila tersedia; tanpa tzdata (mis. Windows) dipakai offset tetap (Indonesia tidak memakai musim panas, jadi hasilnya sama).
+
+## Script terpisah: `scripts/rekap_nota.py` (nota ditempel, tanpa database)
+`python3 scripts/rekap_nota.py FILE|- [--teks "..."] [--tanggal LABEL] [--kas-awal N --kas-fisik N] [--kas-masuk N] [--kas-keluar N] [--batal 011,..] [--bukan-batal 012,..] [--grup-tanpa-rupiah] [--json]`
+- Tidak menulis apa pun. Membaca teks (satu nota per baris, atau blok `Nota X` + baris item sampai baris kosong) atau CSV (`nota;menu;qty;harga;subtotal;bayar;status`, kolom `pelanggan` diabaikan).
+- Nota BATAL/void/dibatalkan dikecualikan (kata "batal" setelah "pengganti/ganti/koreksi" diabaikan). Nomor telepon dibuang sebelum dibaca; bagian nama orang (Pak/Bu/Mbak/a.n.) dibuang dari nama menu.
+- Field JSON: `nota_sah`, `nota_batal`, `porsi_total`, `omzet_tercatat` (termasuk bon), `uang_masuk` (tanpa bon), `per_metode`, `menu` (`porsi`, `nota`, `omzet` per menu, urut porsi), `kas` (`seharusnya` = kas awal + tunai + kas masuk − kas keluar; `selisih` = fisik − seharusnya), `perlu_dicek`, `peringatan`, `diabaikan`, `teks` (pemilik), `teks_grup` (RINGKASAN SIAP TEMPEL untuk grup: agregat, tanpa nama/nomor pelanggan & bon per orang).
+- Uji: `python3 tests/uji_rekap_nota.py`.
 
 ## Kode keluar
 `0` berhasil (termasuk pratinjau), `1` gagal dengan pesan jelas (`error`), `2` perintah salah tulis.

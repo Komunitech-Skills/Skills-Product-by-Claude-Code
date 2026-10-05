@@ -1,0 +1,69 @@
+# Kalender Pajak Anti Telat Setor & Lapor
+
+**Semua tenggat pajak usaha Anda dalam satu kalender — sudah digeser otomatis kalau jatuh di hari libur.**
+
+## Manfaat
+- ✅ Daftar tanggal setor & lapor setahun sesuai kondisi usaha Anda (UMKM 0,5%, PKP/PPN, punya karyawan, potong PPh 23) — untuk PKP termasuk batas unggah faktur pajak keluaran tgl 20
+- ✅ Tanggal otomatis digeser ke hari kerja bila jatuh di Sabtu, Minggu, libur nasional, atau cuti bersama 2026–2027 — lengkap dengan alasannya
+- ✅ File kalender (.ics) siap impor ke Google Calendar, Outlook, atau kalender HP — dengan pengingat H-3 & H-1 (di Google Calendar, pakai opsi acara pengingat terpisah; lihat FAQ)
+- ✅ Checklist bulanan untuk admin + ringkasan "apa yang jatuh tempo 2 minggu ke depan"
+- ✅ Bisa dijadwalkan kirim pengingat otomatis ke Telegram lewat OpenClaw
+
+## Cocok untuk siapa
+- Pemilik UMKM dan toko online yang membayar PPh final 0,5%
+- CV/PT kecil yang sudah PKP dan punya karyawan
+- Admin keuangan, bookkeeper, dan freelancer yang mengurus pajak beberapa klien
+- Orang pribadi yang ingin tidak lupa SPT Tahunan
+
+## Contoh sebelum & sesudah
+**Sebelum:** Mencatat "setor tanggal 15, lapor tanggal 20" di kertas — lalu bingung waktu tanggal 15 jatuh di hari Minggu atau libur Lebaran, dan lupa PPN harus dilapor akhir bulan.
+
+**Sesudah (cukup ketik):** "Saya CV PKP, karyawan 3, sering potong PPh 23. Jadwal pajak Oktober–Desember dong."
+→ Tabel 21 tenggat, misalnya: *Selasa, 20 Oktober 2026 — UNGGAH faktur pajak keluaran bulan September*; *Senin, 2 November 2026 — SETOR & LAPOR PPN masa September (bergeser dari 31 Okt karena Sabtu–Minggu)*; *Senin, 21 Desember 2026 — LAPOR SPT Masa PPh 21 masa November (20 Des hari Minggu)*.
+
+## Cara pakai
+Setelah terpasang, ketik permintaan biasa ke AI agent Anda, misalnya:
+- "Buatkan kalender pajak 2027 untuk usaha saya, saya jualan online pribadi pakai PPh 0,5%."
+- "Pajak apa saja yang jatuh tempo 2 minggu ke depan? PT saya PKP dan punya karyawan."
+- "Bikinin file .ics pengingat pajak untuk Google Calendar."
+- "Ingatkan saya tiap bulan lewat Telegram."
+
+## Instalasi singkat
+Salin folder `kalender-pajak` ke folder skills AI agent Anda:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python standar (tanpa instal paket apa pun); tanpa Python pun skill tetap bisa menyusun jadwal dari tabel aturan.
+
+## FAQ
+**Apakah tanggalnya pasti benar?**
+Tanggal disusun dari aturan PMK 81/2024 dan daftar libur SKB 3 Menteri 2026 & 2027 (pasal tenggat dicocokkan dengan naskah resmi PMK 81/2024 di pajak.go.id, 26 September 2026). Batas SPT Tahunan tidak bergeser walau jatuh di hari libur, jadi lapor lebih awal. DJP kadang mengumumkan perpanjangan khusus, jadi tetap pantau pengumuman DJP. Untuk kasus khusus, tanyakan ke konsultan pajak atau AR Anda.
+
+**Apakah skill ini menghitung berapa pajak saya?**
+Tidak — skill ini khusus jadwal. Untuk besarannya gunakan skill "Hitung Pajak UMKM 0,5%", "PPh 21 TER", atau "Hitung PPN".
+
+**Apakah pengingat H-3 & H-1 pasti muncul di Google Calendar?**
+Belum tentu. Apple Calendar dan Outlook biasanya memakai pengingat bawaan file, tetapi Google Calendar sering mengabaikannya dan memakai notifikasi default kalender. Solusinya: atur notifikasi default kalender Google Anda (mis. 3 hari & 1 hari sebelumnya), atau minta agent membuat file "dengan acara pengingat terpisah" — hasilnya muncul sebagai acara "Pengingat H-3/H-1" di kalender. Kalau file diimpor ulang, Google bisa membuat acara dobel; paling rapi impor ke kalender khusus "Pajak" supaya mudah dihapus dan diimpor lagi.
+
+**Bagaimana untuk tahun 2028?**
+Skill tetap membuat jadwal, tetapi menampilkan peringatan karena daftar libur 2028 belum terbit. Setelah SKB 3 Menteri terbit, cukup tambahkan daftar liburnya (atau tunggu pembaruan skill). Daftar libur yang Anda tambahkan sendiri ditandai "data libur dari pengguna" dan peringatan tetap tampil sampai data resmi masuk ke skill.
+
+## Riwayat versi
+- **1.0.7** (1 Okt 2026) — revisi temuan uji OpenClaw: opsi `--omzet-bulanan`/`--omzet-setahun` menghitung kapan omzet kumulatif orang pribadi melewati Rp500 juta dan tanggal setoran pertamanya (tidak lagi ditebak AI); AI dilarang menyebut kode setor (KAP-KJS) selain deposit pajak 411618-100; rujukan ke skill hitung lain kini bersyarat ("bila terpasang"); script dijalankan dari subfolder `scripts/` di folder skill. 67 uji otomatis lulus (5 baru).
+- **1.0.6** (30 Sep 2026) — koreksi keterangan kebijakan khusus tahun pajak 2025: KEP-55/PJ/2026 **bukan** perpanjangan. Jatuh tempo SPT Tahunan orang pribadi tetap 31 Mar 2026; yang dihapus hanya sanksi denda/bunga bila lapor/bayar s.d. 30 Apr 2026. Badan diberi catatan KEP-71/PJ/2026 (jatuh tempo tetap, sanksi dihapus s.d. 1 bulan setelah jatuh tempo). Rujukan diganti ke sumber resmi DJP (pajak.go.id). Tidak ada tanggal tenggat yang berubah.
+- **1.0.3** (26 Sep 2026) — SPT Tahunan disesuaikan dengan naskah resmi PMK 81/2024: batasnya diatur Ps. 169 dan tidak bergeser meski hari libur, jadi kini hanya satu tanggal yang ditampilkan (tampilan "dua kemungkinan tanggal" dihapus) dengan catatan "lapor lebih awal". Rujukan pasal diperbaiki (Ps. 172/173 bukan dasar SPT Tahunan); label PERLU REVIEW dihapus untuk butir yang kini terverifikasi (mis. PPh 25 dianggap lapor saat setor, Ps. 171 ayat 10). Tidak ada tanggal tenggat yang berubah.
+- **1.0.2** (25 Sep 2026) — perbaikan kecil dari uji ulang: batas unggah faktur (tgl 20) atau tenggat lain yang tidak bergeser dan jatuh di hari libur kini menyebut hari kerja sebelumnya (mis. 20 Mei 2027 → unggah paling aman Jumat 14 Mei 2027); SPT Tahunan yang jatuh di hari libur menampilkan dua kemungkinan tanggal (dasar Ps. 173 ayat 1 masih PERLU REVIEW); file libur buatan sendiri dilabeli "data libur dari pengguna" dan peringatan tahun tanpa data resmi tetap tampil. Tidak ada tanggal tenggat yang berubah.
+- **1.0.1** (25 Sep 2026) — revisi temuan uji independen: tambah batas unggah faktur pajak keluaran tgl 20 untuk PKP (PER-11/PJ/2025); klaim pengingat Google Calendar & impor ulang diluruskan + opsi acara pengingat terpisah; keterangan libur berkoma tidak terpotong; mode "N hari ke depan" menyebut tenggat berikutnya; label alasan geser lebih jelas; output menyebut cakupan periode & sumber data libur; dasar pasal pergeseran setor diperbaiki (Ps. 100 PMK 81/2024).
+- **1.0.0** (25 Sep 2026) — versi awal.
+
+_Bukan nasihat pajak. Hasil adalah alat bantu jadwal; setoran dan pelaporan tetap lewat Coretax/DJP._
+
+## Catatan revisi 1.0.7 (2026-10-01)
+- Kapan omzet kumulatif melewati Rp500 juta kini **dihitung script** dari omzet per bulan atau perkiraan setahun (contoh: omzet 600 juta setahun merata → kumulatif Oktober tepat Rp500 juta, baru melewati di November; setoran pertama Selasa 15 Desember 2026).
+- AI tidak boleh menyebut kode setor (KAP-KJS) selain deposit pajak 411618-100 (temuan uji: model mengarang "KAP 411125", padahal itu PPh 25/29).
+- Rujukan ke `pph-final-umkm`/`pph21-ter`/`hitung-ppn` ditulis "bila terpasang".

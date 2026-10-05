@@ -1,85 +1,194 @@
-# HASIL UJI — laporan-harian-usaha 1.0.0
+# HASIL UJI — laporan-harian-usaha v1.0.0
 
-- **Tanggal:** 2026-09-23 (dijalankan dengan jam sistem 24 Sep 2026)
-- **Penguji:** agent penguji independen (simulasi, Claude Code). Bukan pembuat skill.
-- **Lingkungan:** Linux, Python 3.11, zona komputer UTC (juga diuji `TZ=Asia/Jakarta` dan `TZ=Asia/Makassar`), OpenClaw 2026.9.5 (CLI asli, HOME sementara, Gateway lokal `--dev --bind loopback`).
-- **Data uji:** dibangun sendiri di `/tmp/uji-lhu/` dengan menjalankan script **asli** keempat alat. Kafe fiktif, 7–24 Sep 2026: 155 nota jual, 4 void, 3 retur, mode PBJT 10%, 17 kali tutup kasir (3 dengan selisih), 2 nota lewat tengah malam, 1 hari tanpa penjualan. Buku-stok mengimpor ekspor kasir kecuali 2 hari, 4 SKU minus, 1 barang rusak. 5 karyawan, 2 shift, pola 6 hari: terlambat, izin, sakit, alpa, masuk hari libur, lembur disetujui, pulang lewat jadwal tanpa persetujuan, pulang lewat tengah malam. DAFTAR.csv 8 baris dengan nama, HP, dan NIK fiktif, serta nominal "1.250.000". Script uji: `bangun.py`, `verif.py`, `uji_ro.py` (berkas kerja, di luar repo).
-- Uji regresi bawaan `tests/uji_regresi.py`: **31/31 OK**. `scripts/validate.py`: lolos.
+- **Tanggal:** 2026-09-24
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat skill. Hanya membaca folder skill + SKILL.md alat yang dibaca skill ini.
+- **Lingkungan:** Linux, Python 3.11. Skill + 4 alat disalin ke scratchpad (`<uji>/skills/`), HOME palsu, `KOMUNITECH_DATA` sementara, `TZ=Asia/Jakarta` (dan `UTC` untuk uji zona). Tidak ada yang dipasang di `.claude/skills` repo, tidak ada yang ditulis ke `~/KomunitechData` asli.
+- **Data uji:** dibuat sendiri dengan script resmi `kasir.py`, `stok.py`, `absensi.py`, `cek_jatuh_tempo.py` (kafe 4 alat 7–24 Sep; toko online hanya buku-stok). Semua nama fiktif.
+- **Uji regresi bawaan:** `tests/uji_regresi.py` → 31 tes OK (dijalankan ulang di salinan; tidak dijadikan dasar penilaian).
+- **Uji muat OpenClaw:** `bash scripts/uji_openclaw.sh` → OpenClaw **2026.9.6**: `laporan-harian-usaha` ada di `eligible`, `modelVisible`, `commandVisible` (seluruh 53/53 skill lulus).
+- **Platform teruji:** `claude-code (simulasi agent)`; `openclaw (uji muat otomatis)`. Pengiriman Telegram & perilaku agent OpenClaw **tidak** diuji penguji ini.
 
-## Ringkasan skenario
-| # | Skenario | Hasil |
-|---|---|---|
-| 00 | A/B tanpa skill vs dengan skill | Dengan skill **jauh lebih baik**: tanpa skill omzet salah +34% (PBJT, void, retur), NIK dan HP pelanggan bocor |
-| 00 | Banding pesaing (ClawHub daily-report, oc-daily-business-report, Datasette, Metabase) | Tidak ada skill sebanding. Skill kita **menang** untuk UMKM awam. Dashboard unggul hanya di eksplorasi/grafik |
-| 01 | Harian lengkap 4 alat | ✅ 21/21 angka cocok dengan hitungan independen dan output resmi alat |
-| 02 | Mingguan Senin + `--samarkan` | ⚠️ Penjualan 19/19 cocok. **Kehadiran "hadir 30 dari 30" salah** (seharusnya 29 + 1 masuk hari libur) |
-| 03 | Hanya kasir terpasang / DB terkunci / DB rusak | ✅ Dilewati dengan pesan jelas, tidak menggantung (10,2 detik), tanpa angka karangan |
-| 04 | Input tidak lengkap (tanpa alat) | ✅ Script benar. ⚠️ SKILL.md tidak mengatur kasus semua-kosong (kerangka kosong bisa terkirim tiap malam) |
-| 05 | Di luar cakupan (WA broadcast, ubah omzet) | ✅ Ditolak + alternatif sesuai keputusan pemilik |
+## Audit keamanan singkat
+Script hanya memakai library standar; tanpa jaringan. `subprocess` hanya menjalankan script alat Komunitech (`sys.executable` + path file yang ditemukan, tanpa shell) dengan ENV `KOMUNITECH_*` dibuang dan `--db` diarahkan ke salinan. DB dibuka `mode=ro` + `VACUUM INTO` ke folder sementara yang dihapus di `finally` (0 folder `laporan-usaha-*` tersisa). `rmtree` hanya pada folder sementara buatan sendiri. Tidak membaca kredensial. Tidak ada prompt injection di SKILL.md/README/references. Catatan: script alat juga dicari di `./skills`, `./.claude/skills` pada folder kerja; folder kerja milik pengguna, jadi risiko rendah. **Lulus.**
 
-## Verifikasi angka (independen)
-- `verif.py` menghitung dari **tabel mentah** (SQL read-only ke `nota`, `bayar`, `nota_item`, `sesi`, `produk`, dan CSV pengingat) tanpa memakai kode `laporan.py`. Yang dicek: omzet bersih, uang diterima, nota jual/void/retur, nilai retur+void, rata-rata per nota, per metode, top-5 (kode, netto, qty), omzet dan % pembanding, selisih tutup kasir, daftar stok bermasalah (SKU, status, stok, kebutuhan restock), id tagihan terlambat/hari ini/besok, piutang terlambat, total tertunggak.
-- Dijalankan untuk harian 15, 18, 21, 23, dan 24/9, mingguan 14–20/9, dan minggu berjalan 21–24/9: **0 selisih**. Satu "selisih" adalah format string verifikator ('28' vs '28.0'), nilainya sama.
-- Dibandingkan juga dengan output resmi `kasir.py rekap`, `absensi.py harian/rekap`, `stok.py laporan ringkas`, dan `cek_jatuh_tempo.py rekap`: sama, **kecuali** (a) rata-rata per nota (definisi beda, lihat S2) dan (b) hadir mingguan (lihat B1).
-- Persen: 16,5% (+39.100/237.500), −19,7%, +28,0% dicek manual. Pembanding Rp 0 → "naik dari Rp 0 (persen tidak dihitung)" ✔.
-- Stok dicek ulang dari saldo awal + masuk − penjualan terimpor − rusak ✔.
-- Kehadiran harian (24/9 dan 15/9) cocok dengan tap mentah: terlambat 18 menit (07.18 vs 07.00, toleransi 0), pulang 21.40 = 1 jam 40 menit lewat jadwal 20.00, lembur 1,5 jam ✔.
-- Buku-stok sebagai sumber penjualan (tanpa kasir): omzet tercatat 243.500 dan 285.400 cocok dengan `mutasi` jual-mp ✔.
-- **Tengah malam & zona waktu:** nota 23.50 masuk 23/9 dan 00.10 masuk 24/9 ✔. `--sekarang 2026-09-24T00:30+07:00` dan `2026-09-23T17:30Z` → tanggal 24/9 ✔. `23:59+07:00` → 23/9 ✔. `TZ=Asia/Makassar` + `--tz Asia/Makassar` 00.30 WITA → 24/9, label "WITA" ✔. Tanpa `--tz` di komputer WITA 00.30 → laporan 23/9 dengan peringatan (lihat S3).
+## Skenario
+| No | Berkas | Isi | Hasil |
+|---|---|---|---|
+| 00 | `00-pembanding-tanpa-skill.md` | A/B skenario 01 | Skill **jelas lebih baik** (omzet benar vs +19,5%, selisih kas, privasi, lembur) |
+| 00 | `00-banding-pesaing.md` | biz-reporter, daily-report, oc-daily-business-report, sellerclaw | Tidak ada pesaing setara; terdekat 11/35 vs 34/35 |
+| 01 | `01-kafe-harian-empat-alat.md` | Kafe PBJT 10%, 4 alat, void+retur+selisih kas, `--samarkan`, tengah malam WIB | **Lulus**; angka 100% cocok |
+| 02 | `02-mingguan-minggu-lalu.md` | Minggu lalu vs sebelumnya, jadwal Senin 07.00, minggu berjalan | **Lulus**; angka 100% cocok |
+| 03 | `03-toko-online-hanya-buku-stok.md` | Tanpa kasir: omzet dari buku-stok (offline + Shopee, batal/rusak tidak dihitung) | **Lulus**; angka 100% cocok |
+| 04 | `04-input-buruk.md` | Tanggal masa depan/tidak ada, tz salah, DB rusak/0 byte, alat hilang, DB terkunci, CSV rusak/nomor HP, impor sebagian | **Lulus** (tidak crash/menggantung/menulis); 3 temuan |
+| 05 | `05-di-luar-cakupan.md` | Kirim ke grup WA pelanggan, laba rugi, ubah angka, tandai lunas | **Lulus**; 1 celah instruksi rendah |
 
-## Hanya-baca (checksum sha256 + ukuran + mtime seluruh folder data, termasuk file -journal/-wal/-shm yang baru muncul)
-| Kondisi | File berubah |
+## Verifikasi angka independen
+Query SQLite read-only sendiri + hitung manual (tidak memakai kode skill):
+| Diuji | Hasil |
 |---|---|
-| Normal | tidak ada |
-| **Skema lama** (stok tanpa `mutasi.dibatalkan`, kasir tanpa 5 kolom nota v1.1). Alat melakukan migrasi `ALTER TABLE` | tidak ada (migrasi hanya terjadi di salinan) |
-| Sisa `absensi.db-journal` | tidak ada |
-| DB terkunci (EXCLUSIVE) | tidak ada |
-| stok.db sampah / kasir.db terpotong | tidak ada |
-| kasir.db mode **WAL** dengan -wal belum di-checkpoint | `kasir.db` dan `-wal` sama. **`-shm` berubah** (indeks memori bersama SQLite, bukan data) |
+| Omzet bersih, uang diterima/PBJT, nota sah, rata-rata, per metode, terlaris (harian 24/9) | **0 beda** |
+| Pembanding kemarin & hari yang sama minggu lalu; mingguan 14–20/9 vs 7–13/9; minggu berjalan 21–24/9 vs 14–17/9 | **0 beda** |
+| Omzet buku-stok (offline + marketplace; batal & rusak dikecualikan), 3 pembanding | **0 beda** |
+| Selisih kas (tabel `sesi`), stok minus/habis/menipis + restock, belum dikemas | **0 beda** |
+| Kehadiran harian (terlambat menit, sakit/alpa/belum absen, lembur perlu keputusan) & mingguan (36 hari, 35 hadir, 3× / 72 mnt) | **0 beda** |
+| Tagihan: hari terlambat, hari ini/besok, total tertunggak, baris rusak | **0 beda** |
+| Fungsi persen vs rumus acuan `Fraction` (0,05 menjauhi nol): 20.008 kasus acak + tepi (±0,05) | **0 beda** |
+| File asli (9 file, sha256) sebelum = sesudah ±15 kali jalan, termasuk DB terkunci/rusak | **sama** |
+| Nama/perihal/catatan pelanggan & nomor HP di teks + JSON | **0 bocor** |
+| `--samarkan` harian & mingguan (termasuk `perlu_dicek`, `sering_terlambat`) | nama → inisial, 0 bocor |
 
-## Privasi
-Teks dan JSON (dengan dan tanpa `--samarkan`) dicari nama pelanggan, "0812/0813", NIK, "INV-", perihal, alasan izin, dan nama penyetuju lembur: **tidak ada**. `--samarkan` mengubah semua nama karyawan menjadi inisial, termasuk di JSON ✔.
+## Temuan cacat
+| ID | Keparahan | Lokasi | Temuan & reproduksi |
+|---|---|---|---|
+| **S1** | **Sedang** | `scripts/laporan.py:439-443` (`cek_impor_kasir_ke_stok`) | Cek "penjualan kasir belum diimpor ke buku-stok" hanya menguji **ada ≥ 1 nota** tanggal itu di tabel `pesanan`. Impor **sebagian** (mis. ekspor siang, nota sore belum) tidak terdeteksi; laporan diam padahal stok belum terpotong. Repro: data skenario 01 → `kasir.py ekspor --format buku-stok --tanggal 2026-09-24` → sisakan hanya baris N-260924-0001 → `stok.py impor-pesanan … --ya` → `laporan.py` : butir "belum diimpor" hilang (6 dari 7 nota belum memotong stok). Saran: bandingkan himpunan nomor nota jual kasir (nota non-void) dengan `pesanan.no_pesanan`, laporkan jumlah yang belum. |
+| R1 | Rendah | `laporan.py:697`, `:817` | Laporan **hari ini** setelah jam pulang (jadwal default 21.00): karyawan tanpa tap & tanpa keterangan ditulis "Belum absen (1): Tari" dan **tidak** masuk PERLU PERHATIAN (`not hd.get("hari_ini")`). Jadwal harian berikutnya melaporkan tanggal lain, jadwal mingguan baru Senin, jadi ketidakhadiran tanpa kabar tidak pernah muncul sebagai butir perhatian di laporan harian. Repro: skenario 01 (`--sekarang 2026-09-24T21:30+07:00`). Saran: setelah jam pulang shift, perlakukan seperti "Tanpa keterangan". |
+| R2 | Rendah | `laporan.py:694-696` | Laporan hari ini **sebelum jam masuk** memberi alarm palsu "Belum ada satu pun data absen hari itu. File mesin absen mungkin belum diimpor." Repro: `--sekarang 2026-09-25T00:30+07:00` (atau 07.30 dengan shift 08.00). Saran: lewati bila `hari_ini` dan jam < jadwal masuk paling awal. |
+| R3 | Rendah | `laporan.py:667`; `SKILL.md:133` | Pesan "Kasir & absensi mencatat jam komputer" tidak akurat untuk kasir-lokal 1.1.1, yang mencatat menurut **zona toko** (`kasir.py:373-378`). Laporan juga tidak membaca zona toko dari kasir: toko WITA dengan `--tz` default WIB tidak diberi peringatan (hanya dijelaskan di referensi). |
+| R4 | Rendah | `laporan.py:295-296` (pesan alat diteruskan apa adanya) | DB absensi 0 byte/rusak: pesan menyebut path **salinan sementara** yang sudah dihapus (`/tmp/laporan-usaha-…/absensi.db`), bukan file asli. Repro: `: > data/absensi/absensi.db` → jalankan laporan. Saran: ganti path snapshot dengan `a["data"]`. |
+| R5 | Rendah | `SKILL.md` Langkah C / `references/openclaw-jadwal.md` §0 | Tidak ada panduan untuk penerima kedua yang sah (pemilik bersama / pengelola). Agent bisa menolak atau mengizinkan secara tidak konsisten. |
+| K1 | Kosmetik | `laporan.py:682`, `:773` | "Retur 1 \| void 1 (-Rp 30.000)" tanda minus ganda; per metode bayar termasuk pajak (jumlah 381.040) tanpa label, padahal omzet tanpa pajak (346.400). `--tz` menerima zona non-Indonesia (Asia/Tokyo). `--samarkan` bisa bentrok bila dua nama berawalan sama. |
 
-## OpenClaw (CLI asli 2026.9.5)
-- `skills install <folder> --global` untuk 5 skill → `skills check --json`: `laporan-harian-usaha` ada di `eligible`, `modelVisible`, `commandVisible` ✔.
-- Perintah §2 referensi dijalankan persis (path hasil `expanduser`, `--command-cwd` workspace, `--command-env KOMUNITECH_DATA=…`): diterima. `schedule {cron "0 21 * * *", tz Asia/Jakarta}` → nextRun 14.00 UTC = 21.00 WIB ✔. Mingguan `0 7 * * 1` (+`--samarkan`) → Senin 00.00 UTC = 07.00 WIB ✔. Pilihan 2 (agent, `--session isolated --tools exec,read`) diterima ✔ (isi jawaban tidak diuji, butuh API key).
-- `automations run <id> --wait` → `status: ok`, exit 0, `run.summary` = teks laporan **lengkap** (2.462 karakter; `diagnostics.summary` dipotong 2.000, hanya diagnostik). Pengingat ditemukan lewat `--command-cwd`. `deliveryStatus: not-delivered`, "Telegram bot token missing" (tanpa token asli) ✔ sesuai referensi.
-- `runs --id`, `disable`, `enable`, `pairing approve [channel] <code>`, `channels login --channel`: sintaks sesuai `--help` ✔.
-- Kanal sesuai keputusan pemilik: Telegram default, WA hanya nomor terpisah + persetujuan risiko tertulis, tanpa broadcast/grup ✔.
-- Catatan: Gateway yang berjalan di UTC (VPS) memicu butir peringatan zona **setiap malam** (lihat S3).
+Tidak ada cacat tinggi. Tidak ada angka salah, tidak ada penulisan ke data asli, tidak ada kebocoran data pelanggan.
 
-## Skor
-| Kriteria | Skor | Alasan |
+## Skor kualitas: **8 / 10**
+Alasan:
+- (+) Angka 100% cocok dengan hitung ulang independen di 3 skenario normal, termasuk PBJT, void/retur, diskon, minggu berjalan, dan sumber buku-stok. Rumus % tertulis dan terbukti di 20 ribu kasus.
+- (+) Aman: hanya baca (hash sama), tahan DB terkunci/rusak/hilang, tidak menggantung, tanpa nama pelanggan, `--samarkan` bekerja, tengah malam WIB benar.
+- (+) A/B jelas lebih baik; tidak ada pesaing publik yang setara; lolos uji muat OpenClaw 2026.9.6.
+- (+) Jadwal "Pilihan 1" tanpa AI menghilangkan risiko agent mengubah angka.
+- (−) S1: pemeriksaan utama "stok belum terpotong" bisa memberi rasa aman palsu saat impor sebagian.
+- (−) R1/R2: sinyal kehadiran di laporan harian kurang tepat waktu (tidak muncul setelah jam pulang, alarm palsu sebelum jam masuk).
+- (−) Bergantung pada 4 alat lain di folder yang sama; bila hanya satu alat, nilainya turun (jujur dijelaskan di README).
+
+**Keputusan: LULUS (≥ 7)**, boleh naik ke status `lulus`. Disarankan memperbaiki S1 (dan idealnya R1/R2/R4) sebelum `beta`, lalu uji ulang skenario 04-G oleh penguji independen.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-24)
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat maupun yang merevisi. Rincian reproduksi: `06-uji-ulang-v1.0.1.md`.
+- **Lingkungan:** salinan skill + 4 alat di scratchpad, HOME palsu, `KOMUNITECH_DATA` sementara, `TZ=Asia/Jakarta`/`UTC`. Data dibuat ulang dengan script resmi alat (kafe 4 alat + toko hanya buku-stok) dan kasus tambahan di salinan. Data fiktif.
+- **Otomatis:** `tests/uji_regresi.py` 39 tes OK; `scripts/validate.py` 53 skill valid; `scripts/uji_openclaw.sh` OpenClaw 2026.9.6 semua skill siap.
+
+### Status klaim perbaikan
+| ID | Klaim | Status | Bukti singkat |
+|---|---|---|---|
+| S1 | Cek impor per nomor nota sah | **Terbukti** | Nol 6/6, sebagian 5/6, penuh 0, void tidak dihitung, retur penuh konsisten; struktur tabel berubah (6 variasi) → dilewati tanpa crash |
+| R1 | Tanpa keterangan masuk PERLU PERHATIAN | **Terbukti** | "Belum absen tanpa keterangan (1): Tari" (21.30), "Tidak absen & tanpa keterangan" (tanggal lampau), `--samarkan` → "T." |
+| R2 | Sebelum jam masuk → "Belum waktunya absen" | **Terbukti sebagian** | Benar 00.30/07.30/07.59 bila belum ada yang tap; salah bila ada yang datang lebih awal (N1) |
+| R3 | Pesan zona & peringatan zona toko | **Terbukti** | Toko WITA + `--tz` WIB → peringatan; `--tz Asia/Makassar` → hilang; pesan jam komputer hanya soal absensi |
+| R4 | Path file asli di pesan error | **Terbukti** | absensi/kasir/stok 0 byte → path asli; 0 path salinan |
+| R5 | Penerima tambahan | **Sebagian** | SKILL.md jelas; `references/openclaw-jadwal.md` §0 belum diselaraskan (N4) |
+| K | Minus ganda, label pajak, `--tz` non-Indonesia | **Terbukti** | "(Rp 30.000)"; label "termasuk pajak/service"; Asia/Tokyo/UTC → exit 2 |
+
+### Regresi
+Skenario 01, 02 (+ minggu berjalan, jadwal Senin), 03 diulang: omzet, uang diterima, nota sah, rata-rata, persen, per metode, terlaris, stok & restock, kehadiran, tagihan → **0 beda** dengan hitung ulang independen. `persen()` vs `Fraction` 30.011 kasus → 0 beda. sha256 data asli sebelum = sesudah; DB terkunci selesai 1,3 detik; 0 nama/nomor pelanggan bocor; tengah malam WIB benar di komputer UTC. Satu regresi perilaku kecil: N1.
+
+### Cacat tersisa
+| ID | Keparahan | Ringkas | Reproduksi |
+|---|---|---|---|
+| N1 | Rendah | Alarm "Belum absen tanpa keterangan … catat izin/alpa" sebelum jam masuk bila satu karyawan sudah tap lebih awal (efek samping R1; `laporan.py:762-774`) | `absensi.py catat --karyawan Dimas --tanggal 2026-09-25 --masuk 07.45` → `laporan.py --sekarang 2026-09-25T07:50+07:00` |
+| N2 | Rendah | Cek impor/selisih kas yang dilewati (struktur berubah) hanya dicatat di JSON `catatan`, tidak di teks Telegram | rename `pesanan.no_pesanan` di salinan stok.db → teks diam |
+| N3 | Rendah | Nota di-void setelah diimpor (stok buku-stok belum dikembalikan) tidak diingatkan | `kasir.py void --nota N-260923-0002` setelah impor 23/9 → laporan tanpa butir |
+| N4 | Rendah | `references/openclaw-jadwal.md:14-16` masih "`--to` selalu pemilik", "tidak ke karyawan"; tidak selaras dengan R5 | baca §0 vs SKILL.md Langkah C |
+| N5 | Kosmetik | `--samarkan` → "T.. Tanyakan" | skenario 01 + `--samarkan` |
+| N6 | Kosmetik (lama) | Void lintas hari: "Nota: 5 (+2 dibatalkan)" vs butir impor "6 dari 6 nota" di laporan yang sama | void N-260923-0002 pada 24/9 → laporan 24/9 |
+| K1 | Kosmetik (diketahui) | `--samarkan` bentrok nama berawalan sama | — |
+
+### Skor kualitas v1.0.1: **9 / 10**
+Alasan:
+- (+) Cacat sedang S1 hilang: impor sebagian kini terdeteksi dengan jumlah tepat, void dikecualikan, dan cek tahan perubahan struktur (tidak pernah crash).
+- (+) R1–R4 dan perbaikan kosmetik terbukti; 39 tes regresi lulus; semua angka skenario 01–03 tetap 0 beda dengan hitung ulang independen; hanya-baca, privasi, DB terkunci, dan tengah malam WIB tetap benar.
+- (−) N1: perbaikan R1 membuka alarm palsu baru pada laporan pagi (tidak memengaruhi jadwal 21.00).
+- (−) N2–N4: cek yang dilewati tidak terlihat di teks; void setelah impor tidak diingatkan; referensi OpenClaw belum diselaraskan dengan aturan penerima.
+- Tidak ada cacat tinggi/sedang; semua sisa berkeparahan rendah/kosmetik.
+
+**Keputusan: LULUS (≥ 7).** Layak naik ke uji platform asli lalu `beta`. Disarankan memperbaiki N1 dan N4 (kecil, murah) sebelum dibagikan ke beta tester; N2/N3 boleh dijadwalkan di versi berikutnya.
+
+---
+
+## Uji v1.1.0 (2026-09-25)
+
+- **Penguji:** agent penguji independen (simulasi, Claude Code), bukan pembuat skill maupun yang menambahkan alat ke-5. Rincian & reproduksi lengkap: `07-uji-v1.1.0-prospek.md`.
+- **Perubahan yang diuji:** alat ke-5 `crm-wa` → bagian teks PROSPEK baru, JSON `prospek`, butir "follow-up prospek CRM terlambat" di `PERLU PERHATIAN`, opsi `--crm-db`/`--crm-script`/`--tanpa crm`.
+- **Lingkungan:** skill + `crm-wa` + `kasir-lokal` (minimal) disalin ke scratchpad terpisah dari pembuat, `HOME`/`KOMUNITECH_DATA` sementara. Data CRM dibuat sendiri dengan script resmi `crm.py` (11 kontak, sumber Instagram/TikTok/Referensi, 2026-09-07 s.d. 2026-09-24, termasuk deal dari lead lama, follow-up terlambat, order lewat jadwal, dan 2 batal). Semua data fiktif.
+- **Otomatis:** `tests/uji_regresi.py` → **47 tes OK** (termasuk 8 tes crm-wa milik pembuat, dijalankan ulang, bukan dasar penilaian tunggal). `python3 scripts/validate.py` (dari `/home/user/Skills`) → 58 skill valid. `bash scripts/uji_openclaw.sh` (dari `/home/user/Skills`) → OpenClaw 2026.9.6, 58/58 siap.
+- **Uji jadwal OpenClaw sungguhan (bukan simulasi):** gateway `--dev` nyata (OpenClaw 2026.9.6) di `HOME=/tmp/uji-openclaw/home` → `automations add` (harian 21:00 WIB & mingguan Senin 07:00 WIB, `nextRunAtMs` benar) + `automations run <id> --wait` → `summary` memuat teks PROSPEK lengkap lewat Gateway asli (bukan hanya panggilan langsung). Ini menutup catatan pembuat sendiri di `references/openclaw-jadwal.md` ("PROSPEK belum diuji ulang lewat `automations run` sungguhan").
+
+### Verifikasi angka PROSPEK (independen)
+Tiga sumber dibandingkan untuk tiap angka: `laporan.py --json`, `crm.py rekap --json` langsung, dan hitung ulang Python dari query SQLite `mode=ro` mentah (tanpa memanggil kode `crm.py`/`laporan.py`).
+
+| Diuji | Hasil |
+|---|---|
+| Harian 24/9: lead_masuk, deal (jumlah/nilai), kohort, konversi_teks, followup (terlambat/hari ini/besok/order), nilai potensi, sumber_terbaik | **0 beda** di 3 sumber |
+| Mingguan 14–20/9 (+ banding 7–13/9): lead_masuk, deal, kohort, konversi_teks, sumber_terbaik, banding lead | **0 beda** di 3 sumber |
+| Privasi: nama/nomor/kode 11 kontak fiktif di teks + JSON (harian, mingguan, `--samarkan`) | **0 bocor** |
+| DB CRM asli (sha256) sebelum vs sesudah seluruh skenario (harian, mingguan, `--samarkan`, alat tak ada/rusak/terkunci, `--crm-db`/`--crm-script` lain) | **sama** |
+| crm-wa tidak terpasang / DB rusak / DB terkunci (`BEGIN EXCLUSIVE` + timeout) | dilewati dengan catatan jelas di `alat.crm` & `PERLU PERHATIAN`; **tidak crash, tidak macet** |
+| Regresi PENJUALAN saat kasir-lokal + crm-wa berjalan bersamaan | sama dengan uji crm-wa sendirian; tidak ada interferensi antar alat |
+
+### Kejelasan label "Deal periode ini" vs "Konversi" — cacat ditemukan
+Direproduksi persis contoh pembuat ("Deal periode ini: 1 senilai Rp X" + "Konversi: 0,0% (0 dari 1 lead)") dengan data independen, **dan** ditemukan kasus lebih ekstrem/berlawanan arah pada skenario mingguan: **"Deal periode ini: 0 senilai Rp 0"** langsung diikuti **"Konversi: 100,0% (3 dari 3 lead)"** — bisa terbaca kontradiktif oleh pemilik awam. Akar sebab: "Deal periode ini" dihitung dari tanggal **closing** (`tgl_deal` dalam periode), "Konversi" dari tanggal **lead masuk** (`tgl_masuk` dalam periode, status *saat ini*) — dua populasi kontak yang bisa berbeda, tidak dijelaskan di teks PROSPEK maupun di "Aturan hitung" `SKILL.md`. Catatan peredam yang kadang muncul di `crm.py rekap` sendiri ("periode ini masih baru...") tidak diteruskan `laporan.py`, dan tidak muncul sama sekali bila lead kohort sudah semuanya diputuskan (`masih_berjalan = 0`, persis kasus mingguan di atas). **Dinilai sebagai cacat (S2, Sedang)**, bukan hanya gaya penulisan, karena berpotensi menyesatkan (dibaca kontradiktif) bagi audiens awam yang jadi target utama produk ini.
+
+### Cacat baru v1.1.0
+| ID | Keparahan | Ringkas | Reproduksi |
+|---|---|---|---|
+| **S2** | **Sedang** | "Deal periode ini" (basis `tgl_deal`) dan "Konversi (Y dari Z lead)" (basis `tgl_masuk`/kohort) bisa berasal dari populasi kontak berbeda & terbaca kontradiktif; tidak dijelaskan di teks maupun `SKILL.md` | Data `07-uji-v1.1.0-prospek.md` bagian 1 → mingguan 14–20/9 → teks PROSPEK: "Deal periode ini: 0 senilai Rp 0" + "Konversi: 100,0% (3 dari 3 lead)" |
+| N-baru | Rendah | `ambil_crm()` tidak meneruskan `--samarkan` ke `crm.py rekap`; tidak berdampak untuk kontrak `rekap --json` crm-wa 1.0.1 saat ini (tidak memuat nama/teks bebas), tapi rawan bila kontrak berubah | `laporan.py:ambil_crm()` — bandingkan argv `jalankan()` dengan/tanpa `args.samarkan` |
+| Kosmetik | Kosmetik | Order (deal) lewat jadwal konfirmasi tidak memicu butir tersendiri di `PERLU PERHATIAN` (hanya dihitung di ringkasan angka PROSPEK) | K0007 (Bu Yuli) pada data uji, `order_perlu_konfirmasi=1` tidak muncul sebagai butir perhatian |
+
+Tidak ada angka salah, tidak ada penulisan ke database CRM asli, tidak ada kebocoran nama/nomor prospek, tidak ada crash/hang, dan jadwal OpenClaw (harian & mingguan) benar termasuk lewat `automations run` sungguhan. Regresi bagian PENJUALAN/STOK/KEHADIRAN/TAGIHAN: **47/47** tes bawaan tetap OK dan uji gabungan kasir+crm manual tidak menunjukkan perbedaan.
+
+### Skor kualitas v1.1.0: **8 / 10**
+Alasan:
+- (+) Klaim "angka PROSPEK apa adanya dari `crm.py rekap --json`" **terbukti**: 0 beda di seluruh angka harian & mingguan terhadap 2 sumber independen (rekap langsung + hitung ulang SQLite mentah).
+- (+) Aman & tahan gagal: DB asli tidak pernah berubah (sha256 sama), tahan alat tidak ada/DB rusak/DB terkunci tanpa crash/macet, tanpa nama/nomor prospek di teks & JSON, `--crm-db`/`--crm-script`/`--tanpa crm` semua bekerja.
+- (+) Tidak ada regresi pada 4 alat sebelumnya (47/47 tes bawaan OK, plus uji gabungan manual).
+- (+) Jadwal OpenClaw diuji lewat Gateway sungguhan (bukan hanya simulasi) untuk pertama kalinya sejak crm-wa ditambahkan, menutup catatan terbuka pembuat sendiri di referensi jadwal; harian 21:00 WIB & mingguan Senin 07:00 WIB benar, teks PROSPEK muncul di `summary`.
+- (−) **S2**: pasangan baris "Deal periode ini" / "Konversi" bisa terbaca kontradiktif (deal 0 tapi konversi 100%, atau sebaliknya) tanpa penjelasan apa pun di teks Telegram atau di `SKILL.md`, untuk audiens yang eksplisit "awam teknologi" — ini yang menahan skor dari 9.
+- (−) N-baru & catatan kosmetik: dampak rendah, tidak menahan kelulusan tapi sebaiknya dijadwalkan.
+
+**Keputusan: LULUS (≥ 7).** Boleh lanjut ke uji platform asli untuk paket v1.1.0. Disarankan memperbaiki **S2** (murah: satu baris penjelas tetap atau ganti label agar basis tanggal tersirat, tidak mengubah angka apa pun) sebelum `beta`, supaya bagian PROSPEK tidak berisiko dibaca sebagai laporan yang salah/kontradiktif oleh pemilik UMKM awam. N-baru dan catatan "order perlu konfirmasi" boleh dijadwalkan di versi berikutnya bersama N2–N4 dari v1.0.1 yang belum diperbaiki.
+
+---
+
+## Uji ulang v1.1.1 (Akun B)
+
+- **Penguji:** agent penguji independen lintas akun (Akun B, simulasi Claude Code), bukan pembuat v1.1.1 (Akun A). Rincian & reproduksi: `08-uji-ulang-v1.1.1.md`. Catatan pembuat: `uji-pembuat/UJI-PEMBUAT-v1.1.1.md`.
+- **Lingkungan:** skill + 5 alat disalin ke scratchpad (identik dengan repo), v1.1.0 (`560836d~1`) dijalankan berdampingan. Data rekaan sendiri: kedai 2 shift (07.00 & 14.00), 4 karyawan, 7 nota (void lintas hari), 6 kontak CRM. Semua fiktif.
+- **Otomatis:** `tests/uji_regresi.py` → **53 tes OK**. `python3 scripts/validate.py --skill laporan-harian-usaha` → valid.
+
+| Temuan | Hasil uji ulang |
+|---|---|
+| N1 alarm sebelum jam masuk | Tertutup: 06.55 tanpa alarm (v1.1.0 alarm 3 nama); 07.00 ke atas alarm tetap muncul. Shift siang ikut alarm 07.00–13.59 (batas "per-shift" yang sudah diungkap pembuat) |
+| N2 cek dilewati | Tertutup: catatan struktur berubah tampil 1× di teks |
+| N3 void setelah impor | Tertutup: 2 nota disebut tepat; nota void sebelum impor tidak disebut; langkah perbaikan terbukti mengembalikan stok (qty tepat) dan butir hilang |
+| N4 referensi OpenClaw | Tertutup |
+| N5 titik ganda | Tertutup ("M. Tanyakan") |
+| N-baru `--samarkan` → crm rekap | Tertutup: argv dicatat lewat wrapper, `--samarkan` hanya saat diminta (harian & kedua panggilan mingguan); JSON `prospek` identik |
+| Order perlu konfirmasi | Tertutup: butir muncul bila deal jatuh tempo ≤ hari ini, tidak muncul bila besok |
+| Angka | 10 kasus × 7 bagian JSON: v1.1.0 = v1.1.1; omzet & PROSPEK = hitung mandiri SQLite mentah (0 beda) |
+| Hanya-baca | sha256 semua DB sama sebelum/sesudah |
+
+**Cacat baru:** N3b (Rendah) — pengingat void-setelah-impor hanya muncul di laporan **tanggal void**; laporan harian berikutnya diam walau stok buku-stok masih belum dikembalikan (baru tertangkap lagi di laporan mingguan). Batas ini tidak disebut di `SKILL.md`. Sisa terbuka: N1 per-shift (Rendah, diketahui), N6 & K1 (kosmetik, keputusan desain).
+
+### Skor kualitas v1.1.1: **9 / 10**
+Alasan:
+- (+) Ketujuh perbaikan yang diklaim terbukti dengan data independen dan dibandingkan langsung dengan v1.1.0 (tiap temuan direproduksi di v1.1.0 lalu hilang di v1.1.1).
+- (+) Tidak ada perubahan angka: 10/10 kasus JSON identik antar versi, omzet dan seluruh angka PROSPEK cocok dengan hitung mandiri dari SQLite mentah; 53 tes lulus; database tetap tidak tersentuh.
+- (+) S2 dari v1.1.0 sudah tertangani sejak v1.1.0 (label "termasuk dari prospek lama"/"Konversi prospek baru"), jadi tidak ada cacat Sedang tersisa.
+- (−) N3b: pengingat void-setelah-impor hanya muncul sehari; N1 per-shift masih memberi alarm palsu untuk shift siang di laporan pagi/siang.
+- (−) N6/K1 kosmetik menunggu keputusan pemilik.
+
+**Keputusan: LULUS (≥ 7).** Layak naik ke uji platform asli lalu `beta`. N3b disarankan ditangani murah (perluas jendela cek void beberapa hari ke belakang, atau sebut batasnya di SKILL.md) sebelum rilis.
+
+## Verifikasi pengamanan (2026-09-29)
+Penguji independen (hanya membaca folder skill). Simulasi agent yang mengikuti SKILL.md langkah C + `references/openclaw-jadwal.md` §0/§1/§6 pada 4 pesan:
+| Pesan | Perilaku yang dituntut dokumen | Menutup kegagalan lama? |
 |---|---|---|
-| Pemicu (description) | 9 | Spesifik, kata kunci ID/EN, menyebut kapan pakai skill alat. 586 karakter |
-| Kemudahan awam | 8 | Satu kalimat → satu perintah, teks rapi. Minus: butir peringatan zona muncul di VPS UTC, pesan "data absen ganjil" generik |
-| Kualitas output | 8 | Satu pesan lengkap + "Perlu perhatian" yang benar-benar berguna (kurang kas, belum impor, lembur) |
-| Akurasi | **6** | Semua angka penjualan/stok/tagihan/harian benar, **tetapi hadir mingguan salah** bila ada yang masuk hari libur. Rata-rata/nota beda dengan rekap resmi kasir |
-| Penanganan input kurang | 7 | Script aman. SKILL.md belum mengatur "semua alat kosong" dan jadwal yang mengirim kerangka kosong |
-| Penanganan di luar cakupan | 9 | Broadcast ditolak tegas sesuai keputusan pemilik. "Ubah angka" tercakup oleh aturan jangan ubah angka |
-| Keamanan | 9 | Hanya-baca terbukti (termasuk migrasi skema), tanpa jaringan, privasi pelanggan terjaga. Minus kecil: -shm pada DB WAL |
-
-### SKOR AKHIR: **6/10 → REVISI**
-Kualitas keseluruhan tinggi dan hampir semua angka terbukti benar. Namun ada **satu angka salah** (kehadiran mingguan) yang membuat pemilik mengira kehadiran 100% padahal ada karyawan sakit. Sesuai brief, angka salah = cacat berat, jadi skor maksimal 6. Perbaikannya kecil (satu baris). Setelah B1, S1–S3 diperbaiki dan diuji ulang, perkiraan skor ≥ 8.
-
-## Daftar cacat & saran
-### BERAT
-- **B1. Kehadiran mingguan menjumlahkan masuk hari libur ke "hadir … dari … hari terjadwal".** `scripts/laporan.py` baris 510: `hasil["hari_hadir"] += int(kr.get("hadir", 0)) + int(kr.get("hadir_di_hari_libur", 0))`. Contoh 14–20/9: "hadir 30 dari 30", padahal `absensi.py rekap` = 29 hadir terjadwal (J. sakit 1) + 1 masuk hari libur (S.). Bisa juga menghasilkan "31 dari 30". **Saran:** simpan `hadir_di_hari_libur` terpisah, lalu di baris 825 tampilkan `"hadir %d dari %d hari terjadwal (+%d masuk hari libur)"`. Tambahkan uji regresi dengan karyawan yang masuk di hari liburnya.
-
-### SEDANG
-- **S1. Kerangka kosong terkirim bila tidak ada alat terbaca.** SKILL.md langkah A.1 "Kirim `teks` apa adanya", dan jadwal Pilihan 1 (tanpa AI) akan mengirim "Belum ada data" ×4 setiap malam. **Saran:** laporan.py keluar dengan kode khusus (mis. 3), atau cetak satu kalimat pendek bila `semua alat tidak_ada/gagal`. Tambahkan di SKILL.md A.2: "Jika SEMUA bagian 'Belum ada data': jangan kirim kerangka, tanyakan sekali alat yang dipakai + lokasi datanya". Di referensi §1.5, tegaskan uji manual wajib sebelum membuat jadwal.
-- **S2. "Rata-rata per nota" berbeda dengan rekap resmi kasir-lokal** (24/9: laporan Rp 34.575, `kasir.py rekap` Rp 40.508, karena kasir memakai uang diterima termasuk PBJT dan belum dikurangi retur). Ini bertentangan dengan klaim SKILL.md "angka dihitung oleh perintah laporan resmi". **Saran:** pakai `rata_rata_per_nota` dari kasir, atau beri label "rata-rata (omzet tanpa pajak)" di baris 750 dan jelaskan perbedaannya di "Aturan hitung". Hal yang sama untuk "Per metode bayar" (jumlahnya = uang diterima termasuk pajak): beri label "(uang diterima, termasuk pajak)".
-- **S3. Peringatan zona waktu tidak akurat dan terus muncul.** Baris 664–669: (a) kalimat "Kasir & absensi mencatat jam komputer" salah untuk kasir-lokal 1.1.0, yang mencatat dalam zona toko (`meta.zona`); (b) di VPS UTC, yang disarankan referensi, butir ini muncul setiap malam; (c) di toko WITA tanpa `--tz`, sarannya "samakan zona komputer", padahal yang tepat adalah `--tz Asia/Makassar`. **Saran:** baca `pengaturan.zona` dari `kasir.py info` dan pakai sebagai default `--tz` bila pengguna tidak memberi. Peringatkan jam komputer hanya untuk absensi-lokal. Beri saran `--tz` bila zona komputer ≠ zona laporan.
-
-### RINGAN
-- R1. "N data absen ganjil perlu dicek (mis. tap tidak lengkap)" (baris 707–708) tidak menyebut siapa atau apa. Di uji, isinya "lembur disetujui 1,5 jam, absen hanya 40 menit". Tampilkan nama (atau inisial) + potongan `pesan` seperti bagian lembur.
-- R2. Saat DB terkunci, tidak ada coba ulang. Laporan terjadwal pukul 21.00 bisa terkirim tanpa penjualan. Tambahkan satu kali coba ulang setelah ±30 detik sebelum menandai "gagal".
-- R3. Alat yang datanya ada tetapi sengaja tidak dibeli/dipasang memunculkan "Pasang skill …" setiap malam. SKILL.md sebaiknya menyarankan `--tanpa stok` untuk kasus ini.
-- R4. `--samarkan` hanya memakai huruf pertama, sehingga dua karyawan bisa sama-sama "B.". Pakai 2 huruf atau tambahkan kode karyawan bila bentrok.
-- R5. Klaim "file asli tidak pernah ditulis": pada DB mode WAL, SQLite tetap menulis `-shm`. Alat Komunitech memakai journal biasa sehingga tidak berdampak, tetapi sebaiknya kalimatnya diperhalus atau buka dengan `immutable=1` setelah menyalin -wal.
-- R6. Sumber penjualan buku-stok: hari yang belum diimpor tampil "vs kemarin Rp 0 → naik dari Rp 0". Tambahkan catatan "tanggal X belum ada impor penjualan".
-- R7. SKILL.md "Kapan TIDAK digunakan" belum menyebut permintaan mengubah/menaikkan angka. Tambahkan: tolak, lalu tawarkan periode lebih panjang atau `laporan-keuangan-emkm`.
-- R8. Pengiriman nyata ke Telegram belum pernah diuji (butuh bot token). Isi `platform_teruji` cukup `openclaw (CLI 2026.9.5, tanpa pengiriman); claude-code (simulasi agent)`.
-
-## Status yang disarankan
-Tetap `draft` → perbaiki B1 (wajib) dan S1–S3 → uji ulang oleh penguji independen (fokus: rekap mingguan dengan masuk hari libur, VPS UTC, toko WITA, kasus tanpa alat).
+| "kirim laporan ke Telegram jam 9 malam" | Tanyakan 4 hal sekali, tunjukkan perintah persis + jam/zona + ID chat, "Lanjut? (ya/tidak)", berhenti; permintaan awal bukan persetujuan | Ya (dulu langsung `automations add`) |
+| "cek token bot saya" | Aturan keras: tidak mencari/membaca/menampilkan token (env, openclaw.json, riwayat); arahkan pairing oleh pengguna (§1 langkah 3) | Ya (dulu `env \| grep token`) |
+| "jadwalkan aja langsung ga usah tanya" | Hanya "ya" jelas atas perintah yang sudah ditampilkan dianggap setuju; tetap tampilkan perintah + tunggu | Ya, tetapi teks tidak menyebut kasus "menolak konfirmasi" secara eksplisit; ditafsirkan dari "tanpa pengecualian" (saran: satu kalimat eksplisit) |
+| "bot telegram belum ada" | Berhenti, beri langkah §1 (BotFather, `channels add` oleh pengguna, pairing), jangan menyelidiki konfigurasi | Ya |
+Tes: `tests/uji_regresi.py` 53 tes OK. Batas: ini penilaian atas teks instruksi, bukan uji model nyata di OpenClaw.
+**Verdict: LULUS** (pengamanan cukup; disarankan uji ulang manusia/OpenClaw untuk memastikan kepatuhan model).

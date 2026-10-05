@@ -1,9 +1,16 @@
 ---
 name: asisten-tulis-riset
-description: Menulis artikel/blog/materi SEO/whitepaper/newsletter/materi presentasi berbasis riset dengan sitasi [1][2] dan daftar pustaka, untuk UMKM, konsultan, profesional, dosen/guru Indonesia — alur brief, rencana riset, kumpul sumber (prioritas BPS/kementerian/OJK-BI/jurnal SINTA), kerangka, draf, revisi. Gunakan saat pengguna minta "tulis artikel", "artikel SEO", "blog post", "whitepaper", "newsletter", "materi presentasi berbasis data", research writing/content writing dengan kutipan, ATAU cek sumber & anti-halusinasi tulisan. TIDAK untuk caption/kalender medsos singkat (pakai caption-sosmed-umkm/kalender-konten-30hari) dan TIDAK untuk menulis tugas kuliah/skripsi yang diserahkan sebagai karya sendiri.
+description: Menulis artikel/blog/artikel SEO/whitepaper/newsletter/materi presentasi berbasis riset dengan sitasi [1][2] dan daftar pustaka, untuk UMKM, konsultan, profesional, dosen/guru; juga cek sumber & anti-halusinasi. Pemicu: "tulis artikel", "buatkan tulisan", "artikel SEO", "blog post", "whitepaper", "newsletter", "esai", "tugas kuliah", "skripsi", "makalah", research writing. ATURAN: (1) Tugas kuliah/esai/skripsi/makalah yang akan dikumpulkan atas nama pengguna: TOLAK menulis draf, esai, atau paragraf jadi (termasuk "ditulis ulang/dibumbui"); tawarkan hanya kerangka, sumber, umpan balik, atau sunting tulisan pengguna sendiri. (2) Sumber wajib dibuka, bertanggal, dikutip [n] dengan tanggal akses; pakai data periode terbaru yang tersedia, prioritaskan sumber resmi; klaim/angka tanpa sumber ditandai [perlu sumber]. Baca SKILL.md sebelum menjawab. Bukan untuk caption medsos singkat.
 ---
 
 # Asisten Tulis Riset
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+## ATURAN WAJIB (baca sebelum menjawab apa pun)
+1. Tugas kuliah/esai/skripsi/makalah untuk dikumpulkan atas nama pengguna: tolak menulis draf/paragraf jadi (termasuk "ditulis ulang/dibumbui"); tawarkan kerangka, sumber, umpan balik, atau sunting tulisan pengguna sendiri.
+2. Setiap angka/klaim faktual (termasuk perbandingan biaya/tren/"dua digit") wajib [n] dari sumber yang benar-benar dibuka, atau ditandai [perlu sumber]. Jangan ada klaim tanpa salah satunya.
+3. Pakai data periode TERBARU yang tersedia (cek rilis terbaru sumber resmi; jangan puas dengan angka tahun lalu), prioritaskan sumber resmi, sebut tanggal data dan tanggal akses; tandai bila data terbaru tidak ditemukan.
 
 ## Tujuan
 Membantu menulis artikel/blog/materi SEO/whitepaper/newsletter/materi presentasi yang **berbasis riset
@@ -60,9 +67,12 @@ tujuan, panjang). Jika pengguna ingin cepat, pakai default dan sebutkan asumsiny
    jujur** ke pengguna di awal (lihat Langkah 3), dan tawarkan dua opsi: (a) pengguna menempelkan
    sumber/data sendiri, atau (b) draf ditulis sebagai kerangka + [perlu sumber] di semua klaim faktual,
    tanpa kutipan dikarang.
-7. Sebelum menyerahkan hasil, jalankan **Checklist Verifikasi** di bagian bawah.
+7. **Tidak ada angka tanpa sumber:** perbandingan biaya/tarif/persentase (mis. "EDC memotong 2-3%") juga wajib `[n]` atau `[perlu sumber]` — jangan ditulis dari ingatan.
+8. Sebelum menyerahkan hasil, jalankan **Checklist Verifikasi** di bagian bawah (bila Python ada, jalankan `scripts/cek_sitasi.py` dan tampilkan ringkas hasilnya di akhir jawaban).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
 ### 1. Brief
 Kumpulkan info di atas. Simpan sebagai brief singkat (boleh pakai `templates/brief.md`) dan tampilkan
@@ -74,6 +84,11 @@ ringkasannya ke pengguna sebelum lanjut, supaya arah tulisan disepakati dulu.
   jelaskan ini soal integritas akademik, dan tawarkan sebagai gantinya: membantu **menyusun kerangka
   belajar**, **menyunting** draf yang sudah ditulis pengguna sendiri, atau **mencari sumber** yang bisa
   ia baca dan tulis ulang sendiri.
+- **Integritas akademik (keras):** pemicunya juga "bikinin esai", "makalah", "paper", "skripsi", "tugas
+  kuliah", "laporan praktikum". Boleh: kerangka, daftar sumber bersitasi, umpan balik atas tulisan
+  pengguna, parafrase suatu sumber **dengan kutipan**, cara menyitir. Tidak boleh: menulis esai/bab/draf
+  yang dikumpulkan sebagai karya pengguna. **Jangan menawarkan draf utuh untuk "ditulis ulang" atau
+  "dibumbui" — itu tetap ghostwriting.** Juga jangan membantu membuat tulisan "tidak ketahuan AI".
 - Jika topik menyangkut klaim kesehatan/medis, hukum, atau keuangan yang berisiko (mis. "obat ini
   menyembuhkan X", nasihat investasi spesifik): tulis dengan hati-hati, beri disclaimer, dan arahkan ke
   profesional — skill ini tidak menggantikan nasihat medis/hukum/keuangan personal.
@@ -166,6 +181,7 @@ pustaka satu per satu, cari angka tanpa kutipan.
 - [ ] Tidak ada URL/nama sumber/angka yang dikarang
 - [ ] Semua `[n]` di teks cocok dengan daftar pustaka; tidak ada nomor kosong/hilang
 - [ ] Angka/statistik penting semuanya berkutipan `[n]` atau ditandai `[perlu sumber]`
+- [ ] Perbandingan dengan produk/biaya/tarif lain (mis. "EDC 2-3%") juga berkutipan `[n]` atau `[perlu sumber]`
 - [ ] Opini penulis dibedakan jelas dari fakta bersumber
 - [ ] Tanggal data disebutkan (minimal tahun)
 - [ ] Kutipan langsung ≤ 25 kata, ditandai kutip, tidak berlebihan

@@ -3,14 +3,14 @@
 **Setiap malam satu pesan Telegram berisi omzet, stok, karyawan, dan tagihan usaha Anda. Tanpa aplikasi dashboard berlangganan, data tetap di komputer sendiri.**
 
 ## Manfaat
-- ✅ **Satu pesan, seluruh usaha.** Penjualan, stok menipis, siapa yang terlambat/alpa, lembur yang perlu diputuskan, dan tagihan jatuh tempo, digabung dari alat Komunitech yang sudah Anda pakai (Kasir Lokal, Buku Stok, Absensi Lokal, Pengingat Follow-up).
+- ✅ **Satu pesan, seluruh usaha.** Penjualan, stok menipis, siapa yang terlambat/alpa, lembur yang perlu diputuskan, tagihan jatuh tempo, dan prospek/pipeline CRM, digabung dari alat Komunitech yang sudah Anda pakai (Kasir Lokal, Buku Stok, Absensi Lokal, Pengingat Follow-up, CRM WA).
 - ✅ **Langsung kelihatan naik atau turun.** Omzet dibandingkan dengan kemarin dan hari yang sama minggu lalu dalam persen. Tiap Senin pagi ada laporan mingguan dibanding minggu sebelumnya.
 - ✅ **Masalah muncul sendiri.** Selisih uang laci, stok minus, penjualan kasir yang belum masuk buku stok, absen yang belum diimpor, dan piutang terlambat dikumpulkan di bagian "Perlu Perhatian".
 - ✅ **Angka apa adanya.** Semua angka diambil dari alat Anda. Bagian yang datanya belum ada ditulis "belum ada data", tidak diisi perkiraan. Rumus persen dan pembulatan tertulis jelas.
 - ✅ **Aman.** Hanya membaca data (tidak pernah mengubah kasir/stok/absen Anda), tanpa nama pelanggan di laporan, nama karyawan bisa disamarkan, dan hanya dikirim ke Anda sendiri.
 
 ## Cocok untuk siapa
-- Pemilik toko, warung, kafe, atau usaha jasa yang sudah memakai minimal satu alat lokal Komunitech: **Kasir Lokal**, **Buku Stok**, **Absensi Lokal**, atau **Pengingat Follow-up**. Makin banyak alat yang dipakai, makin lengkap laporannya.
+- Pemilik toko, warung, kafe, atau usaha jasa yang sudah memakai minimal satu alat lokal Komunitech: **Kasir Lokal**, **Buku Stok**, **Absensi Lokal**, **Pengingat Follow-up**, atau **CRM WA**. Makin banyak alat yang dipakai, makin lengkap laporannya.
 - Pemilik yang jarang di toko dan ingin tahu kondisi usaha dari HP tanpa membuka banyak aplikasi.
 - Anggota VIP yang memakai OpenClaw dan ingin laporan terjadwal ke Telegram.
 
@@ -40,9 +40,13 @@ Hadir 2 dari 5 terjadwal | Terlambat: Andi 08.12 | Alpa: Rina
 TAGIHAN & FOLLOW-UP
 - #2 piutang Rp 12.500.000, lewat 3 hari
 
+PROSPEK
+Prospek baru: 1 | Follow-up terlambat 1, hari ini 2 | Deal: 1 senilai Rp 6.000.000
+
 PERLU PERHATIAN
 1. Selisih kas saat tutup kasir: KURANG Rp 11.000
 2. Penjualan kasir hari ini belum diimpor ke buku stok
+3. 1 follow-up prospek CRM terlambat
 ```
 
 ## Cara pakai
@@ -74,5 +78,5 @@ Tidak. Data dibuka dalam mode baca saja dan disalin sementara untuk dihitung. Fi
 **Saya baru memakai Kasir Lokal saja. Apakah tetap berguna?**
 Ya. Bagian penjualan langsung terisi; bagian lain menulis "belum ada data" sampai alatnya dipakai. Tidak ada angka karangan.
 
-**Kenapa nama pelanggan yang belum bayar tidak muncul?**
-Sengaja, supaya laporan aman walau terbaca orang lain di HP Anda. Ketik "rekap pengingat" untuk melihat nama dan draf pesan penagihan dari skill Pengingat Follow-up.
+**Kenapa nama pelanggan/prospek yang belum bayar atau belum di-follow-up tidak muncul?**
+Sengaja, supaya laporan aman walau terbaca orang lain di HP Anda. Ketik "rekap pengingat" untuk tagihan, atau "follow-up hari ini"/"rekap CRM" untuk prospek — keduanya menampilkan nama dan draf pesan dari skill masing-masing (Pengingat Follow-up, CRM WA).
