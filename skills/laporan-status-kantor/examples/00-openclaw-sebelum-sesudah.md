@@ -457,3 +457,14 @@ Penguji independen. Metode: OpenClaw `--channel telegram` (tanpa kirim apa pun),
 Pemeriksaan independen (python): 24 Des 2026 = Kamis, 25 Des 2026 = Jumat, 1 Jan 2027 = Jumat, H-7 dari 25 Des = Jumat 18 Des 2026, Senin 4 Jan 2027. Semua tanggal pada teks percobaan 1-3 cocok; satu-satunya salah fakta adalah tahun pada ucapan percobaan 3. Tidak ada nominal THR per orang di ketiga teks grup.
 
 **VERDIK konteks Telegram v1.0.6: TIDAK LULUS** (rata-rata 7,43 < 8, meski 2/3 lulus). Cacat no. 1 (hanya bertanya) teratasi: ketiganya memberi teks pengumuman lengkap. Sisa untuk pembuat: larang kata "skill" di balasan ke pengguna, dan kunci tahun ucapan = tahun hari raya terakhir (2027 untuk Tahun Baru) lewat contoh/templat.
+
+## Uji ulang konteks Telegram v1.0.7 — 2026-10-05
+Penguji independen. OpenClaw `--channel telegram` (tanpa kirim), 3 percobaan, home bersih, pesan persis kunci `laporan-status-kantor` di teks-g9.json. Keluaran: `hasil/g9x-laporan-status-kantor-1..3`. Tanggal diperiksa independen (python): 24 Des 2026 Kamis, 25 Des Jumat, 1 Jan 2027 Jumat, H-7 = Jumat 18 Des 2026, 28 Des Senin, 2 Jan 2027 Sabtu.
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | Ya | Dua blok; tanggal benar; "Tahun Baru 2027"; tanpa THR per orang; H-7 18 Des; 3 pertanyaan; tanpa kata proses. |
+| 2 | 8,5 | Ya | Sama; kerangka pesan pribadi; 3 butir isian; tanpa kata proses. |
+| 3 | 8,5 | Ya | Dua blok; ucapan "Natal 2026 dan Tahun Baru 2027" benar; tanggal masuk dengan opsi 28 Des/2 Jan benar; 2 pertanyaan. |
+
+**Rata-rata 8,5. Lulus 3/3. VERDIK konteks Telegram v1.0.7: LULUS.** Cacat tahun ucapan dan kata "Skill ini" tidak muncul lagi.

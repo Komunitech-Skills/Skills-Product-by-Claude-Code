@@ -129,3 +129,6 @@ Uji ulang Telegram v1.0.6 (2026-10-05): 3 percobaan 8,0 / 8,3 / 6,0, rata-rata 7
 
 ## Riwayat revisi - v1.0.7 (2026-10-05)
 Dari uji ulang Telegram v1.0.6 (TIDAK LULUS). Perbaikan: aturan tahun ucapan + kata terlarang di SKILL.md, 2 butir checklist. Status: **menunggu uji ulang independen**.
+
+## Uji ulang konteks Telegram — 2026-10-05
+Lihat bagian "Uji ulang konteks Telegram" terakhir di `00-openclaw-sebelum-sesudah.md`: verdik LULUS (laporan-status-kantor 1.0.7 rata-rata 8,5, 3/3; agen-cs-toko 1.0.11 rata-rata 8,0, 2/3).

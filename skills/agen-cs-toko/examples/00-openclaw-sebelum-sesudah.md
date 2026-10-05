@@ -252,3 +252,14 @@ Penguji independen. Metode: OpenClaw `--channel telegram` (tanpa kirim apa pun),
 **Rata-rata: 7,75.** 1/2 percobaan lulus.
 
 **VERDIK konteks Telegram v1.0.10: TIDAK LULUS** (rata-rata 7,75 < 8; 1/2 lulus). Cacat no. 4 teratasi di kedua percobaan (label khusus WA ada). Sisa untuk pembuat: larang menyebut nama file/path & "basis pengetahuan" di balasan chat, dan jangan mengisi nama bank contoh (pakai `[isi: bank]`).
+
+## Uji ulang konteks Telegram v1.0.11 — 2026-10-05
+Penguji independen. OpenClaw `--channel telegram` (tanpa kirim), 3 percobaan, home bersih, pesan persis kunci `agen-cs-toko` di teks-g9.json. Keluaran: `hasil/g9x-agen-cs-toko-1..3`.
+
+| Percobaan | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | Ya | Menolak auto-balas (WA Web tidak resmi, risiko blokir) + Copilot; 8 template lengkap; template bayar berlabel "Khusus chat WhatsApp"; 3 pertanyaan; tanpa nama file/path. |
+| 2 | 8,0 | Ya | Sama; label khusus WA; tanpa nama file/path/bank karangan. Minus kecil: template stok menyebut "ready ya". |
+| 3 | 7,5 | Tidak | Isi benar (tolak + Copilot + 8 template + label WA), tetapi 4 pertanyaan (3 daftar + "Mau saya simpan paket ini...?"), melebihi batas 3. |
+
+**Rata-rata 8,0. Lulus 2/3. VERDIK konteks Telegram v1.0.11: LULUS.** Kebocoran nama file/path/"basis pengetahuan" tidak muncul lagi di ketiganya. Catatan pembuat: tahan pertanyaan tambahan "mau saya simpan" agar maks 3.
