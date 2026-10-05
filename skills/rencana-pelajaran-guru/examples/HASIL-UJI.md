@@ -111,4 +111,4 @@ garis pemisah/baris kosong berulang, catatan tempel Word/Docs sesuai tanda `#`; 
 (zipfile+XML, Python standar) + `tests/uji_buat_docx.py` (10 pemeriksaan lulus: XML valid, tabel, halaman baru,
 lembar siswa tanpa "Jawaban:", 4 input buruk); (d) jawaban permintaan kode/bunyi CP: rujukan BSKAP 046/H/KR/2025
 (18 Juli 2025, diverifikasi web 2026-10-05) + langkah mengambil CP + tempat isian. Contoh: `07-minta-kode-bunyi-cp-resmi.md`.
-Status: **menunggu uji ulang independen** (belum diuji di OpenClaw/agent terpisah).
+Status: **uji ulang independen selesai 2026-10-05 — LULUS** (OpenClaw 2026.9.6 lokal, sebelum/sesudah: rata-rata 5,75 -> 8,5, selisih +2,75; tanpa salah fakta/angka pada sisi SESUDAH). Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.5". Sisa cacat minor (bukan salah fakta): isi utuh tidak ditampilkan di chat, penanda `>`/`####`/`*..*` muncul literal di .docx.
