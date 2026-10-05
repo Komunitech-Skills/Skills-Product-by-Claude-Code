@@ -72,3 +72,6 @@ Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** membe
 
 ## Catatan revisi 1.0.9 (2026-10-05)
 - Dari uji ulang Telegram 1.0.8 (0/3 lulus): penolakan auto-balas WA benar, tetapi template stok/ongkir/retur hanya dirangkum sebagai file `cs/PENGETAHUAN.md` & `cs/ATURAN.md` yang tidak terlihat pengguna Telegram. Kini aturan pertama: semua template (maks. ~8 pendek), aturan nada (3-5 butir), dan alur admin (3-5 langkah) wajib tampil lengkap di chat; file hanya bila diminta "simpan/pasang di OpenClaw", dibuat setelah isi tampil. Checklist baru: "Apakah semua template ada di balasan chat ini?".
+
+## Catatan revisi 1.0.10 (2026-10-05)
+- Dari uji Telegram: template "cara bayar" kini diberi catatan "khusus chat WhatsApp; di chat Shopee/marketplace jangan arahkan transaksi ke luar platform" agar toko tidak melanggar kebijakan marketplace (sumber di `references/eskalasi-dan-kanal.md`).

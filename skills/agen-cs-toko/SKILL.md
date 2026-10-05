@@ -37,7 +37,7 @@ Bila di pesan yang sama ada chat pelanggan yang perlu dibalas, kerjakan langsung
 ## Aturan utama: kerjakan dulu, tanya di akhir
 Untuk permintaan "bikinkan CS/asisten balas chat" (stok, ongkir, retur, dll.), **jangan membalas hanya dengan pertanyaan**. Balasan pertama selalu berisi hasil, dalam satu pesan, urutan tetap:
 1. **Bila ada permintaan auto-reply WA:** penolakan singkat + alasan (lihat "Jawaban baku") + tawarkan Copilot — maks. 5 baris, lalu langsung lanjut ke paket.
-2. **Paket siap pakai** dengan `[isian]` untuk data yang belum diberikan (jangan mengarang harga/ongkir/stok/syarat retur): template balasan **tanya stok, ongkir, retur** + 2-3 situasi umum lain sesuai usaha (mis. cara bayar/COD, status pesanan/resi, ukuran/bahan atau minta diskon), **aturan nada** (sapaan, emoji, panjang balasan, hal yang dilarang), dan **alur kerja admin** (mis. untuk admin 1 orang: tempel chat -> cek draf & `[isian]` -> kirim; antrean prioritas; eskalasi; rekap harian). Semua ini ditulis di chat; file `cs/PENGETAHUAN.md` & `cs/ATURAN.md` hanya bila pengguna memintanya, setelah isi tampil di chat.
+2. **Paket siap pakai** dengan `[isian]` untuk data yang belum diberikan (jangan mengarang harga/ongkir/stok/syarat retur): template balasan **tanya stok, ongkir, retur** + 2-3 situasi umum lain sesuai usaha (mis. cara bayar/COD, status pesanan/resi, ukuran/bahan atau minta diskon), **aturan nada** (sapaan, emoji, panjang balasan, hal yang dilarang), dan **alur kerja admin** (mis. untuk admin 1 orang: tempel chat -> cek draf & `[isian]` -> kirim; antrean prioritas; eskalasi; rekap harian). Semua ini ditulis di chat; file `cs/PENGETAHUAN.md` & `cs/ATURAN.md` hanya bila pengguna memintanya, setelah isi tampil di chat. **Template cara bayar (transfer/e-wallet/QRIS/COD) wajib diawali catatan: "Khusus chat WhatsApp. Di chat Shopee/marketplace lain, jangan arahkan pembayaran atau transaksi ke luar platform (nomor rekening, WA, link): arahkan pembeli ke checkout resmi marketplace."** (dasar & sumber: `references/eskalasi-dan-kanal.md`, bagian Marketplace.)
 3. **Di akhir: maks. 1-3 pertanyaan** paling penting (mis. daftar harga/ongkir/syarat retur — boleh kirim file/foto), plus asumsi yang dipakai (jam kerja, nada).
 Pengecualian: bila permintaan sama sekali tanpa konteks usaha (tidak jelas toko apa), tanyakan jenis usaha di akhir tetap setelah memberi kerangka umum.
 
@@ -147,6 +147,7 @@ Untuk COD, area Bintaro termasuk yang kami layani (radius 5km). Mau pesan berapa
 
 ## Checklist sebelum mengirim hasil
 - [ ] Apakah semua template (stok, ongkir, retur, situasi umum), aturan nada, dan alur admin ada di balasan chat ini, bukan hanya di file?
+- [ ] Template cara bayar punya catatan "khusus chat WA; di Shopee/marketplace jangan arahkan transaksi ke luar platform"
 - [ ] Setiap harga/stok/janji di draf ada persis di `PENGETAHUAN.md`, bukan dikira-kira.
 - [ ] Pemicu eskalasi sudah dicek; jika kena, draf berupa pesan penahan + ringkasan ke pemilik, bukan janji penyelesaian.
 - [ ] Tidak meminta/mengembalikan data sensitif (KTP/NIK, rekening, OTP, PIN, password) ke pelanggan.

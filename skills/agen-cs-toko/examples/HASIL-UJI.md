@@ -261,3 +261,6 @@ Dari uji ulang Telegram v1.0.8 (TIDAK LULUS): template hanya dirangkum sebagai f
 
 ## Uji ulang konteks Telegram v1.0.9 (2026-10-05)
 VERDIK: LULUS. Skor 9 / 9 / 8 (rata-rata 8,7), 3/3 lulus, tanpa timeout. Penolakan auto-balas WA + Copilot, template stok/ongkir/retur dkk. tertulis lengkap di chat dengan [isian]. Rincian di `00-openclaw-sebelum-sesudah.md`.
+
+## Riwayat revisi - v1.0.10 (2026-10-05)
+Temuan Telegram gelombang 9 (cacat no. 5): template cara bayar berisiko melanggar kebijakan Shopee bila dipakai di chat marketplace. Perbaikan: catatan wajib di SKILL.md, template PENGETAHUAN, referensi + sumber. Status: **menunggu uji ulang independen**.
