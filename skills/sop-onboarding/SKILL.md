@@ -1,6 +1,6 @@
 ---
 name: sop-onboarding
-description: Menyusun paket onboarding karyawan baru untuk UMKM dan kantor kecil Indonesia: checklist pra-hari-pertama (dokumen, BPJS, kontrak, perangkat kerja), jadwal H1/minggu 1/30-60-90 hari dengan penanggung jawab (dihitung script), pesan sambutan WA/email & pengumuman tim, buku saku karyawan, dan formulir evaluasi akhir orientasi/masa percobaan. Varian toko, kafe, bengkel, klinik, kantor jasa, gudang. Gunakan saat pengguna minta "onboarding karyawan baru", "induction plan", "employee onboarding", "rencana 30-60-90 hari", atau "paket karyawan baru". Bukan untuk SOP proses kerja umum atau kontrak kerja itu sendiri.
+description: Menyusun paket onboarding karyawan baru untuk UMKM dan kantor kecil Indonesia: checklist pra-hari-pertama (dokumen, BPJS, kontrak, perangkat kerja), jadwal H1/minggu 1/30-60-90 hari dengan penanggung jawab (dihitung script), pesan sambutan WA/email & pengumuman tim, buku saku karyawan, dan formulir evaluasi akhir orientasi/masa percobaan. Varian toko, kafe, bengkel, klinik, kantor jasa, gudang. Gunakan saat pengguna minta "onboarding karyawan baru", "induction plan", "employee onboarding", "rencana 30-60-90 hari", atau "paket karyawan baru". Aturan: KERJAKAN DULU, TANYA DI AKHIR - selama jabatan, jenis hubungan kerja, dan tanggal mulai sudah disebut, langsung beri paket lengkap di chat dengan [isian] untuk data yang kurang, jangan hanya bertanya; jangan menyebut proses internal (cek, script, file). Bukan untuk SOP proses kerja umum atau kontrak kerja itu sendiri.
 ---
 
 # SOP Onboarding Karyawan Baru
@@ -11,6 +11,18 @@ description: Menyusun paket onboarding karyawan baru untuk UMKM dan kantor kecil
 Menyiapkan karyawan baru agar **siap kerja lebih cepat dan tidak merasa dilepas begitu saja**: dokumen
 & administrasi beres sebelum hari pertama, jadwal orientasi jelas dengan penanggung jawab, pesan
 sambutan siap kirim, aturan sehari-hari tertulis di buku saku, dan evaluasi akhir orientasi yang objektif.
+
+## Aturan utama: kerjakan dulu, tanya di akhir
+Jika pengguna sudah menyebut **jabatan**, **jenis hubungan kerja** (tetap/kontrak) dan **tanggal mulai**, JANGAN membalas hanya dengan pertanyaan, walau nama karyawan, nama usaha, buddy, atau jam kerja belum ada. Dalam **satu balasan yang sama**, tulis **isi paket utuh di chat** (bukan hanya tawaran atau nama file), berurutan:
+1. **Jadwal minggu pertama** (hari 1 sampai 6/7: kegiatan & penanggung jawab) dan **jadwal 30/60/90 hari + tanggal evaluasi masa percobaan** (tanggal dihitung dari tanggal mulai; lihat Langkah kerja 3).
+2. **Checklist pra-hari-pertama** (dokumen seperlunya, BPJS Ketenagakerjaan & Kesehatan wajib, perangkat/akses kerja).
+3. **SOP ringkas jabatan** (mis. kasir: buka kas, transaksi, retur/void, tutup kas & setoran; buat 5-8 langkah ringkas, tandai `[isian]` untuk aturan khusus usaha).
+4. **Evaluasi masa percobaan** (karyawan tetap/PKWTT: tanggal evaluasi keputusan dan batas 3 bulan; ringkas formulir penilaiannya).
+5. **Catatan aturan** (satu blok pendek): masa percobaan hanya untuk karyawan tetap, maksimal 3 bulan (PP 35/2021, UU 13/2003 Pasal 60 jo. UU 6/2023); upah masa percobaan tidak boleh di bawah upah minimum, jadi cek UMK kota Anda: `[isian: UMK kota ... tahun 2026]` dibandingkan gaji yang disebut pengguna (usaha mikro/kecil punya pengecualian, lihat referensi); PKWT tidak boleh punya masa percobaan.
+6. Data yang kurang ditulis `[isian: ...]` (nama karyawan, nama usaha, buddy, jam kerja, jumlah cuti, dll.) dan **diberi asumsi** (mis. 6 hari kerja).
+7. **Maks. 3 pertanyaan di akhir** untuk menyempurnakan (mis. hari kerja & shift, nama buddy, UMK kota). Hanya **jabatan, jenis hubungan kerja, atau tanggal mulai yang benar-benar kosong** yang boleh menahan paket.
+
+**Dilarang menulis kata proses ke pengguna:** "sudah saya cek", "saya jalankan script", "file", "LULUS/GAGAL", nama folder/skill internal. Tulis hasilnya saja. Bila diminta cetak, tawarkan satu kalimat saja di akhir.
 
 ## Kapan digunakan
 - "Buatkan paket onboarding untuk kasir baru di toko saya."
@@ -32,8 +44,7 @@ sambutan siap kirim, aturan sehari-hari tertulis di buku saku, dan evaluasi akhi
   bagian legal/Dinkes/lembaga sertifikasi terkait.
 
 ## Input
-Tanyakan **sekali** dalam satu pesan bernomor, maksimal 8 butir; bila pengguna ingin cepat, buat dengan
-data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
+Bila jabatan, jenis hubungan kerja, dan tanggal mulai sudah ada: kerjakan dulu (lihat Aturan utama), tanyakan **maks. 3 butir** di akhir. Bila salah satunya kosong, tanyakan **sekali** dalam satu pesan bernomor (maks. 8 butir); bila pengguna ingin cepat, buat dengan data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
 ```
 1. Nama usaha & jenis usaha (toko/kafe/bengkel/klinik/kantor jasa/gudang/lainnya)
 2. Nama & jabatan karyawan baru (boleh "[Nama]" bila untuk template umum)
@@ -191,6 +202,8 @@ peringatan, tidak digeser otomatis) ada di `references/varian-jenis-usaha.md` ba
 bengkel". Contoh PKWT & input tidak lengkap lain ada di `examples/`.
 
 ## Checklist sebelum mengirim hasil
+- [ ] Paket utuh ada di chat (jadwal minggu 1, checklist, SOP ringkas, evaluasi + tanggal, catatan aturan & UMK) dengan `[isian]`; pertanyaan maks. 3 dan di akhir, bukan pengganti isi.
+- [ ] Tidak ada kata proses (cek, script, file, LULUS/GAGAL) di jawaban.
 - [ ] Tanggal jadwal berasal dari script (atau ditandai "dihitung manual").
 - [ ] Untuk PKWT: tidak ada tanggal/klausul masa percobaan; disebutkan dasar larangannya; formulir
   evaluasi versi PKWT dipakai (tanpa istilah "lulus masa percobaan").

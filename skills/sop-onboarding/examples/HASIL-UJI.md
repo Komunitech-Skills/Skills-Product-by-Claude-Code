@@ -168,3 +168,6 @@ perbandingan, 0 pelanggaran properti evaluasi ≤ batas), libur 2026/2027 terver
 perlu improvisasi. Belum 9 karena B-1 (tafsir hukum disajikan sebagai kepastian), kalimat contoh yang keliru,
 dan sisa P3 ketahanan script. Perbaikan B-1–B-3 dianjurkan sebelum uji platform asli; tidak perlu uji ulang
 penuh.
+
+## Revisi 1.0.5 (2026-10-05) - menunggu uji ulang independen
+Pemicu: pra-cek Telegram G9 skor 5 (hanya 6 pertanyaan, paket tidak ada, kata "sudah saya cek" bocor). Perbaikan: aturan "kerjakan dulu, tanya di akhir" + larangan kata proses + checklist di `SKILL.md` dan `description`. Script tidak berubah; tes regresi dijalankan ulang. **Status: menunggu uji ulang independen** (belum diuji di OpenClaw oleh pembuat).
