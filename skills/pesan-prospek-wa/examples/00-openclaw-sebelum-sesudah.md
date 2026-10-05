@@ -177,3 +177,17 @@
 ### Cuplikan jualan
 - "Rencana kirim 19.30 WIB ke Makassar? Skill mengingatkan itu 20.30 WITA — lewat jam sopan — lalu memberi 3 varian pesan yang sudah dicek panjang, asal kontak, opsi keluar, dan tautan wa.me siap klik."
 - "Database nomor beli? Ditolak dengan dasar UU PDP Pasal 65 & 67, dan diarahkan ke cara dapat kontak yang sah."
+
+## Uji ulang konteks Telegram v1.0.7 — 2026-10-05
+
+Pesan: "Tolong bikinin chat WA pertama ke pemilik kafe di Makassar ... jam 19.30 WIB." Konteks Telegram (`--channel telegram`, tanpa kirim), 3 percobaan, home bersih tiap kali (keluaran `g7u-pesan-prospek-wa-1..3`). Dinilai dari isi balasan chat saja.
+
+| Percobaan | Skor | Lulus | Catatan |
+|---|---|---|---|
+| 1 | 9,0 | Ya | 3 draf dicek script, etika (bukan blast, opsi berhenti), 19.30 WIB = 20.30 WITA benar, 3 pertanyaan di akhir; sumber di V3 berupa placeholder |
+| 2 | 8,5 | Ya | 3 draf, etika, jam benar; menjanjikan "sample & price list" (agak mengarang, ringan) |
+| 3 | 8,5 | Ya | 3 draf, etika, jam benar, tidak mengarang klaim (placeholder); penutup berupa 1 tawaran, bukan daftar 3 pertanyaan bernomor |
+
+- **Rata-rata:** SEBELUM (uji internal lama) 6,0 -> pra-cek v1.0.6 7,0 (tanpa draf) -> **SESUDAH 8,7**; lulus 3/3.
+- **VERDIK: LULUS** (rata-rata >= 8 dan >= 2/3 lulus). Perbaikan "kerjakan dulu, tanya di akhir" terbukti: draf selalu hadir.
+- Catatan kecil: saran jam kirim berbeda antar percobaan (semua benar secara zona); tawaran sampel/price list perlu diisi pengguna sesuai kenyataan.

@@ -420,7 +420,10 @@ def teks_hasil(hasil, cfg, total, csv_path):
                          tc.format_rp(p["bruto_reguler"]), tc.format_rp(h["thr"]), tc.format_rp(p["pph_dengan_thr"]),
                          tc.format_persen(p["tarif_tanpa_thr"]), tc.format_rp(p["bruto_reguler"]),
                          tc.format_rp(p["pph_tanpa_thr"]), tc.format_rp(p["tambahan_pph_thr"]),
-                         " (ditanggung pemerintah, dibayar tunai — THR diterima utuh)" if p["dtp"] else ""))
+                         (" — PPh 21 DTP (PMK 105/2025): {} tetap dipotong, lalu {} dibayar tunai kembali bersama "
+                          "THR, jadi THR diterima utuh; setoran PPh 21 ke negara untuk bagian ini Rp 0".format(
+                              tc.format_rp(p["tambahan_pph_thr"]), tc.format_rp(p["tambahan_pph_thr"]))
+                          if p["dtp"] else "")))
     pr = [x for h in hasil for x in h["peringatan"]] + cfg["peringatan"]
     if pr:
         o += ["", "⚠️ Peringatan:"] + ["- " + x for x in pr]

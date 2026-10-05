@@ -120,3 +120,25 @@ Menutup 3 cacat minor uji ulang v1.0.5: (1) isi modul utuh wajib di chat (aturan
 ---
 ## Cek v1.0.6 (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
 Sisi SESUDAH saja (SEBELUM tetap 5,75 dari v1.0.5): S1-A 8, S1-B 8,5, S2 (RPP Matematika SD kelas 4 + Word) 9; rata-rata **8,5** (selisih +2,75). **VERDIK: LULUS** — isi utuh di chat, .docx valid tanpa `>`/`####` literal, jalur file nyata, CP tidak dikarang, angka/waktu benar (python). Sisa minor: 1 kalimat "File ...:" tanpa jalur (S1-B), 1 `*` literal di docx (bold di dalam miring), bunyi CP persis tidak selalu diberikan. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.6".
+
+---
+## Riwayat v1.0.7 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.6, menunggu uji ulang independen
+Uji Telegram v1.0.6 (topik 724) skor 5 (TANPA 6): bot hanya mengirim ringkasan, menulis "isi lengkap ada di file .md di workspace" (tidak sampai ke guru), dan bertanya "mau dibuatkan .docx?" padahal guru menyebut supervisi besok. Perbaikan: aturan paling atas (isi utuh di chat, dipecah per bagian; .docx langsung + lampiran kanal chat bila bisa; tidak menulis .md di workspace) dan `description`. Status: menunggu uji ulang independen, termasuk konteks Telegram (isi utuh terkirim berurutan, .docx dilampirkan atau jalur disebut). Belum diuji di OpenClaw.
+
+---
+## Uji ulang v1.0.7 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH saja via `uji-tg.sh` (SEBELUM tetap 5,75). Skenario 1 (pesan persis gelombang 6): 5 percobaan, hanya 1 selesai (skor 8; isi utuh 4 bagian, kunci terpisah, .docx nyata, CP tidak dikarang; jalur file kosong di chat); 4 lainnya tanpa balasan (model idle timeout/900 dtk). Skenario 2 (RPP Matematika SD kelas 4, cetak): skor 6; isi utuh & angka benar, tetapi klaim palsu "File Word ... sudah saya lampirkan". Rata-rata percobaan selesai **7,0**. **VERDIK: BELUM** (rata-rata < 8, 1/5 percobaan skenario 1 lulus, klaim lampiran palsu). Tidak ada salah fakta/angka. Detail & saran di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.7".
+
+---
+## Riwayat v1.0.8 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.7, menunggu uji ulang independen
+Menutup cacat uji v1.0.7 (VERDIK BELUM; 1/5 percobaan skenario 1 selesai): (1) format default RINGKAS (±4.000-6.000 karakter, utuh) untuk mencegah idle timeout akibat balasan 13-15 ribu karakter; versi lengkap hanya bila diminta; (2) .docx sekali setelah isi chat, kalimat baku "File Word: <jalur dari output script>", dilarang klaim lampiran/terkirim tanpa alat kirim file; (3) tool call dibatasi (baca SKILL.md sekali, web fetch maks. 2 hanya bila bunyi CP persis diminta). Contoh baru: `09-format-ringkas-telegram.md`. Status: menunggu uji ulang independen di konteks Telegram. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.8 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75). Skenario 1 (pesan persis gelombang 6) x3 berurutan: S1-A timeout model idle (782 dtk), S1-B timeout 900 dtk, S1-C selesai 461 dtk skor 8 (ringkas 6.376 karakter, LKPD bersih, kunci terpisah, rubrik utuh, .docx nyata, CP tidak dikarang). Skenario 2 (RPP Matematika SD kelas 4, cetak): skor 8, 248 dtk, angka benar (70 menit, rubrik 100), .docx nyata, tanpa klaim lampiran palsu. Rata-rata selesai **8,0**, tetapi skenario 1 hanya 1/3 lulus (timeout = gagal). **VERDIK: BELUM**. Tidak ada salah fakta/angka. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.8".
+
+---
+## Riwayat v1.0.9 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.8, menunggu uji ulang independen
+Skenario "tulis kode dan bunyi CP resminya persis" pada v1.0.8: 2 dari 3 timeout (782 dtk idle, 900 dtk), satu-satunya yang selesai memakai `web_fetch` (461 dtk). Perbaikan: dokumen CP resmi tidak diambil lewat web sama sekali (izin "maks. 2 fetch" dihapus di aturan atas, checklist, Batasan, dan description); jawaban = rujukan BSKAP 046/H/KR/2025 + URL resmi + langkah mencari Fase & elemen + kolom "Tempel bunyi CP resmi di sini" + TP selaras elemen. Checklist baru: "tidak ada web_fetch dokumen CP". Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.9 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75), berurutan. Skenario 1 (pesan persis gelombang 6) x3: 237/229/208 dtk, tanpa timeout, skor 8/7/8; Skenario 2 (RPP Matematika SD kelas 4, cetak): 280 dtk, skor 9. Tool: read/ls/exec/write/edit, **tanpa web_fetch**. Modul ringkas, LKPD tanpa jawaban, kunci terpisah, rubrik utuh; CP tidak dikarang (rujukan BSKAP 046/H/KR/2025 + kolom tempel); tanpa klaim lampiran palsu; menit & rubrik dihitung ulang benar. Rata-rata **8,0**, skenario 1 lulus 3/3. **VERDIK: LULUS**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.9".

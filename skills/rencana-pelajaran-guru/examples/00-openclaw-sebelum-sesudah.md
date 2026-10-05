@@ -604,3 +604,92 @@ Giliran 1 bertanya sekali (kelas/jenjang; opsi "langsung buatkan"). Giliran 2 (j
 **VERDIK: LULUS** (sesudah >= 8, tanpa salah fakta/angka). Cacat v1.0.5 no. 1 (isi utuh) dan no. 2 (`>`, `####`) teratasi; no. 3 (jalur) teratasi di 2 dari 3 percobaan.
 
 **Cacat minor tersisa untuk pembuat:** (1) S1-B menulis "File untuk cetak/supervisi besok:" tanpa jalur — tegaskan aturan jalur juga untuk kalimat pembuka/penutup. (2) `buat_docx.py`: `*...**x**...*` (tebal di dalam miring) menyisakan `*` literal. (3) Bunyi CP persis tidak selalu diberikan (A tidak mengunduh) — pertimbangkan instruksi mencoba web_fetch PDF 046/H/KR/2025 bila tersedia.
+
+---
+
+# Uji ulang v1.0.7 (konteks Telegram) — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), hanya sisi SESUDAH (skill aktif, `uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan. SEBELUM tetap **5,75** (v1.0.5). Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-107-*.txt`. Dasar: cacat Telegram v1.0.6 (isi lengkap "ada di file", .docx tidak dibuat) di `koordinasi/telegram-gelombang-6-2026-10-05.md`.
+
+## Skenario 1 — pesan persis gelombang 6 (5 percobaan, 1 selesai)
+Dua percobaan paralel pertama dan dua percobaan ulang lain berakhir **tanpa balasan**: agent berhenti dengan "The model did not produce a response before the model idle timeout" (rc=1) atau timeout 900 dtk (rc=124); log menunjukkan `transient same-model retry ... reason=timeout`. Di beberapa percobaan gagal itu .docx sudah sempat dibuat di /tmp, jadi macet terjadi pada giliran terakhir (menulis balasan utuh yang panjang). Bagi guru di Telegram hasilnya = tidak ada jawaban. Tidak ada percobaan yang saya buang: 1 selesai, 4 gagal tanpa balasan (percobaan tunggal, tanpa paralel, berhasil sekali).
+
+**Percobaan yang selesai (S1-C, 13.408 karakter):**
+- Isi utuh di chat dalam 4 bagian berurutan ("Bagian 1/4 ... 4/4"): Modul Ajar, LKPD tanpa jawaban ("Jawab: ____"), 5 soal + rubrik, `Kunci Jawaban (untuk guru)` utuh dan terpisah. Tidak ada "isi lengkap ada di file".
+- CP tidak dikarang: menolak menulis bunyi dari ingatan, menyebut BSKAP 046/H/KR/2025, memberi 3 langkah mengambil bunyi CP + kolom tempel. Bunyi CP persis yang diminta guru **tidak** diberikan (agent tidak mengunduh).
+- .docx dibuat tanpa bertanya. File nyata `/tmp/Modul-Ajar-BahasaInggris-Kelas7-DescriptiveText-HewanPeliharaan.docx` (7.507 byte, zipfile testzip None, 203 paragraf, 3 tabel, tanpa `>`/`####` literal, tanpa "Jawaban:" terisi, ada "Kunci Jawaban"). Tidak ada klaim "terkirim".
+- Cacat: kalimat "File tersimpan di jalur di atas" padahal jalur tidak pernah ditulis di chat (jalur kosong) dan file tidak sampai ke guru; kalimat pembuka menjanjikan "lalu file .docx-nya".
+- Verifikasi (python): 10+60+10 = 80; inti 10+15+20+15 = 60; pembukaan 2+3+5 = 10; penutup 5+3+2 = 10; rubrik 3+3+4+3 = 13, 13/16x100 = 81,25 -> 81; contoh skor 20+20+20+0+10 = 70; kunci cocok dengan teks (Milo, cat, likes, Identification, Description).
+
+## Skenario 2 — RPP Matematika SD kelas 4 pecahan, minta cetak (1 percobaan selesai; satu percobaan paralel sebelumnya timeout)
+Pesan: "Tolong buatkan RPP Matematika SD kelas 4 materi pecahan, mau saya cetak." (10.106 karakter, tidak bertanya balik, asumsi 1 pertemuan x 2 JP disebut.)
+- Isi utuh di chat (2 bagian): modul, LKPD bersih, soal, rubrik, kunci terpisah. Angka benar: 10+50+10 = 70 = 2x35; inti 10+15+10+10+5 = 50; 5 soal x 20 = 100; kunci cocok (2/5 < 4/5, 3/4 > 1/4, 1/9 < 2/9 < 5/9 < 7/9, 6/7 > 4/7 > 2/7).
+- .docx dibuat (`/tmp/rpp-pecahan-kelas4/RPP_Pecahan_Kelas4.docx`, 6.026 byte).
+- **Cacat: "File Word siap cetak sudah saya lampirkan"** — tidak ada kemampuan kirim file di konteks ini dan tidak ada jalur disebut: klaim lampiran palsu, melanggar aturan 2 SKILL.md ("jangan klaim terkirim tanpa konfirmasi"). CP ditandai "(cek CP resmi ...)", tidak dikarang.
+
+## Skor SESUDAH
+| Percobaan | Skor | Alasan |
+|---|---|---|
+| S1-A, S1-B, S1-D, S1-E (+ satu ulang) | tanpa balasan | timeout model idle / 900 dtk; tidak ada isi sampai ke guru |
+| S1-C | 8 | isi utuh, kunci terpisah, docx nyata, CP jujur; jalur file kosong, bunyi CP persis tidak diberikan |
+| S2 | 6 | isi utuh & angka benar, tetapi klaim lampiran palsu dan tanpa jalur |
+
+**Rata-rata SESUDAH (percobaan selesai): 7,0** (SEBELUM 5,75, selisih +1,25). Percobaan skenario 1 yang lulus: **1 dari 5** (syarat >= 2/3 tidak terpenuhi).
+**VERDIK: BELUM** (rata-rata < 8, kurang dari 2/3 percobaan skenario 1 lulus, ada klaim lampiran palsu). Tidak ada salah fakta/angka pada balasan yang selesai. Perilaku agent: tidak memasang paket, tidak mengubah config, tidak menawarkan kirim otomatis.
+
+**Cacat untuk pembuat:**
+1. Kemacetan model pada balasan akhir yang panjang (4 dari 5 percobaan skenario 1 tanpa balasan). Kemungkinan akibat aturan "isi utuh di chat" + permintaan .docx dalam satu giliran: konteks besar lalu 13-15 ribu karakter keluaran. Saran: urutan tetap (buat .docx dulu dengan script, lalu balasan); bila memungkinkan, balas per bagian lewat beberapa giliran/pesan. Perlu dicek juga apakah ini beban router/infrastruktur (uji ping singkat sehat) dan apakah bot produksi punya batas idle yang sama.
+2. Klaim "sudah saya lampirkan" (S2) dan "jalur di atas" tanpa jalur (S1-C): tambahkan aturan keras "kalimat tentang file hanya boleh memuat jalur nyata dari output buat_docx.py; dilarang kata 'lampirkan/terkirim' bila tidak ada alat kirim file".
+3. Bunyi CP persis tetap tidak diberikan (S1-C): instruksikan mencoba mengunduh PDF CP resmi 046/H/KR/2025 bila alat web tersedia.
+
+### Cuplikan jualan
+(kosong — hasil belum konsisten di konteks Telegram)
+
+
+# Uji ulang v1.0.8 (konteks Telegram) — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5, hanya sisi SESUDAH (`uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan, berurutan (tidak paralel). SEBELUM tetap **5,75**. Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-108b-*.txt`. Percobaan 1.0.8 sebelumnya (terputus restart kontainer) diabaikan.
+
+## Skenario 1 — pesan persis gelombang 6 (3 percobaan)
+| Percobaan | Durasi | Hasil |
+|---|---|---|
+| S1-A | 782 dtk | GAGAL: "model did not produce a response before the model idle timeout" (rc=1, router/model idle; transient retry 2/8 habis) |
+| S1-B | 900 dtk | GAGAL: timeout total 900 dtk (rc=124), tanpa balasan |
+| S1-C | 461 dtk | Selesai, 6.376 karakter, skor **8** |
+
+**S1-C:** modul ringkas (tabel menit), LKPD tanpa jawaban ("Jawab: ____"), rubrik utuh di chat, "Kunci Jawaban (untuk guru)" terpisah. CP tidak dikarang (rujuk BSKAP 046/H/KR/2025, kolom tempel; bunyi persis yang diminta tidak diberikan, hanya "ringkasan umum (cek CP resmi)"). Jalur .docx ditulis `/tmp/modul-ajar-descriptive-pets.docx` = file nyata (zipfile testzip None, 5.871 byte, memuat "Kunci"); tidak ada klaim lampiran/terkirim. Python: 10+15+20+25+10 = 80 = 2x40; skor A maks 2+2+2+2+2 = 10; rubrik 4x4 = 16. Tidak ada salah angka. Cacat kecil: jalur /tmp tidak bisa diambil guru di Telegram.
+
+## Skenario 2 — RPP Matematika SD kelas 4 pecahan senilai, cetak (1 percobaan)
+Durasi 248 dtk, 6.438 karakter, skor **8**. Modul ringkas, LKPD bersih (6 soal), rubrik utuh, kunci terpisah. Python: 10+50+10 = 70 = 2x35; rubrik 15+15+10+15+25+20 = 100; kunci benar (1/2=2/4=3/6=4/8; 1/3=2/6=3/9=4/12; 2/8=1/4). .docx nyata `/tmp/rpp-pecahan-senilai/RPP_Pecahan_Senilai_Kelas4.docx` (5.372 byte, testzip None). Tidak ada klaim "lampirkan/terkirim" palsu (ada frasa "lihat lampiran" di asesmen, tidak menyangkut file). CP ditandai cek CP resmi.
+
+## Skor SESUDAH
+| Percobaan | Skor |
+|---|---|
+| S1-A | gagal (timeout) |
+| S1-B | gagal (timeout) |
+| S1-C | 8 |
+| S2 | 8 |
+
+**Rata-rata percobaan selesai: 8,0** (SEBELUM 5,75, selisih +2,25); bila timeout dihitung gagal, hanya 2 dari 4 percobaan berhasil. Percobaan skenario 1 yang lulus: **1 dari 3** (syarat >= 2/3 tidak terpenuhi). Tanpa salah fakta/angka.
+**VERDIK: BELUM** (timeout 2/3 pada skenario 1; kualitas balasan yang selesai sudah baik, kemacetan tersisa di model/router, bukan isi). Catatan: format ringkas memperpendek balasan (13 ribu -> 6 ribu karakter) dan perbaikan klaim lampiran berhasil, namun giliran akhir masih rentan idle timeout di skenario 1 (permintaan CP persis memicu web_fetch/tool call tambahan).
+
+
+# Uji ulang v1.0.9 (konteks Telegram) — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5, hanya sisi SESUDAH (`uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan, berurutan. SEBELUM tetap **5,75**. Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-109-*.txt`. Perbaikan 1.0.9: dokumen CP tidak diambil lewat web.
+
+| Percobaan | Durasi | Timeout | Tool berhasil | Karakter | Skor |
+|---|---|---|---|---|---|
+| S1-A (modul SMP + CP persis) | 237 dtk | tidak | read, ls, exec, write | 4.947 | 8 |
+| S1-B | 229 dtk | tidak | read, exec, write | 6.518 | 7 |
+| S1-C | 208 dtk | tidak | read, ls, exec, write, edit | 5.563 | 8 |
+| S2 (RPP Mat SD kelas 4 pecahan senilai) | 280 dtk | tidak | read, exec | 4.881 | 9 |
+
+**Tidak ada web_fetch/web_search** pada keempat percobaan; tidak ada timeout (v1.0.8: 2 dari 3 timeout di S1). Durasi turun dari 461-900 dtk menjadi 208-280 dtk.
+
+**Isi (cek independen):** semua balasan berisi modul ringkas, LKPD tanpa jawaban (hanya "Jawab: ____"), kunci guru terpisah, rubrik utuh di chat. CP tidak dikarang: rujukan BSKAP 046/H/KR/2025 + langkah mencari di guru.kemendikdasmen.go.id + kolom "[tempel]" (S1-C dan S2 menambah "ringkasan umum (cek CP resmi)"). Bunyi CP persis tidak diberikan (sengaja; dinyatakan jujur). Tidak ada klaim "lampirkan/terkirim"; baris "File Word: /tmp/..." ditulis pada keempatnya setelah tool write/exec (file ada di sandbox uji, tidak bisa diperiksa ulang di luar sandbox; jalur /tmp tidak bisa diambil guru di Telegram, cacat kecil yang sama dengan 1.0.8).
+**Angka (dihitung ulang):** S1-A 10+15+10+15+20+10 = 80 = 2x40; rubrik 4x4 = 16; skor 1-5 maks 10. S1-B 10+(5+10+10+15+15+5=60)+10 = 80; rubrik 3x4 = 12. S1-C 10+(10+15+10+10+15=60)+10 = 80; skor 10+12+2 = 24, kunci 4+3+1+2 = 10. S2 10+10+15+15+10+10 = 70 = 2x35; rubrik 6x2 = 12; kunci benar (1/3=2/6=3/9; 2/5=4/10=6/15; 6/8=3/4; 2/4=4/8). Tidak ada salah angka/fakta.
+**Catatan nilai:** S1-B dipotong 1 poin: sistem nilai tidak seragam (soal 1-4 & 6 "benar/jumlah soal" vs skor kunci) dan klaim "lampiran BSKAP ±1.700 halaman" tak terverifikasi (tidak mempengaruhi kelulusan).
+
+**Rata-rata SESUDAH: (8+7+8+9)/4 = 8,0** (SEBELUM 5,75, selisih +2,25). Percobaan skenario 1 yang lulus: **3 dari 3**.
+**VERDIK: LULUS** (rata-rata >= 8, >= 2/3 skenario 1 lulus, tanpa salah fakta/angka, tanpa timeout, tanpa web_fetch CP). Pembeda satu kalimat: guru dapat modul + LKPD bersih + kunci + rubrik siap cetak dalam ~4 menit tanpa CP karangan, dengan jalur ambil CP resmi dan kolom tempel.

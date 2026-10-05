@@ -1,6 +1,6 @@
 ---
 name: pesan-prospek-wa
-description: Menyusun pesan PERTAMA (perkenalan/penawaran awal) via WhatsApp ke calon pelanggan B2B/B2C yang belum pernah dihubungi — dari referral, pameran, Google Maps, Instagram, atau grup komunitas — dalam 3 varian (singkat/sedang/dengan nilai), sopan, wajib menyebut asal kontak, patuh UU PDP, dan dicek otomatis lewat script (panjang, kata pemicu spam, jam kirim, opsi keluar) plus tautan wa.me siap pakai. Gunakan saat pengguna minta pesan perkenalan ke calon klien baru, cold outreach WhatsApp, pesan pembuka prospek, first contact message, atau chat pertama ke calon pelanggan. Bukan untuk menindaklanjuti prospek yang sudah dihubungi (pakai follow-up-prospek), promo massal ke banyak kontak (pakai broadcast-wa), atau mencari/menilai daftar calon pelanggan (pakai riset-calon-pelanggan).
+description: Menyusun pesan PERTAMA (perkenalan/penawaran awal) via WhatsApp ke calon pelanggan B2B/B2C yang belum pernah dihubungi — dari referral, pameran, Google Maps, Instagram, atau grup komunitas — dalam 3 varian (singkat/sedang/dengan nilai), sopan, wajib menyebut asal kontak, patuh UU PDP, dan dicek otomatis lewat script (panjang, kata pemicu spam, jam kirim, opsi keluar) plus tautan wa.me siap pakai. Gunakan saat pengguna minta pesan perkenalan ke calon klien baru, cold outreach WhatsApp, pesan pembuka prospek, first contact message, atau chat pertama ke calon pelanggan. Aturan: KERJAKAN DULU, TANYA DI AKHIR — selama asal kontak & produk sudah disebut, langsung beri draf siap kirim dengan [isian] untuk data yang belum ada, jangan hanya bertanya (termasuk saat jam kirim perlu dikoreksi zona waktunya). Bukan untuk menindaklanjuti prospek yang sudah dihubungi (pakai follow-up-prospek), promo massal ke banyak kontak (pakai broadcast-wa), atau mencari/menilai daftar calon pelanggan (pakai riset-calon-pelanggan).
 ---
 
 # Pesan Prospek WA
@@ -9,6 +9,13 @@ description: Menyusun pesan PERTAMA (perkenalan/penawaran awal) via WhatsApp ke 
 
 ## Tujuan
 Membantu penjual/pemilik usaha menulis pesan **pertama** yang dikirim ke calon pelanggan yang **belum pernah dihubungi** — hasil dari referral, pameran, Google Maps, Instagram, atau grup komunitas — supaya terasa personal dan jelas alasannya, bukan seperti spam/penipuan, dan tetap patuh aturan data pribadi. Pesan dikirim **satu per satu oleh manusia** (mode copilot: AI menyiapkan draf, pengguna yang mengirim), bukan otomatis.
+
+## Aturan utama: kerjakan dulu, tanya di akhir
+Jika pengguna sudah menyebut **produk/tawaran** dan **asal kontak**, JANGAN membalas hanya dengan pertanyaan, walau nama penerima, nama pengirim, atau nomor belum ada. Dalam **satu balasan yang sama** berikan berurutan:
+1. **Catatan etika singkat (2-3 baris):** nomor bisnis publik (mis. listing Google Maps) boleh untuk satu pesan perkenalan personal, bukan blast; ada opsi berhenti; hormati bila menolak; dasar PDP sesuai `references/dasar-hukum-wa.md` (bukan nasihat hukum).
+2. **Saran jam kirim dalam zona penerima** (WIB/WITA/WIT). Jika rencana jam pengguna jatuh di luar 08.00-20.00 setempat, koreksi dan beri jam alternatif konkret (mis. 19.30 WIB = 20.30 WITA, geser ke besok 09.00-11.00 WITA). Koreksi ini bukan alasan menunda draf.
+3. **2-3 varian draf siap kirim** (Langkah kerja 4-6), memakai `[nama pemilik]`, `[nama Anda]`, `[nama usaha]`, `[nama kafe]`, `[isi: ...]` untuk yang belum diketahui. Karena jam bisa bergeser, pakai sapaan netral ("Halo Kak").
+4. **Maks. 1-3 pertanyaan di akhir** untuk menyempurnakan (nama penerima, nama pengirim, nomor untuk wa.me, bukti nilai nyata). Hanya **asal kontak yang benar-benar kosong** yang boleh menahan draf (lihat Batasan).
 
 ## Kapan digunakan
 - "Saya dapat kontak toko bahan kue ini dari temen pas pameran UMKM, tolong bikinkan pesan perkenalan."
@@ -27,9 +34,9 @@ Membantu penjual/pemilik usaha menulis pesan **pertama** yang dikirim ke calon p
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
-| Nama & usaha calon pelanggan | Ya | — (tanyakan) |
+| Nama & usaha calon pelanggan | Tidak menahan draf | Pakai `[nama pemilik]`/`[nama usaha]` dan tanyakan di akhir |
 | **Dari mana nomor/kontak didapat** (referral/pameran/Google Maps/IG/grup) | Ya | — (tanyakan; tanpa ini pesan tidak boleh dibuat, lihat Batasan) |
-| Produk/jasa yang ditawarkan & manfaat singkatnya | Ya | — (tanyakan) |
+| Produk/jasa yang ditawarkan & manfaat singkatnya | Ya | — (tanyakan bila benar-benar tidak disebut) |
 | B2B atau B2C (menentukan sapaan & nada) | Tidak | Tebak dari konteks; B2B → Bapak/Ibu, B2C → Kak |
 | Detail spesifik penerima (kebutuhan yang terlihat, konteks pertemuan) | Tidak | Pakai pola umum sumber kontak tsb tanpa detail personal tambahan |
 | Bukti/nilai tambah nyata (hasil, jumlah pelanggan, keahlian) | Tidak | Tidak disebut sama sekali — jangan mengarang |
@@ -37,7 +44,7 @@ Membantu penjual/pemilik usaha menulis pesan **pertama** yang dikirim ke calon p
 | Nama & gaya pengirim | Tidak | Sopan semi-formal |
 | Rencana jam kirim | Tidak | Sebutkan aturan jam wajar tanpa jam pasti |
 
-Jika info wajib kurang, tanyakan **sekali** dalam satu pesan (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai default masuk akal dan tulis "Asumsi" di akhir — **kecuali asal kontak**, yang wajib ditanyakan karena tidak boleh dikarang.
+Jika info wajib (asal kontak/produk) benar-benar kosong, tanyakan **sekali** dalam satu pesan (maks. 3 pertanyaan bernomor); bila sudah cukup, ikuti aturan "kerjakan dulu, tanya di akhir". Jika pengguna ingin cepat, pakai default masuk akal dan tulis "Asumsi" di akhir — **kecuali asal kontak yang kosong sama sekali**, yang wajib ditanyakan karena tidak boleh dikarang (asal kontak yang sudah disebut, mis. "dari Google Maps", cukup; detail kategori pencarian tidak perlu ditanya sebelum draf).
 
 ## Langkah kerja
 
@@ -60,7 +67,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan (maks. 5 pertanyaan
    Jika Python tidak tersedia, encode manual (spasi → `%20`, dst.) dan minta pengguna mengecek sekali sebelum dipakai. Nomor otomatis dikoreksi untuk salah ketik umum ("+62 0812…" dan "0062…"); nomor yang polanya tidak seperti nomor seluler Indonesia (bukan 08xx, atau >13 digit) ditolak dengan pesan jelas — konfirmasi ke pengguna.
 8. **Sarankan jam kirim wajar** untuk lokasi penerima: 08.00–20.00 **waktu setempat penerima** (WIB/WITA/WIT — cek dulu lokasinya, jangan asumsikan WIB untuk semua Indonesia; kalau penerima di WITA/WIT dan kamu hanya tahu jam WIB, konversi dulu: WITA = WIB+1, WIT = WIB+2) — lihat `references/checklist-anti-blokir.md`.
    Jika jam kirim disarankan berbeda dari rencana pengguna, selaraskan lagi sapaan waktu di ketiga varian dengan jam baru itu.
-9. **Tutup dengan checklist anti-blokir** dan ringkasan asumsi (jika ada).
+9. **Urutan balasan = Aturan utama di atas** (etika, jam kirim, draf, pertanyaan terakhir). **Tutup dengan checklist anti-blokir** dan ringkasan asumsi (jika ada).
 
 ## Format Output
 ```

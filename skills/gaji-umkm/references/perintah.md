@@ -21,7 +21,7 @@ Perintah bertanda **(besar)** hanya pratinjau sampai ditambah `--ya` setelah pem
 | `final` (besar) | Kunci periode | `--bulan` |
 | `revisi` (besar) | Buka revisi tercatat | `--bulan --alasan "..."` |
 | `periode` | Daftar periode + riwayat revisi | — |
-| `rekap` | Rekap perusahaan | `--bulan` atau `--tahun`. JSON `total`: `pph21_dipotong`, `pengembalian_pph21`, `setor_pph21` (= perkiraan setor, dipotong − dikembalikan, min. 0), `lebih_bayar_pph21` |
+| `rekap` | Rekap perusahaan | `--bulan` atau `--tahun`. JSON `total`: `pph21_dipotong` (= total dipotong dari gaji, termasuk DTP), `pph21_dtp` (dibayar tunai, tidak disetor), `pengembalian_pph21`, `pph21_disetor_ke_negara` = `setor_pph21` (= perkiraan setor, dipotong − DTP − dikembalikan, min. 0), `lebih_bayar_pph21` |
 | `slip` | Slip Markdown per karyawan | `--bulan`, `--karyawan` (tampilkan satu), `--keluar <folder>` |
 | `transfer` | CSV transfer (periode final) | `--bulan`, `--pemisah ;/,`, `--penuh` (periode revisi: gaji penuh, bukan selisih), `--rekening-lengkap` (nomor lengkap hanya di file) |
 | `thr` (besar) | THR via mesin hitung-thr | `--bulan --hari-raya --nama-hari-raya [--tanggal-bayar] [--karyawan ...]` |

@@ -1,9 +1,11 @@
 ---
 name: agen-cs-toko
-description: Menyiapkan agen CS toko/klinik berbasis "basis pengetahuan" lokal (produk & harga, stok, jam buka, ongkir & cara bayar, kebijakan retur, FAQ, nada brand) yang menghasilkan draf balasan mode COPILOT (1-2 draf + tingkat keyakinan + yang perlu dicek manusia — bukan kirim otomatis) untuk WhatsApp/Telegram lewat OpenClaw, lengkap aturan eskalasi (komplain berat, refund, ancaman, data sensitif, medis/hukum), jam kerja, larangan mengarang harga/stok, dan rekap harian pertanyaan. Gunakan saat pengguna minta "bikin CS otomatis toko saya", "asisten WhatsApp/chatbot CS", "agen CS klinik", "aktifin bot WA biar balas otomatis semua chat", "capek balas chat satu-satu", knowledge base toko, auto-reply pelanggan (AI CS assistant, customer support agent, WhatsApp auto-reply bot) — bot WA auto-reply dijawab dengan risiko blokir nomor + mode Copilot. BUKAN untuk membalas satu chat / bank jawaban saja (pakai balas-chat-cs) dan BUKAN untuk auto-trading, diagnosis medis, atau kirim pesan otomatis ke pelanggan di WA Web.
+description: Menyiapkan agen CS toko/klinik berbasis basis pengetahuan lokal (produk, harga, stok, ongkir, retur, FAQ, nada brand) dengan draf balasan mode COPILOT (1-2 draf + keyakinan + hal yang dicek manusia, bukan kirim otomatis) untuk WhatsApp/Telegram lewat OpenClaw, plus aturan eskalasi, jam kerja, larangan mengarang harga/stok, rekap harian. ATURAN PERTAMA: SEMUA template balasan (stok/ongkir/retur + situasi umum, maks. ~8 pendek), aturan nada, dan alur admin WAJIB ditulis lengkap di balasan chat dengan [isian] bila data kosong; file cs/ hanya bila diminta, dibuat SETELAH isi tampil di chat. KERJAKAN DULU, TANYA DI AKHIR (maks. 1-3 pertanyaan). Pakai saat "bikin CS toko saya", "asisten/chatbot WhatsApp", "aktifin bot WA auto-balas semua chat" (ditolak: risiko blokir nomor, ditawarkan Copilot), knowledge base toko (AI CS assistant, customer support agent, WhatsApp auto-reply). BUKAN untuk satu balasan saja (balas-chat-cs), auto-trading, diagnosis medis, atau kirim otomatis ke pelanggan.
 ---
 
 # Agen CS Toko
+
+> **ATURAN PERTAMA (mengalahkan semua yang lain):** SEMUA template balasan dan aturan nada WAJIB ditulis lengkap di balasan chat ini juga (pengguna, mis. di Telegram, tidak bisa membuka file di server). Ringkas: maks. ±8 template pendek (stok, ongkir, retur + situasi umum, dengan `[isian]` bila data kosong), aturan nada 3-5 butir, alur admin 3-5 langkah. File (`cs/PENGETAHUAN.md`, `cs/ATURAN.md`) HANYA dibuat bila pengguna minta "simpan/pasang di OpenClaw", dan dibuat SETELAH isi tampil di chat. DILARANG menulis "sudah saya simpan di file X" sebagai pengganti isi. Balasan yang hanya berisi penolakan, ringkasan, atau "tersimpan di file" = GAGAL.
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
@@ -32,27 +34,35 @@ Bila pengguna minta bot membalas otomatis semua chat WA pelanggan (pakai nomor t
 3. **Batas yang boleh:** notifikasi/rekap ke **pemilik sendiri** lewat Telegram (default). WhatsApp hanya dengan **nomor terpisah** milik pemilik + persetujuan risiko tertulis (lihat `references/eskalasi-dan-kanal.md` §1 & §5). Auto-reply resmi hanya lewat WhatsApp Business Platform (API resmi, vendor resmi) di luar skill ini — tetap tanpa broadcast/blast.
 Bila di pesan yang sama ada chat pelanggan yang perlu dibalas, kerjakan langsung draf Copilot-nya (langkah 2).
 
+## Aturan utama: kerjakan dulu, tanya di akhir
+Untuk permintaan "bikinkan CS/asisten balas chat" (stok, ongkir, retur, dll.), **jangan membalas hanya dengan pertanyaan**. Balasan pertama selalu berisi hasil, dalam satu pesan, urutan tetap:
+1. **Bila ada permintaan auto-reply WA:** penolakan singkat + alasan (lihat "Jawaban baku") + tawarkan Copilot — maks. 5 baris, lalu langsung lanjut ke paket.
+2. **Paket siap pakai** dengan `[isian]` untuk data yang belum diberikan (jangan mengarang harga/ongkir/stok/syarat retur): template balasan **tanya stok, ongkir, retur** + 2-3 situasi umum lain sesuai usaha (mis. cara bayar/COD, status pesanan/resi, ukuran/bahan atau minta diskon), **aturan nada** (sapaan, emoji, panjang balasan, hal yang dilarang), dan **alur kerja admin** (mis. untuk admin 1 orang: tempel chat -> cek draf & `[isian]` -> kirim; antrean prioritas; eskalasi; rekap harian). Semua ini ditulis di chat; file `cs/PENGETAHUAN.md` & `cs/ATURAN.md` hanya bila pengguna memintanya, setelah isi tampil di chat.
+3. **Di akhir: maks. 1-3 pertanyaan** paling penting (mis. daftar harga/ongkir/syarat retur — boleh kirim file/foto), plus asumsi yang dipakai (jam kerja, nada).
+Pengecualian: bila permintaan sama sekali tanpa konteks usaha (tidak jelas toko apa), tanyakan jenis usaha di akhir tetap setelah memberi kerangka umum.
+
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
-| Nama toko/klinik & jenis usaha | Ya | — (tanyakan) |
-| Daftar produk/layanan & harga (atau file price list) | Ya | — (tanyakan; boleh mulai dari sebagian, tandai sisanya `[isi ...]`) |
+| Nama toko/klinik & jenis usaha | Ya | Ambil dari pesan pengguna; nama toko `[nama toko]` bila belum disebut |
+| Daftar produk/layanan & harga (atau file price list) | Ya | `[isi ...]` di paket; minta di akhir balasan (boleh sebagian) |
 | Stok umum, jam buka, ongkir & cara bayar, kebijakan retur/garansi | Tidak* | `[isi ...]`; jangan mengarang |
 | Nada brand & sapaan | Tidak | Ramah-sopan, sapaan "Kak" (ikut `balas-chat-cs`) |
 | Kanal yang dipakai (Telegram/WA nomor sendiri/WA nomor terpisah) | Tidak | Tanyakan sekali; default disarankan **Telegram** |
 | Jam kerja admin | Tidak | Senin–Sabtu 09.00–17.00 WIB; ubah sesuai jawaban |
 | Chat pelanggan yang mau dibalas (untuk mode Copilot sehari-hari) | Ya (saat minta draf) | — (tanyakan) |
 
-\*Wajib diisi sebelum basis pengetahuan dipakai untuk menjawab kategori itu. Jika kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor) atau tulis `[isi ...]` bila pengguna ingin cepat, dan sebutkan bagian mana yang masih kosong.
+\*Wajib diisi sebelum basis pengetahuan dipakai untuk menjawab kategori itu. Jika kurang, **kerjakan dulu dengan `[isi ...]`**, lalu tanyakan **sekali di akhir** (maks. 3 pertanyaan bernomor) dan sebutkan bagian mana yang masih kosong.
 
 ## Langkah kerja
 
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
 ### 1. Bangun basis pengetahuan (sekali di awal, atau saat diminta perbarui)
-1. Wawancara singkat (satu pesan, bernomor) atau impor dari price list/katalog yang dikirim pengguna.
-2. Tulis **`cs/PENGETAHUAN.md`** (pakai `templates/PENGETAHUAN.template.md`): produk & harga, stok/jam buka, ongkir & cara bayar, kebijakan retur, FAQ, nada brand. Tandai bagian kosong `[isi ...]`.
-3. Tulis **`cs/ATURAN.md`** (pakai `templates/ATURAN.template.md`): jam kerja, daftar pemicu eskalasi, pesan penahan, dan identitas bot.
+Default: tulis isinya di chat (template + aturan nada + alur admin). Langkah 2-4 di bawah (menulis file) hanya bila pengguna minta menyimpan/memasang di OpenClaw, dan setelah isi tampil di chat.
+1. Impor dari price list/katalog yang dikirim pengguna; bila belum ada, buat kerangka dengan `[isi ...]` dan tanyakan di akhir balasan (bukan di awal).
+2. (Bila diminta simpan) Tulis **`cs/PENGETAHUAN.md`** (pakai `templates/PENGETAHUAN.template.md`): produk & harga, stok/jam buka, ongkir & cara bayar, kebijakan retur, FAQ, nada brand. Tandai bagian kosong `[isi ...]`.
+3. (Bila diminta simpan) Tulis **`cs/ATURAN.md`** (pakai `templates/ATURAN.template.md`): jam kerja, daftar pemicu eskalasi, pesan penahan, dan identitas bot.
 4. Tunjukkan ringkasan ke pengguna, minta konfirmasi sebelum dipakai untuk menjawab pelanggan sungguhan.
 
 ### 2. Siapkan draf balasan — mode COPILOT (satu-satunya mode untuk chat ke pelanggan)
@@ -136,6 +146,7 @@ Untuk COD, area Bintaro termasuk yang kami layani (radius 5km). Mau pesan berapa
 ```
 
 ## Checklist sebelum mengirim hasil
+- [ ] Apakah semua template (stok, ongkir, retur, situasi umum), aturan nada, dan alur admin ada di balasan chat ini, bukan hanya di file?
 - [ ] Setiap harga/stok/janji di draf ada persis di `PENGETAHUAN.md`, bukan dikira-kira.
 - [ ] Pemicu eskalasi sudah dicek; jika kena, draf berupa pesan penahan + ringkasan ke pemilik, bukan janji penyelesaian.
 - [ ] Tidak meminta/mengembalikan data sensitif (KTP/NIK, rekening, OTP, PIN, password) ke pelanggan.

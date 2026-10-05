@@ -86,3 +86,80 @@ Tanpa regresi: 40 tes OK; `validate.py --skill gaji-umkm` ✅.
 
 ### Skor: **9/10**
 Alasan: celah dan teks pratinjau tertutup dengan pagar yang tepat sasaran (bulan penuh saja, prorata tetap lancar) serta tercatat di log; angka BPJS & PPh 21 tidak berubah dan cocok dengan hitungan independen. Belum 10: DTP, Coretax, dan platform asli belum diuji; catatan kecil `karyawan ubah` dan P3.
+
+## Riwayat revisi 1.0.10 (2026-10-05) — menunggu uji ulang independen; PERLU REVIEW konsultan pajak
+- Pemicu: temuan penilai gelombang 7 di skill `pph21-ter` (uang diterima DTP ditulis gaji + DTP). Diperiksa terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5 ayat 1 & 5, Pasal 6 ayat 6, Lampiran B).
+- Hasil: hitungan slip gaji-umkm (lewat `mesin/payroll.py`) **sudah benar**; `mesin/pph21.py` hanya dipakai untuk cek ulang setahun tanpa `--dtp`, jadi angka gaji-umkm tidak berubah. Contoh TK/0 gaji Rp 6.000.000, DTP: PPh dipotong = DTP tunai, setoran Rp 0, gaji bersih = Rp 6.000.000 − iuran BPJS karyawan.
+- Perubahan: salinan mesin `payroll.py`/`pph21.py`/`thr.py` disinkronkan + sha256 `SUMBER.json`; catatan DTP di slip (`gaji.py`); `references/dasar-aturan.md`, `references/dtp-pmk105.md` (baru); tes `UjiDTP`. `tests/uji_regresi.py`: 42 tes OK.
+
+## Uji ulang DTP PMK 105/2025 — 2026-10-05
+
+Penguji independen (bukan pembuat; tidak mengubah kode/SKILL.md). Teks PMK 105/2025 dibaca langsung: Pasal 2 ayat 1 (PPh 21 **wajib dipotong**), Pasal 2 ayat 3 (Masa Pajak Januari–Desember 2026), Pasal 3 (industri alas kaki, tekstil & pakaian jadi, furnitur, kulit, pariwisata + KLU Lampiran A, 133 baris), Pasal 4 ayat 2–4 (pegawai tetap: bruto tetap & teratur Januari 2026/bulan pertama kerja **≤ Rp10.000.000**; tidak tetap: rata-rata ≤ Rp500.000/hari atau ≤ Rp10.000.000 bila bulanan), Pasal 5 ayat 1–2 (DTP **dibayar tunai**, bukan penghasilan kena pajak), Pasal 5 ayat 5 (kelebihan DTP tidak dikembalikan), Pasal 6 ayat 4–6 (lapor SPT Masa paling lambat 31 Januari 2027, lewat batas → PPh yang telah dipotong wajib disetor), Lampiran B (Tuan A 8.000.000 − 120.000 + 120.000 = 8.000.000; Tuan B K/1). Kesimpulan mekanisme: **dipotong = PPh TER/Pasal 17, DTP tunai = nilai sama, setoran ke negara Rp 0, diterima = bruto − potongan lain** (bukan bruto + DTP).
+
+Metode: kalkulator independen Python `Decimal` milik penguji (tabel TER ditulis ulang, tidak mengimpor script skill), dicocokkan dulu dengan Lampiran B PMK 105/2025 (Tuan A Desember 540.000 / setahun 1.860.000; Tuan B Desember 480.000 / setahun 4.050.000 — cocok). Lalu CLI skill dijalankan (`--format json`/`--json`) dan dibandingkan per kolom: dipotong, DTP tunai, disetor ke negara, diterima.
+
+Database uji sementara (scratchpad): `init` → `atur --jkk 0,24` → 6 karyawan (`karyawan tambah … --dtp --bruto-tetap-januari`) → `isi --thr` → `hitung --bulan 2026-03 --json`, lalu `rekap` dan `slip`.
+
+| # | Karyawan | Dipotong | DTP tunai | Disetor | Gaji bersih | Selisih |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | A TK/0 Rp6.000.000 DTP | 47.043 | 47.043 | 0 | 5.760.000 | 0 |
+| 2 | B K/1 Rp9.500.000 DTP | 148.969 | 148.969 | 0 | 9.120.000 | 0 |
+| 3 | C TK/0 tepat Rp10.000.000 DTP | 261.350 | 261.350 | 0 | 9.600.000 | 0 |
+| 4 | D TK/0 Rp10.000.001 DTP → ditolak + peringatan | 261.350 | 0 | 261.350 | 9.338.651 | 0 |
+| 5 | E TK/0 Rp6.000.000 tanpa DTP | 47.043 | 0 | 47.043 | 5.712.957 | 0 |
+| 6 | F TK/0 Rp6.000.000 + THR Rp6.000.000 bulan sama, DTP | 490.896 | 490.896 | 0 | 11.760.000 | 0 |
+| Σ | Total perusahaan | 1.256.651 | 948.258 | 308.393 | – | 0 (terutang/DTP/setor) |
+
+Desember & THR memakai mesin yang sama (`mesin/payroll.py`, `mesin/thr.py`) — sudah diverifikasi di slip-gaji-bpjs (Desember DTP 249.777, selisih 0) dan hitung-thr.
+
+SUMBER.json: sha256 kelima file mesin **cocok** dengan file sumber di repo (payroll.py & ter_core.py & ter_tabel.json slip-gaji-bpjs, pph21.py pph21-ter 1.0.5, thr.py hitung-thr 1.0.9; ter_core/ter_tabel di pph21-ter & hitung-thr juga identik).
+
+Teks hitung/rekap: "Setor PPh 21: Rp 308.393" + "PPh 21 DTP dibayar tunai ke karyawan (sudah di gaji bersih): Rp 948.258"; slip: "PPh 21 Rp 47.043 tetap dipotong, lalu Rp 47.043 dibayar tunai kembali … Setoran … Rp 0".
+
+Lain-lain: `tests/uji_regresi.py` 42 tes OK · `validate.py` ✅ · `uji_openclaw.sh` (instalasi uji terpisah) 117/117.
+
+**Total selisih: 0 dari 6 karyawan + total.**
+
+Cacat (ringan, tanpa dampak uang): kunci JSON `total.pph21_dipotong` (= 308.393) sebenarnya jumlah PPh yang **disetor**, bukan yang dipotong (yang dipotong menurut PMK = 1.256.651 = `pph21_terutang`); docstring `gaji.py` ±baris 1491 masih memakai istilah lama. Tidak tampil di teks pembeli, tetapi bisa menyesatkan agent yang membaca JSON. Sarankan ganti nama/penjelasan di versi berikut.
+
+**Skor: 9/10. Verdik: LULUS uji ulang angka DTP** (tetap **PERLU REVIEW konsultan pajak**).
+
+## Riwayat revisi 1.0.11 (2026-10-05) — menunggu cek penguji
+- Menindaklanjuti cacat ringan uji ulang DTP: `total.pph21_dipotong` kini = total PPh 21 yang **dipotong** (Σ potongan "PPh 21", termasuk DTP; pada data uji di atas seharusnya 1.256.651), kunci baru `pph21_dtp` (= `pph21_dtp_tunai`) dan `pph21_disetor_ke_negara` (= `setor_pph21`, perkiraan setor = max(0, dipotong − DTP − kelebihan dikembalikan)). `lebih_bayar_pph21` = max(0, dikembalikan − (dipotong − DTP)). Angka setor tidak berubah.
+- Kompatibilitas: `setor_pph21` dipertahankan; total tersimpan ≤ 1.0.10 (tanpa `pph21_dtp`) dikonversi otomatis di `lengkapi_total` (dipotong lama + DTP). Tidak ada skill/dasbor lain di repo yang membaca kunci ini (dicek dengan grep).
+- Teks rekap DTP: "PPh 21 dipotong dari gaji bulan ini: … (termasuk DTP …)" + "Setor PPh 21 ke negara: …"; docstring `lengkapi_total` diperbarui; `references/perintah.md` diperbarui.
+- Tes baru: `test_total_dtp_dipotong_vs_disetor_dipisah`, `test_total_lama_v1010_dtp_diubah_ke_arti_baru`; `tests/uji_regresi.py` 46 tes OK. Mesin (`scripts/mesin/`) tidak diubah; sha256 SUMBER.json tetap cocok.
+
+
+## Cek v1.0.11 — 2026-10-05
+
+Penguji independen (bukan pembuat; kode tidak diubah). Data fiktif 7 karyawan, periode **Desember 2026** (Masa Pajak Terakhir, Pasal 17 setahun), `saldo-awal` Jan–Nov, `atur --jkk 0,24 --batas-jp 11000000`; DB sementara di scratchpad. CLI `hitung`/`final`/`rekap --json` dijalankan; pembanding = kalkulator `Decimal` milik penguji (tidak mengimpor script skill: bruto = upah + BPJS Kes 4% + JKK + JKM, biaya jabatan 5% maks 6 jt, iuran JHT 2% + JP 1%, PKP dibulatkan ribuan ke bawah, tarif Pasal 17, dikurangi PPh Jan–Nov).
+
+| Kode | Kasus | PPh Des (independen) | Dipotong | DTP tunai | Kembali | Diterima (indep. = skill) | Selisih |
+|---|---|---:|---:|---:|---:|---:|---:|
+| A | TK/0 6 jt, DTP | 248.650 | 248.650 | 248.650 | 0 | 5.760.000 | 0 |
+| B | K/1 9,5 jt, DTP | 1.538.200 | 1.538.200 | 1.538.200 | 0 | 9.120.000 | 0 |
+| C | TK/0 17 jt + bonus 5 jt (bruto > 10 jt), tanpa DTP | 6.676.650 | 6.676.650 | 0 | 0 | 14.753.350 | 0 |
+| D | K/0 8 jt, tanpa DTP | 1.032.000 | 1.032.000 | 0 | 0 | 6.648.000 | 0 |
+| E | TK/1 7 jt, DTP | 527.800 | 527.800 | 527.800 | 0 | 6.720.000 | 0 |
+| F | TK/0 5 jt, lebih potong → dikembalikan | −2.410.250 | 0 | 0 | 2.410.250 | 7.210.250 | 0 |
+| G | TK/0 10,5 jt minta DTP → ditolak (bruto Jan > 10 jt) | 629.400 | 629.400 | 0 | 0 | 9.450.600 | 0 |
+
+Diterima = gaji − iuran karyawan − PPh dipotong + DTP tunai + kelebihan dikembalikan (PMK 105/2025: DTP tetap dipotong lalu dibayar tunai).
+
+| Kunci `rekap --json` `total` | Independen | DB baru (1.0.11) | DB lama (dibuat 1.0.10, dibaca 1.0.11) | Cocok |
+|---|---:|---:|---:|---|
+| `pph21_dipotong` (= Σ PPh dipotong) | 10.652.700 | 10.652.700 | 10.652.700 | ✅ |
+| `pph21_dtp` (= Σ DTP = `pph21_dtp_tunai`) | 2.314.650 | 2.314.650 | 2.314.650 | ✅ |
+| `pengembalian_pph21` | 2.410.250 | 2.410.250 | 2.410.250 | ✅ |
+| `pph21_disetor_ke_negara` = `setor_pph21` (dipotong − DTP − kembali) | 5.927.800 | 5.927.800 / 5.927.800 | 5.927.800 / 5.927.800 | ✅ |
+| `lebih_bayar_pph21` | 0 | 0 | 0 | ✅ |
+
+- Format lama: skill versi `3f2dded^` (1.0.10) diekstrak ke scratchpad, DB dibuat & difinalkan dengannya; total tersimpan berisi `pph21_dipotong` 8.338.050 (arti lama = Σ disetor), tanpa `pph21_dtp`. Dibaca 1.0.11 (`rekap --bulan` dan `rekap --tahun`) → dikonversi ke arti baru, angka sama persis dengan DB baru; `setor_pph21` tidak berubah dibanding output 1.0.10 (5.927.800).
+- Teks rekap: "PPh 21 dipotong bulan ini 10.652.700 / Bagian DTP 2.314.650 / Kelebihan dikembalikan 2.410.250 / Perkiraan setor 5.927.800"; peringatan G (tidak memenuhi syarat DTP) tampil.
+- `tests/uji_regresi.py`: **44 tes OK** (catatan revisi menyebut 46 — salah hitung; 2 tes baru memang ada) · `validate.py` ✅ 117 skill.
+- Catatan ringan (tanpa dampak angka): bila ada DTP + pengembalian, teks rekap menyebut DTP dua kali (baris "Bagian PPh 21 DTP…" dan "PPh 21 DTP dibayar tunai…").
+
+**Total selisih: 0 dari 7 karyawan + 5 kunci total (DB baru & lama).**
+
+**Skor: 9/10. Verdik: LULUS** (tetap PERLU REVIEW konsultan pajak; pembulatan belum dicocokkan dengan Coretax).

@@ -424,9 +424,10 @@ def main():
     else:
         for t in temuan:
             print("{}: [{}] {}".format(t["level"], t["kategori"], t["pesan"]))
-        print("HASIL: {} ({} GAGAL, {} CEK)".format(hasil, gagal, len(temuan) - gagal))
+        print("[UNTUK AGENT SAJA - jangan dikutip ke pengguna] Ringkasan cek: {} wajib diperbaiki, {} perlu diperiksa (kode keluar {}).".format(
+            gagal, len(temuan) - gagal, 2 if gagal else 0))
         if gagal:
-            print("Perbaiki semua GAGAL (hapus klaim, ganti [isi: ...], atau tanyakan ke pengguna), lalu jalankan ulang.")
+            print("[UNTUK AGENT SAJA] Perbaiki semua yang wajib diperbaiki (hapus klaim, ganti [isi: ...], atau tanyakan ke pengguna), lalu jalankan ulang.")
     sys.exit(2 if gagal else 0)
 
 

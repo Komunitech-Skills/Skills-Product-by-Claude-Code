@@ -1,13 +1,17 @@
 ---
 name: rencana-pelajaran-guru
-description: Membuat Modul Ajar/RPP lengkap, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, ATP, Tujuan Pembelajaran, Profil Lulusan, asesmen diagnostik-formatif-sumatif, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Aturan baku: lembar siswa/LKPD TIDAK memuat jawaban; kunci jawaban ditulis utuh terpisah di bagian "Kunci Jawaban (untuk guru)"; CP tidak pernah dikarang (rujuk BSKAP 046/H/KR/2025 + cara mengambil bunyi CP resmi); isi modul LENGKAP (termasuk lembar siswa & kunci guru) selalu ditulis utuh di balasan chat, bukan ringkasan; file .docx untuk cetak/supervisi hanya salinan bila Python tersedia, dengan jalur file disebut. Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal ulangan+rubrik. EN: lesson plan, worksheet, answer key, rubric.
+description: Membuat Modul Ajar/RPP, RPP 1 lembar, LKPD, serta soal+kunci+rubrik sesuai Kurikulum Merdeka (CP, Tujuan Pembelajaran, Profil Lulusan, asesmen, diferensiasi) untuk guru SD/MI/SMP/MTs/SMA/MA/SMK dan guru les/bimbel di Indonesia. Format default RINGKAS ala modul ajar 1 lembar (balasan chat sekitar 4.000-6.000 karakter, utuh: modul, LKPD tanpa jawaban, rubrik, kunci guru terpisah); versi lengkap hanya bila diminta. Bila guru menyebut cetak/supervisi/Word/file, jalankan scripts/buat_docx.py sekali lalu tulis hanya 'File Word: <jalur dari output script>', tidak pernah klaim 'terlampir/terkirim' tanpa alat kirim file. CP tidak dikarang dan tidak diambil lewat web (rujuk BSKAP 046/H/KR/2025, kolom tempel bunyi CP resmi). Gunakan saat guru minta RPP, modul ajar, lesson plan, LKPD, soal+rubrik. EN: lesson plan, worksheet, answer key, rubric.
 ---
 
 # Rencana Pelajaran Guru (Modul Ajar Kurikulum Merdeka)
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
-> **Aturan isi balasan:** Balasan chat WAJIB memuat isi modul secara lengkap dan utuh (Modul Ajar, LKPD/lembar siswa, soal + rubrik, dan Kunci Jawaban untuk guru) — bukan ringkasan atau daftar isi. File .docx/PDF hanya salinan dari isi yang sama; jangan menggantikan isi di chat dengan "lihat file".
+> **ATURAN PALING ATAS (kanal chat: Telegram/WhatsApp/web):**
+> 1. **Format default RINGKAS** (ala "modul ajar 1 lembar"), target balasan chat **sekitar 4.000-6.000 karakter** dan tetap **utuh**, bukan ringkasan isi: Modul Ajar ringkas, LKPD (maks. 6 soal, tanpa jawaban), rubrik ringkas, lalu "Kunci Jawaban (untuk guru)" terpisah. Versi lengkap/panjang (modul penuh, soal banyak) **hanya bila guru memintanya**. Balasan terlalu panjang pernah membuat model macet tanpa balasan di Telegram; jangan menulis lebih dari yang diminta.
+> 2. **Isi utuh WAJIB ditulis di chat**; dilarang menulis "isi lengkap ada di file/workspace/folder" sebagai pengganti isi. Bila terpaksa panjang (versi lengkap diminta), pecah "Bagian 1/n ...".
+> 3. **File Word:** bila guru menyebut cetak, print, supervisi, Word, docx, atau file, **setelah isi chat selesai ditulis** jalankan `scripts/buat_docx.py` **sekali** (tanpa bertanya), lalu tulis HANYA kalimat baku: `File Word: <jalur persis dari output script>`. **Dilarang** menulis "sudah saya lampirkan/terlampir/terkirim/saya kirim" kecuali alat kirim file benar-benar dipanggil dan berhasil. Bila script gagal atau jalurnya tidak ada, jangan menyebut file sama sekali.
+> 4. **Batasi tool call:** baca SKILL.md sekali; **JANGAN pernah web_fetch/web_search dokumen CP** (lampiran BSKAP ±1.700 halaman; pernah membuat timeout). Bila diminta bunyi/kode CP persis: beri rujukan + langkah mencari + kolom tempel, lalu langsung lanjut menyusun modul. Di kanal chat jangan menulis file .md hasil modul di workspace (berkas .md sementara untuk script .docx ditaruh di folder sementara dan dihapus setelahnya).
 
 ## Tujuan
 Mengubah satu kalimat permintaan guru (mis. "buatkan modul ajar IPA kelas 7 tentang
@@ -45,7 +49,7 @@ perlu tahu istilah CP/ATP/Profil Lulusan.
 | Teks/kode CP resmi dari guru | Tidak | Ringkasan umum, ditandai "(cek CP resmi)" — lihat Batasan |
 | Dokumen/format Modul Ajar sekolah sendiri | Tidak | Format `templates/kerangka-modul-ajar.md` |
 | Kondisi kelas (siswa berkebutuhan khusus, kelas besar/kecil, dll.) | Tidak | Tidak ada catatan khusus |
-| Jenis dokumen yang diminta (Modul Ajar lengkap / RPP 1 lembar / LKPD saja / soal saja) | Tidak | Modul Ajar lengkap + LKPD + soal & rubrik (paket penuh) |
+| Jenis dokumen yang diminta (versi lengkap / RPP 1 lembar / LKPD saja / soal saja) | Tidak | Paket RINGKAS: modul ajar ringkas + LKPD (maks. 6 soal) + rubrik ringkas + kunci guru. Versi lengkap hanya bila diminta |
 
 Jika **mapel/topik** atau **jenjang** tidak disebut, tanyakan **sekali** dalam satu pesan
 bernomor, sekaligus tawarkan opsi cepat, misalnya:
@@ -103,8 +107,8 @@ isi sisanya dengan default, dan sebutkan asumsinya — kecuali jenjang/kelas mas
     **LKPD adalah lembar siswa: tidak boleh ada jawaban, kata "Jawaban:", contoh isian
     benar, atau kunci di dalamnya** (hanya garis/kotak kosong "Jawab: ____"). Semua kunci
     ditulis utuh di bagian "Kunci Jawaban (untuk guru)" (lihat Format Output).
-12. **Buat soal evaluasi + kunci + rubrik** (`templates/kerangka-rubrik.md`) dengan skor
-    eksplisit dan cara menghitung nilai akhir yang jelas.
+12. **Buat rubrik + kunci** (`templates/kerangka-rubrik.md`) dengan skor eksplisit dan cara
+    menghitung nilai akhir yang jelas. Default ringkas: LKPD sekaligus menjadi soal sumatif (maks. 6 soal); soal terpisah hanya bila diminta.
 13. **Periksa dengan checklist** di bawah sebelum menyampaikan hasil ke guru.
 14. **Tutup dengan ringkasan asumsi** (jika ada default yang dipakai) dan **tawarkan 2–3
     opsi revisi spesifik** sesuai mapel/topik (mis. "mau saya tambah versi soal yang lebih
@@ -113,19 +117,29 @@ isi sisanya dengan default, dan sebutkan asumsinya — kecuali jenjang/kelas mas
 
 ## Format Output
 
-**Satu format baku** (selalu sama): teks Markdown dengan judul memakai `#`/`##`/`###`,
-daftar `-` atau `1.`, dan tabel `| a | b |`. **Jangan** memakai garis pemisah hiasan
-(`───`, `***`, `---` berulang) dan jangan menumpuk baris kosong; satu baris kosong antar
-bagian cukup. Urutan: **(1) Modul Ajar** (atau RPP 1 lembar bila diminta) → **(2) LKPD
-(lembar siswa, tanpa jawaban)** → **(3) Soal siswa + Rubrik** → **(4) Kunci Jawaban (untuk guru)**.
-Template ada di `templates/kerangka-modul-ajar.md`, `kerangka-lkpd.md`, `kerangka-rubrik.md`.
+**Satu format baku** (selalu sama): teks Markdown dengan judul `#`/`##`/`###`, daftar `-`
+atau `1.`, dan tabel `| a | b |`. **Jangan** memakai garis pemisah hiasan (`───`, `***`, `---`
+berulang) dan jangan menumpuk baris kosong. Urutan: **(1) Modul Ajar ringkas** (atau RPP 1
+lembar) → **(2) LKPD (lembar siswa, tanpa jawaban)** → **(3) Rubrik ringkas** → **(4) Kunci
+Jawaban (untuk guru)**. Template: `templates/kerangka-rpp-1-lembar.md` (default),
+`kerangka-modul-ajar.md` (hanya bila versi lengkap diminta), `kerangka-lkpd.md`, `kerangka-rubrik.md`.
+
+**Isi default RINGKAS (target 4.000-6.000 karakter total):**
+- **Informasi umum** singkat: mapel, kelas/fase, topik, alokasi (n pertemuan x JP = menit), model/metode satu baris.
+- **CP:** rujukan (BSKAP 046/H/KR/2025) + kolom tempel "CP (salin dari dokumen resmi): [tempel]"; ringkasan umum bertanda "(cek CP resmi)".
+- **2-3 Tujuan Pembelajaran** terukur; 1-2 dimensi Profil Lulusan.
+- **Langkah kegiatan bertabel** (kolom: Tahap, Menit, Kegiatan guru dan siswa), jumlah menit = alokasi (diverifikasi).
+- **Asesmen singkat:** diagnostik 1 baris, formatif 1 baris, sumatif = LKPD/soal; diferensiasi 1 baris pengayaan + 1 baris remedial.
+- **LKPD:** judul, petunjuk, maks. 6 soal/tugas, tanpa jawaban ("Jawab: ____").
+- **Rubrik ringkas:** tabel skor + cara menghitung nilai akhir.
+- **Kunci Jawaban (untuk guru):** jawaban singkat per nomor + skor.
+Versi lengkap (kegiatan rinci per pertemuan, soal banyak, pengayaan/remedial panjang) hanya bila guru minta "lengkap/detail".
 
 **Aturan kunci jawaban (wajib):**
 - Lembar siswa (LKPD & soal) bersih dari jawaban; guru bisa langsung menggandakannya.
 - Semua kunci berkumpul di satu bagian terpisah berjudul persis `# Kunci Jawaban (untuk guru)`,
-  di **akhir** dokumen, ditulis **utuh** per bagian dan per nomor (jawaban lengkap, skor,
-  alternatif jawaban bila ada). Dilarang menulis "lihat jawaban di atas/di LKPD".
-- Soal uraian/esai: kunci berisi poin jawaban yang diharapkan + pedoman skor, bukan sekadar "bervariasi".
+  di **akhir** dokumen, ditulis per nomor (jawaban, skor). Dilarang menulis "lihat jawaban di atas/di LKPD".
+- Soal uraian: kunci berisi poin jawaban yang diharapkan + pedoman skor, bukan sekadar "bervariasi".
 
 Tutup dengan catatan (maks. 4 baris):
 
@@ -137,22 +151,19 @@ penanda judul — jadikan baris itu Heading lalu hapus tandanya (Cari & Ganti), 
 file .docx (lihat di bawah) yang judul & tabelnya sudah rapi.
 ```
 
-**File Word (.docx) untuk cetak/supervisi.** Bila guru menyebut dicetak, supervisi,
-"minta file Word/docx", atau akan dikumpulkan ke kepala sekolah/pengawas, dan kamu bisa
-menjalankan Python 3 serta menulis file:
-1. Tulis seluruh hasil (format baku di atas) ke satu file `.md` di folder kerja.
+**File Word (.docx) untuk cetak/supervisi.** Bila guru menyebut dicetak, print, supervisi,
+Word/docx/file, atau akan dikumpulkan ke kepala sekolah/pengawas, dan Python 3 serta izin
+menulis file tersedia, **setelah isi chat selesai ditulis**, kerjakan tanpa bertanya:
+1. Tulis hasil (format baku di atas) ke satu file `.md` **sementara** (folder sementara, bukan workspace guru).
 2. Pisahkan lembar siswa dan kunci dengan baris `<<HALAMAN BARU>>` di atas judul Kunci Jawaban.
-3. Jalankan `python3 scripts/buat_docx.py hasil.md hasil.docx` (Windows: `python` atau `py`);
-   script memakai Python standar saja dan mencetak jalur file yang sebenarnya ditulis
-   ("OK: file ditulis di <jalur>"). Sebutkan **jalur persis dari output script itu** ke guru.
-   Jangan menulis kalimat seperti "File Word siap cetak:" tanpa jalur; bila script gagal atau
-   jalurnya tidak ada, jangan menyebut file sama sekali.
-4. **Tetap tampilkan isi utuh di chat** (modul, lembar siswa, soal+rubrik, kunci guru) —
-   file hanya salinan dan lampiran bisa gagal terkirim. Jangan berjanji
-   "sudah saya kirim file" bila pengiriman tidak terkonfirmasi; sebutkan jalur file saja.
+3. Jalankan **sekali** `python3 scripts/buat_docx.py hasil.md hasil.docx` (Windows: `python` atau `py`);
+   script mencetak "OK: file ditulis di <jalur>". Hapus file .md sementara setelahnya.
+4. Tulis HANYA kalimat baku: `File Word: <jalur persis dari output script>`. Dilarang menulis
+   "sudah saya lampirkan", "terlampir", "terkirim", "saya kirim" kecuali alat kirim file
+   benar-benar dipanggil dan berhasil. Bila script gagal atau jalurnya tidak ada, jangan menyebut file sama sekali.
+5. Isi utuh tetap ditulis di chat; file hanya salinan.
 Bila Python/izin menulis file tidak ada, jangan membuat file palsu: tampilkan teks di chat
-dan jelaskan cara menempel ke Word. Jangan menyalin pesan proses internal ("File sudah
-siap, saya kirim sekarang") ke guru.
+dan jelaskan cara menempel ke Word. Jangan menyalin pesan proses internal ke guru.
 
 Bila guru minta *hanya* salah satu dokumen (mis. "LKPD saja"), keluarkan dokumen itu saja;
 untuk LKPD, tetap sertakan "Kunci Jawaban (untuk guru)" sebagai bagian terpisah di akhir
@@ -162,7 +173,7 @@ untuk LKPD, tetap sertakan "Kunci Jawaban (untuk guru)" sebagai bagian terpisah 
 
 **Input pengguna:** "buatkan modul ajar IPA kelas 7 tentang ekosistem 2 pertemuan"
 
-**Output (ringkas — lihat contoh lengkap di `examples/01-modul-ajar-ipa-kelas7-ekosistem.md`):**
+**Output (ringkas — contoh versi lengkap di `examples/01-modul-ajar-ipa-kelas7-ekosistem.md`; contoh format default ringkas di `examples/09-format-ringkas-telegram.md`):**
 ```
 MODUL AJAR — IPA
 A. Informasi Umum: Fase D, SMP kelas VII, 2 pertemuan × 2 JP (80 menit/pertemuan)...
@@ -187,8 +198,11 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
 - [ ] Nama dimensi Profil Lulusan persis sesuai `references/dasar-kurikulum.md` (Penalaran Kritis, dst.)
 - [ ] Kunci jawaban LKPD/soal sudah dihitung ulang, bukan ditulis kira-kira
 - [ ] **Lembar siswa/LKPD tidak memuat jawaban**; kunci utuh ada di "Kunci Jawaban (untuk guru)" di akhir (bukan "lihat di atas")
-- [ ] **Isi modul lengkap (modul, LKPD, soal+rubrik, kunci guru) tertulis utuh di chat**, bukan ringkasan; .docx hanya salinan
-- [ ] Bila menyebut file: jalur file sesuai output script (atau tidak menyebut file sama sekali)
+- [ ] **Format default RINGKAS** (balasan sekitar 4.000-6.000 karakter, LKPD maks. 6 soal, 2-3 TP, kegiatan bertabel menit); versi panjang hanya bila diminta
+- [ ] Isi chat **utuh** (modul ringkas, LKPD, rubrik, kunci guru), bukan ringkasan isi, tanpa kalimat "isi ada di file"
+- [ ] Bila guru menyebut cetak/supervisi/Word/file: `buat_docx.py` dijalankan sekali SETELAH isi chat selesai; kalimatnya hanya `File Word: <jalur dari output script>`
+- [ ] Tidak ada kata "lampirkan/terlampir/terkirim" tanpa alat kirim file yang berhasil; script gagal = file tidak disebut; tidak ada .md modul tertinggal di workspace
+- [ ] Tool call minimal: SKILL.md dibaca sekali; **tidak ada web_fetch dokumen CP** (CP resmi tidak diambil lewat web)
 - [ ] Format baku: tanpa garis pemisah hiasan/baris kosong berulang; catatan Word/Docs sesuai format (tanda #)
 - [ ] Rubrik punya skor eksplisit dan cara menghitung nilai akhir
 - [ ] Tidak ada soal yang meniru/berbau ujian nasional-ANBK bocoran
@@ -199,15 +213,7 @@ Asumsi yang dipakai: 2 JP per pertemuan (default) karena JP tidak disebutkan gur
   bunyinya bisa direvisi BSKAP sewaktu-waktu). Jangan pernah menuliskan kode/teks CP
   seolah pasti sesuai dokumen resmi kalau tidak yakin — selalu tandai untuk dicek. Jika
   guru menempelkan CP resmi, pakai itu sebagai sumber kebenaran.
-- **Permintaan kode/bunyi CP resmi "persis":** jangan mengarang atau mengutip dari ingatan
-  (CP lama mis. Kepmen 033/H/KR/2022 sudah dicabut). Jawab dengan: (1) rujukan acuan terbaru —
-  Keputusan Kepala BSKAP No. 046/H/KR/2025 (ditetapkan 18 Juli 2025; lampiran per fase & mapel);
-  (2) langkah singkat mengambil CP: buka dokumen CP resmi di situs Kemendikdasmen/guru.kemendikdasmen.go.id
-  (cari "Capaian Pembelajaran 046/H/KR/2025"), pilih jenjang → mata pelajaran → fase (A–F),
-  salin paragraf CP fase itu apa adanya dan elemen/kodenya bila ada; (3) sediakan tempat isian
-  di modul: `CP (salin dari dokumen resmi): [tempel di sini]  Sumber: BSKAP 046/H/KR/2025, hlm. __`;
-  (4) tetap lanjutkan menyusun modul memakai ringkasan umum bertanda "(cek CP resmi)", dan bila
-  guru menempelkan CP, pakai persis itu.
+- **Permintaan kode/bunyi CP resmi "persis":** JANGAN mengambil dokumen CP lewat web (tanpa web_fetch/web_search; dokumen ±1.700 halaman) dan jangan mengarang atau mengutip dari ingatan (CP lama mis. Kepmen 033/H/KR/2022 sudah dicabut). Jawab singkat: (1) bunyi resmi harus disalin dari Keputusan Kepala BSKAP No. 046/H/KR/2025 (ditetapkan 18 Juli 2025; lampiran per fase & mapel); (2) langkah 3-4 baris: buka https://guru.kemendikdasmen.go.id, cari "Capaian Pembelajaran 046/H/KR/2025" dan unduh PDF-nya; pilih jenjang lalu mata pelajaran; temukan Fase (A-F) kelas itu; salin paragraf CP dan nama elemen apa adanya beserta nomor halaman; (3) sediakan kolom di modul: `Tempel bunyi CP resmi di sini: [tempel]  Sumber: BSKAP 046/H/KR/2025, hlm. __`; (4) tetap tulis TP yang selaras dengan elemen yang benar (nama/penomoran elemen boleh dari `references/panduan-mapel.md` bila sudah ada dan bersumber; bila tidak yakin, tandai "(cek CP resmi)"); bila guru menempelkan CP, pakai persis itu.
 - **Format sekolah berbeda-beda:** bila guru melampirkan/menyebut template sekolahnya,
   ikuti template itu — isi dengan hasil Langkah Kerja skill ini, jangan memaksakan format
   Komunitech.

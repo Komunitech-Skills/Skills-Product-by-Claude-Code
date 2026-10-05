@@ -387,6 +387,46 @@ class UjiSetahun(Dasar):
 
 
 # --------------------------------------------------------------------------- THR
+class UjiDTP(Dasar):
+    def test_slip_dtp_dipotong_lalu_dibayar_tunai(self):
+        # PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B (cek 2026-10-05): PPh 21 dipotong, DTP tunai nilai sama,
+        # gaji bersih tidak berkurang karena pajak (bukan gaji + DTP), setoran bagian DTP Rp 0
+        k = self.tambah("Rina", "--ptkp", "TK/0", "--gaji-pokok", "6jt", "--masuk", "2020-01-01", "--dtp", "ya",
+                        "--bruto-tetap-januari", "6jt")["kode"]
+        h, _ = self.hasil("2026-09")
+        p = h[k]["payroll"]
+        self.assertTrue(p["dtp"])
+        pph = p["potongan"]["PPh 21"]
+        self.assertGreater(pph, 0)
+        self.assertEqual(p["pendapatan"]["PPh 21 DTP dibayar tunai"], pph)
+        self.assertEqual(p["pph_disetor"], 0)
+        i = p["iuran"]
+        self.assertEqual(p["take_home_pay"], 6000000 - i["kes_karyawan"] - i["jht_karyawan"] - i["jp_karyawan"])
+        slip = self.ok("slip", "--bulan", "2026-09", "--karyawan", "Rina", "--keluar", self.dir)["teks"]
+        self.assertIn("tetap dipotong", slip)
+        self.assertIn("Setoran PPh 21 ke negara untuk karyawan ini: Rp 0", slip)
+
+    def test_total_dtp_dipotong_vs_disetor_dipisah(self):
+        # v1.0.11: total.pph21_dipotong = yang DIPOTONG (termasuk DTP); pph21_dtp & pph21_disetor_ke_negara terpisah
+        self.tambah("Rina", "--ptkp", "TK/0", "--gaji-pokok", "6jt", "--masuk", "2020-01-01", "--dtp", "ya",
+                    "--bruto-tetap-januari", "6jt")
+        self.tambah("Andi", "--ptkp", "K/1", "--gaji-pokok", "9jt", "--masuk", "2022-01-01")
+        h, out = self.hasil("2026-09")
+        tot = out["total"]
+        dipotong = sum(Decimal(str(x["payroll"]["potongan"]["PPh 21"])) for x in h.values())
+        dtp = sum(Decimal(str(x["payroll"]["pendapatan"]["PPh 21 DTP dibayar tunai"])) for x in h.values())
+        setor = sum(Decimal(str(x["payroll"]["pph_disetor"])) for x in h.values())
+        self.assertGreater(dtp, 0)
+        self.assertGreater(setor, 0)
+        self.assertEqual(Decimal(str(tot["pph21_dipotong"])), dipotong)
+        self.assertEqual(Decimal(str(tot["pph21_dtp"])), dtp)
+        self.assertEqual(Decimal(str(tot["pph21_disetor_ke_negara"])), setor)
+        self.assertEqual(Decimal(str(tot["setor_pph21"])), setor)
+        self.assertEqual(dipotong, dtp + setor)
+        self.assertIn("PPh 21 dipotong dari gaji bulan ini: %s (termasuk DTP %s" % (G.rp(dipotong), G.rp(dtp)), out["teks"])
+        self.assertIn("- Setor PPh 21 ke negara: %s" % G.rp(setor), out["teks"])
+
+
 class UjiTHR(Dasar):
     def test_thr_cocok_hitung_thr(self):
         self.tambah("Gita", "--ptkp", "TK/0", "--gaji-pokok", "5jt", "--tunjangan-tetap", "500rb", "--masuk", "2019-07-01")
@@ -752,9 +792,11 @@ class UjiV101(Dasar):
         h, out = self.hasil("2026-12")
         kembali = Decimal(str(h[l]["payroll"]["pendapatan"]["Pengembalian kelebihan PPh 21"]))
         self.assertGreater(kembali, 0)
-        dipotong = sum(Decimal(str(x["payroll"]["pph_disetor"])) for x in h.values())
+        dipotong = sum(Decimal(str(x["payroll"]["pph_disetor"])) for x in h.values())   # tanpa DTP: = dipotong
         tot = out["total"]
         self.assertEqual(Decimal(str(tot["pph21_dipotong"])), dipotong)
+        self.assertEqual(Decimal(str(tot["pph21_dtp"])), Decimal(0))
+        self.assertEqual(tot["pph21_disetor_ke_negara"], tot["setor_pph21"])
         self.assertEqual(Decimal(str(tot["pengembalian_pph21"])), kembali)
         self.assertEqual(Decimal(str(tot["setor_pph21"])), max(dipotong - kembali, Decimal(0)))
         self.assertEqual(Decimal(str(tot["lebih_bayar_pph21"])), max(kembali - dipotong, Decimal(0)))
@@ -785,6 +827,15 @@ class UjiV101(Dasar):
         self.assertEqual(t["setor_pph21"], Decimal(3087764))           # angka neto temuan penguji (September)
         t = G.lengkapi_total({"setor_pph21": Decimal(100), "pengembalian_pph21": Decimal(250)})
         self.assertEqual((t["setor_pph21"], t["lebih_bayar_pph21"]), (Decimal(0), Decimal(150)))
+
+    def test_total_lama_v1010_dtp_diubah_ke_arti_baru(self):
+        # total tersimpan <= 1.0.10: pph21_dipotong berisi jumlah DISETOR (tanpa DTP)
+        t = G.lengkapi_total({"pph21_dipotong": Decimal(300000), "pph21_dtp_tunai": Decimal(45000),
+                              "setor_pph21": Decimal(300000), "pengembalian_pph21": Decimal(0)})
+        self.assertEqual((t["pph21_dipotong"], t["pph21_dtp"], t["pph21_disetor_ke_negara"], t["setor_pph21"]),
+                         (Decimal(345000), Decimal(45000), Decimal(300000), Decimal(300000)))
+        # idempoten: dipanggil ulang pada total baru tidak menambah DTP lagi
+        self.assertEqual(G.lengkapi_total(t)["pph21_dipotong"], Decimal(345000))
 
     def test_pengingat_jp_tidak_digeser_jht_digeser(self):
         self.tambah("Andi", "--ptkp", "K/1", "--gaji-pokok", "6jt", "--masuk", "2022-01-01")

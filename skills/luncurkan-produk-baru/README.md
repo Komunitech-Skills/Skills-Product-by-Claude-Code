@@ -40,6 +40,9 @@ Salin folder `luncurkan-produk-baru` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket (`docs/instalasi.md`).
 
+## Catatan revisi (v1.0.5, 2026-10-05)
+Pra-cek konteks Telegram: untuk "launching serum, izin BPOM masih proses" bot hanya membalas 5 pertanyaan. Perbaikan: aturan "kerjakan dulu, tanya di akhir" (peringatan izin edar + dasar aturan + rencana dengan asumsi default + maks. 1-3 pertanyaan di balasan yang sama); dasar aturan kosmetik ditambahkan di `references/legalitas-label.md`; contoh baru `examples/06-kosmetik-izin-proses-kerjakan-dulu.md`. Menunggu uji ulang independen.
+
 ## Skill pelengkap
 `hitung-hpp`, `harga-jual-marketplace` (harga & margin), `caption-sosmed-umkm`, `kalender-konten-30hari`, `listing-marketplace`, `naskah-live-jualan`, `laporan-iklan-mingguan`, `kpi-tim`, `promo-kalender`.
 

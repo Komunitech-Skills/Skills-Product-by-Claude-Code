@@ -25,4 +25,11 @@ Berlaku untuk kosmetik (notifikasi BPOM), pangan olahan (PIRT/BPOM MD), obat/sup
 | Teaser tanpa klaim khasiat dan tanpa tombol beli | Soft launch berbayar atau "launching tetap jalan" tanpa nomor izin |
 | Meminta masukan atas sampel desain (bukan produk dijual) | Membagikan produk jadi sebagai sampel KOL/pembeli sebelum izin |
 
-Akibatnya **T0 digeser ke setelah izin terbit** (skill memberi jarak minimal 7 hari persiapan). Dasar umum: ketentuan izin edar BPOM/Kemenkes dan UU Kesehatan. Nomor dan pasal peraturan **sengaja tidak ditulis di sini** karena sering berubah; cek versi terbaru di jdih.pom.go.id, BPOM, atau Dinkes setempat. PERLU REVIEW oleh pihak berwenang/konsultan sebelum skill ini menyebut nomor peraturan apa pun.
+Akibatnya **T0 digeser ke setelah izin terbit** (skill memberi jarak minimal 7 hari persiapan). Dasar umum: ketentuan izin edar BPOM/Kemenkes dan UU Kesehatan. Pasal tidak dikutip karena sering berubah; cek versi terbaru di jdih.pom.go.id, BPOM, atau Dinkes setempat.
+
+### Dasar aturan kosmetik (dicek 2026-10-05, PERLU REVIEW oleh konsultan/pihak berwenang)
+- UU 17/2023 tentang Kesehatan (sediaan farmasi/kosmetika harus memenuhi standar & persyaratan, serta berizin edar sebelum diedarkan).
+- Peraturan BPOM 12/2023 tentang Pengawasan Pembuatan dan Peredaran Kosmetika (kosmetika wajib dinotifikasi ke BPOM sebelum diedarkan). Sumber: https://www.peraturan.go.id/files/peraturan-bpom-no-12-tahun-2023.pdf
+- Peraturan BPOM 18/2024 tentang Penandaan, Promosi, dan Iklan Kosmetika (klaim, label, dan iklan harus sesuai notifikasi). Sumber: https://www.pom.go.id/siaran-pers/bpom-tegaskan-aturan-penandaan-promosi-dan-iklan-kosmetik-wajib-dilaksanakan-pelaku-usaha
+- UU 8/1999 tentang Perlindungan Konsumen (pelaku usaha dilarang memperdagangkan barang yang tidak memenuhi ketentuan peraturan).
+Sebut nomor di atas sebagai dasar umum; jangan mengarang pasal atau besaran sanksi.

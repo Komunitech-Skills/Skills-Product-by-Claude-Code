@@ -1,11 +1,22 @@
 ---
 name: proposal-kerjasama
-description: Menyusun proposal kerja sama bisnis berbahasa Indonesia (B2B, kemitraan, reseller/agen, konsinyasi/titip jual, sponsorship event, co-branding) versi singkat 1 halaman atau lengkap: ringkasan eksekutif, masalah-solusi, penawaran, manfaat mitra, skema & simulasi angka (dihitung script), timeline, penutup + pesan pengantar WA/email. Gunakan saat pengguna minta proposal kerjasama/kemitraan/sponsor, titip jual ke toko/kafe, atau partnership/sponsorship proposal. Bukan untuk rincian harga item (surat-penawaran-harga) atau kontrak (perjanjian-sederhana).
+description: Menyusun proposal kerja sama bisnis berbahasa Indonesia (B2B, kemitraan, reseller/agen, konsinyasi/titip jual, sponsorship event, co-branding) versi singkat 1 halaman atau lengkap: ringkasan eksekutif, masalah-solusi, penawaran, manfaat mitra, skema & simulasi angka (dihitung script), timeline, penutup + pesan pengantar WA/email. Gunakan saat pengguna minta proposal kerjasama/kemitraan/sponsor, titip jual ke toko/kafe, atau partnership/sponsorship proposal. Bukan untuk rincian harga item (surat-penawaran-harga) atau kontrak (perjanjian-sederhana). Kerjakan dulu, tanya di akhir (rumus rugi/impas selalu tampil, tanpa menyebut file/proses): bila jenis kerja sama, produk, dan angka sudah disebut, langsung tulis proposal lengkap dengan [isi ...] untuk data yang belum ada (maks. 1-3 pertanyaan di akhir, bukan di awal), tolak klaim belum terbukti (BPOM, terlaris) singkat + dasar aturan, dan peringatkan bila porsi mitra membuat pemilik rugi.
 ---
 
 # Proposal Kerja Sama
 
+> **Aturan balasan (Telegram/chat):** isi proposal, WA, email ditulis UTUH di chat (email tidak boleh hanya "senada"). Jangan menulis atau menyebut nama/path file (proposal.md, fakta.txt, folder) kecuali pengguna minta file; pengguna chat tidak bisa membukanya. Tidak ada kata proses (cek, script, file, LULUS/GAGAL) di balasan. Simpan file kerja hanya untuk keperluan internal bila perlu.
+
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+## Aturan "kerjakan dulu, tanya di akhir" (utama, mengalahkan aturan tanya-sekali di bawah)
+Bila pengguna **sudah menyebut** jenis kerja sama (mis. titip jual), produk, dan minimal satu angka/skema, **jangan membalas hanya dengan pertanyaan**. Dalam **satu balasan yang sama**, berurutan:
+1. **Klaim belum terbukti (singkat, 2-4 baris, di paling atas):** "sudah BPOM" hanya ditulis bila pengguna memberi nomor izin edar (MD/BPOM atau PIRT); selain itu tulis `[isi: nomor izin edar/PIRT]`. Superlatif ("paling laris se-Solo", "nomor 1") tidak ditulis tanpa data; pakai versi lunak + `[isi: bukti]`. Dasar: label/iklan pangan tidak boleh menyesatkan dan pangan olahan wajib berizin edar (UU 18/2012 tentang Pangan; PP 69/1999 tentang Label dan Iklan Pangan); klaim keliru juga melanggar UU 8/1999 tentang Perlindungan Konsumen (Pasal 9 dan 17). Nada ramah, bukan ceramah.
+2. **Hitungan angka lewat script** (konsinyasi/bagi hasil/reseller). Tampilkan bagian mitra per unit dan sisa pemilik (mis. Rp15.000 x 35% = Rp5.250; sisa Rp9.750), lalu **peringatan rugi**: laba per unit = sisa pemilik - HPP - biaya kirim/kemas; rugi bila HPP + biaya kirim mendekati/melebihi sisa itu. HPP belum diberi -> tulis `[isi HPP]` dan beri rumusnya + contoh dari script (mis. HPP+kirim Rp10.000 -> rugi Rp250/unit). Bagian ini masuk "Catatan untuk Anda", bukan proposal.
+   **Rumus + tabel contoh WAJIB selalu tampil di chat, juga bila HPP belum diberikan** (jangan hanya minta HPP), di blok "Catatan untuk Anda" sebelum proposal: "Sisa untuk Anda per botol = Rp9.750 - HPP - biaya kirim/botol; rugi bila HPP + kirim > Rp9.750" (angka disesuaikan dari script) + tabel 2-3 nilai HPP berlabel "contoh" (mis. HPP+kirim Rp6.000 / Rp9.750 / Rp11.000 -> sisa Rp3.750 / Rp0 / rugi Rp1.250), plus titik impas porsi toko = (harga jual - HPP - kirim) / harga jual bila bisa dihitung.
+3. **Proposal lengkap siap kirim** (format di bawah) + pesan WA/email, dengan `[isi: ...]` untuk nama usaha, nama mitra, kota usaha, kontak, nomor izin, bukti. Jangan menunda proposal demi menunggu jawaban.
+4. **Pertanyaan di akhir, maks. 1-3**, hanya yang paling menentukan (mis. HPP+ongkir, nomor izin edar, nama usaha/mitra). Sebut bahwa proposal akan dirapikan setelah dijawab.
+Bila info wajib benar-benar kosong (mis. "buatin proposal dong" tanpa produk/jenis/angka), baru berlaku tanya-sekali di tabel Input. Pengguna ingin cepat -> default + Asumsi.
 
 ## Tujuan
 Mengubah ide kerja sama yang masih di kepala pengguna menjadi proposal yang meyakinkan calon mitra: jelas apa untungnya bagi **mereka**, bagaimana cara kerjanya, dan langkah berikutnya. Angka simulasi (bagi hasil, margin, konsinyasi) dihitung script, bukan dikira.
@@ -35,7 +46,7 @@ Mengubah ide kerja sama yang masih di kepala pengguna menjadi proposal yang meya
 | Masa uji coba | Tidak | 3 bulan uji coba lalu evaluasi |
 | Kontak PIC | Tidak | `[Nama – WA – email]` |
 
-Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, isi dengan default, beri `[isi ...]` pada data spesifik, dan tulis "Asumsi" di akhir.
+Jika info wajib benar-benar kosong (lihat aturan "kerjakan dulu" di atas), tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, isi dengan default, beri `[isi ...]` pada data spesifik, dan tulis "Asumsi" di akhir.
 
 ## Langkah kerja
 
@@ -87,8 +98,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    kami") yang bocor ke dokumen mitra; kategori `lokasi` menandai kota mitra yang dipakai sebagai kota usaha.
    `fakta.txt` = salinan **persis** pesan pengguna (bukan ringkasan, jangan ditambah). GAGAL ditandai untuk
    klaim reputasi/pasar/sifat/label/layanan, asal produk, ukuran/kemasan, dan angka kredibilitas (jumlah
-   pelanggan, "sejak 2019") yang tidak ada di fakta. **Semua GAGAL wajib diperbaiki**, lalu jalankan ulang
-   sampai `HASIL: LULUS`. CEK = klaim dari pengguna yang belum ada `[isi: bukti]`. Tanpa Python: lakukan
+   pelanggan, "sejak 2019") yang tidak ada di fakta. **Semua GAGAL wajib diperbaiki. **Hasil script hanya untuk agent: jangan dikutip, jangan sebut "lulus cek"/"script"/"file" di balasan****, lalu jalankan ulang
+   sampai ringkasan menyatakan 0 wajib diperbaiki (kode keluar 0). CEK = klaim dari pengguna yang belum ada `[isi: bukti]`. Tanpa Python: lakukan
    cek-silang manual memakai checklist "Cek-silang fakta" di bawah.
 7. **Periksa** dengan checklist; tawarkan versi lain (singkat ↔ lengkap, lebih formal, bahasa Inggris).
 
@@ -173,7 +184,7 @@ Telusuri setiap kalimat proposal, pesan WA, email, dan Asumsi terhadap daftar "F
 - [ ] Klaim yang diminta pengguna tanpa bukti (BPOM, terlaris) memakai versi lunak + `[isi: bukti]`
 - [ ] Kota hanya dipakai dalam konteks yang disebut pengguna (kota mitra ≠ kota usaha/asal produk; "minimarket di Solo" ≠ "Kopi Pakde di Solo")
 - [ ] Proposal/WA/email tidak memuat modal, HPP, laba/rugi pemilik, atau titik impas (semuanya di "Catatan untuk Anda")
-- [ ] `cek_fakta.py ... --dokumen-mitra` menulis `HASIL: LULUS` (atau cek manual sudah dilakukan dan disebut ke pengguna)
+- [ ] `cek_fakta.py ... --dokumen-mitra` kode keluar 0 / 0 wajib diperbaiki (atau cek manual sudah dilakukan dan disebut ke pengguna)
 
 ## Checklist sebelum mengirim hasil
 - [ ] Setiap bagian menjawab "apa untungnya untuk mitra", bukan hanya memuji produk sendiri.
@@ -184,6 +195,8 @@ Telusuri setiap kalimat proposal, pesan WA, email, dan Asumsi terhadap daftar "F
 - [ ] Skema jelas: alur barang & uang, jadwal bayar, retur/klaim, siapa menanggung apa.
 - [ ] Ada langkah berikutnya yang konkret (uji coba, jadwal meeting) dan kontak.
 - [ ] Data internal (modal, HPP, laba/rugi, titik impas) tidak bocor ke proposal, pesan WA, email, atau Asumsi yang dikirim kecuali pengguna minta — termasuk saat menjelaskan alasan menurunkan porsi.
+- [ ] Rumus laba per unit + tabel contoh HPP tampil di "Catatan untuk Anda" walau HPP kosong.
+- [ ] Tidak ada kata proses (cek, script, file, LULUS/GAGAL) atau path file di balasan; isi utuh di chat.
 - [ ] Panjang sesuai versi (singkat ≤ ±350 kata).
 
 ## Batasan & penanganan error

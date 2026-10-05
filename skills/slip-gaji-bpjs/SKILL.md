@@ -62,6 +62,7 @@ Dasar & sumber: `references/regulasi.md` (berlaku per 2026-09-23).
 - Lembur: upah sejam = upah tetap ÷ 173 (bila ada tunjangan tidak tetap dan upah tetap < 75% total upah, pakai 75% total upah). Hari kerja: jam ke-1 × 1,5, jam berikutnya × 2. Hari libur (5 hari kerja): jam 1–8 × 2, jam 9 × 3, jam 10–12 × 4.
 - Bruto pajak = semua pendapatan + JKK + JKM + BPJS Kesehatan 4% (bagian perusahaan). PPh 21 = TER (kategori dari PTKP) × bruto pajak; Desember/bulan berhenti: hitung ulang setahun (lihat skill `pph21-ter`).
 - Take home pay = total pendapatan − (BPJS Kes 1% + JHT 2% + JP 1% + PPh 21 + zakat + potongan lain) [+ PPh 21 DTP tunai bila berhak].
+- PPh 21 DTP (PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B; ringkasan `references/dtp-pmk105.md`): PPh 21 **tetap dipotong** (baris potongan), lalu nilai yang sama **dibayar tunai** (baris pendapatan "PPh 21 DTP dibayar tunai"), jadi gaji bersih tidak berkurang karena pajak — **bukan** gaji + DTP. Setoran PPh 21 ke negara untuk bagian DTP = Rp 0.
 - Biaya perusahaan = penghasilan kotor (gaji pokok + tunjangan + lembur + bonus) + BPJS Kes 4% + JHT 3,7% + JKK + JKM + JP 2% (porsi perusahaan saja). Iuran porsi karyawan & PPh 21 **tidak** ditambah lagi — sudah termasuk di penghasilan kotor.
 - Pembulatan: iuran & lembur ke rupiah terdekat; PPh 21 ke bawah. Belum dicocokkan dengan aplikasi BPJS/Coretax.
 
@@ -87,6 +88,7 @@ Satu slip (isi file MD/HTML): identitas & periode → tabel Pendapatan → tabel
 - [ ] Peringatan UMK disampaikan bila UMK diisi; bila tidak, sebutkan cek dilewati.
 - [ ] Desember/karyawan berhenti memakai data Januari s.d. bulan lalu (hitung ulang).
 - [ ] DTP hanya bila pengguna mengonfirmasi sektor/KLU, masa pajak 2026, dan bruto tetap Januari/bulan pertama kerja ≤ Rp 10 jt.
+- [ ] Bila DTP: slip menampilkan PPh 21 dipotong, DTP dibayar tunai (nilai sama), setoran ke negara Rp 0, dan take home pay dari script (tidak pernah "gaji + DTP").
 - [ ] Desember/berhenti: jumlah bulan kerja (atau bulan mulai) diisi sesuai fakta, bukan ditebak.
 - [ ] Asumsi (JKK, pola kerja), pembulatan, dan disclaimer tercantum.
 

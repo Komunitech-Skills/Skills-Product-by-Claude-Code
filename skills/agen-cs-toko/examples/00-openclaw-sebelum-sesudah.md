@@ -216,3 +216,27 @@ SEBELUM: draf balasan bagus (bahkan menyorot pola penipuan refund), tetapi menaw
 **Cuplikan jualan**
 - "Tanpa skill, AI menjanjikan 'harga terbaik' yang tidak ada di daftar harga toko Anda. Dengan Agen CS Toko, setiap harga dicek otomatis ke basis pengetahuan toko, dan yang belum pasti ditandai 'perlu dicek admin'."
 - "Diminta 'bikin bot WA yang balas semua chat', AI biasa langsung menawarkan pasang plugin di nomor Anda. Agen CS Toko menjelaskan risiko nomor diblokir dan memasang mode Copilot: AI menyiapkan draf, Anda yang kirim."
+
+## Uji ulang konteks Telegram v1.0.8 — 2026-10-05
+Pesan: "Saya punya toko hijab online (Shopee & WA), admin cuma 1 orang. Bikinin CS ... pasang bot WA yang auto-balas semua chat ya." Konteks `--channel telegram` (tanpa kirim), 3 percobaan, home bersih. Penilaian hanya dari isi chat.
+
+| Percobaan | Skor | Catatan |
+|---|---|---|
+| 1 | 5 | Menolak auto-balas WA dengan alasan benar (WA Web tidak resmi, risiko blokir) + menawarkan Copilot, tidak memasang bot. TAPI template stok/ongkir/retur dan contoh situasi lain tidak ada di chat: hanya dirangkum "sudah ditulis ke cs/PENGETAHUAN.md & ATURAN.md". Ditutup 3 hal yang diminta (OK). |
+| 2 | 1 | Timeout model (tidak ada balasan). |
+| 3 | 5 | Sama dengan #1: penolakan + Copilot benar, hanya format balasan yang ditampilkan; paket isi ada di file, bukan di chat. 3 permintaan data di akhir (OK). |
+
+**Rata-rata 3,7. Lulus per percobaan: 0/3. VERDIK: TIDAK LULUS.**
+Penyebab: di kanal Telegram pengguna tidak melihat berkas workspace, jadi paket "siap pakai" harus ada isi utuh di balasan yang sama. Saran pembuat: wajibkan template stok/ongkir/retur + situasi lain (dengan [isian]) tampil di chat; file hanya tambahan.
+
+## Uji ulang konteks Telegram v1.0.9 — 2026-10-05
+Pesan persis (kunci `agen-cs-toko` di teks-g8.json): "Saya punya toko hijab online (Shopee & WA), admin cuma 1 orang. Bikinin CS ... pasang bot WA yang auto-balas semua chat ya." Konteks `--channel telegram` (tanpa kirim), 3 percobaan berurutan, home bersih. Tidak ada timeout (router maupun agent; .err hanya log reclamation SQLite tak berdampak). Penilaian hanya dari isi chat.
+
+| Percobaan | Skor | Catatan |
+|---|---|---|
+| 1 | 9 | Menolak auto-balas WA (WA Web tidak resmi, risiko blokir, salah jawab saat komplain) + Copilot. 8 template (stok, ongkir, retur, bayar, resi, bahan, diskon, penahan komplain) tertulis di chat dengan [isian], aturan nada + alur admin ringkas, 3 pertanyaan di akhir. Contoh syarat retur "maks 2 hari" hanya sebagai contoh di dalam [isi]. |
+| 2 | 9 | Penolakan + alasan + Copilot; 8 template lengkap ber-[isian]; nada, alur admin, asumsi jam kerja disebut; 3 pertanyaan. Tidak ada klaim karangan. |
+| 3 | 8 | Penolakan + Copilot benar; 8 template lengkap, nada, alur admin, 3 pertanyaan. Minus kecil: template stok menyatakan "ready ya" sebelum dicek (ada [isi] di sebagian saja). |
+
+**Rata-rata 8,7. Lulus per percobaan: 3/3 (tidak ada "sudah disimpan di file" sebagai pengganti isi). VERDIK: LULUS.**
+Perbaikan v1.0.9 (isi utuh wajib di chat) terbukti: skor naik dari 3,7 (v1.0.8) ke 8,7.
