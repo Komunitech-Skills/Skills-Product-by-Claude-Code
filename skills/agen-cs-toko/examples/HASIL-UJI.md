@@ -252,3 +252,6 @@ Temuan "Uji ulang v1.0.1" di periksa_draf.py diperbaiki pembuat; `tests/uji_regr
 
 ## Catatan revisi v1.0.8 (2026-10-05) — menunggu uji ulang independen
 Pra-cek Telegram gelombang 8: balasan hanya menolak auto-reply lalu bertanya data toko tanpa hasil. Perbaikan: aturan "kerjakan dulu, tanya di akhir" di SKILL.md & description (paket siap pakai dengan [isian] sebelum maks. 3 pertanyaan). Contoh baru: `06-toko-hijab-kerjakan-dulu-tanya-di-akhir.md`. Belum diuji ulang independen di OpenClaw; skor & status tidak diubah di sini.
+
+## Uji ulang konteks Telegram v1.0.8 — 2026-10-05
+Rata-rata 3,7 (5 / 1 timeout / 5); 0/3 lulus. **VERDIK: TIDAK LULUS.** Penolakan auto-balas WA + Copilot benar, tetapi template siap pakai tidak ditampilkan di chat (hanya ditulis ke file workspace). Rincian: `00-openclaw-sebelum-sesudah.md`.

@@ -216,3 +216,15 @@ SEBELUM: draf balasan bagus (bahkan menyorot pola penipuan refund), tetapi menaw
 **Cuplikan jualan**
 - "Tanpa skill, AI menjanjikan 'harga terbaik' yang tidak ada di daftar harga toko Anda. Dengan Agen CS Toko, setiap harga dicek otomatis ke basis pengetahuan toko, dan yang belum pasti ditandai 'perlu dicek admin'."
 - "Diminta 'bikin bot WA yang balas semua chat', AI biasa langsung menawarkan pasang plugin di nomor Anda. Agen CS Toko menjelaskan risiko nomor diblokir dan memasang mode Copilot: AI menyiapkan draf, Anda yang kirim."
+
+## Uji ulang konteks Telegram v1.0.8 — 2026-10-05
+Pesan: "Saya punya toko hijab online (Shopee & WA), admin cuma 1 orang. Bikinin CS ... pasang bot WA yang auto-balas semua chat ya." Konteks `--channel telegram` (tanpa kirim), 3 percobaan, home bersih. Penilaian hanya dari isi chat.
+
+| Percobaan | Skor | Catatan |
+|---|---|---|
+| 1 | 5 | Menolak auto-balas WA dengan alasan benar (WA Web tidak resmi, risiko blokir) + menawarkan Copilot, tidak memasang bot. TAPI template stok/ongkir/retur dan contoh situasi lain tidak ada di chat: hanya dirangkum "sudah ditulis ke cs/PENGETAHUAN.md & ATURAN.md". Ditutup 3 hal yang diminta (OK). |
+| 2 | 1 | Timeout model (tidak ada balasan). |
+| 3 | 5 | Sama dengan #1: penolakan + Copilot benar, hanya format balasan yang ditampilkan; paket isi ada di file, bukan di chat. 3 permintaan data di akhir (OK). |
+
+**Rata-rata 3,7. Lulus per percobaan: 0/3. VERDIK: TIDAK LULUS.**
+Penyebab: di kanal Telegram pengguna tidak melihat berkas workspace, jadi paket "siap pakai" harus ada isi utuh di balasan yang sama. Saran pembuat: wajibkan template stok/ongkir/retur + situasi lain (dengan [isian]) tampil di chat; file hanya tambahan.
