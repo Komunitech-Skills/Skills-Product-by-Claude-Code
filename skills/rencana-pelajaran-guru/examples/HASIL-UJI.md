@@ -102,3 +102,13 @@ Alasan:
 CACAT-01 (murah: tambah 1 baris aturan default JP eksplisit + selaraskan §Contoh) sebelum
 `beta`, karena ini menyangkut konsistensi output — prinsip inti "reliable" yang dijanjikan
 ke pembeli awam. CACAT-02 boleh dijadwalkan versi berikutnya.
+
+---
+## Riwayat v1.0.5 (2026-10-05) — menunggu uji ulang independen
+Perbaikan dari cacat no. 3 `koordinasi/telegram-gelombang-6-2026-10-05.md` (DENGAN 7,5; selisih +1,5):
+(a) lembar siswa tanpa jawaban + "Kunci Jawaban (untuk guru)" utuh & terpisah; (b) format baku tanpa
+garis pemisah/baris kosong berulang, catatan tempel Word/Docs sesuai tanda `#`; (c) `scripts/buat_docx.py`
+(zipfile+XML, Python standar) + `tests/uji_buat_docx.py` (10 pemeriksaan lulus: XML valid, tabel, halaman baru,
+lembar siswa tanpa "Jawaban:", 4 input buruk); (d) jawaban permintaan kode/bunyi CP: rujukan BSKAP 046/H/KR/2025
+(18 Juli 2025, diverifikasi web 2026-10-05) + langkah mengambil CP + tempat isian. Contoh: `07-minta-kode-bunyi-cp-resmi.md`.
+Status: **menunggu uji ulang independen** (belum diuji di OpenClaw/agent terpisah).

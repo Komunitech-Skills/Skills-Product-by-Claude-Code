@@ -13,7 +13,7 @@ Nama: ______________________   Kelas: _______   Tanggal: _______
 menggambar. Untuk kelas tinggi: pertanyaan pemandu + ruang jawab.]
 
 1. ...
-   Jawaban: _________________________________
+   Jawab: _________________________________   (lembar siswa: JANGAN isi jawaban)
 
 ### Bagian 2 — [nama bagian, mis. "Ayo Berlatih"]
 [Soal latihan bertingkat mudah → sulit, sesuai Tujuan Pembelajaran]
@@ -24,11 +24,20 @@ menggambar. Untuk kelas tinggi: pertanyaan pemandu + ruang jawab.]
 ### Bagian 3 — [nama bagian, mis. "Ayo Simpulkan"]
 [1–2 pertanyaan reflektif/simpulan yang menguji pemahaman, bukan hafalan]
 
----
-## KUNCI JAWABAN & PANDUAN GURU (halaman terpisah — jangan digandakan untuk siswa)
+<<HALAMAN BARU>>
 
-1. [jawaban dihitung/diverifikasi, bukan perkiraan]
+# Kunci Jawaban (untuk guru)
+Jangan digandakan untuk siswa.
+
+## Bagian 1
+1. [jawaban LENGKAP, dihitung/diverifikasi, bukan perkiraan]
 2. ...
+
+## Bagian 2
+1. [jawaban lengkap + langkah/skor]
+
+## Bagian 3
+[poin jawaban yang diharapkan + pedoman skor]
 
 **Catatan bagi guru:** [miskonsepsi umum yang mungkin muncul, dan cara meresponnya]
 ```
@@ -42,3 +51,7 @@ menggambar. Untuk kelas tinggi: pertanyaan pemandu + ruang jawab.]
   pendek, 5–8 menit per soal uraian/analisis, sesuaikan dengan jenjang).
 - Kunci jawaban wajib dihitung ulang/diverifikasi sebelum ditulis — jangan menuliskan
   angka yang belum dipastikan benar, terutama untuk Matematika dan IPA.
+- Lembar siswa tidak boleh memuat jawaban, contoh isian benar, atau kata "Jawaban:". Kunci
+  hanya di "Kunci Jawaban (untuk guru)", ditulis utuh per nomor — tidak boleh "lihat di atas".
+- `<<HALAMAN BARU>>` hanya penanda untuk `scripts/buat_docx.py`; bila tidak membuat .docx,
+  hapus barisnya.
