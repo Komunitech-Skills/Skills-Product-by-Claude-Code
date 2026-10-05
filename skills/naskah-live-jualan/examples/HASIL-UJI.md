@@ -78,3 +78,6 @@ terverifikasi & jujur, urgensi hanya dari fakta. **Skill jelas memberi nilai tam
 
 ## Riwayat revisi
 - **1.0.6 (2026-10-05):** pra-cek konteks Telegram menemukan baris proses internal ("Lulus cek-silang fakta (0 GAGAL)") bocor di pembuka balasan. SKILL.md kini melarang menampilkan hasil script/nama script/istilah cek-silang dan mewajibkan balasan dimulai dengan naskah; butir checklist ditambah. **Status: menunggu uji ulang independen.**
+
+## Uji ulang konteks Telegram v1.0.6 — 2026-10-05
+Penguji independen, 3 percobaan (`--channel telegram`): skor 8,5 / 5 / 5,5, rata-rata 6,3, lulus 1/3. **VERDIK: GAGAL.** Masalah: pembuka "Cek-silang fakta sudah LULUS." (percobaan 2), label "(dihitung script/sistem)" pada judul tabel (2, 3), klaim karangan "paling banyak diambil malam ini" dan penyebutan file naskah.md (3). Angka harga/hemat benar di ketiganya. Detail di `00-openclaw-sebelum-sesudah.md`.

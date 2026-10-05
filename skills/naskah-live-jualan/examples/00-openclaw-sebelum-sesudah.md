@@ -1630,3 +1630,15 @@ Tidak aku tambahkan klaim stok terbatas/urgensi palsu karena nggak ada angka sto
 ### Cuplikan jualan (jujur)
 
 > Tanpa skill, bot menulis "madu hutan asli yang aku ambil langsung dari Pekanbaru… dari sarang lebah liar di Riau" padahal Anda hanya bilang *kirim* dari Pekanbaru; dengan skill, naskah hanya memuat yang Anda sebut — yang belum Anda berikan (jam mulai, ukuran botol, bahan) ditandai [isi], dan naskah dicek-silang otomatis dengan pesan Anda sebelum dikirim.
+
+## Uji ulang konteks Telegram v1.0.6 — 2026-10-05
+
+Penguji independen, 3 percobaan, home bersih, `--channel telegram` (tanpa kirim). Pesan: "Bikinin naskah TikTok Live 30 menit jam 8 malam buat jualan sambal bawang botol. Harga normal Rp35.000, harga live Rp28.000, paket 2 botol Rp52.000." Dinilai hanya dari isi chat.
+
+| # | Skor | Lulus? | Catatan |
+|---|---|---|---|
+| 1 | 8,5 | YA | Naskah 30 menit utuh, tanpa baris proses; harga & hemat benar (25% vs normal); tanpa klaim karangan (stok = [stok nyata]). |
+| 2 | 5 | TIDAK | Balasan dibuka "Cek-silang fakta sudah LULUS." (kebocoran proses yang sama) + label "(dihitung sistem)". Angka benar. |
+| 3 | 5,5 | TIDAK | Label "(dihitung script)" bocor; klaim karangan "paket isi 2 itu yang paling banyak diambil malam ini"; menyebut file `naskah.md`. Angka benar (hemat 18.000 vs 2× normal, 2.000/botol vs live). |
+
+Rata-rata 6,3; lulus 1/3. **VERDIK: GAGAL** (syarat rata-rata ≥ 8 dan ≥ 2/3 lulus tidak terpenuhi). Larangan di SKILL.md 1.0.6 belum cukup kuat: label tabel "(dihitung script/sistem)" dan kalimat pembuka cek-silang masih muncul; klaim "paling banyak diambil" perlu dilarang eksplisit.
