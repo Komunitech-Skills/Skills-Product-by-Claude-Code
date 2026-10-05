@@ -121,3 +121,6 @@ Salinan di scratchpad `uji3-ppw/` (tanpa `__pycache__`), Python 3.11. Fokus: N2 
 
 ## Revisi 1.0.7 (2026-10-05) — menunggu uji ulang independen
 Pemicu: pra-cek Telegram G7 (OpenClaw) untuk "chat WA pertama ke pemilik kafe di Makassar... Google Maps... 19.30 WIB": bot mengoreksi zona waktu dengan benar (skor 9,0 → 7,0) tetapi hanya bertanya 5 pertanyaan tanpa draf. Perbaikan: aturan "kerjakan dulu, tanya di akhir" di `SKILL.md` dan `description` (catatan etika → saran jam kirim WITA → 2-3 varian dengan `[isian]` → maks. 3 pertanyaan; hanya asal kontak kosong yang menahan draf). Contoh: `examples/07-kerjakan-dulu-kafe-makassar-google-maps.md` (3 varian dicek script, semua OK). Script tidak berubah; tes regresi dijalankan ulang. **Status: menunggu uji ulang independen** (belum diuji di OpenClaw oleh pembuat).
+
+## Uji ulang konteks Telegram v1.0.7 (2026-10-05, penguji independen) — LULUS
+3 percobaan OpenClaw konteks Telegram: skor 9,0 / 8,5 / 8,5 (rata-rata 8,7), lulus 3/3. Semua membawa 2-3 draf siap kirim, catatan etika, konversi 19.30 WIB = 20.30 WITA benar, pertanyaan di akhir. Detail: `00-openclaw-sebelum-sesudah.md`.
