@@ -182,6 +182,17 @@ class TestPPh(unittest.TestCase):
                                 cfg("2026-06-20"))
         self.assertTrue(h["pph21"]["dtp"])
         self.assertEqual(h["thr_setelah_pph"], h["thr"])
+        # PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B (cek 2026-10-05): PPh tetap dipotong lalu DTP dibayar
+        # tunai -> THR diterima = THR (bukan THR + DTP); setoran bagian DTP Rp 0
+        tambahan = h["pph21"]["tambahan_pph_thr"]
+        self.assertGreater(tambahan, 0)
+        c = cfg("2026-06-20")
+        total = {"thr": h["thr"], "pph": tambahan, "diterima": h["thr_setelah_pph"]}
+        teks = thr.teks_hasil([h], c, total, None)
+        self.assertIn("{} tetap dipotong, lalu {} dibayar tunai kembali".format(
+            tc.format_rp(tambahan), tc.format_rp(tambahan)), teks)
+        self.assertIn("setoran PPh 21 ke negara untuk bagian ini Rp 0", teks)
+        self.assertNotIn(tc.format_rp(h["thr"] + tambahan), teks)
 
 
 class TestRusak(unittest.TestCase):

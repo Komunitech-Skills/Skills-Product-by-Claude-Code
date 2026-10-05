@@ -80,7 +80,7 @@ Dasar: Permenaker 6/2016 & SE Menaker M/3/HK.04.00/III/2026 (untuk hari raya 202
 - Batas bayar = tanggal hari raya − 7 hari. Terlambat: denda 5% dari total THR (THR tetap wajib dibayar).
 - PPh 21: THR digabung ke gaji bulan dibayar → PPh 21 = TER(gaji + THR) × (gaji + THR). Tambahan karena THR = hasil itu − TER(gaji) × gaji.
 - Karyawan yang sudah berhenti (PHK ≤ 30 hari sebelum hari raya) dan THR dibayar **setelah bulan berhenti** berstatus Mantan Pegawai: PPh 21 = tarif Pasal 17 (5% s.d. Rp 60 jt, 15% berikutnya, dst.) × THR, bukan TER (PMK 168/2023 Pasal 16 ayat 6).
-- PPh 21 DTP (PMK 105/2025) hanya bila THR dibayar di tahun 2026, sektor/KLU dikonfirmasi, dan bruto tetap Januari 2026/bulan pertama kerja ≤ Rp 10 jt.
+- PPh 21 DTP (PMK 105/2025) hanya bila THR dibayar di tahun 2026, sektor/KLU dikonfirmasi, dan bruto tetap Januari 2026/bulan pertama kerja ≤ Rp 10 jt. Mekanismenya (Pasal 2 ayat 1, Pasal 5, Lampiran B; ringkasan `references/dtp-pmk105.md`): tambahan PPh 21 tetap **dipotong**, lalu nilai yang sama **dibayar tunai** kembali, jadi THR diterima utuh — **bukan** THR + DTP; setoran ke negara untuk bagian DTP Rp 0. Kutip kalimat ini dari script.
 - Pembulatan: THR ke rupiah terdekat; PPh 21 ke bawah (belum dicocokkan dengan Coretax).
 
 ## Format output

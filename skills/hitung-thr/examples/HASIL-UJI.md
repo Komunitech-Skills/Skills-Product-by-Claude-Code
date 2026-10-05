@@ -58,3 +58,8 @@ Hasil kasus lama dan contoh resmi:
 
 ## Status
 **LULUS** (skor 9).
+
+## Riwayat revisi 1.0.9 (2026-10-05) — menunggu uji ulang independen; PERLU REVIEW konsultan pajak
+- Pemicu: temuan penilai gelombang 7 di skill `pph21-ter` (uang diterima DTP ditulis gaji + DTP). Skill ini diperiksa dengan teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5 ayat 1 & 5, Pasal 6 ayat 6, Lampiran B).
+- Hasil: angka `scripts/thr.py` **sudah benar** — `thr_setelah_pph` = THR bila DTP (tambahan PPh dipotong lalu dibayar tunai kembali). Contoh TK/0 gaji Rp 8.000.000, THR dibayar Juni 2026, DTP: THR diterima = THR (tidak berubah dari versi sebelumnya).
+- Perubahan: kalimat penjelasan DTP di rekap (PPh dipotong, DTP tunai nilai sama, setoran ke negara Rp 0); SKILL.md; `references/dtp-pmk105.md` (baru); tes `test_dtp` diperluas. `scripts/test_thr.py`: 38 tes OK.

@@ -63,3 +63,6 @@ Kamu yang menyebutkan tanggalnya (sesuai kalender libur nasional resmi). Untuk I
 - **Tanggal masuk di masa depan** (setelah hari ini) kini diberi ⚠️ agar dikonfirmasi (mungkin salah ketik tahun). Tanggal masuk setelah hari raya tidak lagi menghentikan seluruh rekap: orang itu ditandai belum berhak (Rp 0) dengan ⚠️.
 - Bila tanggal cair tidak disebut, dipakai aturan umum **paling lambat H-7** (Permenaker 6/2016) sebagai asumsi — AI tidak mencari tanggal di web berulang-ulang.
 - Kolom `gaji_sebulan` dikenali sebagai gaji pokok; judul rekap tidak lagi berakhir "— -" bila nama usaha kosong. Salinan `thr.py` di gaji-umkm disinkronkan (sha256 baru di `SUMBER.json`); 38 uji otomatis hitung-thr dan 41 uji gaji-umkm lulus.
+
+## Catatan revisi 1.0.9 (2026-10-05)
+- Pemeriksaan ulang PPh 21 DTP terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B): angka "THR diterima" **sudah benar** (sama dengan THR, tidak ditambah DTP). Kalimat penjelasan kini menulis jelas bahwa PPh 21 tetap dipotong, nilai yang sama dibayar tunai kembali, dan setoran ke negara untuk bagian DTP Rp 0. Tambah tes regresi dan ringkasan dasar hukum `references/dtp-pmk105.md`. **PERLU REVIEW konsultan pajak.**
