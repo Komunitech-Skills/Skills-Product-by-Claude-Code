@@ -709,3 +709,21 @@ Durasi 248 dtk, 6.438 karakter, skor **8**. Modul ringkas, LKPD bersih (6 soal),
 
 **Rata-rata SESUDAH: (6+9)/2 = 7,5. Percobaan lulus: 1 dari 2.**
 **VERDIK: BELUM** (syarat rata-rata >= 8 dan 2/2 lulus tidak terpenuhi; sisa cacat = klaim "File Word terlampir" muncul lagi di 1 dari 2 percobaan setelah tool write dipakai).
+
+
+# Cek v1.0.11 — 2026-10-05
+
+**Cara uji:** OpenClaw 2026.9.6 lokal, `uji-tg.sh` (konteks kanal Telegram, tanpa kirim), home bersih per percobaan, 3 percobaan berurutan, pesan: modul ajar Bahasa Inggris kelas 7 SMP, descriptive text hewan peliharaan, 2x40 menit, minta kode & bunyi CP persis, untuk supervisi besok. Percobaan C dilanjutkan dengan pesan kedua "kirim file". Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-111-{A,B,C,C2}`.
+
+| Percobaan | Durasi | Timeout | Tool berhasil | Karakter | Skor | Lulus |
+|---|---|---|---|---|---|---|
+| A | 385 dtk | tidak | exec, read | 6.410 | 9 | ya |
+| B | 350 dtk | tidak | read, ls, exec | 6.301 | 9 | ya |
+| C (giliran 1) | 120 dtk | tidak | read, exec | 7.298 | 8 | ya |
+| C (giliran 2 "kirim file") | 653 dtk | YA (model idle timeout) | tidak ada | 326 (pesan galat) | - | tidak teruji |
+
+**Giliran pertama (A, B, C):** isi utuh di chat; tanpa jalur file /tmp dan tanpa tool write; tanpa "terlampir/sudah dikirim" (kata "di bawah" hanya merujuk isi dokumen; C menulis "lihat di bawah" untuk opsi .docx, ambigu tetapi diikuti kalimat baku); kalimat baku "balas 'kirim file' — saya coba lampirkan" ada di ketiganya. CP tidak dikarang: rujukan BSKAP 046/H/KR/2025 + kolom [tempel] + ringkasan umum bertanda "cek CP resmi". Menit (dihitung ulang): A 10+60+10 = 80; B 10+(15+15+15+15)+10 = 80; C 10+20+15+20+15 = 80. Rubrik A 4x4 = 16 benar.
+**Giliran "kirim file" (C2):** model timeout, tanpa tool apa pun (terminalReceipt: successfulToolNames kosong, disposition not-visible). Balasan hanya pesan galat, tidak ada klaim lampiran palsu (jujur secara default), tetapi perilaku kirim file BELUM terverifikasi pada 1.0.11.
+
+**Rata-rata SESUDAH (giliran 1): (9+9+8)/3 = 8,7. Percobaan lulus: 3 dari 3** (C2 tidak teruji karena timeout router, bukan klaim palsu).
+**VERDIK: LULUS** (rata-rata >= 8, >= 2/3 lulus, tanpa klaim palsu). Catatan: ulang giliran "kirim file" bila ingin bukti sukses/gagal alat.
