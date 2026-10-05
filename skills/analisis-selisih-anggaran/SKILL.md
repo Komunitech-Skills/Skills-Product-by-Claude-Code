@@ -112,6 +112,7 @@ Catatan: analisis untuk manajemen, bukan audit/nasihat keuangan; penyebab perlu 
 - [ ] Disclaimer satu baris; pertanyaan maks. 3, di akhir.
 
 ## Batasan & penanganan error
+- **Catatan wajib di balasan:** bila bauran menu/produk bergeser atau harga rata-rata berubah, sebutkan bahwa penyesuaian HPP dihitung dari jumlah unit sehingga angka kelebihan pemakaian adalah batas atas (beri rentang bila bisa). Daftar pemeriksaan berbentuk pertanyaan netral (tanpa kata "pencurian"/tuduhan). Pesan ke tim memakai angka persis (Rp5.150.000, bukan "sekitar Rp5,1 jt"). Di kanal chat jangan menulis file kerja kecuali diminta. Balasan penolakan tetap memuat asumsi dan pesan tim.
 - Penyebab hanya bisa **diduga dan dicek**, bukan dipastikan dari angka. Jangan menulis "karyawan boros/curang", "pemasok menaikkan harga" sebagai fakta; tulis sebagai pertanyaan.
 - Pemecahan harga/volume memakai harga rata-rata = nilai ÷ unit; diskon, retur, dan promo ikut masuk efek harga. Bauran hanya bermakna bila satuan antarproduk sebanding.
 - Penyesuaian biaya variabel memakai total unit terjual (atau rasio pendapatan bila unit tidak ada, sehingga kenaikan harga jual ikut terhitung); bila bauran bergeser, angkanya perkiraan kasar.
