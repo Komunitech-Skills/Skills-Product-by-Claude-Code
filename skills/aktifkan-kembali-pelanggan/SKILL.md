@@ -127,6 +127,8 @@ Di balasan ke pengguna **jangan menyebut** script, file, path folder, "dicek", "
 - [ ] Tidak ada kata proses (script/file/path) di balasan; maks. 3 pertanyaan di akhir
 
 ## Batasan & penanganan error
+- **Privasi di rekap:** di ringkasan/daftar pelanggan yang ditulis ke chat, tulis nomor HP tersamar (mis. 0812-xxxx-3456) dan nama panggilan saja; nomor lengkap hanya di file di komputer pengguna. Setiap varian pesan, termasuk yang tanpa penawaran, wajib berakhir dengan kalimat opt-out ("balas stop").
+
 - **Kolom wajib kurang** (nama, nomor, tanggal beli terakhir, total belanja): sebutkan kolom yang kurang dan kolom yang ada; tetap beri alur + template, tanya di akhir.
 - **Baris rusak** (tanggal tidak ada di kalender, tanggal masa depan, nomor salah/format ilmiah Excel, total bukan angka) tidak dipakai; sebutkan jumlah dan contoh barisnya agar pemilik memperbaiki, jangan menebak. Nomor ganda digabung.
 - **Format tanggal** dibaca hari/bulan/tahun (dd/mm/yyyy). Jika data berformat bulan/hari/tahun, minta ekspor ulang.
