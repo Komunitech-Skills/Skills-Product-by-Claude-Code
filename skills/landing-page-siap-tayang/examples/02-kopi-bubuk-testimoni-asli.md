@@ -7,3 +7,8 @@
 - `cek_landing.py`: **14 LOLOS, 0 PERLU PERBAIKAN**.
 
 **Catatan:** tanpa skill, agent mengirim ZIP (HTML tidak di chat), memakai Google Fonts luar, tanpa h1, menambah ★★★★★ ke testimoni, menulis "tanpa pengawet" (tidak diberikan), dan salah menyebut tautan Netlify Drop tanpa akun "gratis selamanya". Kekurangan sesudah: menyebut path folder dan "lolos semua pengecekan"; lokasi footer Temanggung diasumsikan (disebut di asumsi).
+
+## Uji ulang 1.0.1 (2026-10-06)
+**Output sesudah:** pembuka bersih, `index.html` utuh (`data/hasil-sesudah-v101-s2.html`), 2 testimoni dikutip persis tanpa bintang, `wa.me/6285722334455`, Rp45.000/250 g, panduan tayang langkah demi langkah untuk gaptek (Netlify Drop sementara ±1 jam lalu klaim, ganti nama, cPanel, CNAME), checklist, asumsi, 3 pertanyaan; waktu kirim & kota footer jadi `[isian]`.
+- Tidak ada lagi "lolos semua pengecekan" atau path `kopi-lereng-sindoro/index.html` di jawaban (nama folder hanya muncul sebagai contoh di langkah "buat folder baru").
+- Sisa klaim tambahan kecil: "Pengiriman Cepat - dikirim cepat", "dari lereng Gunung Sindoro", "diproses dan dikemas oleh Kopi Lereng Sindoro". Nilai 8,5.

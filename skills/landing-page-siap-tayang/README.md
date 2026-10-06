@@ -15,7 +15,9 @@
 - **Bukan untuk:** hanya teks copy (`copy-landing-page`), SEO lanjutan (`audit-seo-toko-online`), atau toko dengan keranjang dan pembayaran online.
 
 ## Contoh sebelum & sesudah
-Akan diisi dari hasil uji.
+**Tanpa skill** (uji OpenClaw 2026-10-06, rata-rata 4,7/10): AI bilang "sudah jadi" lalu menyebut lokasi file; halamannya berisi 3 testimoni bintang 5 karangan, harga karangan, bahkan kode pelacak Facebook saat diminta "diam-diam".
+
+**Dengan skill** (rata-rata 8,4/10): file `index.html` tampil utuh di chat siap disalin, tombol WhatsApp benar dengan pesan terisi, tidak ada testimoni/harga/pelacak karangan (yang belum ada ditulis `[isian]`), permintaan menyesatkan ditolak terang-terangan sambil halamannya tetap dibuat, plus panduan tayang gratis. Rincian di `examples/00-openclaw-sebelum-sesudah.md`.
 
 ## Cara pakai
 Cukup ketik, misalnya:

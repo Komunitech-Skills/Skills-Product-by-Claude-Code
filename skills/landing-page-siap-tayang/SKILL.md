@@ -49,10 +49,10 @@ Nomor WA: ubah ke format `62` + nomor tanpa 0 di depan, tanpa spasi/tanda (0812-
 ## Format output
 Urutan: (a) satu kalimat pembuka tanpa kata proses, contoh: "Ini halaman untuk Bersih Sofa Bandung, siap disalin dan ditayangkan." Bila ada permintaan yang ditolak, kalimat tolak singkat (lihat Pola penolakan) ditulis **di sini, sebelum blok kode**; (b) **seluruh isi `index.html` utuh dalam satu blok kode** (wajib, agar bisa disalin bila lampiran tidak bisa); (c) bila ada: daftar `[isian]` yang perlu diganti; (d) panduan tayang + checklist; (e) asumsi yang dipakai; (f) **maksimal 3 pertanyaan** di akhir. Di kanal chat tanpa lampiran, tawarkan "balas 'kirim file'" bila file diperlukan.
 
-Dilarang di hasil untuk pengguna: kata "skill", "script", nama folder/path (mis. `namausaha/index.html`), "saya jalankan pengecekan", "lolos cek", "lolos 13 dari 14 pengecekan", "LULUS", atau angka hasil pemeriksaan apa pun. Pemeriksaan di langkah 7 adalah urusan internal; pengguna hanya melihat halaman yang sudah benar dan daftar `[isian]` yang tersisa. Sebut file cukup sebagai "file index.html" tanpa lokasi.
+Dilarang di hasil untuk pengguna: kata "skill", "script", nama folder/path (mis. `namausaha/index.html`), "saya jalankan pengecekan", "lolos cek", "lolos 13 dari 14 pengecekan", "LULUS", atau angka hasil pemeriksaan apa pun. Pemeriksaan di langkah 7 adalah urusan internal; pengguna hanya melihat halaman yang sudah benar dan daftar `[isian]` yang tersisa. Sebut file cukup sebagai "file index.html" tanpa lokasi; jangan menyebut "workspace", "folder kerja", atau "disimpan di".
 
 ## Pola penolakan
-Tolak singkat -> beri padanan sah -> **tetap buat landing page**. Kalimat tolak WAJIB tertulis 1-2 kalimat di awal jawaban, sebelum blok kode, menyebut apa yang tidak ditulis dan kenapa, lalu padanannya; jangan diam-diam menghilangkan permintaan itu. Contoh: "Testimoni dan bintang 5 buatan tidak saya tulis karena bisa menyesatkan pembeli dan melanggar aturan platform iklan; saya siapkan blok testimoni untuk diisi ulasan asli. Klaim 'terbaik di Indonesia' dan 'dijamin fasih 30 hari' saya ganti klaim yang bisa dibuktikan."
+Tolak singkat -> beri padanan sah -> **tetap buat landing page**. Kalimat tolak WAJIB tertulis 1-2 kalimat (maksimal 2) di awal jawaban, sebelum blok kode, menyebut apa yang tidak ditulis dan kenapa, lalu padanannya; jangan diam-diam menghilangkan permintaan itu. Contoh: "Testimoni dan bintang 5 buatan tidak saya tulis karena bisa menyesatkan pembeli dan melanggar aturan platform iklan; saya siapkan blok testimoni untuk diisi ulasan asli. Klaim 'terbaik di Indonesia' dan 'dijamin fasih 30 hari' saya ganti klaim yang bisa dibuktikan."
 | Diminta | Padanan sah |
 |---|---|
 | Testimoni karangan / bintang 5 palsu | Minta 2-3 testimoni asli (screenshot chat yang diizinkan pelanggan); sementara blok `[isian: testimoni]` |
@@ -66,6 +66,8 @@ Hasil: blok kode `index.html` dengan judul "Dingin Jaya - Cuci & Servis AC Bekas
 
 ## Batasan & penanganan error
 - Halaman statis: tidak ada formulir tersimpan, keranjang, atau pembayaran.
+- Netlify Drop tanpa akun: situs bersifat sementara dan harus diklaim (±1 jam); selalu sebut ini, jangan tulis "langsung aktif" saja. Alamatnya `app.netlify.com/drop`.
+- Versi 1.0.2 (2026-10-06): larangan "workspace/disimpan di", tolak maks 2 kalimat, catatan Netlify sementara.
 - Versi 1.0.1 (2026-10-06): kalimat tolak wajib di awal, larangan angka pemeriksaan & path, kerangka `[isian]` untuk permintaan tanpa bahan, larangan menambah fitur.
 - Pembulatan/harga: tulis persis seperti diberikan pengguna, format "Rp75.000".
 - Langkah di situs pihak ketiga bisa berubah; sebut bila tampilan berbeda, ikuti istilah yang mirip.

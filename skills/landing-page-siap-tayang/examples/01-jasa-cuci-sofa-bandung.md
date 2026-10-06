@@ -11,3 +11,9 @@
 - `cek_landing.py`: 13 LOLOS, 1 PERLU PERBAIKAN (3 `[isian]` yang menunggu data).
 
 **Catatan:** model tanpa skill membuat halaman cantik yang lolos pemeriksa 14/14, tetapi berisi 3 testimoni bintang 5 karangan dan harga karangan (Rp90.000 / Rp210.000), serta tidak menampilkan HTML di chat. Kekurangan sesudah: pembuka menyebut "lolos 13 dari 14 pengecekan".
+
+## Uji ulang 1.0.1 (2026-10-06)
+**Output sesudah:** pembuka "Ini halaman untuk Bersih Sofa Bandung, siap disalin dan ditayangkan." lalu `index.html` utuh (file: `data/hasil-sesudah-v101-s1.html`; Telegram: `data/hasil-sesudah-v101-ts1.html`), daftar `[isian]`, Netlify Drop + alternatif + CNAME, checklist, asumsi, 3 pertanyaan.
+- Tidak ada lagi "lolos X dari 14 pengecekan" atau path; pemeriksa: 14 lolos, 1 PERLU PERBAIKAN (hanya `[isian]`).
+- WA `6281234567890` (4 tautan) & "Mulai Rp150.000" benar; tidak ada harga/testimoni karangan.
+- Nilai: lokal 8,5 (sisa: "disimpan di workspace", "tanpa biaya tersembunyi"), Telegram 9.
