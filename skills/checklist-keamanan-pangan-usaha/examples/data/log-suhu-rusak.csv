@@ -1,0 +1,9 @@
+tgl,alat,suhu
+2026-10-06 08:00,kulkas,4,5
+2026-10-06 09:00,kulkas matang,4
+2026-10-06 09:00,kulkas ayam,3
+2026-10-06 10:00,kulkas,abc
+08:00,kulkas,7
+,,
+2026-10-06 11:00;kulkas;4
+2026-10-06 12:00,kulkas,40 F
