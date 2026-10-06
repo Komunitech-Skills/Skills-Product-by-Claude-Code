@@ -122,6 +122,7 @@ Di balasan ke pengguna **jangan menyebut** script, file, path folder, "dihitung 
 - [ ] Tanpa kata proses (script/file/path); maks. 3 pertanyaan di akhir
 
 ## Batasan & penanganan error
+- **Ulasan:** jangan menawarkan imbalan/apresiasi apa pun untuk ulasan (Google Maps melarang imbalan untuk ulasan dalam bentuk apa pun; marketplace umumnya sama; UU 8/1999 Ps. 9–10 soal penawaran menyesatkan). Minta ulasan hanya dengan ucapan terima kasih. **Batas kirim:** jangan pernah menyarankan memakai beberapa nomor WA atau cara lain untuk melewati batas pesan harian; bila kontak banyak, perpanjang jadwalnya.
 - **Info sangat kurang:** tetap beri rangkaian dengan `[isian]` dan asumsi; tanya di akhir.
 - **Permintaan di luar cakupan** (blast, nomor beli, ulasan palsu, urgensi palsu): tolak bagian itu dengan satu kalimat alasan, tetap kerjakan bagian yang boleh.
 - **Tanggal rusak** (tidak ada di kalender, format aneh): minta penulisan tanggal yang benar sambil tetap memberi jarak hari (H+0, H+3, ...).
