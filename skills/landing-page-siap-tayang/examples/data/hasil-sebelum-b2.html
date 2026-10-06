@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kopi Lereng Sindoro - Kopi Bubuk Robusta Temanggung Asli</title>
+<meta name="description" content="Kopi Bubuk Robusta Temanggung asli, kemasan 250g, Rp45.000. Wangi, pahit pas, tanpa asam. Pesan langsung via WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coffee-dark:#3b2314;
+    --coffee:#5c3a21;
+    --coffee-light:#8a5a2b;
+    --cream:#f5ead9;
+    --cream-light:#fdf8f0;
+    --gold:#c8963e;
+    --green:#4a7c3f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Poppins',sans-serif;
+    background:var(--cream-light);
+    color:var(--coffee-dark);
+    line-height:1.6;
+  }
+  img{max-width:100%;display:block;}
+  a{text-decoration:none;}
+
+  .wa-float{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:#25D366;
+    color:#fff;
+    padding:14px 20px;
+    border-radius:50px;
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    z-index:999;
+    font-size:14px;
+  }
+  .wa-float:hover{background:#1ebd5a;}
+
+  header.hero{
+    background:linear-gradient(135deg, var(--coffee-dark), var(--coffee) 60%, var(--coffee-light));
+    color:var(--cream);
+    padding:48px 20px 60px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::before{
+    content:"☕";
+    position:absolute;
+    font-size:220px;
+    opacity:.07;
+    right:-30px;
+    top:-30px;
+    transform:rotate(15deg);
+  }
+  .brand{
+    font-family:'Merriweather',serif;
+    font-weight:700;
+    font-size:2.1rem;
+    letter-spacing:.5px;
+    margin-bottom:6px;
+  }
+  .brand span{color:var(--gold);}
+  .tagline{
+    font-size:1.05rem;
+    opacity:.92;
+    max-width:460px;
+    margin:0 auto 28px;
+  }
+  .hero-badges{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:30px;
+  }
+  .badge{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.3);
+    padding:6px 14px;
+    border-radius:30px;
+    font-size:.82rem;
+  }
+  .btn-cta{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background:var(--gold);
+    color:var(--coffee-dark);
+    font-weight:700;
+    padding:16px 32px;
+    border-radius:50px;
+    font-size:1.05rem;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+    transition:.2s;
+  }
+  .btn-cta:hover{transform:translateY(-2px);background:#d8a650;}
+
+  section{
+    padding:50px 20px;
+    max-width:880px;
+    margin:0 auto;
+  }
+  h2{
+    font-family:'Merriweather',serif;
+    color:var(--coffee);
+    font-size:1.6rem;
+    text-align:center;
+    margin-bottom:10px;
+  }
+  .subhead{
+    text-align:center;
+    color:#6b5847;
+    max-width:520px;
+    margin:0 auto 32px;
+    font-size:.95rem;
+  }
+
+  .about-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:24px;
+    text-align:center;
+  }
+  .about-grid p{max-width:640px;margin:0 auto;color:#4e3b29;}
+
+  .features{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:18px;
+    margin-top:10px;
+  }
+  .feature-card{
+    background:#fff;
+    border:1px solid #eadfcd;
+    border-radius:16px;
+    padding:22px 16px;
+    text-align:center;
+    box-shadow:0 4px 14px rgba(59,35,20,.06);
+  }
+  .feature-card .ico{font-size:1.8rem;margin-bottom:10px;display:block;}
+  .feature-card h3{font-size:.95rem;color:var(--coffee);margin-bottom:6px;}
+  .feature-card p{font-size:.84rem;color:#6b5847;}
+
+  .product-card{
+    background:linear-gradient(160deg,#fff,#fbf3e6);
+    border:2px solid var(--gold);
+    border-radius:22px;
+    padding:36px 24px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(59,35,20,.12);
+    max-width:420px;
+    margin:0 auto;
+  }
+  .product-emoji{font-size:4rem;margin-bottom:10px;}
+  .product-card h3{
+    font-family:'Merriweather',serif;
+    font-size:1.25rem;
+    color:var(--coffee-dark);
+    margin-bottom:6px;
+  }
+  .product-card .weight{
+    display:inline-block;
+    background:var(--coffee);
+    color:#fff;
+    font-size:.78rem;
+    padding:3px 12px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  .price{
+    font-size:2.1rem;
+    font-weight:800;
+    color:var(--coffee);
+    margin:10px 0 18px;
+  }
+  .price small{font-size:1rem;font-weight:600;color:#8a7a68;}
+  .product-list{
+    text-align:left;
+    font-size:.88rem;
+    color:#4e3b29;
+    margin:0 auto 22px;
+    max-width:280px;
+  }
+  .product-list li{margin-bottom:6px;list-style:"✓  ";}
+
+  .testimonials{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+  }
+  .testi-card{
+    background:#fff;
+    border-radius:16px;
+    padding:24px;
+    border-left:5px solid var(--gold);
+    box-shadow:0 4px 14px rgba(59,35,20,.06);
+    position:relative;
+  }
+  .testi-card .quote{font-size:1.6rem;color:var(--gold);line-height:0;position:absolute;top:14px;right:18px;}
+  .testi-card p.text{font-style:italic;color:#4e3b29;margin-bottom:14px;font-size:.95rem;}
+  .testi-card .who{font-weight:700;color:var(--coffee);font-size:.9rem;}
+  .testi-card .where{color:#8a7a68;font-size:.82rem;}
+  .stars{color:var(--gold);letter-spacing:2px;margin-bottom:8px;display:block;}
+
+  .order-section{
+    background:var(--coffee-dark);
+    color:var(--cream);
+    text-align:center;
+    border-radius:24px;
+    padding:48px 24px;
+  }
+  .order-section h2{color:var(--cream);}
+  .order-section .subhead{color:#d8c5ad;}
+  .wa-number{
+    font-size:1.1rem;
+    font-weight:700;
+    margin-top:18px;
+    opacity:.9;
+  }
+
+  footer{
+    text-align:center;
+    padding:28px 20px 90px;
+    font-size:.82rem;
+    color:#8a7a68;
+  }
+  footer .foot-brand{font-weight:700;color:var(--coffee);}
+
+  @media(min-width:700px){
+    .about-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<a class="wa-float" href="https://wa.me/6285722334455?text=Halo%20Kopi%20Lereng%20Sindoro%2C%20saya%20mau%20pesan%20Kopi%20Bubuk%20Robusta%20Temanggung%20250g" target="_blank" rel="noopener">
+  💬 Pesan via WhatsApp
+</a>
+
+<header class="hero">
+  <div class="brand">KOPI LERENG <span>SINDORO</span></div>
+  <p class="tagline">Kopi Bubuk Robusta Temanggung asli — dipetik dan diolah dari lereng Gunung Sindoro, langsung untuk cangkir kamu.</p>
+  <div class="hero-badges">
+    <span class="badge">🌱 100% Robusta Asli</span>
+    <span class="badge">🏔️ Dari Temanggung</span>
+    <span class="badge">🚚 Kirim Seluruh Indonesia</span>
+  </div>
+  <a class="btn-cta" href="https://wa.me/6285722334455?text=Halo%20Kopi%20Lereng%20Sindoro%2C%20saya%20mau%20pesan%20Kopi%20Bubuk%20Robusta%20Temanggung%20250g" target="_blank" rel="noopener">
+    🛒 Pesan Sekarang via WhatsApp
+  </a>
+</header>
+
+<section id="about">
+  <h2>Kenapa Kopi Lereng Sindoro?</h2>
+  <p class="subhead">Dibuat dari biji robusta pilihan hasil petani lokal di kaki Gunung Sindoro, Temanggung — disangrai dan digiling halus untuk rasa yang konsisten di setiap tegukan.</p>
+  <div class="features">
+    <div class="feature-card">
+      <span class="ico">🌋</span>
+      <h3>Tanah Vulkanik</h3>
+      <p>Tumbuh di lereng Sindoro yang subur, menghasilkan aroma khas dan body yang kuat.</p>
+    </div>
+    <div class="feature-card">
+      <span class="ico">🔥</span>
+      <h3>Sangrai Pas</h3>
+      <p>Tingkat sangrai dijaga supaya pahitnya pas, tidak gosong, dan tidak asam.</p>
+    </div>
+    <div class="feature-card">
+      <span class="ico">🪨</span>
+      <h3>Digiling Halus</h3>
+      <p>Cocok untuk kopi tubruk — bubuk halus, mudah mengendap, nikmat setiap pagi.</p>
+    </div>
+    <div class="feature-card">
+      <span class="ico">📦</span>
+      <h3>Kemasan Rapat</h3>
+      <p>Dikemas rapi menjaga aroma tetap segar sampai ke tangan kamu.</p>
+    </div>
+  </div>
+</section>
+
+<section id="produk">
+  <h2>Produk Kami</h2>
+  <p class="subhead">Satu produk andalan, kualitas terjaga.</p>
+  <div class="product-card">
+    <div class="product-emoji">☕</div>
+    <h3>Kopi Bubuk Robusta Temanggung</h3>
+    <span class="weight">Kemasan 250 gram</span>
+    <div class="price">Rp45.000 <small>/ pack</small></div>
+    <ul class="product-list">
+      <li>100% robusta asli Temanggung</li>
+      <li>Digiling halus, pas untuk kopi tubruk</li>
+      <li>Tanpa campuran, tanpa pengawet</li>
+      <li>Kemasan higienis & rapat udara</li>
+    </ul>
+    <a class="btn-cta" href="https://wa.me/6285722334455?text=Halo%20Kopi%20Lereng%20Sindoro%2C%20saya%20mau%20pesan%20Kopi%20Bubuk%20Robusta%20Temanggung%20250g%20(Rp45.000)" target="_blank" rel="noopener">
+      💬 Order via WhatsApp
+    </a>
+  </div>
+</section>
+
+<section id="testimoni">
+  <h2>Apa Kata Mereka</h2>
+  <p class="subhead">Testimoni asli dari pelanggan Kopi Lereng Sindoro.</p>
+  <div class="testimonials">
+    <div class="testi-card">
+      <span class="quote">"</span>
+      <span class="stars">★★★★★</span>
+      <p class="text">"Aromanya wangi banget, pahitnya pas, nggak asam. Udah langganan 3 bulan."</p>
+      <div class="who">Mas Arif</div>
+      <div class="where">Semarang</div>
+    </div>
+    <div class="testi-card">
+      <span class="quote">"</span>
+      <span class="stars">★★★★★</span>
+      <p class="text">"Enak buat kopi tubruk pagi-pagi, bubuknya halus. Pengirimannya juga cepet."</p>
+      <div class="who">Bu Ratna</div>
+      <div class="where">Magelang</div>
+    </div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="order-section">
+    <h2>Siap Ngopi Enak Setiap Hari?</h2>
+    <p class="subhead">Chat langsung, kami bantu proses pesanan kamu.</p>
+    <a class="btn-cta" href="https://wa.me/6285722334455?text=Halo%20Kopi%20Lereng%20Sindoro%2C%20saya%20mau%20pesan%20Kopi%20Bubuk%20Robusta%20Temanggung%20250g" target="_blank" rel="noopener">
+      💬 Chat & Pesan Sekarang
+    </a>
+    <div class="wa-number">📱 WhatsApp: 0857-2233-4455</div>
+  </div>
+</section>
+
+<footer>
+  <p><span class="foot-brand">Kopi Lereng Sindoro</span> — Kopi Bubuk Robusta Temanggung Asli</p>
+  <p>&copy; 2026. Dipetik dari lereng Gunung Sindoro, disajikan untuk Indonesia.</p>
+</footer>
+
+</body>
+</html>

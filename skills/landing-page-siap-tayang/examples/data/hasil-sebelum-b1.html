@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bersih Sofa Bandung | Jasa Cuci Sofa Panggilan</title>
+<meta name="description" content="Jasa cuci sofa panggilan di Bandung Raya. Harga mulai Rp150.000 per sofa 2 dudukan. Garansi ulang gratis kalau belum bersih. Hubungi WA 0812-3456-7890.">
+<style>
+  :root{
+    --green-900:#064e3b;
+    --green-800:#065f46;
+    --green-700:#047857;
+    --green-600:#059669;
+    --green-500:#10b981;
+    --green-100:#d1fae5;
+    --green-50:#ecfdf5;
+    --ink:#0f172a;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--green-50);
+    line-height:1.6;
+  }
+  a{text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+
+  /* NAV */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:var(--green-900);
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+  }
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;max-width:1080px;margin:0 auto;
+  }
+  .brand{color:#fff;font-weight:800;font-size:1.25rem;display:flex;align-items:center;gap:8px;}
+  .brand span.dot{color:var(--green-100);}
+  nav .links a{color:#d1fae5;margin-left:22px;font-weight:600;font-size:.95rem;}
+  nav .links a:hover{color:#fff;}
+  .nav-wa{
+    background:var(--green-500);color:#fff!important;padding:8px 16px;border-radius:999px;
+    font-weight:700;margin-left:22px;
+  }
+  @media (max-width:640px){ nav .links{display:none;} }
+
+  /* HERO */
+  .hero{
+    background:linear-gradient(135deg,var(--green-900) 0%, var(--green-700) 55%, var(--green-500) 100%);
+    color:#fff;padding:70px 20px 90px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-80px;bottom:-80px;width:320px;height:320px;
+    background:rgba(255,255,255,.08);border-radius:50%;
+  }
+  .hero-inner{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:40px;align-items:center;position:relative;z-index:2;}
+  .hero-text{flex:1;min-width:280px;}
+  .badge{
+    display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);
+    padding:6px 14px;border-radius:999px;font-size:.85rem;font-weight:600;margin-bottom:18px;
+  }
+  .hero h1{font-size:2.4rem;margin:0 0 14px;line-height:1.2;}
+  .hero h1 em{color:var(--green-100);font-style:normal;}
+  .hero p.sub{font-size:1.08rem;color:#ecfdf5;max-width:520px;margin-bottom:26px;}
+  .price-pill{
+    display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--green-800);
+    padding:12px 20px;border-radius:14px;font-weight:800;font-size:1.1rem;margin-bottom:26px;
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+  }
+  .price-pill small{display:block;font-weight:600;font-size:.75rem;color:#059669;}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:12px;
+    font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:.2s transform,.2s box-shadow;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{background:#25D366;color:#fff;box-shadow:0 10px 22px rgba(0,0,0,.25);}
+  .btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6);}
+  .hero-card{
+    flex:0 0 280px;background:#fff;border-radius:20px;padding:26px 22px;color:var(--ink);
+    box-shadow:0 20px 40px rgba(0,0,0,.25);
+  }
+  .hero-card h3{margin:0 0 10px;color:var(--green-800);font-size:1.05rem;}
+  .hero-card ul{margin:0;padding:0;list-style:none;}
+  .hero-card li{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:.92rem;}
+  .hero-card li .ic{color:var(--green-600);font-weight:900;}
+
+  /* SECTION TITLES */
+  .section{padding:64px 20px;}
+  .section h2{font-size:1.8rem;color:var(--green-900);text-align:center;margin-bottom:10px;}
+  .section p.lead{text-align:center;color:#334155;max-width:640px;margin:0 auto 40px;}
+
+  /* SERVICES / PRICE */
+  .price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px;}
+  .price-card{
+    background:#fff;border-radius:16px;padding:26px 22px;border:1px solid var(--green-100);
+    box-shadow:0 6px 18px rgba(16,185,129,.08);transition:.2s transform;
+  }
+  .price-card:hover{transform:translateY(-4px);}
+  .price-card.pop{border:2px solid var(--green-500);position:relative;}
+  .price-card.pop::before{
+    content:"Paling Laris";position:absolute;top:-12px;right:18px;background:var(--green-500);
+    color:#fff;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:999px;
+  }
+  .price-card h3{margin:0 0 6px;color:var(--green-800);font-size:1.1rem;}
+  .price-card .amount{font-size:1.9rem;font-weight:800;color:var(--green-700);margin:6px 0;}
+  .price-card .amount sup{font-size:1rem;font-weight:600;}
+  .price-card p{color:#475569;font-size:.9rem;margin:0 0 16px;}
+  .price-card a{color:var(--green-700);font-weight:700;font-size:.9rem;}
+
+  /* GUARANTEE */
+  .guarantee{
+    background:var(--green-900);color:#fff;border-radius:24px;padding:50px 30px;
+    display:flex;flex-wrap:wrap;gap:30px;align-items:center;max-width:1080px;margin:0 auto;
+  }
+  .guarantee .ic-big{font-size:3rem;flex:0 0 auto;}
+  .guarantee h2{color:#fff;text-align:left;margin-bottom:8px;}
+  .guarantee p{color:var(--green-100);margin:0;max-width:560px;}
+
+  /* STEPS */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;}
+  .step{background:#fff;border-radius:16px;padding:24px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.06);}
+  .step .num{
+    width:42px;height:42px;border-radius:50%;background:var(--green-600);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;margin:0 auto 14px;
+  }
+  .step h4{margin:0 0 8px;color:var(--green-800);}
+  .step p{color:#475569;font-size:.92rem;margin:0;}
+
+  /* AREA */
+  .area-box{
+    background:#fff;border-radius:18px;padding:34px;display:flex;flex-wrap:wrap;gap:30px;align-items:center;
+    box-shadow:0 6px 18px rgba(16,185,129,.08);
+  }
+  .area-list{display:flex;flex-wrap:wrap;gap:10px;flex:1;}
+  .chip{background:var(--green-100);color:var(--green-800);padding:8px 14px;border-radius:999px;font-weight:600;font-size:.88rem;}
+
+  /* TESTIMONIALS */
+  .testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;}
+  .testi{background:#fff;border-radius:16px;padding:24px;box-shadow:0 6px 16px rgba(0,0,0,.06);}
+  .testi .stars{color:#f59e0b;margin-bottom:10px;}
+  .testi p{color:#334155;font-style:italic;margin:0 0 14px;}
+  .testi .who{font-weight:700;color:var(--green-800);font-size:.9rem;}
+
+  /* FAQ */
+  details{background:#fff;border-radius:12px;padding:16px 20px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+  summary{font-weight:700;color:var(--green-800);cursor:pointer;}
+  details p{margin:10px 0 0;color:#475569;}
+
+  /* CTA BAND */
+  .cta-band{
+    background:linear-gradient(135deg,var(--green-700),var(--green-500));
+    color:#fff;text-align:center;padding:60px 20px;
+  }
+  .cta-band h2{color:#fff;}
+  .cta-band p{color:var(--green-100);max-width:520px;margin:0 auto 26px;}
+
+  footer{background:var(--green-900);color:var(--green-100);padding:36px 20px 24px;text-align:center;font-size:.9rem;}
+  footer a{color:#fff;font-weight:700;}
+
+  /* FLOATING WA */
+  .float-wa{
+    position:fixed;bottom:22px;right:22px;background:#25D366;color:#fff;border-radius:50%;
+    width:60px;height:60px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 24px rgba(0,0,0,.3);z-index:60;font-size:1.6rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="brand">🛋️ Bersih Sofa <span class="dot">Bandung</span></div>
+    <div class="links">
+      <a href="#layanan">Harga</a>
+      <a href="#garansi">Garansi</a>
+      <a href="#area">Area</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="nav-wa" href="https://wa.me/6281234567890?text=Halo%20Bersih%20Sofa%20Bandung%2C%20saya%20mau%20pesan%20cuci%20sofa" target="_blank" rel="noopener">WA Sekarang</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <span class="badge">✅ Garansi Ulang Gratis</span>
+      <h1>Jasa Cuci Sofa <em>Panggilan</em><br>di Rumah Anda, Bandung Raya</h1>
+      <p class="sub">Sofa bersih, segar, bebas debu &amp; bau tanpa harus dibawa ke mana-mana. Teknisi datang langsung dengan alat profesional.</p>
+      <div class="price-pill">
+        <span>💰</span>
+        <span>
+          Mulai <strong>Rp150.000</strong> / sofa 2 dudukan
+          <small>Harga transparan, tanpa biaya tersembunyi</small>
+        </span>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://wa.me/6281234567890?text=Halo%20Bersih%20Sofa%20Bandung%2C%20saya%20mau%20booking%20cuci%20sofa" target="_blank" rel="noopener">📲 Booking via WhatsApp</a>
+        <a class="btn btn-outline" href="#layanan">Lihat Harga</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>Kenapa Pilih Kami?</h3>
+      <ul>
+        <li><span class="ic">✔</span> Teknisi datang ke lokasi (panggilan)</li>
+        <li><span class="ic">✔</span> Mesin steam & vacuum profesional</li>
+        <li><span class="ic">✔</span> Sofa kering lebih cepat, aman untuk kain & kulit</li>
+        <li><span class="ic">✔</span> Garansi cuci ulang GRATIS kalau belum bersih</li>
+        <li><span class="ic">✔</span> Melayani seluruh Bandung Raya</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="layanan">
+  <div class="wrap">
+    <h2>Daftar Harga Cuci Sofa</h2>
+    <p class="lead">Harga sudah termasuk jasa teknisi, bahan pembersih khusus, dan proses pengeringan. Panggilan ke area Bandung Raya.</p>
+    <div class="price-grid">
+      <div class="price-card">
+        <h3>Sofa 1 Dudukan</h3>
+        <div class="amount">Rp90.000<sup>/unit</sup></div>
+        <p>Cocok untuk sofa single / kursi tunggal.</p>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20cuci%20sofa%201%20dudukan" target="_blank" rel="noopener">Tanya &amp; Booking →</a>
+      </div>
+      <div class="price-card pop">
+        <h3>Sofa 2 Dudukan</h3>
+        <div class="amount">Rp150.000<sup>/unit</sup></div>
+        <p>Paket paling banyak dipesan pelanggan.</p>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20cuci%20sofa%202%20dudukan" target="_blank" rel="noopener">Tanya &amp; Booking →</a>
+      </div>
+      <div class="price-card">
+        <h3>Sofa 3 Dudukan</h3>
+        <div class="amount">Rp210.000<sup>/unit</sup></div>
+        <p>Untuk sofa panjang di ruang tamu.</p>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20cuci%20sofa%203%20dudukan" target="_blank" rel="noopener">Tanya &amp; Booking →</a>
+      </div>
+      <div class="price-card">
+        <h3>Sofa L / Sudut &amp; Kasur</h3>
+        <div class="amount">Hubungi Kami</div>
+        <p>Harga disesuaikan ukuran &amp; kondisi. Gratis survei via foto/video call.</p>
+        <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20tanya%20harga%20cuci%20sofa%20L%2Fsudut" target="_blank" rel="noopener">Tanya &amp; Booking →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="garansi">
+  <div class="guarantee">
+    <div class="ic-big">🛡️</div>
+    <div>
+      <h2>Garansi Cuci Ulang 100% Gratis</h2>
+      <p>Kalau sofa Anda masih belum bersih maksimal setelah dicuci, kami datang lagi dan cuci ulang <strong>tanpa biaya tambahan</strong>. Kepuasan pelanggan adalah prioritas kami.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>Cara Booking, Gampang Banget</h2>
+    <p class="lead">Cukup 3 langkah, sofa bersih dalam hitungan jam.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h4>Chat via WhatsApp</h4>
+        <p>Kirim alamat &amp; jenis sofa ke 0812-3456-7890.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h4>Teknisi Datang</h4>
+        <p>Kami jadwalkan kedatangan sesuai waktu yang Anda pilih.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h4>Sofa Bersih &amp; Segar</h4>
+        <p>Proses cuci + steam, sofa kering &amp; wangi dalam beberapa jam.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="area">
+  <div class="wrap">
+    <h2>Area Layanan</h2>
+    <p class="lead">Kami melayani panggilan cuci sofa di seluruh Bandung Raya.</p>
+    <div class="area-box">
+      <div class="area-list">
+        <span class="chip">Kota Bandung</span>
+        <span class="chip">Kabupaten Bandung</span>
+        <span class="chip">Kabupaten Bandung Barat</span>
+        <span class="chip">Cimahi</span>
+        <span class="chip">Soreang</span>
+        <span class="chip">Baleendah</span>
+        <span class="chip">Dayeuhkolot</span>
+        <span class="chip">Margahayu</span>
+        <span class="chip">Lembang</span>
+        <span class="chip">Padalarang</span>
+      </div>
+      <a class="btn btn-primary" style="background:#25D366" href="https://wa.me/6281234567890?text=Halo%2C%20apakah%20area%20saya%20bisa%20dilayani%3F" target="_blank" rel="noopener">Cek Area Saya →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>Kata Pelanggan</h2>
+    <div class="testi-grid">
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p>"Sofa ruang tamu udah 2 tahun nggak dicuci, sekarang kayak baru lagi. Teknisinya ramah dan rapi."</p>
+        <div class="who">— Rina, Kota Bandung</div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p>"Harganya jelas dari awal, nggak ada tambahan biaya mendadak. Hasilnya juga wangi dan cepat kering."</p>
+        <div class="who">— Dedi, Cimahi</div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p>"Ada noda susah yang nggak langsung hilang, mereka datang lagi gratis buat cuci ulang. Mantap garansinya."</p>
+        <div class="who">— Siti, Soreang</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <h2>Pertanyaan Umum</h2>
+    <details>
+      <summary>Berapa lama sofa kering setelah dicuci?</summary>
+      <p>Umumnya 2-4 jam tergantung bahan sofa dan cuaca, karena kami menggunakan mesin steam &amp; vacuum pengering.</p>
+    </details>
+    <details>
+      <summary>Apa semua jenis sofa bisa dicuci?</summary>
+      <p>Bisa, kami melayani sofa fabric, suede, beludru, hingga kulit sintetis dengan metode pembersihan yang disesuaikan.</p>
+    </details>
+    <details>
+      <summary>Bagaimana cara klaim garansi cuci ulang?</summary>
+      <p>Hubungi kami via WhatsApp maksimal 3 hari setelah pengerjaan, sebutkan kendala yang ditemukan, dan kami jadwalkan ulang tanpa biaya.</p>
+    </details>
+    <details>
+      <summary>Apakah ada minimal pemesanan?</summary>
+      <p>Tidak ada minimal, meskipun hanya 1 sofa tetap kami layani dengan senang hati.</p>
+    </details>
+  </div>
+</section>
+
+<section class="cta-band">
+  <h2>Sofa Kusam &amp; Bau? Yuk Bersihin Sekarang</h2>
+  <p>Chat WhatsApp sekarang, teknisi kami siap datang ke rumah Anda di seluruh Bandung Raya.</p>
+  <a class="btn" style="background:#fff;color:#047857;" href="https://wa.me/6281234567890?text=Halo%20Bersih%20Sofa%20Bandung%2C%20saya%20mau%20booking%20cuci%20sofa" target="_blank" rel="noopener">📲 Chat WA: 0812-3456-7890</a>
+</section>
+
+<footer>
+  <div>🛋️ <strong>Bersih Sofa Bandung</strong> — Jasa Cuci Sofa Panggilan</div>
+  <div style="margin:8px 0;">WhatsApp: <a href="https://wa.me/6281234567890" target="_blank" rel="noopener">0812-3456-7890</a> · Area: Bandung Raya</div>
+  <div style="font-size:.8rem;opacity:.8;">© 2026 Bersih Sofa Bandung. Garansi cuci ulang gratis jika belum bersih.</div>
+</footer>
+
+<a class="float-wa" href="https://wa.me/6281234567890?text=Halo%20Bersih%20Sofa%20Bandung%2C%20saya%20mau%20tanya" target="_blank" rel="noopener" aria-label="Chat WhatsApp">💬</a>
+
+</body>
+</html>
