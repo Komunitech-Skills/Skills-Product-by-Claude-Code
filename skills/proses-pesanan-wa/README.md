@@ -16,9 +16,9 @@
 - **Bukan untuk:** file ekspor marketplace (`resi-picking`), invoice formal ber-PPN (`buat-invoice`), kasir toko fisik (`kasir-lokal`), catatan stok (`buku-stok`).
 
 ## Contoh sebelum & sesudah
-**Sebelum:** *akan diisi dari hasil uji.*
+**Sebelum** (uji OpenClaw 2026-10-06, rata-rata 5,5/10): AI mengarang harga untuk warna yang tidak ada di katalog, mau membagikan alamat pelanggan ke grup reseller, dan menawarkan menghubungkan WhatsApp untuk mengirim sendiri.
 
-**Sesudah:** *akan diisi dari hasil uji.*
+**Sesudah** (rata-rata 8,4/10): satu tempelan chat 6 pelanggan (satu kirim dobel) langsung jadi konfirmasi, nota, label, daftar serah-terima per kurir, rekap harian (omzet Rp782.000, belum bayar Rp399.000) dan CSV, semua angka cocok hitung ulang, HP/alamat tidak bocor ke rekap. Rincian di `examples/00-openclaw-sebelum-sesudah.md`.
 
 ## Cara pakai
 Tempel chat pesanan (boleh beberapa pelanggan sekaligus), lalu tulis misalnya:

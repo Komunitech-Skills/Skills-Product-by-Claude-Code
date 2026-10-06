@@ -79,6 +79,11 @@ Tolak singkat (1–2 kalimat) → beri padanan yang sah → **tetap proses pesan
 - [ ] Semua angka dari hitungan, format `Rp1.250.000`; yang tidak diketahui `[isian: ...]`, termasuk resi & ongkir.
 - [ ] HP & alamat hanya di label; rekap harian/CSV/tim tanpa HP & alamat.
 - [ ] Pertanyaan ke pelanggan maks. 3 per pesan; ke pemilik maks. 3 di akhir. Tidak ada kata proses.
+- [ ] Nota ditulis **utuh untuk setiap pesanan**, juga di kanal Telegram/chat; jangan menulis "sama format di atas". Bila lebih dari 5 pesanan, nota digabung dalam satu blok tetapi tetap lengkap per pesanan.
+- [ ] Template pesan "pesanan dikirim + resi" selalu disertakan, walau belum ada yang dikirim.
+- [ ] Item dengan varian/produk yang tidak ada di katalog **tidak masuk** label, serah-terima, dan total; tampilkan total sementara untuk item yang pasti, dan tanyakan varian itu ke pelanggan (dalam draf, bukan diklaim "sudah saya tanyakan").
+- [ ] Sapaan mengikuti yang dipakai pelanggan/pemilik di chat (Bu/Pak/Kak); paket yang belum lunas (non-COD) tidak masuk daftar serah-terima kurir, tulis di bagian "menunggu pembayaran".
+- [ ] File kerja sementara yang berisi HP/alamat (pesanan.txt dsb.) dihapus setelah hasil diberikan, atau tidak dibuat sama sekali bila data kecil.
 
 ## Batasan & penanganan error
 - **Bukan alat kirim:** semua pesan berupa draf; pengguna yang mengirim, mengecek pembayaran, dan memesan pickup kurir.
@@ -86,4 +91,5 @@ Tolak singkat (1–2 kalimat) → beri padanan yang sah → **tetap proses pesan
 - **Pajak:** nota non-PPN. Penjual PKP yang perlu PPN → `buat-invoice`.
 - **Chat tidak terbaca** (hanya stiker/gambar/voice note): minta ditulis ulang isinya.
 - **Info sangat kurang** (mis. "rekap orderan saya"): minta chat ditempel, sertakan contoh format satu baris ("Nama – barang x jumlah – kurir – alamat").
+- Versi 1.0.1 (2026-10-06): nota utuh di Telegram, template resi wajib, varian tidak ada dikeluarkan dari label/total, file kerja dihapus, peringatan harga negatif di script.
 - **Privasi:** data hanya dipakai di percakapan ini; jangan menyarankan mengunggah data pelanggan ke layanan lain. Bukan nasihat hukum/pajak.

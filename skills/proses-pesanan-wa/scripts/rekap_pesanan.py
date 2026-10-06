@@ -295,6 +295,9 @@ def proses(pesanan, katalog, tanggal, mulai):
             k = katalog.get(norm(nama_in))
             harga = parse_rupiah(it.get("harga")) if it.get("harga") not in (None, "") else None
             sumber = "pengguna" if harga is not None else None
+            if it.get("harga") not in (None, "") and (harga is None or harga <= 0):
+                masalah.append(f"harga '{nama_in}' dari chat tidak terbaca atau tidak wajar ('{it.get('harga')}'); " + ("dipakai harga katalog" if k else "belum diketahui"))
+                harga, sumber = None, None
             if harga is None and k:
                 harga, sumber = k["harga"], "katalog"
             nama = k["nama"] if k else nama_in

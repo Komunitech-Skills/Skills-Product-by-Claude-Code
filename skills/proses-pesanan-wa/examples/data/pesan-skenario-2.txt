@@ -1,0 +1,8 @@
+Ini 3 pesanan kue lebaran yg udah DP. Tolong hitung sisa tagihannya, bikinin pengingat bayar buat yg masih kurang, sama pesan resi buat Kak Mega (paketnya udah aku kirim tadi, resi JNE 0123 4567 8910 11).
+
+Toko: Dapur Bunda Ani, rek BRI 0987-01-000123-50-1 a.n. Ani Suryani
+Harga: Nastar 500g 95rb, Kastengel 500g 105rb, Putri Salju 500g 85rb
+
+1. Bu Rahma: nastar 3, kastengel 2. diskon langganan 10%. ongkir JNE REG 18rb. udah DP 200rb
+2. Pak Joko: putri salju 4, nastar 1. diskon reseller 12,5%. ongkir J&T 25rb. DP 150rb
+3. Kak Mega: kastengel 3. diskon 5%. ongkir JNE REG 15rb. udah lunas transfer 299.250 + ongkir 15rb
