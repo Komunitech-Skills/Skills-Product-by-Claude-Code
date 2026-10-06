@@ -150,6 +150,17 @@ k, h = jalankan("--pokok", "20jt", "--tenor", "24", "--bandingkan-bunga", "10;15
 cek("I6 ilustrasi beberapa bunga (bunga belum diketahui)", k == 0 and [x["cicilan"] for x in h["bandingkan_bunga"]]
     == [round(-float(C.pmt(t / 1200, 24, 20_000_000))) for t in (10, 15, 20)])
 
+k, h = jalankan("--harga", "8jt", "--tenor", "12", "--ilustrasi", "hp")
+bb = h["bandingkan_bunga"]
+cek("I7 ilustrasi HP: flat 1,5/2/3%/bln -> Rp786.667/826.667/906.667, efektif 30-62%",
+    k == 0 and [x["cicilan"] for x in bb] == [786667, 826667, 906667] and all(x["jenis"] == "flat" for x in bb)
+    and 30 < bb[0]["bunga_efektif_per_tahun_persen"] < bb[-1]["bunga_efektif_per_tahun_persen"] < 62)
+k, h = jalankan("--pokok", "450jt", "--tenor", "15th", "--bunga-tahap", "5%x36;11%")
+jt = h["jadwal_per_tahun"]
+cek("I8 KPR: catatan pergantian hanya di tahun 4, mulai bulan ke-37", jt[3]["catatan"] and "bulan ke-37" in jt[3]["catatan"]
+    and "Rp4.823.129" in jt[3]["catatan"] and all(r["catatan"] is None for i, r in enumerate(jt) if i != 3))
+cek("I9 rujukan pinjol SEOJK 19/SEOJK.06/2023 + tenor", "19/SEOJK.06/2023" in C.RUJUKAN_PINJOL and "6 bulan" in C.RUJUKAN_PINJOL)
+
 # ---------------------------------------------------------------- J. input rusak
 for nama, arg in (("tenor 0", ["--pokok", "10jt", "--tenor", "0", "--bunga", "10"]),
                   ("pokok huruf", ["--pokok", "abc", "--tenor", "12", "--bunga", "10"]),

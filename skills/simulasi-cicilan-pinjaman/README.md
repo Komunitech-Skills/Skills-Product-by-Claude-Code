@@ -15,7 +15,9 @@
 - Staf penjualan dealer/koperasi yang ingin membuat simulasi dan brosur kredit yang transparan
 
 ## Contoh sebelum & sesudah
-*(akan diisi dari hasil uji)*
+**Sebelum:** "Motor 25 juta, DP 20%, 3 tahun, bunga 0,8% per bulan flat, admin 1 juta." AI biasa menjawab cicilan Rp715.556 per bulan dan bilang "aman" — tanpa memberi tahu berapa mahal sebenarnya.
+
+**Sesudah:** cicilan **Rp715.556/bulan**, ditambah fakta yang biasanya tidak terlihat: bunga "0,8% sebulan" flat itu setara **±17,25% per tahun** bunga efektif, dan **±20,97%** setelah admin 1 juta. Motor Rp25.000.000 jadi **Rp31.760.000** lewat kredit (27% lebih mahal dari tunai), plus perbandingan dengan anuitas dan cicilan maksimal aman dari gaji.
 
 ## Cara pakai
 Ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -44,6 +46,10 @@ Flat menghitung bunga dari pinjaman awal sampai lunas; efektif menghitung dari s
 
 **Bisa menyarankan bank atau aplikasi pinjaman yang paling murah?**
 Tidak. Skill ini tidak menyebut atau merekomendasikan merek. Kirimkan angka dari penawaran yang kamu terima, dan AI akan membandingkannya dengan bunga efektif setara dan total biaya.
+
+## Catatan versi
+- **1.0.1 (2026-10-06):** permintaan brosur/iklan kredit "bunga 0%" lebih andal memicu pola tolak → brosur transparan; ilustrasi bunga per jenis kredit (HP, motor, KPR) bila bunga belum diketahui; penjelasan KPR fixed → floating dipertegas; label "pinjaman bersih setelah biaya di muka"; rujukan aturan OJK pinjaman daring diperbarui.
+- **1.0.0 (2026-10-06):** rilis awal.
 
 ---
 Sebagian rumus dan kasus uji diturunkan dari numpy-financial (BSD-3-Clause, © NumPy Developers) — lihat `ATTRIBUTION.md`. Komunitech tidak berafiliasi dengan NumPy. Simulasi, bukan penawaran atau nasihat keuangan.

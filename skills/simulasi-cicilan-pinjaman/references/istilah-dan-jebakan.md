@@ -29,12 +29,12 @@
 Semua cicilan (termasuk yang sudah berjalan) **maks. 30% penghasilan bersih**; 30–35% = waspada; > 35% = berat. Ini patokan umum yang dipakai sebagai asumsi (bukan aturan resmi untuk semua lembaga); sesuaikan bila tanggungan keluarga besar.
 
 ## Batas biaya pinjaman daring (pinjol/LPBBTI) — cek ulang sebelum dipakai
-| Jenis | Batas yang dicatat untuk 2026 | Dasar |
+| Jenis | Batas yang dicatat untuk 2026 (tenor > 6 bulan) | Dasar |
 |---|---|---|
-| Konsumtif | 0,1% per hari | SEOJK No. 19/SEOJK.05/2023 (penurunan bertahap: 0,3% 2024 → 0,2% 2025 → 0,1% 2026) |
+| Konsumtif | 0,1% per hari | SEOJK No. 19/SEOJK.06/2023 (penurunan bertahap: 0,3% 2024 → 0,2% 2025 → 0,1% 2026) |
 | Produktif | 0,067% per hari | SEOJK yang sama |
 
-Dicatat dari riset internal Komunitech (26 September 2026). Batas ini mencakup bunga dan biaya lain ("manfaat ekonomi"). Aturan dapat berubah — di balasan selalu tulis "cek aturan OJK terbaru di ojk.go.id" dan ajak cek legalitas penyelenggara (Kontak OJK 157). Bila ragu, jangan sebut angka batas; cukup sampaikan biaya per hari hasil hitungan dan arahkan ke OJK.
+Akhir 2024 OJK menyesuaikan batas manfaat ekonomi berdasarkan **tenor pinjaman** (≤ 6 bulan vs > 6 bulan). Angka di tabel berlaku untuk tenor > 6 bulan; untuk tenor ≤ 6 bulan (termasuk pinjaman harian 7–30 hari) angkanya tidak dicatat di sini — jangan dikarang, tulis "cek aturan OJK terbaru". Nomor SEOJK diverifikasi di ojk.go.id (2026-10-06); angka dicatat dari riset internal Komunitech (26 September 2026). Batas ini mencakup bunga dan biaya lain ("manfaat ekonomi"). Aturan dapat berubah — di balasan selalu tulis "cek aturan OJK terbaru di ojk.go.id" dan ajak cek legalitas penyelenggara (Kontak OJK 157). Bila ragu, jangan sebut angka batas; cukup sampaikan biaya per hari hasil hitungan dan arahkan ke OJK.
 
 ## Bahan rujukan bagi pengguna
 - Daftar penyelenggara pinjaman daring berizin: situs resmi OJK (ojk.go.id), Kontak OJK 157.

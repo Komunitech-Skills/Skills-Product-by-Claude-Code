@@ -30,11 +30,20 @@ getcontext().prec = 50
 D = Decimal
 NOL, SATU, SERATUS = D(0), D(1), D(100)
 
-# Batas manfaat ekonomi pinjaman daring yang kami catat (SEOJK No. 19/SEOJK.05/2023, penurunan
-# bertahap; nilai untuk 2026). Hanya untuk peringatan; selalu minta pengguna cek aturan OJK terbaru.
+# Batas manfaat ekonomi pinjaman daring yang kami catat (SEOJK No. 19/SEOJK.06/2023, penurunan
+# bertahap; nilai untuk 2026, tenor > 6 bulan). Akhir 2024 OJK menyesuaikan batas berdasarkan tenor
+# (<= 6 bulan vs > 6 bulan). Hanya untuk peringatan; selalu minta pengguna cek aturan OJK terbaru.
 BATAS_PINJOL_HARIAN = {"konsumtif": D("0.1"), "produktif": D("0.067")}
-RUJUKAN_PINJOL = ("SEOJK No. 19/SEOJK.05/2023 (batas turun bertahap; untuk 2026 tercatat 0,1%/hari "
-                  "konsumtif, 0,067%/hari produktif) - cek aturan OJK terbaru di ojk.go.id")
+RUJUKAN_PINJOL = ("SEOJK No. 19/SEOJK.06/2023 (batas turun bertahap; untuk 2026 tercatat 0,1%/hari "
+                  "konsumtif, 0,067%/hari produktif untuk tenor lebih dari 6 bulan; sejak akhir 2024 batas "
+                  "dibedakan menurut tenor) - cek aturan OJK terbaru di ojk.go.id")
+# Ilustrasi bila bunga belum diketahui (asumsi umum kisaran pasar, bukan data lembaga tertentu).
+ILUSTRASI = {
+    "hp": ("kredit HP/elektronik lewat pembiayaan atau paylater, biasanya flat",
+           "1,5%/bulan flat;2%/bulan flat;3%/bulan flat"),
+    "motor": ("kredit motor, biasanya flat", "0,8%/bulan flat;1,2%/bulan flat;1,5%/bulan flat"),
+    "kpr": ("KPR, efektif/anuitas", "5%/tahun efektif;8%/tahun efektif;12%/tahun efektif"),
+}
 
 PENGALI = {"rb": 10**3, "ribu": 10**3, "k": 10**3, "jt": 10**6, "juta": 10**6,
            "m": 10**9, "miliar": 10**9, "milyar": 10**9, "t": 10**12, "triliun": 10**12}
@@ -247,11 +256,20 @@ def cicilan_tahap(rows, tahap):
     return out
 
 
-def ringkas_tahunan(rows):
+def ringkas_tahunan(rows, tahap=None):
+    mulai = {}
+    if tahap and len(tahap) > 1:
+        k = 0
+        for r, b in tahap:
+            if k > 0:
+                mulai[k + 1] = (r, rows[k]["cicilan"])
+            k += b
     out = []
     for awal in range(0, len(rows), 12):
         blok = rows[awal:awal + 12]
-        out.append({"tahun": awal // 12 + 1, "bulan": f"{blok[0]['bulan']}-{blok[-1]['bulan']}",
+        cat = [f"mulai bulan ke-{bln}: bunga {pct(r * 12 * SERATUS)}/tahun, cicilan {rp(c)}"
+               for bln, (r, c) in mulai.items() if blok[0]["bulan"] <= bln <= blok[-1]["bulan"]]
+        out.append({"catatan": "; ".join(cat) or None, "tahun": awal // 12 + 1, "bulan": f"{blok[0]['bulan']}-{blok[-1]['bulan']}",
                     "cicilan_per_bulan": sorted({r["cicilan"] for r in blok}),
                     "pokok_dibayar": sum(r["pokok"] for r in blok),
                     "bunga_dibayar": sum(r["bunga"] for r in blok), "sisa_akhir": blok[-1]["sisa"]})
@@ -502,7 +520,7 @@ def hitung(a):
     else:
         hasil["jadwal_awal"] = rows[:3]
         hasil["jadwal_akhir"] = rows[-2:]
-        hasil["jadwal_per_tahun"] = ringkas_tahunan(rows)
+        hasil["jadwal_per_tahun"] = ringkas_tahunan(rows, tahap)
 
     # --- peringatan (netral)
     if jenis == "flat" and e_tanpa_biaya:
@@ -599,8 +617,9 @@ def hitung_harian(a, pokok, diterima, hari, asumsi, peringatan):
     peringatan.append(f"Biaya total {rp(biaya)} untuk {hari} hari = {pct(per_hari, 3)} per hari dari uang yang diterima "
                       f"(setara ±{pct(tahun_sederhana, 0)} per tahun).")
     if per_hari > batas:
-        peringatan.append(f"Biaya total per hari di atas {pct(batas, 3)}/hari, batas pinjaman daring {a.jenis_pinjol} "
-                          f"yang kami catat ({RUJUKAN_PINJOL}). Cek legalitas penyelenggara di ojk.go.id / Kontak OJK 157.")
+        peringatan.append(f"Biaya total per hari di atas {pct(batas, 3)}/hari, angka batas pinjaman daring {a.jenis_pinjol} "
+                          f"yang kami catat ({RUJUKAN_PINJOL}). Untuk tenor pendek seperti ini batasnya bisa berbeda; "
+                          f"cek aturan OJK terbaru dan legalitas penyelenggara di ojk.go.id / Kontak OJK 157.")
     if diterima < pokok:
         peringatan.append(f"Uang cair {rp(diterima)} tetapi yang harus dikembalikan dihitung dari {rp(pokok)}.")
     return {"ringkasan": ring}
@@ -635,10 +654,19 @@ def bandingkan_bunga(a, hasil):
         raise Galat("--bandingkan-bunga butuh pokok dan tenor dalam bulan", "Contoh: --pokok 20jt --tenor 24")
     out = []
     for t in [x for x in a.bandingkan_bunga.split(";") if x.strip()]:
+        flat = "flat" in t.lower()
         bp, per = parse_persen(t, "bandingkan bunga")
         r = bp / SERATUS / (1 if per == "bulan" else 12)
-        cic = bulat(-pmt(r, n, pokok))
-        out.append({"bunga_efektif_per_tahun_persen": r * 12 * SERATUS, "cicilan": cic, "total_bunga": cic * n - pokok})
+        if flat:
+            rows = jadwal_flat(pokok, r, n)
+            cic, tb = rows[0]["cicilan"], sum(x["bunga"] for x in rows)
+            ef = eir(pokok, rows)["per_tahun_persen"]
+        else:
+            cic = bulat(-pmt(r, n, pokok))
+            tb, ef = cic * n - pokok, r * 12 * SERATUS
+        out.append({"jenis": "flat" if flat else "efektif", "bunga_per_bulan_persen": r * SERATUS,
+                    "bunga_per_tahun_persen": r * 12 * SERATUS, "bunga_efektif_per_tahun_persen": ef,
+                    "cicilan": cic, "total_bunga": tb})
     return out
 
 
@@ -648,7 +676,7 @@ def teks(h):
     it, rg = h.get("input_terbaca", {}), h.get("ringkasan")
     if h["mode"] == "harian":
         L.append(f"Pinjaman {rp(it['pokok_pinjaman'])}, {it['tenor']} hari, dibayar sekali di akhir")
-        L.append(f"  Uang diterima bersih     : {rp(rg['uang_diterima_bersih'])}")
+        L.append(f"  Pinjaman bersih setelah biaya di muka : {rp(rg['uang_diterima_bersih'])}")
         L.append(f"  Bunga                    : {pct(rg['bunga_per_hari_persen'], 3)}/hari = {rp(rg['bunga_total'])}")
         L.append(f"  Total dikembalikan       : {rp(rg['total_kembali'])}")
         L.append(f"  Total biaya pinjaman     : {rp(rg['total_biaya_pinjaman'])}")
@@ -672,7 +700,7 @@ def teks(h):
         L.append(f"  Total bunga              : {rp(rg['total_bunga'])}")
         if rg["biaya_di_muka"]:
             L.append(f"  Biaya di muka            : {rp(rg['biaya_di_muka'])}")
-        L.append(f"  Uang diterima bersih     : {rp(rg['uang_diterima_bersih'])}")
+        L.append(f"  Pinjaman bersih setelah biaya di muka : {rp(rg['uang_diterima_bersih'])}")
         L.append(f"  Total biaya pinjaman     : {rp(rg['total_biaya_pinjaman'])} (bunga + semua biaya)")
         e0, e1 = rg["bunga_efektif_setara_tanpa_biaya"], rg["bunga_efektif_setara_dengan_biaya"]
         if e0:
@@ -702,11 +730,16 @@ def teks(h):
         else:
             L.append("Ringkasan per tahun (tahun | pokok dibayar | bunga dibayar | sisa akhir):")
             for r in h["jadwal_per_tahun"]:
-                L.append(f"  {r['tahun']:>2} | {rp(r['pokok_dibayar'])} | {rp(r['bunga_dibayar'])} | {rp(r['sisa_akhir'])}")
+                L.append(f"  {r['tahun']:>2} | {rp(r['pokok_dibayar'])} | {rp(r['bunga_dibayar'])} | {rp(r['sisa_akhir'])}"
+                         + (f"  ({r['catatan']})" if r.get("catatan") else ""))
     if h.get("bandingkan_bunga"):
-        L.append("Cicilan pada beberapa angka bunga efektif (ilustrasi, bukan tawaran):")
+        L.append("Cicilan pada beberapa angka bunga (ilustrasi, bukan tawaran"
+                 + (f"; kisaran umum {h['ilustrasi_untuk']}" if h.get("ilustrasi_untuk") else "") + "):")
         for r in h["bandingkan_bunga"]:
-            L.append(f"  {pct(r['bunga_efektif_per_tahun_persen'], 1)}/tahun -> {rp(r['cicilan'])}/bulan, total bunga {rp(r['total_bunga'])}")
+            label = (f"flat {pct(r['bunga_per_bulan_persen'], 2)}/bulan" if r["jenis"] == "flat"
+                     else f"efektif {pct(r['bunga_per_tahun_persen'], 1)}/tahun")
+            L.append(f"  {label} -> {rp(r['cicilan'])}/bulan, total bunga {rp(r['total_bunga'])}, "
+                     f"bunga efektif setara {pct(r['bunga_efektif_per_tahun_persen'], 1)}/tahun")
     if h.get("denda_ilustrasi"):
         d = h["denda_ilustrasi"]
         L.append(f"Denda telat {d['hari_telat']} hari: {rp(d['denda'])} ({d['rumus']})")
@@ -752,11 +785,15 @@ def main(argv=None):
     p.add_argument("--batas", default="30", help="batas aman rasio cicilan (%% penghasilan bersih), default 30")
     p.add_argument("--batas-atas", default="35", help="batas atas rasio cicilan, default 35")
     p.add_argument("--bandingkan-bunga", help="ilustrasi cicilan pada beberapa bunga efektif, mis. \"10;15;20\"")
+    p.add_argument("--ilustrasi", choices=sorted(ILUSTRASI), help="bunga belum diketahui: ilustrasi kisaran per jenis kredit")
     p.add_argument("--jadwal-lengkap", action="store_true", help="tampilkan semua baris jadwal")
     p.add_argument("--format", choices=["json", "teks"], default="json")
     a = p.parse_args(argv)
     if a.jenis == "anuitas":
         a.jenis = "efektif"
+    ilu = None
+    if a.ilustrasi and not a.bandingkan_bunga:
+        ilu, a.bandingkan_bunga = ILUSTRASI[a.ilustrasi]
     try:
         if a.bandingkan_bunga and not (a.bunga or a.cicilan or a.bunga_tahap):
             # Mode ilustrasi: pokok + tenor saja
@@ -771,7 +808,8 @@ def main(argv=None):
                 raise Galat("--bandingkan-bunga hanya untuk tenor bulanan", "Contoh: --tenor 24")
             h = {"mode": "ilustrasi", "input_terbaca": {"pokok_yang_dicicil": pokok, "pokok_pinjaman": pokok, "tenor": n,
                                                         "satuan_tenor": "bulan"},
-                 "asumsi": ["Bunga belum diketahui: angka bunga di tabel hanyalah ilustrasi, bukan tawaran lembaga mana pun."],
+                 "asumsi": ["Bunga belum diketahui: angka bunga di tabel hanyalah ilustrasi kisaran umum, bukan tawaran "
+                            "lembaga mana pun; bunga sebenarnya bisa lebih rendah atau lebih tinggi."],
                  "peringatan": []}
             if a.penghasilan:
                 h["kemampuan_bayar"] = hitung_kemampuan(a)
@@ -779,6 +817,8 @@ def main(argv=None):
             h = hitung(a)
         if a.bandingkan_bunga:
             h["bandingkan_bunga"] = bandingkan_bunga(a, h)
+            if ilu:
+                h["ilustrasi_untuk"] = ilu
     except Galat as g:
         print(json.dumps({"error": g.pesan, "saran": g.saran}, ensure_ascii=False, indent=2), file=sys.stderr)
         return 2
