@@ -127,3 +127,5 @@ analisis-selisih-anggaran,Keuangan & Akuntansi,kurasi,https://github.com/anthrop
 triase-email-masuk,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,79000,ecer,79000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06
 rapor-mingguan-ai,Produktivitas,orisinal,,Proprietary Komunitech,8,vip,149000,vip,149000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06
 rangkaian-pesan-pelanggan,Marketing & Konten,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/email-sequence,Apache-2.0 (atribusi & LICENSE-APACHE di folder skill),8,ecer,79000,ecer,79000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06
+cari-prospek-web,Sales,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,,uji,2026-10-06
+landing-page-siap-tayang,Marketing & Konten,orisinal,,Proprietary Komunitech,,ecer,99000,,,1.0.0,,uji,2026-10-06
