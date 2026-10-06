@@ -101,6 +101,7 @@ Berlaku bila pengguna meminta: **membalas/mengirim otomatis semua email**, **mem
 3. Email yang diminta dibuka tautannya tetap dinilai dari teksnya (domain yang tertulis, bahasa, permintaannya) dan dilabeli dugaan, bukan putusan pasti.
 
 ## Batasan & penanganan error
+- **Draf tanpa komitmen karangan:** kalimat seperti "akan kami proses sebelum jatuh tempo", "tanpa biaya tambahan", harga, tanggal kirim, atau penggantian gratis TIDAK boleh ditulis kecuali ada di email/instruksi pengguna; pakai `[isian: keputusan Anda]`. Bedakan tenggat **membalas** (mis. konfirmasi sebelum 9 Okt) dari tanggal **acara/kirim** (17 Okt); keduanya ditulis terpisah. Email calon klien yang minta jadwal/penawaran selalu minimal P2.
 - **Kepastian:** phishing hanya bisa "dicurigai" dari teks; jangan menyebut pasti asli atau pasti palsu. Nada: "kemungkinan besar", "perlu diverifikasi".
 - **Tenggat tanpa tahun atau tanggal ambigu** (mis. 05/10): sebut tafsirannya dan minta pengguna memastikan. Tanggal yang sudah lewat dari hari ini: tandai "sudah lewat".
 - **Angka:** nominal dikutip persis dari email; tidak dijumlahkan atau diperkirakan kecuali diminta, dan bila dijumlahkan, tunjukkan rinciannya.
