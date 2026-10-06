@@ -122,3 +122,8 @@ rapikan-data-berantakan,Data & Analisis,kurasi,https://github.com/OpenRefine/Ope
 triase-keluhan-pelanggan,Customer Service,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/customer-support/skills/ticket-triage,Apache-2.0,8,ecer,79000,ecer,79000,1.0.2,openclaw (uji otomatis agent),lulus,2026-10-05
 kelayakan-investasi-usaha,Keuangan & Akuntansi,kurasi,https://github.com/numpy/numpy-financial,BSD-3-Clause,9,ecer,149000,ecer,149000,1.0.2,openclaw (uji otomatis agent),lulus,2026-10-05
 sunting-tulisan-jelas,Produktivitas,kurasi,https://developers.google.com/tech-writing,CC-BY-4.0,8,ecer,59000,ecer,59000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-05
+seleksi-cv-pelamar,HR,orisinal,,Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.2,openclaw (uji otomatis agent),lulus,2026-10-05
+analisis-selisih-anggaran,Keuangan & Akuntansi,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/finance/skills/variance-analysis,Apache-2.0,8,ecer,99000,ecer,99000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-05
+triase-email-masuk,Produktivitas,orisinal,,Proprietary Komunitech,8,ecer,79000,ecer,79000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06
+rapor-mingguan-ai,Produktivitas,orisinal,,Proprietary Komunitech,8,vip,149000,vip,149000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06
+rangkaian-pesan-pelanggan,Marketing & Konten,kurasi,https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/email-sequence,Apache-2.0 (atribusi & LICENSE-APACHE di folder skill),8,ecer,79000,ecer,79000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06

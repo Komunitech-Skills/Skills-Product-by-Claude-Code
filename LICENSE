@@ -42,7 +42,18 @@ Hak Cipta (c) Komunitech (komunitech.com). Seluruh hak dilindungi.
    Lisensi ini tunduk pada hukum Republik Indonesia.
 
 8. KOMPONEN PIHAK KETIGA
-   Sebagian skill memuat atau diadaptasi dari karya pihak ketiga berlisensi terbuka
-   (mis. MIT, Apache-2.0). Bagian tersebut tetap tunduk pada lisensi aslinya sebagaimana
-   tercantum di file LICENSE/ATTRIBUTION.md di folder skill yang bersangkutan; bila ada
+   Sebagian skill memuat atau diadaptasi dari karya pihak ketiga berlisensi terbuka.
+   Lisensi sumber yang kini dipakai: MIT, Apache-2.0, BSD-3-Clause, dan CC BY 4.0.
+   Bagian tersebut tetap tunduk pada lisensi aslinya sebagaimana tercantum di file
+   LICENSE*/ATTRIBUTION.md/NOTICE di folder skill yang bersangkutan; bila ada
    pertentangan, lisensi asli bagian tersebut yang berlaku untuk bagian itu.
+   Kewajiban: MIT/BSD wajib menyertakan teks lisensi dan pemberitahuan hak cipta;
+   Apache-2.0 wajib menyertakan teks lisensi, NOTICE (bila ada), dan keterangan bahwa
+   file telah diubah; CC BY 4.0 wajib atribusi. Berkas-berkas itu tidak boleh dihapus
+   dari paket.
+   Bila suatu skill kelak memuat bahan GPL/AGPL/CC BY-SA, skill tersebut berlisensi
+   sama dan boleh dibagikan ulang sesuai lisensi itu, dan ditandai jelas di foldernya.
+   Saat ini software AGPL/MIT/Apache yang dioperasikan skill asisten (mis. Fider,
+   listmonk, Vikunja, SiYuan, Frappe Books, Umami) tidak didistribusikan bersama skill.
+   Nama produk pihak ketiga hanya penyebut; Komunitech tidak berafiliasi dengan
+   pemiliknya.

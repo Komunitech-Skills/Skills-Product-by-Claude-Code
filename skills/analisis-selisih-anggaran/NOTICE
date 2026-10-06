@@ -1,0 +1,13 @@
+Analisis Selisih Anggaran
+Copyright 2026 Komunitech (komunitech.com)
+
+Skill ini memuat bagian yang diadaptasi dari:
+  - anthropics/knowledge-work-plugins, plugin `finance`, skill `variance-analysis`,
+    Apache License 2.0. https://github.com/anthropics/knowledge-work-plugins
+    (teks LICENSE tidak menyebut nama pemegang hak cipta; pembuat: Anthropic, pemilik repo).
+
+Repo asal tidak menyertakan berkas NOTICE (dicek 2026-10-05: finance/NOTICE dan NOTICE di root
+mengembalikan 404), sehingga tidak ada teks NOTICE asli yang perlu diteruskan. Berkas ini adalah
+NOTICE milik Komunitech untuk karya turunan.
+
+Berkas yang diubah dinyatakan di ATTRIBUTION.md (bagian "Pernyataan perubahan").

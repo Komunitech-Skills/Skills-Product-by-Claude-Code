@@ -1,0 +1,23 @@
+CURRICULUM VITAE
+
+Nama: Tiara Anggraini Putri
+Tempat/Tanggal Lahir: Bekasi, 19 Agustus 1996
+Jenis Kelamin: Perempuan
+Status: Belum menikah
+Agama: Islam
+Alamat: Jl. Contoh Fiktif No. 12, Kota Contoh
+No. HP: 0812-5550-1234
+Email: tiara@contoh.id
+
+PENDIDIKAN
+2014 - 2018 S1 Akuntansi, Universitas Fiktif Raya
+
+PENGALAMAN KERJA
+2019 - 2024 | Staf Akuntansi dan Pajak, PT Perdagangan Contoh
+- Menyusun laporan keuangan bulanan dan tahunan
+- Hitung dan lapor PPh 21, PPh 23, dan PPN (e-Faktur, Coretax)
+- Rekonsiliasi bank dan hutang piutang di Accurate
+- Excel: pivot, VLOOKUP, rekap pajak
+
+KEAHLIAN
+Accurate, Excel, PPh 21, PPN, SPT Masa, laporan keuangan, rekonsiliasi bank

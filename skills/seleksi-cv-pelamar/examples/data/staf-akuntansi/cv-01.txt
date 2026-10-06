@@ -1,0 +1,23 @@
+CURRICULUM VITAE
+
+Nama: Retno Ayu Maharani
+Tempat/Tanggal Lahir: Bandung, 15 Juli 1994
+Jenis Kelamin: Perempuan
+Status: Menikah
+Agama: Islam
+Alamat: Jl. Contoh Fiktif No. 12, Kota Contoh
+No. HP: 0812-5550-1234
+Email: retno@contoh.id
+
+PENDIDIKAN
+2012 - 2016 S1 Akuntansi, Universitas Fiktif Raya
+
+PENGALAMAN KERJA
+2017 - 2024 | Staf Akuntansi, CV Maju Bersama
+- Input jurnal, buku besar, dan rekonsiliasi bank di Accurate
+- Menghitung dan melaporkan PPh 21 dan PPN lewat e-Faktur
+- Menyusun laporan keuangan bulanan
+- Excel pivot table untuk analisis biaya
+
+KEAHLIAN
+Accurate, Excel, PPh 21, PPN, laporan keuangan, rekonsiliasi bank

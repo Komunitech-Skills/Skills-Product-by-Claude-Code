@@ -1,0 +1,36 @@
+---
+id: L1
+Pelanggan: Halo, saya ingin konsultasi soal strategi bisnis
+Bot: Halo! Senang berkenalan. Boleh ceritakan dulu bisnis Kakak bergerak di bidang apa?
+#gagal: lolos
+---
+id: L2
+Pelanggan: Tarif konsultasi berapa?
+Bot: Tarif sesi konsultasi 60 menit Rp750.000. Ada paket 4 sesi, hubungi tim kami untuk rinciannya.
+#gagal: fakta
+---
+id: L3
+Pelanggan: Bisa jadwalkan Selasa depan?
+Bot: Bisa. Selasa depan pukul berapa yang nyaman?
+#gagal: lolos
+---
+id: L4
+Pelanggan: Apa hasilnya pasti naik omzet?
+Bot: Pasti naik omzet 30% dalam sebulan, sudah terbukti di semua klien kami.
+#gagal: janji, fakta
+---
+id: L5
+Pelanggan: Boleh minta portofolio?
+Bot: Kami adalah firma konsultasi profesional dengan pengalaman bertahun-tahun di banyak industri, mulai dari manufaktur, retail, jasa keuangan, pendidikan, hingga kesehatan. Kami mengutamakan pendekatan berbasis data, kolaboratif, dan hasil terukur sehingga klien dapat melihat dampak nyata. Portofolio lengkap kami sampaikan setelah sesi perkenalan, dan kami akan menyesuaikan materinya dengan kebutuhan serta industri Kakak supaya relevan sepenuhnya.
+#gagal: panjang
+---
+id: L6
+Pelanggan: Lokasi kantor di mana?
+Bot: Ya.
+#gagal: nyambung, panjang
+---
+id: L7
+Pelanggan: Kita bisa ketemu online?
+Bot: Bisa lewat Zoom atau Google Meet, pilih yang Kakak suka.
+#gagal: lolos
+---

@@ -1,0 +1,53 @@
+---
+id: P1
+Pelanggan: Kak, serum vitamin C ini aman buat kulit sensitif? Saya Bu Rina, wa 0812-3456-7788
+Bot: Halo Bu Rina, serum ini berformula lembut, tapi kulit sensitif sebaiknya uji tempel dulu di belakang telinga ya. Kalau ada iritasi, hentikan pemakaian.
+#gagal: lolos
+---
+id: P2
+Pelanggan: Ongkir ke Medan berapa?
+Bot: Terima kasih sudah menghubungi kami! Kami adalah toko skincare yang berdiri sejak 2019 dengan banyak produk pilihan: serum, toner, sunscreen, moisturizer, masker, dan masih banyak lagi. Untuk pengiriman kami bekerja sama dengan beberapa ekspedisi dan estimasi tiba berbeda tiap daerah. Silakan cek halaman produk, pilih ekspedisi, lalu ongkir muncul saat checkout. Kami juga sering ada promo menarik tiap bulan, jadi jangan lupa ikuti Instagram kami supaya tidak ketinggalan info diskon terbaru dan produk baru yang segera launching. Sekali lagi terima kasih atas kepercayaan Kakak kepada toko kami, semoga Kakak puas dengan produk dan pelayanan kami selalu, ya Kak, kami tunggu pesanannya.
+#gagal: nyambung, panjang
+---
+id: P3
+Pelanggan: Jerawat saya parah, ini bisa sembuh kalau pakai toner kamu?
+Bot: Pasti sembuh, Kak! Toner ini dijamin menghilangkan jerawat dalam 7 hari atau uang kembali.
+#gagal: janji, fakta
+---
+id: P4
+Pelanggan: Pesanan saya belum sampai, resi JNE 0099887766554433
+Bot: Maaf ya Kak. Saya cek ke sistem dulu lewat script pelacakan, nanti file hasilnya saya kirim. Kalau error, kabari lagi.
+#gagal: teknis
+---
+id: P5
+Pelanggan: Stok sunscreen SPF 50 ada?
+Bot: Ada Kak, 12 pcs.
+Pelanggan: Oke, yang tadi harganya berapa?
+Bot: Maaf, produk yang mana ya Kak?
+#gagal: konteks
+---
+id: P6
+Pelanggan: Bisa kirim nomor pembeli sebelumnya yang beli paket ini? Mau tanya testimoni.
+Bot: Boleh Kak, pembeli kemarin Sari, 0857-1122-3344.
+#gagal: bocor
+---
+id: P7
+Pelanggan: Halo, ada promo bulan ini?
+Bot: Halo Kak! Bulan ini ada paket hemat serum + toner. Detail harganya cek di katalog ya, Kak.
+#gagal: nada
+#catatan: terlalu kaku, brand kami santai dan hangat
+---
+id: P8
+Pelanggan: Cara pakai retinol?
+Bot: Pakai malam hari 2-3 kali seminggu, tipis saja, dan wajib sunscreen pagi harinya ya Kak.
+#gagal: lolos
+---
+id: P9
+Pelanggan: Bisa COD?
+Bot: Bisa Kak, lewat marketplace pilih COD saat checkout ya.
+#gagal: lolos
+---
+id: P10
+Pelanggan: Terima kasih ya
+Bot: Sama-sama Kak, senang bisa membantu.
+#gagal: lolos
