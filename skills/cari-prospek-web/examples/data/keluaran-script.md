@@ -105,3 +105,12 @@ Tautan terbaca sebagai `sumber`, 0 tanpa sumber, skor 43 ✓. **Diperbaiki** (1.
 
 ## Berkas rusak
 kosong / hanya judul / tanpa kolom nama / tidak ada → pesan Indonesia, kode 2 ✓. Biner acak masih "GAGAL: new-line character seen in unquoted field - do you need to open the file with newline=''?" (teknis, Inggris; ringan).
+
+# Uji ulang 1.0.2 (2026-10-06, penguji independen ketiga)
+
+- `tests/uji_regresi.py`: **14 tes OK**.
+- `maps.csv` (`--icp kafe,katering,kue --kota Bandung`): 5 masuk, 5 unik (tautan Maps/IG tidak lagi dianggap duplikat). `prospek.csv`: 7 masuk, 6 unik, 1 duplikat (Kopi Senja Contoh Dago), 3 tanpa sumber, 1 `DUMMY?` (0812-3456-7890). `templ.csv`: 2 baris, kolom "Tautan halaman" dikenali. `titikkoma-tidak-rata.csv`: peringatan baris 3, tetap dibaca.
+- Penanda dummy (data buatan penguji): "Jl. Merdeka No. 1, (022) 4230352" → **tidak** ditandai ✓; "Jl. X No. 123" → `DUMMY?` ✓; "No. 45A, info@domain.com" → `DUMMY?` (email contoh) ✓; **"Jl. Asia No. 12, (022) 7012345" → `DUMMY?` (nomor berderet)** — positif palsu tersisa untuk nomor nyata yang kebetulan berakhir "012345".
+- Kolom bernama `alamat` tidak dikenali (diabaikan diam-diam, sehingga "No. 123" di kolom itu tidak dicek).
+- Berkas biner: kode keluar 2, pesan masih teknis berbahasa Inggris ("GAGAL: new-line character seen in unquoted field ...").
+- Script tidak dipakai agent di uji OpenClaw (tidak ada CSV dari pengguna).
