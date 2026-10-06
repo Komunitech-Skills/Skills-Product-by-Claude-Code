@@ -3,7 +3,7 @@
 PERLU REVIEW terhadap acuan Kemenkes/BPOM terbaru. Angka ini fakta ilmiah umum, bukan kutipan peraturan.
 
 ## Zona bahaya
-Bakteri berkembang cepat sekitar 5 sampai 57 °C. Simpan dingin <= 5 °C, tahan panas >= 60 °C (pakai 60 supaya ada margin).
+Bakteri berkembang cepat di zona bahaya 5 sampai 60 °C. Simpan dingin <= 5 °C, tahan panas >= 60 °C (pakai 60 supaya ada margin).
 Makanan berisiko tinggi di suhu ruang: total maksimal 2 jam (1 jam bila ruangan sangat panas, di atas 32 °C). Catat jam mulai.
 
 ## Batas

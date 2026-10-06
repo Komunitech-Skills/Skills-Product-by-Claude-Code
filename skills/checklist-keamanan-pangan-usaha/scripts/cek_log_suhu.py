@@ -20,6 +20,9 @@ def jenis_alat(nama):
     n = nama.lower()
     if re.search(r"freezer|beku|frozen", n):
         return "freezer", "maks", -18.0
+    # alat dingin dicocokkan lebih dulu daripada kata menu (mis. "kulkas ayam" = kulkas)
+    if re.search(r"kulkas|chiller|pendingin|showcase|lemari es|cooler|dingin|fridge", n):
+        return "kulkas", "maks", 5.0
     if re.search(r"panas ulang|reheat|pemanasan ulang", n):
         return "pemanasan ulang", "min", 74.0
     if re.search(r"penahan|warmer|bain|hot ?hold|pemanas", n):
@@ -30,8 +33,6 @@ def jenis_alat(nama):
         if re.search(r"ikan|telur|utuh|steak", n):
             return "masak (ikan/telur/utuh)", "min", 63.0
         return "masak", "min", 74.0
-    if re.search(r"kulkas|chiller|showcase|lemari es|cooler|kulkas|dingin|fridge", n):
-        return "kulkas", "maks", 5.0
     return None, None, None
 
 
@@ -64,7 +65,7 @@ def baca_suhu(teks):
 
 def analisis(path, dasar=None):
     dasar = dasar or date.today()
-    hasil = {"baris_ok": 0, "baris_rusak": [], "alat": {}, "pelanggaran": [], "alat_tak_dikenal": []}
+    hasil = {"baris_ok": 0, "baris_rusak": [], "alat": {}, "pelanggaran": [], "alat_tak_dikenal": [], "peringatan": []}
     try:
         with open(path, newline="", encoding="utf-8-sig") as f:
             isi = f.read()
@@ -80,6 +81,14 @@ def analisis(path, dasar=None):
         if len(r) < 3:
             hasil["baris_rusak"].append({"baris": i, "alasan": "kolom kurang dari 3"})
             continue
+        if len(r) > 3:
+            a3, a4 = r[2].strip(), r[3].strip()
+            if len(r) == 4 and re.fullmatch(r"-?\d+", a3) and re.fullmatch(r"\d+\s*[°ºcC]*", a4):
+                r = [r[0], r[1], a3 + "," + a4]
+                hasil["peringatan"].append({"baris": i, "pesan": "koma desimal dibaca sebagai %s" % r[2]})
+            else:
+                hasil["baris_rusak"].append({"baris": i, "alasan": "kolom lebih dari 3 dan tidak bisa dibaca (tulis desimal dengan titik atau beri tanda kutip)"})
+                continue
         w, alat, s = baca_waktu(r[0], dasar), r[1].strip(), baca_suhu(r[2])
         if w is None or not alat or s is None:
             alasan = "waktu tak terbaca" if w is None else ("nama alat kosong" if not alat else "suhu bukan angka wajar")
@@ -103,34 +112,38 @@ def analisis(path, dasar=None):
         def langgar(s):
             return s > batas if arah == "maks" else s < batas
         awal = None
+        normal_terakhir = None
         for idx, (w, _, s, baris_no) in enumerate(rows):
             if langgar(s):
                 ringkas["pembacaan_melanggar"] += 1
-                if jenis in ("kulkas", "penahan panas"):
+                if jenis in ("kulkas", "penahan panas", "freezer"):
                     if awal is None:
                         awal = w
+                        awal_sebelum = normal_terakhir or w
                 else:
                     hasil["pelanggaran"].append({"alat": alat, "waktu": w.strftime("%Y-%m-%d %H:%M"), "suhu": s,
                         "batas": batas, "arah": arah, "menit": None, "baris": baris_no})
             else:
                 if awal is not None:
-                    _tutup(hasil, ringkas, alat, awal, w, rows, batas, arah, True)
+                    _tutup(hasil, ringkas, alat, awal, w, rows, batas, arah, True, awal_sebelum)
                     awal = None
+                normal_terakhir = w
         if awal is not None:
-            _tutup(hasil, ringkas, alat, awal, rows[-1][0], rows, batas, arah, False)
+            _tutup(hasil, ringkas, alat, awal, rows[-1][0], rows, batas, arah, False, awal_sebelum)
         hasil["alat"][alat] = ringkas
     hasil["pelanggaran"].sort(key=lambda p: (p["waktu"], p["alat"]))
     return hasil
 
 
-def _tutup(hasil, ringkas, alat, awal, akhir, rows, batas, arah, pulih):
+def _tutup(hasil, ringkas, alat, awal, akhir, rows, batas, arah, pulih, sebelum=None):
     menit = int((akhir - awal).total_seconds() // 60)
+    menit_maks = int((akhir - (sebelum or awal)).total_seconds() // 60)
     ringkas["menit_zona_bahaya"] += menit
     s_zona = [x[2] for x in rows if awal <= x[0] <= akhir and ((x[2] > batas) if arah == "maks" else (x[2] < batas))]
     ekstrem = max(s_zona) if arah == "maks" else min(s_zona)
     hasil["pelanggaran"].append({"alat": alat, "waktu": awal.strftime("%Y-%m-%d %H:%M"), "suhu": ekstrem,
-        "batas": batas, "arah": arah, "menit": menit, "pulih": pulih,
-        "lewat_2_jam": menit > MAKS_ZONA_MENIT})
+        "batas": batas, "arah": arah, "menit": menit, "menit_maks": menit_maks, "pulih": pulih,
+        "lewat_2_jam": menit > MAKS_ZONA_MENIT, "mungkin_lewat_2_jam": menit_maks > MAKS_ZONA_MENIT})
 
 
 def teks(h):
@@ -141,7 +154,7 @@ def teks(h):
             o.append("- %s: jenis alat tidak dikenal, tidak dinilai (%d pembacaan, %.1f sampai %.1f C)" % (a, r["jumlah"], r["min"], r["maks"]))
         else:
             tanda = ">" if r["arah"] == "maks" else "<"
-            o.append("- %s [%s, batas %s%.0f C]: %d pembacaan, %.1f sampai %.1f C, melanggar %d, zona bahaya %d menit" % (
+            o.append("- %s [%s, batas %s%.0f C]: %d pembacaan, %.1f sampai %.1f C, melanggar %d, zona bahaya minimal %d menit terukur" % (
                 a, r["jenis"], "<= " if r["arah"] == "maks" else ">= ", r["batas"], r["jumlah"], r["min"], r["maks"],
                 r["pembacaan_melanggar"], r["menit_zona_bahaya"]))
     o.append("")
@@ -153,15 +166,24 @@ def teks(h):
                     p["waktu"], p["alat"], p["suhu"], "<= " if p["arah"] == "maks" else ">= ", p["batas"],
                     TINDAKAN["freezer" if p["arah"] == "maks" else "masak"]))
             else:
-                ket = "sekitar %d menit di luar batas (dari pembacaan pertama sampai pembacaan yang kembali normal)" % p["menit"]
+                ket = "minimal %d menit terukur, bisa sampai %d menit (antara pembacaan normal terakhir dan pembacaan normal berikutnya)" % (p["menit"], p["menit_maks"])
                 if not p.get("pulih", True):
-                    ket += " (belum terlihat pulih sampai pembacaan terakhir; durasi minimal)"
+                    ket += " (belum terlihat pulih sampai pembacaan terakhir)"
                 if p["lewat_2_jam"]:
-                    ket += " - LEBIH DARI 2 JAM: bahan berisiko tinggi sebaiknya dibuang"
+                    ket += " - LEBIH DARI 2 JAM terukur: bahan berisiko tinggi sebaiknya dibuang"
+                elif p.get("mungkin_lewat_2_jam"):
+                    ket += " - BISA LEBIH DARI 2 JAM: perlakukan bahan berisiko tinggi dengan hati-hati, sebaiknya dibuang"
+                if p["arah"] == "maks" and p["batas"] < 0:
+                    ket += ". Tindakan: " + TINDAKAN["freezer"]
                 o.append("- %s %s: terburuk %.1f C (batas %s%.0f C), %s" % (
                     p["waktu"], p["alat"], p["suhu"], "<= " if p["arah"] == "maks" else ">= ", p["batas"], ket))
     else:
         o.append("Tidak ada pelanggaran batas pada data yang terbaca.")
+    if h.get("peringatan"):
+        o.append("")
+        o.append("PERINGATAN:")
+        for b in h["peringatan"]:
+            o.append("- baris %d: %s" % (b["baris"], b["pesan"]))
     if h["baris_rusak"]:
         o.append("")
         o.append("BARIS BERMASALAH (dilewati):")

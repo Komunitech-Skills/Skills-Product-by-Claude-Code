@@ -19,7 +19,9 @@ Tulis misalnya: "Buatkan checklist keamanan pangan untuk katering rumahan, menu 
 Tidak membuat sertifikat higiene/halal, tidak menulis "bebas alergen" untuk dapur bersama, tidak membantu mengganti tanggal kadaluarsa, dan tidak mengisi log suhu palsu. Sebagai gantinya, kamu dapat cara yang sah (mengurus izin resmi, label "diproses di dapur yang juga mengolah ...", membuang bahan lewat tanggal, mengisi log jujur dengan cepat).
 
 ## Contoh sebelum/sesudah
-Akan diisi dari hasil uji.
+**Tanpa skill:** bot menyimpan checklist sebagai file di server, sehingga pengguna Telegram hanya menerima nama file (rata-rata 6,0/10).
+
+**Dengan skill:** paket lengkap tampil langsung di chat: checklist harian, log suhu dengan tindakan bila melebihi batas, kartu 10 aturan staf, peta risiko menu, dan petunjuk perizinan. Kulkas 9 °C selama sekitar 3 jam dan freezer -17 °C tertangkap (rata-rata 8,4/10). Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
 
 ## Instalasi singkat
 Salin folder ini ke lokasi skill platformmu (OpenClaw, Codex, Claude Code, Cursor); lihat `docs/instalasi.md` di paket.

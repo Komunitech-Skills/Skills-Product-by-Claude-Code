@@ -63,6 +63,28 @@ class Uji(unittest.TestCase):
         self.assertFalse(p["pulih"])
         self.assertIn("belum terlihat pulih", c.teks(h))
 
+    def test_kulkas_dengan_kata_menu(self):
+        for nama in ("kulkas ayam", "kulkas matang", "kulkas daging bakar", "chiller goreng"):
+            self.assertEqual(c.jenis_alat(nama)[0], "kulkas", nama)
+        self.assertEqual(c.jenis_alat("masak ayam")[0], "masak")
+        self.assertEqual(c.jenis_alat("freezer ayam")[0], "freezer")
+
+    def test_koma_desimal_kolom_pecah(self):
+        h = c.analisis(tulis("08:00,kulkas,5,8\n09:00,kulkas,4\n10:00,kulkas,5,x,y\n"), D)
+        self.assertEqual(h["alat"]["kulkas"]["maks"], 5.8)
+        self.assertEqual(h["alat"]["kulkas"]["pembacaan_melanggar"], 1)
+        self.assertIn("koma desimal dibaca sebagai 5,8", c.teks(h))
+        self.assertEqual(len(h["baris_rusak"]), 1)
+
+    def test_durasi_freezer_dan_penahan_rentang(self):
+        h = c.analisis(tulis("08:00,freezer,-20\n09:00,freezer,-17\n10:00,freezer,-16\n11:00,freezer,-19\n"
+                             "08:00,penahan panas,65\n09:00,penahan panas,55\n09:30,penahan panas,50\n10:30,penahan panas,62\n"), D)
+        d = {p["alat"]: p for p in h["pelanggaran"]}
+        self.assertEqual(len(h["pelanggaran"]), 2)
+        self.assertEqual((d["freezer"]["menit"], d["freezer"]["menit_maks"]), (120, 180))
+        self.assertEqual((d["penahan panas"]["menit"], d["penahan panas"]["menit_maks"]), (90, 150))
+        self.assertIn("minimal 120 menit terukur, bisa sampai 180 menit", c.teks(h))
+
     def test_berkas_hilang(self):
         with self.assertRaises(SystemExit):
             c.analisis("/tidak/ada.csv", D)

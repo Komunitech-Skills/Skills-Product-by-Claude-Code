@@ -39,7 +39,7 @@ Dari gambaran usaha, langsung menghasilkan lembar kerja keamanan pangan yang bis
 1. Tentukan jenis usaha dan sesuaikan: kafe/warung (penahan panas, nasi, gorengan), katering rumahan (porsi besar, pendinginan, waktu antar), toko kue (krim/susu/telur, alergen), minuman (es, susu, topping, mesin es), frozen food (rantai dingin, freezer, pengiriman).
 2. Susun **daftar periksa harian** (`templates/checklist-harian.md`): Datang / Sebelum buka / Jam sibuk / Tutup. Pakai kotak centang, 5-8 butir per bagian, hanya yang relevan dengan menu dan alat pengguna.
 3. Susun **daftar mingguan dan bulanan**: hama (celah, sampah, jebakan), pembersihan dalam (kulkas, penyedot asap, saluran air, mesin es), FIFO dan buang yang lewat tanggal, kalibrasi termometer (uji es batu: harus ± 0 °C), cek pasokan sabun/sanitizer.
-4. Siapkan **log suhu** (`templates/log-suhu.md`) dengan batas dari `references/batas-suhu-dan-bahan-rawan.md` dan kolom "tindakan bila melebihi". Bila pengguna tidak punya termometer: tulis tegas bahwa log suhu tidak bisa diisi tanpa alat ukur, saran beli termometer pangan murah, dan sementara pakai checklist visual (es batu, bau, waktu).
+4. Siapkan **log suhu** (`templates/log-suhu.md`) dengan batas dari `references/batas-suhu-dan-bahan-rawan.md` dan kolom "tindakan bila melebihi". Bila pengguna tidak punya termometer: tulis tegas bahwa log suhu tidak bisa diisi tanpa alat ukur, saran beli termometer pangan murah, dan sementara pakai checklist visual (es batu, jam pencatatan waktu bahan keluar kulkas). Bau dan rasa bukan penentu aman; keputusan pakai suhu dan waktu.
 5. Buat **kartu staf 10 poin** (`templates/kartu-staf.md`) dengan bahasa dapur sehari-hari, disesuaikan menu.
 6. Buat **peta risiko menu**: tiap bahan rawan di menu pengguna: risikonya, batas waktu/suhu, cara aman, dan alergen yang ada. Sebut kontaminasi silang yang spesifik di dapur itu (mis. talenan ayam vs sayur lalapan).
 7. Beri **ringkasan perizinan** untuk jenis usaha itu dari `references/perizinan-indonesia.md`: nama izin, kapan relevan, instansi, langkah awal. Selalu tandai **PERLU REVIEW** dan arahkan ke Dinkes/DPMPTSP/BPOM/BPJPH setempat. Jangan mengutip pasal.
@@ -48,14 +48,15 @@ Dari gambaran usaha, langsung menghasilkan lembar kerja keamanan pangan yang bis
 
 ## UNTUK AGENT SAJA (hitungan suhu)
 - Batas: kulkas/chiller <= 5 °C; freezer <= -18 °C; penahan panas >= 60 °C; masak/pemanasan ulang inti >= 74 °C (ikan/telur/daging utuh 63, daging giling 71 bila disebut). Jangan mengarang batas lain.
-- Durasi di zona bahaya dan rekap dihitung script; **salin angka hasil script apa adanya**. Jangan menghitung ulang dengan perkiraan. Bila script tidak bisa jalan, hitung selisih waktu pembacaan eksplisit dan tulis bahwa itu hitungan manual.
-- Bahan berisiko tinggi di zona bahaya total lebih dari 2 jam (di atas 32 °C ruangan: 1 jam): saran buang. Jangan menyuruh "dicium dulu".
+- Zona bahaya 5-60 °C (kulkas <= 5, penahan panas >= 60). Termometer inframerah hanya mengukur permukaan; suhu inti makanan wajib pakai termometer tusuk.
+- Durasi di zona bahaya dan rekap dihitung script; **salin angka hasil script apa adanya**. Tulis durasi sebagai rentang: "minimal X menit terukur, bisa sampai Y menit" (Y = sejak pembacaan normal terakhir), bukan angka pasti. Jangan menghitung ulang dengan perkiraan. Bila script tidak bisa jalan, hitung selisih waktu pembacaan eksplisit dan tulis bahwa itu hitungan manual.
+- Bahan berisiko tinggi di zona bahaya total lebih dari 2 jam (di atas 32 °C ruangan: 1 jam): saran buang. Jangan menyuruh "dicium dulu" atau menilai aman dari bau/rasa.
 
 ## Permintaan di luar batas (tolak singkat, beri padanan sah, TETAP buat checklist)
 | Permintaan | Jawaban |
 |---|---|
 | Bikin sertifikat laik higiene/halal sendiri biar kelihatan resmi | Tolak: itu pemalsuan dokumen dan menyesatkan konsumen. Padanan: cara mengurus SLHS/PIRT/halal resmi (ringkasan perizinan). |
-| Tulis "bebas alergen" di menu padahal satu dapur | Tolak: klaim bisa membahayakan. Padanan: "Diproses di dapur yang juga mengolah susu, telur, kacang, gandum..." + tabel alergen per menu. |
+| Tulis "bebas alergen" di menu padahal satu dapur | Tolak: klaim bisa membahayakan. Padanan: "Diproses di dapur yang juga mengolah susu, telur, kacang, gandum..." (alergen umum yang perlu dicek; sebut hanya yang memang ada di menu pengguna) + tabel alergen per menu. |
 | Ganti tanggal kadaluarsa / label ulang bahan lama | Tolak. Padanan: bahan lewat tanggal dibuang; cara kurangi sisa (FIFO, porsi pesan lebih kecil, stok per hari, promo bahan mendekati tanggal sebelum lewat). |
 | Log suhu diisi saja yang bagus, tidak usah ukur | Tolak: log palsu hilang gunanya dan merugikan bila ada kejadian. Padanan: log jujur, cara mengisi cepat (30 detik, dua kali sehari). Angka di luar batas bukan aib; yang dinilai adalah tindakannya. |
 
@@ -64,10 +65,11 @@ Judul "Paket Keamanan Pangan - [nama usaha/jenis]", lalu bagian berurutan: Asums
 
 ## Contoh ringkas
 Input: "Katering rumahan, menu nasi box ayam bakar, telur balado, sayur santan. 2 orang, ada 1 kulkas, belum ada termometer."
-Hasil: checklist harian katering (pendinginan lauk sebelum dikemas, batas waktu antar 4 jam setelah masak), log suhu dengan catatan "beli termometer dulu", peta risiko: santan dan nasi (basi cepat), ayam (kontaminasi silang), telur (matang inti); perizinan: PIRT bila produk dijual kemasan, SLHS untuk jasa boga, halal; tutup dengan 3 pertanyaan (jumlah porsi per hari, jarak antar, ada freezer?).
+Hasil: checklist harian katering (pendinginan lauk sebelum dikemas, maksimal 2 jam di suhu ruang (1 jam bila > 32 °C) sejak makanan keluar dari penahan panas/pendingin sampai dimakan), log suhu dengan catatan "beli termometer dulu", peta risiko: santan dan nasi (basi cepat), ayam (kontaminasi silang), telur (matang inti); perizinan: PIRT bila produk dijual kemasan, SLHS untuk jasa boga, halal; tutup dengan 3 pertanyaan (jumlah porsi per hari, jarak antar, ada freezer?).
 
 ## Batasan dan penanganan error
 - Info menu kurang: pakai bahan umum dan sebut asumsi.
 - CSV rusak (baris tak terbaca, suhu non-angka): script melaporkan baris bermasalah, tetap memproses sisanya.
 - Pertanyaan medis (sakit setelah makan): bukan diagnosis; sarankan ke tenaga kesehatan dan simpan sisa makanan untuk dilaporkan.
 - Aturan dan angka lokal bisa berubah: PERLU REVIEW; sebut tanggal acuan 2026-10-06.
+- Versi 1.0.1 (2026-10-06): kulkas dengan kata menu (mis. "kulkas ayam") dibaca sebagai kulkas; koma desimal terbagi kolom ditangani; durasi freezer/penahan panas sebagai rentang; saran bau dihapus; zona bahaya 5-60 °C disamakan.

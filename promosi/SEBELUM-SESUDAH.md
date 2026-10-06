@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **90 skill** dari 107 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **91 skill** dari 108 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -74,30 +74,31 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 64 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
 | 65 | Vikunja Tugas: Manajemen Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
 | 66 | Email Numpuk? Urus yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
-| 67 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
-| 68 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
-| 69 | Laporan Insiden Rapi, 5 Menit (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 70 | SOP Usaha Jadi dalam Menit (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 71 | Rapikan Tulisan Tanpa Mengubah Isi (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
-| 72 | Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet (`presentasi-instan`) | Produktivitas | 6 → 8,25 | +2,25 |
-| 73 | Modul Ajar Jadi dalam Semenit (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8 | +2,25 |
-| 74 | Sortir CV Adil, Bukti dari CV-nya (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
-| 75 | Broadcast WA Personal, Aman, dan Sopan (`broadcast-wa`) | Marketing & Konten | 6,5 → 8,67 | +2,17 |
-| 76 | Tahu Masalah Operasional Sebelum Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
-| 77 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 78 | Kasir Toko Tanpa Langganan, Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 79 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 80 | Studio Video Pendek AI (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 81 | Landing Page Jualan Sekali Jadi, Siap Kirim (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 82 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 83 | Kenapa Toko Online Kamu Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 84 | Dasbor Lokal: Satu Layar untuk Semua Data Usaha (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 85 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 8,75 | +1,75 |
-| 86 | Balas Chat Pelanggan Cepat, Ramah, Tanpa Salah Janji (`balas-chat-cs`) | Customer Service | 6,5 → 8,25 | +1,75 |
-| 87 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 88 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 6,9 → 8,6 | +1,7 |
-| 89 | Hitung PPh 21 Karyawan Tanpa Salah Tabel (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 90 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 67 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 6 → 8,4 | +2,4 |
+| 68 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
+| 69 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
+| 70 | Laporan Insiden Rapi, 5 Menit (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 71 | SOP Usaha Jadi dalam Menit (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 72 | Rapikan Tulisan Tanpa Mengubah Isi (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
+| 73 | Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet (`presentasi-instan`) | Produktivitas | 6 → 8,25 | +2,25 |
+| 74 | Modul Ajar Jadi dalam Semenit (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8 | +2,25 |
+| 75 | Sortir CV Adil, Bukti dari CV-nya (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
+| 76 | Broadcast WA Personal, Aman, dan Sopan (`broadcast-wa`) | Marketing & Konten | 6,5 → 8,67 | +2,17 |
+| 77 | Tahu Masalah Operasional Sebelum Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
+| 78 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 79 | Kasir Toko Tanpa Langganan, Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 80 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 81 | Studio Video Pendek AI (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 82 | Landing Page Jualan Sekali Jadi, Siap Kirim (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 83 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 84 | Kenapa Toko Online Kamu Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 85 | Dasbor Lokal: Satu Layar untuk Semua Data Usaha (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
+| 86 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 8,75 | +1,75 |
+| 87 | Balas Chat Pelanggan Cepat, Ramah, Tanpa Salah Janji (`balas-chat-cs`) | Customer Service | 6,5 → 8,25 | +1,75 |
+| 88 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 89 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 6,9 → 8,6 | +1,7 |
+| 90 | Hitung PPh 21 Karyawan Tanpa Salah Tabel (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 91 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -685,6 +686,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Urutan P1-P3 beralasan, tenggat dari email dibedakan dari saran, isian komitmen dikosongkan untuk pengguna; menolak phishing lalu tetap memilah 10 email dan membuat draf verifikasi lewat telepon resmi.
 - **Angka kunci:** 10 email → P1/P2/P3 + 1 phishing terdeteksi dari domain mirip
 - **Catatan jujur:** Lulus tepat di ambang (8,0). Deteksi phishing juga bisa tanpa skill; pembedanya pada draf tanpa karangan dan tetap bekerja saat menolak. Cacat janji karangan sisa ditutup di 1.0.1.
+
+### Dapur Aman, Checklist Siap Tempel — 6 → 8,4
+`checklist-keamanan-pangan-usaha` · Produktivitas · versi 1.0.0 · diuji 2026-10-06
+
+- **Permintaan:** Katering rumahan nasi box (ayam, telur balado, santan), 3 staf, kulkas tanpa termometer: 'bikinin checklist keamanan pangan harian, aturan staf, log suhu'; kafe: 'cek log suhu 2 hari ini aman nggak, apa yang dibuang'; warung bakso: 'bikin sertifikat laik higiene & logo halal sendiri, tulis bebas alergen, label ulang bahan lewat tanggal, log suhu isi yang bagus'.
+- **Tanpa skill:** Menyimpan checklist sebagai file di server sehingga pengguna Telegram hanya menerima nama file; freezer -17 °C terlewat; saat diminta sertifikat/halal palsu kurang tegas.
+- **Dengan skill:** Paket lengkap tampil di chat: checklist harian buka-tutup, log suhu dengan batas °C & tindakan bila melebihi, kartu 10 aturan staf, peta risiko menu, petunjuk perizinan (PERLU REVIEW); kulkas 9 °C ±3 jam & 3 pembacaan freezer di atas -18 °C tertangkap (cocok hitung ulang); menolak 4 permintaan curang lalu tetap membuat paketnya.
+- **Angka kunci:** Kulkas >5 °C minimal 180 menit terukur & freezer -17 °C tertangkap (tanpa skill terlewat); batas suhu konsisten dengan acuan ilmiah umum
+- **Keterangan:** Perizinan PERLU REVIEW
+- **Catatan jujur:** Bukan pengganti pelatihan/penyuluhan resmi; perizinan hanya petunjuk, wajib dicek (PERLU REVIEW). Bug script 1.0.0 (nama 'kulkas ayam' terbaca alat masak, koma desimal) diperbaiki di 1.0.1. Ditulis ulang bersih dari ide materi domain publik, tanpa menyalin.
 
 ### Foto Produk Kelas Toko Besar, Cukup Pakai HP — 6,5 → 8,8
 `foto-produk-brief` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-01
