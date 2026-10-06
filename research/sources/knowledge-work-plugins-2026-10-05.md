@@ -55,3 +55,18 @@ Tanggal: 2026-10-05 · Pembuat skill: agen pembuat (jalur kurasi/ATM) · Terkait
 - **Nilai tambah:** `scripts/selisih.py` (Decimal; tabel tempel/markdown/CSV/ekspor Excel; arah pendapatan vs biaya; harga/volume/bauran dengan komponen sisa sehingga jumlah persis; efek pemakaian vs harga satuan untuk lembur/bahan; anggaran fleksibel biaya variabel; ambang Rp500 rb/5% bisa diubah; baris total/laba dicocokkan; pos kosong → peringatan laba belum lengkap) + 53 uji regresi; daftar pemeriksaan per pos UMKM berbentuk pertanyaan; rekap 1 layar + pesan WA/Telegram ke tim; penolakan memoles angka untuk investor dengan analisis jujur tetap diberikan.
 - **Tumpang tindih:** dicek terhadap `analisis-rasio-keuangan-usaha` (rasio kesehatan dari neraca/laba rugi, tanpa anggaran) dan `arus-kas-13minggu` (proyeksi kas ke depan). Skill ini satu-satunya yang membandingkan **anggaran vs realisasi per pos**; saling dirujuk di bagian "Kapan TIDAK digunakan".
 - Status `uji` (v1.0.0); belum diuji penguji independen maupun OpenClaw.
+
+---
+
+# Skill kelima dari sumber yang sama: `email-sequence` → `rangkaian-pesan-pelanggan`
+
+Tanggal: 2026-10-06 · Pembuat skill: agen pembuat (jalur kurasi/ATM) · Terkait: `research/sources/kurasi-apache-2026-10-05.md` kandidat baris 4 (`rangkaian-pesan-otomatis`; diganti nama jadi `rangkaian-pesan-pelanggan` karena tidak ada kirim otomatis ke pelanggan).
+
+- **Skill diambil:** `marketing/skills/email-sequence/SKILL.md` (220 baris; satu-satunya file di folder, tanpa script). URL: https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/email-sequence
+- **Lisensi:** Apache-2.0. `marketing/LICENSE` ada (202 baris, bersih; SHA-256 `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30`, identik dengan LICENSE bagian lain), disalin sebagai `LICENSE-APACHE`. Pemegang hak cipta placeholder. **NOTICE:** 404 (dicek 2026-10-05).
+- **Cara baca:** `raw.githubusercontent.com` (tanpa clone, tanpa menjalankan kode). SHA-256 `SKILL.md`: `4303252cbe340b19945b3e58d46430fdf42ea47b3e26d985e3ef1d6da5e36021`. Commit terakhir path tidak bisa dicek (API GitHub tidak dipakai); sinyal bukti repo dari berkas kurasi induk.
+- **Audit (Tahap 3):** dibaca penuh + pencarian pola (curl/wget/eval/base64/rm/ssh/token/api key/password/secret/ignore): nihil (satu "token" = istilah personalisasi). Frontmatter `argument-hint` dan penanda konektor tidak dibawa. **Lolos.**
+- **Diambil (ATM, kerangka saja):** 8 jenis urutan dan jumlah/jarak pesan per jenis, tujuan tiap langkah, kondisi keluar, aturan penekanan, satu ajakan per pesan. **Dibuang:** konektor, tabel tolok ukur persentase (tidak dapat dipertanggungjawabkan untuk UMKM Indonesia), uji A/B ala platform email, diagram cabang berbasis pembukaan email, upsell/event perangkat lunak.
+- **Nilai tambah:** 8 situasi UMKM Indonesia (sambutan, edukasi, keranjang tertunda, setelah beli, ulasan, perpanjangan, reaktivasi → rujuk `aktifkan-kembali-pelanggan`, peluncuran); semua pesan utuh bahasa WA; opt-out tiap pesan; batas frekuensi, jam kirim, tanpa Minggu; WA = Copilot, OpenClaw hanya pengingat ke pemilik; larangan imbalan/penyaringan ulasan dan ajakan transaksi keluar marketplace; `scripts/jadwal_rangkaian.py` (jadwal per situasi, geser Minggu/libur, bagi per batas harian) + 18 uji regresi.
+- **Tumpang tindih dicek:** `aktifkan-kembali-pelanggan` (isi win-back, tidak ditulis ulang), `follow-up-prospek` (prospek diam sesudah penawaran), `pesan-prospek-wa` (pesan pertama), `listmonk-newsletter` (alat email).
+- **PERLU REVIEW:** aturan platform (marketplace/ulasan) disebut umum tanpa kutipan pasal; ringkasan UU PDP/UU 8/1999 mengacu rujukan skill saudara. Status `uji` (v1.0.0); belum diuji penguji independen maupun OpenClaw.
