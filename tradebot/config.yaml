@@ -1,0 +1,63 @@
+# Konfigurasi bot. Secret TIDAK di sini (lihat .env.example).
+mode: paper            # paper | live — live butuh 2 kunci (Fase 4), default selalu paper
+
+exchange:
+  id: binance
+  market_type: spot
+  # api.binance.com menolak sebagian lokasi (HTTP 451). Mirror publik resmi Binance
+  # khusus market data. Kosongkan (null) untuk memakai endpoint default ccxt.
+  public_api_url: https://data-api.binance.vision/api/v3
+  # true = ccxt memakai proxy & CA bundle dari environment (HTTPS_PROXY, REQUESTS_CA_BUNDLE).
+  trust_env: true
+
+symbol: BTC/USDT
+timeframe: 4h
+
+# Parameter strategi — DIKUNCI sesuai spec, dilarang di-tuning
+# (tests/test_config_locked.py gagal kalau angka ini diubah).
+strategy:
+  ema_fast: 20
+  ema_slow: 50
+  ema_trend: 200
+  rsi_period: 14
+  rsi_min: 45
+  rsi_max: 70
+  swing_lookback: 10          # candle, TERMASUK candle sinyal
+  sl_buffer_pct: 0.005        # SL = swing low × (1 − 0.005)
+  max_sl_distance_pct: 0.04   # jarak (entry − SL)/entry > 4% → skip
+  reward_risk: 2              # TP = entry + 2 × (entry − SL)
+  # Candle sebelum sinyal pertama yang boleh dievaluasi. Spec: minimal 200.
+  # Dipakai 600 agar EMA200 (ewm) praktis konvergen: sisa bobot nilai awal ≈ e^-6 ≈ 0,25%.
+  warmup_candles: 600
+
+risk:
+  initial_equity: 1000        # USDT
+  risk_per_trade_pct: 0.01    # 1% equity berjalan
+  max_open_positions: 1
+
+costs:
+  fee_pct: 0.001              # per sisi
+  slippage_pct: 0.0005        # merugikan: entry, SL exit, exit sinyal. TP (limit) tanpa slippage
+
+# Filter exchange cadangan bila exchangeInfo tidak bisa diambil (nilai BTCUSDT per 2026-10).
+market_filters_fallback:
+  step_size: "0.00001"
+  min_qty: "0.00001"
+  min_notional: "5"
+
+data:
+  db_path: data/ohlcv.sqlite
+  history_years: 3            # di luar warm-up
+  fetch_limit: 1000           # candle per request
+
+backtest:
+  in_sample_years: 2          # sisanya (1 tahun terakhir) = out-of-sample
+  report_dir: reports
+  periods_per_year: 2190      # 6 candle 4h × 365 → Sharpe × sqrt(2190)
+
+# Ambang flag "overfit / tidak meyakinkan" (hanya untuk laporan, bukan parameter strategi).
+report_flags:
+  min_trades: 30
+  oos_degradation_ratio: 0.5      # OOS dianggap jauh lebih buruk bila PF/expectancy(R) < 50% IS
+  top_trades_for_dependency: 2    # PF tanpa N trade terbesar < 1 → bergantung 1–2 trade
+  bh_margin_pct_points: 10        # return < B&H + 10 poin% dengan DD lebih buruk → tidak meyakinkan

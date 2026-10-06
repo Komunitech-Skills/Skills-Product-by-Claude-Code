@@ -1,0 +1,102 @@
+{
+  "In-sample": {
+    "n_trades": 12,
+    "win_rate": 0.25,
+    "profit_factor": 0.7046473073138497,
+    "profit_factor_ex_top": 0.21891651952065047,
+    "expectancy_usdt": -1.752219446357697,
+    "expectancy_r": -0.17072986772083687,
+    "avg_win_r": 1.733277260702846,
+    "avg_loss_r": -0.8053989105287311,
+    "max_drawdown": 0.05073761995623438,
+    "sharpe": -0.3905733221306085,
+    "total_return": -0.02102663335629218,
+    "final_equity": 978.9733666437078,
+    "exposure": 0.045205479452054796,
+    "bh_return": 3.4108056171950825,
+    "bh_max_drawdown": 0.3064126773306415,
+    "bh_sharpe": 1.8014714174939945,
+    "exit_reasons": {
+      "stop_loss": 4,
+      "signal_exit": 5,
+      "take_profit": 3
+    },
+    "skip_reasons": {
+      "sl_too_far": 7
+    },
+    "start": "2023-10-07 08:00:00+00:00",
+    "end": "2025-10-06 04:00:00+00:00",
+    "n_candles": 4380
+  },
+  "Out-of-sample": {
+    "n_trades": 7,
+    "win_rate": 0.2857142857142857,
+    "profit_factor": 0.865419422146892,
+    "profit_factor_ex_top": 0.0,
+    "expectancy_usdt": -0.733998985005661,
+    "expectancy_r": -0.0672989969168496,
+    "avg_win_r": 1.680037341040282,
+    "avg_loss_r": -0.7662335320997022,
+    "max_drawdown": 0.02871943349273942,
+    "sharpe": -0.16653963361796434,
+    "total_return": -0.0051379928950398,
+    "final_equity": 994.8620071049602,
+    "exposure": 0.032861706983112735,
+    "bh_return": -0.30315792129846764,
+    "bh_max_drawdown": 0.5344740218167796,
+    "bh_sharpe": -0.6319280289280862,
+    "exit_reasons": {
+      "stop_loss": 2,
+      "take_profit": 2,
+      "signal_exit": 3
+    },
+    "skip_reasons": {
+      "sl_too_far": 2
+    },
+    "start": "2025-10-06 08:00:00+00:00",
+    "end": "2026-10-06 08:00:00+00:00",
+    "n_candles": 2191
+  },
+  "Penuh (referensi)": {
+    "n_trades": 19,
+    "win_rate": 0.2631578947368421,
+    "profit_factor": 0.7603059269717999,
+    "profit_factor_ex_top": 0.4418269875723453,
+    "expectancy_usdt": -1.369769258602138,
+    "expectancy_r": -0.13245211726337935,
+    "avg_win_r": 1.7128663913099167,
+    "avg_loss_r": -0.7914944417538423,
+    "max_drawdown": 0.05453478146609947,
+    "sharpe": -0.31116197543679897,
+    "total_return": -0.02602561591344099,
+    "final_equity": 973.974384086559,
+    "exposure": 0.041089636280627,
+    "bh_return": 2.0828697074109077,
+    "bh_max_drawdown": 0.5344740218167796,
+    "bh_sharpe": 1.0466737397159989,
+    "exit_reasons": {
+      "stop_loss": 6,
+      "signal_exit": 8,
+      "take_profit": 5
+    },
+    "skip_reasons": {
+      "sl_too_far": 9
+    },
+    "start": "2023-10-07 08:00:00+00:00",
+    "end": "2026-10-06 08:00:00+00:00",
+    "n_candles": 6571
+  },
+  "flags": [
+    "IS: hanya 12 trade (< 30) \u2014 sampel terlalu kecil",
+    "IS: kalah dari buy & hold (-2.1% vs 341.1%)",
+    "IS: expectancy \u2264 0 (-0.17R per trade)",
+    "OOS: hanya 7 trade (< 30) \u2014 sampel terlalu kecil",
+    "OOS: expectancy \u2264 0 (-0.07R per trade)"
+  ],
+  "filters": {
+    "step_size": "0.00001",
+    "min_qty": "0.00001",
+    "min_notional": "5"
+  },
+  "data_gaps": []
+}

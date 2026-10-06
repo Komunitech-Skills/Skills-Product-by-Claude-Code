@@ -1,0 +1,7 @@
+# Fase 1 (data + strategy + backtest). Versi dipin agar hasil bisa diulang.
+ccxt==4.5.85
+pandas>=2.2,<3
+numpy>=1.26,<3
+PyYAML>=6.0,<7
+python-dotenv>=1.0,<2
+pytest>=8,<9
