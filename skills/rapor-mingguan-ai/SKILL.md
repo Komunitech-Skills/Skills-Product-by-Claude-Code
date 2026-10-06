@@ -95,6 +95,7 @@ Berlaku bila pengguna meminta: **mengubah konfigurasi, model, atau kunci API bot
 3. Sebut sekali: bila ingin bot menyebut stok/promo yang nyata, isi datanya di catatan pengetahuan bot dan perbarui rutin.
 
 ## Batasan & penanganan error
+- **Urutan tetap "3 kesalahan teratas" & PR:** kriteria kritis (salah fakta, janji tidak bisa ditepati, bocor data pribadi) SELALU didahulukan dan masing-masing jadi butir terpisah; nada/panjang hanya mengisi sisa kuota. PR minggu ini wajib menutup kesalahan kritis dulu. **Privasi:** nama, inisial, dan potongan nomor pelanggan (termasuk 4 digit akhir) tidak ditulis di rapor — ganti "pelanggan A/B". PR berisi fakta usaha hanya dari info yang diberikan pengguna (selain itu `[isian]`). Jangan menyebut nama berkas di hasil dan jangan menanyakan angka yang sudah tertulis di info.
 - **Percakapan sedikit** (kurang dari 5): buat rapor, tandai "indikatif" dan minta tambahan minggu depan; jangan menyimpulkan tren.
 - **Tanpa percakapan atau hanya satu pesan:** beri cara mengumpulkan contoh (salin 10-20 percakapan terbaru dari chat bot, hapus nomor sensitif) dan kerangka rapor kosong; jangan membuat angka.
 - **Format berantakan** (log mentah, tanggal dan jam bercampur): bersihkan dan tulis asumsinya; bila pembicara tidak jelas, tanya di akhir.
