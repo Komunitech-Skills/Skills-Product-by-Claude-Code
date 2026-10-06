@@ -9,13 +9,13 @@ Library **agent skills** siap pakai untuk pengusaha & profesional Indonesia, ole
 
 ## Isi library (per 2026-10-05)
 
-Katalog: **123 skill** = 110 `beta` + 10 `lulus` + 3 `arsip` (120 aktif; 84 orisinal, 39 kurasi). Belum ada yang `rilis`.
+Katalog: **132 skill** = 110 `beta` + 18 `lulus` + 1 `uji` + 3 `arsip` (129 aktif; 91 orisinal, 41 kurasi). Belum ada yang `rilis`.
 Kategori: Produktivitas (25), Keuangan & Akuntansi (24), Marketing & Konten (23), Data & Analisis (12), HR (10),
 Sales (9), E-commerce/Marketplace Indonesia (8), Customer Service (7), Legal & Dokumen (3), Pendidikan (1), Kehidupan Pribadi (1).
 
 | Jalur | Isi |
 |---|---|
-| **1. Skill** | 120 skill aktif: keuangan & pajak, HR & gaji & KPI, marketing & strategi produk (positioning, riset pesaing, harga, peluncuran, uji pasar), toko online/marketplace, sales, customer service, produktivitas, data, kesehatan (khusus nakes), kripto. Tiga skill diarsipkan (`caption-sosmed-umkm`, `kalender-konten-30hari`, `brainstorming-ide-usaha`; folder tidak dihapus) |
+| **1. Skill** | 129 skill aktif: keuangan & pajak, HR & gaji & KPI, marketing & strategi produk (positioning, riset pesaing, harga, peluncuran, uji pasar), toko online/marketplace, sales, customer service, produktivitas, data, kesehatan (khusus nakes), kripto. Tiga skill diarsipkan (`caption-sosmed-umkm`, `kalender-konten-30hari`, `brainstorming-ide-usaha`; folder tidak dihapus) |
 | **2. Produk siap pakai pengganti SaaS** | Software yang jalan di komputer pembeli (data lokal, tanpa biaya bulanan), dioperasikan AI agent: kasir, stok, absensi, piutang, CRM WA, dasbor, PDF, serta asisten untuk Frappe Books, Dolibarr, hledger, Actual Budget, Grist, Vikunja, SiYuan, Open Notebook, Uptime Kuma, InvenTree, Umami (analitik web), listmonk (newsletter), Fider (masukan pelanggan), Odoo, Kanboard. Nama produk pihak ketiga hanya penyebut; **tidak berafiliasi** |
 | **3. Solusi member VIP** | Paket skill + konfigurasi OpenClaw (jadwal, Telegram) + panduan: toko online, klinik, konsultan, usaha offline, kantor & manajemen, riset kripto & keuangan pribadi — lihat [`solusi-vip/`](solusi-vip/) |
 
