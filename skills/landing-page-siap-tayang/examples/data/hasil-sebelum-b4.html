@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speak Up English - Kelas Percakapan Online via Zoom</title>
+<style>
+  :root{
+    --primary:#1d4ed8;
+    --primary-dark:#1e3a8a;
+    --accent:#f59e0b;
+    --bg:#f8fafc;
+    --text:#1e293b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+  .container{max-width:1100px;margin:0 auto;padding:0 20px;}
+
+  /* HERO */
+  .hero{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;padding:70px 0 90px;text-align:center;}
+  .hero h1{font-size:2.4rem;margin-bottom:14px;}
+  .hero p.sub{font-size:1.15rem;opacity:.95;max-width:650px;margin:0 auto 30px;}
+  .badge-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:34px;}
+  .badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:8px 16px;border-radius:30px;font-size:.9rem;}
+  .cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#1e293b;font-weight:700;padding:16px 34px;border-radius:50px;text-decoration:none;font-size:1.1rem;box-shadow:0 8px 20px rgba(0,0,0,.2);transition:transform .15s;}
+  .cta-btn:hover{transform:translateY(-2px);}
+
+  /* SECTION GENERIC */
+  section{padding:60px 0;}
+  h2.section-title{text-align:center;font-size:1.9rem;margin-bottom:12px;color:var(--primary-dark);}
+  p.section-sub{text-align:center;color:#64748b;max-width:600px;margin:0 auto 40px;}
+
+  /* FEATURES */
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;}
+  .feature-card{background:#fff;border-radius:14px;padding:28px 22px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+  .feature-card .icon{font-size:2.2rem;margin-bottom:12px;}
+  .feature-card h3{font-size:1.05rem;margin-bottom:8px;color:var(--primary-dark);}
+  .feature-card p{font-size:.92rem;color:#5b6472;}
+
+  /* PRICE */
+  .price-box{background:#fff;max-width:420px;margin:0 auto;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08);overflow:hidden;border:2px solid var(--accent);}
+  .price-head{background:var(--primary-dark);color:#fff;text-align:center;padding:24px;}
+  .price-head .amount{font-size:2.6rem;font-weight:800;}
+  .price-body{padding:26px 30px;}
+  .price-body ul{list-style:none;}
+  .price-body li{padding:8px 0;border-bottom:1px solid #eef2f7;font-size:.95rem;}
+  .price-body li:before{content:"✔ ";color:#16a34a;font-weight:700;}
+  .price-body .cta-wrap{text-align:center;margin-top:20px;}
+
+  /* TESTIMONIALS */
+  .testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;}
+  .testi-card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+  .stars{color:var(--accent);font-size:1.1rem;margin-bottom:10px;}
+  .testi-card p.quote{font-size:.93rem;color:#444;font-style:italic;margin-bottom:14px;}
+  .testi-card .name{font-weight:700;font-size:.9rem;color:var(--primary-dark);}
+  .testi-note{text-align:center;background:#fff7ed;border:1px dashed #f59e0b;border-radius:10px;padding:16px 20px;margin-top:10px;font-size:.88rem;color:#92400e;}
+
+  /* FAQ */
+  .faq-item{background:#fff;border-radius:10px;padding:18px 22px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .faq-item h4{color:var(--primary-dark);margin-bottom:6px;font-size:1rem;}
+  .faq-item p{font-size:.9rem;color:#5b6472;}
+
+  /* FOOTER */
+  footer{background:#0f172a;color:#cbd5e1;padding:36px 0;text-align:center;font-size:.85rem;}
+  footer a{color:#93c5fd;}
+  .privacy-note{max-width:700px;margin:14px auto 0;font-size:.78rem;color:#94a3b8;}
+
+  .sticky-wa{position:fixed;bottom:18px;right:18px;background:#25D366;color:#fff;padding:14px 20px;border-radius:50px;text-decoration:none;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:999;display:flex;align-items:center;gap:8px;}
+</style>
+</head>
+<body>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="container">
+    <div class="badge-row">
+      <span class="badge">📅 8x Pertemuan</span>
+      <span class="badge">💻 Live via Zoom</span>
+      <span class="badge">👥 Kelas Kecil</span>
+    </div>
+    <h1>Speak Up English</h1>
+    <p class="sub">Kelas percakapan Bahasa Inggris online langsung bareng tutor, fokus praktik ngomong biar makin pede speaking tiap hari — kerja, kuliah, sampai interview.</p>
+    <a class="cta-btn" href="https://wa.me/6281399887766?text=Halo%20Speak%20Up%20English%2C%20saya%20mau%20tanya%20tentang%20kelas%20percakapannya" target="_blank" rel="noopener">
+      💬 Chat via WhatsApp Sekarang
+    </a>
+  </div>
+</section>
+
+<!-- ============== FITUR ============== -->
+<section>
+  <div class="container">
+    <h2 class="section-title">Kenapa Pilih Speak Up English?</h2>
+    <p class="section-sub">Program dirancang supaya kamu banyak praktik ngomong, bukan cuma teori grammar.</p>
+    <div class="features">
+      <div class="feature-card">
+        <div class="icon">🎤</div>
+        <h3>Fokus Speaking</h3>
+        <p>80% sesi diisi latihan ngomong langsung dengan tutor dan teman sekelas.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">👨‍🏫</div>
+        <h3>Tutor Berpengalaman</h3>
+        <p>Dibimbing tutor yang terbiasa mengajar conversation untuk level pemula-menengah.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🖥️</div>
+        <h3>Live via Zoom</h3>
+        <p>Belajar interaktif real-time, bisa tanya jawab langsung, rekaman tersedia untuk diulang.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📈</div>
+        <h3>Progres Terukur</h3>
+        <p>Latihan topik harian + feedback tiap sesi supaya kemajuanmu terasa nyata.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HARGA ============== -->
+<section style="background:#eef2ff;">
+  <div class="container">
+    <h2 class="section-title">Investasi Belajar</h2>
+    <p class="section-sub">Satu harga, langsung 8x pertemuan live.</p>
+    <div class="price-box">
+      <div class="price-head">
+        <div class="amount">Rp350.000</div>
+        <div>untuk 8x Pertemuan</div>
+      </div>
+      <div class="price-body">
+        <ul>
+          <li>8x sesi live via Zoom</li>
+          <li>Materi & latihan speaking tiap sesi</li>
+          <li>Kelas kecil, interaktif</li>
+          <li>Rekaman sesi untuk diulang</li>
+          <li>Pendampingan via grup WhatsApp</li>
+        </ul>
+        <div class="cta-wrap">
+          <a class="cta-btn" href="https://wa.me/6281399887766?text=Halo%2C%20saya%20mau%20daftar%20kelas%20Speak%20Up%20English" target="_blank" rel="noopener">
+            Daftar via WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONI ============== -->
+<section>
+  <div class="container">
+    <h2 class="section-title">Apa Kata Siswa?</h2>
+    <p class="section-sub">Ganti kartu di bawah dengan testimoni ASLI dari siswamu (nama, foto/screenshot chat, dan bintangnya).</p>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"[Tempel testimoni asli siswa 1 di sini]"</p>
+        <div class="name">[Nama Siswa 1]</div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"[Tempel testimoni asli siswa 2 di sini]"</p>
+        <div class="name">[Nama Siswa 2]</div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"[Tempel testimoni asli siswa 3 di sini]"</p>
+        <div class="name">[Nama Siswa 3]</div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"[Tempel testimoni asli siswa 4 di sini]"</p>
+        <div class="name">[Nama Siswa 4]</div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"[Tempel testimoni asli siswa 5 di sini]"</p>
+        <div class="name">[Nama Siswa 5]</div>
+      </div>
+    </div>
+    <div class="testi-note">
+      ⚠️ Kosongkan/isi dengan testimoni yang benar-benar dari siswamu. Testimoni palsu melanggar aturan iklan dan bisa menjatuhkan kredibilitas kalau ketahuan.
+    </div>
+  </div>
+</section>
+
+<!-- ============== FAQ ============== -->
+<section style="background:#eef2ff;">
+  <div class="container">
+    <h2 class="section-title">Pertanyaan Umum</h2>
+    <div class="faq-item">
+      <h4>Apakah cocok untuk pemula?</h4>
+      <p>Cocok. Kelas dirancang untuk yang mau membangun kepercayaan diri berbicara, mulai dari dasar sampai level percakapan sehari-hari.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Berapa lama tiap sesi?</h4>
+      <p>Setiap sesi berlangsung interaktif via Zoom dengan fokus latihan speaking dan feedback langsung dari tutor.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Bagaimana cara daftar?</h4>
+      <p>Klik tombol WhatsApp di halaman ini, tutor akan membantu proses pendaftaran dan jadwal kelas terdekat.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER + PIXEL DISCLOSURE ============== -->
+<footer>
+  <div class="container">
+    <p><strong>Speak Up English</strong> — Kelas Percakapan Online via Zoom</p>
+    <p>WhatsApp: <a href="https://wa.me/6281399887766" target="_blank" rel="noopener">0813-9988-7766</a></p>
+    <p class="privacy-note">
+      Situs ini menggunakan cookie/pixel (termasuk Facebook Pixel) untuk mengukur performa iklan dan menampilkan
+      promosi yang relevan kepada pengunjung yang pernah berkunjung ke halaman ini. Dengan tetap menggunakan
+      situs ini, kamu menyetujui penggunaan tersebut.
+    </p>
+  </div>
+</footer>
+
+<a class="sticky-wa" href="https://wa.me/6281399887766?text=Halo%2C%20saya%20tertarik%20dengan%20kelas%20Speak%20Up%20English" target="_blank" rel="noopener">
+  💬 WhatsApp
+</a>
+
+<!-- ============== FACEBOOK PIXEL ==============
+     Ganti YOUR_PIXEL_ID dengan Pixel ID asli dari Facebook Events Manager.
+     Pixel ini TIDAK disembunyikan: ada pemberitahuan di footer (privacy-note di atas)
+     sesuai kebijakan Meta Business Tools & aturan perlindungan data konsumen. -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', 'YOUR_PIXEL_ID'); // <-- ganti dengan Pixel ID asli
+fbq('track', 'PageView');
+</script>
+
+</body>
+</html>
