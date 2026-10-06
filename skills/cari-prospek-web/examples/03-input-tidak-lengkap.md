@@ -1,20 +1,22 @@
 # Skenario 3: input tidak lengkap
 
-- Tanggal uji: 2026-10-06 · penguji independen · OpenClaw lokal, model claude-sonnet-5
-- Perbandingan lengkap SEBELUM/SESUDAH: `00-openclaw-sebelum-sesudah.md`; verifikasi sumber: `data/verifikasi-sumber.md`
+- Tanggal uji: 2026-10-06 · **versi 1.0.1** · penguji independen baru (uji ulang) · OpenClaw lokal, model claude-sonnet-5, lokal, durasi 0,7 menit
+- Perbandingan lengkap SEBELUM/SESUDAH: `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang 1.0.1"); verifikasi sumber: `data/verifikasi-sumber.md`
 
 ## Input
 > cariin calon pelanggan dong
 
-## Output SESUDAH (dengan skill)
+## Output SESUDAH (skill 1.0.1)
 
-Belum ada info usaha Bapak/Ibu di memori saya, jadi saya butuh sedikit konteks dulu biar hasilnya pas (dan supaya langsung kerja, bukan asal tebak):
+Belum ada info soal usaha kamu di memori saya, jadi aku perlu tanya dulu biar nggak nebak-nebak. Boleh kasih tahu 3 hal ini:
 
-1. Jual apa — produk/jasa apa yang ditawarkan?
-2. Target calon pelanggannya jenis usaha apa (toko, kantor, restoran, pabrik, dst)?
-3. Kota/wilayah mana yang mau disasar?
+1. **Jual apa** (produk/jasa kamu)?
+2. **Target calon pelanggannya jenis usaha apa** (misal: toko kelontong, kafe, kantor, distributor, dll)?
+3. **Kota/wilayah** yang mau disasar?
 
-Kalau mau, boleh juga sebut ukuran/ciri khusus (misal: "resto skala menengah, 1-5 cabang") dan jumlah prospek yang diinginkan (default 15). Begitu saya punya ini, langsung saya carikan daftarnya lengkap dengan kontak dan sumbernya.
+Kalau mau, sebutkan juga jumlah prospek yang diinginkan (default 15) dan ciri khusus (skala usaha, punya cabang, dll). Begitu ada jawabannya, langsung aku cariin daftarnya dari sumber publik (situs resmi, direktori, marketplace B2B) — bukan nebak atau ngarang kontak.
 
-## Catatan penguji
-Skor 7,5 (SEBELUM 6). Tepat 3 pertanyaan wajib, tanpa kata proses. SEBELUM bertanya 4 hal, membocorkan "IDENTITY.md", dan menawarkan mencari lewat grup WA/Telegram. Bisa lebih baik: sertakan contoh kalimat permintaan siap salin atau rencana pencarian singkat agar pengguna tidak pulang dengan tangan kosong.
+## Catatan penguji (1.0.1)
+Skor 7,5 (SEBELUM 6; 1.0.0: 7,5). Tepat 3 pertanyaan wajib, tanpa kata proses, menegaskan tidak mengarang kontak. Masih belum memberi sesuatu yang langsung berguna (contoh kalimat permintaan siap salin / rencana pencarian singkat).
+
+Riwayat — 1.0.0: 7,5 (perilaku sama).

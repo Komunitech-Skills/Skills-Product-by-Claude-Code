@@ -65,3 +65,28 @@ Hutanika WA +62 822-8288-8859 → ✓ (wa.me di hutanika.com). Bisou: 0895 3375 
 Wisma Husada (031) 5150 0111 → ✓ di alamatsehat.com. 13 baris lain tidak bisa diuji penguji: tanpa URL per baris, sebagian dari OpenStreetMap/Overpass yang tidak bisa diakses dari lingkungan penguji (koneksi diputus). → 1 ✓, 13 ?.
 
 **Total SEBELUM: 44 baris → 17 ✓ cocok (semua tanpa URL per baris), 1 nomor terpotong "xxxx", 1 baris pengisi bukan prospek, sisanya tidak bisa dibuktikan; 0/44 baris punya URL sumber per baris.**
+
+---
+
+# Uji ulang 1.0.1 (2026-10-06, penguji independen baru)
+
+Cara: penguji mengambil sendiri **setiap** URL sumber dari jawaban SESUDAH 1.0.1 (curl lewat proxy lingkungan, HTML dibersihkan, angka dinormalisasi) lalu mencari nama usaha dan setiap nomor/email persis. Juga dicari pola placeholder (deret 1234/3456 7890/7654 3210, "No. 123", `@domain.com`, `08xx`).
+
+### S1 Telegram (16 baris)
+✓ toomboo.id/contact (+62 812-2900-0029; hello@toomboo.id ada di HTML, dilindungi Cloudflare) · jardins-cafe.com (022) 426-7711 · bandungcatering.com/hubungi-kami 022 6372 6529 & 0811 2202 112 · dinastycatering.com/kontak-kami (022) 7563971 & info@dinastycatering.com · legendacatering.com 0811-212-724 · heni-catering.id 022-8888-3732 · makanponyo.com 0822-1448-5000 & makanponyo@gmail.com · vitasari.id/cabang Kurdi +62 812-2343-3963 · mayasaribakery.com/pages/kontak-lokasi-toko 0821-2772-8114 · shop.bisou.co.id 0819 3143 7475 & 022 203 2213 · delierasakue.com/kontak-delie-rasa 0896-1009-3818 · arnonbakery.com +62 811-2015-999 · primarasabakery.co.id/kontak (022) 7206468 → **13 ✓**.
+◐ Heritage Resto & Cafe, Sarasa Catering (nama & alamat ada di sites.google.com; nomor memang tidak tertulis) → **2 ◐ jujur**.
+? Cafe Halaman (instagram.com 429) → **1 ?**. Placeholder: 0 (ManA dibuang dengan alasan).
+
+### S1 lokal (15 baris)
+✓ legendacatering.com, mgcatering.id 0856-0368-9788, asparaguscatering.com 0811-2222-0688, dinastycatering.com, bandungcatering.com, maqueen-catering.com +62 899-8867-181, heni-catering.id, mayasaribakery.com (022) 6003999 Bojong, delierasakue.com, hollandbakery.co.id 0818-0691-8181, wheelscoffeeroasters.com/contact 0823-1919-9727, kurokoffee.co/contact hello@kurokoffee.co, mana-social-cafe.com/contact.html (IG manasocialcafe ada; nomor 3456 7890 memang placeholder di situs → agent benar menolaknya), toomboo.id/location (IG t.o.o.m.b.o.o), kopiaroma.id ("agen" ada) → **15/15 cocok**. Catatan: Toomboo ditulis "nomor belum terverifikasi" padahal /contact memuat nomornya (terlalu hati-hati).
+
+### S2 (13 baris)
+✓ alamatsehat.com: Apotek Restu (031) 8283848, K-24 Jemursari 8483891, K-24 Demak 3552620, K-24 Wiyung 7671131 · lokanesia: Pelita Jaya (031) 5044632 · klinikoptima.id/kontak 8720733/8720744, klinikutamaoptima@gmail.com, 8711203 (2 baris) · qdermaclinicsby.com/contact 0812 95485757 · m2cdental.net +62 812-6077-9191 · denthausdental.com/kontak +62 812-2401-1920 & email → **10 ✓**.
+◐ OMDC (Dharmahusada ada), FDC (Mayjen ada), telepon ditulis belum terverifikasi → **2 ◐**.
+**Sebagian/salah atribusi:** K-24 Mulyosari — (031) 5991059 ✓, tetapi **0813-3506-2362 tidak ada di alamatsehat.com** (halaman memuat 0828-054-2424 layanan pelanggan); riwayat sesi agent menunjukkan nomor itu dari cuplikan hasil pencarian mulyosari.com yang tidak dibuka.
+
+### S4 (14 baris)
+✓ yogyes.com: Hotel Nugraha 0816-653-143 (kapasitas 300 ada), Nine Hotel 0818-638-074, Omah Andini 0852-0088-2103, Griya Sari 0889-8089-8233, Banbili 0812-2767-3252, Ayra 0812-2700-479 · simplyhomy.com/contact-us 0812-2860-7080 & 0856-4356-7337 · hotel-yogyakarta.blogspot.com: OGH Dhoni 580833, Tribrata 589147, Duta Wisata 1 512380, Duta Wisata 2 587364, SALA 565380 → **12 ✓**.
+◐ Hallstatt (rating 4.9 ada), Cemara Residence → **2 ◐ jujur**.
+
+**Total SESUDAH 1.0.1: 58 baris → 50 ✓ penuh, 6 ◐ jujur, 1 salah atribusi sumber (nomor nyata dari cuplikan pencarian), 1 tidak bisa dibuka; 0 karangan, 0 placeholder disajikan sebagai fakta; 58/58 punya URL sumber + tanggal cek.**

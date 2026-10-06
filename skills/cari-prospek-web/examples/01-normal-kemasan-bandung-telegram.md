@@ -1,83 +1,77 @@
 # Skenario 1: penjual kemasan ramah lingkungan mencari kafe/katering/toko kue di Bandung (konteks Telegram)
 
-- Tanggal uji: 2026-10-06 · penguji independen · OpenClaw lokal, model claude-sonnet-5
-- Perbandingan lengkap SEBELUM/SESUDAH: `00-openclaw-sebelum-sesudah.md`; verifikasi sumber: `data/verifikasi-sumber.md`
+- Tanggal uji: 2026-10-06 · **versi 1.0.1** · penguji independen baru (uji ulang) · OpenClaw lokal, model claude-sonnet-5, konteks Telegram (`uji-tg.sh`), durasi 14,0 menit
+- Perbandingan lengkap SEBELUM/SESUDAH: `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang 1.0.1"); verifikasi sumber: `data/verifikasi-sumber.md`
 
 ## Input
 > Saya jual kemasan makanan ramah lingkungan di Bandung, carikan 15 calon pelanggan kafe/katering/toko kue di Bandung yang punya website atau Google Maps, kontak bisnisnya, dan mana yang paling cocok
 
-## Output SESUDAH (dengan skill)
+## Output SESUDAH (skill 1.0.1)
 
-Sudah selesai carikan. Browser/mesin pencari utama (Google, DuckDuckGo, Yandex, Mojeek) diblokir captcha, jadi saya pakai kombinasi Brave Search + kunjungan langsung ke situs resmi/profil bisnis publik untuk verifikasi tiap baris.
+Sudah selesai menyusun daftarnya — berikut hasil riset dari sumber publik (situs resmi, halaman kontak, dan profil bisnis publik), dicek hari ini 6 Okt 2026.
 
-**Profil ideal & asumsi:** Pembeli kemasan makanan ramah lingkungan di Bandung: kafe/coffee shop dengan volume takeaway/delivery tinggi, katering (nasi box/prasmanan harian), dan toko kue/bakery yang butuh box kue & kemasan oleh-oleh. Asumsi: skala usaha menengah-besar (bukan warung kecil tanpa jejak publik) karena lebih mungkin beli kemasan dalam volume.
+**Profil ideal & asumsi:** Kafe/katering/toko kue di Kota Bandung yang punya website resmi atau profil bisnis publik aktif, berpotensi butuh kemasan makanan dalam volume reguler (take-away, nasi box, kue/oleh-oleh). Saya tidak menemukan alamat/kontak pengguna — asumsi: produk kemasan untuk F&B umum (take-away box, kemasan kue, nasi box), bukan segmen spesifik (misal zero-waste kemasan premium saja).
 
-**15 calon pelanggan (dicek 6 Okt 2026):**
+**Daftar 16 calon pelanggan** (4 kafe, 6 katering, 6 toko kue — komposisi tidak merata karena beberapa kafe eco-friendly spesifik tidak ketemu kontak valid, lihat catatan kejujuran):
 
-1. **Kartika Sari Pusat** — Toko kue/bakery, Jl. H. Akbar No.4, Cicendo, Bandung. Alasan: produksi besar & distribusi ke supermarket se-Indonesia, butuh kemasan volume tinggi. Skor: **Tinggi**. Kontak: (022) 4231355, email order@kartikasari.com. Sumber: kartikasari.com; alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html
+KAFE
+1. Toomboo Cafe — Jl. Cigadung Raya Barat No.29, Cigadung, Bandung. Cocok: kafe kreatif dgn estetika desain, segmen sedang. Skor: Sedang. Kontak: WA/Telp +62 812-2900-0029, email hello@toomboo.id. Sumber: toomboo.id/contact
+2. Jardin Cafe (Le Jardin) — Jl. Cimanuk No.1A, Bandung. Cocok: konsep "taman tersembunyi", citra alami cocok dengan kemasan ramah lingkungan. Skor: Sedang. Kontak: Telp (022) 426-7711. Sumber: jardins-cafe.com
+3. Cafe Halaman Bandung — Jl. Tamansari No.92, Bandung. Cocok: kafe pet-friendly dgn traffic tinggi, kemungkinan ada take-away. Skor: Sedang. Kontak: Telp 022-2501618 / WA 0811-2222-292 (profil bisnis Instagram publik). Sumber: instagram.com/cafehalaman_bdg
+4. Heritage Resto & Cafe — Jl. Raya Golf Dago No.78, Bandung. Cocok: resto-cafe, tapi info kontak minim. Skor: Rendah. Kontak: [belum terverifikasi — hanya tombol medsos di situs, nomor tidak tercantum di teks]. Sumber: sites.google.com/view/heritagerestocafe/hubungi-kami
 
-2. **Kopi Toko Djawa** — Coffee shop multi-outlet (Progo, Cihapit, Braga, Ciumbuleuit, Riau, Teuku Umar, Buah Batu), Bandung. Alasan: delivery aktif lewat GrabFood/GoFood/ShopeeFood di banyak outlet = kebutuhan kemasan takeaway besar. Skor: **Tinggi**. Kontak: tombol WA resmi di situs (nomor spesifik belum terverifikasi). Sumber: kopitokodjawa.com/link/
+KATERING
+5. D'Yummy Catering (CV. D Yummy Indonesia) — Jl. Sindang Sari 4 No.48, Cinambo, Bandung. Cocok: katering volume tinggi, bersertifikat halal & higienis Dinkes, pasti butuh nasi box/snack box dalam jumlah besar. Skor: Tinggi. Kontak: Telp 022 6372 6529 / WA 0811 2202 112. Sumber: bandungcatering.com/hubungi-kami/
+6. DinasTy Catering — Jl. Mars Utara III No.11&17, Manjahlega, Rancasari, Bandung. Cocok: katering acara besar (wedding/korporat/pemerintahan), skala kemasan besar. Skor: Tinggi. Kontak: Telp (022) 7563971, email info@dinastycatering.com. Sumber: dinastycatering.com/kontak-kami/
+7. Legenda Catering Bandung — Jl. Rumah Sakit RT.01 RW.06 Sukamulya, Cinambo, Bandung. Cocok: fokus nasi box & prasmanan. Skor: Sedang. Kontak: Telp 0811-212-724. Sumber: legendacatering.com
+8. Heni Catering — Jl. Cibatu Raya No.4, Antapani Tengah, Bandung. Cocok: katering harian & wedding, dari warung jadi skala profesional. Skor: Sedang. Kontak: Telp 022-8888-3732. Sumber: heni-catering.id
+9. Ponyo Resto & Wedding — Rumah makan Sunda + katering + venue, 7 cabang (Bandung & sekitarnya). Cocok: multi-lokasi, volume katering wedding besar. Skor: Sedang. Kontak: Telp 0822-1448-5000, email makanponyo@gmail.com. Sumber: makanponyo.com
+10. Sarasa Catering — Jl. Soekarno-Hatta No.378, Bojongloa Kidul, Bandung. Cocok: katering harian. Skor: Rendah. Kontak: [belum terverifikasi — hanya tombol WA, nomor tidak tertera]. Sumber: sites.google.com/view/sarasacatering/kontak
 
-3. **Kenangan Pasar Catering** — Katering harian/prasmanan/nasi box, Bandung (HALAL, sejak 2020). Alasan: operasional harian nasi box = konsumsi kemasan rutin tinggi. Skor: **Tinggi**. Kontak: WA 0882000836989 (dicantumkan di profil bisnis). Sumber: instagram.com/kenangan_pasar (profil bisnis publik via hasil pencarian Brave)
+TOKO KUE / BAKERY
+11. Vitasari Bakery (cabang Kurdi) — Jl. H. Kurdi 1 No.49, Karasak, Astanaanyar, Bandung. Cocok: 7 cabang di Bandung, brand "tanpa pengawet, resep keluarga" — citra alami pas dengan kemasan ramah lingkungan. Skor: Tinggi. Kontak: WA +62 812-2343-3963. Sumber: vitasari.id/cabang
+12. Mayasari Bakery (cabang Jl. Riau) — Jl. LLRE Martadinata No.87, Citarum, Bandung Wetan, Bandung. Cocok: multi-cabang (13+), fokus oleh-oleh, volume kemasan besar. Skor: Tinggi. Kontak: Telp 0821-2772-8114. Sumber: mayasaribakery.com/pages/kontak-lokasi-toko
+13. Bisou Patisserie (cabang Hegarmanah) — Jl. Hegarmanah 19, Cidadap, Bandung. Cocok: patisserie premium, banyak cabang mall, kemasan estetik jadi nilai jual. Skor: Tinggi. Kontak: Telp 0819 3143 7475 / 022 203 2213. Sumber: shop.bisou.co.id
+14. Delie Rasa Kue — Jl. Kampus 2 No.1, Babakan Sari, Kiaracondong, Bandung. Cocok: jual kue basah + snack box + nasi box. Skor: Sedang. Kontak: WA 0896-1009-3818. Sumber: delierasakue.com/kontak-delie-rasa/
+15. Arnon Bakery — Jl. Raya Batujajar 201, Bandung. Cocok: bakery sejak 1988, produksi roti harian. Skor: Sedang. Kontak: Telp +62 811-2015-999. Sumber: arnonbakery.com
+16. Prima Rasa Bakery & Pastry — Jl. Kemuning No.20, Sumur Bandung, Bandung. Cocok: bakery legendaris sejak 1986, kemasan kue/oleh-oleh. Skor: Sedang. Kontak: Telp (022) 7206468. Sumber: primarasabakery.co.id/kontak
 
-4. **The Harvest Cakes - Buah Batu** — Toko kue/bakery, Jl. Buah Batu Raya, Lengkong, Bandung. Alasan: punya layanan "Corporate Services", berpotensi butuh kemasan premium ramah lingkungan untuk branding. Skor: **Tinggi**. Kontak: (022) 7302330. Sumber: alamatelpon.com (daftar di atas); harvestbakes.co.id (situs resmi, nav "Corporate Services" terkonfirmasi)
-
-5. **Garmelia Bakery** — Toko kue/bakery, Jl. Kw. Industri Trikencana Kav. No.32, Cilampeni, Katapang, Kab. Bandung. Alasan: skala produksi besar (233 produk/hari, "cater to large requests"). Skor: **Sedang**. Kontak: (022) 7514188. Sumber: garmeliabakery.com/contact
-
-6. **Bisou Patisserie - Hegarmanah** — Patisserie, Jl. Hegarmanah 19, Cidadap, Bandung. Alasan: brand patisserie premium multi-outlet, cocok untuk kemasan eco bernilai jual. Skor: **Sedang**. Kontak: 0819 3143 7475 / (022) 203 2213. Sumber: shop.bisou.co.id
-
-7. **Amanda Brownies Pusat** — Bakery brownies, Jl. Rancabolang No.29, Rancasari, Bandung. Alasan: brand nasional dengan ratusan cabang, volume kemasan besar. Skor: **Sedang**. Kontak: (022) 7514657. Sumber: alamatelpon.com; amandabrownies.co.id
-
-8. **Holland Bakery - Buah Batu** — Bakery waralaba, Jl. Buah Batu No.171, Lengkong, Bandung. Alasan: jaringan 400+ gerai nasional, butuh kemasan rutin. Skor: **Sedang**. Kontak: (022) 7304499; WA resmi perusahaan 0818-0691-8181 (tercantum di situs, catatan: hati-hati nomor palsu yang mereka sendiri peringatkan). Sumber: alamatelpon.com; hollandbakery.co.id
-
-9. **Mayasari Bakery - Kebon Kawung** — Oleh-oleh/bakery, Jl. Kebon Kawung No.22 B-D, Cicendo, Bandung. Alasan: pusat oleh-oleh khas Bandung, kemasan jadi nilai jual tambahan. Skor: **Sedang**. Kontak: (022) 4222444. Sumber: alamatelpon.com; mayasaribakery.com (situs aktif terkonfirmasi, nomor dari direktori)
-
-10. **Cizz Cheesecake & Friends** — Bakery/cheesecake, Jl. Laswi No.1A, Batununggal, Bandung. Alasan: produk kue potong/slice butuh kemasan rapi untuk delivery. Skor: **Sedang**. Kontak: (022) 7230969. Sumber: cizzcakeandfriends.com (situs aktif); alamatelpon.com
-
-11. **Vitasari Bakery - Surapati** — Toko roti, Jl. Surapati No.55A, Coblong, Bandung. Alasan: toko roti aktif dengan 3 cabang di Bandung. Skor: **Sedang**. Kontak: (022) 2531200. Sumber: alamatelpon.com (website resmi belum ditemukan — [belum terverifikasi])
-
-12. **Buttercup Boulangerie** — Bakery, Jl. Ir. H. Djuanda No.46, Bandung Wetan, Bandung. Alasan: boulangerie di jalan utama Dago, segmen menengah-atas. Skor: **Sedang**. Kontak: (022) 4203124. Sumber: alamatelpon.com (website buttercup.co.id tidak bisa diakses — [belum terverifikasi])
-
-13. **Vannisa Brownies** — Bakery brownies, Komplek Griya Bandung Indah, Jl. Alam Permai I Blok G5 No.6, Bojongsoang, Bandung. Alasan: produsen brownies lokal, potensi kemasan kotak kue. Skor: **Sedang**. Kontak: (022) 7537754. Sumber: alamatelpon.com (website belum ditemukan — [belum terverifikasi])
-
-14. **Sudut Pandang** — Kafe & destinasi wisata, Jl. Pagermaneuh RT.05/RW.07, Pagerwangi, Lembang, Bandung Barat. Alasan: kafe + ruang seni/retail, target makanan-minuman take away. Skor: **Rendah**. Kontak: **[belum terverifikasi]** — hanya alamat dari blog, nomor kontak bisnis belum ditemukan di sumber publik. Sumber: blog.cove.id/cafe-instagramable-di-bandung
-
-15. **Mercusuar Cafe & Resto** — Kafe & resto, Jl. Lembah Pakar Timur 2 No.7, Ciburial, Cimenyan, Bandung. Alasan: resto besar 6 lantai dengan volume pengunjung tinggi. Skor: **Rendah**. Kontak: **[belum terverifikasi]** — hanya alamat dari blog. Sumber: blog.cove.id/cafe-instagramable-di-bandung
-
-**3 prospek prioritas:**
-
-1. **Kartika Sari Pusat** — skala distribusi nasional + kontak email resmi jelas. Pembuka: "Kami lihat Kartika Sari mendistribusikan produk hingga ke supermarket & minimarket se-Indonesia dari outlet Jl. H. Akbar — kami punya kemasan ramah lingkungan yang cocok untuk kebutuhan volume sebesar itu."
-2. **Kopi Toko Djawa** — multi-outlet dengan delivery aktif di 3 platform ojek online. Pembuka: "Kami lihat Kopi Toko Djawa melayani banyak outlet di Bandung lewat GrabFood/GoFood/ShopeeFood — kami punya kemasan take away ramah lingkungan yang pas untuk kebutuhan delivery seperti itu."
-3. **Kenangan Pasar Catering** — volume harian + kontak WA jelas di profil. Pembuka: "Kami lihat Kenangan Pasar melayani catering harian & nasi box di Bandung sejak 2020 — kami bisa bantu sediakan kemasan nasi box ramah lingkungan untuk operasional harian Bapak/Ibu."
+**3 Prospek Prioritas:**
+1. **D'Yummy Catering** — sudah bersertifikat halal & higienis Dinkes, volume nasi/snack box besar. Pembuka: "Halo Kak, lihat D'Yummy Catering sudah bersertifikat halal & higienis Dinkes Bandung — kami sediakan kemasan nasi box/snack box ramah lingkungan yang bisa melengkapi standar kualitas itu, boleh kirim info produknya?"
+2. **Vitasari Bakery** — brand "tanpa pengawet, resep keluarga", 7 cabang. Pembuka: "Halo Kak, Vitasari Bakery bangga dengan resep tanpa pengawet sejak 1991 — kami punya kemasan roti & kue ramah lingkungan yang bisa memperkuat citra alami itu di 7 cabang Bandung, boleh kami kirim sample?"
+3. **Bisou Patisserie** — patisserie premium multi-cabang mall. Pembuka: "Halo Kak, Bisou Patisserie tampil premium di banyak mall besar — kami punya kemasan kue ramah lingkungan yang estetik, cocok memperkuat kesan premium sekaligus peduli lingkungan, boleh kami kirim katalog?"
 
 **CSV siap tempel:**
 ```
 nama,kota,jenis,alasan,skor,kontak,website,sumber,tanggal_cek
-"Kartika Sari Pusat","Bandung","Toko kue/bakery","Distribusi nasional skala besar","Tinggi","(022) 4231355; order@kartikasari.com","kartikasari.com","https://kartikasari.com","6 Okt 2026"
-"Kopi Toko Djawa","Bandung","Coffee shop multi-outlet","Delivery aktif lintas platform","Tinggi","WA via situs (tombol, nomor belum terverifikasi)","kopitokodjawa.com","https://kopitokodjawa.com/link/","6 Okt 2026"
-"Kenangan Pasar Catering","Bandung","Katering nasi box/prasmanan","Volume harian tinggi","Tinggi","WA 0882000836989","instagram.com/kenangan_pasar","https://www.instagram.com/kenangan_pasar/","6 Okt 2026"
-"The Harvest Cakes - Buah Batu","Bandung","Toko kue/bakery","Ada layanan corporate services","Tinggi","(022) 7302330","harvestbakes.co.id","https://harvestbakes.co.id/","6 Okt 2026"
-"Garmelia Bakery","Bandung","Toko kue/bakery","Produksi skala besar","Sedang","(022) 7514188","garmeliabakery.com","https://garmeliabakery.com/contact","6 Okt 2026"
-"Bisou Patisserie - Hegarmanah","Bandung","Patisserie","Brand premium multi-outlet","Sedang","0819 3143 7475 / (022) 203 2213","shop.bisou.co.id","https://shop.bisou.co.id/","6 Okt 2026"
-"Amanda Brownies Pusat","Bandung","Bakery brownies","Brand nasional ratusan cabang","Sedang","(022) 7514657","amandabrownies.co.id","https://www.alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Holland Bakery - Buah Batu","Bandung","Bakery waralaba","Jaringan 400+ gerai nasional","Sedang","(022) 7304499","hollandbakery.co.id","https://www.alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Mayasari Bakery - Kebon Kawung","Bandung","Toko oleh-oleh/bakery","Pusat oleh-oleh khas Bandung","Sedang","(022) 4222444","mayasaribakery.com","https://www.alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Cizz Cheesecake & Friends","Bandung","Bakery/cheesecake","Produk slice butuh kemasan rapi","Sedang","(022) 7230969","cizzcakeandfriends.com","https://www.cizzcakeandfriends.com/","6 Okt 2026"
-"Vitasari Bakery - Surapati","Bandung","Toko roti","3 cabang aktif di Bandung","Sedang","(022) 2531200","[belum terverifikasi]","https://www.alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Buttercup Boulangerie","Bandung","Bakery","Lokasi jalan utama Dago","Sedang","(022) 4203124","[belum terverifikasi]","https://www.alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Vannisa Brownies","Bandung","Bakery brownies","Produsen brownies lokal","Sedang","(022) 7537754","[belum terverifikasi]","https://www.alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Sudut Pandang","Bandung Barat","Kafe & destinasi wisata","Kafe + retail, target take away","Rendah","[belum terverifikasi]","[belum terverifikasi]","https://blog.cove.id/cafe-instagramable-di-bandung","6 Okt 2026"
-"Mercusuar Cafe & Resto","Bandung","Kafe & resto","Resto besar volume pengunjung tinggi","Rendah","[belum terverifikasi]","[belum terverifikasi]","https://blog.cove.id/cafe-instagramable-di-bandung","6 Okt 2026"
+"Toomboo Cafe","Bandung","Kafe","Konsep kreatif, kemungkinan ada take-away","Sedang","WA/Telp +62 812-2900-0029, hello@toomboo.id","toomboo.id","https://toomboo.id/contact","6 Okt 2026"
+"Jardin Cafe","Bandung","Kafe","Citra alami cocok kemasan ramah lingkungan","Sedang","Telp (022) 426-7711","jardins-cafe.com","https://jardins-cafe.com","6 Okt 2026"
+"Cafe Halaman Bandung","Bandung","Kafe","Traffic tinggi, pet-friendly","Sedang","Telp 022-2501618 / WA 0811-2222-292","instagram.com/cafehalaman_bdg","https://www.instagram.com/cafehalaman_bdg/","6 Okt 2026"
+"Heritage Resto & Cafe","Bandung","Kafe/Resto","Info kontak minim","Rendah","[belum terverifikasi]","sites.google.com/view/heritagerestocafe","https://sites.google.com/view/heritagerestocafe/hubungi-kami","6 Okt 2026"
+"D'Yummy Catering","Bandung","Katering","Volume tinggi, bersertifikat halal & higienis","Tinggi","Telp 022 6372 6529 / WA 0811 2202 112","bandungcatering.com","https://bandungcatering.com/hubungi-kami/","6 Okt 2026"
+"DinasTy Catering","Bandung","Katering","Acara besar, skala kemasan besar","Tinggi","Telp (022) 7563971, info@dinastycatering.com","dinastycatering.com","https://dinastycatering.com/kontak-kami/","6 Okt 2026"
+"Legenda Catering Bandung","Bandung","Katering","Fokus nasi box & prasmanan","Sedang","Telp 0811-212-724","legendacatering.com","https://legendacatering.com","6 Okt 2026"
+"Heni Catering","Bandung","Katering","Katering harian & wedding","Sedang","Telp 022-8888-3732","heni-catering.id","https://heni-catering.id","6 Okt 2026"
+"Ponyo Resto & Wedding","Bandung","Rumah Makan/Katering","Multi-cabang, volume wedding besar","Sedang","Telp 0822-1448-5000, makanponyo@gmail.com","makanponyo.com","https://www.makanponyo.com","6 Okt 2026"
+"Sarasa Catering","Bandung","Katering","Katering harian","Rendah","[belum terverifikasi]","sites.google.com/view/sarasacatering","https://sites.google.com/view/sarasacatering/kontak","6 Okt 2026"
+"Vitasari Bakery (Kurdi)","Bandung","Toko Kue/Bakery","7 cabang, brand tanpa pengawet","Tinggi","WA +62 812-2343-3963","vitasari.id","https://vitasari.id/cabang","6 Okt 2026"
+"Mayasari Bakery (Jl. Riau)","Bandung","Toko Kue/Bakery","Multi-cabang, fokus oleh-oleh","Tinggi","Telp 0821-2772-8114","mayasaribakery.com","https://mayasaribakery.com/pages/kontak-lokasi-toko","6 Okt 2026"
+"Bisou Patisserie (Hegarmanah)","Bandung","Toko Kue/Bakery","Patisserie premium multi-cabang mall","Tinggi","Telp 0819 3143 7475 / 022 203 2213","shop.bisou.co.id","https://shop.bisou.co.id","6 Okt 2026"
+"Delie Rasa Kue","Bandung","Toko Kue/Bakery","Kue basah, snack box, nasi box","Sedang","WA 0896-1009-3818","delierasakue.com","https://delierasakue.com/kontak-delie-rasa/","6 Okt 2026"
+"Arnon Bakery","Bandung","Toko Kue/Bakery","Bakery sejak 1988, produksi harian","Sedang","Telp +62 811-2015-999","arnonbakery.com","https://www.arnonbakery.com","6 Okt 2026"
+"Prima Rasa Bakery & Pastry","Bandung","Toko Kue/Bakery","Bakery legendaris sejak 1986","Sedang","Telp (022) 7206468","primarasabakery.co.id","https://www.primarasabakery.co.id/kontak","6 Okt 2026"
 ```
 
-**Catatan kejujuran:** 13 dari 15 baris punya nama+alamat+kontak+sumber yang bisa diverifikasi (alamat & kontak dari situs resmi atau direktori publik alamatelpon.com). 2 baris (Sudut Pandang, Mercusuar) hanya punya alamat terverifikasi dari blog kuliner — kontak bisnisnya belum ditemukan di sumber publik, jadi ditandai [belum terverifikasi]; sebaiknya dicek langsung via Google Maps sebelum dihubungi. 3 toko kue (Vitasari, Buttercup, Vannisa) kontaknya dari direktori alamatelpon.com saja karena situs resmi mereka tidak ditemukan/tidak bisa diakses — nomor telepon tetap kemungkinan valid tapi perlu konfirmasi ulang sebelum WA.
+**Catatan kejujuran:** 14 dari 16 baris terverifikasi penuh (alamat + kontak bisnis tertulis di halaman sumber). 2 baris (Heritage Resto & Cafe, Sarasa Catering) ditandai `[belum terverifikasi]` karena situs mereka hanya punya tombol WhatsApp/medsos tanpa nomor tertulis di teks — bukan berarti tidak sah, hanya kontaknya tidak bisa saya salin langsung. Satu kontak dari sumber lain (ManA Social Cafe) saya buang dari daftar karena nomornya pola berderet (0812-3456-7890 / 022-7654-3210) — ciri khas nomor contoh/dummy, bukan kontak asli, jadi tidak dimasukkan. Komposisi agak berat ke katering & toko kue karena pencarian khusus "kafe ramah lingkungan/zero waste Bandung" tidak menemukan bisnis dengan kontak valid (banyak hasil justru produsen tumbler/souvenir, bukan kafe).
 
-**Langkah lanjut:** Hubungi satu-satu lewat kontak bisnis di atas, mulai dari 3 prioritas. Kalau mau, saya bisa susun draf pesan WA pembuka lengkap untuk ke-15 kontak ini — mau sekarang?
+**Langkah lanjut:** hubungi satu-satu lewat kontak bisnis di atas (sebut sumbernya, misal "kami lihat kontak Bapak/Ibu di situs resmi"), catat yang sudah dihubungi. Saya bisa buatkan pesan pembuka lengkap untuk semua 16 prospek kalau mau.
 
-Pertanyaan (maks 3, boleh dijawab nanti):
-1. Mau saya perluas ke kecamatan lain (misal Lembang/Soreang/Dago) atau fokus Bandung kota saja?
-2. Produk kemasan Anda lebih cocok untuk kue/box cake, nasi box, atau cup kopi take away — supaya saya bisa prioritaskan jenis usaha yang tepat?
-3. Perlu saya cek ulang Google Maps untuk Sudut Pandang & Mercusuar agar kontaknya tidak lagi [belum terverifikasi]?
+Tiga hal yang bisa saya perjelas kalau Kakak mau hasil lebih tajam:
+1. Target spesifiknya kemasan apa (nasi box, kemasan kue, cup minuman, atau semua)?
+2. Mau saya perluas cari ke area tertentu di Bandung (misal dekat kawasan tertentu dulu) atau sudah cukup kota Bandung secara umum?
+3. Perlu saya lanjutkan cari 4-5 prospek tambahan khusus kafe untuk menyeimbangkan kategori?
 
-## Catatan penguji
-Skor 8,5 (SEBELUM 6). Verifikasi penguji: 11 baris nama+kontak cocok dengan URL sumber, 3 ditandai `[belum terverifikasi]` dengan jujur, 1 tidak bisa dibuka (Instagram), 0 karangan. Waktu jawab 11,4 menit. Kekurangan: komposisi berat ke toko kue (10 dari 15); email Kartika Sari berasal dari direktori tetapi kolom sumber CSV hanya menyebut situs resmi. Di konteks lokal (skenario 1b di `00-...`), 2 dari 3 percobaan timeout 15 menit dan 1 kontak placeholder (ManA Social Cafe) disajikan sebagai fakta.
+## Catatan penguji (1.0.1)
+Skor 8 (SEBELUM 6; 1.0.0: 8,5). Verifikasi penguji: 13 baris nama+kontak persis ada di URL sumber, 2 ditandai `[belum terverifikasi]` dengan jujur, 1 tidak bisa dibuka (Instagram 429), 0 karangan, 0 placeholder (ManA Social Cafe dibuang dan dijelaskan). Komposisi kini 4 kafe / 6 katering / 6 toko kue, tanpa nama skill lain. Minus utama: **14,0 menit** (66 halaman dibuka, 27 tebakan URL kontak; batas skill ±15 halaman di kanal chat tidak dipatuhi) — sangat dekat batas 15 menit. Konteks lokal (skenario 1b, `00-...`): 11,3 menit, 15/15 cocok sumber, skor 8,5.
+
+Riwayat — 1.0.0: Telegram 8,5 (11,4 menit, 11 ✓, komposisi 10 toko kue); lokal 7,5 (2 dari 3 percobaan timeout, 1 placeholder ManA disajikan sebagai fakta).
