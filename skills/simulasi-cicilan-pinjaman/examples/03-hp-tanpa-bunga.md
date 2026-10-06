@@ -2,6 +2,34 @@
 
 **Input:** "Mau kredit HP 8 juta 12 bulan, cicilannya berapa?"
 
+**Output dengan skill v1.0.1:**
+
+> Belum ada info bunganya, jadi ini ilustrasi kisaran umum kredit HP (flat per bulan) — bukan tawaran lembaga mana pun:
+>
+> **Kredit HP 8 juta, 12 bulan — ilustrasi kisaran umum (belum tahu bunganya)**
+>
+> | Bunga flat | Cicilan/bulan | Total bunga | Efektif setara/tahun |
+> |---|---|---|---|
+> | 1,50%/bulan | Rp786.667 | Rp1.440.000 | 31,7% |
+> | 2,00%/bulan | Rp826.667 | Rp1.920.000 | 41,7% |
+> | 3,00%/bulan | Rp906.667 | Rp2.880.000 | 61,0% |
+>
+> Angka ini hanya kisaran umum pembiayaan HP/elektronik, bukan tawaran — cicilan sebenarnya bisa lebih rendah atau lebih tinggi tergantung penyedia.
+>
+> Catatan: simulasi, bukan penawaran atau nasihat keuangan; angka final mengikuti tabel angsuran resmi lembaga pembiayaan.
+>
+> Supaya bisa saya hitungkan pasti (bukan ilustrasi):
+> 1. Berapa bunga yang ditawarkan, dan per bulan/per tahun?
+> 2. Itu bunga flat atau efektif/anuitas?
+> 3. Ada biaya admin/asuransi di muka?
+
+**Catatan penguji (uji ulang 1.0.1, penguji independen kedua):**
+**SESUDAH 1.0.1: 8,5** — `tools: read, exec`. Ilustrasi kini flat 1,5% / 2% / 3% per bulan (Rp786.667 / Rp826.667 / Rp906.667; efektif setara 31,7% / 41,7% / 61,0% — cocok independen), berlabel "kisaran umum, bukan tawaran", tanpa kata "wajar/normal" dan tanpa kesimpulan "cicilanmu sekitar ...". 3 pertanyaan bernomor, disclaimer. Minus: tabel 4 kolom (aturan maks. 3 kolom), kalimat "bukan tawaran" diulang dua kali.
+
+---
+
+## Arsip uji 1.0.0
+
 **Output dengan skill:**
 
 > Belum ada info bunga/cicilan dari penawarannya, jadi ini ilustrasi dulu (bukan tawaran):
