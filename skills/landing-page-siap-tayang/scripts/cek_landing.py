@@ -125,6 +125,9 @@ def periksa(teks, ukuran, putih=()):
        or re.search(r"position\s*:\s*fixed", teks),
        "Tombol WhatsApp melayang ada", "Tombol WhatsApp melayang di HP tidak ada")
 
+    klaim = re.findall(r"(★{3,}|⭐{3,}|terbaik di indonesia|nomor ?1|no\. ?1|dijamin|pasti untung|100% ?aman|paling murah)", teks, re.I)
+    ok(not klaim, "Tidak ada klaim berlebihan/bintang (terbaik, dijamin, ★★★)",
+       "Ada %d klaim/bintang yang perlu dibuktikan atau dihapus: %s" % (len(klaim), ", ".join(sorted(set(k.lower() for k in klaim))[:5])))
     sisa = len(re.findall(r"\[isian", teks, re.I))
     ok(sisa == 0, "Tidak ada teks [isian...] tersisa",
        "Masih ada %d teks [isian...] yang belum diganti" % sisa)
