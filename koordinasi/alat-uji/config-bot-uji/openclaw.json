@@ -1,0 +1,302 @@
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ninerouter": {
+        "baseUrl": "https://r9wtenn.abc-tunnel.us/v1",
+        "apiKey": "${NINEROUTER_UJI_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "komunitech",
+            "name": "Komunitech (router)",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 16000
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "ninerouter/komunitech"
+      },
+      "heartbeat": {
+        "every": "0m"
+      }
+    },
+    "entries": {
+      "main": {}
+    }
+  },
+  "gateway": {
+    "mode": "local"
+  },
+  "meta": {
+    "migrations": {
+      "modelPolicyAllowlist": true,
+      "utilityModelSeparation": true
+    },
+    "lastTouchedVersion": "2026.9.7"
+  },
+  "commands": {
+    "ownerAllowFrom": [
+      "telegram:1538336036"
+    ]
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "groupPolicy": "allowlist",
+      "groups": {
+        "-1004407409583": {
+          "requireMention": true,
+          "groupPolicy": "open",
+          "topics": {
+            "515": {
+              "skills": []
+            },
+            "516": {
+              "skills": []
+            },
+            "517": {
+              "skills": []
+            },
+            "518": {
+              "skills": []
+            },
+            "519": {
+              "skills": []
+            },
+            "578": {
+              "skills": []
+            },
+            "580": {
+              "skills": []
+            },
+            "582": {
+              "skills": []
+            },
+            "584": {
+              "skills": []
+            },
+            "586": {
+              "skills": []
+            },
+            "627": {
+              "skills": []
+            },
+            "629": {
+              "skills": []
+            },
+            "631": {
+              "skills": []
+            },
+            "633": {
+              "skills": []
+            },
+            "635": {
+              "skills": []
+            },
+            "674": {
+              "skills": []
+            },
+            "676": {
+              "skills": []
+            },
+            "678": {
+              "skills": []
+            },
+            "680": {
+              "skills": []
+            },
+            "682": {
+              "skills": []
+            },
+            "732": {
+              "skills": []
+            },
+            "734": {
+              "skills": []
+            },
+            "736": {
+              "skills": []
+            },
+            "738": {
+              "skills": []
+            },
+            "740": {
+              "skills": []
+            },
+            "782": {
+              "skills": []
+            },
+            "784": {
+              "skills": []
+            },
+            "786": {
+              "skills": []
+            },
+            "788": {
+              "skills": []
+            },
+            "790": {
+              "skills": []
+            },
+            "827": {
+              "skills": []
+            },
+            "829": {
+              "skills": []
+            },
+            "831": {
+              "skills": []
+            },
+            "833": {
+              "skills": []
+            },
+            "865": {
+              "skills": []
+            },
+            "867": {
+              "skills": []
+            },
+            "869": {
+              "skills": []
+            },
+            "900": {
+              "skills": []
+            },
+            "902": {
+              "skills": []
+            },
+            "904": {
+              "skills": []
+            },
+            "906": {
+              "skills": []
+            },
+            "908": {
+              "skills": []
+            }
+          }
+        }
+      },
+      "replyToMode": "first"
+    }
+  },
+  "skills": {
+    "limits": {
+      "maxSkillsPromptChars": 110000
+    },
+    "entries": {
+      "1password": {
+        "enabled": false
+      },
+      "blogwatcher": {
+        "enabled": false
+      },
+      "blucli": {
+        "enabled": false
+      },
+      "camsnap": {
+        "enabled": false
+      },
+      "coding-agent": {
+        "enabled": false
+      },
+      "eightctl": {
+        "enabled": false
+      },
+      "gemini": {
+        "enabled": false
+      },
+      "gh-issues": {
+        "enabled": false
+      },
+      "gifgrep": {
+        "enabled": false
+      },
+      "github": {
+        "enabled": false
+      },
+      "gog": {
+        "enabled": false
+      },
+      "goplaces": {
+        "enabled": false
+      },
+      "himalaya": {
+        "enabled": false
+      },
+      "mcporter": {
+        "enabled": false
+      },
+      "model-usage": {
+        "enabled": false
+      },
+      "nano-pdf": {
+        "enabled": false
+      },
+      "obsidian": {
+        "enabled": false
+      },
+      "openai-whisper": {
+        "enabled": false
+      },
+      "openai-whisper-api": {
+        "enabled": false
+      },
+      "openhue": {
+        "enabled": false
+      },
+      "oracle": {
+        "enabled": false
+      },
+      "ordercli": {
+        "enabled": false
+      },
+      "sag": {
+        "enabled": false
+      },
+      "sherpa-onnx-tts": {
+        "enabled": false
+      },
+      "songsee": {
+        "enabled": false
+      },
+      "sonoscli": {
+        "enabled": false
+      },
+      "spotify-player": {
+        "enabled": false
+      },
+      "summarize": {
+        "enabled": false
+      },
+      "trello": {
+        "enabled": false
+      },
+      "xurl": {
+        "enabled": false
+      }
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-09-30T09:55:59.771Z",
+    "lastRunVersion": "2026.9.7",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  }
+}
