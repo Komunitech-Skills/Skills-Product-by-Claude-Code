@@ -133,5 +133,5 @@ proses-pesanan-wa,E-commerce/Marketplace Indonesia,orisinal,,Proprietary Komunit
 checklist-keamanan-pangan-usaha,Produktivitas,orisinal,https://www.fda.gov/food/retail-food-protection/fda-food-code,Proprietary Komunitech (tulis ulang bersih dari ide domain publik AS),8,ecer,79000,ecer,79000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06
 simulasi-cicilan-pinjaman,Keuangan & Akuntansi,kurasi,https://github.com/numpy/numpy-financial,BSD-3-Clause,9,ecer,79000,ecer,79000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-06
 satu-lawan-satu-dan-umpan-balik,HR,kurasi,https://github.com/ksindi/managers-playbook,CC BY 4.0 (diadaptasi),8,ecer,59000,,,1.0.1,claude-code (simulasi agent),lulus,2026-10-09
-cek-risiko-dan-asuransi-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,69000,ecer,69000,1.0.1,claude-code (simulasi agent),lulus,2026-10-09
+cek-risiko-dan-asuransi-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,8,ecer,69000,ecer,69000,1.0.2,claude-code (simulasi agent),lulus,2026-10-09
 persiapan-jual-atau-wariskan-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,7,ecer,69000,,,1.0.0,claude-code (simulasi agent),uji,2026-10-09

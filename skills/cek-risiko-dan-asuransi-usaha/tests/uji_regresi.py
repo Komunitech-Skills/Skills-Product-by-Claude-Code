@@ -167,6 +167,76 @@ class Tes(unittest.TestCase):
         k, _, e = jalan("risiko", "/tidak/ada.json")
         self.assertEqual(k, 2)
 
+    # ---- v1.0.2 ----
+    def test_bpjs_otomatis_dan_eksplisit(self):
+        h = {x["nama"]: x for x in c.hitung_risiko([
+            {"nama": "Pegawai cedera angkat karung", "kemungkinan": 2, "dampak": 2},
+            {"nama": "Karyawan cedera kerja", "kemungkinan": 3, "dampak": 3},
+            {"nama": "Insiden di gudang", "kemungkinan": 2, "dampak": 4, "kategori": "bpjs"},
+            {"nama": "Pelanggan terpeleset dan cedera", "kemungkinan": 2, "dampak": 4},
+            {"nama": "Pemilik sakit", "kemungkinan": 2, "dampak": 3},
+            {"nama": "Mekanik senior keluar/sakit", "kemungkinan": 3, "dampak": 4},
+            {"nama": "Karyawan cedera (diubah)", "kemungkinan": 2, "dampak": 2, "kategori": "umum"},
+        ])}
+        for n in ("Pegawai cedera angkat karung", "Karyawan cedera kerja", "Insiden di gudang"):
+            self.assertTrue(h[n]["bpjs"], n)
+            self.assertEqual(h[n]["perlu_asuransi"], c.LABEL_BPJS)
+            self.assertIn("BPJS", h[n]["respons"])
+            self.assertNotIn(h[n]["perlu_asuransi"], ("Tidak", "Tidak perlu"))
+        for n in ("Pelanggan terpeleset dan cedera", "Pemilik sakit",
+                  "Mekanik senior keluar/sakit", "Karyawan cedera (diubah)"):
+            self.assertFalse(h[n]["bpjs"], n)
+            self.assertNotEqual(h[n]["perlu_asuransi"], c.LABEL_BPJS)
+        with self.assertRaises(ValueError):
+            c.hitung_risiko([{"nama": "A", "kemungkinan": 1, "dampak": 1, "kategori": "lain"}])
+
+    def test_bpjs_menang_atas_tidak_bisa_diasuransikan_dan_cli(self):
+        j = tmp_json([{"nama": "Kasir cedera", "kemungkinan": 1, "dampak": 1, "bisa_diasuransikan": False}])
+        k, o, _ = jalan("risiko", j)
+        self.assertEqual(k, 0)
+        self.assertIn("BPJS: kewajiban pemberi kerja", o)
+        self.assertNotIn("| Terima", o)
+
+    def test_nama_dengan_pipa_tidak_merusak_tabel(self):
+        k, o, _ = jalan("risiko", tmp_json([{"nama": "Listrik | padam\nlama", "kemungkinan": 3, "dampak": 2}]))
+        baris = [b for b in o.splitlines() if b.startswith("| 1 |")]
+        self.assertEqual(len(baris), 1)
+        self.assertEqual(baris[0].count("|"), 9)
+        self.assertIn("Listrik / padam lama", baris[0])
+
+    def test_cukup_bulan_bulat_setengah_ke_atas(self):
+        self.assertEqual(c.hitung_dana({"a": 5_000_000}, 3, 1_250_000)["tercukupi_bulan"], 0.3)  # 0,25 -> 0,3
+        self.assertEqual(c.hitung_dana({"a": 3_000_000}, 3, 5_000_000)["tercukupi_bulan"], 1.7)
+        self.assertEqual(c.hitung_dana({"a": 3_000_000}, 3, 0)["tercukupi_bulan"], 0.0)
+        k, out, _ = jalan("dana", "--biaya", "a=5000000", "--kas", "1250000")
+        self.assertIn("cukup 0,3 bulan", out)
+
+    def test_kas_cukup_tanpa_cicilan_nol(self):
+        k, out, _ = jalan("dana", "--biaya", "a=1000000", "--bulan", "3", "--kas", "5000000", "--cicil", "6")
+        self.assertEqual(k, 0)
+        self.assertNotIn("Cicilan menabung: Rp0", out)
+        self.assertIn("tidak perlu cicilan", out)
+
+    def test_nama_biaya_kosong_dan_koma_desimal(self):
+        for bad in ("=3000000", " =5"):
+            with self.assertRaises(ValueError) as e:
+                c.parse_biaya(bad)
+            self.assertIn("kosong", str(e.exception))
+        with self.assertRaises(ValueError) as e:
+            c.parse_biaya("Sewa=3.000.000,00")
+        self.assertIn("koma", str(e.exception))
+        k, _, err = jalan("dana", "--biaya", "Sewa=3.000.000,00")
+        self.assertEqual(k, 2)
+        self.assertIn("koma", err)
+
+    def test_json_dengan_bom(self):
+        p = os.path.join(tempfile.mkdtemp(), "bom.json")
+        with open(p, "wb") as f:
+            f.write(b"\xef\xbb\xbf" + json.dumps([{"nama": "Kebakaran", "kemungkinan": 2, "dampak": 5}]).encode())
+        k, o, _ = jalan("risiko", p)
+        self.assertEqual(k, 0)
+        self.assertIn("Kebakaran", o)
+
 
 if __name__ == "__main__":
     unittest.main()
