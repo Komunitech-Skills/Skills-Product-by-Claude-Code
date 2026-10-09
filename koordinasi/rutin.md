@@ -7,7 +7,7 @@ Routine hanya bisa dibuat **oleh sesi itu sendiri** (akun lain tidak bisa membua
 - **2026-10-09:** pemilik mendelegasikan semua pekerjaan belum selesai ke Akun A (lihat `koordinasi/papan-tugas.md` bagian SERAH TERIMA Akun B → Akun A). Routine Akun B dijeda; routine Akun A perlu diaktifkan kembali oleh pemilik/Akun A.
 | Akun | Routine | Jadwal | Status |
 |---|---|---|---|
-| Akun A | "Lanjutkan iterasi Komunitech Skills (tiap 3 jam)" | `32 */3 * * *` (UTC) | dijeda 2026-09-26; **harus dihidupkan lagi dengan prompt versi 2026-10-09 di bawah** |
+| Akun A | "Lanjutkan iterasi Komunitech Skills (tiap 3 jam)" | `32 */3 * * *` (UTC) | **AKTIF lagi 2026-10-09** (prompt baru merujuk ke bagian Akun A di berkas ini; giliran pertama 09.32 UTC membangun lingkungan uji bila belum ada) |
 | Akun B | "Lanjutkan iterasi Komunitech Skills Akun B (tiap 3 jam)" | `25 */3 * * *` (UTC, disebar server dari `0 */3`) | **dijeda** 2026-10-09 (pekerjaan diserahkan ke Akun A) |
 
 > **2026-10-03:** prompt routine Akun B diperbarui lewat `update_trigger`: gateway produksi memakai `scratchpad/openclaw-prod`, aturan "lanjut hanya bila pembeda sebelum/sesudah jelas", dan langkah PROMOSI (perbarui `promosi/` + terbitkan ulang artifact Bukti Sebelum–Sesudah ke URL yang sama, lihat `promosi/README.md`). Teks prompt di bawah adalah versi lama; sumber kebenaran prompt ada di routine.
