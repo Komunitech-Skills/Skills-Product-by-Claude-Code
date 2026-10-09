@@ -1,0 +1,7 @@
+[{"nama":"Akun marketplace dibekukan","kemungkinan":3,"dampak":4},
+{"nama":"Banjir/bocor merusak stok","kemungkinan":2,"dampak":4,"kerugian_rp":60000000},
+{"nama":"Kebakaran rumah-gudang","kemungkinan":1,"dampak":5,"kerugian_rp":60000000},
+{"nama":"Paket hilang/rusak di ekspedisi","kemungkinan":4,"dampak":2},
+{"nama":"Penipuan retur/bukti transfer palsu","kemungkinan":4,"dampak":2},
+{"nama":"Pemilik sakit (satu-satunya pengelola)","kemungkinan":2,"dampak":4},
+{"nama":"Pencurian stok","kemungkinan":2,"dampak":3,"kerugian_rp":15000000}]

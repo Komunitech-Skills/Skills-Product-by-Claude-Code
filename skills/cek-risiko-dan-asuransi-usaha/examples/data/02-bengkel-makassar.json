@@ -1,0 +1,7 @@
+[{"nama":"Kebakaran (bensin, oli, korsleting)","kemungkinan":2,"dampak":5},
+{"nama":"Motor pelanggan hilang/rusak saat dititip","kemungkinan":2,"dampak":4},
+{"nama":"Mekanik senior keluar/sakit","kemungkinan":3,"dampak":4},
+{"nama":"Mekanik cedera kerja","kemungkinan":3,"dampak":3},
+{"nama":"Pencurian alat/sparepart","kemungkinan":3,"dampak":2},
+{"nama":"Gempa bumi","kemungkinan":2,"dampak":4},
+{"nama":"Pemasok sparepart tunggal berhenti","kemungkinan":2,"dampak":2}]
