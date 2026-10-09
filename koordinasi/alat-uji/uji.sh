@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+# Folder scratchpad sesi (wajib): export SCRATCHPAD=/path/ke/scratchpad
+SP=${SCRATCHPAD:?isi SCRATCHPAD dengan folder scratchpad sesi}
 # uji.sh HOME SESI KELUAR "pesan"  -> satu giliran agent OpenClaw (lokal, tanpa Telegram); balasan teks ke KELUAR.txt
 # Terisolasi (mount namespace): repo, scratchpad, home uji lain, dan transkrip Claude disembunyikan dari agent.
-R=/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real
+R=$SP/openclaw-real
 HN=$1; S=$2; O=$3; shift 3
 H=$R/homes/$HN
 mkdir -p $R/hasil
