@@ -1,0 +1,9 @@
+[{"nama":"Tuntutan pasien (komplikasi/dugaan malpraktik)","kemungkinan":2,"dampak":5},
+{"nama":"Dokter gigi pemilik sakit/cedera tangan (satu-satunya praktisi)","kemungkinan":2,"dampak":5},
+{"nama":"Kebakaran (kompresor, autoclave, korsleting)","kemungkinan":2,"dampak":5,"kerugian_rp":250000000},
+{"nama":"Infeksi silang karena sterilisasi gagal","kemungkinan":1,"dampak":5},
+{"nama":"Asisten tertusuk jarum/cedera kerja","kemungkinan":3,"dampak":3},
+{"nama":"Dental unit rusak (cicilan jalan, praktik berhenti)","kemungkinan":3,"dampak":3},
+{"nama":"Kebocoran data rekam medis pasien","kemungkinan":2,"dampak":4},
+{"nama":"Izin praktik/STR/SIP terlambat diperpanjang","kemungkinan":2,"dampak":4,"bisa_diasuransikan":false},
+{"nama":"Listrik padam saat tindakan","kemungkinan":3,"dampak":2}]

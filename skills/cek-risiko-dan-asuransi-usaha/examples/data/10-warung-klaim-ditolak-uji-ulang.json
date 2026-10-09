@@ -1,0 +1,4 @@
+[{"nama":"Kebakaran ulang (instalasi listrik belum standar)","kemungkinan":3,"dampak":5},
+{"nama":"Pencurian stok/uang","kemungkinan":3,"dampak":3},
+{"nama":"Pemilik sakit","kemungkinan":2,"dampak":3},
+{"nama":"Pemasok utama berhenti","kemungkinan":2,"dampak":2,"bisa_diasuransikan":false}]

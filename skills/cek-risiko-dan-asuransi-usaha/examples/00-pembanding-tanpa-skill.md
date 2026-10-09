@@ -69,3 +69,41 @@ Dengan skill jelas lebih baik (+1,5): tabel berprioritas, keputusan asuransi per
 
 ### Kalimat sebelum/sesudah untuk README
 Tanpa skill: daftar risiko umum dan "dana darurat 47–95 juta". Dengan skill: 9 risiko diberi skor & keputusan asuransi masing-masing, plus "kurang Rp39.400.000, sisihkan Rp3.283.334/bulan selama 12 bulan".
+
+---
+
+## Uji ulang v1.0.1 — 2026-10-09 (penguji independen kedua)
+
+- Platform: `claude-code (simulasi agent)`. Router model OpenClaw mati (HTTP 530) sehingga uji OpenClaw sebelum/sesudah belum bisa dijalankan; ini uji isi oleh agent.
+- Catatan jujur: sisi "tanpa skill" ditulis penguji sebagai jawaban terbaik model dasar yang wajar. Penguji sudah membaca folder skill sebelumnya, jadi ada risiko bias. Nilai SEBELUM bisa berbeda di bot asli.
+- Pesan (identik di kedua sisi): lihat `06-kelontong-semarang-uji-ulang.md` (toko kelontong di rumah, Semarang Utara, rob sebetis, stok ±45 jt, 1 pegawai 1,8 jt belum BPJS, listrik 650 rb, cicilan motor 900 rb, arisan 500 rb, tabungan 6 jt, banyak yang berutang).
+
+### SEBELUM (tanpa skill)
+> Halo! Untuk toko kelontong di Semarang Utara yang sering kena rob, berikut gambaran risiko dan saran asuransinya:
+>
+> **Risiko utama**
+> 1. **Banjir/rob**: paling sering terjadi. Naikkan barang ke rak, pakai palet.
+> 2. **Kebakaran**: dari korsleting kulkas/freezer atau kompor. Siapkan APAR.
+> 3. **Pencurian**: rokok sering jadi incaran. Pasang CCTV.
+> 4. **Piutang macet**: batasi pelanggan yang boleh berutang.
+> 5. **Kecelakaan kerja pegawai.**
+>
+> **Asuransi yang bisa dipertimbangkan**
+> - **Asuransi kebakaran untuk toko/rumah** dengan perluasan banjir. Banyak perusahaan asuransi umum dan bank punya produk asuransi mikro untuk UMKM dengan premi terjangkau, mulai puluhan ribu per bulan.
+> - **BPJS Ketenagakerjaan** untuk pegawai: wajib, iurannya kecil (JKK 0,24% dan JKM 0,3% dari gaji untuk usaha kecil).
+> - **BPJS Kesehatan** untuk keluarga.
+>
+> **Dana darurat**
+> Pengeluaran tetap: 1,8 jt + 650 rb + 900 rb + 500 rb = **Rp3,85 jt/bulan**. Dana darurat ideal 3–6 bulan = **Rp11,55 jt – Rp23,1 jt**. Tabungan Bapak 6 jt, jadi masih kurang sekitar 5,5–17 jt. Sisihkan sedikit tiap hari dari omzet.
+>
+> Untuk produk yang pas, sebaiknya konsultasi dengan agen asuransi.
+
+**Nilai SEBELUM: 6/10.** Risiko utama tepat dan bahasanya ramah. Kekurangan: arisan dimasukkan sebagai biaya tetap tanpa menyebut asumsi; tidak ada skor/prioritas; tidak ada keputusan "perlu asuransi atau tidak" per risiko (asuransi untuk rob yang terjadi tiap musim disarankan tanpa catatan bahwa perluasan banjir bisa mahal atau dikecualikan); menyebut perkiraan premi ("puluhan ribu per bulan") dan tarif iuran BPJS dari ingatan tanpa sumber dan tanggal (berisiko keliru); tidak ada cicilan menabung konkret; tidak ada cek izin OJK atau daftar pertanyaan ke agen. Angka penjumlahannya sendiri benar untuk asumsi yang dipakai.
+
+### SESUDAH (dengan skill)
+Output utuh ada di `06-kelontong-semarang-uji-ulang.md`: 9 risiko dengan skor (rob 12 TINGGI → kurangi dengan langkah murah; kebakaran 10 TINGGI → asuransi dipertimbangkan; utang macet 10 TINGGI → "tidak ada asuransi umum"; pegawai cedera → label BPJS), dana darurat Rp3.350.000 × 3 = **Rp10.050.000**, kas Rp6.000.000 (1,8 bulan), kekurangan **Rp4.050.000 → Rp675.000/bulan selama 6 bulan**, arisan dikeluarkan dengan asumsi tertulis, jenis perlindungan tanpa merek, tanpa tarif/premi dari ingatan, cek OJK, 3 prioritas, 3 pertanyaan.
+
+**Nilai SESUDAH: 8,5/10.** Semua angka cocok verifikasi Decimal. Dikurangi karena label BPJS harus ditimpa agent secara manual (script tidak mengenal kategori ini) dan kolom "rob: Tidak perlu" vs "gempa: Ya, pertimbangkan" butuh satu kalimat penjelas agar tidak membingungkan awam.
+
+### Selisih
+**+2,5** (6 → 8,5). Pembeda terkuat: tanpa skill, pemilik dapat daftar risiko umum, tarif BPJS dan premi dari ingatan, dan "dana darurat 11,5–23 juta"; dengan skill, tiap risiko diberi skor dan keputusan asuransi (termasuk "tidak ada asuransi umum" untuk utang macet), plus "kurang Rp4.050.000, sisihkan Rp675.000/bulan selama 6 bulan".

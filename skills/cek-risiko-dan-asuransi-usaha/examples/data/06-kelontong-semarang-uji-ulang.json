@@ -1,0 +1,9 @@
+[{"nama":"Banjir rob masuk toko (sebetis, musim hujan)","kemungkinan":4,"dampak":3,"kerugian_rp":8000000},
+{"nama":"Kebakaran (kabel, kompor dapur rumah, stok rokok)","kemungkinan":2,"dampak":5,"kerugian_rp":45000000},
+{"nama":"Utang pelanggan macet","kemungkinan":5,"dampak":2,"bisa_diasuransikan":false},
+{"nama":"Pencurian stok rokok/uang laci","kemungkinan":3,"dampak":3},
+{"nama":"Pemilik atau istri sakit (toko tutup)","kemungkinan":2,"dampak":3},
+{"nama":"Pegawai cedera angkat karung","kemungkinan":2,"dampak":2},
+{"nama":"Freezer/kulkas rusak, listrik padam","kemungkinan":3,"dampak":2},
+{"nama":"Bukti transfer/QRIS palsu","kemungkinan":3,"dampak":2},
+{"nama":"Gempa bumi","kemungkinan":1,"dampak":4}]
