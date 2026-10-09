@@ -41,6 +41,7 @@ class Tes(unittest.TestCase):
 
     def test_respons(self):
         self.assertEqual(c.respons(2, 2, 4)[1], "Tidak")
+        self.assertEqual(c.respons(1, 4, 4)[1], "Ya, pertimbangkan")  # jarang tapi berat
         self.assertEqual(c.respons(2, 5, 10)[1], "Ya, pertimbangkan")
         self.assertEqual(c.respons(4, 5, 20)[1], "Ya, setelah dikurangi")
         self.assertEqual(c.respons(4, 3, 12)[1], "Tidak perlu")
@@ -93,6 +94,71 @@ class Tes(unittest.TestCase):
         self.assertIn("Rp6.000.000", o)
         self.assertIn("Rp36.000.000", o)
         self.assertIn("Kekurangan: Rp26.000.000", o)
+
+    def test_biaya_dobel_ditolak(self):
+        with self.assertRaises(ValueError) as e:
+            c.parse_biaya("Gaji=1000000,gaji=2000000")
+        self.assertIn("dobel", str(e.exception))
+        k, _, err = jalan("dana", "--biaya", "Gaji=1000000,Gaji=2000000")
+        self.assertEqual(k, 2)
+        self.assertIn("dobel", err)
+
+    def test_parse_angka(self):
+        self.assertEqual(c.parse_angka("3000000"), 3000000)
+        self.assertEqual(c.parse_angka("3.000.000"), 3000000)
+        self.assertEqual(c.parse_angka("Rp 3.000.000"), 3000000)
+        self.assertEqual(c.parse_angka("0"), 0)
+        for bad in ("3000000.00", "3.5", "3,5", "3,000,000", "3.00", "1.2345", "abc", "", "-5"):
+            with self.assertRaises(ValueError):
+                c.parse_angka(bad)
+        with self.assertRaises(ValueError):
+            c.parse_biaya("Sewa=3000000.00")
+
+    def test_tidak_bisa_diasuransikan(self):
+        h = c.hitung_risiko([
+            {"nama": "Akun marketplace dibekukan", "kemungkinan": 2, "dampak": 4, "bisa_diasuransikan": False},
+            {"nama": "Kebakaran", "kemungkinan": 2, "dampak": 5}])
+        d = {x["nama"]: x for x in h}
+        self.assertNotIn("Ya", d["Akun marketplace dibekukan"]["perlu_asuransi"])
+        self.assertIn("mitigasi lain", d["Akun marketplace dibekukan"]["perlu_asuransi"])
+        self.assertEqual(d["Kebakaran"]["perlu_asuransi"], "Ya, pertimbangkan")
+        with self.assertRaises(ValueError):
+            c.hitung_risiko([{"nama": "A", "kemungkinan": 1, "dampak": 1, "bisa_diasuransikan": "tidak"}])
+
+    def test_jarang_tapi_berat_bukan_terima(self):
+        h = c.hitung_risiko([{"nama": "Gempa", "kemungkinan": 1, "dampak": 4}])[0]
+        self.assertEqual(h["skor"], 4)
+        self.assertEqual(h["perlu_asuransi"], "Ya, pertimbangkan")
+        h = c.hitung_risiko([{"nama": "X", "kemungkinan": 1, "dampak": 2, "kerugian_rp": 50000000}], 10000000)[0]
+        self.assertEqual(h["perlu_asuransi"], "Ya, pertimbangkan")
+        h = c.hitung_risiko([{"nama": "X", "kemungkinan": 1, "dampak": 2}])[0]
+        self.assertEqual(h["perlu_asuransi"], "Tidak")
+
+    def test_cicilan(self):
+        o = c.hitung_dana({"a": 6_000_000}, 3, 10_000_000, 6)
+        self.assertEqual(o["kekurangan"], 8_000_000)
+        self.assertEqual(o["cicilan"], 1_333_334)  # dibulatkan ke atas
+        k, out, _ = jalan("dana", "--biaya", "a=6.000.000", "--bulan", "3", "--kas", "10.000.000", "--cicil", "6")
+        self.assertEqual(k, 0)
+        self.assertIn("Cicilan menabung: Rp1.333.334 per bulan selama 6 bulan", out)
+        self.assertIn("cukup 1,7 bulan", out)
+        with self.assertRaises(ValueError):
+            c.hitung_dana({"a": 1}, 3, None, 6)
+        with self.assertRaises(ValueError):
+            c.hitung_dana({"a": 1}, 3, 5, 0)
+
+    def test_pesan_indonesia_dan_nol(self):
+        k, _, err = jalan("dana", "--biaya", "a=1000", "--kas", "5000000.50")
+        self.assertEqual(k, 2)
+        self.assertIn("tidak jelas", err)
+        k, out, _ = jalan("dana", "--biaya", "a=0", "--kas", "100")
+        self.assertEqual(k, 0)
+        self.assertNotIn("None", out)
+
+    def test_cli_dana_opsi(self):
+        j = tmp_json([{"nama": "X", "kemungkinan": 2, "dampak": 3, "kerugian_rp": 50000000}])
+        k, out, _ = jalan("risiko", j, "--dana", "10.000.000")
+        self.assertIn("Ya, pertimbangkan", out)
 
     def test_cli_berkas_rusak(self):
         k, _, e = jalan("risiko", tmp_json(None, "{rusak"))

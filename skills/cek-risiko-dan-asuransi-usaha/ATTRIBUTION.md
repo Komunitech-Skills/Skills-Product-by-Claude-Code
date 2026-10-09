@@ -11,3 +11,4 @@ Ide umum (peta risiko, skor kemungkinan x dampak, empat respons terhadap risiko,
 
 ## Riwayat versi
 - 1.0.0 (2026-10-09): rilis awal (status draft).
+- 1.0.1 (2026-10-09): parser angka ketat (desimal/ambigu ditolak), nama biaya dobel ditolak, kategori tidak bisa diasuransikan, aturan jarang-tapi-berat, cicilan menabung.
