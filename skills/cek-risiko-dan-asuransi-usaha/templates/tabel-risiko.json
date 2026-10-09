@@ -1,0 +1,5 @@
+[
+  {"nama": "Kebakaran dapur", "kemungkinan": 2, "dampak": 5, "kerugian_rp": 80000000},
+  {"nama": "Banjir", "kemungkinan": 3, "dampak": 4},
+  {"nama": "Pencurian kas", "kemungkinan": 3, "dampak": 2}
+]
