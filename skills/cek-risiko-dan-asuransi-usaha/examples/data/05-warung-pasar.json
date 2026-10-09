@@ -1,0 +1,5 @@
+[{"nama":"Kebakaran (pasar padat, kabel tua)","kemungkinan":3,"dampak":5},
+{"nama":"Pencurian stok/uang","kemungkinan":3,"dampak":3},
+{"nama":"Banjir","kemungkinan":2,"dampak":3},
+{"nama":"Pemilik sakit","kemungkinan":2,"dampak":3},
+{"nama":"Pemasok utama berhenti","kemungkinan":2,"dampak":2}]

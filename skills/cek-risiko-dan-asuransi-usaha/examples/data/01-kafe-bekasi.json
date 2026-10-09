@@ -1,0 +1,9 @@
+[{"nama":"Kebakaran dapur (kompor gas, korsleting)","kemungkinan":2,"dampak":5},
+{"nama":"Banjir (dekat kali, pernah 2020)","kemungkinan":3,"dampak":4},
+{"nama":"Pelanggan sakit perut/keracunan","kemungkinan":2,"dampak":4},
+{"nama":"Pencurian kas/stok","kemungkinan":3,"dampak":2},
+{"nama":"Barista kunci keluar mendadak","kemungkinan":3,"dampak":3},
+{"nama":"Karyawan cedera kerja (luka bakar, terpeleset)","kemungkinan":3,"dampak":3},
+{"nama":"Mesin espresso rusak/listrik padam","kemungkinan":3,"dampak":3},
+{"nama":"Gempa bumi","kemungkinan":1,"dampak":4},
+{"nama":"Bukti transfer palsu","kemungkinan":2,"dampak":2}]
