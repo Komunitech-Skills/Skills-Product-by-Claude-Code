@@ -40,3 +40,6 @@ Masalah: ...
 
 Lalu tambahkan platform ke kolom `platform_teruji` di `catalog.csv` (pisahkan dengan `;`, mis. `claude-code (simulasi agent);openclaw;cursor`).
 Jika ada ❌ di nomor 1, 2, atau 4 → skill kembali ke `uji` untuk diperbaiki.
+
+## Uji khusus asisten akuntansi
+Untuk `frappe-books-usaha`, `dolibarr-usaha`, `odoo-usaha` pakai panduan lengkap `docs/uji-manusia-akuntansi.md` (persiapan aplikasi, data fiktif, skenario per aplikasi, uji keamanan kunci).

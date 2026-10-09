@@ -4,6 +4,7 @@ Routine membuat sesi Claude Code melanjutkan kerja sendiri tiap beberapa jam, ta
 Routine hanya bisa dibuat **oleh sesi itu sendiri** (akun lain tidak bisa membuatkannya).
 
 ## Status saat ini
+- **2026-10-09:** pemilik mendelegasikan semua pekerjaan belum selesai ke Akun A (lihat `koordinasi/papan-tugas.md` bagian SERAH TERIMA Akun B → Akun A). Routine Akun B dijeda; routine Akun A perlu diaktifkan kembali oleh pemilik/Akun A.
 | Akun | Routine | Jadwal | Status |
 |---|---|---|---|
 | Akun A | "Lanjutkan iterasi Komunitech Skills (tiap 3 jam)" | `32 */3 * * *` (UTC) | **dijeda** 2026-09-26 (limit Akun A hampir habis; semua kerja diserahkan ke Akun B) |

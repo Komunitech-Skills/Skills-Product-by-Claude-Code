@@ -90,3 +90,35 @@ Cara: penguji mengambil sendiri **setiap** URL sumber dari jawaban SESUDAH 1.0.1
 ◐ Hallstatt (rating 4.9 ada), Cemara Residence → **2 ◐ jujur**.
 
 **Total SESUDAH 1.0.1: 58 baris → 50 ✓ penuh, 6 ◐ jujur, 1 salah atribusi sumber (nomor nyata dari cuplikan pencarian), 1 tidak bisa dibuka; 0 karangan, 0 placeholder disajikan sebagai fakta; 58/58 punya URL sumber + tanggal cek.**
+
+# Uji ulang 1.0.2 (2026-10-06, penguji independen ketiga)
+
+Metode: penguji mengambil sendiri setiap URL sumber (curl lewat proxy lingkungan), membersihkan HTML, lalu memeriksa nama usaha dan 8 digit akhir nomor ada di halaman **dan berjarak < 500 karakter** (pasangan nama-nomor benar, bukan sekadar ada di halaman). Semua baris diperiksa.
+
+### S1 Telegram — 0 baris (mode Rencana, tidak ada yang diverifikasi)
+
+### S1 lokal — 15 baris, 15 ✓
+| Halaman | Baris | Hasil (jarak nama-nomor) |
+|---|---|---|
+| alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | Kartika Sari Pusat (022) 4231355 + order@kartikasari.com; Amanda Pusat 7514657; Amanda Juanda 2516123; Holland Buah Batu 7304499; Kartika Sari Djuanda 2509500 | 5 ✓ (14–95 karakter; "9 outlet" juga tertulis) |
+| alamatpenting.com/daftar-alamat-catering-di-bandung/ | Cita Rasa 6070781 (Taman Holis ✓); Citra Boga 7501921; Adinda 7271884; Asparagus 7313730; Bey Catering 7530039 + 0815-72011490 | 5 ✓ (8–152) |
+| alamatpenting.com/daftar-alamat-cafe-di-bandung/ | Armor Kopi 0812-1396-0941; 56 Degrees 86060668; 13 Cups 0813-3388-1313; Abraham And Smith 20523371; 18 Hrs 2032600 | 5 ✓ (20–22) |
+
+Catatan: kedua direktori berupa artikel lama (alamatelpon bertanggal 2019); data cocok dengan halaman, tetapi kemutakhiran nomor tidak dijamin.
+
+### S2 — 15 baris, 15 ✓
+| Halaman | Baris | Hasil |
+|---|---|---|
+| lokanesia.com/klinik-pratama-di-surabaya/ | Medico Sier 8434056 (halaman menulis "(031) 0318434056", agent merapikan; "24 Jam" ✓), Mitra Sehat 7524408, Optima 8720733, Prameswari 5029118 | 4 ✓ |
+| lokanesia.com/klinik-pratama-di-surabaya/3/ | Mitra Medicare 5968780 (09.00–21.00 ✓), Kencana Medika 8414791, Tabita 3820088 | 3 ✓ |
+| surabaya.lokanesia.com/daftar-lengkap-alamat-apotek-di-surabaya/ | 2 Oscar 5033067, Amira 3773313, AN Jaya 0851-0030-9486, Adam Farma 8439919, AHA Medica 5032819, Asri Farma 5923908, Andrea 8433370, Anita Farma 8298357 | 8 ✓ (AN Jaya: halaman menulis "No. Telepon", label "WA bisnis" tambahan agent) |
+
+### S4 — 12 baris, 11 ✓, 1 tak terbukti
+| Halaman | Baris | Hasil |
+|---|---|---|
+| lokanesia.com/tempat-kost-dekat-ugm-jogja/ | 9 kos (UGM Residence 0852-9392-9275, D'Paragon Pogung B 0813-2998-8000, Kost GA 0812-2780-040, DHost 0812-2604-0899, Kost Citra Jogja 0878-3918-8788, Sendowo B44 0857-1041-5990, kos kosan sendowo 0857-2916-8515, Kos Merah Putih 0878-3961-9633, Griya Afa 0821-3430-1977) | 9 ✓ cocok, **tetapi semuanya nomor HP perorangan pemilik/pengelola kos dari listing** → seharusnya tidak masuk tabel/CSV menurut SKILL.md |
+| jogja.pandanaranhotel.com/contact | Pandanaran Prawirotaman (0274) 4580077, jogja.reservation@pandanaranhotel.com | ✓ (agent **tidak membuka** halaman ini; kontak dari cuplikan pencarian) |
+| galleryprawirotamanhotel.com/location | Gallery Prawirotaman (0274) 4580008, info@… | ✓ (sama: dari cuplikan) |
+| exploreyogya.com/hotel-melati | Hotel Mawar Saron (0274) 584083 | **✗ tak terbukti**: domain kini parkir (redirect /lander), agent gagal membukanya; nomor hanya dari cuplikan DuckDuckGo yang teksnya tampak tulisan otomatis |
+
+**Total 1.0.2:** 42 baris → 41 nama+kontak cocok dengan halaman, 1 tak terbukti, 0 placeholder, 0 karangan terbukti; 3 kontak dari cuplikan pencarian; 9 HP perorangan masuk tabel.

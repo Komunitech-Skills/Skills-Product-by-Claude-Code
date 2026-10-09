@@ -30,7 +30,7 @@ BELUM = "[belum terverifikasi]"
 BADAN = {"pt", "cv", "ud", "pd", "tbk", "persero", "koperasi", "toko", "the"}
 RE_HP = re.compile(r"(?<!\d)(?:\+?62|0)\s?-?8\d[\d\s\-]{6,12}")
 RE_EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
-RE_NO_DUMMY = re.compile(r"\bno\.?\s*(?:123|1234|12|1)\b(?!\d)", re.I)
+RE_NO_DUMMY = re.compile(r"\bno\.?\s*(?:12345|123|000+)(?!\w)", re.I)  # hanya deret 123/12345/000; "No. 1", "No. 12", "No. 45A" wajar
 DOMAIN_MAIL_DUMMY = ("domain.com", "email.com", "mail.com", "test.com", "contoh.com", "yourdomain.com", "company.com")
 # Platform bersama: bukan bukti "situs yang sama" antar usaha.
 PLATFORM = ("google.com", "maps.google.com", "maps.app.goo.gl", "goo.gl", "g.page", "instagram.com",

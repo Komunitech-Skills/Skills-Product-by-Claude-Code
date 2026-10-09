@@ -94,6 +94,12 @@ class Uji(unittest.TestCase):
         self.assertNotIn("DUMMY?", per["Toko Lima"]["periksa"])
         self.assertGreater(per["Toko Lima"]["skor"], 0)
 
+    def test_no_alamat_wajar_tidak_ditandai_dummy(self):
+        for alamat, dummy in (("Jl. Mawar No. 1", False), ("Jl. Melati No. 12", False), ("Jl. Kenanga No. 45A", False),
+                              ("Jl. Anggrek No. 123", True), ("Jl. Dahlia No. 12345", True), ("Jl. Tulip No. 000", True)):
+            d = {**dict.fromkeys(s.KOLOM, ""), "nama": "Toko X", "catatan": alamat, "kontak": "(031) 555-0188"}
+            self.assertEqual(bool(s.dummy(d)), dummy, alamat)
+
     def test_platform_bersama_bukan_kunci_dedup(self):
         rows = [
             {**dict.fromkeys(s.KOLOM, ""), "nama": "Alfa Sejahtera", "website": "https://www.instagram.com/alfa"},
