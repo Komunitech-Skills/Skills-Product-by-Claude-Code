@@ -128,6 +128,88 @@ nilai rupiah calon pembeli — akan tersimpan di riwayat chat Telegram Anda. Kal
 kontaknya banyak, pakai `--samarkan` (dan/atau `--tanpa-draf` di dalam argv). Detail lengkap &
 pilihan lain (termasuk lewat agent AI): `skills/crm-wa/references/openclaw-jadwal.md`.
 
+## 8. Ringkasan kas harian (kas-umkm), 21.00 WIB — kalau catatan kas terpisah dari kasir ✅/⚠️
+Disalin persis dari `skills/kas-umkm/references/openclaw-jadwal.md` §"Pilihan 1". Pola
+`--command-argv`/`--cron`/`--tz`/`--announce --channel telegram` ✅ **dijalankan sungguhan** untuk
+skill lain (`kasir-lokal`, `crm-wa`); kombinasi persis dengan `kas.py` ⚠️ **belum diuji** di
+Gateway oleh tim kurasi.
+1. Cari path lengkap script (ganti `NAMA` dengan nama pengguna komputer Anda; argv tidak mengenal
+   `~`):
+   ```bash
+   python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/kas-umkm/scripts/kas.py'))"
+   ```
+2. Buat jadwal:
+   ```bash
+   openclaw automations add --name "Ringkasan kas harian" --cron "0 21 * * *" --tz Asia/Jakarta \
+     --command-argv '["python3","/home/NAMA/.openclaw/skills/kas-umkm/scripts/kas.py","rekap","--tanggal","hari-ini"]' \
+     --announce --channel telegram --to <chat-id-telegram-pemilik>
+   ```
+- Database bukan di lokasi default → tambahkan `"--db","/path/kas.db"` setelah nama perintah di
+  dalam argv.
+- Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+- Jadwal **hanya menjalankan perintah baca** (`rekap`) — tidak pernah `--ya`/`catat`/`pindah`.
+  Detail lengkap & Pilihan 2 (lewat agent): `skills/kas-umkm/references/openclaw-jadwal.md`.
+
+## 9. Ringkasan piutang reseller/pelanggan tempo (buku-piutang), 07.45 WIB ✅/⚠️
+Disalin persis dari `skills/buku-piutang/references/openclaw-jadwal.md` §"Pilihan 1". Pola sama
+dengan §8; kombinasi persis dengan `piutang.py` ⚠️ **belum diuji** di Gateway oleh tim kurasi.
+1. Cari path lengkap script:
+   ```bash
+   python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/buku-piutang/scripts/piutang.py'))"
+   ```
+2. Buat jadwal (nama pelanggan disamarkan jadi inisial secara default):
+   ```bash
+   openclaw automations add --name "Ringkasan piutang harian" --cron "45 7 * * *" --tz Asia/Jakarta \
+     --command-argv '["python3","/home/NAMA/.openclaw/skills/buku-piutang/scripts/piutang.py","ringkasan","--samarkan"]' \
+     --announce --channel telegram --to <chat-id-telegram-pemilik>
+   ```
+   Pemilik ingin nama lengkap: hapus `"--samarkan"` setelah ia menyetujui catatan privasi di
+   `skills/buku-piutang/references/openclaw-jadwal.md`.
+- Jadwal **hanya menjalankan perintah baca** (`ringkasan`) — tidak pernah `--ya`/`catat`/`bayar`.
+  Draf pesan tagihan & tautan wa.me **tidak** ikut dijadwalkan; minta langsung ke agent.
+- Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+
+## 10. Laporan iklan mingguan (laporan-iklan-mingguan), Senin 08.00 WIB ✅/⚠️
+Skill ini sendiri tidak membuat jadwal (§4 `references/openclaw-jadwal.md` skill ini) — perintah
+di bawah adalah bentuk "3a" (perintah langsung, disarankan) yang **disalin persis** dari
+`skills/laporan-iklan-mingguan/references/openclaw-jadwal.md`, hanya jam digeser dari 07.50 ke
+**08.00 WIB** (sesuai jam yang diminta untuk paket ini — flag/struktur perintahnya tidak diubah).
+Flag inti (`--command-argv`, `--cron`, `--tz`, `--announce --channel telegram`) ✅ **dijalankan
+sungguhan** untuk skill lain (lihat `laporan-harian-usaha/references/openclaw-jadwal.md`);
+kombinasi persis dengan `laporan_iklan.py` ⚠️ belum diuji end-to-end oleh tim kurasi.
+
+**Wajib manual tiap minggu, sebelum jam jadwal:** ekspor CSV iklan dari Ads Manager dan pakai
+**nama file tetap** — Senin pagi, ganti nama `meta-minggu-ini.csv` yang lama menjadi
+`meta-minggu-lalu.csv` (timpa yang lama), lalu simpan ekspor baru sebagai `meta-minggu-ini.csv`.
+```bash
+openclaw automations add --name "Laporan iklan mingguan" --cron "0 8 * * 1" --tz Asia/Jakarta \
+  --command-argv '["python3","/home/NAMA/.openclaw/skills/laporan-iklan-mingguan/scripts/laporan_iklan.py","analisis","/home/NAMA/Laporan-AI/iklan/meta-minggu-ini.csv","--sebelumnya","/home/NAMA/Laporan-AI/iklan/meta-minggu-lalu.csv","--nama-hasil","pesan WA"]' \
+  --announce --channel telegram --to <chat-id-telegram-pemilik>
+```
+- Lebih dari satu platform (Meta + TikTok + Shopee, dst.): buat satu job per platform dengan
+  `--name` berbeda, atau pakai Bentuk A (agent, §3 di `skills/laporan-iklan-mingguan/references/
+  openclaw-jadwal.md`) agar agent menjalankan `analisis --json` per platform lalu `gabung`.
+- Nama file berisi tanggal (`meta-2026-09-21.csv`) **tidak** bisa dipakai di bentuk ini — pakai
+  nama tetap di atas.
+- Windows: bentuk `--command-argv` ini belum diuji di Gateway Windows; pakai Bentuk A.
+- Uji dulu sebelum percaya jadwal aktif: `openclaw automations run <id> --wait`.
+
+## 11. Laporan web mingguan (umami-analitik), Senin 07.00 WIB 📖
+Disalin dari `skills/umami-analitik/references/openclaw-jadwal.md` (Pilihan 1). `laporan-mingguan`
+diuji ke Umami 3.4.0 asli; **jadwal & pengiriman Telegram ⚠️ belum diuji** di Gateway. Umami
+**perlu dipasang** dulu (jasa setup berbayar Komunitech tersedia). Jadwal hanya membaca.
+```bash
+python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/umami-analitik/scripts/umami.py'))"
+openclaw automations add --name "Umami - laporan web mingguan" --cron "0 7 * * 1" --tz Asia/Jakarta \
+  --command-argv '["python3","/home/NAMA/.openclaw/skills/umami-analitik/scripts/umami.py","laporan-mingguan","--situs","tokosaya.id"]' \
+  --command-env '{"UMAMI_URL":"http://localhost:3000"}' \
+  --announce --channel telegram --to <chat-id-telegram-pemilik>
+```
+- Kunci **tidak** ditulis di jadwal; simpan dengan `simpan-kunci` (akun view-only) di komputer Gateway.
+- Skill lain di §5m (referral, iterasi masukan, listmonk, luncurkan produk, video) **dipicu manual**,
+  tidak ada jadwalnya; newsletter tidak pernah dijadwalkan sebagai blast.
+- Uji dulu: `openclaw automations run <id> --wait`.
+
 ## WhatsApp (hanya bila syarat berikut semua terpenuhi)
 1. **Nomor terpisah** — bukan nomor toko/CS yang dikenal pelanggan.
 2. Hanya mengirim ke **pemilik sendiri**.
@@ -154,3 +236,7 @@ Ganti baris terakhir tiap perintah `add` di atas menjadi
   memakai API key model).
 - Jadwal follow-up CRM (§7, `crm-wa`) di atas — pola cron & `--command-argv` sudah terbukti untuk
   skill lain, tapi kombinasi persis dengan `crm.py` belum dicoba di Gateway oleh tim kurasi.
+- Jadwal kas harian, piutang harian, dan laporan iklan mingguan (§8-10, `kas-umkm`,
+  `buku-piutang`, `laporan-iklan-mingguan`) — pola cron & `--command-argv` sudah terbukti untuk
+  skill lain, tapi kombinasi persis dengan script masing-masing skill belum dicoba di Gateway
+  oleh tim kurasi.

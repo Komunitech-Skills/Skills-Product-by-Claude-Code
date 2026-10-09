@@ -43,3 +43,18 @@ pekerjaannya, beri tahu alasannya agar bisa ditulis sebagai kebutuhan kerja.
 - Selalu tulis: "Proses rekrutmen tidak dipungut biaya apa pun."
 - Jangan minta foto seluruh badan, KTP, atau KK di tahap melamar; cukup CV. KTP diminta saat sudah diterima.
 - Sarankan: "Data lamaran hanya digunakan untuk proses rekrutmen [Nama Usaha]."
+
+## Gaji vs upah minimum (UMK/UMP)
+Dicek 1 Oktober 2026. Skill ini **tidak menyimpan tabel angka UMK** (berbeda per kabupaten/kota dan berubah tiap tahun). Jangan mengarang angka.
+- Bila pengguna menyebut gaji **dan** kota/kabupaten, selalu beri kotak peringatan (template di bawah) dan minta pengguna mencocokkan dengan UMK tahun berjalan di situs Disnaker/pemprov setempat. Bila angka UMK resmi diberikan pengguna (atau bisa dicek dari sumber resmi dalam percakapan, dengan URL disebut), bandingkan langsung dan sebut selisihnya.
+- Dasar: pengusaha dilarang membayar upah lebih rendah dari upah minimum (UU 13/2003 Pasal 88E ayat (2) s.t.d.d. UU 6/2023; ada sanksi pidana & denda).
+- Pengecualian: **usaha mikro dan kecil** dikecualikan dari ketentuan upah minimum; upahnya berdasarkan kesepakatan dengan batas bawah (paling sedikit 50% rata-rata konsumsi masyarakat provinsi dan 25% di atas garis kemiskinan provinsi) — PP 36/2021 Pasal 36–37 (s.t.d.d. PP 51/2023). Jadi gaji di bawah UMK belum tentu melanggar, tetapi wajib dicek. Kriteria usaha mikro/kecil mengikuti PP 7/2021 (modal usaha/omzet).
+
+Template:
+```
+⚠️ Cek gaji vs UMK: Gaji yang ditawarkan (Rp[gaji]) perlu dicocokkan dengan UMK [kota/kabupaten]
+tahun [tahun]: [isi: UMK]. Jika di bawah UMK, pengusaha dilarang membayar lebih rendah dari upah
+minimum (UU 13/2003 Ps. 88E ayat 2 s.t.d.d. UU 6/2023), kecuali usaha mikro/kecil yang memakai upah
+kesepakatan sesuai PP 36/2021. Pastikan dulu sebelum loker disebar.
+```
+

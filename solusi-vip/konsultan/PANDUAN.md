@@ -28,7 +28,8 @@ langkah demi langkah.
 Skill: `karyawan-ai-mulai`, `cek-privasi-openclaw`, `proposal-kerjasama`,
 `surat-penawaran-harga`, `buat-invoice`, `tagih-piutang`, `pengingat-follow-up`,
 `riset-calon-pelanggan`, `asisten-tulis-riset`, `presentasi-instan`, `tender-checklist`,
-`kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `kalender-pajak`.
+`kontrak-kerja-pkwt`, `perjanjian-sederhana`, `kebijakan-privasi-pdp`, `kalender-pajak`, `hledger-usaha`, `buku-piutang`,
+`laporan-klien-konsultan`, dan (opsional, hanya kalau agensi punya staf tetap) `gaji-umkm`.
 
 ```bash
 openclaw skills install ./karyawan-ai-mulai --global
@@ -43,13 +44,20 @@ openclaw skills install ./asisten-tulis-riset --global
 openclaw skills install ./presentasi-instan --global
 openclaw skills install ./tender-checklist --global
 openclaw skills install ./kontrak-kerja-pkwt --global
+openclaw skills install ./perjanjian-sederhana --global
 openclaw skills install ./kebijakan-privasi-pdp --global
 openclaw skills install ./kalender-pajak --global
+openclaw skills install ./hledger-usaha --global
+openclaw skills install ./buku-piutang --global
+openclaw skills install ./laporan-klien-konsultan --global
+openclaw skills install ./gaji-umkm --global
 ```
 (Jalankan dari folder hasil ekstrak ZIP paket. Windows tanpa WSL: salin folder skill lewat File
-Explorer ke `%USERPROFILE%\.openclaw\skills\`.)
+Explorer ke `%USERPROFILE%\.openclaw\skills\`. Lewati baris `gaji-umkm` kalau Anda tidak punya
+staf tetap yang digaji bulanan.)
 
-- **Cara cek berhasil:** `openclaw skills list` menampilkan ke-14 nama skill di atas.
+- **Cara cek berhasil:** `openclaw skills list` menampilkan 18 nama skill di atas (atau 19 kalau
+  memasang `gaji-umkm`).
 - **Kalau gagal:** sama seperti paket lain — "already exists" aman dilewati, skill tidak terbaca
   → buka sesi baru, `exec` ditolak → salin manual lewat File Explorer/Finder.
 
@@ -64,6 +72,37 @@ atau menagih piutang, kanal favorit, privasi/komputer menyala).
 - **Cara cek berhasil:** Anda menerima rekomendasi 3 skill pertama + 1 hasil nyata (mis. draf
   proposal atau pesan follow-up) dalam percakapan yang sama.
 - **Kalau gagal:** panggil langsung "pakai skill karyawan-ai-mulai".
+
+### Pasang "Aturan kerja Komunitech" (sekali, ±2 menit)
+Agar aturan aman tetap berlaku walau skill tidak terbuka (pesan ke pelanggan = draf, tidak mengulang
+password, tidak memasang/mengubah apa pun tanpa izin Anda), tambahkan blok aturan ke `AGENTS.md`
+OpenClaw — file ini dibaca di setiap percakapan. `karyawan-ai-mulai` akan menawarkannya; atau ketik:
+**"pasang aturan kerja Komunitech ke AGENTS.md"**. Isi blok ada di
+`templates/openclaw-AGENTS-komunitech.md` (paket VIP). AI wajib menampilkan isinya dulu dan
+hanya **menambahkan** di akhir file setelah Anda jawab "ya". Cara manual: Control UI →
+Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawah, simpan.
+
+- **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
+  menyebut aturannya tanpa membuka file lain.
+
+### WAJIB untuk konsultan: tambahkan "Aturan konsultan Komunitech" di bawah blok umum
+Uji gabungan 3 Okt 2026 menemukan AI mencari skill perjanjian ke seluruh disk (`find /`) lalu
+mematikan prosesnya sendiri. Tempel blok berikut di bawah blok umum di `AGENTS.md` (cara sama seperti di atas):
+
+```markdown
+## Aturan konsultan Komunitech (wajib)
+
+Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka. Jelaskan alasannya singkat bila menolak.
+
+1. Skill ada di folder skills OpenClaw. Jangan mencari skill/file ke seluruh disk (`find /`, `locate`), jangan mematikan proses, jangan memeriksa/mengubah config OpenClaw. Bila skill yang dibutuhkan tidak terpasang, katakan dan sarankan memasangnya.
+2. Pesan & laporan untuk klien = DRAF untuk konsultan; konsultan yang mengirim. Jangan menawarkan kiriman otomatis ke klien.
+3. Draf kontrak/perjanjian/proposal selalu diberi catatan "bukan nasihat hukum — tinjau dengan konsultan hukum". Peringatkan klausul yang tidak wajar (mis. denda harian sangat tinggi) dan beri alternatif yang lazim.
+4. Jangan memakai logo, merek, atau testimoni klien tanpa izin tertulis; jangan mengarang testimoni/surat/dokumen.
+5. Angka invoice, pajak (PPh 23/PPN), piutang, dan penawaran wajib dari script skill. Ikuti pola nomor invoice yang disebut pengguna.
+6. Data tiap klien terpisah; jangan mencampur nama/angka klien lain. Password/token yang ditempel tidak diulang (sebagian maupun utuh) — sarankan segera ganti.
+```
+
+- **Cara cek berhasil:** sesi baru, ketik "apa aturan konsultan Komunitech?" — AI menyebut 6 aturan di atas.
 
 ---
 
@@ -146,7 +185,7 @@ termasuk PPN) supaya tidak gugur karena hitungan salah.
 Merekrut asisten atau staf admin dengan status kontrak? Ketik: *"Buatkan kontrak kerja 6 bulan
 untuk asisten riset saya."* `kontrak-kerja-pkwt` menyusun draf PKWT sesuai aturan dan menghitung
 kompensasi akhir kontrak — bukan untuk kontrak kerja sama dengan klien (itu `proposal-kerjasama`/
-gunakan `perjanjian-sederhana` bila tersedia).
+gunakan `perjanjian-sederhana`).
 
 ### i. Kebijakan privasi untuk layanan/website Anda (manual, dipicu Anda)
 Kalau Anda mengumpulkan data klien lewat website/formulir/WA Business, ketik: *"Buatkan kebijakan
@@ -160,6 +199,58 @@ libur — **bukan** penghitung besaran pajak. Cara mengaktifkan pengingat otomat
 `jadwal-openclaw.md` §8.
 - **Cara cek berhasil:** jadwal diuji sekali dan hasilnya (tanggal-tanggal nyata, bukan contoh)
   ditunjukkan sebelum dinyatakan aktif.
+
+### k. Laporan pembukuan bulanan (hledger-usaha, terjadwal, tanggal 1 jam 07.50 WIB)
+Untuk pembukuan berpasangan (debit/kredit) tanpa aplikasi berbayar — cocok kalau Anda/agensi
+ingin laporan laba rugi & neraca yang benar secara akuntansi, bukan sekadar catatan kas. Ketik:
+*"Aktifkan laporan bulanan pembukuan tiap tanggal 1 jam 7.50 pagi."*
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya (laba rugi bulan lalu) ditunjukkan sebelum
+  aktif.
+- **Kalau gagal:** jurnal belum ada/neraca tidak seimbang → skill akan bilang jujur (kode keluar
+  sengaja gagal) — perbaiki dulu pencatatan sebelum percaya laporannya.
+
+### l. Ringkasan piutang retainer/termin (buku-piutang, terjadwal, 07.45 WIB)
+Punya klien retainer/termin yang belum lunas? Ketik: *"Aktifkan ringkasan piutang klien jam 7.45
+pagi."* Sama seperti paket lain, nama klien **disamarkan jadi inisial secara default**.
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya ditunjukkan sebelum aktif.
+- **Kalau gagal:** database piutang belum ada → catat piutang pertama dulu.
+
+### m. Pengingat gaji & setoran staf tetap (gaji-umkm, opsional, terjadwal 07.00 WIB)
+**Hanya kalau agensi/kantor Anda punya staf tetap yang digaji bulanan** (bukan honor per proyek —
+untuk itu tetap pakai `buat-invoice`/kesepakatan proyek). Ketik: *"Aktifkan pengingat gaji &
+setoran BPJS/PPh 21 tiap pagi jam 7."* Anda menerima pengingat tenggat (tanggal gajian, BPJS,
+PPh 21) berisi **total perusahaan saja**, tanpa nama/NIK/rekening karyawan.
+- **Cara cek berhasil:** jadwal diuji sekali, hasilnya ditunjukkan sebelum aktif.
+- **Kalau tidak punya staf tetap:** lewati langkah ini, tidak perlu memasang skillnya.
+
+### n. Draf laporan progres ke klien (laporan-klien-konsultan, terjadwal, Jumat 16.00 WIB)
+Ini mengisi celah "laporan status ke klien" yang sebelumnya belum ada polanya. Cocok kalau Anda
+mencatat pekerjaan harian per klien (jam, status, kendala) dan ingin draf laporan progres
+mingguan/bulanan disiapkan otomatis — **bukan** dikirim otomatis ke klien. Ketik: *"Catat: hari
+ini saya kerjakan rekonsiliasi bank untuk PT Maju, 2,5 jam, selesai"* setiap kali selesai
+mengerjakan sesuatu, lalu: *"Aktifkan draf laporan mingguan untuk PT Maju tiap Jumat jam 4
+sore."*
+- **Cara cek berhasil:** jadwal diuji sekali, draf laporan (versi email, WA, dan markdown)
+  ditunjukkan sebelum dinyatakan aktif.
+- **Satu klien = satu jadwal.** Untuk beberapa klien, ulangi dengan jam berbeda-beda (mis.
+  16.00, 16.10, 16.20) agar tidak menumpuk.
+- **Draf ini hanya terkirim ke Anda.** Anda yang meninjau lalu menyalin ke email/WA klien —
+  tidak pernah otomatis ke klien.
+
+### o. Merek, positioning & harga jasa Anda (manual, dipicu Anda)
+Semua skill di bawah dipicu satu kalimat; tanpa jadwal. Pasang: `openclaw skills install ./<nama> --global`.
+- **`strategi-merek-usaha`:** *"Bantu saya menamai agensi baru dan merumuskan penawarannya."* Isi:
+  10 opsi nama dengan skor, cek arti negatif, panduan cek domain/handle/merek DJKI.
+- **`positioning-persona-usaha`:** *"Susun persona klien ideal dan positioning saya."* Hasil: segmen
+  berskor, value proposition, tagline, message house untuk profil/proposal.
+- **`analisis-pesaing-strategis`:** *"Bandingkan saya dengan 3 agensi pesaing."* Dari halaman
+  publik atau teks yang Anda tempel.
+- **`strategi-harga-produk`:** untuk tarif jasa: paket good-better-best, retainer, diskon yang aman.
+  Hasilnya masuk ke `surat-penawaran-harga` dan `proposal-kerjasama`.
+- **`rencana-marketing-usaha`:** rencana kuartalan untuk mendapat klien (kanal, anggaran, target).
+- **Cara cek berhasil:** ada dokumen siap pakai, bukan saran umum. **Kalau gagal:** jawab pertanyaan
+  singkat yang diajukan agent (sekali, dalam satu pesan).
+- Komunikasi ke calon klien tetap draf yang **Anda kirim sendiri**, bukan kirim massal.
 
 ---
 

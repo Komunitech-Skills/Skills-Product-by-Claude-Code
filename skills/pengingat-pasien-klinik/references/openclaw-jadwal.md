@@ -1,5 +1,7 @@
 # Ringkasan harian otomatis ke Telegram (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (jujur).** Flag `openclaw automations add --command-argv ... --announce
 --channel telegram --to ...` di bawah disalin dari pola yang sama yang sudah dijalankan sungguhan
 di Gateway OpenClaw untuk `crm-wa` dan `pengingat-follow-up`

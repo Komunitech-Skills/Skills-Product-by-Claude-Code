@@ -1,5 +1,7 @@
 # Template Syarat & Ketentuan Promo (isi bagian <...>, hapus baris yang tidak berlaku)
 
+> Isi `<...>` hanya dengan data dari pengguna. Yang belum diberikan (waktu kirim, kuota, batas beli, retur) ditulis `[isi: …]` — jangan dikarang. Periode di butir 1 harus sama dengan durasi yang dipakai untuk target & linimasa.
+
 **<Nama promo> — <nama toko>**
 1. Periode promo: <hari, tanggal> pukul <jam mulai> s.d. <hari, tanggal> pukul <jam selesai> WIB.
 2. Produk yang ikut promo: <daftar produk/varian>. Produk lain dijual dengan harga normal.
@@ -9,7 +11,7 @@
 6. Bundling: <isi paket> seharga <Rp ...>; isi paket tidak dapat ditukar. <hapus jika tidak ada>
 7. Hadiah <nama hadiah> diberikan untuk <syarat, mis. setiap pembelian min. Rp ...> selama persediaan hadiah <n> buah masih ada.
 8. Promo <dapat/tidak dapat> digabung dengan promo lain.
-9. Pesanan promo dikirim paling lambat <n> hari kerja setelah pembayaran. Batas pengiriman sebelum libur: <tanggal>.
+9. Pesanan promo dikirim paling lambat <n atau [isi: jumlah]> hari kerja setelah pembayaran. Batas pengiriman sebelum libur: <tanggal>.
 10. Pengembalian/penukaran mengikuti kebijakan toko: <ringkas>.
 
 Catatan untuk penjual (jangan ditempel):

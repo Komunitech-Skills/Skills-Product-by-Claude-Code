@@ -152,6 +152,10 @@ def main():
             # Panduan solusi per profesi (OpenClaw) khusus member VIP
             for f in sorted((ROOT / "solusi-vip").rglob("*.md")):
                 z.write(f, f.relative_to(ROOT).as_posix())
+            # Blok aturan kerja untuk AGENTS.md OpenClaw (dirujuk solusi-vip/*/PANDUAN.md)
+            aturan = ROOT / "templates" / "openclaw-AGENTS-komunitech.md"
+            if aturan.is_file():
+                z.write(aturan, "templates/openclaw-AGENTS-komunitech.md")
         daftar = "\n".join(f"  - {b['nama']} v{b['versi']}" for b in pilihan)
         z.writestr("LISENSI.txt",
                    f"Kode lisensi : {kode}\nPemegang     : {a.pembeli}\nJenis        : {jenis}\n"

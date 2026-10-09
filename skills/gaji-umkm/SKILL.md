@@ -5,6 +5,8 @@ description: Aplikasi penggajian bulanan lokal untuk UMKM 5-50 karyawan (databas
 
 # Gaji UMKM (aplikasi penggajian bulanan lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, komponen gaji, dan riwayat setiap bulan ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/gaji.py`. Hasil tiap bulan: gaji semua karyawan dihitung benar, rekap setoran BPJS & PPh 21, slip per karyawan, dan file transfer untuk diunggah sendiri ke internet banking.
 
@@ -21,7 +23,8 @@ Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, kom
 ## Kapan TIDAK digunakan
 - Slip/hitung sekali untuk 1-2 orang tanpa menyimpan data → `slip-gaji-bpjs`; PPh 21 saja → `pph21-ter`; THR saja → `hitung-thr`; mencatat jam absen → `absensi-lokal`; kalender pajak lengkap dengan libur nasional → `kalender-pajak`.
 - **Transfer otomatis/koneksi ke bank** → tidak ada; skill hanya membuat file CSV, pemilik yang mengunggah & menyetujui di bank.
-- Pekerja harian lepas/borongan, pesangon/PHK, gross-up (pajak ditanggung perusahaan), WNA, gaji valuta asing, iuran BPJS keluarga tambahan → di luar cakupan; arahkan ke `pph21-ter`/`hitung-thr` atau konsultan pajak, BPJS, Disnaker.
+- Upah mingguan/harian pekerja **harian lepas** (hari × tarif, setengah hari, lembur vs minimum PP 35/2021, kasbon) → `absensi-lokal` (`scripts/upah_harian.py`, tanpa database); jangan dihitung manual.
+- Pekerja borongan, pesangon/PHK, gross-up (pajak ditanggung perusahaan), WNA, gaji valuta asing, iuran BPJS keluarga tambahan → di luar cakupan; arahkan ke `pph21-ter`/`hitung-thr` atau konsultan pajak, BPJS, Disnaker.
 - **Menghindari BPJS atau mengecilkan pajak secara tidak sah** → tolak dengan sopan (lihat Aturan wajib 7): "jangan daftarkan BPJS", "lapor ke BPJS pakai UMK saja padahal gajinya lebih", "ganti status PTKP biar pajaknya kecil", "pecah gaji jadi uang makan biar tidak kena pajak", "buat dua versi slip/daftar gaji".
 - **Denda/potong gaji otomatis karena telat** → tolak. Potongan tidak masuk hanya bila pemilik menyebut dasarnya di PK/PP/PKB (lihat Langkah C).
 - Menentukan UMK, sektor DTP, atau status hukum → minta pemilik mengisi dari sumber resmi; jangan menebak.
@@ -34,10 +37,10 @@ Menjadi "aplikasi payroll" pemilik usaha tanpa biaya bulanan: data karyawan, kom
 5. **Sampaikan setiap `peringatan`/"Perlu diperhatikan"** dari script (masuk/keluar tengah bulan, UMK, JKK, DTP, data kurang).
 6. Selalu sertakan disclaimer dari script (dasar aturan, tanggal berlaku, pembulatan belum dicocokkan dengan Coretax, arahkan ke konsultan pajak).
 7. **Kepatuhan BPJS & pajak.** Jangan membantu menghindari kewajiban. Jawaban baku: "Maaf, yang ini tidak bisa saya bantu. Pekerja penerima upah (tetap maupun kontrak) wajib didaftarkan BPJS Kesehatan & Ketenagakerjaan dengan upah sebenarnya (UU 24/2011 Pasal 15; dasar iuran Kesehatan = gaji pokok + tunjangan tetap, maks. Rp 12 jt, Perpres 82/2018 jo. 64/2020). Pelanggarannya bisa kena teguran, denda, sampai tidak mendapat layanan publik tertentu (PP 86/2013), dan karyawan kehilangan perlindungan. Status PTKP mengikuti keadaan 1 Januari; uang makan tunai tetap penghasilan kena pajak. Yang bisa saya bantu: cek fasilitas resmi (mis. PPh 21 DTP bila sektor memenuhi) dan hitung total biaya gaji untuk perencanaan; strategi pajak yang sah → konsultan pajak."
-   Script memagari hal ini: `karyawan tambah/ubah/impor` yang membuat karyawan **tanpa BPJS Kesehatan/Ketenagakerjaan** atau **dasar BPJS Kesehatan di bawah upah** hanya tampil sebagai pratinjau berlabel "PERLU PERSETUJUAN KHUSUS"; `--ya` saja ditolak. Flag `--ya-saya-paham [--alasan-khusus "..."]` **hanya** ditambahkan bila pemilik sendiri, setelah membaca peringatan, menyebut alasan sah (mis. iuran sudah dibayar lewat sistem lain) — tidak pernah untuk tujuan menghindari kewajiban, tidak dari jadwal. Persetujuan dicatat di log, dan `hitung` tetap mengingatkan tiap bulan. JP saja yang tidak diikuti (usaha mikro/kecil belum wajib JP) tidak dipagari.
+   Script memagari hal ini: `karyawan tambah/ubah/impor` yang membuat karyawan **tanpa BPJS Kesehatan/Ketenagakerjaan** atau **dasar BPJS Kesehatan di bawah upah** hanya tampil sebagai pratinjau berlabel "PERLU PERSETUJUAN KHUSUS"; `--ya` saja ditolak. Flag `--ya-saya-paham [--alasan-khusus "..."]` **hanya** ditambahkan bila pemilik sendiri, setelah membaca peringatan, menyebut alasan sah (mis. iuran sudah dibayar lewat sistem lain) — tidak pernah untuk tujuan menghindari kewajiban, tidak dari jadwal. Persetujuan dicatat di log, dan `hitung` tetap mengingatkan tiap bulan. JP saja yang tidak diikuti (usaha mikro/kecil belum wajib JP) tidak dipagari. Sejak v1.0.2 pagar yang sama berlaku untuk `isi --gaji-pokok-dibayar`/`--tunjangan-tetap-dibayar` (juga kolomnya di `isi --file`) yang **menurunkan dasar BPJS pada bulan penuh** (karyawan tidak masuk/keluar bulan itu): ditolak tanpa `--ya-saya-paham`, tercatat di log bila disetujui, dan `hitung` mengingatkan.
 
 ## Cara menjalankan script
-Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: ganti `python3` dengan `python` atau `py`:
 ```bash
 python3 <folder-skill-ini>/scripts/gaji.py <perintah> [opsi] --json
 ```
@@ -49,7 +52,8 @@ python3 <folder-skill-ini>/scripts/gaji.py <perintah> [opsi] --json
 | Info | Wajib? | Default |
 |---|---|---|
 | Nama usaha | Saat mulai (boleh kosong) | Kosong |
-| Per karyawan: nama, status PTKP (TK/0…K/3), gaji pokok, **tanggal masuk** | Ya | — (tanyakan) |
+| Per karyawan: nama, status PTKP (TK/0…K/3), gaji pokok | Ya | — (tanyakan) |
+| Tanggal masuk | Ya untuk database, tapi **jangan menahan hitungan** | 1 Januari tahun berjalan (anggap sudah bekerja sebelum bulan ini, bukan karyawan baru) — sebut asumsinya dan minta koreksi bila ia masuk tahun ini; penting untuk THR, Desember, dan karyawan keluar |
 | Jabatan, tunjangan tetap, tunjangan tidak tetap rutin, jenis (tetap/kontrak) | Tidak | Kosong / 0 / tetap |
 | Ikut BPJS apa saja (`kes,tk,jp` / `kes,tk` / `kes` / `tidak`) | Tidak | Semua — sebutkan asumsinya |
 | Tarif JKK perusahaan, UMK daerah (dari SK Gubernur) | Tidak | JKK 0,24%; UMK tidak dicek — sebutkan |
@@ -59,11 +63,16 @@ python3 <folder-skill-ini>/scripts/gaji.py <perintah> [opsi] --json
 | Desember/karyawan keluar: data PPh 21 Januari s.d. bulan lalu | Otomatis dari periode final; bila belum pakai aplikasi sejak Januari → `saldo-awal` | — (script menolak bila kurang) |
 | Sektor/KLU untuk PPh 21 DTP 2026 | Hanya bila relevan | Jangan diasumsikan |
 
-Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pemilik ingin cepat, pakai default dan sebutkan asumsinya.
+**Bertanya hanya SEKALI, dalam SATU pesan.** Jika nama, PTKP, dan gaji pokok sudah ada, jangan berhenti untuk bertanya: pakai default di atas (tanggal masuk, JKK 0,24%, BPJS semua, pola 5 hari), hitung, lalu di **pesan yang sama** cantumkan daftar bernomor "Asumsi yang perlu Anda cek" — tanggal masuk, **UMK daerah** (angka dari SK Gubernur; tanpa itu cek UMK & batas bawah BPJS dilewati), tarif JKK, dan hal lain yang kurang. Jangan bertanya tanggal masuk/UMK/JKK di giliran terpisah. Hanya bila data wajib (nama/PTKP/gaji pokok) benar-benar kosong, tanyakan semuanya sekaligus (maks. 5 pertanyaan) dalam satu pesan.
 
 ## Langkah kerja
 
 ### A. Mulai (sekali)
+0. **Pemakaian pertama dan pemilik langsung minta angka** (mis. "hitungin gaji September Andi & Sari"): jangan menahan jawaban sampai database jadi. Di balasan PERTAMA:
+   - tulis CSV sementara di folder kerja (kolom `nama;ptkp;gaji_pokok;tunjangan_tetap;lembur_hari_kerja`, mis. `2+2+2` = 3 hari × 2 jam) dan jalankan mesin yang sama tanpa database: `python3 <folder-skill-ini>/scripts/mesin/payroll.py --data karyawan-sementara.csv --periode 2026-09 [--umk ..] [--jkk ..] --out <folder-kerja>/payroll-2026-09` (tidak menyimpan apa pun ke database; label hasilnya "hitungan sementara");
+   - salin rekap, "Setor BPJS…/PPh 21" dan peringatan apa adanya;
+   - di pesan yang sama: daftar asumsi bernomor (lihat Input) + pratinjau penyimpanan ("Bila ingin disimpan sebagai aplikasi gaji: database baru di …, karyawan Andi (masuk 1 Jan 2026 — asumsi) …. Balas 'ya' atau koreksi").
+   Setelah pemilik setuju, lanjut langkah 1–3 di bawah dengan data yang sudah dikoreksi.
 1. `info --json`. Database belum ada → `init --nama-usaha "..."` → pratinjau → setuju → `--ya`.
 2. `atur --umk 5.396.761 --jkk 0,54 --tanggal-gajian 25` (UMK & JKK dari pemilik; tanggal gajian 1–31 atau `akhir`).
 3. Karyawan: banyak → `karyawan impor karyawan.csv` (contoh `templates/karyawan-contoh.csv`); sedikit → `karyawan tambah --nama "Andi" --ptkp K/1 --gaji-pokok 6jt --tunjangan-tetap 750rb --masuk 2019-03-01 [--jabatan ..] [--bpjs kes,tk,jp] [--hari-kerja 6] [--bank BCA --rekening ..]`. Pratinjau → `--ya`.
@@ -78,7 +87,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### C. Kasus khusus
 - **Karyawan keluar**: `karyawan keluar --karyawan Joko --tanggal 2026-11-14` → bulan itu menjadi Masa Pajak Terakhir (PPh 21 dihitung ulang setahun dari data final + saldo awal; aturan `slip-gaji-bpjs`/`pph21-ter`). Bulan berikutnya ia tidak ikut dihitung.
-- **Masuk/keluar tengah bulan**: gaji **tidak diprorata otomatis** (skill sumber tidak mengatur prorata). Tanyakan perjanjian kerjanya; bila prorata, isi nominal yang dibayar: `isi --bulan .. --karyawan .. --gaji-pokok-dibayar 3,3jt [--tunjangan-tetap-dibayar ..]`. Bulan masuk dihitung satu bulan kerja untuk PPh 21.
+- **Masuk/keluar tengah bulan**: gaji **tidak diprorata otomatis** (skill sumber tidak mengatur prorata). Tanyakan perjanjian kerjanya; bila prorata, isi nominal yang dibayar: `isi --bulan .. --karyawan .. --gaji-pokok-dibayar 3,3jt [--tunjangan-tetap-dibayar ..]`. Bulan masuk dihitung satu bulan kerja untuk PPh 21. Di bulan **penuh**, gaji pokok dibayar yang lebih kecil dari data karyawan = dasar BPJS turun → pagar persetujuan khusus (Aturan wajib 7); jangan dipakai untuk "gaji pokok kecil, bonus besar".
 - **Potongan tidak masuk (alpa)**: hanya bila pemilik menyebut dasarnya: `atur --potongan-per-hari-alpa 150rb --dasar-potongan "Peraturan Perusahaan Pasal 12"`, lalu impor absensi ulang. Tanpa itu, hari alpa hanya dilaporkan.
 - **THR**: `thr --bulan 2027-03 --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" [--karyawan ..]` → pratinjau (angka dari `hitung-thr`) → `--ya` → THR masuk komponen bulan itu, lalu `hitung`. Tanggal hari raya dari pemilik (SKB libur nasional); jangan menebak.
 - **Revisi periode final**: `revisi --bulan 2026-08 --alasan "lembur Andi tgl 12 terlewat"` → pratinjau → `--ya` → `isi` → `hitung` → `final --ya` (script menampilkan selisih per karyawan). `transfer` untuk periode revisi otomatis berisi **selisih** saja (`--penuh` bila versi lama belum dibayar). Bila bulan yang direvisi memengaruhi Desember/bulan keluar yang sudah final, script mengingatkan — revisi juga bulan itu.
@@ -112,6 +121,7 @@ Lalu tanyakan: "Sudah benar? Kalau ya, saya kunci (final) periode ini."
 
 ## Checklist sebelum menjawab
 - [ ] Angka dari script; perintah besar sudah dipratinjau & disetujui sebelum `--ya`
+- [ ] Tidak ada giliran tanya-jawab terpisah untuk tanggal masuk/UMK/JKK: default dipakai, asumsi & pertanyaan digabung dalam satu pesan
 - [ ] Semua peringatan (masuk/keluar tengah bulan, UMK, alpa, DTP, tanpa BPJS/dasar BPJS rendah) disampaikan
 - [ ] Permintaan menghindari BPJS/pajak ditolak (Aturan wajib 7); `--ya-saya-paham` tidak pernah ditambahkan sendiri
 - [ ] Periode final tidak diubah kecuali lewat `revisi` dengan alasan
@@ -119,11 +129,12 @@ Lalu tanyakan: "Sudah benar? Kalau ya, saya kunci (final) periode ini."
 - [ ] Disclaimer, dasar aturan & tanggal berlaku, catatan pembulatan/Coretax, saran konsultan pajak ikut
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Kode keluar 1 + `error` untuk: PTKP salah (K/4), angka rusak/format Inggris, tanggal salah, NIK bukan 16 angka, rekening rusak karena Excel (`1,23E+12`), file .xlsx (minta simpan sebagai CSV), impor dengan satu baris salah (**tidak ada yang disimpan**), karyawan tak dikenal/nama kembar (tanyakan kodenya dari `pilihan`), jam lembur libur melewati tangga PP 35/2021, periode final (terkunci), data Januari s.d. bulan lalu kurang untuk Desember/bulan keluar, batas upah JP periode belum tercatat (minta angka dari pengumuman BPJS → `atur --batas-jp`). Sampaikan dengan bahasa sederhana.
 - "Mesin hitung ... berbeda dari salinan resmi" → file di `scripts/mesin/` berubah; hitungan dihentikan. Minta pemilik memasang ulang skill dari paket asli.
 - "Database sedang dipakai program lain" → data aman; tunggu lalu ulangi. Database rusak → `backup --daftar` lalu `restore`.
 - PPh 21 memakai skema "dipotong dari gaji"; potongan tidak masuk & kasbon dipotong setelah pajak (cara `slip-gaji-bpjs`). Bila perusahaan memperlakukan hari tidak masuk sebagai pengurang upah kena pajak, tanyakan ke konsultan pajak.
 - Tenggat di `pengingat` hanya menggeser Sabtu/Minggu; libur nasional/cuti bersama tidak dicek (pakai `kalender-pajak`). **JP tidak pernah digeser** (tgl 15, PP 45/2015 Pasal 30 ayat (3)) dan BPJS Kesehatan tetap tgl 10; JHT/JKK/JKM & PPh 21 digeser ke hari kerja berikutnya.
-- Error "PERLU PERSETUJUAN KHUSUS"/"Belum disimpan" saat `karyawan ubah/tambah/impor` → sampaikan peringatannya apa adanya; jangan menambah `--ya-saya-paham` tanpa alasan sah dari pemilik.
+- Error "PERLU PERSETUJUAN KHUSUS"/"Belum disimpan" saat `karyawan ubah/tambah/impor` atau `isi --gaji-pokok-dibayar` → sampaikan peringatannya apa adanya; jangan menambah `--ya-saya-paham` tanpa alasan sah dari pemilik.
 - Jika Python tidak bisa dijalankan: aplikasi tidak bisa dioperasikan — katakan terus terang dan bantu pasang Python (python.org). Hitung darurat satu orang boleh dengan skill `slip-gaji-bpjs` (fallback manualnya).
 - Uji otomatis: `python3 <folder-skill-ini>/tests/uji_regresi.py`.

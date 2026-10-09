@@ -35,7 +35,7 @@ from datetime import date
 from pathlib import Path
 
 APLIKASI = "dasbor-lokal"
-VERSI = "1.0.0"
+VERSI = "1.0.2"
 FOLDER_SKRIP = Path(__file__).resolve().parent
 FOLDER_SKILL = FOLDER_SKRIP.parent
 
@@ -160,6 +160,52 @@ ALAT = {
             ),
         },
     },
+    "kpi-tim": {
+        "env_db": "KOMUNITECH_KPI_DB",
+        "sub": "kpi/kpi.db",
+        "queries": {
+            "perusahaan-tren": Query(
+                "Skor perusahaan per periode (tren)",
+                """SELECT periode, skor, status, tren, dasar, sebagian
+                   FROM skor_perusahaan
+                   ORDER BY periode DESC""",
+                tabel="skor_perusahaan",
+            ),
+            "divisi-terbaru": Query(
+                "Skor per divisi, periode terbaru",
+                """SELECT periode, divisi, skor, status, tren, jumlah_orang, jumlah_belum_lengkap, dasar_skor
+                   FROM skor_divisi
+                   WHERE periode = (SELECT MAX(periode) FROM skor_divisi)
+                   ORDER BY divisi""",
+                tabel="skor_divisi",
+            ),
+            "orang-terbaru": Query(
+                "Skor per orang (per divisi), periode terbaru",
+                """SELECT periode, divisi, orang, skor, status, tren, jumlah_kpi_merah, jumlah_kpi_kosong
+                   FROM skor_orang
+                   WHERE periode = (SELECT MAX(periode) FROM skor_orang)
+                   ORDER BY divisi, orang""",
+                tabel="skor_orang",
+            ),
+            "tren-orang": Query(
+                "Tren skor per orang per periode",
+                """SELECT divisi, orang, periode, skor, status, tren
+                   FROM skor_orang
+                   ORDER BY divisi, orang, periode""",
+                tabel="skor_orang",
+            ),
+            "kpi-merah": Query(
+                "KPI berstatus merah, periode terbaru",
+                """SELECT periode, divisi, COALESCE(orang, '(KPI divisi)') AS orang, kpi, satuan,
+                          target, realisasi, capaian_persen, bobot
+                   FROM skor_kpi
+                   WHERE status = 'merah'
+                     AND periode = (SELECT MAX(periode) FROM skor_kpi)
+                   ORDER BY divisi, orang, capaian_persen""",
+                tabel="skor_kpi",
+            ),
+        },
+    },
 }
 
 KOLOM_UANG = {"total_penjualan", "sisa", "nominal", "total_nilai_potensi", "saldo",
@@ -257,6 +303,10 @@ def fmt_nilai(kolom, nilai):
         return ""
     if kolom in KOLOM_UANG and isinstance(nilai, (int, float)):
         return "Rp " + "{:,.0f}".format(nilai).replace(",", ".")
+    if isinstance(nilai, float) and nilai.is_integer():
+        # SQLite REAL sering menyimpan angka bulat (mis. stok) sebagai float — tampilkan
+        # "25", bukan "25.0", di mode teks. Angka pecahan asli (mis. 25.5) tetap apa adanya.
+        return str(int(nilai))
     return str(nilai)
 
 

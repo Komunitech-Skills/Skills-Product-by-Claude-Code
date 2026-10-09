@@ -145,3 +145,64 @@ Alasan:
 - (−) Bentuk ekspor asli kelima platform tetap **belum diverifikasi** dengan file nyata (PERLU REVIEW).
 
 **Keputusan: LULUS.** Disarankan memperbaiki M1 (dengan tes regresi) sebelum beta; cukup uji ulang singkat P5/P2/P8b. Uji platform asli tetap membutuhkan satu ekspor asli per platform dari pemilik.
+
+## Uji ulang independen v1.0.3 (Akun B, 2026-09-26)
+
+- **Versi:** v1.0.3 (commit `e63c127`). **Penguji:** agent independen lintas akun (Akun B, simulasi Claude Code), bukan pembuat. Skill dijalankan dari salinan di scratchpad.
+- **Rincian:** `08-uji-ulang-v103-akun-b.md`.
+- **Regresi:** `tests/uji_regresi.py` menjalankan 78 tes, semuanya OK. `validate.py --skill laporan-iklan-mingguan` menghasilkan ✅ 1 skill valid, 80 baris katalog sesuai.
+
+| ID | Status | Bukti |
+|---|---|---|
+| M1 | ✅ Beres | `Total 12.12 Flash Sale`, `Jumlah 2 Pcs Bundling`, `Total 12.12`, `TOTAL SALE` (juga saat dominan) dihitung. Setiap baris total/subtotal yang dikecualikan diberi ⚠️ nama + biaya |
+| M2 | ✅ Sesuai SKILL.md | Selisih +3% → dihitung + ⚠️ "TERHITUNG DUA KALI" |
+| M3 | ✅ Sesuai SKILL.md | `Subtotal Kamp A` cocok → dibuang + ⚠️. Yang tidak cocok → dihitung + ⚠️ |
+
+**Uji baru.** Ada 9 CSV (Meta EN/ID, Google `--` + judul + `Total:` berlapis, Shopee angka Indonesia + `Total` di atas, TikTok harian + subtotal, TikTok Shop `Jumlah`) dengan kunci `Decimal` independen. Hasilnya **7/9 cocok tanpa selisih** pada biaya, CPC, dan ROAS.
+
+| ID | Keparahan | Temuan |
+|---|---|---|
+| **N3** | Sedang | Subtotal buatan lembar kerja di kolom nama yang memuat nama kampanye (`Subtotal: Retarget Video`, `Retarget Video Total`) → dihitung 2× **tanpa ⚠️** untuk barisnya. Repro: Rp 294.240, padahal seharusnya Rp 202.120. Di file TikTok harian: Rp 1.102.543, padahal seharusnya Rp 597.331. Bukan regresi (v1.0.2 sama) dan tidak terjadi pada ekspor platform asli. |
+| R-e | Rendah | ⚠️ M2 positif palsu untuk kampanye sah yang dominan (+4,7%). Kalimat "TERHITUNG DUA KALI" perlu dilunakkan. |
+| R-f | Rendah | (d) Label murni `Overall` (nama produk baju overall), `Overall - Video`, `Total Produk`, dan `Total Store` dibuang. ⚠️ nama + biaya selalu ada, jadi tidak diam-diam. Nama persis "Total/Totals/Total 4 kampanye" tidak realistis sebagai kampanye, jadi keputusan pembuat wajar. |
+
+**Skor: 8 / 10. Keputusan: LULUS.** Perbaiki N3 (+ tes regresi) sebelum beta bila memungkinkan.
+
+## Uji ulang independen v1.0.4 (2026-09-28)
+
+- **Versi:** v1.0.4 (commit `95a6710`). **Penguji:** agent independen (simulasi Claude Code), bukan pembuat revisi. Skill dijalankan dari salinan di scratchpad, dan kode script tidak dibaca.
+- **Rincian:** `08-uji-ulang-v1.0.4.md`.
+- **Regresi:** `tests/uji_regresi.py` menjalankan 87 tes, semuanya OK. `validate.py --skill laporan-iklan-mingguan` menghasilkan ✅.
+
+| ID | Status | Bukti |
+|---|---|---|
+| N3 | ✅ Beres | Diuji dengan ejaan `Subtotal:`, `Sub total -`, `SUBTOTAL`, `Sub-total:`, `subtotal`, `Sub Total`, `Jumlah sementara`, `X Total`, `Total: X`, dan nama sama persis tanpa tanggal. Hasilnya cocok dengan kunci `Decimal`. v1.0.3 menghitung 2× pada 3 file |
+| R-e | ✅ Beres | Kalimat ⚠️ M2 sudah lunak ("mohon dicek … mungkin terjumlah dua kali") |
+| M1/M2/M3/N1/N2 | ✅ Tidak regresi | File 04, 09, 11, 12, 13b, dan 15, ditambah matriks label total |
+
+**Uji baru.** Ada 17 CSV (Meta/TikTok/TikTok Shop/Shopee/Google) dan 6 file buruk.
+- 13 file cocok 100% dengan kunci kebenaran. 161 nilai rincian cocok. Baris harian yang kebetulan sama dengan jumlah baris di atasnya tetap dihitung.
+- 4 file berbeda dari kunci kebenaran, tetapi sesuai desain SKILL.md dan selalu diberi ⚠️ di blok teratas: kampanye sungguhan `Subtotal Promo Gajian` dikecualikan, dan pada kebetulan 3 metrik = jumlah baris lain, cek silang membuang barisnya.
+- **Selisih diam-diam: 0.**
+- `Total 12.12 Flash Sale` sungguhan tetap dihitung.
+
+| ID | Keparahan | Temuan |
+|---|---|---|
+| P-1 | Rendah (sejak v1.0.2) | Cek silang tetap berjalan setelah baris total eksplisit dibuang, sehingga kampanye `B` = A + C (3 metrik persis) ikut dibuang. Ada ⚠️ |
+| P-2 | Rendah | ⚠️ untuk `Sub Total X` / `Total: Search campaigns` membandingkan biaya dengan jumlah semua baris, bukan dengan baris di sekitarnya, sehingga kalimat "tidak sama" menyesatkan. Angkanya benar |
+| P-3 | Rendah | PMax dengan `Ad group` kosong tampil sebagai "(tanpa nama, baris 7)", bukan nama kampanyenya |
+| P-4 | Rendah | ⚠️ `Subtotal …` yang tidak cocok tidak menyebut total alternatif |
+
+**Skor: 9 / 10. Keputusan: LULUS.** N3 ditutup. Ekspor asli per platform tetap PERLU REVIEW sebelum uji platform asli/beta.
+
+## Uji ulang (2026-09-29) - v1.0.5 - penguji independen
+Tes regresi 91/91 OK.
+- P-3: baris PMax tanpa grup iklan tampil `PMax Sepatu (tanpa grup iklan)` (bukan "tanpa nama, baris N"). Total file dicek manual: Rp2.900.000, 1.800 klik, cocok.
+- P-4: ⚠️ subtotal/total menyebut total alternatif dan angkanya benar (file 900k+250k: "Rp650.000 / Rp1.550.000"; `Total` 1.650.000 -> 950.000 / 2.600.000; `Retarget Video Total` 1.300.000 / 650.000). N3 tidak mundur (6 varian subtotal, tidak dihitung dua kali).
+- Temuan RENDAH (bukan regresi, perilaku sama di v1.0.4): baris total kampanye tanpa label di kolom grup iklan kosong (`Search Brand`, 700.000 = jumlah grup di atasnya) tetap dihitung tanpa peringatan -> total 1.650.000, seharusnya 950.000. Dengan `--kolom-nama "Asset group"` baris kosong masih "(tanpa nama, baris N)".
+**Skor: 8,5/10. Lulus.**
+
+## Uji ulang (2026-09-29, patch) - v1.0.7 - penguji independen
+Tes regresi 94/94 OK. Google Ads 2 level, baris total kampanye tanpa label dengan Ad group kosong: total di bawah, di atas grup, dua kampanye sekaligus, format `Rp300.000`, dan placeholder `--` semuanya tidak terhitung dua kali dan diberi ⚠️. Total dicek dengan Decimal: 1.100.000 / 1.200 klik / 28 hasil / 4.200.000 nilai (v1.0.4 menghasilkan 1.800.000 tanpa peringatan, jadi perbaikan nyata); dua kampanye 850.000 / 24 hasil / 3.450.000 cocok. PMax sungguhan (angka berbeda) tetap dihitung; biaya kebetulan sama tetapi tayangan/klik beda tetap dihitung + ⚠️ lunak. Tanpa regresi N3/M1 (`Subtotal: Retarget Video` dikecualikan; `Total 12.12 Flash Sale` dan `Jumlah 2 Pcs Bundling` dihitung; total 1.000.000).
+Temuan RENDAH (bukan regresi, sama di v1.0.4): `Retarget Video Total` yang diletakkan DI ATAS kampanyenya tetap terhitung dua kali tanpa ⚠️ (800.000, seharusnya 500.000). PMax sungguhan yang angkanya kebetulan sama persis dengan jumlah grup lain dibuang dengan ⚠️ (sesuai desain).
+**Skor: 9/10. Lulus.**

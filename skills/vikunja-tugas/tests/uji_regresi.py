@@ -126,9 +126,25 @@ class TesDariTeks(unittest.TestCase):
         self.assertIsNone(draf[0]["ke"])
         self.assertEqual(draf[0]["judul"], "Beli semen 50 sak")
 
-    def test_kata_label_bukan_nama(self):
+    def test_kata_label_pic_di_awal_terdeteksi(self):
+        # v1.0.2: "PIC: Nama <tugas>" di awal baris sekarang dikenali via label eksplisit,
+        # bukan lagi dianggap "Nama: tugas" biasa (yang mengecualikan kata "pic").
         draf, _ = vikunja.urai_dari_teks("- PIC: Andi kirim penawaran", HARI_ACUAN)
-        # "PIC" ada di daftar bukan-nama -> tidak dianggap PIC (keterbatasan yang didokumentasikan)
+        self.assertEqual(draf[0]["ke"], "Andi")
+        self.assertEqual(draf[0]["judul"], "kirim penawaran")
+
+    def test_label_pic_di_akhir_baris_terdeteksi(self):
+        draf, _ = vikunja.urai_dari_teks("- Follow up klien ABC PIC: Budi", HARI_ACUAN)
+        self.assertEqual(draf[0]["ke"], "Budi")
+        self.assertEqual(draf[0]["judul"], "Follow up klien ABC")
+
+    def test_label_pic_dua_kata(self):
+        draf, _ = vikunja.urai_dari_teks("- Kirim invoice ke supplier PIC: Siti Aminah", HARI_ACUAN)
+        self.assertEqual(draf[0]["ke"], "Siti Aminah")
+        self.assertEqual(draf[0]["judul"], "Kirim invoice ke supplier")
+
+    def test_tanpa_label_pic_tetap_tanpa_ke(self):
+        draf, _ = vikunja.urai_dari_teks("- Beli semen 50 sak", HARI_ACUAN)
         self.assertIsNone(draf[0]["ke"])
 
     def test_baris_diabaikan_dihitung(self):
@@ -154,6 +170,27 @@ class TesDariTeks(unittest.TestCase):
         draf, diabaikan = vikunja.urai_dari_teks("cuma teks biasa tanpa bullet", HARI_ACUAN)
         self.assertEqual(draf, [])
         self.assertEqual(diabaikan, 1)
+
+    def test_v103_kata_header_inggris_bukan_pic(self):
+        # temuan uji ulang v1.0.2: "TOPIC:" dulu terbaca PIC "TOPIC" dan terhapus dari judul
+        for kata in ("TOPIC", "INFO", "UPDATE", "STATUS", "NOTE", "AGENDA", "SUBJECT", "Next Step", "Action Items",
+                     "FYI", "Reminder", "Summary", "Topik", "Perihal", "Update", "RE"):
+            baris = "- %s: bahas rencana marketing minggu depan" % kata
+            draf, _ = vikunja.urai_dari_teks(baris, HARI_ACUAN)
+            self.assertIsNone(draf[0]["ke"], kata)
+            self.assertEqual(draf[0]["judul"], "%s: bahas rencana marketing minggu depan" % kata, kata)
+
+    def test_v103_nama_asli_tetap_terbaca(self):
+        for baris, nama in (("- Budi: follow up supplier", "Budi"), ("- Siti Aminah: kirim invoice", "Siti Aminah"),
+                            ("- ANDI: cek stok gudang", "ANDI"), ("- Status: cek laporan PIC: Rina", "Rina"),
+                            ("- UPDATE - kirim revisi desain PIC: Maya", "Maya")):
+            draf, _ = vikunja.urai_dari_teks(baris, HARI_ACUAN)
+            self.assertEqual(draf[0]["ke"], nama, baris)
+        # anggota yang dikenal menang atas daftar kata header (orang bernama "Tim")
+        draf, _ = vikunja.urai_dari_teks("- Tim: siapkan materi", HARI_ACUAN)
+        self.assertIsNone(draf[0]["ke"])
+        draf, _ = vikunja.urai_dari_teks("- Tim: siapkan materi", HARI_ACUAN, anggota_dikenal=["Tim"])
+        self.assertEqual(draf[0]["ke"], "Tim")
 
 
 # ============================================================ 3. validasi URL (keamanan)
@@ -427,6 +464,11 @@ class Keadaan:
             "tk_tulisrahasia12345": {"projects": ["read_all", "read_one", "projectusers"],
                                      "tasks": ["read_all", "read_one", "create", "update"],
                                      "tasks_assignees": ["create", "read_all"]},
+            # Temuan Akun B (2026-09-26): token dengan Tasks lengkap TAPI TANPA kelompok
+            # 'tasks_assignees' -> penugasan (--ke) harus gagal dengan pesan yang menyebut
+            # kelompok itu secara eksplisit, bukan pesan 401 generik.
+            "tk_tanpaassignees1234": {"projects": ["read_all", "read_one", "projectusers"],
+                                       "tasks": ["read_all", "read_one", "create", "update"]},
         }
 
 
@@ -515,6 +557,30 @@ class TesUjungKeUjung(unittest.TestCase):
         self.assertIn("GAGAL menugaskan", r.stderr)
         self.assertTrue(any(t["title"] == "Tugas x" for t in self.srv.keadaan.tugas))
 
+    def test_tambah_ke_tanpa_izin_tasks_assignees_pesan_jelas(self):
+        # Regresi Temuan #1 Akun B: token punya Tasks lengkap tapi tidak dicentang kelompok
+        # terpisah 'Tasks Assignees' -> Vikunja balas 401 ("token tidak valid", bukan 403).
+        # Tugas tetap tersimpan; pesan galat harus menyebut 'Tasks Assignees' secara eksplisit
+        # supaya pengguna tidak salah kira token/username-nya yang salah.
+        r = self.jalankan(["tambah", "--proyek", "2", "--judul", "Tugas tanpa izin assign", "--ke", "budi", "--ya"],
+                           token="tk_tanpaassignees1234")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("GAGAL menugaskan", r.stderr)
+        self.assertIn("Tasks Assignees", r.stderr)
+        self.assertTrue(any(t["title"] == "Tugas tanpa izin assign" for t in self.srv.keadaan.tugas))
+        self.assertFalse(any(t["assignees"] for t in self.srv.keadaan.tugas
+                              if t["title"] == "Tugas tanpa izin assign"))
+
+    def test_hari_ini_dan_terlambat_menyebut_catatan_tumpang_tindih(self):
+        # Regresi Temuan #2 Akun B: dokumentasikan (bukan sembunyikan) bahwa tugas due hari ini
+        # yang jamnya sudah lewat bisa muncul di hari-ini MAUPUN terlambat sekaligus.
+        r1 = self.jalankan(["hari-ini"])
+        self.assertEqual(r1.returncode, 0, r1.stderr)
+        self.assertIn("MAUPUN", r1.stdout)
+        r2 = self.jalankan(["terlambat"])
+        self.assertEqual(r2.returncode, 0, r2.stderr)
+        self.assertIn("MAUPUN", r2.stdout)
+
     def test_selesai_menandai(self):
         r = self.jalankan(["selesai", "--id", "1", "--ya"])
         self.assertEqual(r.returncode, 0, r.stderr)
@@ -598,6 +664,35 @@ class TesUjungKeUjung(unittest.TestCase):
             )
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertTrue(os.path.exists(os.path.join(d, "draf.json")))
+
+    def test_v105_kata_permintaan_bukan_pic(self):
+        # temuan uji ulang v1.0.3: "Mohon: Bu Rina tolong kirim faktur" dulu terbaca PIC "Mohon"
+        for kata in ("Mohon", "Tolong", "Harap", "Catatan", "MOHON", "Silakan", "Dimohon", "Pastikan", "Please"):
+            draf, _ = vikunja.urai_dari_teks("- %s: Bu Rina kirim faktur besok" % kata, HARI_ACUAN)
+            self.assertIsNone(draf[0]["ke"], kata)
+            self.assertTrue(draf[0]["judul"].startswith(kata), draf[0]["judul"])
+
+    def test_v105_nama_asli_dan_anggota_tetap(self):
+        draf, _ = vikunja.urai_dari_teks("- Budi: kirim faktur\n- PIC: Rina follow up", HARI_ACUAN)
+        self.assertEqual([x["ke"] for x in draf], ["Budi", "Rina"])
+        draf, _ = vikunja.urai_dari_teks("- Mohon: kirim faktur", HARI_ACUAN, anggota_dikenal=["Mohon"])
+        self.assertEqual(draf[0]["ke"], "Mohon")
+
+
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "vikunja.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["simpan-kunci", "--kunci-file", os.path.join(t, "k.txt"), "--y"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+            self.assertFalse(os.path.exists(os.path.join(t, "k.txt")), "singkatan flag tidak boleh menulis apa pun")
 
 
 if __name__ == "__main__":

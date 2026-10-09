@@ -21,8 +21,11 @@ tinggal minta lewat kalimat biasa.
    posting sosmed"), agent yang merancang tabel & kolomnya (4 pola siap pakai untuk UMKM).
 2. **Rumus dijamin benar secara nalar** — 5 rumus siap tempel untuk kebutuhan umum (rapikan
    nomor WA, total setelah diskon, status stok, hitung mundur hari), bukan tebakan.
-3. **Data berantakan jadi rapi otomatis** — angka Rupiah format apa pun ("Rp 1,25jt" ditulis beda-
-   beda orang) dirapikan sebelum masuk ke Grist.
+3. **Data berantakan jadi rapi otomatis** — angka Rupiah gaya sehari-hari ("Rp 1.250.000,-",
+   "1,25jt", "2,5 rb", "10k", "3 jt 500 rb", "1,5M") dirapikan sebelum masuk ke Grist. Yang
+   ragu-ragu (mis. "1.500rb" — 1,5 ribu atau 1,5 juta?) tidak ditebak: baris & nilainya disebut
+   supaya Anda betulkan sendiri. Nomor WA & kode barang berawalan 0 ("0812…", "007") tetap utuh
+   sebagai teks, tidak berubah jadi angka.
 4. **Laporan tanpa buka Grist** — tanya "stok apa yang menipis?" dan langsung dapat jawabannya,
    dibaca langsung dari file `.grist` Anda (bahkan saat Grist tidak menyala).
 5. **Aman by design** — kunci API tersimpan lokal & tidak pernah tercetak, semua tindakan

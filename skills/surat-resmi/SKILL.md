@@ -5,6 +5,8 @@ description: Menulis surat resmi/surat dinas berbahasa Indonesia sesuai EYD V da
 
 # Surat Resmi (EYD V)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menghasilkan surat resmi yang benar strukturnya, benar ejaannya (EYD Edisi V), sopan, ringkas, dan langsung bisa disalin ke Word/Google Docs lalu dicetak, untuk pemilik usaha, pengurus organisasi/RT/koperasi, sekolah, dan profesional.
 
@@ -40,6 +42,8 @@ Menghasilkan surat resmi yang benar strukturnya, benar ejaannya (EYD Edisi V), s
 Jika info wajib kurang, tanyakan **sekali** (maks 5 pertanyaan bernomor). Jika pengguna ingin cepat, buat dengan placeholder `[...]` dan sebutkan asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Tentukan jenis surat** dan ambil kerangkanya dari `references/template-surat.md`.
 2. **Buat tanggal, hari, dan nomor surat dengan script** (bulan Romawi dan nama hari sering salah bila ditebak). Path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`:
    ```bash

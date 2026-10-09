@@ -30,26 +30,36 @@ lalu isi bagian bertanda `<isi>` sesuai jawaban wawancara._
    ```bash
    python3 <folder-skill-rekap-penjualan-csv>/scripts/rekap.py "<file terbaru atau gabungan>" \
      --kolom-tanggal "<isi>" --kolom-produk "<isi>" --kolom-qty "<isi>" \
-     --kolom-total "<isi>" --kolom-status "<isi, opsional>" --top 3
+     --kolom-total "<isi>" --kolom-status "<isi, opsional>" \
+     --kolom-pesanan "<isi, bila ada kolom no. nota/pesanan>" --top 1000 > laporan/hasil-rekap.json
+   ```
+   `--top 1000` supaya `produk_terlaris` memuat **semua** produk (cek: jumlahnya =
+   `jumlah_produk_unik`); total barang terjual (pcs) dihitung dari situ dengan script, bukan dikira:
+   ```bash
+   python3 -c "import json,sys; d=json.load(open(sys.argv[1],encoding='utf-8')); assert len(d['produk_terlaris'])==d['jumlah_produk_unik']; q=sum(p['qty'] for p in d['produk_terlaris']); print(int(q) if q==int(q) else q)" laporan/hasil-rekap.json
    ```
 3. **Cek periode.** Bandingkan `periode.awal`/`periode.akhir` hasil JSON dengan periode yang
    seharusnya dicakup (mis. laporan Senin pagi = Senin-Minggu minggu lalu). Kalau tidak mencakup
    penuh (mis. cuma 1-2 hari untuk laporan mingguan), **jangan kirim sebagai laporan periode
    itu** -- katakan "Data yang tersedia mencakup <awal>-<akhir>, bukan seluruh <periode
    diminta>" dan hentikan, seperti data kosong.
-4. Ambil dari hasil JSON: `total_omzet`, `jumlah_baris_valid` (ini jumlah **baris/item terjual**,
-   BUKAN jumlah pesanan/transaksi unik -- satu pesanan marketplace bisa berisi beberapa baris
-   produk), `rata_rata_omzet_per_hari_kalender`, 3 `produk_terlaris`, `hari_terbaik`/
+4. Ambil dari hasil JSON: `total_omzet`, jumlah nota/baris (lihat aturan label di bawah), total
+   pcs (dari perintah di atas), `rata_rata_omzet_per_hari_kalender`, 3 teratas `produk_terlaris`, `hari_terbaik`/
    `hari_terendah` (untuk laporan mingguan), dan **semua isi `peringatan`/`baris_dilewati`**.
 
 ## Format pesan (lewat scripts/susun_pesan.py)
 - Judul: "Laporan Penjualan Harian" (periode 1 hari) atau "Laporan Penjualan Mingguan" (periode
   Senin-Minggu) -- pilih sesuai `periode.awal`/`periode.akhir` hasil hitung, bukan cuma nama
   jadwalnya.
-- Baris angka: Total omzet (Rupiah), Jumlah baris/item terjual (label ini, bukan "jumlah
-  transaksi", supaya tidak disalahartikan sebagai jumlah pesanan), Rata-rata omzet/hari (Rupiah);
+- Baris angka: Total omzet (Rupiah), **Transaksi: `<N> nota / <Q> pcs`** (contoh "57 nota / 110
+  pcs"), Rata-rata omzet/hari (Rupiah);
   untuk mingguan tambahkan Hari terbaik & Hari terendah
-- Daftar: "Produk terlaris" -- 3 item, format `Nama -- qty pcs -- Rp omzet`
+- **Aturan label hitungan (wajib):** `<N>` = jumlah `jumlah_transaksi_harian` dijumlahkan.
+  Satuannya "nota" hanya bila `hari_transaksi_terbanyak.satuan` = "pesanan unik" (pakai
+  `--kolom-pesanan`) **atau** pengguna memastikan 1 baris CSV = 1 nota; selain itu tulis
+  "<N> baris penjualan". `<Q>` = total pcs dari script. Jangan pernah menyebut jumlah baris/nota
+  sebagai "item" atau "barang terjual". Tanpa kolom qty → tulis nota/baris saja, tanpa pcs.
+- Daftar: "Produk terlaris" -- 3 teratas, format `Nama -- qty pcs -- Rp omzet`
 - `catatan` (netral): cakupan periode yang dilaporkan
 - `peringatan`: baris dilewati, tanggal ambigu, status batal/retur yang dibuang, dll. dari script
 - **Tanpa** nama pelanggan/nomor pesanan perorangan.

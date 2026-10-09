@@ -5,6 +5,8 @@ description: Buat daftar ambil barang (picking list) per SKU/rak dan urutan kema
 
 # resi-picking
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah file ekspor pesanan marketplace (yang sudah diunduh pengguna sendiri dari Seller Center)
 menjadi dua dokumen siap pakai untuk gudang: **daftar ambil barang** (total per SKU/varian, diurutkan
@@ -48,6 +50,8 @@ kalau ada, file lokasi rak dan file stok juga boleh disertakan biar daftarnya le
 pengguna cuma punya file pesanan, tetap jalankan tanpa lokasi/stok dan sebutkan itu sebagai asumsi.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Simpan file yang dikirim pengguna ke folder kerja (mis. folder yang sama dengan file pesanan).
 2. Jalankan:
    ```bash
@@ -63,7 +67,10 @@ pengguna cuma punya file pesanan, tetap jalankan tanpa lokasi/stok dan sebutkan 
      `--kolom-sku`, `--kolom-nama`, `--kolom-varian`, `--kolom-qty`, `--kolom-kurir`, `--kolom-resi`,
      `--kolom-catatan`, atau `--kolom-status` (isi `-` untuk sengaja mengabaikan kolom itu).
    - `peringatan` — sampaikan semuanya ke pengguna apa adanya (SKU tak dikenal, jumlah 0/negatif,
-     baris duplikat, resi kosong, pesanan dilewati karena batal/retur/belum bayar, dst.).
+     baris duplikat, resi kosong, pesanan dilewati karena batal/retur/belum bayar, kolom ambigu, dst.).
+   - `kolom_ambigu` — kalau tidak kosong, ada kolom yang punya lebih dari satu kandidat cocok (mis.
+     dua kolom yang sama-sama terlihat seperti SKU); tunjukkan ke pengguna kandidat mana saja dan
+     kolom mana yang dipakai, supaya bisa dikoreksi dengan `--kolom-...` kalau salah.
    - `file_keluaran` — path file `daftar-ambil.md` dan `urutan-resi.md` yang sudah ditulis ke disk;
      tempelkan isinya ke pesan balasan (Markdown-nya langsung terbaca rapi di chat) dan sebutkan lokasi
      filenya untuk dicetak/dibagikan ke admin gudang.
@@ -139,6 +146,10 @@ uji, termasuk peringatan SKU tak dikenal dan stok menipis).
   terdeteksi di dalam nama kolom gabungan (mis. "Nama Kurir", "No. Invoice"). Kalau pemetaan tetap
   salah/kurang, error dan hasil sukses SAMA-SAMA menyebutkan kolom yang ada di file dan flag
   `--kolom-...` yang persis untuk membetulkan secara manual - tidak perlu menunggu pembaruan skill.
+  Sejak v1.0.2, kalau ada **lebih dari satu** kolom yang sama-sama cocok untuk satu field (mis. file
+  punya kolom "SKU Induk" DAN "Nomor SKU" sekaligus), hasil `peringatan` dan field `kolom_ambigu`
+  menyebutkan semua kandidat + kolom mana yang akhirnya dipakai, supaya bisa dikoreksi lewat
+  `--kolom-...` kalau tebakannya salah - bukan diam-diam memilih tanpa memberi tahu.
 - Tidak ada scraping, login browser, atau API resmi marketplace di skill ini. Input murni dari file
   yang diunduh pengguna sendiri.
 - Bukan alat inventori: tidak memotong stok, tidak mengingat "sudah dikemas" dari hari sebelumnya. Untuk

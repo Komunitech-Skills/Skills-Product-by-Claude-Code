@@ -73,7 +73,11 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 Tidak. Script CRM tidak memakai internet sama sekali; semuanya ada di satu file di komputer Anda. Yang keluar hanya teks yang Anda minta dikirim ke Telegram Anda sendiri (lewat OpenClaw), dan pesan yang Anda kirim sendiri lewat WhatsApp.
 
 **Bisa kirim pesan ke semua pelanggan sekaligus?**
-Tidak, dan itu disengaja. Setiap pesan dikirim manusia satu per satu supaya nomor WhatsApp Anda aman dan pesannya tetap personal. Untuk promo ke banyak orang secara manual, pakai skill Broadcast WA.
+Tidak, dan itu disengaja. Setiap pesan dikirim manusia satu per satu supaya nomor WhatsApp Anda aman dan pesannya tetap personal. Promo hanya untuk pelanggan yang sudah setuju dikabari (ditandai label `setuju-promo`); agent menyiapkan draf + tautan per orang, Anda kirim satu per satu. Pembeli marketplace (Shopee/Tokopedia) dianggap belum setuju, jadi promo untuk mereka lewat fitur voucher/promosi di dalam marketplace. (Skill Broadcast WA terpisah, bila Anda punya, hanya membantu menulis variasi teks — tetap dikirim satu per satu.)
 
 **Saya sudah punya daftar pelanggan di Excel/HP. Harus ketik ulang?**
 Tidak. Simpan sebagai CSV (Excel: *Save As → CSV*; Google Contacts: *Export → Google CSV*), kirim ke agent, lalu periksa pratinjaunya. Nomor dirapikan otomatis, nomor dobel dan baris yang bermasalah dilewati dan disebutkan barisnya.
+
+## Catatan revisi 1.0.9 (2026-10-02)
+- Temuan uji gabungan paket Toko Online: permintaan "daftar pelanggan buat promo" tidak memicu skill ini, dan rujukan ke `broadcast-wa` (tidak ada di paket Toko Online) membingungkan.
+- Pemicu baru: "daftar pelanggan buat promo", "data pelanggan", "kontak pembeli". Aturan 10: promo hanya ke kontak berlabel `setuju-promo`; pembeli marketplace default belum setuju; tanpa broadcast (termasuk WhatsApp Business) ke kontak yang belum setuju.

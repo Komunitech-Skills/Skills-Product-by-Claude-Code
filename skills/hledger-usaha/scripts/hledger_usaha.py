@@ -21,6 +21,7 @@ Perintah:
 Windows: pakai `python` atau `py` sebagai ganti `python3`.
 """
 import argparse
+import copy
 import csv
 import datetime as dt
 import difflib
@@ -35,8 +36,8 @@ import sys
 import tempfile
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, ROUND_HALF_UP
 
-VERSI = "1.0.1"
-HLEDGER_TERUJI = ("1.52.4",)
+VERSI = "1.0.10"
+HLEDGER_TERUJI = ("1.52.4", "1.30.1")
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
 TEMPLATE_JURNAL = os.path.join(FOLDER_SKILL, "templates", "jurnal-awal.journal")
@@ -393,14 +394,44 @@ def angka_jurnal(s, dm, no):
     return -v if neg else v
 
 
+EKSTENSI_JURNAL = (".journal", ".hledger", ".ledger", ".j")
+
+
+def jurnal_di_folder_kerja(maks_dalam=2, maks_folder=300):
+    """v1.0.5: file jurnal di folder kerja (cwd) dan subfoldernya s.d. 2 tingkat - TIDAK pernah seluruh disk/home."""
+    akar = os.getcwd()
+    hasil, dilihat = [], 0
+    for dirpath, dirnames, filenames in os.walk(akar):
+        dilihat += 1
+        dalam = os.path.relpath(dirpath, akar).count(os.sep) + (0 if dirpath == akar else 1)
+        dirnames[:] = sorted(d for d in dirnames if not d.startswith(".") and d not in ("node_modules", "backup", "__pycache__"))
+        if dalam >= maks_dalam:
+            dirnames[:] = []
+        for f in sorted(filenames):
+            if f.lower().endswith(EKSTENSI_JURNAL) and not f.endswith(".sebelum-ubah"):
+                hasil.append(os.path.relpath(os.path.join(dirpath, f), akar))
+        if dilihat >= maks_folder or len(hasil) >= 10:
+            break
+    return hasil
+
+
+def saran_jurnal_lokal(path):
+    temuan = [x for x in jurnal_di_folder_kerja() if os.path.abspath(x) != os.path.abspath(path)]
+    if not temuan:
+        return ("Tidak ada file jurnal (*.journal) di folder kerja {}. Tanyakan pengguna di mana filenya; JANGAN langsung "
+                "membuat buku baru (`init`) sebelum pengguna memastikan belum punya pembukuan.".format(os.getcwd()))
+    return ("Ditemukan file jurnal di folder kerja: {}. Bila itu buku pengguna, ulangi dengan --jurnal \"{}\" "
+            "(jangan membuat buku baru).".format(", ".join(temuan), temuan[0]))
+
+
 def baca_file(path, jenis="jurnal"):
     try:
         with open(path, "rb") as f:
             mentah = f.read()
     except FileNotFoundError:
         if jenis == "jurnal":
-            raise Gagal("File jurnal tidak ditemukan: {}\nBuat dulu dengan perintah `init`, atau sebutkan "
-                        "--jurnal <path>.".format(path), K_FILE)
+            raise Gagal("File jurnal tidak ditemukan: {}\n{}\nBuku baru hanya dengan perintah `init` setelah pengguna "
+                        "setuju.".format(path, saran_jurnal_lokal(path)), K_FILE)
         raise Gagal("File {} tidak ditemukan: {}".format(jenis, path), K_FILE)
     except OSError as e:
         raise Gagal("File {} tidak bisa dibuka: {}".format(path, e), K_FILE)
@@ -565,9 +596,55 @@ def cari_hledger(a):
     return shutil.which("hledger")
 
 
+# v1.0.5: opsi -n/--no-conf baru ada sejak hledger 1.40 (sebelum itu hledger tidak membaca file config, jadi tidak perlu).
+# hledger lama (mis. 1.30 dari apt Ubuntu/Debian) menolak -n dengan "Unknown flag: -n".
+HLEDGER_NO_CONF_SEJAK = (1, 40)
+_INFO_HLEDGER = {}        # path -> (teks versi, tuple versi atau None)
+_HLEDGER_TIDAK_COCOK = {}  # path -> alasan; hledger yang gagal dipakai (mode auto turun ke pembaca bawaan)
+RE_GALAT_OPSI = re.compile(r"unknown flag|unknown option|unrecognized option|invalid option|unknown command|"
+                           r"not a known command|unexpected argument|no such command", re.I)
+
+
+def info_hledger(hl):
+    if hl not in _INFO_HLEDGER:
+        teks, tup = "?", None
+        try:
+            r = subprocess.run([hl, "--version"], capture_output=True, timeout=30)
+            out = r.stdout.decode("utf-8", errors="replace")
+            m = re.search(r"hledger\s+(\d+(?:\.\d+)+)", out)
+            if m:
+                teks = m.group(1)
+                tup = tuple(int(x) for x in teks.split("."))
+            else:
+                teks = out.strip() or "?"
+        except subprocess.TimeoutExpired:
+            raise Gagal("hledger tidak selesai dalam 30 detik.", K_HLEDGER)
+        except OSError as e:
+            raise Gagal("hledger tidak bisa dijalankan: {}".format(e), K_HLEDGER)
+        _INFO_HLEDGER[hl] = (teks, tup)
+    return _INFO_HLEDGER[hl]
+
+
+def opsi_awal_hledger(hl):
+    """['-n'] hanya untuk hledger >= 1.40 (abaikan file config pengguna); versi lama tanpa opsi tambahan."""
+    _, tup = info_hledger(hl)
+    return ["-n"] if tup is not None and tup >= HLEDGER_NO_CONF_SEJAK else []
+
+
+def hledger_aktif(a):
+    """hledger yang dipakai untuk perintah ini, atau None (mesin bawaan / hledger tidak cocok di mode auto)."""
+    mesin = getattr(a, "mesin", "auto")
+    if mesin == "bawaan":
+        return None
+    hl = cari_hledger(a)
+    if hl and mesin == "auto" and hl in _HLEDGER_TIDAK_COCOK:
+        return None
+    return hl
+
+
 def jalankan_hledger(hl, argumen, batas=120):
     try:
-        r = subprocess.run([hl, "-n"] + argumen, capture_output=True, timeout=batas)
+        r = subprocess.run([hl] + opsi_awal_hledger(hl) + argumen, capture_output=True, timeout=batas)
     except subprocess.TimeoutExpired:
         raise Gagal("hledger tidak selesai dalam {} detik.".format(batas), K_HLEDGER)
     except OSError as e:
@@ -578,9 +655,7 @@ def jalankan_hledger(hl, argumen, batas=120):
 
 
 def versi_hledger(hl):
-    kode, out, _ = jalankan_hledger(hl, ["--version"], 30)
-    m = re.search(r"hledger\s+(\d+(?:\.\d+)+)", out)
-    return m.group(1) if m else (out.strip() or "?")
+    return info_hledger(hl)[0]
 
 
 def ringkas_galat(err):
@@ -591,11 +666,27 @@ def ringkas_galat(err):
 def muat_hledger(hl, path):
     kode, out, err = jalankan_hledger(hl, ["-f", path, "print", "-O", "json"])
     if kode != 0:
+        if RE_GALAT_OPSI.search(err):
+            raise HledgerTidakCocok("hledger {} tidak mengenali perintah yang dipakai skill ({})".format(
+                versi_hledger(hl), ringkas_galat(err).splitlines()[0] if err.strip() else "galat"))
         raise Gagal("hledger menolak file jurnal:\n" + ringkas_galat(err), K_JURNAL)
     try:
         data = json.loads(out)
-    except ValueError:
-        raise Gagal("Keluaran hledger tidak bisa dibaca (JSON rusak).", K_HLEDGER)
+        return _jurnal_dari_json(data)
+    except (ValueError, KeyError, TypeError, AttributeError, IndexError) as e:
+        raise HledgerTidakCocok("keluaran JSON hledger {} berbeda dari yang dikenal skill ({})".format(
+            versi_hledger(hl), type(e).__name__))
+
+
+class HledgerTidakCocok(Gagal):
+    """hledger terpasang tetapi versinya tidak cocok dengan perintah/format yang dipakai skill."""
+
+    def __init__(self, pesan):
+        Gagal.__init__(self, pesan + ". Pakai pembaca bawaan (--mesin bawaan) atau perbarui hledger "
+                       "(docs/panduan-hledger.md).", K_HLEDGER)
+
+
+def _jurnal_dari_json(data):
     j = Jurnal()
     j.mesin = "hledger"
     for i, t in enumerate(data):
@@ -647,8 +738,22 @@ def muat_jurnal(a, wajib_ada=True):
         bawaan = parse_jurnal(teks)
     except Gagal as e:
         galat_bawaan = e
+    if hl and mesin == "auto" and hl in _HLEDGER_TIDAK_COCOK:
+        hl = None
     if hl:
-        j = muat_hledger(hl, path)
+        try:
+            j = muat_hledger(hl, path)
+        except HledgerTidakCocok as e:
+            if mesin == "hledger" or bawaan is None:
+                raise
+            _HLEDGER_TIDAK_COCOK[hl] = str(e)
+            j = bawaan
+            j.catatan.append("hledger {} terpasang tetapi tidak cocok dengan skill ini (versi terlalu lama/berbeda: {}). "
+                             "Dihitung otomatis dengan pembaca bawaan skill - angka tetap diperiksa seimbang. Untuk "
+                             "pemeriksaan hledger, perbarui hledger (docs/panduan-hledger.md).".format(
+                                 versi_hledger(hl), str(e).split(". Pakai")[0]))
+            j.path = path
+            return j
         j.versi_hledger = versi_hledger(hl)
         j.deklarasi = bawaan.deklarasi if bawaan else set()
         j.tipe_deklarasi = bawaan.tipe_deklarasi if bawaan else {}
@@ -878,12 +983,18 @@ PENGINGAT_TUNAI = ("INGAT: mutasi bank hanya berisi uang yang lewat rekening. Pe
 
 
 def cek_tunai(j, dari, sampai):
-    """Periode yang pendapatan/bebannya hanya berasal dari impor mutasi bank, tanpa satu pun transaksi kas tunai."""
+    """Periode yang pendapatan/bebannya hanya berasal dari impor mutasi bank, tanpa satu pun transaksi kas tunai.
+
+    "Transaksi kas tunai" = transaksi yang menyentuh Aset:Kas BERSAMA akun pendapatan/HPP/beban (penjualan atau
+    biaya tunai). Pindah dana bank<->kas (TARIKAN ATM, Setor Tunai, catat --jenis tarik-tunai/setor-tunai) dan
+    saldo awal tidak dihitung, karena tidak mencatat penjualan/biaya tunai apa pun (temuan uji ulang v1.0.1)."""
     ada_bank = ada_tunai = False
     for t in j.txns:
         if not dari <= t.tanggal <= sampai:
             continue
-        if any(a.lower().startswith("aset:kas") for a, _ in t.postings):
+        gol = [j.gol(a) for a, _ in t.postings]
+        if (any(a.lower().startswith("aset:kas") for a, _ in t.postings)
+                and any(g in ("pendapatan", "hpp", "beban") for g in gol)):
             ada_tunai = True
         if t.tags.get("sumber") == "mutasi-bank" and any(j.gol(a) in ("pendapatan", "hpp", "beban")
                                                           for a, _ in t.postings):
@@ -1144,7 +1255,7 @@ def tulis_jurnal(a, path, tambahan):
             f.write(sisip + tambahan.encode("utf-8") + b"\n")
         a2 = argparse.Namespace(**vars(a))
         muat_jurnal(a2)
-        hl = cari_hledger(a) if getattr(a, "mesin", "auto") != "bawaan" else None
+        hl = hledger_aktif(a2)
         if hl:
             kode, _, err = jalankan_hledger(hl, ["-f", path, "check"])
             if kode != 0:
@@ -1203,6 +1314,48 @@ def potongan_pph23(e, bruto):
     return pph, catatan
 
 
+RE_PENDAPATAN_JASA = re.compile(r"jasa|sewa|royalti|konsultan|honor|fee|komisi|servis|service|jaringan|instalasi",
+                                re.I)
+RE_PENDAPATAN_BARANG = re.compile(r"penjualan|barang|dagang|produk|jual", re.I)
+
+
+# v1.0.4: jenis catatan disimpan sebagai tag transaksi ("; jenis:jual" / "; jenis:jasa") agar asal piutang
+# dibaca dari JENIS TRANSAKSI, bukan hanya nama akun pendapatan ("Pendapatan:Usaha" dari --jenis jual = barang).
+TAG_JENIS = {"jual": "barang", "penjualan": "barang", "jasa": "jasa"}
+
+
+def jenis_pendapatan(akun):
+    """'jasa' (boleh PPh 23), 'barang' (penjualan barang, tidak ada PPh 23), atau 'lain'."""
+    if RE_PENDAPATAN_JASA.search(akun):
+        return "jasa"
+    if RE_PENDAPATAN_BARANG.search(akun):
+        return "barang"
+    return "lain"
+
+
+def asal_piutang(j, akun_piutang, sampai):
+    """Jenis pendapatan yang membentuk piutang ini (transaksi yang MENAMBAH akun piutang tsb./sub-akunnya
+    sampai tanggal pelunasan). Kembalikan set {'jasa','barang','lain'}; kosong bila tidak ketemu
+    (mis. piutang dari saldo awal)."""
+    hasil = set()
+    for t in j.txns:
+        if t.tanggal > sampai:
+            continue
+        if not any((a == akun_piutang or a.startswith(akun_piutang + ":")) and v > 0 for a, v in t.postings):
+            continue
+        dari_tag = TAG_JENIS.get((t.tags.get("jenis") or "").strip().lower())
+        for a, v in t.postings:
+            if v < 0 and j.gol(a) == "pendapatan":
+                hasil.add(dari_tag or jenis_pendapatan(a))
+    return hasil
+
+
+def saldo_piutang(j, akun_piutang, sampai):
+    """Saldo akun piutang (termasuk sub-akunnya) di jurnal sampai tanggal itu."""
+    return sum((v for a, v in saldo_per(j, sampai=sampai).items()
+                if a == akun_piutang or a.startswith(akun_piutang + ":")), NOL)
+
+
 def teks_persen_polos(d):
     return format(d.normalize(), "f").replace(".", ",")
 
@@ -1247,7 +1400,15 @@ def rencana_dari(j, e, tahun=None):
     catatan = []
     if (e.get("pph23") or e.get("diterima")) and jenis not in ("jual", "penjualan", "jasa", "terima-piutang",
                                                                 "pelunasan-piutang"):
-        raise Gagal("--pph23/--diterima hanya untuk jenis jual, jasa, atau terima-piutang (pelanggan memotong PPh 23).")
+        raise Gagal("--pph23/--diterima hanya untuk jenis jasa atau terima-piutang (pelanggan memotong PPh 23).")
+    if (e.get("pph23") or e.get("diterima")) and jenis in ("jual", "penjualan"):
+        raise Gagal("--pph23/--diterima tidak dipakai untuk --jenis jual (penjualan BARANG): PPh 23 dipotong atas jasa, "
+                    "sewa, royalti, dll.; atas penjualan barang umumnya tidak berlaku, TETAPI bisa berlaku bila transaksi "
+                    "sebenarnya jasa (mis. jasa katering) - jadi minta klarifikasi/bukti potong (UU PPh Pasal 23). "
+                    "JANGAN dicatat sebagai kredit pajak sebelum ada bukti potong. Bila pembeli membayar kurang: catat penjualan PENUH dengan --via tempo, lalu --jenis "
+                    "terima-piutang --nominal <uang yang benar-benar masuk> --ket \"selisih potongan belum "
+                    "dikonfirmasi\"; selisihnya tetap PIUTANG pelanggan sampai ada klarifikasi/bukti potong. Bila yang "
+                    "dijual sebenarnya jasa/sewa, pakai --jenis jasa. PERLU REVIEW konsultan pajak.")
     tags = {}
     if pihak:
         tags["pihak"] = bersih_segmen(pihak, "--pihak")
@@ -1261,6 +1422,7 @@ def rencana_dari(j, e, tahun=None):
         return v
 
     if jenis in ("jual", "penjualan", "jasa"):
+        tags["jenis"] = "jasa" if jenis == "jasa" else "jual"          # v1.0.4: asal piutang dari jenis catatan
         n = nom()
         ak_p = akun_arg or ("Pendapatan:Jasa" if jenis == "jasa" else "Pendapatan:Penjualan")
         lawan = akun_via(j, via, bank, "piutang", pihak)
@@ -1304,6 +1466,44 @@ def rencana_dari(j, e, tahun=None):
         pph, catatan = potongan_pph23(e, n)
         masuk_ke = akun_via(j, via, bank, None, None)
         if pph:
+            asal = asal_piutang(j, dasar, tgl)
+            if asal == {"barang"}:
+                nama_p = tags.get("pihak") or "pelanggan"
+                raise Gagal(
+                    "--pph23/--diterima ditolak: piutang {d} berasal dari PENJUALAN BARANG (dicatat dengan --jenis jual). "
+                    "PPh 23 dipotong atas jasa, sewa, royalti, dll.; atas penjualan barang umumnya tidak berlaku, tetapi bisa "
+                    "berlaku bila transaksi sebenarnya jasa (mis. jasa katering; UU PPh Pasal 23, PMK 141/PMK.03/2015). "
+                    "Karena itu minta klarifikasi/bukti potong; sampai ada bukti potong, potongan {p} JANGAN dicatat "
+                    "sebagai kredit pajak dan JANGAN dibebankan (bukan biaya bank).\n"
+                    "YANG DISARANKAN (pratinjau dulu, lalu --ya setelah pengguna setuju):\n"
+                    "  catat --jenis terima-piutang --nominal {m} --via {v} --pihak \"{n}\" --tanggal {t} "
+                    "--ket \"Pelunasan sebagian - selisih {p} potongan belum dikonfirmasi\"\n"
+                    "  -> uang masuk Rp {m}; sisa {p} TETAP piutang {n} (potongan belum dikonfirmasi) sampai jelas.\n"
+                    "LALU minta klarifikasi ke {n} (draf, dikirim pengguna sendiri): \"Selamat siang, terima kasih "
+                    "pembayarannya sebesar Rp {m}. Tagihan kami {b} untuk pembelian barang; ada selisih {p} yang disebut "
+                    "potongan PPh 23. Setahu kami PPh 23 dipotong atas jasa/sewa, bukan pembelian barang. Mohon "
+                    "dibantu: bila memang ada pemotongan pajak, mohon kirimkan bukti potongnya; bila tidak, mohon "
+                    "kekurangan {p} ditransfer ke rekening kami. Terima kasih.\"\n"
+                    "SETELAH JELAS: (a) kekurangan dibayar -> terima-piutang --nominal {q}; (b) ternyata tagihannya jasa "
+                    "dan ada bukti potong PPh 23 -> perbaiki catatan tagihan menjadi --jenis jasa (dengan konsultan), "
+                    "baru selisihnya dicatat PPh 23; (c) bukti potong pajak lain (mis. PPh 22 oleh pemungut tertentu) "
+                    "-> tanyakan konsultan pajak cara mencatatnya; (d) pemilik memutuskan merelakan selisih -> "
+                    "--jenis bebas --posting \"Beban:Lain-lain={q}\" --posting \"{d}\". PERLU REVIEW konsultan pajak."
+                    .format(d=dasar, p=rp(pph), q=rp(pph).replace("Rp ", ""), m=rp(n - pph).replace("Rp ", ""), b=rp(n), n=nama_p, v=via or "bank",
+                            t=tgl.isoformat()))
+            if "barang" in asal:
+                catatan.append("PERHATIAN: piutang {} bercampur penjualan barang dan jasa. PPh 23 hanya boleh atas "
+                               "bagian jasa/sewa - pastikan potongan {} sesuai bukti potong dan bukan dihitung dari "
+                               "nilai barang.".format(dasar, rp(pph)))
+            elif not asal:
+                catatan.append("PERHATIAN: asal piutang {} tidak ditemukan di jurnal (mis. dari saldo awal). PPh 23 "
+                               "hanya untuk tagihan jasa/sewa/royalti, bukan penjualan barang - pastikan ada bukti "
+                               "potong.".format(dasar))
+            elif "lain" in asal:
+                catatan.append("PERHATIAN: piutang {} berasal dari pendapatan yang jenisnya tidak jelas (akun "
+                               "pendapatan tanpa kata jasa/sewa atau penjualan, dicatat sebelum v1.0.4). PPh 23 hanya "
+                               "untuk tagihan jasa/sewa/royalti, bukan penjualan barang - pastikan ada bukti potong."
+                               .format(dasar))
             ps = [(masuk_ke, n - pph), (AKUN_PPH23, pph), (dasar, -n)]
             arti = ("Pelanggan melunasi piutang {} (piutang berkurang penuh): uang masuk {} ke {}, dipotong PPh 23 {} "
                     "yang dicatat sebagai pajak dibayar dimuka (bukan beban, pendapatan tetap bruto).".format(
@@ -1312,6 +1512,14 @@ def rencana_dari(j, e, tahun=None):
         else:
             ps = [(masuk_ke, n), (dasar, -n)]
             arti = "Pelanggan membayar piutang {} (piutang berkurang).".format(rp(n))
+        sisa = saldo_piutang(j, dasar, tgl)                   # v1.0.4: piutang yang tidak ada di jurnal
+        if sisa < n:
+            catatan.append("PERHATIAN: saldo piutang {} di jurnal per {} hanya {}, lebih kecil dari pelunasan {}, "
+                           "sehingga piutang menjadi minus {}. Kemungkinan tagihannya (atau saldo awal piutang) belum "
+                           "dicatat. Catat dulu: --jenis jual/jasa --via tempo (tagihan baru) atau --jenis saldo-awal "
+                           "(piutang lama), lalu catat pelunasan ini. Bila uang ini sebenarnya penjualan tunai, pakai "
+                           "--jenis jual/jasa --via bank.".format(dasar, teks_tanggal(tgl), rp(max(sisa, NOL)), rp(n),
+                                                                   rp(n - sisa)))
         ket = ket or "Terima pelunasan" + (" - " + tags["pihak"] if pihak else "")
     elif jenis in ("bayar-utang", "pelunasan-utang"):
         n = nom()
@@ -1450,9 +1658,15 @@ def cmd_catat(a):
         entri = [{k: getattr(a, k) for k in ("jenis", "tanggal", "nominal", "via", "bank", "pihak", "ket", "akun",
                                               "dari", "ke", "posting", "pokok", "bunga", "pph23", "diterima")}]
     rencana = []
+    # v1.0.4: entri batch berikutnya ikut "melihat" entri sebelumnya (tagihan tempo lalu pelunasannya dalam satu
+    # batch) untuk cek asal & saldo piutang; jurnal asli (j) tetap dipakai untuk cek akun dan dobel.
+    j_sem = copy.copy(j)
+    j_sem.txns = list(j.txns)
     for i, e in enumerate(entri, start=1):
         try:
-            rencana.append(rencana_dari(j, e))
+            r = rencana_dari(j_sem, e)
+            rencana.append(r)
+            j_sem.txns.append(Transaksi(r.tanggal, r.ket, dict(r.tags), list(r.postings), 0, len(j_sem.txns)))
         except Gagal as g:
             raise Gagal(("Transaksi ke-{}: ".format(i) if len(entri) > 1 else "") + str(g), g.kode)
     baru = periksa_akun(j, rencana, a.akun_baru)
@@ -1879,7 +2093,7 @@ def cmd_impor_bank(a):
     dobel = len(rows) - len(baru)
 
     # uji silang dengan hledger (aturan yang sama)
-    hl = cari_hledger(a) if a.mesin != "bawaan" else None
+    hl = hledger_aktif(a)
     silang = None
     with tempfile.TemporaryDirectory() as tmp:
         p_norm = os.path.join(tmp, "mutasi.csv")
@@ -1894,6 +2108,9 @@ def cmd_impor_bank(a):
             dari_hl = {}
             for t in json.loads(out):
                 ref = dict(t.get("ttags") or []).get("ref")
+                if not ref:   # v1.0.5: hledger lama (mis. 1.30) tidak mengurai tag dari komentar aturan CSV
+                    m_ref = re.search(r"\bref:\s*([0-9a-f]{12})\b", t.get("tcomment") or "")
+                    ref = m_ref.group(1) if m_ref else None
                 for p in t["tpostings"]:
                     if p["paccount"] != ak_bank:
                         dari_hl[ref] = p["paccount"]
@@ -2211,10 +2428,16 @@ def cmd_cek(a):
                  "Pasang hledger (gratis) lewat docs/panduan-hledger.md untuk pemeriksaan lengkap & hledger-web.")
     path = path_jurnal(a)
     if not os.path.exists(path):
-        b.append("File jurnal: BELUM ADA ({}). Buat dengan: init --nama \"Nama Usaha\"".format(path))
+        b.append("File jurnal: BELUM ADA ({}).\n{}\nBuku baru (hanya bila pengguna setuju): init --nama \"Nama Usaha\"".format(
+            path, saran_jurnal_lokal(path)))
         print("\n".join(b))
         return K_FILE
     j = muat_jurnal(a)
+    if hl and hl in _HLEDGER_TIDAK_COCOK and getattr(a, "mesin", "auto") == "auto":
+        b.append("hledger {} TIDAK COCOK dengan skill ini ({}). Semua perintah otomatis memakai pembaca bawaan; "
+                 "perbarui hledger bila ingin pemeriksaan hledger.".format(versi_hledger(hl),
+                                                                           _HLEDGER_TIDAK_COCOK[hl].split(". Pakai")[0]))
+        hl = None
     if j.txns:
         b.append("File jurnal: {} ({} transaksi, {} s.d. {})".format(path, len(j.txns), j.txns[0].tanggal.isoformat(),
                                                                      j.txns[-1].tanggal.isoformat()))
@@ -2273,26 +2496,26 @@ def cmd_backup(a):
 # ============================================================ argparse
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--jurnal", help="file jurnal (default: $LEDGER_FILE atau ~/Pembukuan/usaha.journal)")
     umum.add_argument("--hledger", help="path program hledger (default: cari di PATH / $HLEDGER)")
     umum.add_argument("--mesin", choices=["auto", "hledger", "bawaan"], default="auto")
     umum.add_argument("--json", action="store_true", help="keluaran JSON (laporan)")
 
     p = argparse.ArgumentParser(prog="hledger_usaha.py", description="Asisten pembukuan hledger untuk UMKM "
-                                "(Komunitech v{}).".format(VERSI))
+                                "(Komunitech v{}).".format(VERSI), allow_abbrev=False)
     p.add_argument("--versi", action="version", version=VERSI)
     sub = p.add_subparsers(dest="perintah")
 
-    s = sub.add_parser("init", parents=[umum], help="buat buku (file jurnal) baru")
+    s = sub.add_parser("init", parents=[umum], help="buat buku (file jurnal) baru", allow_abbrev=False)
     s.add_argument("--nama", help="nama usaha")
     s.add_argument("--bank", action="append", help="nama rekening bank, mis. BCA (bisa diulang)")
     s.set_defaults(fungsi=cmd_init)
 
-    s = sub.add_parser("cek", parents=[umum], help="cek hledger & file jurnal")
+    s = sub.add_parser("cek", parents=[umum], help="cek hledger & file jurnal", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_cek)
 
-    s = sub.add_parser("catat", parents=[umum], help="catat transaksi")
+    s = sub.add_parser("catat", parents=[umum], help="catat transaksi", allow_abbrev=False)
     s.add_argument("--jenis")
     s.add_argument("--tanggal")
     s.add_argument("--nominal")
@@ -2314,7 +2537,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true", help="simpan (setelah pengguna setuju)")
     s.set_defaults(fungsi=cmd_catat)
 
-    s = sub.add_parser("impor-bank", parents=[umum], help="impor CSV mutasi bank")
+    s = sub.add_parser("impor-bank", parents=[umum], help="impor CSV mutasi bank", allow_abbrev=False)
     s.add_argument("file")
     s.add_argument("--bank", help="rekening tujuan, mis. BCA atau Aset:Bank:BCA")
     s.add_argument("--aturan", help="file aturan .rules (default: aturan-bank.rules di folder jurnal)")
@@ -2327,7 +2550,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_impor_bank)
 
-    s = sub.add_parser("tambah-aturan", parents=[umum], help="tambah kata kunci pengelompokan mutasi bank")
+    s = sub.add_parser("tambah-aturan", parents=[umum], help="tambah kata kunci pengelompokan mutasi bank", allow_abbrev=False)
     s.add_argument("--kata", action="append", required=True)
     s.add_argument("--akun", required=True)
     s.add_argument("--arah", choices=["masuk", "keluar", "dua"], default="dua")
@@ -2335,7 +2558,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_tambah_aturan)
 
-    s = sub.add_parser("stok-akhir", parents=[umum], help="penyesuaian nilai persediaan dari hitung stok")
+    s = sub.add_parser("stok-akhir", parents=[umum], help="penyesuaian nilai persediaan dari hitung stok", allow_abbrev=False)
     s.add_argument("--nilai", required=True)
     s.add_argument("--tanggal")
     s.add_argument("--akun")
@@ -2343,7 +2566,7 @@ def buat_parser():
     s.add_argument("--ya", action="store_true")
     s.set_defaults(fungsi=cmd_stok_akhir)
 
-    s = sub.add_parser("saldo", parents=[umum], help="saldo akun")
+    s = sub.add_parser("saldo", parents=[umum], help="saldo akun", allow_abbrev=False)
     s.add_argument("akun", nargs="*")
     s.add_argument("--tanggal")
     s.add_argument("--bulan")
@@ -2353,7 +2576,7 @@ def buat_parser():
     for nama, f, per in (("laba-rugi", cmd_laba_rugi, True), ("arus-kas", cmd_arus_kas, True),
                          ("bulanan", cmd_bulanan, True), ("neraca", cmd_neraca, False),
                          ("ekspor-emkm", cmd_ekspor_emkm, True)):
-        s = sub.add_parser(nama, parents=[umum])
+        s = sub.add_parser(nama, parents=[umum], allow_abbrev=False)
         s.add_argument("--bulan", help="2026-09 | 09/2026 | 'September 2026' | ini | lalu")
         if per:
             s.add_argument("--dari")
@@ -2365,7 +2588,7 @@ def buat_parser():
             s.add_argument("--timpa", action="store_true")
         s.set_defaults(fungsi=f)
 
-    s = sub.add_parser("backup", parents=[umum], help="salin jurnal & aturan")
+    s = sub.add_parser("backup", parents=[umum], help="salin jurnal & aturan", allow_abbrev=False)
     s.add_argument("--ke", help="folder tujuan (default: backup/ di folder jurnal)")
     s.set_defaults(fungsi=cmd_backup)
     return p

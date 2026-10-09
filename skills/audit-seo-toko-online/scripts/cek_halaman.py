@@ -469,6 +469,17 @@ def _cek_product(obj):
     return catatan
 
 
+def _norm_url(teks):
+    """Samakan tanda hubung/garis bawah/%20/+ menjadi spasi agar kata kunci
+    ("keripik pedas") cocok dengan slug URL ("keripik-pedas"). Slug URL yang
+    benar memakai TANDA HUBUNG; pencocokan di sini hanya menormalkan
+    tanda hubung = spasi."""
+    t = teks.lower().replace("%20", " ")
+    for ch in "-_+":
+        t = t.replace(ch, " ")
+    return " ".join(t.split())
+
+
 def analisis_kata_kunci(kata_kunci, title, headings, paragraf_awal, url):
     if not kata_kunci:
         return None
@@ -478,7 +489,7 @@ def analisis_kata_kunci(kata_kunci, title, headings, paragraf_awal, url):
         "kata_kunci": kata_kunci,
         "di_title": bool(title) and kk in title.lower(),
         "di_h1": kk in h1_gabungan,
-        "di_url": bool(url) and kk.replace(" ", "-") in url.lower(),
+        "di_url": bool(url) and _norm_url(kk) in _norm_url(url),
         "di_paragraf_awal": bool(paragraf_awal) and kk in paragraf_awal.lower(),
     }
 
@@ -614,6 +625,9 @@ def cetak_teks(hasil):
         for label, kunci in (("Muncul di title", "di_title"), ("Muncul di H1", "di_h1"),
                               ("Muncul di URL", "di_url"), ("Muncul di paragraf awal", "di_paragraf_awal")):
             print(f"  {label}: {'YA' if kk[kunci] else 'TIDAK'}")
+        print("  Catatan: slug URL yang benar memakai tanda hubung (keripik-pedas). "
+              "Pencocokan kata kunci di URL menormalkan tanda hubung = spasi, "
+              "jadi \"keripik pedas\" cocok dengan /keripik-pedas.")
 
     judul("Ukuran halaman (HTML mentah saja)")
     u = hasil["ukuran_halaman"]

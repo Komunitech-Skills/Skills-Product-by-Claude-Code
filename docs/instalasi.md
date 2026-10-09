@@ -2,7 +2,7 @@
 
 Skill adalah **folder** berisi file `SKILL.md`. Cara memasangnya: **salin folder skill ke folder "skills" milik AI agent kamu.** Setelah itu, cukup minta tolong seperti biasa. AI agent akan memakai skill secara otomatis bila relevan.
 
-> Pastikan yang disalin adalah folder skill-nya (misalnya `caption-sosmed-umkm`, yang di dalamnya langsung ada `SKILL.md`), bukan folder hasil ekstrak ZIP yang membungkusnya.
+> Pastikan yang disalin adalah folder skill-nya (misalnya `kasir-lokal`, yang di dalamnya langsung ada `SKILL.md`), bukan folder hasil ekstrak ZIP yang membungkusnya.
 
 ## Pilih platform yang kamu pakai
 
@@ -69,7 +69,7 @@ Beberapa skill menyertakan script Python (folder `scripts/`). Mac dan Linux umum
 | Masalah | Solusi |
 |---|---|
 | Skill tidak muncul | Pastikan `SKILL.md` ada **langsung** di dalam folder skill, bukan di dalam folder bertingkat. Buka sesi/chat baru. |
-| Skill tidak dipakai otomatis | Sebut kebutuhannya lebih jelas, atau panggil namanya langsung (mis. "pakai skill caption-sosmed-umkm"). |
+| Skill tidak dipakai otomatis | Sebut kebutuhannya lebih jelas, atau panggil namanya langsung (mis. "pakai skill kasir-lokal"). |
 | Error "python not found" | Pasang Python (lihat di atas), lalu buka ulang aplikasi. |
 
 ---

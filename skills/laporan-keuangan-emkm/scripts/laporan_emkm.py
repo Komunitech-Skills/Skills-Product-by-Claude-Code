@@ -17,6 +17,7 @@ Contoh:
 """
 import argparse
 import csv
+import html
 import io
 import json
 import os
@@ -27,7 +28,7 @@ from collections import OrderedDict, defaultdict
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-VERSI = "1.3.0"
+VERSI = "1.3.3"
 
 # ---------------------------------------------------------------------------
 # Kategori & peran akuntansinya
@@ -1187,6 +1188,25 @@ def hitung(a):
             data["saldo_kolom_terakhir"] != kas_buku_akhir:
         peringatan.append("Kolom Saldo di file berakhir di {}, sedangkan hasil hitung {}. Cek kas awal atau "
                           "baris yang terlewat.".format(rp(data["saldo_kolom_terakhir"]), rp(kas_buku_akhir)))
+    # Modal (ekuitas) negatif BUKAN otomatis "wajar": paling sering karena aset lama tidak dicatat.
+    modal_negatif = None
+    if modal_awal < 0 or modal_akhir < 0:
+        cek = []
+        if aset_tetap_awal == 0:
+            cek.append("ASET YANG BELUM DICATAT: aset tetap awal tercatat Rp 0. Peralatan/kendaraan lama yang masih "
+                       "dipakai usaha (kompor, gerobak, etalase, motor, mesin) belum masuk neraca. Isi "
+                       "--aset-tetap-awal <nilai wajar sekarang> + --umur-aset-tahun <sisa umur>, atau lampirkan "
+                       "daftar aset bila laporan untuk bank")
+        cek.append("UTANG: pastikan utang awal ({}) memang utang usaha yang masih tersisa, bukan utang pribadi "
+                   "atau angka plafon awal".format(rp(liab_awal)))
+        cek.append("SALDO AWAL LAIN: kas, saldo rekening usaha, stok, dan piutang awal sudah lengkap")
+        modal_negatif = ("Modal (ekuitas) NEGATIF (modal awal {}, modal akhir {}): utang tercatat lebih besar dari "
+                         "aset tercatat. Ini BUKAN otomatis 'wajar untuk usaha baru' — bank membacanya sebagai "
+                         "kewajiban melebihi harta. Periksa dulu: {}. Bila setelah dicek tetap negatif, sampaikan "
+                         "apa adanya beserta penyebabnya.".format(rp(modal_awal), rp(modal_akhir),
+                                                                 "; ".join("({}) {}".format(i, x) for i, x in
+                                                                           enumerate(cek, 1))))
+        peringatan.append(modal_negatif)
     if prive > 0 and laba_bersih > 0 and prive > laba_bersih:
         peringatan.append("Pengambilan pribadi (prive) {} lebih besar dari laba {}: modal usaha berkurang.".format(
             rp(prive), rp(laba_bersih)))
@@ -1298,8 +1318,34 @@ def hitung(a):
         if n:
             per_kategori.append({"kode": kd, "label": info["label"], "jumlah_transaksi": n, "total": total[kd]})
 
+    # --- Laporan arus kas (metode langsung, basis kas; transfer antar rekening sendiri tidak dihitung)
+    kelompok_ak = {"aset_tetap": "investasi", "jual_aset": "investasi", "modal": "pendanaan", "prive": "pendanaan",
+                   "pinjaman_masuk": "pendanaan", "bayar_pinjaman": "pendanaan", "transfer": None}
+    arus_kas = OrderedDict((k, OrderedDict()) for k in ("operasi", "investasi", "pendanaan"))
+    for t in trx:
+        jenis = kategori[t["kode"]]["jenis"] if t["kode"] else None
+        grup = kelompok_ak.get(jenis, "operasi")
+        if grup is None:
+            continue
+        lbl = (label(t["kode"]) if t["kode"] else "Belum terklasifikasi (perlu dicek)") + \
+            (" (masuk)" if t["arah"] == "masuk" else "")
+        arus_kas[grup][lbl] = arus_kas[grup].get(lbl, 0) + (t["nilai"] if t["arah"] == "masuk" else -t["nilai"])
+    bersih_ak = {g: sum(v.values()) for g, v in arus_kas.items()}
+    kenaikan_kas = sum(bersih_ak.values())
+    laporan_arus_kas = {
+        "kas_awal": kas_awal,
+        "rincian": {g: [{"pos": k, "nilai": v} for k, v in sorted(arus_kas[g].items(), key=lambda x: -x[1])]
+                    for g in arus_kas},
+        "bersih": bersih_ak, "kenaikan_kas": kenaikan_kas, "kas_akhir_buku": kas_awal + kenaikan_kas,
+        "selisih_kas_nyata": (kas_neraca - kas_hitung) if kas_neraca != kas_hitung else 0,
+        "kas_akhir": kas_neraca,
+        "cocok_dengan_buku": kas_awal + kenaikan_kas == kas_hitung,
+    }
+
     hasil = {
         "versi_script": VERSI,
+        "modal_negatif": modal_negatif,
+        "arus_kas": laporan_arus_kas,
         "nama_usaha": a.nama_usaha,
         "file": data["nama_file"],
         "periode": {"awal": p_awal.isoformat(), "akhir": p_akhir.isoformat(),
@@ -1520,6 +1566,28 @@ def cetak_teks(h):
         for p in pk["penyebab_selisih"]:
             o.append("- " + p)
     o.append("")
+    ak = h["arus_kas"]
+    nama_grup = {"operasi": "Arus kas dari kegiatan usaha (operasi)", "investasi": "Arus kas dari investasi (aset tetap)",
+                 "pendanaan": "Arus kas dari pendanaan (modal, prive, pinjaman)"}
+    o.append("## Laporan Arus Kas (ringkas, metode langsung — tambahan, tidak diwajibkan SAK EMKM)")
+    o.append("{} — untuk periode {}".format(nama, per))
+    o.append("")
+    b = []
+    for g, rinci in ak["rincian"].items():
+        b.append(("**{}**".format(nama_grup[g]), ""))
+        for x in rinci:
+            b.append((x["pos"], rp(x["nilai"]) if x["nilai"] >= 0 else rp_kurang(-x["nilai"])))
+        nilai_g = ak["bersih"][g]
+        b.append(("_Kas bersih {}_".format(g), "_{}_".format(rp(nilai_g) if nilai_g >= 0 else rp_kurang(-nilai_g))))
+    b.append(("**Kenaikan (penurunan) kas**", "**{}**".format(
+        rp(ak["kenaikan_kas"]) if ak["kenaikan_kas"] >= 0 else rp_kurang(-ak["kenaikan_kas"]))))
+    b.append(("Kas awal periode", rp(ak["kas_awal"])))
+    if ak["selisih_kas_nyata"]:
+        b.append(("Selisih kas nyata vs buku", rp(ak["selisih_kas_nyata"]) if ak["selisih_kas_nyata"] >= 0
+                  else rp_kurang(-ak["selisih_kas_nyata"])))
+    b.append(("**Kas akhir periode**", "**{}**".format(rp(ak["kas_akhir"]))))
+    o.append(tabel(b))
+    o.append("")
     o.append("## 3. Catatan atas Laporan Keuangan (ringkas)")
     o.extend(catatan(h))
     o.append("")
@@ -1614,12 +1682,75 @@ def catatan(h):
                                  rp(h["arus_non_laba"]["bayar_pokok_pinjaman"])))
     n.append("**8. Ekuitas.** Modal awal {} + tambahan modal {} + laba bersih {} - prive {} = modal akhir {}.".format(
         rp(e["modal_awal"]), rp(e["setoran_modal"]), rp(e["laba_bersih"]), rp(e["prive"]), rp(e["modal_akhir"])))
+    if h.get("modal_negatif"):
+        n.append("**Catatan modal negatif.** " + h["modal_negatif"])
     n.append("**9. Pendapatan** diakui saat barang/jasa diserahkan; pendapatan usaha bersih periode ini {}.".format(
         rp(lr["pendapatan_usaha_bersih"])))
     n.append("**10. Beban** diakui saat terjadi. Total beban usaha {}, beban keuangan {}, beban pajak "
              "penghasilan {}. [Lengkapi status perpajakan usaha bila perlu, mis. memakai PPh final UMKM.]".format(
                  rp(lr["total_beban_usaha"]), rp(lr["beban_keuangan"]), rp(lr["beban_pajak_penghasilan"])))
     return [x + "\n" for x in n]
+
+
+def _inline_html(t):
+    t = html.escape(t, quote=False)
+    t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"(?<![\w])_(.+?)_(?![\w])", r"<em>\1</em>", t)
+    return t
+
+
+def ke_html(md, nama_usaha):
+    """Ubah keluaran Markdown script menjadi HTML mandiri siap cetak (Ctrl+P → Simpan sebagai PDF)."""
+    out, tabel_buka, list_buka, baris_tabel = [], False, False, 0
+    for baris in md.split("\n"):
+        b = baris.rstrip()
+        if b.startswith("|"):
+            sel = [x.strip() for x in b.strip("|").split("|")]
+            if all(re.fullmatch(r":?-{3,}:?", x) for x in sel if x):
+                continue
+            if not tabel_buka:
+                out.append("<table>")
+                tabel_buka, baris_tabel = True, 0
+            tag = "th" if baris_tabel == 0 else "td"
+            out.append("<tr>" + "".join('<{0}{1}>{2}</{0}>'.format(
+                tag, ' class="n"' if i > 0 else "", _inline_html(x)) for i, x in enumerate(sel)) + "</tr>")
+            baris_tabel += 1
+            continue
+        if tabel_buka:
+            out.append("</table>")
+            tabel_buka = False
+        if b.startswith("- "):
+            if not list_buka:
+                out.append("<ul>")
+                list_buka = True
+            out.append("<li>" + _inline_html(b[2:]) + "</li>")
+            continue
+        if list_buka:
+            out.append("</ul>")
+            list_buka = False
+        if b.startswith("## "):
+            out.append("<h2>" + _inline_html(b[3:]) + "</h2>")
+        elif b.startswith("# "):
+            out.append("<h1>" + _inline_html(b[2:]) + "</h1>")
+        elif b == "---":
+            out.append("<hr>")
+        elif b:
+            out.append("<p>" + _inline_html(b) + "</p>")
+    if tabel_buka:
+        out.append("</table>")
+    if list_buka:
+        out.append("</ul>")
+    ttd = ('<div class="ttd"><p>[isi: kota], [isi: tanggal]</p><p>Pemilik {},</p><br><br><br>'
+           '<p>( [isi: nama pemilik] )</p></div>').format(html.escape(nama_usaha))
+    gaya = ("body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;background:#fff;max-width:800px;"
+            "margin:24px auto;padding:0 16px}h1{font-size:20px}h2{font-size:15px;margin-top:22px;border-bottom:1px "
+            "solid #999}table{border-collapse:collapse;width:100%;margin:8px 0}td,th{border:1px solid #bbb;"
+            "padding:4px 6px;text-align:left;vertical-align:top}.n{text-align:right;white-space:nowrap}"
+            ".ttd{margin-top:36px;width:260px;margin-left:auto}@media print{h2{page-break-after:avoid}"
+            "table{page-break-inside:auto}tr{page-break-inside:avoid}}")
+    return ('<!doctype html>\n<html lang="id"><head><meta charset="utf-8"><title>Laporan Keuangan {}</title>'
+            '<style>{}</style></head><body>\n{}\n{}\n</body></html>\n').format(
+                html.escape(nama_usaha), gaya, "\n".join(out), ttd)
 
 
 def cetak_daftar_kategori(path_pemetaan):
@@ -1686,6 +1817,8 @@ def main(argv=None):
     p.add_argument("--saldo-awal-per", choices=["awal-file", "awal-periode"],
                    help="saldo awal yang diberikan berlaku per awal data file (default, digulirkan) atau per --periode-awal")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
+    p.add_argument("--html", metavar="FILE", help="simpan juga laporan siap cetak (HTML; buka di browser → Cetak → PDF)")
+    p.add_argument("--csv-arus-kas", metavar="FILE", help="simpan laporan arus kas ke CSV (bisa dibuka di Excel)")
     p.add_argument("--daftar-kategori", action="store_true", help="tampilkan kode kategori & kata kunci")
     a = p.parse_args(argv)
     try:
@@ -1701,10 +1834,33 @@ def main(argv=None):
         else:
             sys.stderr.write("GALAT: {}\n".format(e))
         return 1
+    try:
+        if a.html:
+            with open(a.html, "w", encoding="utf-8") as f:
+                f.write(ke_html(cetak_teks(h), h["nama_usaha"]))
+        if a.csv_arus_kas:
+            with open(a.csv_arus_kas, "w", newline="", encoding="utf-8-sig") as f:
+                w = csv.writer(f)
+                w.writerow(["kelompok", "pos", "nilai_rupiah"])
+                for g, rinci in h["arus_kas"]["rincian"].items():
+                    for x in rinci:
+                        w.writerow([g, x["pos"], x["nilai"]])
+                    w.writerow([g, "Kas bersih " + g, h["arus_kas"]["bersih"][g]])
+                w.writerow(["", "Kenaikan (penurunan) kas", h["arus_kas"]["kenaikan_kas"]])
+                w.writerow(["", "Kas awal periode", h["arus_kas"]["kas_awal"]])
+                if h["arus_kas"]["selisih_kas_nyata"]:
+                    w.writerow(["", "Selisih kas nyata vs buku", h["arus_kas"]["selisih_kas_nyata"]])
+                w.writerow(["", "Kas akhir periode", h["arus_kas"]["kas_akhir"]])
+    except OSError as e:
+        sys.stderr.write("GALAT: gagal menyimpan file ekspor: {}\n".format(e))
+        return 1
     if a.format == "json":
         print(json.dumps(h, ensure_ascii=False, indent=2))
     else:
         print(cetak_teks(h))
+        for f_, ket in ((a.html, "Laporan siap cetak (HTML)"), (a.csv_arus_kas, "Arus kas (CSV)")):
+            if f_:
+                print("\n{} disimpan: {}".format(ket, f_))
     return 0
 
 

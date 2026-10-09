@@ -58,3 +58,10 @@ Perintah bertanda **(tulis)** hanya pratinjau sampai ditambah `--ya` setelah pen
 - Tanpa `--gabung`: kolom `nama;jabatan;ptkp;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;lembur_hari_kerja;lembur_hari_libur;kode_absensi;hari_hadir;hari_alpa;terlambat_menit`. Gaji & tunjangan diisi dari database absensi; pekerja upah harian diisi upah sebulan konversi (× 25 / × 21, Pasal 33) + catatan. `ptkp` wajib diisi dulu.
 - Dengan `--gabung file-gaji.csv`: kolom `lembur_hari_kerja` (mis. `2+1,5`) dan `lembur_hari_libur` (mis. `8+6p`, `p` = libur resmi di hari kerja terpendek) diisi ke file gaji yang sudah ada, dicocokkan lewat nama (atau kode di kolom `nik`). Baris yang sudah berisi `lembur_rp` tidak diisi jam (mencegah dobel).
 - `slip-gaji-bpjs` memakai satu `--hari-kerja` per jalan → ekspor terpisah per pola (`--pola 5` / `--pola 6`).
+
+## Script terpisah: `scripts/upah_harian.py` (pekerja harian lepas, tanpa database)
+`python3 scripts/upah_harian.py [--pola 6|5] [--periode LABEL] --pekerja "Nama; tarif=120rb; hari=6; setengah=1; lembur=2+1; lembur-libur=3; tarif-lembur=15rb; tambahan=20rb; potongan=200rb; pola=6" [--pekerja ...] [--file pekerja.csv] [--json]`
+- Upah hadir = tarif × hari + tarif × ½ × setengah (dibulatkan ke rupiah terdekat). Lembur minimum = jam setara × (tarif × 25 atau × 21) ÷ 173, dibulatkan sekali per pekerja. `tarif-lembur` → lembur dibayar = jam × tarif pemilik (peringatan bila < minimum). Total = hadir + lembur dibayar + tambahan − potongan.
+- Field JSON per pekerja: `upah_hadir`, `rumus_upah_hadir`, `lembur_jam`, `lembur_jam_setara`, `upah_sejam`, `lembur_minimum_pp35`, `lembur_dibayar`, `total_dibayar`, `total_versi_minimum_pp35`, `peringatan`; plus `total_dibayar`, `total_versi_minimum_pp35`, `teks`.
+- Peringatan: lembur > 4 jam/hari atau > 18 jam/minggu (Pasal 26), potongan > upah, upah harian > Rp450.000 (PPh 21 harian mungkin terutang). Lembur libur melebihi tangga Pasal 31 → ditolak.
+- Uji: `python3 tests/uji_upah_harian.py`.

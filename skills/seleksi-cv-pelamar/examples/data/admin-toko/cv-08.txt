@@ -1,0 +1,21 @@
+CURRICULUM VITAE
+
+Nama: Fajar Nugroho Santoso
+Tempat/Tanggal Lahir: Malang, 5 Juni 1993
+Jenis Kelamin: Laki-laki
+Status: Menikah
+Agama: Islam
+Alamat: Jl. Contoh Fiktif No. 12, Kota Contoh
+No. HP: 0812-5550-1234
+Email: fajar@contoh.id
+
+PENDIDIKAN
+2011 - 2015 S1 Teknik Informatika, Universitas Fiktif Raya
+
+PENGALAMAN KERJA
+2016 - 2024 | Programmer, PT Perangkat Lunak Contoh
+- Membuat aplikasi web internal
+- Mengelola database dan laporan
+
+KEAHLIAN
+Python, SQL, Excel lanjutan, Google Sheet

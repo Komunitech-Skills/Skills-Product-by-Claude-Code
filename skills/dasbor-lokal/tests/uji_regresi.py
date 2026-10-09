@@ -82,6 +82,29 @@ class UjiStokMenipis(unittest.TestCase):
         self.assertEqual(d["jumlah_baris"], 2)
 
 
+class UjiFormatTeks(unittest.TestCase):
+    def test_float_bulat_tanpa_titik_nol(self):
+        # v1.0.1: stok REAL 25.0 dari SQLite dulu tampil "25.0" di mode teks, sekarang "25".
+        self.assertEqual(dasbor.fmt_nilai("stok", 25.0), "25")
+        self.assertEqual(dasbor.fmt_nilai("stok_min", 5.0), "5")
+
+    def test_float_pecahan_tetap_apa_adanya(self):
+        self.assertEqual(dasbor.fmt_nilai("stok", 25.5), "25.5")
+
+    def test_kolom_uang_tetap_format_rupiah(self):
+        kolom_uang = next(iter(dasbor.KOLOM_UANG))
+        self.assertEqual(dasbor.fmt_nilai(kolom_uang, 15000.0), "Rp 15.000")
+
+    def test_cetak_tabel_teks_tidak_ada_titik_nol(self):
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            dasbor.cetak_tabel({"alat": "buku-stok", "query": "stok-menipis", "judul": "x",
+                                 "db": "x.db", "baris": [{"sku": "A", "stok": 25.0}]})
+        keluaran = buf.getvalue()
+        self.assertIn("25", keluaran)
+        self.assertNotIn("25.0", keluaran)
+
+
 class UjiPenjualanPerHari(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -312,6 +335,53 @@ class UjiCariDanDaftarQuery(unittest.TestCase):
     def test_daftar_query_semua_alat_ada_isi(self):
         for nama, info in dasbor.ALAT.items():
             self.assertTrue(info["queries"], "%s tidak punya query" % nama)
+
+
+class UjiKpiTim(unittest.TestCase):
+    """Query kpi-tim dijalankan atas kpi.db hasil 'skor_kpi.py ekspor-db' (data contoh distributor)."""
+
+    @classmethod
+    def setUpClass(cls):
+        import subprocess
+        cls.tmp = tempfile.mkdtemp()
+        kpi = Path(__file__).resolve().parents[2] / "kpi-tim"
+        subprocess.run([sys.executable, str(kpi / "scripts" / "skor_kpi.py"), "ekspor-db",
+                        "--rencana", str(kpi / "templates" / "rencana-kpi-contoh.csv"),
+                        "--realisasi", str(kpi / "templates" / "realisasi-contoh.csv"),
+                        "--keluar", cls.tmp], check=True, capture_output=True)
+        cls.db = str(Path(cls.tmp) / "kpi.db")
+        cls.hash0 = hash_file(Path(cls.db))
+        cls.kpi = kpi
+
+    @classmethod
+    def tearDownClass(cls):
+        import shutil
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_baris_dan_nilai(self):
+        n = {q: dasbor.jalankan_query("kpi-tim", q, cli_db=self.db)["jumlah_baris"]
+             for q in dasbor.ALAT["kpi-tim"]["queries"]}
+        self.assertEqual(n["perusahaan-tren"], 2)
+        self.assertEqual(n["divisi-terbaru"], 3)
+        self.assertEqual(n["orang-terbaru"], 8)
+        self.assertEqual(n["tren-orang"], 16)
+        self.assertGreater(n["kpi-merah"], 0)
+        p = dasbor.jalankan_query("kpi-tim", "perusahaan-tren", cli_db=self.db)["baris"]
+        self.assertEqual((p[0]["periode"], p[0]["skor"], p[0]["tren"]), ("2026-09", 93.6, 6.3))
+        m = dasbor.jalankan_query("kpi-tim", "kpi-merah", cli_db=self.db)["baris"]
+        self.assertTrue(all(b["periode"] == "2026-09" for b in m))
+
+    def test_sql_sama_dengan_metadata_datasette(self):
+        teks = (Path(__file__).resolve().parents[1] / "templates" / "metadata.yml").read_text(encoding="utf-8")
+        blok = (self.kpi / "templates" / "metadata-kpi.yml").read_text(encoding="utf-8").split("databases:\n", 1)[1]
+        self.assertIn(blok, teks)
+        for nama in ("perusahaan_tren", "divisi_terbaru", "orang_terbaru", "tren_orang", "kpi_merah"):
+            self.assertIn("      %s:" % nama, teks)
+
+    def test_database_tidak_berubah(self):
+        for q in dasbor.ALAT["kpi-tim"]["queries"]:
+            dasbor.jalankan_query("kpi-tim", q, cli_db=self.db)
+        self.assertEqual(hash_file(Path(self.db)), self.hash0)
 
 
 if __name__ == "__main__":

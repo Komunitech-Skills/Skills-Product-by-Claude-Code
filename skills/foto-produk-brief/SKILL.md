@@ -1,9 +1,11 @@
 ---
 name: foto-produk-brief
-description: Membuat brief & shot list foto/video produk dengan HP tanpa studio — foto wajib marketplace (utama latar polos, detail, ukuran/skala, cara pakai, kemasan, varian), properti murah, cahaya jendela, sudut, rasio 1:1/3:4/9:16, pengaturan kamera, ide video 15-30 detik dengan storyboard, dan checklist sebelum upload. Gunakan saat diminta cara foto produk pakai HP, shot list, product photography brief, product video ideas. Judul & deskripsi produk pakai listing-marketplace.
+description: Membuat brief & shot list foto/video produk dengan HP tanpa studio — foto wajib marketplace (utama latar polos, detail, ukuran/skala, cara pakai, kemasan, varian), properti murah, cahaya jendela, sudut, rasio 1:1/3:4/9:16, pengaturan kamera, ide video 15-30 detik dengan storyboard, dan checklist sebelum upload. Gunakan saat diminta cara foto produk pakai HP, shot list, konsep foto/video produk, foto before-after, edit foto produk, logo BPOM/halal di foto, foto produk kosmetik/skincare/serum/pemutih/obat/suplemen/jamu, product photography brief, product video ideas. Juga untuk produk yang izin edar BPOM-nya belum terbit. Judul & deskripsi produk pakai listing-marketplace.
 ---
 
 # Brief Foto & Video Produk dengan HP
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Memberi pengguna (atau staf/fotografer freelance) **satu lembar kerja siap eksekusi**: foto apa saja yang diambil, dari sudut mana, dengan latar & cahaya apa, rasio berapa, urutan upload, plus ide video pendek — cukup dengan HP, jendela, dan properti murah. Hasil akhirnya: foto yang jujur (sesuai barang asli) dan lengkap menjawab pertanyaan pembeli.
@@ -13,6 +15,7 @@ Memberi pengguna (atau staf/fotografer freelance) **satu lembar kerja siap eksek
 - "Bikinin shot list foto untuk produk baru", "ide video 15 detik buat TikTok Shop".
 - Brief untuk staf/fotografer/teman yang membantu memotret.
 - Setelah analisis ulasan menemukan keluhan "tidak sesuai foto" atau "ukuran tidak jelas".
+- Konsep foto/video produk kosmetik, skincare, serum, obat, suplemen, atau jamu — termasuk permintaan foto before-after, foto yang diedit, atau logo BPOM/halal di foto (ikuti aturan "Produk wajib izin edar" di Batasan).
 
 ## Kapan TIDAK digunakan
 - Menulis judul/deskripsi/SEO produk → `listing-marketplace`; caption posting → `caption-sosmed-umkm`.
@@ -40,7 +43,7 @@ Jika produk belum jelas, tanyakan **sekali** (maks. 5 pertanyaan bernomor): prod
    kertas harus terlihat putih netral (tidak kuning/biru) dan warna produk sama dengan aslinya bila dilihat berdampingan.
    Jika beda: matikan lampu ruangan, pindah ke cahaya siang, jangan pakai filter. Ulangi tes setelah menyunting.
 5. **Tentukan rasio per kegunaan**: 1:1 untuk foto marketplace; 3:4 (atau 4:5 untuk feed Instagram) untuk feed; 9:16 untuk Story/Reels/TikTok/video. Sarankan memotret dengan ruang kosong di sekeliling produk agar bisa dipotong ke beberapa rasio.
-6. **Buat 2–3 ide video 15–30 detik** dengan storyboard per detik (`references/ide-video.md`): hook 0–3 detik, isi, penutup/CTA, teks layar, suara.
+6. **Buat 2–3 ide video 15–30 detik** dengan storyboard per detik (`references/ide-video.md`): hook 0–3 detik, isi, penutup/CTA, teks layar, suara. Teks di layar hanya memuat fakta dari pengguna; selebihnya tulis `[ISI: ...]`.
 7. **Tambahkan checklist sebelum upload** (`templates/checklist-upload.md`) dan urutan upload + penamaan file.
 8. Periksa checklist di bawah sebelum mengirim.
 
@@ -106,11 +109,16 @@ Posisi jendela–produk–pemantul (sketsa teks), pengaturan kamera langkah demi
 - [ ] Ada langkah tes warna (kertas putih + bandingkan dengan barang asli) dan urutan prioritas bila slot terbatas.
 - [ ] Pengaturan kamera ditulis dengan catatan "beda per merek HP"; jam foto disesuaikan arah jendela.
 - [ ] Ada ide video 15–30 detik dengan storyboard per detik, hook di 3 detik pertama.
-- [ ] Tidak ada saran yang membuat foto menyesatkan (warna diubah, ukuran dipalsukan, klaim BPOM/halal/"terlaris" yang tidak diberikan pengguna, before-after tanpa bukti).
+- [ ] Tidak ada saran yang membuat foto menyesatkan (warna diubah, ukuran dipalsukan, klaim BPOM/halal/"terlaris" yang tidak diberikan pengguna, before-after untuk kosmetik/obat/suplemen, jualan/pre-order sebelum izin edar terbit).
 - [ ] Ketentuan platform yang berubah-ubah (jumlah slot, ukuran file, durasi video) ditulis "cek ketentuan terbaru di Seller Center", bukan angka pasti.
 
 ## Batasan & penanganan error
 - Skill ini tidak menyunting foto dan tidak menjamin foto lolos moderasi; aturan tiap platform berubah — arahkan pengguna mengecek Seller Center/pusat edukasi penjual.
 - Memakai orang (model, tangan, wajah pelanggan) atau karya orang lain (foto dari internet, musik): minta izin dan pakai musik dari pustaka resmi platform. Jangan memakai foto milik toko/brand lain.
-- Produk kecantikan/kesehatan: jangan menyarankan foto before-after atau klaim hasil tanpa bukti yang sah; tampilkan tekstur & cara pakai saja.
+- **Produk wajib izin edar (kosmetik, skincare, serum/pemutih, obat, suplemen, jamu/obat tradisional):**
+  - Cek dulu: sudah punya nomor notifikasi/izin edar BPOM yang **sudah terbit**? Kalau belum atau ragu, tanyakan.
+  - **Izin belum terbit** → jangan sarankan menjual, pre-order, teaser jualan, membuka listing, atau menulis "BPOM dalam proses"/"segera BPOM". Promosi & iklan kosmetik hanya boleh untuk kosmetik yang sudah bernotifikasi (PerBPOM No. 18 Tahun 2024 tentang Penandaan, Promosi, dan Iklan Kosmetik, diundangkan 28 Nov 2024); obat, suplemen, dan obat tradisional juga wajib izin edar sebelum diedarkan. Arahkan: tunggu nomor terbit, cek di cekbpom.pom.go.id, baru buat brief foto. Yang boleh disiapkan sekarang hanya rencana/brief internal yang belum dipublikasikan.
+  - **Jangan pernah** menyarankan logo/nomor BPOM atau halal yang belum dimiliki (pemalsuan keterangan izin).
+  - **Jangan sarankan foto/video before-after** (sebelum–sesudah pemakaian, termasuk "versi realistis" atau dari testimoni) dan klaim hasil ("putih dalam 7 hari", "menyembuhkan"), juga tidak mengedit foto agar produk/hasil terlihat lebih besar/bagus dari aslinya. Iklan kosmetik wajib objektif dan tidak menyesatkan/berlebihan; untuk obat/suplemen klaim khasiat hanya yang disetujui di izin edarnya.
+  - Alternatif yang ditawarkan: foto kemasan asli, tekstur, cara pakai, ukuran asli, label komposisi asli — setelah izin terbit. Ingatkan cek aturan terbaru di situs BPOM; ini bukan nasihat hukum.
 - Jika pengguna meminta "foto dibuat lebih bagus dari aslinya": jelaskan risikonya (ulasan "tidak sesuai foto", retur) dan fokus pada pencahayaan & komposisi yang jujur.

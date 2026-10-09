@@ -22,6 +22,16 @@ Lokasi file log (urutan prioritas):
 Perintah tulis (`catat`) langsung menambah baris (auto-membuat file+header bila belum ada).
 Perintah baca (`laporan`, `daftar-klien`) tidak pernah mengubah file.
 
+Sejak 1.0.5 pembacaan file toleran, sehingga file catatan milik pengguna sendiri bisa langsung
+dipakai dengan `--file catatan-saya.csv` (tanpa menyalin baris satu per satu):
+  - pemisah koma, titik koma, tab, atau |; BOM UTF-8/UTF-16; encoding Windows (cp1252)
+  - header umum ID/EN (Tanggal/Date, Klien/Client, Kerjaan/Kegiatan/Task, Durasi/Hours, ...)
+  - durasi "2,5 jam", "90 menit", "1 jam 30 menit", "1:30", "2h", "45m", "2.5"
+  - tanggal 2026-09-22, 22/09/2026, 22-09-2026, 22 Sep 2026, 22 September 2026
+  - kolom opsional Keterangan/Catatan dan Rencana/Next step
+Jam disimpan & ditampilkan sampai 2 desimal (menit dibulatkan per baris), dan total jam =
+penjumlahan persis jam per baris yang tampil.
+
 Contoh:
   python3 laporan_klien.py catat --klien "PT Maju Jaya" --proyek "Pembukuan bulanan" \\
       --pekerjaan "Rekonsiliasi bank September" --jam 2.5 --status selesai
@@ -45,7 +55,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 APLIKASI = "laporan-klien-konsultan"
-VERSI = "1.0.0"
+VERSI = "1.0.5"
 SKEMA = 1
 
 KOLOM = ["tanggal", "klien", "proyek", "pekerjaan", "jam", "status", "kendala", "butuh_dari_klien"]
@@ -54,6 +64,9 @@ LABEL_STATUS = {"selesai": "Selesai", "berjalan": "Berjalan", "terkendala": "Ter
 
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
          "Agustus", "September", "Oktober", "November", "Desember"]
+NAMA_BULAN = {"jan": 1, "feb": 2, "peb": 2, "mar": 3, "apr": 4, "mei": 5, "may": 5, "jun": 6,
+              "jul": 7, "agu": 8, "agt": 8, "aug": 8, "sep": 9, "okt": 10, "oct": 10,
+              "nov": 11, "nop": 11, "des": 12, "dec": 12}
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 
 # Pola deteksi data pribadi/rahasia klien -- deteksi saja (tidak memblokir), sama seperti
@@ -109,45 +122,115 @@ def baca_tanggal(teks, acuan=None):
         return acuan
     if t in ("kemarin", "yesterday"):
         return acuan - timedelta(days=1)
-    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y"):
+    bersih = teks.strip()
+    # Excel kadang menulis "2026-09-22 00:00:00"
+    if re.match(r"^\d{4}-\d{2}-\d{2}[ T]\d{1,2}:\d{2}", bersih):
+        bersih = bersih[:10]
+    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%d/%m/%y", "%d-%m-%y", "%Y/%m/%d",
+                "%d.%m.%Y"):
         try:
-            return datetime.strptime(teks.strip(), fmt).date()
+            return datetime.strptime(bersih, fmt).date()
         except ValueError:
             continue
+    m = re.match(r"^(?:[A-Za-z]+,?\s+)?(\d{1,2})\s+([A-Za-z]+)\.?\s+(\d{4})$", bersih)
+    if m:
+        bln = NAMA_BULAN.get(m.group(2).lower()[:3])
+        if bln:
+            try:
+                return date(int(m.group(3)), bln, int(m.group(1)))
+            except ValueError:
+                pass
     raise Gagal(f"Tanggal '{teks}' tidak dikenali. Pakai format YYYY-MM-DD (mis. 2026-09-24), "
-                "'hari-ini', atau 'kemarin'.")
+                "DD/MM/YYYY (mis. 24/09/2026), '24 Sep 2026', 'hari-ini', atau 'kemarin'.")
+
+
+_SATUAN_JAM = ("jam", "j", "h", "hr", "hrs", "hour", "hours")
+_SATUAN_MENIT = ("menit", "mnt", "m", "min", "mins", "minute", "minutes")
+_POLA_DURASI = re.compile(r"(-?\d+(?:[.,]\d+)?)\s*([a-z]*)")
+
+
+def _angka(teks):
+    return float(teks.replace(",", "."))
 
 
 def parse_jam(teks):
+    """Baca durasi jadi jam desimal, dibulatkan 2 desimal (supaya total = jumlah yang tampil).
+
+    Menerima: 2 | 2.5 | 2,5 | "2,5 jam" | "90 menit" | "1 jam 30 menit" | "1:30" | "2h" | "45m".
+    """
     if teks is None or str(teks).strip() == "":
         return None
-    t = str(teks).strip().replace(",", ".")
-    try:
-        nilai = float(t)
-    except ValueError:
-        raise Gagal(f"Jam '{teks}' bukan angka. Contoh yang benar: 2 atau 2.5 (atau 2,5).")
+    asli = str(teks).strip()
+    t = asli.lower().strip()
+    nilai = None
+    m = re.match(r"^(\d{1,2}):(\d{2})$", t)
+    if m:
+        nilai = int(m.group(1)) + int(m.group(2)) / 60
+    else:
+        try:
+            nilai = _angka(t)
+        except ValueError:
+            potongan = _POLA_DURASI.findall(t)
+            sisa = _POLA_DURASI.sub("", t).replace("dan", "").replace("&", "")
+            if potongan and not sisa.strip(" .,+"):
+                total = 0.0
+                for angka, satuan in potongan:
+                    if satuan in _SATUAN_JAM or satuan == "":
+                        total += _angka(angka)
+                    elif satuan in _SATUAN_MENIT:
+                        total += _angka(angka) / 60
+                    else:
+                        total = None
+                        break
+                nilai = total
+    if nilai is None:
+        raise Gagal(f"Jam '{asli}' tidak dikenali. Contoh yang benar: 2 | 2,5 | 2.5 | "
+                    "'2,5 jam' | '90 menit' | '1 jam 30 menit' | '1:30'.")
     if nilai < 0:
         raise Gagal("Jam tidak boleh negatif.")
     if nilai > 24:
-        raise Gagal(f"Jam '{nilai}' tidak masuk akal untuk satu pekerjaan (>24 jam). "
+        raise Gagal(f"Jam '{asli}' tidak masuk akal untuk satu pekerjaan (>24 jam). "
                      "Pecah jadi beberapa baris `catat` bila memang lintas hari.")
-    return nilai
+    return round(nilai + 1e-9, 2)
+
+
+def jumlah_jam(daftar):
+    """Jumlah persis jam 2-desimal (dihitung dalam satuan seperseratus jam, tanpa galat float)."""
+    return sum(int(round(j * 100)) for j in daftar) / 100
 
 
 def format_jam(nilai):
+    """Tampilkan sampai 2 desimal dengan koma (3,25 jam), tanpa pembulatan ulang."""
     if nilai is None:
         return "-"
-    if float(nilai).is_integer():
+    nilai = round(float(nilai), 2)
+    if nilai.is_integer():
         return f"{int(nilai)} jam"
-    return f"{nilai:.1f}".rstrip("0").rstrip(".").replace(".", ",") + " jam"
+    return f"{nilai:.2f}".rstrip("0").rstrip(".").replace(".", ",") + " jam"
+
+
+def format_jam_menit(nilai):
+    """'9,75 jam (9 jam 45 menit)' bila menitnya bulat; selain itu sama dengan format_jam."""
+    dasar = format_jam(nilai)
+    if nilai is None or float(nilai).is_integer():
+        return dasar
+    menit_total = float(nilai) * 60
+    if abs(menit_total - round(menit_total)) > 1e-6:
+        return dasar
+    j, mn = divmod(int(round(menit_total)), 60)
+    teks = (f"{j} jam {mn} menit" if j else f"{mn} menit")
+    return f"{dasar} ({teks})"
 
 
 def normalisasi_status(teks):
-    t = (teks or "berjalan").strip().lower()
+    t = re.sub(r"[^\w\s-]", "", (teks or "").lower()).strip() or "berjalan"
     alias = {
         "selesai": "selesai", "done": "selesai", "tuntas": "selesai", "beres": "selesai",
         "berjalan": "berjalan", "progress": "berjalan", "in progress": "berjalan",
-        "sedang berjalan": "berjalan", "ongoing": "berjalan",
+        "sedang berjalan": "berjalan", "ongoing": "berjalan", "on progress": "berjalan",
+        "in-progress": "berjalan", "proses": "berjalan", "dalam proses": "berjalan",
+        "dikerjakan": "berjalan", "sedang dikerjakan": "berjalan", "belum selesai": "berjalan",
+        "wip": "berjalan", "completed": "selesai", "complete": "selesai", "ok": "selesai",
         "terkendala": "terkendala", "kendala": "terkendala", "stuck": "terkendala",
         "blocked": "terkendala", "tertunda": "terkendala",
     }
@@ -164,6 +247,13 @@ def format_periode_label(d1, d2):
     if d1 == d2:
         return tanggal_indo(d1)
     return f"{d1.day} {BULAN[d1.month - 1]} {d1.year} - {d2.day} {BULAN[d2.month - 1]} {d2.year}"
+
+
+def judul_periode(label_periode, awal, akhir):
+    """'Minggu ini (21 September 2026 - 27 September 2026)' atau, untuk rentang kustom
+    (label kosong), cukup '22 September 2026 - 26 September 2026' -- tanpa kata ganda."""
+    rentang = format_periode_label(awal, akhir)
+    return f"{label_periode} ({rentang})" if label_periode else rentang
 
 
 def rentang_periode(nama, acuan):
@@ -217,45 +307,152 @@ def pastikan_file(path):
     return False
 
 
+ALIAS_KOLOM = {
+    "tanggal": ("tanggal", "tgl", "date", "hari tanggal", "hari/tanggal", "tanggal kerja",
+                "tanggal pekerjaan", "day"),
+    "klien": ("klien", "client", "customer", "pelanggan", "nama klien", "client name",
+              "perusahaan", "company"),
+    "proyek": ("proyek", "projek", "project", "nama proyek", "project name", "layanan",
+               "service", "job"),
+    "pekerjaan": ("pekerjaan", "kerjaan", "kegiatan", "aktivitas", "aktifitas", "activity",
+                  "task", "tugas", "deskripsi", "description", "uraian", "uraian pekerjaan",
+                  "item", "work", "detail pekerjaan"),
+    "jam": ("jam", "durasi", "duration", "hours", "hour", "hrs", "jumlah jam", "lama",
+            "waktu", "time", "time spent", "jam kerja"),
+    "status": ("status", "progress", "progres", "keadaan", "state"),
+    "kendala": ("kendala", "hambatan", "blocker", "blockers", "issue", "issues", "masalah"),
+    "butuh_dari_klien": ("butuh dari klien", "kebutuhan klien", "butuh klien",
+                         "need from client", "needs from client", "waiting on client",
+                         "menunggu klien"),
+    "keterangan": ("keterangan", "ket", "catatan", "notes", "note", "remarks", "komentar",
+                   "comment", "comments"),
+    "rencana": ("rencana", "rencana berikutnya", "next", "next step", "next steps",
+                "tindak lanjut", "follow up", "langkah berikutnya"),
+}
+WAJIB_BACA = ("tanggal", "pekerjaan")
+_POLA_BUTUH_KLIEN = re.compile(r"\b(menunggu|nunggu|tunggu|butuh|perlu|belum (dikirim|diberi|ada))\b",
+                               re.IGNORECASE)
+
+
+def _norm_header(h):
+    h = (h or "").replace("\ufeff", "").strip().lower()
+    h = re.sub(r"[_\-]+", " ", h)
+    h = re.sub(r"\s*\(.*?\)\s*", " ", h)  # "Durasi (jam)" -> "durasi"
+    return re.sub(r"\s+", " ", h).strip()
+
+
+def _petakan_header(fieldnames):
+    peta = {}
+    for asli in fieldnames:
+        n = _norm_header(asli)
+        for kunci, alias in ALIAS_KOLOM.items():
+            if kunci not in peta and (n == kunci.replace("_", " ") or n in alias):
+                peta[kunci] = asli
+                break
+    return peta
+
+
+def _dekode(path):
+    data = path.read_bytes()
+    if data.startswith(b"\xff\xfe") or data.startswith(b"\xfe\xff"):
+        return data.decode("utf-16"), "utf-16"
+    try:
+        return data.decode("utf-8-sig"), "utf-8"
+    except UnicodeDecodeError:
+        return data.decode("cp1252", errors="replace"), "cp1252"
+
+
+def _tebak_pemisah(teks):
+    baris_awal = [b for b in teks.splitlines() if b.strip()][:20]
+    if not baris_awal:
+        return ","
+    try:
+        return csv.Sniffer().sniff("\n".join(baris_awal), delimiters=",;\t|").delimiter
+    except csv.Error:
+        header = baris_awal[0]
+        return max(",;\t|", key=header.count) if any(c in header for c in ";\t|") else ","
+
+
 def baca_log(path):
+    """Baca file log skill ATAU file catatan milik pengguna (format toleran, lihat docstring)."""
     if not path.exists():
         raise Gagal(f"File log '{path}' tidak ditemukan. Catat pekerjaan dulu dengan perintah "
                     "`catat`, atau jalankan `init` untuk membuat file kosong.")
+    teks, encoding = _dekode(path)
+    if not teks.strip():
+        raise Gagal(
+            f"File log '{path}' kosong total (0 byte, tanpa baris header) -- ini beda dari "
+            "\"belum ada catatan\": file yang benar selalu punya baris header pertama "
+            f"({','.join(KOLOM)}) meski belum ada data. Kemungkinan file rusak/terhapus isinya "
+            "tanpa sengaja. Jalankan `init --file <path>` untuk membuat ulang filenya (data lama "
+            "tidak bisa dipulihkan otomatis -- cek backup bila ada), lalu `catat` ulang."
+        )
+    pemisah = _tebak_pemisah(teks)
     try:
-        with path.open(newline="", encoding="utf-8-sig") as f:
-            r = csv.DictReader(f)
-            if r.fieldnames is None:
-                return []
-            hilang = [k for k in KOLOM if k not in r.fieldnames]
-            if hilang:
-                raise Gagal(f"File log '{path}' tidak berkolom {hilang} -- pastikan header persis: "
-                            f"{','.join(KOLOM)}.")
-            baris = list(r)
+        r = csv.reader(teks.splitlines(), delimiter=pemisah)
+        semua_baris = [b for b in r if any(sel.strip() for sel in b)]
     except csv.Error as e:
-        raise Gagal(f"File log '{path}' tidak bisa dibaca sebagai CSV: {e}")
+        raise Gagal(f"File '{path}' tidak bisa dibaca sebagai CSV: {e}. Simpan ulang dari "
+                    "Excel/Sheets sebagai 'CSV (dipisah koma)' lalu coba lagi.")
+    header = semua_baris[0]
+    peta = _petakan_header(header)
+    hilang = [k for k in WAJIB_BACA if k not in peta]
+    if hilang:
+        nama_ramah = {"tanggal": "Tanggal/Date", "pekerjaan": "Pekerjaan/Kerjaan/Kegiatan/Task"}
+        raise Gagal(
+            f"File '{path}' tidak punya kolom wajib: {', '.join(nama_ramah[k] for k in hilang)}. "
+            f"Header yang terbaca: {header} (pemisah '{pemisah}'). Kolom yang dikenali: "
+            "Tanggal, Klien, Proyek, Pekerjaan/Kerjaan, Jam/Durasi, Status, Kendala, "
+            "Butuh dari klien, Keterangan/Catatan, Rencana (atau padanan Inggrisnya). "
+            "Ganti nama kolom di baris pertama file, lalu coba lagi."
+        )
+    idx = {k: header.index(v) for k, v in peta.items()}
+    info = {"encoding": encoding, "pemisah": pemisah, "kolom": {k: peta[k] for k in peta},
+            "tanpa_kolom_klien": "klien" not in peta}
     hasil = []
-    for i, b in enumerate(baris, start=2):
+    for nomor, b in enumerate(semua_baris[1:], start=2):
+        if len(b) > len(header):
+            raise Gagal(
+                f"Baris {nomor} '{path.name}' punya {len(b)} kolom, padahal header {len(header)} "
+                f"kolom (pemisah '{pemisah}'). Biasanya karena angka berkoma seperti 2,5 tidak "
+                "diberi tanda kutip. Perbaiki dengan menulis \"2,5 jam\" (pakai kutip), atau "
+                "simpan ulang dari Excel/Sheets sebagai CSV, atau pakai titik koma (;) sebagai "
+                "pemisah kolom."
+            )
+
+        def ambil(k):
+            if k not in idx or idx[k] >= len(b):
+                return ""
+            v = (b[idx[k]] or "").strip()
+            return v[1:] if v[:1] == "'" and v[1:2] in ("=", "+", "-", "@") else v
+
         try:
-            tgl = baca_tanggal(b.get("tanggal", ""))
+            tgl = baca_tanggal(ambil("tanggal")) if ambil("tanggal") else None
+            if tgl is None:
+                raise Gagal("kolom tanggal kosong.")
+            status = normalisasi_status(ambil("status"))
+            jam = parse_jam(ambil("jam"))
         except Gagal as e:
-            raise Gagal(f"Baris {i} '{path.name}': {e.pesan}")
-        try:
-            status = normalisasi_status(b.get("status", ""))
-        except Gagal as e:
-            raise Gagal(f"Baris {i} '{path.name}': {e.pesan}")
-        jam = None
-        if (b.get("jam") or "").strip() != "":
-            try:
-                jam = parse_jam(b.get("jam"))
-            except Gagal as e:
-                raise Gagal(f"Baris {i} '{path.name}': {e.pesan}")
+            raise Gagal(f"Baris {nomor} '{path.name}': {e.pesan}")
+        keterangan = ambil("keterangan")
+        butuh = ambil("butuh_dari_klien")
+        dari_keterangan = False
+        if keterangan and not butuh and "butuh_dari_klien" not in peta \
+                and re.search(r"\bklien\b|\bclient\b", keterangan, re.IGNORECASE) \
+                and _POLA_BUTUH_KLIEN.search(keterangan):
+            butuh, keterangan, dari_keterangan = keterangan, "", True
         hasil.append({
-            "tanggal": tgl, "klien": (b.get("klien") or "").strip(),
-            "proyek": (b.get("proyek") or "").strip(), "pekerjaan": (b.get("pekerjaan") or "").strip(),
-            "jam": jam, "status": status, "kendala": (b.get("kendala") or "").strip(),
-            "butuh_dari_klien": (b.get("butuh_dari_klien") or "").strip(),
+            "tanggal": tgl, "klien": ambil("klien"), "proyek": ambil("proyek"),
+            "pekerjaan": ambil("pekerjaan"), "jam": jam, "status": status,
+            "kendala": ambil("kendala"), "butuh_dari_klien": butuh,
+            "keterangan": keterangan, "rencana": ambil("rencana"),
+            "butuh_dari_keterangan": dari_keterangan,
         })
+    baca_log.info_terakhir = info
     return hasil
+
+
+baca_log.info_terakhir = {}
 
 
 def tulis_baris(path, entri):
@@ -362,24 +559,50 @@ def susun_laporan(entri_periode, klien, label_periode, awal, akhir, rencana_manu
 
     berjam = [e for e in entri_periode if e["jam"] is not None]
     tanpa_jam = len(entri_periode) - len(berjam)
-    total_jam = round(sum(e["jam"] for e in berjam), 2) if berjam else 0.0
+    # total = jumlah PERSIS jam per baris (sudah 2 desimal), jadi selalu sama dengan
+    # penjumlahan angka yang tampil di daftar pekerjaan.
+    total_jam = jumlah_jam(e["jam"] for e in berjam) if berjam else 0.0
     per_proyek = {}
     for e in berjam:
-        per_proyek[e["proyek"]] = round(per_proyek.get(e["proyek"], 0.0) + e["jam"], 2)
+        kunci = e["proyek"] or "(tanpa nama proyek)"
+        per_proyek.setdefault(kunci, []).append(e["jam"])
+    per_proyek = {k: jumlah_jam(v) for k, v in per_proyek.items()}
 
     kendala = _dedup_urut(e["kendala"] for e in entri_periode)
     butuh = _dedup_urut(e["butuh_dari_klien"] for e in entri_periode)
 
+    # Rencana berikutnya TIDAK pernah dikarang dari judul tugas ("Lanjutkan ..." x3).
+    # Sumber: --rencana dari pengguna > kolom Rencana di file > isian [isi: ...] untuk diisi.
+    isian = 0
     if rencana_manual:
         rencana = [r.strip() for r in rencana_manual if r.strip()]
     else:
-        rencana = [f"Lanjutkan: {e['pekerjaan']} ({e['proyek']})" for e in berjalan]
-        if not rencana:
-            rencana = []
+        rencana = _dedup_urut(e["rencana"] for e in entri_periode)
+        ada_rencana = {e["pekerjaan"] for e in entri_periode if e["rencana"]}
+        for e in berjalan + terkendala:
+            if e["pekerjaan"] not in ada_rencana:
+                rencana.append(f"[isi: langkah berikutnya untuk \"{e['pekerjaan']}\" "
+                               "+ target tanggal]")
+                isian += 1
+        if not rencana and entri_periode:
+            rencana.append("[isi: rencana periode berikutnya]")
+            isian += 1
+    if isian:
+        catatan.append(
+            f"Rencana berikutnya berisi {isian} isian [isi: ...]. Isi dari catatan/rencana "
+            "pengguna (atau tanyakan sekali), lalu buat ulang dengan --rencana \"...\" -- "
+            "jangan dikirim ke klien dengan isian kosong dan jangan mengarang rencana."
+        )
+    if any(e.get("butuh_dari_keterangan") for e in entri_periode):
+        catatan.append(
+            "Sebagian 'Butuh dari klien' diambil dari kolom Keterangan yang menyebut klien "
+            "dan kata menunggu/butuh -- pastikan memang hal yang ditunggu dari klien."
+        )
 
     if not entri_periode:
         catatan.append(
-            f"Tidak ada catatan pekerjaan untuk '{klien}' pada periode {label_periode.lower()} "
+            f"Tidak ada catatan pekerjaan untuk '{klien}' pada periode "
+            f"{format_periode_label(awal, akhir)} "
             f"({awal.isoformat()} s/d {akhir.isoformat()}). Laporan di bawah kosong -- jangan "
             "mengarang isi; catat dulu pekerjaannya dengan perintah `catat`."
         )
@@ -393,33 +616,37 @@ def susun_laporan(entri_periode, klien, label_periode, awal, akhir, rencana_manu
         "selesai": selesai, "berjalan": berjalan, "terkendala": terkendala,
         "kendala": kendala, "butuh_dari_klien": butuh, "rencana": rencana,
         "total_jam": total_jam, "entri_tanpa_jam": tanpa_jam, "per_proyek": per_proyek,
-        "jumlah_entri": len(entri_periode),
+        "jumlah_entri": len(entri_periode), "rencana_perlu_diisi": isian,
     }
 
     ringkasan = (
-        f"Periode {label_periode.lower()} ({format_periode_label(awal, akhir)}): "
+        f"{judul_periode(label_periode, awal, akhir) if label_periode else 'Periode ' + format_periode_label(awal, akhir)}: "
         f"{len(selesai)} pekerjaan selesai, {len(berjalan)} sedang berjalan"
         + (f", {len(terkendala)} terkendala" if terkendala else "")
-        + f". Total jam tercatat: {format_jam(total_jam) if berjam else 'tidak ada jam dicatat'}."
+        + f". Total jam tercatat: {format_jam_menit(total_jam) if berjam else 'tidak ada jam dicatat'}."
     )
     bagian["ringkasan"] = ringkasan
     return bagian
 
 
 def _baris_kerja(e, dengan_tanggal=True):
-    inti = f"{e['pekerjaan']} ({e['proyek']}"
+    rincian = []
+    if e["proyek"]:
+        rincian.append(e["proyek"])
     if dengan_tanggal:
-        inti += f", {e['tanggal'].isoformat()}"
+        rincian.append(e["tanggal"].isoformat())
     if e["jam"] is not None:
-        inti += f", {format_jam(e['jam'])}"
-    inti += ")"
+        rincian.append(format_jam(e["jam"]))
+    inti = e["pekerjaan"] + (f" ({', '.join(rincian)})" if rincian else "")
+    if e.get("keterangan"):
+        inti += f" -- {e['keterangan']}"
     return inti
 
 
 def buat_markdown(klien, label_periode, awal, akhir, b):
     L = []
     L.append(f"# Laporan Progres -- {klien}")
-    L.append(f"**Periode:** {label_periode} ({format_periode_label(awal, akhir)})\n")
+    L.append(f"**Periode:** {judul_periode(label_periode, awal, akhir)}\n")
     L.append("## Ringkasan")
     L.append(b["ringkasan"] + "\n")
     L.append("## Yang Selesai")
@@ -443,11 +670,12 @@ def buat_markdown(klien, label_periode, awal, akhir, b):
     L.append("")
     L.append("## Total Jam")
     if b["per_proyek"]:
-        L.append(f"**Total: {format_jam(b['total_jam'])}**" +
+        L.append(f"**Total: {format_jam_menit(b['total_jam'])}**" +
                   (f" (dari {b['jumlah_entri'] - b['entri_tanpa_jam']} entri berjam; "
                    f"{b['entri_tanpa_jam']} entri tanpa jam tidak dihitung)" if b["entri_tanpa_jam"] else ""))
-        for p, j in sorted(b["per_proyek"].items()):
-            L.append(f"- {p}: {format_jam(j)}")
+        if list(b["per_proyek"]) != ["(tanpa nama proyek)"]:
+            for p, j in sorted(b["per_proyek"].items()):
+                L.append(f"- {p}: {format_jam(j)}")
     else:
         L.append("Tidak ada jam yang dicatat pada periode ini.")
     L.append("\n---")
@@ -457,7 +685,8 @@ def buat_markdown(klien, label_periode, awal, akhir, b):
 
 def buat_teks_email(klien, label_periode, awal, akhir, b):
     L = []
-    L.append(f"Subjek: Laporan Progres {label_periode} -- {klien} ({format_periode_label(awal, akhir)})\n")
+    L.append(f"Subjek: Laporan Progres{' ' + label_periode if label_periode else ''} -- {klien} "
+             f"({format_periode_label(awal, akhir)})\n")
     L.append(f"Yth. Bapak/Ibu {klien},\n")
     L.append(f"Berikut laporan progres untuk periode {format_periode_label(awal, akhir)}.\n")
     L.append(f"Ringkasan: {b['ringkasan']}\n")
@@ -482,7 +711,7 @@ def buat_teks_email(klien, label_periode, awal, akhir, b):
 def buat_teks_wa(klien, label_periode, awal, akhir, b):
     L = []
     L.append(f"*Laporan Progres -- {klien}*")
-    L.append(f"_{label_periode}, {format_periode_label(awal, akhir)}_\n")
+    L.append(f"_{judul_periode(label_periode, awal, akhir)}_\n")
     L.append(b["ringkasan"] + "\n")
     L.append("*Selesai:*")
     L += [f"- {_baris_kerja(e, dengan_tanggal=False)}" for e in b["selesai"]] or ["- Belum ada"]
@@ -515,10 +744,20 @@ def cmd_laporan(args):
         akhir = baca_tanggal(args.sampai)
         if akhir < awal:
             raise Gagal("--sampai lebih awal dari --dari.")
-        label_periode = "Periode kustom"
+        label_periode = ""  # rentang kustom: cukup tampilkan tanggalnya (bukan "Periode periode kustom")
     else:
         label_periode, awal, akhir = rentang_periode(args.periode, acuan)
 
+    catatan = []
+    info = getattr(baca_log, "info_terakhir", {}) or {}
+    if info.get("tanpa_kolom_klien"):
+        for e in semua:
+            e["klien"] = klien
+        catatan.append(f"File '{path.name}' tidak punya kolom Klien -- semua baris dianggap "
+                       f"pekerjaan untuk '{klien}'. Pastikan file ini memang khusus klien tersebut.")
+    if info.get("encoding") == "cp1252":
+        catatan.append(f"File '{path.name}' bukan UTF-8 (dibaca sebagai Windows-1252) -- cek "
+                       "huruf beraksen/simbol di draf.")
     cocok_klien = [e for e in semua if e["klien"].strip().lower() == klien.lower()]
     if not cocok_klien and semua:
         klien_ada = sorted({e["klien"] for e in semua})
@@ -527,7 +766,6 @@ def cmd_laporan(args):
     entri_periode = [e for e in cocok_klien if awal <= e["tanggal"] <= akhir]
     entri_periode.sort(key=lambda e: e["tanggal"])
 
-    catatan = []
     peringatan = []
     b = susun_laporan(entri_periode, klien, label_periode, awal, akhir, args.rencana, catatan)
 
@@ -536,6 +774,8 @@ def cmd_laporan(args):
         deteksi_sensitif(e["kendala"], f"Baris {e['tanggal'].isoformat()} (kendala)", peringatan)
         deteksi_sensitif(e["butuh_dari_klien"], f"Baris {e['tanggal'].isoformat()} (butuh_dari_klien)",
                           peringatan)
+        deteksi_sensitif(e["keterangan"], f"Baris {e['tanggal'].isoformat()} (keterangan)", peringatan)
+        deteksi_sensitif(e["rencana"], f"Baris {e['tanggal'].isoformat()} (rencana)", peringatan)
 
     markdown = buat_markdown(klien, label_periode, awal, akhir, b)
     teks_email = buat_teks_email(klien, label_periode, awal, akhir, b)
@@ -543,10 +783,15 @@ def cmd_laporan(args):
 
     hasil = {
         "skema": SKEMA, "klien": klien, "periode": {
-            "label": label_periode, "awal": awal.isoformat(), "akhir": akhir.isoformat(),
+            "label": label_periode or "kustom", "awal": awal.isoformat(), "akhir": akhir.isoformat(),
         },
+        "total_jam_teks": format_jam_menit(b["total_jam"]),
+        "rencana_perlu_diisi": b["rencana_perlu_diisi"],
         "jumlah_entri": b["jumlah_entri"], "total_jam": b["total_jam"],
         "jam_per_proyek": b["per_proyek"], "entri_tanpa_jam": b["entri_tanpa_jam"],
+        "rincian": [{"tanggal": e["tanggal"].isoformat(), "pekerjaan": e["pekerjaan"],
+                     "proyek": e["proyek"], "jam": e["jam"], "status": e["status"]}
+                    for e in entri_periode],
         "selesai": [e["pekerjaan"] for e in b["selesai"]],
         "berjalan": [e["pekerjaan"] for e in b["berjalan"]],
         "terkendala": [e["pekerjaan"] for e in b["terkendala"]],
@@ -584,17 +829,17 @@ def cmd_laporan(args):
 # ---------------------------------------------------------------------------
 
 def build_parser():
-    ap = argparse.ArgumentParser(prog="laporan_klien.py", description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(prog="laporan_klien.py", description=__doc__.splitlines()[0], allow_abbrev=False)
     ap.add_argument("--file", help="Path file log CSV (default: log-kerja-klien.csv atau "
                                      "ENV KOMUNITECH_LAPORAN_KLIEN_FILE)")
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    p_init = sub.add_parser("init", help="Buat file log kosong")
+    p_init = sub.add_parser("init", help="Buat file log kosong", allow_abbrev=False)
     p_init.add_argument("--paksa", action="store_true", help="Timpa file yang sudah ada")
     p_init.add_argument("--json", action="store_true")
     p_init.set_defaults(func=cmd_init)
 
-    p_catat = sub.add_parser("catat", help="Catat satu pekerjaan")
+    p_catat = sub.add_parser("catat", help="Catat satu pekerjaan", allow_abbrev=False)
     p_catat.add_argument("--klien", required=True)
     p_catat.add_argument("--proyek", required=True)
     p_catat.add_argument("--pekerjaan", required=True)
@@ -608,11 +853,12 @@ def build_parser():
     p_catat.add_argument("--json", action="store_true")
     p_catat.set_defaults(func=cmd_catat)
 
-    p_daftar = sub.add_parser("daftar-klien", help="Lihat daftar klien yang tercatat")
+    p_daftar = sub.add_parser("daftar-klien", help="Lihat daftar klien yang tercatat", allow_abbrev=False)
     p_daftar.add_argument("--json", action="store_true")
     p_daftar.set_defaults(func=cmd_daftar_klien)
 
-    p_lap = sub.add_parser("laporan", help="Susun draf laporan progres satu klien")
+    p_lap = sub.add_parser("laporan", help="Susun draf laporan progres satu klien (file log skill "
+                           "atau file catatan CSV milik pengguna via --file)", allow_abbrev=False)
     p_lap.add_argument("--klien", required=True)
     p_lap.add_argument("--periode", default="minggu-ini",
                         help="mingguan/bulanan, minggu-ini (default)/minggu-lalu/bulan-ini/bulan-lalu")
@@ -623,7 +869,8 @@ def build_parser():
                              "berguna untuk menguji jadwal Jumat)")
     p_lap.add_argument("--rencana", action="append",
                         help="Satu butir rencana berikutnya (bisa diulang). Tanpa ini, rencana "
-                             "diturunkan dari pekerjaan berstatus 'berjalan'.")
+                             "diambil dari kolom Rencana di file; bila tidak ada, muncul isian "
+                             "[isi: ...] untuk pekerjaan berjalan/terkendala.")
     p_lap.add_argument("--json", action="store_true")
     p_lap.set_defaults(func=cmd_laporan)
 

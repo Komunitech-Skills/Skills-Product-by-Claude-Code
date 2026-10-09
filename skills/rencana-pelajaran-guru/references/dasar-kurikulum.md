@@ -20,6 +20,7 @@ langsung situs Kemendikdasmen dari lingkungan kerja) pada **2026-09-24**.
   Pancasila" (6 dimensi)** masih lazim dipakai sekolah yang belum memperbarui dokumen —
   skill ini memakai istilah yang guru minta, dan bila tidak disebutkan memakai istilah
   terbaru "Profil Lulusan" sambil mencatat padanan dimensi lama jika relevan.
+- **Nama 8 dimensi Profil Lulusan (Permendikdasmen No. 10 Tahun 2025 tentang SKL; dicek 2026-10-01)** — salin persis, jangan diparafrasekan: (1) Keimanan dan Ketakwaan terhadap Tuhan YME, (2) Kewargaan, (3) Penalaran Kritis, (4) Kreativitas, (5) Kolaborasi, (6) Kemandirian, (7) Kesehatan, (8) Komunikasi. Padanan lama (Profil Pelajar Pancasila, 6 dimensi): Bernalar Kritis -> Penalaran Kritis, Gotong Royong -> Kolaborasi, Mandiri -> Kemandirian, Kreatif -> Kreativitas. Verifikasi ulang ke dokumen resmi Kemendikdasmen bila ragu.
 - **"Deep Learning"/Pembelajaran Mendalam** adalah *pendekatan* (berkesadaran, bermakna,
   menggembirakan) yang menekankan pembelajaran lintas tema/mapel dan pemahaman mendalam —
   bukan format dokumen baru. Skill ini menambahkan sentuhan pendekatan ini (kaitkan topik
@@ -83,6 +84,16 @@ Setiap sekolah/yayasan/dinas boleh punya format Modul Ajar/RPP tersendiri (kop s
 urutan komponen, kolom tanda tangan kepala sekolah, dll). **Jika guru melampirkan atau
 menyebut template sekolahnya, ikuti template itu** — isi templatenya dengan hasil
 langkah kerja skill ini, jangan memaksakan format Komunitech.
+
+## Cara mengambil bunyi CP resmi (diverifikasi 2026-10-05)
+Acuan CP terbaru: **Keputusan Kepala BSKAP No. 046/H/KR/2025**, ditetapkan **18 Juli 2025**
+(CP PAUD, dasar, menengah; lampiran sekitar 1.691 halaman, per fase A–F dan mata pelajaran).
+Langkah: (1) unduh PDF dari situs resmi Kemendikdasmen (guru.kemendikdasmen.go.id, cari
+"Capaian Pembelajaran 046/H/KR/2025") atau lewat dinas pendidikan; (2) cari jenjang → mata
+pelajaran → fase; (3) salin paragraf CP fase itu **apa adanya** (beserta elemen/kode bila ada)
+dan catat halamannya; (4) tempel ke kolom "CP (salin dari dokumen resmi)" di modul. Jangan
+memakai CP versi lama (Kepmen 033/H/KR/2022, 32/H/KR/2024). Bunyi CP tidak boleh diketik dari ingatan.
+Sumber verifikasi (diakses 2026-10-05): https://www.komunitasbelajar.id/2025/07/keputusan-kepala-bskap-nomor-046hkr2025.html ; https://guruinovatif.id/artikel/bskap-terbitkan-cp-terbaru-2025-struktur-pembelajaran-mata-pelajaran-koding-ai-di-kurikulum-merdeka ; https://www.pembelajaranmendalam.com/2025/11/download-capaian-pembelajaran-terbaru-jenjang-paud-sd-smp-sma-sederajat-berdasarkan-keputusan-kepala-bskap-nomor-046-h-kr-2025.html
 
 ## Sumber (diakses 2026-09-24)
 

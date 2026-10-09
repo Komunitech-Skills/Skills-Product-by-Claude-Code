@@ -1442,5 +1442,86 @@ class UjiDolibarr(unittest.TestCase):
         self.assertEqual(p.returncode, 2)
 
 
+
+class UjiPiutangCsv(unittest.TestCase):
+    """piutang-csv: baca ekspor CSV tanpa koneksi/kunci; angka dihitung script."""
+    CSV = os.path.join(SINI, "fixtures", "ekspor-invoice-contoh.csv")
+
+    def jalan(self, *argv):
+        env = {k: v for k, v in os.environ.items() if not k.startswith("DOLIBARR")}
+        env["DOLIBARR_URL"] = "http://127.0.0.1:1/tidak-dipakai"  # bila terhubung, uji gagal
+        return subprocess.run([sys.executable, SKRIP, "piutang-csv"] + list(argv), capture_output=True,
+                              text=True, env=env, timeout=60)
+
+    def test_umur_dan_total(self):
+        p = self.jalan(self.CSV, "--per-tanggal", "2026-10-02", "--json")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        d = json.loads(p.stdout)
+        self.assertEqual(d["total"], 18752000)
+        self.assertEqual(d["jumlah"], 5)
+        terlambat = sum(x["sisa"] for x in d["invoice"] if x["hari_lewat"] > 0)
+        self.assertEqual(terlambat, 12427000)
+        h = {x["ref"]: x["hari_lewat"] for x in d["invoice"]}
+        self.assertEqual(h["IN2607-0003"], 64)
+        self.assertEqual(h["IN2609-0005"], -3)
+        self.assertIn("BUKAN koneksi langsung", d["teks"])
+        self.assertIn("Sumber: file CSV ekspor", d["teks"])
+        self.assertIn("kirim sendiri lewat WA", d["teks"])
+        self.assertIn("tidak mengirim", d["teks"])
+
+    def test_samarkan_dan_format_inggris_titik_koma(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "e.csv")
+            open(f, "w", encoding="utf-8").write(
+                "Ref;Third party;Due date;Amount incl. tax;Received;Status\n"
+                "A1;Budi Santoso;15/09/2026;1,250,000.50;250,000.50;Unpaid\n"
+                "A2;Siti;2026-09-01;500000;0;Abandoned\n")
+            p = self.jalan(f, "--per-tanggal", "2026-10-02", "--samarkan", "--json")
+            self.assertEqual(p.returncode, 0, p.stderr)
+            d = json.loads(p.stdout)
+            self.assertEqual(d["total"], 1000000)
+            self.assertNotIn("Budi", d["teks"])
+
+    def test_data_rusak(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "e.csv")
+            open(f, "w", encoding="utf-8").write(
+                "Ref,Pelanggan,Jatuh tempo,Total,Dibayar\n"
+                "X1,A,2026-09-01,62,500,0\n"
+                "X2,B,bukan-tanggal,100000,0\n"
+                "X3,C,2026-09-01,abc,0\n"
+                "X4,D,2026-09-01,100.000,0\n")
+            p = self.jalan(f, "--per-tanggal", "2026-10-02")
+            self.assertEqual(p.returncode, 0, p.stderr)
+            self.assertIn("Total sisa tagihan: Rp 100.000 (1 invoice)", p.stdout)
+            self.assertEqual(p.stdout.count("DILEWATI"), 3)  # tidak ada baris dibuang diam-diam
+            open(f, "w", encoding="utf-8").write("Ref,Jatuh tempo,Total\nX,rusak,abc\n")
+            self.assertEqual(self.jalan(f).returncode, 2)
+
+    def test_kolom_hilang_dan_file_tidak_ada(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "e.csv")
+            open(f, "w", encoding="utf-8").write("a,b\n1,2\n")
+            p = self.jalan(f)
+            self.assertEqual(p.returncode, 2)
+            self.assertIn("Kolom wajib", p.stderr)
+            self.assertEqual(self.jalan(os.path.join(t, "nol.csv")).returncode, 2)
+
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "dolibarr.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["simpan-kunci", "--kunci-file", os.path.join(t, "k.txt"), "--y"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+            self.assertFalse(os.path.exists(os.path.join(t, "k.txt")), "singkatan flag tidak boleh menulis apa pun")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

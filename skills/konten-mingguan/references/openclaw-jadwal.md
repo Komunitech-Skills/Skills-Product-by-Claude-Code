@@ -1,5 +1,7 @@
 # Otomasi OpenClaw — Paket Jumat Sore + Pengingat Posting Harian
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Opsional. Skill ini berguna dipanggil manual di platform mana pun (OpenClaw, Codex, Claude Code,
 Cursor). Bagian ini **hanya untuk OpenClaw** yang punya Gateway menyala terus, dan **hanya dipasang
 setelah pengguna setuju** (tampilkan ringkasan lalu tanya "Lanjut? (ya/tidak)").

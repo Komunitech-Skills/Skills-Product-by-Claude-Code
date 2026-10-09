@@ -9,7 +9,7 @@ Anda sendiri; halaman ini hanya bagian yang benar-benar dipakai `scripts/vikunja
 ulang dengan kata-kata sendiri (bukan kutipan dari dokumentasi Vikunja).
 
 ## Autentikasi
-- Header: `Authorization: Bearer tk_xxxxxxxxxxxxxxxxxxxxxxxx` (token API, awalan `tk_`, dibuat manual di Settings > API Tokens Vikunja — lihat `docs/panduan-vikunja.md` §6).
+- Header: `Authorization: Bearer tk_xxxxxxxxxxxxxxxxxxxxxxxx` (token API, awalan `tk_`, dibuat manual di Settings > API Tokens Vikunja — lihat `references/panduan-vikunja.md` §6).
 - Vikunja juga mendukung login user/sandi (`POST /api/v1/login` → JWT) — **tidak dipakai** skill ini; skill hanya memakai token API berskop, tidak pernah menyimpan sandi akun.
 - **Kuirk penting (diuji langsung, tidak didokumentasikan resmi):** token yang salah/kedaluwarsa DAN token yang sah tapi **kurang izin** untuk aksi tertentu **sama-sama membalas `401`** dengan pesan generik `"missing, malformed, expired or otherwise invalid token provided"` — bukan `403` untuk kasus kedua. `scripts/vikunja.py` menyebut kedua kemungkinan di setiap pesan galat 401.
 

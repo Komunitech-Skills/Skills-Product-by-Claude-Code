@@ -1,0 +1,41 @@
+{
+  "config": {
+    "slug": "toko-scenario3",
+    "title": "Toko Scenario3",
+    "description": "Data buatan tangan Komunitech untuk menguji catatan SSL eksplisit saat Uptime Kuma tidak mengisi certExpiryDaysRemaining (sertifikat self-signed/tidak tepercaya) walau showCertificateExpiry aktif - temuan uji independen v1.0.0 (lihat examples/HASIL-UJI.md dan 07-link-bio-katalog-ssl-uji-akun-b.md).",
+    "icon": "/icon.svg",
+    "autoRefreshInterval": 300,
+    "theme": "auto",
+    "published": true,
+    "showTags": false,
+    "customCSS": null,
+    "footerText": null,
+    "showPoweredBy": true,
+    "analyticsId": null,
+    "analyticsScriptUrl": null,
+    "analyticsType": null,
+    "showCertificateExpiry": true,
+    "showOnlyLastHeartbeat": false,
+    "rssTitle": null
+  },
+  "incidents": [],
+  "publicGroupList": [
+    {
+      "id": 1,
+      "name": "Utama",
+      "weight": 1,
+      "monitorList": [
+        {
+          "id": 20,
+          "name": "Link Bio Katalog (self-signed)",
+          "sendUrl": 1,
+          "type": "http",
+          "url": "https://katalog.contoh",
+          "certExpiryDaysRemaining": "",
+          "validCert": false
+        }
+      ]
+    }
+  ],
+  "maintenanceList": []
+}

@@ -5,20 +5,20 @@
     "payroll.py": {
       "skill_sumber": "slip-gaji-bpjs",
       "path_sumber": "scripts/payroll.py",
-      "versi_skill_sumber": "1.0.1",
-      "sha256": "9b92e8edb80e62e93d5841924f4227684b5307a51c5f33cf9d24e3cc4dedba6e"
+      "versi_skill_sumber": "1.0.6",
+      "sha256": "3f4a9d7b72a29334f5203d22104ef506b29e95e1a2e8a6558c1bcc5cdf23a0e4"
     },
     "pph21.py": {
       "skill_sumber": "pph21-ter",
       "path_sumber": "scripts/pph21.py",
-      "versi_skill_sumber": "1.0.1",
-      "sha256": "54a52dea511766397ef452933fec9a207a617864081feb392a2eae5088df093c"
+      "versi_skill_sumber": "1.0.5",
+      "sha256": "2e5d98d6da7e0f5474b1f9a86353a44654b38d7f332c74fc3a0cb86b9d088ff7"
     },
     "thr.py": {
       "skill_sumber": "hitung-thr",
       "path_sumber": "scripts/thr.py",
-      "versi_skill_sumber": "1.0.1",
-      "sha256": "88c40a69b1d6f20843cbf53044c94a087146a348b72b29614c19f1327f83af3d"
+      "versi_skill_sumber": "1.0.9",
+      "sha256": "991d6ca1254b2cdd58b62d3db59764e7f8b16a69c85eada2c2b4046d26fb2aae"
     },
     "ter_core.py": {
       "skill_sumber": "slip-gaji-bpjs",

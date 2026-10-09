@@ -94,3 +94,30 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 ### Ringan
 3. `Rp 25.000,-` sebagai nilai skenario ditolak "ambigu" (padahal sebagai `--harga-jual` diterima). Aman, tapi tidak konsisten. *Saran:* di `_pecah_koma()`, perlakukan akhiran `,-` sebagai bagian angka sebelum menghitung koma.
 4. Label untuk 4–5 skenario hanya "Skenario 1…5". Tidak salah, tapi untuk proposal, "Pesimis/…/Optimis" lebih mudah dibaca. *Saran (opsional):* label 5 tingkat.
+
+
+---
+
+## Riwayat revisi 1.0.8 (2026-10-05) - menunggu uji ulang independen
+- Pemicu: pra-cek konteks Telegram gelombang 7 (`koordinasi/pracek-telegram-g7-2026-10-05.md`): skor konteks 6,5; bot hanya membalas 4 pertanyaan padahal jenis kerja sama, produk, dan angka sudah ada; tanpa proposal dan tanpa peringatan bahwa porsi toko 35% bisa merugikan.
+- Perbaikan: aturan baru "kerjakan dulu, tanya di akhir" di SKILL.md dan description (klaim belum terbukti -> hitungan script + peringatan rugi -> proposal lengkap -> maks. 1-3 pertanyaan di akhir). Contoh baru: `07-kerjakan-dulu-tanya-di-akhir-klaim-dan-porsi-rugi.md`.
+- Status: **menunggu uji ulang independen** (belum diuji ulang; skor di atas belum berlaku untuk 1.0.8).
+
+## Uji ulang konteks Telegram v1.0.8 (2026-10-05) - penguji independen
+3 percobaan valid (1 timeout infrastruktur diulang): 8,3 / 9,0 / 8,0, rata-rata 8,43 (pra-cek 6,5). Proposal lengkap di balasan yang sama, klaim BPOM/"paling laris" ditangani benar, Rp5.250/sisa Rp9.750 benar, peringatan porsi rugi ada. **VERDIK LULUS.** Detail: `00-openclaw-sebelum-sesudah.md`.
+
+
+## Riwayat revisi 1.0.9 (2026-10-05) - menunggu uji ulang independen
+- Pemicu: cacat no. 1 gelombang 8 Telegram (`koordinasi/telegram-gelombang-8-2026-10-05.md`): rumus laba/titik impas tidak tampil (hanya minta HPP), baris proses "HASIL: LULUS" ikut terkirim, path file tidak bisa dibuka dari Telegram.
+- Perbaikan: rumus + tabel contoh HPP wajib tampil di "Catatan untuk Anda" walau HPP kosong; keluaran `cek_fakta.py` bertanda "UNTUK AGENT SAJA" tanpa LULUS/GAGAL di baris ringkas; larangan menyebut file/proses di balasan, isi utuh di chat.
+- Status: **menunggu uji ulang independen** (skor di atas belum berlaku untuk 1.0.9).
+
+## Uji ulang konteks Telegram v1.0.9 (2026-10-05) - penguji independen
+3 percobaan: 8,7 / 8,5 / 8,0, rata-rata 8,40, 3/3 lulus. Rumus sisa per botol (Rp9.750 − HPP − kirim) + peringatan rugi + titik impas tampil di chat walau HPP kosong; klaim BPOM/"paling laris" jadi `[isi]`; tanpa kata proses/path; angka benar (python). Minus kecil: "Produk berizin edar resmi" tanpa `[isi]` di percobaan 3. **VERDIK LULUS.** Detail: `00-openclaw-sebelum-sesudah.md`.
+
+## Riwayat revisi - v1.0.10 (2026-10-05)
+Temuan Telegram gelombang 9 (cacat no. 3): "sudah BPOM" disamakan dengan "BPOM MD/PIRT"; komitmen "display/cooler kami sediakan" tercetak padahal tidak diberikan pengguna. Perbaikan: SKILL.md langkah 1 + larangan janji tak diberikan + 2 butir checklist, `references/izin-edar-pangan.md`. Status: **menunggu uji ulang independen**.
+
+
+## Uji ulang Telegram v1.0.10 (2026-10-05)
+Uji ulang Telegram v1.0.10 (2026-10-05): 2 percobaan 8,3 / 7,8, rata-rata 8,05, 2/2 lulus. VERDIK LULUS (tipis). BPOM/PIRT tidak disamakan secara tegas, rumus laba/rugi tampil.

@@ -73,7 +73,8 @@ c. Para Pihak sepakat membuat Perjanjian Sewa Alat dengan ketentuan sebagai beri
 ### Wanprestasi dan Pengakhiran
 (1) Suatu Pihak dianggap wanprestasi apabila tidak melaksanakan kewajibannya dan tetap tidak memperbaikinya dalam waktu [[2]] ([[dua]]) hari setelah menerima teguran tertulis (termasuk melalui WhatsApp).
 (2) Apabila PIHAK KEDUA melanggar Pasal 5 ayat (2) huruf b, PIHAK PERTAMA berhak mengakhiri sewa dan meminta Alat dikembalikan segera, dengan pemberitahuan tertulis.
-(3) Pengakhiran tidak menghapus kewajiban pembayaran dan ganti rugi yang telah timbul.
+(3) Apabila Alat tidak dikembalikan setelah pemberitahuan pengakhiran, Para Pihak menyelesaikannya secara musyawarah sesuai Pasal 9; bila tidak berhasil, PIHAK PERTAMA menempuh jalur hukum sesuai Pasal 9. PIHAK PERTAMA tidak akan mengambil Alat secara paksa dari tempat PIHAK KEDUA tanpa persetujuan PIHAK KEDUA atau putusan/penetapan pengadilan.
+(4) Pengakhiran tidak menghapus kewajiban pembayaran dan ganti rugi yang telah timbul.
 
 ## Pasal 8
 ### Keadaan Memaksa

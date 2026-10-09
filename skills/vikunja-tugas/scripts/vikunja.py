@@ -32,7 +32,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 VIKUNJA_TERUJI = ("2.6.0", "v2.6.0")
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
@@ -276,7 +276,7 @@ def _baca_file_token(path, sumber):
     if not os.path.isfile(path):
         raise Gagal(
             f"File kunci ({sumber}) tidak ditemukan: {path}. Jalankan dulu "
-            f"'python3 vikunja.py simpan-kunci' (lihat docs/panduan-vikunja.md bagian 6).",
+            f"'python3 vikunja.py simpan-kunci' (lihat references/panduan-vikunja.md bagian 6).",
             K_FILE,
         )
     cek_izin_file(path)
@@ -309,7 +309,7 @@ def periksa_url(url, izinkan_jarak_jauh):
     if not izinkan_jarak_jauh:
         raise Gagal(
             f"Alamat Vikunja '{url}' bukan komputer ini (127.0.0.1/localhost). Jangan buka Vikunja "
-            f"ke internet (lihat docs/panduan-vikunja.md bagian 4). Bila ini memang server Anda "
+            f"ke internet (lihat references/panduan-vikunja.md bagian 4). Bila ini memang server Anda "
             f"sendiri di jaringan kantor/VPS milik sendiri, tegaskan dengan --izinkan-jarak-jauh.",
             K_INPUT,
         )
@@ -352,7 +352,7 @@ def panggil(method, path, args, token=None, body=None, tulis=False, timeout=None
                 "401 dari Vikunja: token salah/kedaluwarsa/dihapus, ATAU token tidak punya izin "
                 f"untuk aksi ini (Vikunja memakai kode 401 untuk kedua kasus). Pesan server: "
                 f"{pesan_server or '(kosong)'}. Cek Settings > API Tokens di Vikunja; lihat "
-                f"docs/panduan-vikunja.md bagian 6 untuk daftar izin yang dibutuhkan.",
+                f"references/panduan-vikunja.md bagian 6 untuk daftar izin yang dibutuhkan.",
                 K_AUTH,
             )
         if e.code == 403:
@@ -380,7 +380,7 @@ def panggil(method, path, args, token=None, body=None, tulis=False, timeout=None
             )
         raise Gagal(
             f"Tidak bisa menghubungi Vikunja di {args.url} ({e}). Pastikan Vikunja menyala "
-            f"(docs/panduan-vikunja.md bagian 3/7) dan alamatnya benar.",
+            f"(references/panduan-vikunja.md bagian 3/7) dan alamatnya benar.",
             K_KONEKSI,
         )
     except json.JSONDecodeError:
@@ -513,18 +513,26 @@ def _filter_dan_cetak(args, token, judul, filter_expr, proyek_arg, catatan=None)
     return 0
 
 
+CATATAN_TUMPANG_TINDIH = (
+    "Catatan: tugas yang jatuh tempo HARI INI tapi jamnya sudah lewat muncul di sini MAUPUN di "
+    "'terlambat' sekaligus (disengaja - 'hari-ini' = rentang tanggal, 'terlambat' = sudah lewat waktu "
+    "sekarang). Jangan jumlahkan kedua daftar sebagai tugas unik tanpa mengecek id yang sama."
+)
+
+
 def cmd_hari_ini(args, token):
     now = sekarang(args.tz)
     awal = ke_iso_utc(now.date(), 0, 0, args.tz)
     akhir = ke_iso_utc(now.date() + dt.timedelta(days=1), 0, 0, args.tz)
     f = f"due_date >= {awal} && due_date < {akhir} && done = false"
-    return _filter_dan_cetak(args, token, f"TUGAS HARI INI ({format_tanggal_panjang(now.date())})", f, args.proyek)
+    return _filter_dan_cetak(args, token, f"TUGAS HARI INI ({format_tanggal_panjang(now.date())})", f,
+                              args.proyek, catatan=CATATAN_TUMPANG_TINDIH)
 
 
 def cmd_terlambat(args, token):
     now = sekarang(args.tz)
     f = f"due_date < {ke_iso_utc(now.date(), now.hour, now.minute, args.tz)} && done = false"
-    return _filter_dan_cetak(args, token, "TUGAS TERLAMBAT", f, args.proyek)
+    return _filter_dan_cetak(args, token, "TUGAS TERLAMBAT", f, args.proyek, catatan=CATATAN_TUMPANG_TINDIH)
 
 
 def cmd_minggu_ini(args, token):
@@ -684,8 +692,17 @@ def cmd_tambah(args, token):
                         body={"user_id": uid}, tulis=True)
                 ringkasan.append("-> berhasil ditugaskan")
             except Gagal as e:
+                petunjuk = ""
+                if e.kode == K_AUTH:
+                    petunjuk = (
+                        " KEMUNGKINAN BESAR PENYEBAB: token belum dicentang izin grup 'Tasks Assignees' "
+                        "(Create + Read All) - ini GRUP TERPISAH dari grup 'Tasks', letaknya di bagian "
+                        "sendiri di layar buat token dan mudah terlewat. Buka Settings > API Tokens, "
+                        "edit/buat ulang token, cek grup 'Tasks Assignees' (bukan 'Tasks'), lihat "
+                        "references/panduan-vikunja.md bagian 6."
+                    )
                 sys.stderr.write(
-                    f"CATATAN: tugas #{data['id']} tersimpan, tapi GAGAL menugaskan ke '{ke}': {e}\n"
+                    f"CATATAN: tugas #{data['id']} tersimpan, tapi GAGAL menugaskan ke '{ke}': {e}.{petunjuk}\n"
                 )
 
     teks = [f"TERSIMPAN {len(dibuat)} TUGAS DI VIKUNJA:"]
@@ -717,8 +734,41 @@ def cmd_selesai(args, token):
 
 _POLA_BULLET = re.compile(r"^\s*(?:[-*•]|\d{1,2}[.)])\s+(.*\S)\s*$")
 _POLA_PIC = re.compile(r"^([A-Za-z][A-Za-z .]{1,29}?)\s*[:\-–]\s+(.+)$")
+# Label eksplisit "PIC: Nama" / "PIC - Nama" di mana pun dalam baris (awal, tengah, atau akhir),
+# terpisah dari _POLA_PIC yang hanya menangkap "Nama: sisa tugas" di AWAL baris. Nama dibatasi
+# 1-3 kata berawalan huruf besar (mis. "Siti Aminah") supaya tidak ikut menelan sisa kalimat tugas.
+_POLA_PIC_LABEL = re.compile(r"\bPIC\s*[:\-–]\s*([A-Z][A-Za-z]*(?:\s+[A-Z][A-Za-z]*){0,2})\b")
 _POLA_MENDESAK = re.compile(r"\b(mendesak|urgent|penting|segera|asap)\b", re.IGNORECASE)
 _BUKAN_NAMA = {"pic", "catatan", "note", "todo", "tugas", "deadline", "tenggat", "prioritas", "urgent"}
+# v1.0.3: kata judul/header umum (Inggris & Indonesia) di notulen/WA/email yang berbentuk "Kata: ..." tetapi BUKAN
+# nama orang ("TOPIC: bahas marketing" dulu terbaca PIC "TOPIC"). Dicocokkan tanpa peduli huruf besar/kecil,
+# kecuali kandidat persis nama anggota yang dikenal (--anggota).
+_BUKAN_NAMA |= {
+    "topic", "topik", "info", "informasi", "update", "status", "subject", "subjek", "perihal", "hal", "re", "fw",
+    "fwd", "fyi", "notes", "memo", "agenda", "action", "action item", "action items", "next step", "next steps",
+    "follow up", "followup", "fu", "reminder", "pengingat", "summary", "ringkasan", "rangkuman", "kesimpulan",
+    "hasil", "result", "results", "issue", "issues", "masalah", "problem", "question", "pertanyaan", "q", "a",
+    "answer", "jawaban", "goal", "goals", "target", "tujuan", "plan", "rencana", "project", "proyek", "task",
+    "tasks", "to do", "done", "selesai", "pending", "progress", "progres", "wip", "blocker", "blockers", "risk",
+    "risiko", "decision", "keputusan", "owner", "due", "due date", "date", "tanggal", "time", "waktu", "jam",
+    "tempat", "lokasi", "location", "venue", "meeting", "rapat", "notulen", "minutes", "attendees", "peserta",
+    "hadir", "budget", "anggaran", "biaya", "cost", "price", "harga", "note to self", "ps", "nb", "penting",
+    "important", "new", "baru", "old", "urgent", "asap", "high", "medium", "low", "priority", "key point",
+    "key points", "highlight", "highlights", "detail", "details", "description", "deskripsi", "keterangan", "ket",
+    "link", "url", "file", "lampiran", "attachment", "contact", "kontak", "email", "phone", "hp", "wa", "admin",
+    "team", "tim", "all", "semua", "everyone", "general", "umum", "misc", "lainnya", "lain lain", "other",
+    "others", "context", "konteks", "background", "latar belakang", "outcome", "output", "input", "feedback",
+    "masukan", "review", "cek", "check", "checklist", "warning", "peringatan", "alert", "error", "bug", "fix",
+    "catatan penting", "poin", "point", "points", "step", "steps", "langkah", "phase", "fase", "tahap",
+    "week", "minggu", "day", "hari", "today", "hari ini", "tomorrow", "besok", "kpi", "okr", "sop", "faq",
+}
+# v1.0.5: kata permintaan/pembuka ("Mohon: kirim faktur", "Tolong: ...", "Harap: ...") bukan nama orang.
+_BUKAN_NAMA |= {
+    "mohon", "dimohon", "tolong", "harap", "diharap", "diharapkan", "silakan", "silahkan", "minta", "diminta",
+    "bantu", "ingat", "ingatkan", "jangan lupa", "pastikan", "wajib", "harus", "perlu", "butuh", "usul", "usulan",
+    "saran", "pesan", "please", "pls", "plz", "kindly", "reminder untuk", "mari", "ayo", "yuk", "kalau bisa",
+    "bisa tolong", "mohon bantuan", "tolong ya", "harap dicatat", "catatan tambahan", "catatan khusus",
+}
 
 
 def urai_dari_teks(teks, acuan, anggota_dikenal=None):
@@ -736,9 +786,14 @@ def urai_dari_teks(teks, acuan, anggota_dikenal=None):
             kandidat, sisa = m2.group(1).strip(), m2.group(2).strip()
             kata = kandidat.split()
             cocok_dikenal = anggota_dikenal and kandidat.lower() in {a.lower() for a in anggota_dikenal}
-            bukan_nama = kandidat.lower() in _BUKAN_NAMA
+            bukan_nama = not cocok_dikenal and (" ".join(kandidat.lower().replace(".", " ").split()) in _BUKAN_NAMA)
             if not bukan_nama and (cocok_dikenal or (1 <= len(kata) <= 3 and all(w[0:1].isupper() for w in kata))):
                 pic, isi = kandidat, sisa
+        if pic is None:
+            m3 = _POLA_PIC_LABEL.search(isi)
+            if m3:
+                pic = m3.group(1).strip()
+                isi = (isi[:m3.start()] + isi[m3.end():]).strip(" -–:,;")
         tenggat = cocok_tanggal_kata(isi, acuan)
         prioritas = 4 if _POLA_MENDESAK.search(isi) else None
         draf.append({
@@ -842,33 +897,33 @@ def _tambah_opsi_umum(p):
 
 
 def buat_parser():
-    ap = argparse.ArgumentParser(prog="vikunja.py", description="Asisten tugas/proyek Vikunja (Komunitech)")
+    ap = argparse.ArgumentParser(prog="vikunja.py", description="Asisten tugas/proyek Vikunja (Komunitech)", allow_abbrev=False)
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    p = sub.add_parser("simpan-kunci")
+    p = sub.add_parser("simpan-kunci", allow_abbrev=False)
     p.add_argument("--kunci-file", dest="kunci_file", default=None)
     p.add_argument("--ya", action="store_true")
 
     for nama in ("cek", "daftar-proyek"):
-        p = sub.add_parser(nama)
+        p = sub.add_parser(nama, allow_abbrev=False)
         _tambah_opsi_umum(p)
 
     for nama in ("hari-ini", "terlambat", "minggu-ini"):
-        p = sub.add_parser(nama)
+        p = sub.add_parser(nama, allow_abbrev=False)
         _tambah_opsi_umum(p)
         p.add_argument("--proyek", default=None)
 
-    p = sub.add_parser("cari")
+    p = sub.add_parser("cari", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("kata_kunci")
     p.add_argument("--proyek", default=None)
 
-    p = sub.add_parser("ringkasan")
+    p = sub.add_parser("ringkasan", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--proyek", default=None)
     p.add_argument("--hanya-terlambat", dest="hanya_terlambat", action="store_true")
 
-    p = sub.add_parser("tambah")
+    p = sub.add_parser("tambah", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--judul", default=None)
     p.add_argument("--proyek", default=None)
@@ -879,12 +934,12 @@ def buat_parser():
     p.add_argument("--batch", default=None)
     p.add_argument("--ya", action="store_true")
 
-    p = sub.add_parser("selesai")
+    p = sub.add_parser("selesai", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--id", type=int, required=True)
     p.add_argument("--ya", action="store_true")
 
-    p = sub.add_parser("dari-teks")
+    p = sub.add_parser("dari-teks", allow_abbrev=False)
     _tambah_opsi_umum(p)
     p.add_argument("--teks", default=None)
     p.add_argument("--file", default=None)

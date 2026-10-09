@@ -5,6 +5,8 @@ description: Membuat presentasi/pitch deck Indonesia sebagai satu file HTML mand
 
 # Presentasi Instan
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Mengubah poin-poin dari pengguna menjadi presentasi HTML siap pakai — satu file,
 tanpa instalasi, tanpa internet setelah file jadi, langsung bisa dibuka di browser
 laptop atau HP dan dicetak ke PDF.
@@ -57,6 +59,8 @@ pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan a
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 1. **Tentukan jenis presentasi** dari jawaban pengguna, lalu baca template yang sesuai
    di `templates/`: `pitch-investor.md`, `proposal-b2b.md`, `pengajuan-kur.md`,
    `laporan-bulanan.md`, `profil-perusahaan.md`, `produk-ke-reseller.md`, atau
@@ -73,6 +77,10 @@ pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan a
    dari pengguna. Jika pengguna hanya memberi topik, buat isi contoh yang masuk akal
    untuk konteks itu dan **tandai jelas** bagian yang perlu diisi pengguna (mis.
    `[isi nama perusahaan Anda]`).
+   **Klaim di slide hanya dari fakta pengguna.** Kalimat tentang kinerja, kecepatan, tren,
+   reputasi, atau pertumbuhan (mis. "pelanggan bertambah tiap tahun", "selesai 1–2 hari",
+   "repeat order rutin") yang tidak diberikan pengguna jangan ditulis sebagai fakta; tulis
+   `[isi: ...]` (mis. `[isi: lama pengerjaan]`) atau hapus.
 3. **Baca `references/aturan-desain.md`** dan terapkan: batas kata per slide, kontras
    warna, tumpukan font aman, palet warna, format Rupiah, jumlah slide wajar.
 4. **Baca `references/kerangka-html.md`** dan gunakan kerangkanya sebagai dasar file
@@ -184,7 +192,7 @@ perlu dihitung, **masukkan hasilnya ke slide, jangan menghitung ulang manual/kir
 - [ ] Angka dari CSV penjualan berasal dari `rekap-penjualan-csv`/`scripts/rekap.py`, bukan dijumlah manual.
 - [ ] Tidak ada `<link>`/`<script src>` ke internet, tidak ada gambar dengan path lokal — sudah dicek `validasi_html.py`.
 - [ ] Ada `@page { size: 1920px 1080px; margin: 0; }` dan blok `@media print`, sudah dicoba cetak PDF-nya tidak terpotong.
-- [ ] Tidak ada klaim tanpa dasar (halal, BPOM, "terlaris") kecuali diberikan pengguna.
+- [ ] Tidak ada klaim tanpa dasar (halal, BPOM, "terlaris", "pelanggan bertambah", "selesai 1–2 hari") kecuali diberikan pengguna; selain itu `[isi: ...]`.
 - [ ] Bagian yang belum terisi ditandai jelas, bukan dikarang seolah-olah data asli.
 
 ## Batasan & penanganan error

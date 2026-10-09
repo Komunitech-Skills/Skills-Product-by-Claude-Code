@@ -1,0 +1,5 @@
+﻿id_stok;kode;nama;lokasi;batch;satuan;stok_sistem;stok_fisik;catatan
+5;BB-003;Bumbu Balado;Gudang Utama/Rak A;BL-0901;kg;12,5;12,5;
+3;BB-002;Minyak Goreng;Gudang Utama/Rak A;MG-0915;L;18;17,5;1 jeriken bocor
+4;BB-002;Minyak Goreng;Gudang Utama/Rak A;MG-0922;L;10;;
+1;BB-001;Singkong Kupas;Gudang Utama/Rak A;SK-2609;kg;60;57;

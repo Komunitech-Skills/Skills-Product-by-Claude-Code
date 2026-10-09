@@ -5,6 +5,8 @@ description: Buku piutang pelanggan lokal (SQLite di komputer pemilik, tanpa lan
 
 # Buku Piutang (bon & tagihan pelanggan)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menggantikan buku bon/Excel piutang dan fitur piutang aplikasi akuntansi berlangganan: semua tagihan yang belum dibayar pelanggan ada di **satu file database di komputer pemilik**, dan kamu (agent) mengoperasikannya lewat `scripts/piutang.py`. Hasilnya: tahu persis siapa berutang berapa, nota mana yang terlewat, umur piutang, uang masuk hari ini, dan setiap tagihan punya **draf pesan sopan + tautan wa.me** yang tinggal diperiksa dan dikirim sendiri oleh pemilik.
 
@@ -58,6 +60,8 @@ python3 <folder-skill-ini>/scripts/piutang.py <perintah> [opsi] --json
 Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 pertanyaan). Jika pengguna ingin cepat, simpan yang ada dan sebutkan asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
 ### A. Mulai
 1. `info --json`. Belum ada database → tanyakan nama usaha, nama di pesan, rekening pembayaran, termin biasa (hari), zona (WIB/WITA/WIT).
@@ -133,6 +137,7 @@ Contoh sesi lengkap: `examples/contoh-sesi-toko-sembako.md`.
 - [ ] Yang dibagikan/dijadwalkan memakai `--samarkan`; tidak ada ancaman atau denda di draf.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan aplikasi akuntansi lengkap (tidak ada jurnal, hutang ke pemasok, laba rugi) dan bukan pengganti faktur pajak Coretax. Tidak membaca mutasi bank otomatis; pembayaran dicatat dari cerita/bukti yang ditempel pemilik (cocokkan mutasi → `rekonsiliasi-bank`).
 - Satu database dipakai satu komputer. Jangan buka file yang sama dari dua komputer lewat Google Drive/Dropbox.
 - Database terkunci (mis. jadwal sedang membaca) → script menunggu 15 detik lalu memberi pesan jelas; ulangi perintahnya. Database rusak → script menolak dengan petunjuk `backup --daftar` + `restore`; jangan hapus atau timpa file database sendiri.

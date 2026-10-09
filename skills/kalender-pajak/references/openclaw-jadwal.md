@@ -1,5 +1,7 @@
 # Pengingat pajak bulanan ke Telegram pemilik (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (25 September 2026):** ⚠️ **Jadwal di bawah BELUM diuji** untuk skill ini di OpenClaw sungguhan. Sintaks `openclaw automations add ... --command-argv ... --announce --channel telegram` meniru pola yang **sudah diuji** di skill `laporan-harian-usaha` (`references/openclaw-jadwal.md`, OpenClaw 2026.9.5). Script-nya sendiri sudah diuji dari terminal (`--hari-ini hari-ini` membaca tanggal komputer saat jadwal berjalan). Pengiriman nyata ke Telegram belum diuji.
 
 ## 0. Aturan kanal (keputusan pemilik Komunitech, 2026-09-23)

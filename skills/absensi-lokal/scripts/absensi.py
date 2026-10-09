@@ -2443,57 +2443,57 @@ def cmd_harian(args):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--db", help="Lokasi file database (default ~/KomunitechData/absensi/absensi.db)")
     umum.add_argument("--json", action="store_true", help="Keluaran JSON")
     umum.add_argument("--sekarang", help=argparse.SUPPRESS)
-    tulis = argparse.ArgumentParser(add_help=False)
+    tulis = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     tulis.add_argument("--ya", action="store_true", help="Simpan (tanpa ini hanya pratinjau)")
 
-    p = argparse.ArgumentParser(prog="absensi.py", description="Absensi karyawan lokal + rekap + lembur PP 35/2021.")
+    p = argparse.ArgumentParser(prog="absensi.py", description="Absensi karyawan lokal + rekap + lembur PP 35/2021.", allow_abbrev=False)
     p.add_argument("--versi", action="version", version=VERSI)
     sub = p.add_subparsers(dest="perintah")
     sub.required = True
 
-    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database baru")
+    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database baru", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_init)
-    s = sub.add_parser("info", parents=[umum], help="Info database & pengaturan")
+    s = sub.add_parser("info", parents=[umum], help="Info database & pengaturan", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_info)
-    s = sub.add_parser("backup", parents=[umum], help="Buat salinan database")
+    s = sub.add_parser("backup", parents=[umum], help="Buat salinan database", allow_abbrev=False)
     s.set_defaults(fungsi=cmd_backup)
-    s = sub.add_parser("atur", parents=[umum, tulis], help="Toleransi terlambat, jeda tap ganda, nama usaha")
+    s = sub.add_parser("atur", parents=[umum, tulis], help="Toleransi terlambat, jeda tap ganda, nama usaha", allow_abbrev=False)
     s.add_argument("--toleransi", type=int, help="Toleransi terlambat (menit)")
     s.add_argument("--jeda-duplikat", type=int, help="Tap berjarak <= menit ini dianggap ganda (default 5)")
     s.add_argument("--nama-usaha")
     s.set_defaults(fungsi=cmd_atur)
 
-    sh = sub.add_parser("shift", help="Kelola shift").add_subparsers(dest="aksi")
+    sh = sub.add_parser("shift", help="Kelola shift", allow_abbrev=False).add_subparsers(dest="aksi")
     sh.required = True
-    s = sh.add_parser("tambah", parents=[umum, tulis], help="Tambah/ubah shift")
+    s = sh.add_parser("tambah", parents=[umum, tulis], help="Tambah/ubah shift", allow_abbrev=False)
     s.add_argument("--kode", required=True)
     s.add_argument("--masuk")
     s.add_argument("--pulang")
     s.add_argument("--istirahat", type=int, help="Menit istirahat (tidak dihitung jam kerja), default 60")
     s.add_argument("--pulang-hari-pendek", help="Jam pulang di hari kerja terpendek (pola 6 hari), '-' untuk hapus")
     s.set_defaults(fungsi=cmd_shift_tambah)
-    s = sh.add_parser("daftar", parents=[umum])
+    s = sh.add_parser("daftar", parents=[umum], allow_abbrev=False)
     s.set_defaults(fungsi=cmd_shift_daftar)
 
-    lb = sub.add_parser("libur", help="Hari libur resmi").add_subparsers(dest="aksi")
+    lb = sub.add_parser("libur", help="Hari libur resmi", allow_abbrev=False).add_subparsers(dest="aksi")
     lb.required = True
-    s = lb.add_parser("tambah", parents=[umum, tulis])
+    s = lb.add_parser("tambah", parents=[umum, tulis], allow_abbrev=False)
     s.add_argument("--tanggal")
     s.add_argument("--nama")
     s.add_argument("--file", help="CSV kolom tanggal;nama")
     s.set_defaults(fungsi=cmd_libur_tambah)
-    s = lb.add_parser("hapus", parents=[umum, tulis])
+    s = lb.add_parser("hapus", parents=[umum, tulis], allow_abbrev=False)
     s.add_argument("--tanggal", required=True)
     s.set_defaults(fungsi=cmd_libur_hapus)
-    s = lb.add_parser("daftar", parents=[umum])
+    s = lb.add_parser("daftar", parents=[umum], allow_abbrev=False)
     s.add_argument("--tahun")
     s.set_defaults(fungsi=cmd_libur_daftar)
 
-    ky = sub.add_parser("karyawan", help="Data karyawan").add_subparsers(dest="aksi")
+    ky = sub.add_parser("karyawan", help="Data karyawan", allow_abbrev=False).add_subparsers(dest="aksi")
     ky.required = True
 
     def opsi_karyawan(s, wajib):
@@ -2513,21 +2513,21 @@ def buat_parser():
                        help="ya = golongan jabatan tertentu (Pasal 27), tidak dibayar lembur")
         s.add_argument("--mulai", help="Tanggal mulai dicatat (default tanggal 1 bulan ini)")
 
-    s = ky.add_parser("tambah", parents=[umum, tulis])
+    s = ky.add_parser("tambah", parents=[umum, tulis], allow_abbrev=False)
     opsi_karyawan(s, True)
     s.set_defaults(fungsi=cmd_karyawan_tambah)
-    s = ky.add_parser("ubah", parents=[umum, tulis])
+    s = ky.add_parser("ubah", parents=[umum, tulis], allow_abbrev=False)
     opsi_karyawan(s, False)
     s.add_argument("--nonaktif", action="store_true")
     s.add_argument("--aktifkan", action="store_true")
     s.set_defaults(fungsi=cmd_karyawan_ubah)
-    s = ky.add_parser("daftar", parents=[umum])
+    s = ky.add_parser("daftar", parents=[umum], allow_abbrev=False)
     s.set_defaults(fungsi=cmd_karyawan_daftar)
-    s = ky.add_parser("impor", parents=[umum, tulis])
+    s = ky.add_parser("impor", parents=[umum, tulis], allow_abbrev=False)
     s.add_argument("file")
     s.set_defaults(fungsi=cmd_karyawan_impor)
 
-    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat masuk/pulang manual")
+    s = sub.add_parser("catat", parents=[umum, tulis], help="Catat masuk/pulang manual", allow_abbrev=False)
     s.add_argument("--karyawan", required=True, help="Kode atau nama")
     s.add_argument("--masuk", help="Jam masuk, mis. 08.12 atau 'sekarang'")
     s.add_argument("--pulang", help="Jam pulang, mis. 17.05 atau 'sekarang'")
@@ -2536,7 +2536,7 @@ def buat_parser():
     s.add_argument("--ganti", action="store_true", help="Ganti catatan yang sudah ada")
     s.set_defaults(fungsi=cmd_catat)
 
-    s = sub.add_parser("keterangan", parents=[umum, tulis], help="Izin/sakit/cuti/alpa/dinas")
+    s = sub.add_parser("keterangan", parents=[umum, tulis], help="Izin/sakit/cuti/alpa/dinas", allow_abbrev=False)
     s.add_argument("--karyawan", required=True)
     s.add_argument("--jenis", required=True, choices=JENIS_KET)
     s.add_argument("--tanggal", required=True)
@@ -2544,7 +2544,7 @@ def buat_parser():
     s.add_argument("--catatan")
     s.set_defaults(fungsi=cmd_keterangan)
 
-    s = sub.add_parser("lembur", parents=[umum, tulis], help="Catat lembur yang DISETUJUI")
+    s = sub.add_parser("lembur", parents=[umum, tulis], help="Catat lembur yang DISETUJUI", allow_abbrev=False)
     s.add_argument("--karyawan")
     s.add_argument("--tanggal", help="Tanggal kerja (tanggal mulai shift)")
     s.add_argument("--jam", help="Jam lembur disetujui, mis. 2 atau 1,5")
@@ -2553,13 +2553,13 @@ def buat_parser():
     s.add_argument("--ganti", action="store_true")
     s.set_defaults(fungsi=cmd_lembur)
 
-    s = sub.add_parser("hapus", parents=[umum, tulis], help="Hapus data satu karyawan pada satu tanggal")
+    s = sub.add_parser("hapus", parents=[umum, tulis], help="Hapus data satu karyawan pada satu tanggal", allow_abbrev=False)
     s.add_argument("--karyawan", required=True)
     s.add_argument("--tanggal", required=True)
     s.add_argument("--jenis", choices=["tap", "keterangan", "lembur", "semua"], default="tap")
     s.set_defaults(fungsi=cmd_hapus)
 
-    s = sub.add_parser("impor-absen", parents=[umum, tulis], help="Impor file dari mesin absen (CSV/XLSX)")
+    s = sub.add_parser("impor-absen", parents=[umum, tulis], help="Impor file dari mesin absen (CSV/XLSX)", allow_abbrev=False)
     s.add_argument("file")
     for f in SIN_ABSEN:
         s.add_argument("--kolom-" + f, dest="kolom_" + f, help="Nama kolom untuk %s ('-' = abaikan)" % f)
@@ -2568,7 +2568,7 @@ def buat_parser():
     s.add_argument("--sampai")
     s.set_defaults(fungsi=cmd_impor_absen)
 
-    s = sub.add_parser("rekap", parents=[umum], help="Rekap bulanan + lembur")
+    s = sub.add_parser("rekap", parents=[umum], help="Rekap bulanan + lembur", allow_abbrev=False)
     s.add_argument("--bulan", help="YYYY-MM, atau 'lalu' untuk bulan lalu (default bulan ini s.d. hari ini)")
     s.add_argument("--dari")
     s.add_argument("--sampai")
@@ -2580,7 +2580,7 @@ def buat_parser():
     s.add_argument("--gabung", help="File CSV gaji slip-gaji-bpjs yang kolom lemburnya akan diisi")
     s.set_defaults(fungsi=cmd_rekap)
 
-    s = sub.add_parser("harian", parents=[umum], help="Laporan absensi satu hari")
+    s = sub.add_parser("harian", parents=[umum], help="Laporan absensi satu hari", allow_abbrev=False)
     s.add_argument("--tanggal")
     s.add_argument("--karyawan")
     s.set_defaults(fungsi=cmd_harian)

@@ -47,3 +47,9 @@ Sebaiknya ada (gratis, biasanya sudah ada di Mac/Linux; di Windows pasang dari p
 
 **Apakah data keuangan saya dikirim ke internet?**
 Script berjalan di komputermu sendiri tanpa internet. Isi percakapan tetap dibaca oleh AI agent yang kamu pakai.
+
+## Catatan revisi 1.0.3 (2026-10-01)
+Perbaikan dari uji OpenClaw asli (arus kas 13 minggu, info kurang lalu dilengkapi):
+- Script kini mencetak **kejadian per minggu** (pos masuk/keluar apa saja yang jatuh di tiap minggu) dan rincian minggu kritis. AI wajib mengutip nomor minggu dan pos dari daftar ini, sehingga tidak ada lagi salah sebut "cicilan di minggu 12" padahal di minggu 11.
+- Pos yang ditanyakan tetapi belum dijawab (mis. BPJS, PPh 21) ditulis jelas sebagai "Belum termasuk" di Asumsi.
+- Path script ditulis jelas (subfolder `scripts/`); AI dilarang mencari file ke seluruh disk.

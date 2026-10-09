@@ -77,3 +77,40 @@ Tidak. SCAMPER, skor tertimbang, titik impas — semuanya dijelaskan dengan baha
   - Dasar aturan (UU No. 7/2014 Pasal 9, UU No. 8/1995, UU No. 4/2023 P2SK) ditambahkan untuk kategori terlarang.
   - 28 tes regresi baru ditambahkan di `scripts/test_skor_ide.py` (total 60 tes, semua lulus).
 - **1.0.0** (2026-09-25) — Rilis draft pertama (lihat `ATTRIBUTION.md` untuk sumber & proses ATM).
+
+## Catatan revisi 1.0.5 (2026-10-01)
+Dari uji sebelum/sesudah OpenClaw: setelah 2 giliran AI masih menunggu persetujuan dan
+belum memberi rencana, serta menyimpan CSV di folder skill tanpa bilang. Kini **paling
+lambat di balasan kedua** kamu sudah menerima ide terpilih + **Rencana Uji 7 Hari**
+(Hari 1–7, target angka, biaya rupiah); ganti ide cukup ketik nomornya. Baru: perintah
+`skor_ide.py rencana` menghitung **untung bersih per unit setelah potongan
+GoFood/ShopeeFood/marketplace**, laba uji, unit untuk menutup biaya uji, dan target
+kumulatif Hari 3/5/7 — dengan rumus tertulis. File kerja hanya disimpan di folder kerjamu
+(lokasinya disebut), atau tidak sama sekali (data skor lewat stdin). Saran kanal uji khas
+Indonesia (status/grup WA, PO + QRIS, titip warung, tanggal gajian). AI tidak lagi
+menyebut angka imbal hasil karangan pada kasus investasi/bagi hasil.
+
+## Catatan revisi 1.0.7 (2026-10-03)
+Dari uji ulang OpenClaw: saran paket dibilang "bukan turun harga" padahal harganya sama dengan pesaing, target uji tidak nyambung ke kekurangan omzet, dan file sempat ditulis ke /tmp. Perbaikan:
+- "Aturan wajib" di awal SKILL.md: fakta hanya dari kamu, angka & skor dari script, tanpa file di /tmp, plus daftar nilai tambah (skor berbobot, rencana uji 7 hari berangka, tanda risiko/legal).
+- `rencana` kini mencetak **KONSISTENSI**: bila harga per satuan sama/lebih murah dari harga lama atau pesaing, ditandai turun harga (sebut dampak ke pelanggan lama); dengan `--gap-omzet`, target uji dihubungkan ke kekurangan omzet per bulan.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+Dari uji ulang OpenClaw: saran paket laundry keluar Rp8.000–9.000/kg padahal harga
+sendiri Rp6.000/kg dan pesaing Rp5.000/kg, dan pada kasus money game AI mengutip pasal
+KUHP lama (378/372) yang sudah tidak berlaku sejak KUHP baru (UU 1/2023) berlaku
+2 Januari 2026. Perbaikan:
+- **Cek kewajaran harga otomatis.** `skor_ide.py rencana` kini bisa menghitung harga dari
+  **biaya + margin** (`--margin-target`), menampilkan **harga per kg/porsi** untuk paket
+  (`--isi-per-unit`, `--satuan`), lalu membandingkannya dengan harga kamu sendiri
+  (`--harga-lama`) dan harga pesaing (`--harga-pesaing`): hasilnya WAJAR / CEK / BELUM
+  DICEK. Harga yang lebih mahal dari acuan diberi peringatan dan harus disertai nilai tambah
+  nyata atau diturunkan.
+- **Titik berhenti dini** di rencana 7 hari: Hari 3 masih 0 → ganti tawaran/kanal; Hari 5
+  di bawah ambang → hentikan uji dan hemat sisa biaya. Ditambah 2 tanda bahaya (pre-mortem)
+  yang dipantau Hari 1–3.
+- **Tanpa pasal pidana kecuali diminta.** Untuk ide terlarang AI menjelaskan bahayanya
+  dengan bahasa awam; bila kamu minta dasar hukumnya, rujukan terkini (KUHP baru Pasal
+  492 penipuan & Pasal 486 penggelapan, Kontak OJK 157, Satgas PASTI) ada di
+  `references/rujukan-kasus-terlarang.md` (dicek 1 Oktober 2026).
+- 8 tes baru (total 87 tes, semua lulus).

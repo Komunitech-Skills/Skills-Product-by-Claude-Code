@@ -1,9 +1,11 @@
 ---
 name: absensi-lokal
-description: Aplikasi absensi karyawan lokal (SQLite di komputer pemilik) yang dioperasikan agent: karyawan & shift (termasuk shift malam), catat masuk/pulang lewat chat, impor file mesin fingerprint (CSV/XLSX), izin/sakit/cuti/alpa, rekap bulanan hadir/terlambat/pulang cepat/jam kerja, upah lembur PP 35/2021 hanya dari lembur disetujui, deteksi data ganjil, CSV untuk slip-gaji-bpjs. Gunakan saat pengguna minta "catat absen", "Andi masuk 08.12", "rekap absensi", "hitung lembur", impor data mesin absen, atau attendance, overtime. Slip gaji/BPJS pakai slip-gaji-bpjs.
+description: Aplikasi absensi karyawan lokal (SQLite di komputer pemilik) yang dioperasikan agent: karyawan & shift (termasuk shift malam), catat masuk/pulang lewat chat, impor file mesin fingerprint (CSV/XLSX), izin/sakit/cuti/alpa, rekap bulanan hadir/terlambat/pulang cepat/jam kerja, upah lembur PP 35/2021 hanya dari lembur disetujui, deteksi data ganjil, CSV untuk slip-gaji-bpjs, plus hitung upah mingguan pekerja harian lepas tanpa database (hari x tarif, setengah hari, lembur vs minimum PP 35/2021, kasbon). Gunakan saat pengguna minta "catat absen", "Andi masuk 08.12", "rekap absensi", "hitung lembur", "gaji harian minggu ini", "upah tukang/pekerja harian", impor data mesin absen, atau attendance, overtime. Slip gaji/BPJS pakai slip-gaji-bpjs.
 ---
 
 # Absensi Lokal (pengganti aplikasi absensi bulanan)
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Menjadi "aplikasi absensi" pemilik usaha tanpa langganan: data ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/absensi.py`. Hasil akhir: kehadiran tercatat rapi, rekap bulanan per karyawan, upah lembur yang benar menurut PP 35/2021, daftar data ganjil yang perlu dicek, dan file untuk skill `slip-gaji-bpjs`.
@@ -13,6 +15,7 @@ Menjadi "aplikasi absensi" pemilik usaha tanpa langganan: data ada di **satu fil
 - "Ini file dari mesin fingerprint, masukkan", "rekap absensi September", "siapa yang sering telat?"
 - "Joko lembur 3 jam kemarin, disuruh Bu Rina", "hitung lembur bulan ini"
 - "Kirim rekap absen harian ke Telegram saya tiap jam 10 pagi" (OpenClaw)
+- "Hitung gaji minggu ini: Agus 120rb/hari masuk 6 hari + lembur 2 jam, Budi 110rb 5 hari kasbon 200rb" (pekerja **harian lepas**, tanpa database) → bagian **F**
 
 ## Kapan TIDAK digunakan
 - Slip gaji, potongan BPJS, PPh 21 → `slip-gaji-bpjs` (skill ini hanya mengirim jam lembur/rekap ke sana)
@@ -54,9 +57,11 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai ("catat absen karyawan saya")
 1. `info --json`. Jika database belum ada → satu pesan: (1) boleh disimpan di `~/KomunitechData/absensi/`? (2) daftar karyawan: nama, pola 5/6 hari, jam masuk–pulang; (3) pakai mesin fingerprint? Jika ya, ID tiap karyawan di mesin; (4) toleransi terlambat berapa menit? (5) mau dihitung rupiah lemburnya? Jika ya, gaji pokok + tunjangan tetap.
-2. `init` → konfirmasi → `init --ya`. Shift selain REG: `shift tambah --kode MALAM --masuk 22.00 --pulang 06.00 [--istirahat 60] [--pulang-hari-pendek 13.00]` (pulang ≤ masuk = otomatis lewat tengah malam).
+2. **Pratinjau data karyawan sebelum disimpan:** tampilkan tabel nama, pola hari kerja, jam, shift, ID mesin (gaji hanya bila diminta), lalu minta "ya". Simpan (`init --ya`, `karyawan tambah/impor ... --ya`) hanya setelah pengguna membalas "ya". Shift selain REG: `shift tambah --kode MALAM --masuk 22.00 --pulang 06.00 [--istirahat 60] [--pulang-hari-pendek 13.00]` (pulang ≤ masuk = otomatis lewat tengah malam).
 3. Banyak karyawan: `karyawan impor karyawan.csv` (contoh `templates/karyawan.csv`; shift yang disebut di file harus sudah dibuat — contoh itu memakai REG, ENAM 08.00–16.00 hari pendek 13.00, dan MALAM). Sedikit: `karyawan tambah --kode A01 --nama Andi [--jabatan ..] [--shift ..] [--hari-kerja 6] [--id-mesin 1] [--gaji-pokok 5jt --tunjangan-tetap 500rb | --upah-harian 150rb] [--tanpa-lembur ya]`.
 4. Libur resmi bulan berjalan: `libur tambah --tanggal 2026-12-25 --nama "Natal"` atau `--file libur.csv`. Jangan mengarang tanggal libur; minta pengguna mengonfirmasi dari SKB libur nasional/pengumuman daerah.
 
@@ -76,12 +81,26 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### D. Rekap bulanan
 1. `rekap --bulan 2026-09 --json` (tambah `--csv rekap.csv --csv-harian rincian.csv` bila diminta file Excel; pemisah `;`).
-2. Kirim teks rekap script **apa adanya** (siap tempel ke WA/Telegram). Lalu sampaikan bagian **PERLU DICEK** dan **hari tanpa keterangan** sebagai pertanyaan ke pengguna (izin/sakit/cuti/alpa?). Jika script menulis "Belum ada data absen", jangan tanyakan alpa — tanyakan apakah file mesin sudah diimpor. Bagian "Catatan (bukan lembur)" (pulang jauh lewat jadwal / masuk di hari libur tanpa lembur disetujui, pengingat makan Pasal 29) cukup diteruskan; jangan mengubahnya menjadi lembur tanpa persetujuan pengguna. Setelah dijawab, catat dengan `keterangan`, lalu rekap ulang.
-3. Untuk gaji: `rekap --bulan 2026-09 --csv-gaji lembur-gaji.csv [--gabung file-gaji-slip.csv] [--pola 5|6]` → teruskan ke skill `slip-gaji-bpjs` (jalankan dengan `--hari-kerja` sesuai pola). Jika file gaji sudah berisi `lembur_rp`, jam lembur tidak diisi (mencegah dobel) — sampaikan catatannya.
+2. Tanggal kerja yang kosong untuk SEMUA karyawan tandai "**kemungkinan libur — konfirmasi**" ke pengguna (jangan dihitung sebagai bolong/alpa individu; tanyakan lalu catat dengan `libur tambah` bila benar).
+3. Kirim teks rekap script **apa adanya** (siap tempel ke WA/Telegram). Lalu sampaikan bagian **PERLU DICEK** dan **hari tanpa keterangan** sebagai pertanyaan ke pengguna (izin/sakit/cuti/alpa?). Jika script menulis "Belum ada data absen", jangan tanyakan alpa — tanyakan apakah file mesin sudah diimpor. Bagian "Catatan (bukan lembur)" (pulang jauh lewat jadwal / masuk di hari libur tanpa lembur disetujui, pengingat makan Pasal 29) cukup diteruskan; jangan mengubahnya menjadi lembur tanpa persetujuan pengguna. Setelah dijawab, catat dengan `keterangan`, lalu rekap ulang.
+4. Untuk gaji: `rekap --bulan 2026-09 --csv-gaji lembur-gaji.csv [--gabung file-gaji-slip.csv] [--pola 5|6]` → teruskan ke skill `slip-gaji-bpjs` (jalankan dengan `--hari-kerja` sesuai pola). Jika file gaji sudah berisi `lembur_rp`, jam lembur tidak diisi (mencegah dobel) — sampaikan catatannya.
 
 ### E. Laporan harian & jadwal
 - `harian [--tanggal ...]` → siapa hadir, terlambat, belum absen, izin/sakit, lembur disetujui.
 - Jadwal otomatis ke Telegram (OpenClaw): ikuti `references/openclaw-jadwal.md`. Jadwal hanya menjalankan `harian`/`rekap` (baca saja).
+
+### F. Upah pekerja harian lepas (tanpa database) — `scripts/upah_harian.py`
+Untuk gajian harian/mingguan (warung, bengkel, toko, tukang) yang diketik di chat. `gaji-umkm` khusus gaji bulanan, jadi **jangan menghitung upah harian manual** — pakai script ini (tidak menyimpan apa pun):
+```bash
+python3 <folder-skill-ini>/scripts/upah_harian.py --pola 6 --periode "28 Sep - 3 Okt 2026" \
+  --pekerja "Agus; tarif=120rb; hari=6; lembur=2; tarif-lembur=15rb" \
+  --pekerja "Budi; tarif=110rb; hari=5; kasbon=200rb" \
+  --pekerja "Cici; tarif=100rb; hari=5; setengah=1" --json
+```
+- Kunci: `tarif` (upah harian, wajib), `hari` (hari penuh), `setengah` (jumlah setengah hari, dibayar ½ tarif — sebut sebagai asumsi), `lembur` (jam lembur di hari kerja, per hari dipisah `+`, mis. `2+1`), `lembur-libur` (jam di hari istirahat/libur), `tarif-lembur` (tarif per jam yang biasa dibayar pemilik, opsional), `tambahan`, `potongan`/`kasbon`, `pola` (6 atau 5 hari kerja/minggu; default `--pola`). Banyak pekerja: `--file pekerja.csv` (kolom sama).
+- Lembur **minimum PP 35/2021**: upah sebulan = harian × 25 (pola 6) / × 21 (pola 5); upah sejam = ÷ 173; hari kerja jam ke-1 × 1,5, berikutnya × 2. Contoh: 120.000 × 25 ÷ 173 = 17.341,04/jam × 3,5 = **Rp 60.694** untuk 2 jam.
+- Bila `tarif-lembur` diisi, `total_dibayar` memakai tarif pemilik dan script memberi **peringatan** bila di bawah minimum, plus `total_versi_minimum_pp35`. Sampaikan keduanya dan peringatannya apa adanya; keputusan di pemilik.
+- Salin `teks` / angka dari script. Lembur hanya yang disetujui/disuruh pemilik. Ingin tercatat tiap hari → tawarkan mode database (bagian A–D).
 
 ## Format output ke pengguna
 **Konfirmasi sebelum menyimpan:**
@@ -123,6 +142,7 @@ Setiap rekap yang memuat lembur diakhiri disclaimer dari script (PP 35/2021, pem
 **Agent:** `lembur --karyawan Joko --tanggal 2026-09-13 --jam 9 --catatan "perintah Pak Budi" --json` → "Saya akan mencatat lembur **disetujui** Joko, Minggu 13/09: 9 jam di hari istirahat (pola 5 hari, PP 35/2021 Pasal 31 ayat (3): 8 jam × 2 + 1 jam × 3 = 19 jam setara) ≈ Rp 461.272 (upah Joko Rp 200.000/hari × 21 = Rp 4.200.000/bulan). Simpan?" → "ya" → perintah sama + `--ya`.
 
 ## Checklist sebelum menjawab
+- [ ] Data karyawan dipratinjau dan dijawab "ya" sebelum disimpan; tanggal kosong untuk semua karyawan ditandai "kemungkinan libur — konfirmasi"
 - [ ] Perintah tulis sudah dipratinjau dan disetujui sebelum `--ya`
 - [ ] Pemetaan kolom & cara baca tanggal impor ditunjukkan
 - [ ] Semua `peringatan`/`PERLU DICEK` disampaikan; hari tanpa keterangan ditanyakan, tidak diisi sendiri
@@ -131,6 +151,7 @@ Setiap rekap yang memuat lembur diakhiri disclaimer dari script (PP 35/2021, pem
 - [ ] `--db` konsisten; tidak ada NIK/rekening yang disimpan
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Golongan jabatan tertentu** (pemikir/perencana/pengendali, waktu kerja tidak dapat dibatasi, upah lebih tinggi — Pasal 27 ayat (2)–(5)) tidak dibayar lembur **hanya bila diatur di PK/PP/PKB**; tandai dengan `--tanpa-lembur ya` atas keputusan pengguna. Sektor usaha tertentu dengan waktu kerja khusus (Pasal 23–25, 30: mis. migas, tambang daerah tertentu) dan upah satuan hasil (Pasal 33 ayat (2)–(3)) **tidak didukung** — arahkan ke konsultan/Disnaker.
 - Batas 4 jam/hari & 18 jam/minggu (Pasal 26) hanya diperingatkan; lembur tetap dihitung sesuai yang disetujui. Lembur hari libur di atas tangga Pasal 31 (11/9/12 jam) ditolak. Batas 18 jam/minggu dihitung per minggu Senin–Minggu penuh, termasuk hari di luar periode rekap. Kewajiban makan-minum ≥ 1.400 kkal bila lembur ≥ 4 jam (Pasal 29) muncul sebagai pengingat di pratinjau lembur dan rekap, tidak dihitung rupiah.
 - Pola kerja di luar 5/6 hari (mis. 4 hari on/off, shift rotasi mingguan) belum didukung: satu karyawan = satu shift tetap; rotasi → ubah `--shift` per periode atau catat manual. Cuti bersama dianggap libur resmi **hanya jika** pengguna mencatatnya di `libur` — status cuti bersama untuk swasta perlu dikonfirmasi (lihat references).

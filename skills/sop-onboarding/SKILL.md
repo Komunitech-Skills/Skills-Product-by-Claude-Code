@@ -1,14 +1,28 @@
 ---
 name: sop-onboarding
-description: Menyusun paket onboarding karyawan baru untuk UMKM dan kantor kecil Indonesia: checklist pra-hari-pertama (dokumen, BPJS, kontrak, perangkat kerja), jadwal H1/minggu 1/30-60-90 hari dengan penanggung jawab (dihitung script), pesan sambutan WA/email & pengumuman tim, buku saku karyawan, dan formulir evaluasi akhir orientasi/masa percobaan. Varian toko, kafe, bengkel, klinik, kantor jasa, gudang. Gunakan saat pengguna minta "onboarding karyawan baru", "induction plan", "employee onboarding", "rencana 30-60-90 hari", atau "paket karyawan baru". Bukan untuk SOP proses kerja umum atau kontrak kerja itu sendiri.
+description: Menyusun paket onboarding karyawan baru untuk UMKM dan kantor kecil Indonesia: checklist pra-hari-pertama (dokumen, BPJS, kontrak, perangkat kerja), jadwal H1/minggu 1/30-60-90 hari dengan penanggung jawab (dihitung script), pesan sambutan WA/email & pengumuman tim, buku saku karyawan, dan formulir evaluasi akhir orientasi/masa percobaan. Varian toko, kafe, bengkel, klinik, kantor jasa, gudang. Gunakan saat pengguna minta "onboarding karyawan baru", "induction plan", "employee onboarding", "rencana 30-60-90 hari", atau "paket karyawan baru". Aturan: KERJAKAN DULU, TANYA DI AKHIR - selama jabatan, jenis hubungan kerja, dan tanggal mulai sudah disebut, langsung beri paket lengkap di chat dengan [isian] untuk data yang kurang, jangan hanya bertanya; jangan menyebut proses internal (cek, script, file). Bukan untuk SOP proses kerja umum atau kontrak kerja itu sendiri.
 ---
 
 # SOP Onboarding Karyawan Baru
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Menyiapkan karyawan baru agar **siap kerja lebih cepat dan tidak merasa dilepas begitu saja**: dokumen
 & administrasi beres sebelum hari pertama, jadwal orientasi jelas dengan penanggung jawab, pesan
 sambutan siap kirim, aturan sehari-hari tertulis di buku saku, dan evaluasi akhir orientasi yang objektif.
+
+## Aturan utama: kerjakan dulu, tanya di akhir
+Jika pengguna sudah menyebut **jabatan**, **jenis hubungan kerja** (tetap/kontrak) dan **tanggal mulai**, JANGAN membalas hanya dengan pertanyaan, walau nama karyawan, nama usaha, buddy, atau jam kerja belum ada. Dalam **satu balasan yang sama**, tulis **isi paket utuh di chat** (bukan hanya tawaran atau nama file), berurutan:
+1. **Jadwal minggu pertama** (hari 1 sampai 6/7: kegiatan & penanggung jawab) dan **jadwal 30/60/90 hari + tanggal evaluasi masa percobaan** (tanggal dihitung dari tanggal mulai; lihat Langkah kerja 3). Tulis sebagai **daftar bernomor per tanggal, urut kronologis** (bukan tabel 6 kolom, karena tampil sebagai teks berpipa di Telegram/WA). Satu butir = `Hari, tanggal: tahap (penanggung jawab), kegiatan`.
+2. **Checklist pra-hari-pertama** (dokumen seperlunya, BPJS Ketenagakerjaan & Kesehatan wajib, perangkat/akses kerja).
+3. **SOP ringkas jabatan** (mis. kasir: buka kas, transaksi, retur/void, tutup kas & setoran; buat 5-8 langkah ringkas, tandai `[isian]` untuk aturan khusus usaha).
+4. **Evaluasi masa percobaan** (karyawan tetap/PKWTT: tanggal evaluasi keputusan dan batas 3 bulan; ringkas formulir penilaiannya). Tulis dalam satu kalimat berurutan, evaluasi lebih dulu: "Evaluasi keputusan: Rabu 6 Jan 2027 (sebelum batas percobaan Senin 11 Jan 2027)". Checkpoint 90 hari disebut pemantauan rutin, jangan dijadikan batas keputusan.
+5. **Catatan aturan** (satu blok pendek): masa percobaan hanya untuk karyawan tetap, maksimal 3 bulan (PP 35/2021, UU 13/2003 Pasal 60 jo. UU 6/2023); upah masa percobaan tidak boleh di bawah upah minimum, jadi cek UMK kota Anda: `[isian: UMK kota ... tahun 2026]` dibandingkan gaji yang disebut pengguna (usaha mikro/kecil punya pengecualian, lihat referensi); PKWT tidak boleh punya masa percobaan.
+6. Data yang kurang ditulis `[isian: ...]` (nama karyawan, nama usaha, buddy, jam kerja, jumlah cuti, dll.) dan **diberi asumsi** (mis. 6 hari kerja).
+7. **Maks. 3 pertanyaan di akhir** untuk menyempurnakan (mis. hari kerja & shift, nama buddy, UMK kota). Hanya **jabatan, jenis hubungan kerja, atau tanggal mulai yang benar-benar kosong** yang boleh menahan paket.
+
+**Dilarang menulis kata proses ke pengguna:** skill, script, file, path, folder, cek ("sudah saya cek"), "saya jalankan", LULUS/GAGAL, nama skill internal, dan frasa "tafsir skill ini". Tulis hasilnya saja; untuk catatan tanggal tulis "perhitungan tanggal ini tafsir yang lazim dipakai, ikuti tanggal di perjanjian kerja". Ringkasan/keluaran script adalah **UNTUK AGENT SAJA**: ubah ke daftar sebelum dikirim, jangan disalin mentah. Bila diminta cetak, tawarkan satu kalimat saja di akhir.
 
 ## Kapan digunakan
 - "Buatkan paket onboarding untuk kasir baru di toko saya."
@@ -30,8 +44,7 @@ sambutan siap kirim, aturan sehari-hari tertulis di buku saku, dan evaluasi akhi
   bagian legal/Dinkes/lembaga sertifikasi terkait.
 
 ## Input
-Tanyakan **sekali** dalam satu pesan bernomor, maksimal 8 butir; bila pengguna ingin cepat, buat dengan
-data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
+Bila jabatan, jenis hubungan kerja, dan tanggal mulai sudah ada: kerjakan dulu (lihat Aturan utama), tanyakan **maks. 3 butir** di akhir. Bila salah satunya kosong, tanyakan **sekali** dalam satu pesan bernomor (maks. 8 butir); bila pengguna ingin cepat, buat dengan data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
 ```
 1. Nama usaha & jenis usaha (toko/kafe/bengkel/klinik/kantor jasa/gudang/lainnya)
 2. Nama & jabatan karyawan baru (boleh "[Nama]" bila untuk template umum)
@@ -44,6 +57,8 @@ data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
 ```
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Tentukan cakupan permintaan**: pengguna mungkin minta paket lengkap, atau hanya satu bagian
    (checklist saja, jadwal saja, pesan sambutan saja, buku saku saja, atau formulir evaluasi saja).
    Buat bagian yang diminta; tawarkan bagian lain sebagai lanjutan.
@@ -61,9 +76,11 @@ data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
    sama dengan skill `kalender-pajak`, SKB 3 Menteri — cek ulang tiap tahun) **dimuat otomatis** oleh
    script bila ada. Tambahkan `--libur <file.csv>` hanya untuk libur **tambahan** khusus perusahaan
    (kolom `tanggal`, satu tanggal per baris, format bebas seperti `--mulai`; pemisah koma atau titik-koma
-   sama-sama didukung) — file itu digabung dengan libur bawaan, bukan menggantinya. Salin tabel Markdown
-   hasil script (termasuk baris peringatan `>` bila ada) langsung ke jawaban; jangan menghitung ulang
-   tanggal secara manual, dan jangan hapus peringatan yang muncul.
+   sama-sama didukung) — file itu digabung dengan libur bawaan, bukan menggantinya. Keluaran tabel script
+   **UNTUK AGENT SAJA**. Pindahkan tanggal "Tanggal disesuaikan" apa adanya ke **daftar bernomor
+   kronologis** (lihat Format output), terjemahkan peringatan `>`/⚠️ ke kalimat biasa; jangan menghitung
+   ulang tanggal manual, dan jangan hapus peringatan yang muncul. Tabel (maks. 2 kolom: Tanggal | Kegiatan)
+   hanya untuk dokumen cetak/Word, bukan untuk balasan chat.
 
    **Definisi tanggal (harus identik dengan script, lihat komentar header `scripts/jadwal_onboarding.py`):**
    - Checkpoint 30/60/90 hari = mulai + 29/59/89 hari kalender. **Ini hanya pemantauan kinerja rutin**,
@@ -72,7 +89,7 @@ data yang ada dan tandai sisanya `[isi: ...]`, sebutkan asumsinya.
      kemudian; **bila bulan target tidak punya tanggal itu, pakai hari terakhir bulan itu (tanpa dikurangi
      1 hari lagi)**; bila tanggal itu ada, **dikurangi 1 hari**. Contoh: mulai 14 Des 2026 → 14 Mar 2027 −
      1 hari = batas **13 Mar 2027**. Tanggal ini **tidak pernah digeser** walau jatuh di hari libur.
-     **Ini adalah TAFSIR yang dipakai skill ini, bukan kepastian hukum** — UU 13/2003 Pasal 60 hanya
+     **Ini adalah TAFSIR perhitungan (jangan tulis "skill" ke pengguna), bukan kepastian hukum** — UU 13/2003 Pasal 60 hanya
      menyebut "paling lama 3 (tiga) bulan" dan tidak merinci cara menghitung tanggal per hari. Ikuti
      tanggal yang tertulis di perjanjian kerja/surat pengangkatan bila berbeda dengan hasil script, dan
      sarankan pengguna konfirmasi ke Disnaker/konsultan HR bila ragu.
@@ -133,7 +150,7 @@ Untuk permintaan paket lengkap, urutkan:
 [isi dari templates/checklist-pra-hari-pertama.md]
 
 ## 2. Jadwal Onboarding (H1 – 90 Hari)
-[tabel Markdown dari scripts/jadwal_onboarding.py]
+[daftar bernomor kronologis dari hasil perhitungan tanggal; maks. 2 kolom bila tabel]
 
 ## 3. Pesan Sambutan & Pengumuman Tim
 [pesan WA/email untuk karyawan baru + pengumuman tim]
@@ -161,32 +178,29 @@ Disclaimer: [lihat Batasan & penanganan error]
 di Sidoarjo, mulai kerja Senin 28 September 2026, kontraknya PKWTT langsung, buddy-nya Rina (kasir
 senior), kerja 6 hari seminggu."
 
-**Output (ringkas, hasil nyata `jadwal_onboarding.py --mulai "28 September 2026" --hari-kerja 6 --jenis
-pkwtt`, hari libur nasional dimuat otomatis — libur Natal 24–25 Desember 2026 justru ADA di rentang
-evaluasi keputusan akhir masa percobaan dan memundurkannya dari 22 ke 19 Desember 2026, lihat baris
-terakhir tabel & catatan di bawahnya):**
+**Output (ringkas; tanggal dari `jadwal_onboarding.py --mulai "28 September 2026" --hari-kerja 6 --jenis
+pkwtt`, libur Natal 24–25 Des 2026 memundurkan evaluasi keputusan dari 22 ke 19 Des):**
 ```
 ## 2. Jadwal Onboarding (H1 – 90 Hari)
-| Tahap | Tanggal target | Tanggal disesuaikan | Digeser? | Penanggung jawab | Kegiatan |
-|---|---|---|---|---|---|
-| Hari pertama (H1) | 28 September 2026 | 28 September 2026 | Tidak | Pemilik/Atasan langsung | ... |
-| Akhir minggu 1 | 4 Oktober 2026 | 5 Oktober 2026 | Ya | Buddy: Rina | ... |
-| Checkpoint 30 hari | 27 Oktober 2026 | 27 Oktober 2026 | Tidak | Atasan langsung | ... |
-| Checkpoint 60 hari | 26 November 2026 | 26 November 2026 | Tidak | Atasan langsung | ... |
-| Checkpoint 90 hari | 26 Desember 2026 | 26 Desember 2026 | Tidak | Pemilik/Atasan | Pemantauan rutin |
-| Batas hukum akhir masa percobaan (PKWTT) | 27 Desember 2026 | 27 Desember 2026 | Tidak | - | Tanggal hukum, tidak digeser |
-| Evaluasi keputusan akhir masa percobaan (PKWTT) | 19 Desember 2026 | 19 Desember 2026 | Tidak | Pemilik/Atasan | Keputusan lanjut/tidak |
+1. Senin 28 Sep 2026 - Hari pertama (Pemilik/Atasan): sambutan, serah terima perangkat, buku saku
+2. Senin 5 Okt 2026 - Akhir minggu 1 (Buddy: Rina): cek pemahaman tugas dasar & SOP harian
+3. Selasa 27 Okt 2026 - Checkpoint 30 hari (Atasan): umpan balik tertulis singkat
+4. Kamis 26 Nov 2026 - Checkpoint 60 hari (Atasan): kemandirian & kepatuhan SOP
+5. Sabtu 19 Des 2026 - Evaluasi keputusan masa percobaan (Pemilik): lanjut/tidak (sebelum batas percobaan Minggu 27 Des 2026)
+6. Sabtu 26 Des 2026 - Checkpoint 90 hari (Pemilik): pemantauan rutin
+7. Minggu 27 Des 2026 - Batas masa percobaan 3 bulan (tanggal hukum, tidak digeser)
 ```
-Di sini checkpoint 90 hari (26 Des) masih sebelum batas hukum (27 Des), jadi tidak ada peringatan. Bila
-tanggal mulai membuat checkpoint 90 hari jatuh **setelah** batas hukum, script menambah baris peringatan
-`⚠️` di atas tabel — salin juga baris itu, dan pakai baris "Evaluasi keputusan akhir masa percobaan"
-(bukan checkpoint 90 hari) untuk keputusan lanjut/tidak.
+Urutan selalu kronologis. Bila checkpoint 90 hari jatuh **setelah** batas percobaan, tulis peringatan
+"checkpoint 90 hari lewat batas percobaan, keputusan lanjut/tidak diambil pada evaluasi keputusan".
 
 Contoh lengkap lain (varian bengkel, karyawan PKWT, tanggal mulai jatuh di hari libur — H1 diberi
 peringatan, tidak digeser otomatis) ada di `references/varian-jenis-usaha.md` bagian "Contoh lengkap:
 bengkel". Contoh PKWT & input tidak lengkap lain ada di `examples/`.
 
 ## Checklist sebelum mengirim hasil
+- [ ] Paket utuh ada di chat (jadwal minggu 1, checklist, SOP ringkas, evaluasi + tanggal, catatan aturan & UMK) dengan `[isian]`; pertanyaan maks. 3 dan di akhir, bukan pengganti isi.
+- [ ] Tidak ada kata proses (skill, script, file, path, cek, LULUS/GAGAL, "tafsir skill ini") di jawaban.
+- [ ] Jadwal berupa daftar bernomor urut tanggal, bukan tabel 6 kolom; evaluasi keputusan ditulis sebelum batas percobaan.
 - [ ] Tanggal jadwal berasal dari script (atau ditandai "dihitung manual").
 - [ ] Untuk PKWT: tidak ada tanggal/klausul masa percobaan; disebutkan dasar larangannya; formulir
   evaluasi versi PKWT dipakai (tanpa istilah "lulus masa percobaan").

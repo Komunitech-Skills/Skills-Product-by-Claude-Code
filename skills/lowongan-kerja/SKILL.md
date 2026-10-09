@@ -5,6 +5,8 @@ description: Membuat iklan lowongan kerja (loker) siap posting untuk JobStreet, 
 
 # Lowongan Kerja Siap Posting
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Mengubah kebutuhan rekrutmen pemilik usaha ("butuh admin online shop, gaji UMR") menjadi iklan lowongan yang jelas, menarik pelamar yang tepat, bebas syarat diskriminatif, dan langsung bisa diposting di beberapa kanal sekaligus.
 
@@ -43,6 +45,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan (maks 5 pertanyaan 
    - Syarat usia, jenis kelamin, agama, suku, status pernikahan, tinggi/berat badan, "berpenampilan menarik", warna kulit, disabilitas → **jangan dicantumkan** kecuali ada alasan pekerjaan yang nyata dan bisa dijelaskan.
    - Jika pengguna memintanya, tetap buat lowongan **tanpa** syarat itu, lalu beri kotak **⚠️ Catatan** berisi: syarat mana yang dihapus, alasan singkat (SE Menaker M/6/HK.04/V/2025 & prinsip kesempatan kerja yang sama), dan alternatif kalimat yang berfokus pada kemampuan (mis. "berpenampilan menarik" → "rapi dan sopan dalam melayani pelanggan").
    - Jika pengguna bersikeras dan ada alasan pekerjaan yang sah (mis. usia minimal 18 tahun karena aturan kerja; kemampuan mengangkat 20 kg untuk gudang), tulis sebagai syarat kemampuan, bukan ciri pribadi.
+2b. **Cek gaji vs UMK** (wajib bila gaji dan kota/kabupaten disebut, termasuk saat mengecek loker lama): skill tidak punya tabel UMK, jadi jangan menebak angka. Tambahkan kotak **⚠️ Cek gaji vs UMK** dari `references/anti-diskriminasi.md` (bagian "Gaji vs upah minimum") dengan `[isi: UMK]`, minta pengguna mengecek UMK tahun berjalan di Disnaker/pemprov setempat, dan sebut pengecualian usaha mikro/kecil (PP 36/2021). Bila pengguna memberi angka UMK resmi, bandingkan langsung; bila gaji di bawahnya, beri peringatan tegas. Pada format cek loker, masukkan sebagai baris di tabel "0) Hasil cek loker".
 3. **Pisahkan kualifikasi** menjadi **Wajib** (maks 6 butir, benar-benar dibutuhkan hari pertama) dan **Nilai plus** (maks 4 butir). Syarat yang bisa dilatih dalam 1–2 minggu pindahkan ke nilai plus.
 4. **Tulis versi lengkap** (JobStreet/LinkedIn/Glints) mengikuti format output. Judul posisi pakai nama yang umum dicari pelamar (mis. "Admin Online Shop", bukan "Customer Happiness Hero"); boleh tambahkan padanan Inggris dalam kurung.
 5. **Tulis versi pendek**:
@@ -146,6 +149,7 @@ Contoh lebih lengkap (kurir, barista, staf gudang, sales) ada di `references/con
 - [ ] Jika ada syarat yang dihapus, kotak ⚠️ Catatan ada dan menjelaskan alternatifnya.
 - [ ] Kualifikasi wajib ≤ 6 butir dan benar-benar dibutuhkan; sisanya di nilai plus.
 - [ ] Benefit hanya yang disebut pengguna; angka gaji/UMK tidak dikarang (pakai `[isi angka]`).
+- [ ] Bila gaji & kota disebut: kotak **⚠️ Cek gaji vs UMK** ada (dengan `[isi: UMK]` bila angka resmi belum diketahui).
 - [ ] Ada cara melamar, batas waktu, dan kalimat "tidak dipungut biaya".
 - [ ] Versi IG ≤ 120 kata, versi WA ≤ 80 kata, format tebal WA memakai `*...*`.
 - [ ] Jika versi IG/WA masih memuat `[isi ...]`, tulis peringatan tebal tepat di atas bloknya: **⚠️ Isi dulu bagian [isi ...] sebelum dikirim.** Lebih baik lagi: hapus baris yang belum ada datanya dari versi IG/WA.
@@ -153,7 +157,7 @@ Contoh lebih lengkap (kurir, barista, staf gudang, sales) ada di `references/con
 - [ ] Pertanyaan screening tidak menanyakan hal pribadi yang tidak relevan.
 
 ## Batasan & penanganan error
-- **Angka UMR/UMK tidak boleh dikarang.** Nilainya berbeda per kota dan berubah tiap tahun; minta pengguna mengisi atau tulis "[isi angka UMK kota]".
+- **Angka UMR/UMK tidak boleh dikarang.** Nilainya berbeda per kota dan berubah tiap tahun; minta pengguna mengisi atau tulis "[isi: UMK]". Tetapi **selalu ingatkan** pengguna untuk membandingkan gaji dengan UMK (langkah 2b).
 - Jangan menjanjikan benefit (BPJS, THR, bonus, jenjang karier) yang tidak disebut pengguna. Boleh diberi saran: "Jika ada BPJS, sebutkan: pelamar lebih tertarik."
 - Jika pengguna meminta syarat yang jelas melanggar hukum atau merendahkan (mis. "bukan dari suku X", "belum menikah dan tidak akan hamil"), tolak syarat itu dengan sopan, jelaskan singkat, dan tetap berikan lowongan yang layak.
 - Jika lowongan terlihat seperti modus penipuan (pelamar diminta bayar biaya seragam/pelatihan), beri peringatan dan jangan tulis syarat pembayaran.

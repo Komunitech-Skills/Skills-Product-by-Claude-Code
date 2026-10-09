@@ -5,6 +5,8 @@ description: Menyusun pesan penagihan piutang bertahap (WA/email/surat): penging
 
 # Tagih Piutang
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha menagih pembayaran yang tertunda dengan urutan pesan yang makin tegas tapi tetap menjaga hubungan dan tetap di koridor hukum. Angka (hari terlambat, sisa, denda) dihitung script, sehingga pesan tidak salah nominal.
 
@@ -37,15 +39,19 @@ Membantu pemilik usaha menagih pembayaran yang tertunda dengan urutan pesan yang
 
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai default dan tulis "Asumsi" di akhir.
 
+**Sumber data = hanya yang diberikan pengguna.** Jika data tagihan tidak disebut di chat atau di file yang ia tunjuk, **tanyakan** — jangan menjelajah folder, membuka invoice/kuitansi/log lain, grep, atau mencari di memori untuk "menemukan" piutang. File Excel `.xlsx` dibaca langsung oleh script (tanpa paket tambahan); `.xls`/`.ods`/format lain atau file yang gagal dibaca → minta pengguna menyimpannya sebagai **CSV UTF-8**. **Jangan pernah menjalankan `pip install` (openpyxl, pandas, dll.)** atau menginstal apa pun untuk skill ini.
+
 ## Langkah kerja
-1. **Hitung dengan script** (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
+1. **Hitung dengan script.** Script `hitung_telat.py` ada di subfolder `scripts/` di folder yang sama dengan file SKILL.md ini (mis. di OpenClaw: `~/.openclaw/skills/tagih-piutang/scripts/hitung_telat.py`). Pakai path itu langsung — **jangan mencari script atau file data ke seluruh disk** (`find /`, `dir /s`, dsb.); file dari pengguna ada di folder kerja. Windows: `python`/`py`.
    ```bash
-   python3 <folder-skill-ini>/scripts/hitung_telat.py --nominal "Rp 12.500.000" --dibayar "Rp 2.500.000" \
+   python3 scripts/hitung_telat.py --nominal "Rp 12.500.000" --dibayar "Rp 2.500.000" \
      --jatuh-tempo 2026-08-24 --tanggal 2026-09-23 --sudah-diingatkan 2
    ```
+   - `--hubungan dekat` untuk tetangga/kenalan/keluarga/pelanggan perorangan langganan (jeda antartahap 14 hari, bukan 7). Script menulis baris `Jadwal` (tenggat bayar + kapan tahap berikutnya) — **salin kalimat itu apa adanya** ke bagian "Tahap berikutnya"; jangan menghitung tanggal sendiri.
    - `--sudah-diingatkan N` = jumlah pengingat yang **sudah** terkirim (dari "Riwayat penagihan"; default 0). Script memakainya untuk menentukan tahap.
    - Denda **hanya** jika ada kesepakatan tertulis: tambahkan `--denda-persen 0,1 --denda-per hari` (atau `--denda-per bulan`, `--denda-tetap "Rp 100.000"`), `--tenggang 3`, `--denda-maks 5%`, dan `--dasar-denda "Pasal 4 Perjanjian No. ..."`. Jika script menulis PERINGATAN bahwa dasar denda kosong, jangan cantumkan denda di pesan sampai pengguna mengonfirmasi dasarnya.
-   - Banyak tagihan: `--file piutang.csv` (kolom `pelanggan,no_invoice,nominal,jatuh_tempo,dibayar`) → rekap umur piutang + urutan prioritas penagihan.
+   - Banyak tagihan: `--file piutang.csv` atau `--file piutang.xlsx` (opsional `--sheet NamaSheet`) → rekap umur piutang, total yang sudah telat, dan urutan prioritas. Nama kolom umum ID/EN dikenali otomatis (mis. `no_faktur`, `nilai_faktur`, `sudah_dibayar`, `customer`, `due_date`, `amount`, `paid`, atau kolom `sisa`/`outstanding`); kolom lain (no. WA, tanggal faktur) diabaikan; angka format Indonesia (`Rp 1.500.000`, `2,5jt`) dan tanggal `25/09/2026`/`25 Sep 2026` diterima. Jika script menulis `ERROR: kolom wajib tidak ditemukan`, sampaikan pesan itu ke pengguna (minta ganti judul kolom) — jangan menebak isi kolom. Hanya file yang ditunjuk pengguna. Salin tabel & total dari output script ke chat apa adanya.
+   - **Grup/tim:** bila pengguna minta "laporin ke grup/tim", salin **hanya** blok "Ringkasan aman untuk grup" dari output script (jumlah faktur & total telat, tanpa nama pelanggan, nomor invoice, nomor HP, atau sisa per pelanggan; JSON: `ringkasan_grup`). Tabel per pelanggan diberi judul "khusus pemilik/admin keuangan — jangan ditempel ke grup"; jangan menyuruh menyalin tabel/ringkasan lain ke grup. Mode satu tagihan tidak punya versi grup (satu faktur mudah dikenali) — sampaikan ke pemilik saja. Jangan menawarkan jadwal/kirim otomatis ke grup.
    - Script menolak denda > 1% per hari (atau setara per bulan) sebagai kemungkinan salah ketik, serta `--denda-maks` tanpa satuan ≤ 100 atau < Rp 1.000. Tanyakan konfirmasi ke pengguna; tambahkan `--konfirmasi-denda-tinggi` hanya bila pengguna memastikan angka itu memang tertulis di perjanjian.
    - Script keluar dengan kode ≠ 0 dan pesan `ERROR:` bila input salah; perbaiki, jangan menebak.
 2. **Tentukan tahap** dari output `tahap` script:
@@ -61,7 +67,12 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 
    **Pakai riwayat penagihan, bukan umur piutang saja.** Tahap maksimal: belum pernah diingatkan → tahap 4 (tahap 5 bila ≥ 30 hari); 1 pengingat → tahap 5; ≥ 2 pengingat tanpa hasil → boleh tahap 6 (somasi). Jadi invoice 39 hari yang belum pernah ditagih dimulai dari tahap 5 (pemberitahuan resmi yang tetap membuka opsi cicilan), bukan somasi. Naikkan satu tahap bila 7 hari tanpa respons. Script sudah menerapkan aturan ini dan menulis PERINGATAN bila tahap dibatasi.
    Jika debitur sudah memberi janji bayar, sesuaikan: tagih pada tanggal janji, rujuk janjinya secara faktual.
+   **Hubungan dekat** (tetangga, kenalan, keluarga, pelanggan perorangan langganan): pakai `--hubungan dekat`; jangan menyarankan naik ke tahap tegas sebelum jeda 14 hari lewat, dan sarankan bicara langsung dulu sebelum pesan tertulis yang lebih tegas atau surat resmi.
 3. **Tulis pesan** sesuai tahap (contoh lengkap semua tahap + surat teguran: `references/template-penagihan.md`). Selalu cantumkan: nomor invoice, nominal sisa (dari script), tanggal jatuh tempo, rekening, cara konfirmasi. Tahap 1–3 tambahkan "Abaikan pesan ini jika sudah membayar".
+   - **Rincian dari pengguna wajib masuk ke pesan.** Bila pengguna memberi rincian (per bulan, per invoice, per barang — mis. "Juli 420rb, Agustus 465rb, September 465rb"), tulis rincian itu sebagai daftar di pesan lalu totalnya, agar debitur bisa mencocokkan.
+   - **Saluran tahap 5–6:** bentuk utamanya surat/email resmi. Bila pengguna meminta lewat WA, beri versi WA singkat (fakta, nominal, tenggat) **plus** saran melampirkan/mengirim surat resminya — jangan menjadikan WA panjang sebagai pengganti surat.
+   - **Lampiran:** jangan menulis "kami lampirkan surat/invoice/bukti" kecuali pengguna menyebut file itu ada dan akan ia sertakan. Skill ini tidak membuat PDF/file. Bila surat resmi disarankan, tulis di pesan `[lampirkan: surat pemberitahuan — simpan/ekspor sebagai PDF dulu]` dan beri catatan di luar blok pesan bahwa pengguna yang membuat & melampirkan file. Catatan untuk pemilik taruh **di luar** blok pesan yang akan disalin ke debitur.
+   - Agent tidak mengirim pesan ke debitur; pengguna yang mengirim sendiri. Jangan menawarkan "saya kirimkan langsung".
 4. **Surat teguran (tahap 6)**: format surat resmi, fakta kronologis (tanggal invoice, jatuh tempo, pengingat yang sudah dikirim, pembayaran sebagian), jumlah yang harus dibayar, tenggat, rekening, dan langkah lanjutan yang sah ("menempuh upaya hukum sesuai peraturan yang berlaku"). Tanda tangan pemilik/direktur. Tambahkan disclaimer di bawah hasil.
 5. **Beri saran tindakan** untuk pengguna: kapan tahap berikutnya dikirim, simpan bukti, tawarkan cicilan tertulis (surat kesepakatan cicilan/pengakuan utang adalah surat perjanjian/pernyataan → bermeterai Rp10.000 **berapa pun nilainya**; kuitansi pelunasan bermeterai bila > Rp5.000.000), kapan ke advokat/gugatan sederhana. Untuk layanan langganan yang masih berjalan (katering, jasa bulanan), jangan hentikan layanan sepihak tanpa pemberitahuan tertulis lebih dulu.
 6. **Periksa** dengan checklist.
@@ -81,14 +92,15 @@ Hitung manual, tulis langkahnya, dan beri tahu pengguna "dihitung manual, mohon 
 [isi siap kirim]
 
 ### Tahap berikutnya (jika belum dibayar)
-- [tanggal] → tahap [N+1]: [ringkas]
+- [salin kalimat `Jadwal` dari output script, mis. "Tenggat bayar di pesan ini: Kamis, 8 Oktober 2026 … pada Jumat, 9 Oktober 2026 kirim tahap 6."]
 
 ### Saran tindakan
 - ...
 
 ### Catatan hukum
-Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi), UU ITE, UU PDP, UU Bea Meterai — per 2026-09-23. Untuk sengketa/gugatan, konsultasikan ke advokat.
+Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi)[, UU Bea Meterai bila menyarankan kesepakatan cicilan bermeterai] — per 2026-09-23. Untuk sengketa/gugatan, konsultasikan ke advokat.
 ```
+Sebut UU ITE/UU PDP **hanya bila relevan** dan dengan alasannya dalam satu kalimat (mis. pengguna ingin menyebar nama debitur di grup/medsos atau mengancam lewat chat → "dilarang UU ITE Pasal 27A/27B dan UU PDP"). Jangan mencantumkannya sebagai "dasar" pesan tagihan biasa.
 Bila pengguna minta "semua tahap sekaligus", tampilkan tahap 1–6 berurutan dengan tanggal kirim masing-masing (tanggal = jatuh tempo −3, 0, +3, +7, +14, +30).
 
 ## Contoh
@@ -121,12 +133,17 @@ Asumsi: tenggat 7 hari. (Jika pengguna belum pernah mengirim pengingat, script m
 - [ ] Denda hanya muncul jika ada dasar tertulis dan dasarnya disebut di pesan.
 - [ ] Tidak ada ancaman kekerasan, ancaman menyebarkan/viralkan, hinaan, atau tekanan ke keluarga/atasan/rekan debitur.
 - [ ] Tidak menyebarkan data/utang debitur ke pihak lain (grup, medsos, status WA).
+- [ ] Bila ada permintaan untuk grup/tim: hanya blok "Ringkasan aman untuk grup" dari script yang disarankan ditempel.
 - [ ] "Langkah hukum" hanya disebut umum dan benar ("sesuai peraturan yang berlaku"); tidak menyebut polisi/pidana untuk utang dagang biasa.
 - [ ] Ada jalan keluar: konfirmasi bila sudah bayar, tawaran jadwal/cicilan.
 - [ ] Nomor invoice, rekening, tenggat jelas; disclaimer ada di bawah hasil tahap 5–6.
+- [ ] Rincian yang diberikan pengguna (per bulan/per invoice) tercantum di pesan.
+- [ ] Jadwal tahap berikutnya = kalimat `Jadwal` dari script (hubungan dekat: jeda 14 hari).
+- [ ] Tidak menawarkan mengirim pesan sendiri; tidak mencari file ke seluruh disk.
 
 ## Batasan & penanganan error
 - Bukan nasihat hukum. Somasi, gugatan (termasuk gugatan sederhana), dan penagihan lintas negara → advokat.
 - Script tidak menghitung bunga moratoir menurut undang-undang, bunga berbunga, atau denda dengan dasar pembayaran bertanggal; jika diminta, jelaskan dan sarankan advokat/akuntan.
 - Jika pengguna tidak punya bukti tertulis (invoice, PO, chat kesepakatan), sarankan mengumpulkan bukti dulu dan gunakan nada tahap 3–4 saja.
+- File tidak terbaca (`.xls` lama, terkunci kata sandi, rusak) → script menulis `ERROR:` + minta CSV; sampaikan itu ke pengguna. Jangan mencari cara lain dengan menginstal paket.
 - Jika debitur membantah tagihan (barang cacat, belum diterima), hentikan eskalasi; sarankan klarifikasi & rekonsiliasi dulu.

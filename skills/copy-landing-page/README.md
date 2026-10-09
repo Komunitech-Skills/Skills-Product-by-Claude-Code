@@ -50,3 +50,6 @@ Hanya kalau kamu memang sudah punya sertifikat resmi (BPJPH/MUI untuk halal, izi
 
 **Harus pakai Python?**
 Tidak wajib. Kalau Python ada, tautan WhatsApp dan panjang meta title/description dihitung otomatis lewat script. Kalau tidak ada, AI agent tetap menyusun halamannya dan menghitung manual, lalu memberitahumu untuk dicek sekali sebelum dipakai.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+dari uji ulang OpenClaw: seluruh isi halaman wajib tampil di chat dan lokasi file disebut; pengingat izin edar untuk kosmetik/pangan/obat; garansi, jangkauan kirim, dan janji layanan lain hanya dari pemilik, selain itu placeholder [isi: ...].

@@ -2,6 +2,7 @@
 """Hitung keterlambatan piutang, tahap penagihan, dan (opsional) denda sesuai kesepakatan tertulis.
 
 Hanya library standar Python (3.8+). Tidak ada akses jaringan.
+Versi 1.0.4 (2026-10-01).
 
 Mode 1 – satu tagihan:
   python3 hitung_telat.py --nominal "Rp 12.500.000" --jatuh-tempo 2026-08-24 --tanggal 2026-09-23
@@ -9,9 +10,15 @@ Mode 1 – satu tagihan:
       --denda-persen 0,1 --denda-per hari --denda-maks 5% --tenggang 3 \
       --dasar-denda "Pasal 4 Perjanjian Pasok No. 07/PKS/2026"
 
-Mode 2 – banyak tagihan (rekap umur piutang) dari CSV berkolom:
+Mode 2 – banyak tagihan (rekap umur piutang) dari CSV atau Excel .xlsx berkolom:
   pelanggan,no_invoice,nominal,jatuh_tempo[,dibayar][,sudah_diingatkan]
+  Nama kolom umum ID/EN juga diterima (mis. no_faktur, nilai_faktur, sudah_dibayar, customer,
+  due_date, amount, paid, "Nilai Faktur (Rp)"); kolom lain (no_wa, tanggal_faktur, ...) diabaikan.
+  Bila hanya ada kolom sisa (sisa/outstanding/balance), sisa dipakai sebagai nominal belum dibayar.
   python3 hitung_telat.py --file piutang.csv --tanggal 2026-09-23
+  python3 hitung_telat.py --file piutang.xlsx --sheet Piutang --tanggal 2026-09-23
+  File .xlsx dibaca dengan library standar (zipfile + xml), TANPA openpyxl/pandas: jangan pernah menginstal
+  paket untuk skill ini. File .xls lama / .ods / .numbers -> minta pengguna menyimpan ulang sebagai CSV.
 
 Aturan hitung:
   - Hari terlambat = tanggal hitung - tanggal jatuh tempo (hari kalender).
@@ -26,11 +33,40 @@ import json
 import math
 import re
 import sys
-from datetime import date, datetime
+import zipfile
+import xml.etree.ElementTree as ET
+from datetime import date, datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
+VERSI = "1.0.4"
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
          "Agustus", "September", "Oktober", "November", "Desember"]
+HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+# singkatan bulan ID/EN untuk tanggal teks seperti "25 Sep 2026" / "1 Okt 2026" / "9 Agustus 2026"
+_BULAN_TEKS = {"jan": 1, "feb": 2, "peb": 2, "mar": 3, "apr": 4, "mei": 5, "may": 5, "jun": 6, "jul": 7,
+               "agu": 8, "agt": 8, "ags": 8, "aug": 8, "sep": 9, "okt": 10, "oct": 10, "nov": 11, "nop": 11,
+               "des": 12, "dec": 12}
+
+# Alias nama kolom (sudah dinormalkan: huruf kecil, isi kurung dibuang, non-alfanumerik -> "_").
+# Urutan = prioritas bila ada dua kolom yang cocok.
+ALIAS_KOLOM = {
+    "pelanggan": ["pelanggan", "nama_pelanggan", "customer", "customer_name", "klien", "client", "nama_klien",
+                  "debitur", "konsumen", "nama_toko", "toko", "mitra", "nama", "name"],
+    "no_invoice": ["no_invoice", "nomor_invoice", "no_faktur", "nomor_faktur", "no_inv", "invoice_no",
+                   "invoice_number", "invoice", "faktur", "no_nota", "nomor_nota", "nota", "no_tagihan",
+                   "nomor_tagihan", "no_dokumen", "ref", "referensi"],
+    "nominal": ["nominal", "nilai_faktur", "nilai_invoice", "nilai_tagihan", "total_tagihan", "jumlah_tagihan",
+                "total_faktur", "total_invoice", "tagihan", "nilai", "total", "jumlah", "grand_total",
+                "amount", "invoice_amount", "total_amount"],
+    "sisa": ["sisa", "sisa_tagihan", "sisa_piutang", "outstanding", "balance", "saldo", "belum_dibayar",
+             "amount_due", "balance_due"],
+    "jatuh_tempo": ["jatuh_tempo", "tgl_jatuh_tempo", "tanggal_jatuh_tempo", "jatuhtempo", "tgl_jt", "jt",
+                    "due_date", "due", "tempo", "batas_bayar", "tanggal_tempo"],
+    "dibayar": ["dibayar", "sudah_dibayar", "terbayar", "sudah_bayar", "bayar", "pembayaran", "total_dibayar",
+                "jumlah_dibayar", "paid", "amount_paid", "payment"],
+    "sudah_diingatkan": ["sudah_diingatkan", "diingatkan", "jumlah_pengingat", "pengingat", "reminder",
+                         "reminders", "jumlah_reminder"],
+}
 
 
 class InputSalah(Exception):
@@ -66,14 +102,192 @@ def parse_angka(teks, nama="angka"):
         raise InputSalah(f"{nama} tidak bisa dibaca sebagai angka: {teks!r}")
 
 
+# ---------------------------------------------------------------- baca .xlsx tanpa paket tambahan
+_NS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+_NS_R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+_BATAS_XML = 50 * 1024 * 1024  # tolak isi XML > 50 MB (perlindungan file rusak/zip bomb)
+MINTA_CSV = ("Buka file di Excel/Google Sheets/LibreOffice lalu Simpan Sebagai (Save As) \"CSV UTF-8\", "
+             "kemudian kirim file CSV-nya.")
+
+
+def _xml(z, nama):
+    try:
+        info = z.getinfo(nama)
+    except KeyError:
+        return None
+    if info.file_size > _BATAS_XML:
+        raise InputSalah(f"file Excel terlalu besar untuk dibaca ({nama}). " + MINTA_CSV)
+    data = z.read(nama)
+    if b"<!DOCTYPE" in data[:2048].upper():
+        raise InputSalah("file Excel berisi DOCTYPE yang tidak didukung. " + MINTA_CSV)
+    return ET.fromstring(data)
+
+
+def _kolom_ke_indeks(ref):
+    m = re.match(r"([A-Z]+)", ref or "")
+    if not m:
+        return None
+    n = 0
+    for c in m.group(1):
+        n = n * 26 + ord(c) - 64
+    return n - 1
+
+
+def _angka_xlsx(v):
+    try:
+        d = Decimal(v)
+    except InvalidOperation:
+        return v
+    d = d.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return str(int(d)) if d == d.to_integral_value() else str(d).replace(".", ",")
+
+
+def baca_xlsx(path, sheet=None):
+    """Baca satu sheet .xlsx jadi list baris (list teks). Hanya zipfile + xml.etree dari library standar."""
+    try:
+        z = zipfile.ZipFile(path)
+    except (zipfile.BadZipFile, OSError):
+        raise InputSalah("file .xlsx tidak bisa dibuka (rusak, terkunci kata sandi, atau bukan .xlsx asli). " + MINTA_CSV)
+    with z:
+        wb = _xml(z, "xl/workbook.xml")
+        if wb is None:
+            raise InputSalah("isi file .xlsx tidak dikenali. " + MINTA_CSV)
+        pr = wb.find(_NS + "workbookPr")
+        tahun1904 = pr is not None and pr.get("date1904") in ("1", "true")
+        sheets = [(s.get("name"), s.get(_NS_R + "id")) for s in wb.iter(_NS + "sheet")]
+        if not sheets:
+            raise InputSalah("file .xlsx tidak berisi sheet. " + MINTA_CSV)
+        if sheet:
+            cocok = [x for x in sheets if (x[0] or "").strip().lower() == sheet.strip().lower()]
+            if not cocok:
+                raise InputSalah(f"sheet {sheet!r} tidak ada. Sheet yang tersedia: {', '.join(x[0] for x in sheets)}")
+            nama_sheet, rid = cocok[0]
+        else:
+            nama_sheet, rid = sheets[0]
+        target = None
+        rels = _xml(z, "xl/_rels/workbook.xml.rels")
+        if rels is not None:
+            for r in rels:
+                if r.get("Id") == rid:
+                    target = r.get("Target", "")
+        if not target:
+            target = "worksheets/sheet1.xml"
+        target = target.lstrip("/")
+        path_sheet = target if target.startswith("xl/") else "xl/" + target
+        teks_bersama = []
+        ss = _xml(z, "xl/sharedStrings.xml")
+        if ss is not None:
+            for si in ss.iter(_NS + "si"):
+                teks_bersama.append("".join(t.text or "" for t in si.iter(_NS + "t")))
+        ws = _xml(z, path_sheet)
+        if ws is None:
+            raise InputSalah(f"sheet {nama_sheet!r} tidak bisa dibaca. " + MINTA_CSV)
+        hasil = []
+        for row in ws.iter(_NS + "row"):
+            isi = {}
+            for i_auto, c in enumerate(row.iter(_NS + "c")):
+                idx = _kolom_ke_indeks(c.get("r"))
+                idx = i_auto if idx is None else idx
+                jenis = c.get("t", "n")
+                v = c.find(_NS + "v")
+                if jenis == "inlineStr":
+                    el = c.find(_NS + "is")
+                    nilai = "".join(t.text or "" for t in el.iter(_NS + "t")) if el is not None else ""
+                elif v is None or v.text is None:
+                    nilai = ""
+                elif jenis == "s":
+                    try:
+                        nilai = teks_bersama[int(v.text)]
+                    except (ValueError, IndexError):
+                        nilai = ""
+                elif jenis in ("str", "e"):
+                    nilai = v.text
+                elif jenis == "b":
+                    nilai = "TRUE" if v.text == "1" else "FALSE"
+                else:
+                    nilai = ("n", v.text)  # angka mentah; dibedakan agar tanggal serial bisa dikenali
+                isi[idx] = nilai
+            if isi:
+                hasil.append([isi.get(i, "") for i in range(max(isi) + 1)])
+    return hasil, tahun1904
+
+
+def serial_ke_tanggal(teks, tahun1904=False):
+    n = float(teks)
+    awal = date(1904, 1, 1) if tahun1904 else date(1899, 12, 30)
+    return (awal + timedelta(days=int(n))).isoformat()
+
+
+def baris_dari_xlsx(path, sheet=None):
+    data, tahun1904 = baca_xlsx(path, sheet)
+    data = [b for b in data if any((x[1] if isinstance(x, tuple) else str(x)).strip() for x in b)]
+    if not data:
+        return []
+    kepala = [str(x[1] if isinstance(x, tuple) else x).strip() for x in data[0]]
+    hasil = []
+    for b in data[1:]:
+        d = {}
+        for i, k in enumerate(kepala):
+            if not k:
+                continue
+            x = b[i] if i < len(b) else ""
+            if isinstance(x, tuple):
+                if peta_kolom([k]).get("jatuh_tempo") == k:
+                    try:
+                        x = serial_ke_tanggal(x[1], tahun1904)
+                    except (ValueError, OverflowError):
+                        x = x[1]
+                else:
+                    x = _angka_xlsx(x[1])
+            d[k] = x
+        hasil.append(d)
+    return hasil
+
+
 def parse_tgl(teks, nama):
     t = str(teks or "").strip()
-    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y", "%Y/%m/%d"):
         try:
             return datetime.strptime(t, fmt).date()
         except ValueError:
             pass
-    raise InputSalah(f"{nama} tidak dikenali: {teks!r}. Pakai format YYYY-MM-DD, mis. 2026-09-23")
+    m = re.fullmatch(r"(\d{1,2})[\s\-/]+([A-Za-z]+)\.?[\s\-/,]+(\d{4})", t)
+    if m and m.group(2)[:3].lower() in _BULAN_TEKS:
+        try:
+            return date(int(m.group(3)), _BULAN_TEKS[m.group(2)[:3].lower()], int(m.group(1)))
+        except ValueError:
+            pass
+    raise InputSalah(f"{nama} tidak dikenali: {teks!r}. Pakai format YYYY-MM-DD (mis. 2026-09-23), "
+                     "DD/MM/YYYY, atau '23 Sep 2026'")
+
+
+def normal_kolom(nama):
+    t = re.sub(r"\(.*?\)", "", str(nama or "").strip().lower())
+    return re.sub(r"[^0-9a-z]+", "_", t).strip("_")
+
+
+def peta_kolom(nama_kolom):
+    """{kanonik: nama kolom asli} dari daftar nama kolom file, memakai ALIAS_KOLOM."""
+    normal = {}
+    for k in nama_kolom:
+        if k is None:
+            continue
+        n = normal_kolom(k)
+        if n and n not in normal:
+            normal[n] = k
+    peta = {}
+    dipakai = set()
+    for kanon, alias in ALIAS_KOLOM.items():
+        for a in alias:
+            if a in normal and normal[a] not in dipakai:
+                peta[kanon] = normal[a]
+                dipakai.add(normal[a])
+                break
+    return peta
+
+
+def tgl_hari(d):
+    return f"{HARI[d.weekday()]}, {tgl_id(d)}"
 
 
 def bulat(x):
@@ -116,6 +330,33 @@ def sesuaikan_riwayat(kode, label, hari, sudah_diingatkan):
             5: f"Tahap 5 – lewat {hari} hari, pengingat sebelumnya {sudah_diingatkan}x (pemberitahuan resmi + tawaran solusi/cicilan)"}
     return maks, nama[maks], (f"Menurut umur piutang seharusnya {label.split(' (')[0]}, tetapi baru {sudah_diingatkan} pengingat "
                               f"terkirim. Mulai dari tahap {maks}; naikkan satu tahap bila 7 hari tanpa respons.")
+
+
+def jadwal_berikutnya(kode, jt, tgl, hubungan):
+    """Kalimat jadwal yang jelas: tenggat bayar yang diusulkan di pesan ini dan kapan tahap berikutnya dikirim.
+    Jeda antartahap: 7 hari (bisnis) atau 14 hari (hubungan dekat: tetangga/kenalan/keluarga/pelanggan perorangan
+    langganan). Tidak pernah menyarankan naik tahap kurang dari jeda itu."""
+    jeda = 14 if hubungan == "dekat" else 7
+    if kode < 0:
+        return {"jeda_hari": jeda, "tenggat_bayar": None, "kirim_berikutnya": None, "kalimat": "Lunas – tidak ada tahap berikutnya."}
+    if kode <= 2:
+        nxt = {0: jt - timedelta(days=3), 1: jt, 2: jt + timedelta(days=3)}[kode]
+        isi = {0: "tahap 1 (pengingat halus H-3)", 1: "tahap 2 (hari jatuh tempo)",
+               2: "tahap 3 (konfirmasi ramah) bila belum ada pembayaran"}[kode]
+        return {"jeda_hari": jeda, "tenggat_bayar": jt.isoformat(), "kirim_berikutnya": nxt.isoformat(),
+                "kalimat": f"Kirim {isi} pada {tgl_hari(nxt)}."}
+    tenggat = tgl + timedelta(days=jeda)
+    kirim = tenggat + timedelta(days=1)
+    if kode >= 6:
+        lanjut = "konsultasikan ke advokat (mis. gugatan sederhana) — jangan kirim ancaman lain"
+    elif hubungan == "dekat" and kode >= 3:
+        lanjut = (f"ajak bicara langsung dulu; bila tetap belum ada kabar, kirim tahap {kode + 1} "
+                  "(tetap dengan nada kekeluargaan)")
+    else:
+        lanjut = f"kirim tahap {kode + 1}"
+    return {"jeda_hari": jeda, "tenggat_bayar": tenggat.isoformat(), "kirim_berikutnya": kirim.isoformat(),
+            "kalimat": (f"Tenggat bayar di pesan ini: {tgl_hari(tenggat)} ({jeda} hari dari {tgl_id(tgl)}). "
+                        f"Jika sampai tanggal itu belum ada pembayaran atau kabar, pada {tgl_hari(kirim)} {lanjut}.")}
 
 
 def ember_umur(hari):
@@ -215,6 +456,9 @@ def satu(a, tgl):
     if denda and denda > sisa:
         peringatan.append("Denda melebihi sisa pokok. Periksa kembali persen & batas denda di perjanjian; "
                           "denda yang berlebihan berisiko dipersoalkan/dikurangi hakim.")
+    if a.hubungan == "dekat" and kode >= 5:
+        peringatan.append("Hubungan dekat (tetangga/kenalan/keluarga): sebelum pemberitahuan resmi/surat, ajak bicara "
+                          "langsung dulu; pesan tertulis tetap bernada kekeluargaan.")
     if kode == 6 and sisa >= 5_000_000:
         peringatan.append("Nilai besar & lewat 30 hari: pertimbangkan surat teguran resmi dan konsultasi ke advokat "
                           "bila tidak ada respons.")
@@ -227,6 +471,8 @@ def satu(a, tgl):
         "tahap_kode": kode, "tahap": label,
         "denda": denda, "rumus_denda": rumus, "dasar_denda": a.dasar_denda,
         "total_ditagih": sisa + denda,
+        "hubungan": a.hubungan,
+        "jadwal": jadwal_berikutnya(kode, jt, tgl, a.hubungan),
         "peringatan": peringatan,
         "catatan": ["Hari terlambat dihitung per hari kalender.",
                     "Denda (jika ada) dihitung dari sisa pokok, dibulatkan ke rupiah terdekat."],
@@ -234,31 +480,70 @@ def satu(a, tgl):
 
 
 def banyak(a, tgl):
+    ext = a.file.lower().rsplit(".", 1)[-1] if "." in a.file else ""
+    if ext in ("xls", "ods", "numbers", "xlsb"):
+        raise InputSalah(f"format .{ext} tidak bisa dibaca tanpa menginstal paket (dan paket tidak boleh diinstal). "
+                         + MINTA_CSV)
     try:
-        with open(a.file, newline="", encoding="utf-8-sig") as f:
+        with open(a.file, "rb") as f:
+            zip_asli = f.read(4) == b"PK\x03\x04"
+    except OSError as e:
+        raise InputSalah(f"file tidak bisa dibuka: {e}")
+    if ext in ("xlsx", "xlsm") or zip_asli:
+        baris = baris_dari_xlsx(a.file, a.sheet)
+    else:
+        baris = baca_csv(a.file)
+    return olah_baris(baris, tgl)
+
+
+def baca_csv(path):
+    try:
+        with open(path, newline="", encoding="utf-8-sig") as f:
             contoh = f.read(4096)
             f.seek(0)
             try:
                 dialek = csv.Sniffer().sniff(contoh, delimiters=",;\t|")
             except csv.Error:
                 dialek = csv.excel
-            baris = list(csv.DictReader(f, dialect=dialek))
+            return list(csv.DictReader(f, dialect=dialek))
     except OSError as e:
         raise InputSalah(f"file tidak bisa dibuka: {e}")
-    wajib = {"pelanggan", "nominal", "jatuh_tempo"}
+    except UnicodeDecodeError:
+        raise InputSalah("encoding file tidak dikenali. " + MINTA_CSV)
+
+
+def olah_baris(baris, tgl):
     if not baris:
         raise InputSalah("file kosong")
-    kolom = {str(k).strip().lower() for k in baris[0].keys() if k}
-    if not wajib <= kolom:
-        raise InputSalah(f"kolom wajib tidak ada: {sorted(wajib - kolom)}. Kolom: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar")
+    asli = [k for k in baris[0].keys() if k]
+    peta = peta_kolom(asli)
+    kurang = [k for k in ("pelanggan", "jatuh_tempo") if k not in peta]
+    if "nominal" not in peta and "sisa" not in peta:
+        kurang.insert(1, "nominal")
+    if kurang:
+        contoh = {"pelanggan": "pelanggan / nama_pelanggan / customer / klien",
+                  "nominal": "nominal / nilai_faktur / total / jumlah / amount (atau kolom sisa / outstanding)",
+                  "jatuh_tempo": "jatuh_tempo / tgl_jatuh_tempo / due_date"}
+        raise InputSalah("kolom wajib tidak ditemukan: " + "; ".join(f"{k} (nama yang dikenali: {contoh[k]})" for k in kurang)
+                         + f". Kolom di file: {', '.join(str(x) for x in asli)}. Ganti nama judul kolom yang sesuai "
+                         "di file, lalu jalankan ulang.")
+    # kolom sisa dipakai bila tidak ada nominal, atau ada nominal tanpa kolom pembayaran (agar cicilan tidak hilang)
+    pakai_sisa = "sisa" in peta and ("nominal" not in peta or "dibayar" not in peta)
     daftar, dilewati = [], []
     for no, b in enumerate(baris, start=2):
-        k = {str(x).strip().lower(): (v or "").strip() for x, v in b.items() if x}
-        if not any(k.values()):
+        mentah = {x: (v if isinstance(v, str) else ("" if v is None else str(v))).strip() for x, v in b.items() if x}
+        if not any(mentah.values()):
             continue
+        k = {kanon: mentah.get(asal, "") for kanon, asal in peta.items()}
         try:
-            nominal = bulat(parse_angka(k["nominal"], "nominal"))
-            dibayar = bulat(parse_angka(k["dibayar"], "dibayar")) if k.get("dibayar") else 0
+            if pakai_sisa:
+                nominal = bulat(parse_angka(k["sisa"], "sisa"))
+                dibayar = 0
+                if nominal == 0:
+                    continue
+            else:
+                nominal = bulat(parse_angka(k["nominal"], "nominal"))
+                dibayar = bulat(parse_angka(k["dibayar"], "dibayar")) if k.get("dibayar") else 0
             ingat_teks = k.get("sudah_diingatkan", "")
             if ingat_teks and not ingat_teks.isdigit():
                 raise InputSalah(f"sudah_diingatkan harus angka bulat: {ingat_teks!r}")
@@ -284,9 +569,27 @@ def banyak(a, tgl):
     for d in daftar:
         rekap[d["umur"]]["jumlah_invoice"] += 1
         rekap[d["umur"]]["total"] += d["sisa"]
+    telat = [d for d in daftar if d["hari_terlambat"] > 0]
     return {"tanggal_hitung": tgl.isoformat(), "tanggal_hitung_teks": tgl_id(tgl),
-            "total_piutang": sum(d["sisa"] for d in daftar), "rekap_umur": rekap,
+            "ringkasan_grup": ringkasan_grup(tgl, daftar, telat),
+            "total_piutang": sum(d["sisa"] for d in daftar),
+            "total_telat": sum(d["sisa"] for d in telat), "jumlah_invoice_telat": len(telat),
+            "rekap_umur": rekap, "kolom_dipakai": peta,
+            "catatan_kolom": (f"Kolom {peta['sisa']!r} dipakai sebagai jumlah yang belum dibayar."
+                              if pakai_sisa else None),
             "daftar": daftar, "baris_dilewati": dilewati}
+
+
+def ringkasan_grup(tgl, daftar, telat):
+    """Teks aman untuk grup/tim: hanya jumlah faktur & total (agregat), TANPA nama pelanggan, nomor invoice,
+    nomor HP, atau sisa per pelanggan. Data per pelanggan tetap khusus pemilik/admin keuangan."""
+    b = [f"Rekap piutang per {tgl_id(tgl)}:",
+         f"- Faktur belum lunas: {len(daftar)}, total {rupiah(sum(d['sisa'] for d in daftar))}",
+         f"- Sudah lewat jatuh tempo: {len(telat)} faktur, total {rupiah(sum(d['sisa'] for d in telat))}"]
+    if telat:
+        b.append(f"- Paling lama terlambat: {max(d['hari_terlambat'] for d in telat)} hari")
+    b.append("Penagihan sedang ditindaklanjuti oleh bagian keuangan; rincian per pelanggan tidak dibagikan di grup.")
+    return "\n".join(b)
 
 
 def teks_satu(h):
@@ -305,6 +608,7 @@ def teks_satu(h):
         if h["dasar_denda"]:
             b.append(f"Dasar denda     : {h['dasar_denda']}")
     b.append(f"TOTAL DITAGIH   : {rupiah(h['total_ditagih'])}")
+    b.append(f"Jadwal          : {h['jadwal']['kalimat']}")
     for p in h["peringatan"]:
         b.append(f"\nPERINGATAN: {p}")
     b.append("")
@@ -313,8 +617,12 @@ def teks_satu(h):
 
 
 def teks_banyak(h):
-    b = [f"Rekap umur piutang per {h['tanggal_hitung_teks']} – total {rupiah(h['total_piutang'])}", "",
-         "| Umur | Jumlah invoice | Total |", "|---|---|---|"]
+    b = [f"Rekap umur piutang per {h['tanggal_hitung_teks']} – total {rupiah(h['total_piutang'])}",
+         f"Sudah lewat jatuh tempo: {h['jumlah_invoice_telat']} invoice, total {rupiah(h['total_telat'])}",
+         "Kolom dipakai: " + ", ".join(f"{k}={v}" for k, v in h["kolom_dipakai"].items()), ""]
+    if h.get("catatan_kolom"):
+        b.insert(-1, "Catatan: " + h["catatan_kolom"])
+    b += ["| Umur | Jumlah invoice | Total |", "|---|---|---|"]
     for u, v in h["rekap_umur"].items():
         b.append(f"| {u} | {v['jumlah_invoice']} | {rupiah(v['total'])} |")
     b += ["", "| Pelanggan | No. invoice | Sisa | Jatuh tempo | Terlambat | Tahap |", "|---|---|---|---|---|---|"]
@@ -324,11 +632,14 @@ def teks_banyak(h):
     if h["baris_dilewati"]:
         b.append("\nBaris dilewati:")
         b += [f"- baris {x['baris']}: {x['alasan']}" for x in h["baris_dilewati"]]
+    b += ["", "### Ringkasan aman untuk grup (tanpa nama pelanggan — salin blok ini saja ke grup/tim)", "```",
+          h["ringkasan_grup"], "```",
+          "(Tabel per pelanggan di atas KHUSUS pemilik/admin keuangan — jangan ditempel ke grup.)"]
     return "\n".join(b)
 
 
 def main():
-    p = argparse.ArgumentParser(description="Hitung keterlambatan piutang & denda (sesuai kesepakatan tertulis)")
+    p = argparse.ArgumentParser(description="Hitung keterlambatan piutang & denda (sesuai kesepakatan tertulis)", allow_abbrev=False)
     p.add_argument("--nominal", help="Nominal tagihan, mis. 'Rp 12.500.000'")
     p.add_argument("--dibayar", action="append", help="Pembayaran sebagian (bisa diulang)")
     p.add_argument("--jatuh-tempo", help="Tanggal jatuh tempo YYYY-MM-DD")
@@ -343,8 +654,12 @@ def main():
                    help="Jumlah pengingat yang SUDAH dikirim untuk tagihan ini (default 0 = belum pernah)")
     p.add_argument("--konfirmasi-denda-tinggi", action="store_true",
                    help="Konfirmasi bahwa denda > 1%%/hari memang sesuai perjanjian")
+    p.add_argument("--hubungan", choices=["bisnis", "dekat"], default="bisnis",
+                   help="dekat = tetangga/kenalan/keluarga/pelanggan perorangan langganan: jeda antartahap 14 hari "
+                        "(bisnis: 7 hari)")
     p.add_argument("--dasar-denda", help="Rujukan kesepakatan tertulis, mis. 'Pasal 4 Perjanjian No. ...'")
-    p.add_argument("--file", help="CSV banyak tagihan: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar,sudah_diingatkan")
+    p.add_argument("--file", help="CSV atau .xlsx banyak tagihan: pelanggan,no_invoice,nominal,jatuh_tempo,dibayar,sudah_diingatkan")
+    p.add_argument("--sheet", help="Nama sheet untuk file .xlsx (default: sheet pertama)")
     p.add_argument("--format", choices=["teks", "json", "keduanya"], default="keduanya")
     a = p.parse_args()
     try:

@@ -1,0 +1,316 @@
+===== TOKEN agen-baca (grup 'Agen Baca', hanya lihat) =====
+
+$ python3 inventree.py cek
+CEK INVENTREE
+Alamat: http://127.0.0.1:8100
+Versi server: 1.5.6 (API 530)
+Token: inv-75****0929
+Akun: agen-baca
+- lihat barang: YA
+- lihat stok: YA
+- lihat lokasi: YA
+- lihat PO: YA
+- lihat produksi: YA
+- lihat BOM: YA
+- opname (tulis): tidak
+- terima barang (tulis): tidak
+Hak baca dasar: OK
+[kode keluar 0]
+
+$ python3 inventree.py cari keripik
+HASIL CARI BARANG: 'keripik'
+Jumlah: 2
+- Keripik Singkong Balado 250g [PJ-001] | Produk Jadi | stok 200 (min 200)
+- Keripik Singkong Original 250g [PJ-002] | Produk Jadi | stok 90 (min 150) - DI BAWAH MINIMUM
+[kode keluar 0]
+
+$ python3 inventree.py stok BB-001
+STOK Singkong Kupas [BB-001]
+Total: 85 kg (2 item stok)
+Minimum: 100 kg - DI BAWAH MINIMUM
+
+Gudang Utama/Rak A: 60 kg
+  - 60 kg (batch SK-2609) [id stok 1]
+
+Ruang Produksi: 25 kg
+  - 25 kg (batch SK-2609) [id stok 2]
+[kode keluar 0]
+
+$ python3 inventree.py stok singkong
+GALAT: 'singkong' cocok dengan 3 barang: Keripik Singkong Balado 250g [PJ-001] (#7); Keripik Singkong Original 250g [PJ-002] (#8); Singkong Kupas [BB-001] (#1). Sebutkan kode (IPN) atau #id.
+[kode keluar 7]
+
+$ python3 inventree.py lokasi
+LOKASI GUDANG (jumlah item stok termasuk sub-lokasi)
+- Gudang Utama (8 item stok) [#1]
+- Gudang Utama/Rak A (4 item stok) [#2]
+- Gudang Utama/Rak B (3 item stok) [#3]
+- Ruang Produksi (1 item stok) [#4]
+- Toko Depan (2 item stok) [#5]
+[kode keluar 0]
+
+$ python3 inventree.py lokasi Rak A
+ISI LOKASI Gudang Utama/Rak A (termasuk sub-lokasi)
+Jumlah item stok: 4
+- Bumbu Balado [BB-003]: 12,5 kg (batch BL-0901; Gudang Utama/Rak A)
+- Minyak Goreng [BB-002]: 18 L (batch MG-0915; Gudang Utama/Rak A)
+- Minyak Goreng [BB-002]: 10 L (batch MG-0922; Gudang Utama/Rak A)
+- Singkong Kupas [BB-001]: 60 kg (batch SK-2609; Gudang Utama/Rak A)
+[kode keluar 0]
+
+$ python3 inventree.py stok-menipis
+STOK MENIPIS (di bawah minimum): 4 barang
+
+Bahan Baku:
+- Minyak Goreng [BB-002]: stok 28 L, minimum 40 L, kurang 12 L (sedang dipesan 40 L; dibutuhkan produksi/penjualan terbuka 5 L; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+- Singkong Kupas [BB-001]: stok 85 kg, minimum 100 kg, kurang 15 kg (sedang dipesan 200 kg; dibutuhkan produksi/penjualan terbuka 30 kg; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+
+Kemasan:
+- Label Stiker Sumber Rasa [KM-002]: stok 300, minimum 500, kurang 200 (sedang dipesan 1.000; dibutuhkan produksi/penjualan terbuka 100; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+
+Produk Jadi:
+- Keripik Singkong Original 250g [PJ-002]: stok 90, minimum 150, kurang 60 (perlu diproduksi lagi min. 60)
+
+Catatan: hanya barang yang diberi 'Minimum Stock' di InvenTree yang diperiksa. 'Perlu dipesan' = minimum - stok - sedang dipesan - sedang diproduksi (kebutuhan produksi/penjualan terbuka ditampilkan terpisah, tidak ditambahkan).
+[kode keluar 0]
+
+$ python3 inventree.py po-terbuka
+PO TERBUKA (belum diterima penuh): 2
+
+PO-0001 | CV Tani Makmur (fiktif) | Sudah dipesan | target - | 0/2 baris lengkap
+  - Singkong Kupas [BB-001]: dipesan 200, diterima 0, sisa 200 kg
+  - Minyak Goreng [BB-002]: dipesan 40, diterima 0, sisa 40 L
+
+PO-0002 | Toko Plastik Jaya (fiktif) | Sudah dipesan | target - | 0/2 baris lengkap
+  - Standing Pouch 250g [KM-001]: dipesan 1.000, diterima 0, sisa 1.000
+  - Label Stiker Sumber Rasa [KM-002]: dipesan 1.000, diterima 0, sisa 1.000
+[kode keluar 0]
+
+$ python3 inventree.py bom PJ-001
+BOM Keripik Singkong Balado 250g [PJ-001] (bahan per 1 unit)
+- Singkong Kupas [BB-001]: 0,3 kg (stok tersedia 85 kg; cukup untuk 283 unit)
+- Minyak Goreng [BB-002]: 0,05 L (stok tersedia 28 L; cukup untuk 560 unit)
+- Bumbu Balado [BB-003]: 0,02 kg (stok tersedia 12,5 kg; cukup untuk 625 unit)
+- Standing Pouch 250g [KM-001]: 1 (stok tersedia 1.200; cukup untuk 1.200 unit)
+- Label Stiker Sumber Rasa [KM-002]: 1 (stok tersedia 300; cukup untuk 300 unit)
+
+Maksimal bisa diproduksi dari stok sekarang: 283 unit (dibatasi bahan dengan angka 'cukup untuk' terkecil; stok yang sudah dialokasikan tidak dihitung)
+[kode keluar 0]
+
+$ python3 inventree.py produksi-ringkas
+PERINTAH PRODUKSI TERBUKA: 1
+- BO-0001 Keripik Singkong Balado 250g: 0/100 selesai | Menunggu | target 1 Okt 2026
+Untuk cek bahan: produksi-ringkas --produk <kode> --jumlah <unit>
+[kode keluar 0]
+
+$ python3 inventree.py produksi-ringkas --produk PJ-001 --jumlah 300
+KEBUTUHAN BAHAN: 300 unit Keripik Singkong Balado 250g [PJ-001]
+- Singkong Kupas [BB-001]: butuh 90 kg, tersedia 85 -> KURANG 5 kg; sedang dipesan 200
+- Minyak Goreng [BB-002]: butuh 15 L, tersedia 28 -> CUKUP
+- Bumbu Balado [BB-003]: butuh 6 kg, tersedia 12,5 -> CUKUP
+- Standing Pouch 250g [KM-001]: butuh 300, tersedia 1.200 -> CUKUP
+- Label Stiker Sumber Rasa [KM-002]: butuh 300, tersedia 300 -> CUKUP
+
+Kesimpulan: BAHAN BELUM CUKUP untuk 300 unit. Maksimal dari stok sekarang: 283 unit.
+Hitungan: butuh = per unit x jumlah (+ setup, + susut % bila diisi di BOM); tersedia = stok bebas (belum dialokasikan) termasuk pengganti.
+[kode keluar 0]
+
+$ python3 inventree.py laporan-harian
+LAPORAN GUDANG HARIAN - Selasa, 29 September 2026
+
+STOK MENIPIS (di bawah minimum): 4 barang
+
+Bahan Baku:
+- Minyak Goreng [BB-002]: stok 28 L, minimum 40 L, kurang 12 L (sedang dipesan 40 L; dibutuhkan produksi/penjualan terbuka 5 L; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+- Singkong Kupas [BB-001]: stok 85 kg, minimum 100 kg, kurang 15 kg (sedang dipesan 200 kg; dibutuhkan produksi/penjualan terbuka 30 kg; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+
+Kemasan:
+- Label Stiker Sumber Rasa [KM-002]: stok 300, minimum 500, kurang 200 (sedang dipesan 1.000; dibutuhkan produksi/penjualan terbuka 100; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+
+Produk Jadi:
+- Keripik Singkong Original 250g [PJ-002]: stok 90, minimum 150, kurang 60 (perlu diproduksi lagi min. 60)
+
+PO TERBUKA: 2 (0 terlambat)
+- PO-0001 CV Tani Makmur (fiktif): target -
+- PO-0002 Toko Plastik Jaya (fiktif): target -
+
+PRODUKSI TERBUKA: 1
+- BO-0001 Keripik Singkong Balado 250g: 0/100 | target 1 Okt 2026
+
+(Laporan otomatis, hanya membaca InvenTree. Angka dari InvenTree apa adanya.)
+[kode keluar 0]
+
+$ python3 inventree.py ekspor-csv --keluaran ekspor-item.csv
+EKSPOR CSV (item): 11 baris -> ekspor-item.csv
+Pemisah kolom ';' (desimal koma, cocok Excel Indonesia).
+[kode keluar 0]
+
+$ python3 inventree.py ekspor-csv --jenis barang --keluaran ekspor-barang.csv
+EKSPOR CSV (barang): 8 baris -> ekspor-barang.csv
+Pemisah kolom ';' (desimal koma, cocok Excel Indonesia).
+[kode keluar 0]
+
+$ python3 inventree.py stok #999
+GALAT: 404: tidak ditemukan di InvenTree (/part/999/). Periksa id/kode, atau alamat server salah (bukan InvenTree?). No Part matches the given query.
+[kode keluar 4]
+
+$ python3 inventree.py opname-draf --lokasi Rak A --keluaran opname-rak-a.csv
+LEMBAR OPNAME Gudang Utama/Rak A: 4 item -> opname-rak-a.csv
+Cara isi: cetak/buka di Excel, hitung barang fisik, isi kolom 'stok_fisik' (boleh koma: 12,5).
+Kosongkan 'stok_fisik' untuk item yang TIDAK dihitung. Jangan ubah kolom id_stok & stok_sistem.
+Lalu: python3 inventree.py opname --file opname-rak-a.csv   (pratinjau selisih, belum menyimpan)
+[kode keluar 0]
+
+(lembar diisi petugas:)
+﻿id_stok;kode;nama;lokasi;batch;satuan;stok_sistem;stok_fisik;catatan
+5;BB-003;Bumbu Balado;Gudang Utama/Rak A;BL-0901;kg;12,5;12,5;
+3;BB-002;Minyak Goreng;Gudang Utama/Rak A;MG-0915;L;18;17,5;1 jeriken bocor
+4;BB-002;Minyak Goreng;Gudang Utama/Rak A;MG-0922;L;10;;
+1;BB-001;Singkong Kupas;Gudang Utama/Rak A;SK-2609;kg;60;57;
+
+$ python3 inventree.py opname --file opname-rak-a.csv
+PRATINJAU OPNAME dari opname-rak-a.csv: 3 item dihitung, 1 dilewati (stok_fisik kosong)
+- Bumbu Balado [BB-003] Gudang Utama/Rak A batch BL-0901: sistem 12,5 kg, fisik 12,5 kg -> sama
+- Minyak Goreng [BB-002] Gudang Utama/Rak A batch MG-0915: sistem 18 L, fisik 17,5 L -> KURANG 0,5 L
+- Singkong Kupas [BB-001] Gudang Utama/Rak A batch SK-2609: sistem 60 kg, fisik 57 kg -> KURANG 3 kg
+
+Ringkasan: 2 item selisih, 1 item sama.
+
+Belum disimpan. Periksa angka di atas. Bila benar, ulangi perintah yang sama + --ya. Semua item yang dihitung (termasuk yang sama) akan dicatat sebagai hasil opname hari ini.
+[kode keluar 0]
+
+$ python3 inventree.py opname --file opname-rak-a.csv --ya
+GALAT: 403 dari InvenTree: akun pemilik token TIDAK PUNYA HAK untuk aksi ini (POST /stock/count/; pesan server: You do not have permission to perform this action.). Atur grup/peran akun itu di Admin Center > Users/Groups (panduan bagian 6). Jangan mencoba lewat jalan lain.
+[kode keluar 5]
+
+===== TOKEN agen-gudang (grup 'Agen Gudang', boleh ubah stok & PO) =====
+
+$ python3 inventree.py cek
+CEK INVENTREE
+Alamat: http://127.0.0.1:8100
+Versi server: 1.5.6 (API 530)
+Token: inv-2d****0929
+Akun: agen-gudang
+- lihat barang: YA
+- lihat stok: YA
+- lihat lokasi: YA
+- lihat PO: YA
+- lihat produksi: YA
+- lihat BOM: YA
+- opname (tulis): YA
+- terima barang (tulis): YA
+Hak baca dasar: OK
+Catatan: token ini BISA MENULIS. Untuk jadwal otomatis pakai akun baca-saja.
+[kode keluar 0]
+
+$ python3 inventree.py opname --file opname-rak-a.csv --catatan opname akhir bulan --ya
+TERSIMPAN: hasil opname 3 item dicatat di InvenTree (2 item disesuaikan).
+Catatan transaksi: Opname 2026-09-29 via Komunitech inventree-gudang: opname akhir bulan
+Riwayat tiap item bisa dilihat di InvenTree: buka item stok > tab Stock Tracking.
+[kode keluar 0]
+
+$ python3 inventree.py stok BB-001
+STOK Singkong Kupas [BB-001]
+Total: 82 kg (2 item stok)
+Minimum: 100 kg - DI BAWAH MINIMUM
+
+Gudang Utama/Rak A: 57 kg
+  - 57 kg (batch SK-2609) [id stok 1]
+
+Ruang Produksi: 25 kg
+  - 25 kg (batch SK-2609) [id stok 2]
+[kode keluar 0]
+
+$ python3 inventree.py opname --file opname-rak-a.csv --ya
+PRATINJAU OPNAME dari opname-rak-a.csv: 3 item dihitung, 1 dilewati (stok_fisik kosong)
+- Bumbu Balado [BB-003] Gudang Utama/Rak A batch BL-0901: sistem 12,5 kg, fisik 12,5 kg -> sama
+- Minyak Goreng [BB-002] Gudang Utama/Rak A batch MG-0915: sistem 17,5 L, fisik 17,5 L -> sama
+- Singkong Kupas [BB-001] Gudang Utama/Rak A batch SK-2609: sistem 57 kg, fisik 57 kg -> sama
+
+Ringkasan: 0 item selisih, 3 item sama.
+
+BERHENTI: stok berikut BERUBAH di InvenTree sejak lembar dibuat (ada transaksi masuk/keluar):
+- Minyak Goreng (id 3): di lembar 18, sekarang 17,5
+- Singkong Kupas (id 1): di lembar 60, sekarang 57
+Hitung ulang item itu atau buat lembar baru ('opname-draf'). Tidak ada yang disimpan.
+[kode keluar 2]
+
+$ python3 inventree.py terima-barang --po PO-0001
+GALAT: Sebutkan barang yang diterima: --baris "BB-001=150; BB-002=40" atau --semua (semua sisa).
+[kode keluar 2]
+
+$ python3 inventree.py terima-barang --po PO-0001 --baris BB-001=250
+GALAT: Singkong Kupas: diterima 250 melebihi sisa pesanan 200. Kelebihan barang dicatat manual di InvenTree (atau ubah jumlah PO dulu).
+[kode keluar 2]
+
+$ python3 inventree.py terima-barang --po PO-0001 --baris BB-001=150; minyak=40 --batch SK-2909 --kedaluwarsa 2026-10-06
+PRATINJAU TERIMA BARANG PO-0001 dari CV Tani Makmur (fiktif)
+Masuk ke lokasi: Gudang Utama/Rak A
+Kode batch: SK-2909
+- Singkong Kupas [BB-001]: terima 150 kg (sisa pesanan 200)
+- Minyak Goreng [BB-002]: terima 40 L (sisa pesanan 40)
+
+Belum disimpan. Cocokkan dengan surat jalan/nota pemasok. Bila benar, ulangi perintah + --ya.
+[kode keluar 0]
+
+$ python3 inventree.py terima-barang --po PO-0001 --baris BB-001=150; minyak=40 --batch SK-2909 --kedaluwarsa 2026-10-06 --ya
+TERSIMPAN: 2 baris diterima dari PO-0001 ke Gudang Utama/Rak A (batch SK-2909).
+- Singkong Kupas: +150
+- Minyak Goreng: +40
+Cek: 'po-terbuka' (sisa pesanan) atau 'stok <kode>'.
+[kode keluar 0]
+
+$ python3 inventree.py po-terbuka --pemasok tani
+PO TERBUKA (belum diterima penuh): 1
+
+PO-0001 | CV Tani Makmur (fiktif) | Sudah dipesan | target - | 1/2 baris lengkap
+  - Singkong Kupas [BB-001]: dipesan 200, diterima 150, sisa 50 kg
+[kode keluar 0]
+
+$ python3 inventree.py stok BB-001
+STOK Singkong Kupas [BB-001]
+Total: 232 kg (3 item stok)
+Minimum: 100 kg
+
+Gudang Utama/Rak A: 207 kg
+  - 57 kg (batch SK-2609) [id stok 1]
+  - 150 kg (batch SK-2909; kedaluwarsa 6 Okt 2026) [id stok 12]
+
+Ruang Produksi: 25 kg
+  - 25 kg (batch SK-2609) [id stok 2]
+[kode keluar 0]
+
+$ python3 inventree.py stok-menipis
+STOK MENIPIS (di bawah minimum): 2 barang
+
+Kemasan:
+- Label Stiker Sumber Rasa [KM-002]: stok 300, minimum 500, kurang 200 (sedang dipesan 1.000; dibutuhkan produksi/penjualan terbuka 100; kekurangan terhadap minimum sudah tertutup pesanan/produksi berjalan)
+
+Produk Jadi:
+- Keripik Singkong Original 250g [PJ-002]: stok 90, minimum 150, kurang 60 (perlu diproduksi lagi min. 60)
+
+Catatan: hanya barang yang diberi 'Minimum Stock' di InvenTree yang diperiksa. 'Perlu dipesan' = minimum - stok - sedang dipesan - sedang diproduksi (kebutuhan produksi/penjualan terbuka ditampilkan terpisah, tidak ditambahkan).
+[kode keluar 0]
+
+$ python3 inventree.py produksi-ringkas --produk PJ-002 --jumlah 1.000
+KEBUTUHAN BAHAN: 1.000 unit Keripik Singkong Original 250g [PJ-002]
+- Singkong Kupas [BB-001]: butuh 300 kg, tersedia 232 -> KURANG 68 kg; sedang dipesan 50
+- Minyak Goreng [BB-002]: butuh 50 L, tersedia 67,5 -> CUKUP
+- Standing Pouch 250g [KM-001]: butuh 1.000, tersedia 1.200 -> CUKUP
+- Label Stiker Sumber Rasa [KM-002]: butuh 1.000, tersedia 300 -> KURANG 700; sedang dipesan 1.000
+
+Kesimpulan: BAHAN BELUM CUKUP untuk 1.000 unit. Maksimal dari stok sekarang: 300 unit.
+Hitungan: butuh = per unit x jumlah (+ setup, + susut % bila diisi di BOM); tersedia = stok bebas (belum dialokasikan) termasuk pengganti.
+[kode keluar 0]
+
+$ python3 inventree.py stok-menipis
+GALAT: 401 dari InvenTree: token salah, kedaluwarsa, atau sudah dicabut (pesan server: Invalid token.). Buat token baru di profil pengguna > Access Tokens, lalu 'simpan-kunci --ya'. Lihat docs/panduan-inventree.md bagian 6.
+[kode keluar 5]
+
+$ python3 inventree.py cari keripik --url http://127.0.0.1:8999
+GALAT: Tidak bisa menghubungi InvenTree di http://127.0.0.1:8999 (<urlopen error [Errno 111] Connection refused>). Pastikan InvenTree menyala (panduan bagian 3/7) dan alamatnya benar (ENV INVENTREE_API_HOST atau --url).
+[kode keluar 4]
+
+$ python3 inventree.py cari keripik --url http://gudang.contoh.com
+GALAT: Alamat InvenTree 'http://gudang.contoh.com' bukan komputer ini (localhost/127.0.0.1). Jangan buka InvenTree ke internet (docs/panduan-inventree.md bagian 4). Bila ini memang server Anda sendiri di jaringan kantor/VPS milik sendiri, tegaskan dengan --izinkan-jarak-jauh.
+[kode keluar 2]

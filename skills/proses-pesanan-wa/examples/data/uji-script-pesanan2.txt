@@ -1,0 +1,22 @@
+TANGGAL: 2026-10-06
+---
+pelanggan: Bu Rahma
+item: nastar x3; kastengel x2
+diskon: 10%
+ongkir: 18rb
+kurir: JNE REG
+dibayar: 200rb
+---
+pelanggan: Pak Joko
+item: putri salju x4; nastar x1
+diskon: 12,5%
+ongkir: 25rb
+kurir: J&T
+dibayar: 150rb
+---
+pelanggan: Kak Mega
+item: kastengel x3
+diskon: 5%
+ongkir: 15rb
+kurir: JNE REG
+dibayar: 314.250

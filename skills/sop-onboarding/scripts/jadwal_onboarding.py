@@ -330,7 +330,7 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None, libur_bawaan_i
             "kegiatan_target": "Tanggal hukum tetap (informasi, bukan tanggal kegiatan) -- TIDAK PERNAH "
                                 "digeser walau jatuh di hari libur.",
             "catatan": ("Masa percobaan maksimal 3 bulan sejak {} (UU 13/2003 Pasal 60 jo. UU 6/2023). "
-                        "Definisi batas (TAFSIR skill ini, bukan kepastian hukum -- UU tidak merinci cara "
+                        "Definisi batas (TAFSIR perhitungan ini, bukan kepastian hukum -- UU tidak merinci cara "
                         "hitung tanggal per hari): tanggal sama persis 3 bulan kalender kemudian; bila "
                         "bulan target tidak punya tanggal itu, pakai hari terakhir bulan itu; bila ada, "
                         "dikurangi 1 hari. Ikuti tanggal di perjanjian kerja bila berbeda; konsultasikan "

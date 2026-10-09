@@ -10,7 +10,8 @@ import json
 import re
 import sys
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 
 BULAN = {
     "jan": 1, "januari": 1, "january": 1,
@@ -32,6 +33,12 @@ STATUS_BATAL_DEFAULT = ["batal", "dibatalkan", "cancel", "retur", "return", "ref
 
 # Status yang mengandung kata di atas tetapi transaksinya TETAP sah (mis. "Pengembalian Ditolak")
 PENGECUALIAN_STATUS = ["ditolak", "rejected", "dibatalkan pembatalannya"]
+
+# Status yang dianggap sudah final (uang aman). Status lain yang tetap dihitung (mis. "Sedang Dikirim")
+# ditandai "belum final" di ringkasan karena masih bisa batal/retur.
+STATUS_FINAL = ["selesai", "completed", "complete", "diterima", "delivered"]
+
+BULAN_PENDEK = ["", "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 
 POLA_ISO = re.compile(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[ T].*)?$")
 POLA_ANGKA_3 = re.compile(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2}|\d{4})(?:[ T].*)?$")
@@ -146,6 +153,76 @@ def parse_angka(teks):
     return -nilai if negatif else nilai
 
 
+def rupiah(nilai):
+    """Rupiah dibulatkan ke rupiah terdekat (setengah ke atas), pemisah ribuan titik: 'Rp 1.250.000'."""
+    bulat = int(Decimal(str(nilai)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    tanda = "-" if bulat < 0 else ""
+    return "Rp {}{:,}".format(tanda, abs(bulat)).replace(",", ".")
+
+
+def tgl_id(iso):
+    try:
+        d = date.fromisoformat(iso)
+    except ValueError:
+        return iso
+    return "{} {} {}".format(d.day, BULAN_PENDEK[d.month], d.year)
+
+
+def angka_qty(q):
+    return str(int(q)) if float(q).is_integer() else ("%s" % round(q, 2)).replace(".", ",")
+
+
+def gabung_daftar(item):
+    item = list(item)
+    if len(item) <= 1:
+        return "".join(item)
+    return ", ".join(item[:-1]) + " dan " + item[-1]
+
+
+def susun_ringkasan(h, ada_status, satuan_pesanan):
+    """Kalimat lengkap siap tempel ke grup tim. HANYA angka agregat: tanpa nama/nomor/alamat pembeli."""
+    p = h["periode"]
+    kal = []
+    status_txt = ""
+    if ada_status:
+        status_txt = " (status yang dihitung: {})".format(gabung_daftar(
+            [st for st, v in h["per_status"].items() if v["golongan"] == "dihitung"] or sorted(h["status_dihitung"])))
+    kal.append("Rekap penjualan {} sampai {}: total omzet {} dari {} {}{}.".format(
+        tgl_id(p["awal"]), tgl_id(p["akhir"]), rupiah(h["total_omzet"]),
+        h["jumlah_pesanan_dihitung"], satuan_pesanan, status_txt))
+    if ada_status and h["per_status"]:
+        bagian = []
+        for st, v in h["per_status"].items():
+            teks = "{} {} {} senilai {}".format(st, v["jumlah_pesanan"], satuan_pesanan, rupiah(v["omzet"]))
+            if v["baris_nilai_tak_terbaca"]:
+                teks += " ({} baris nilainya tidak terbaca)".format(v["baris_nilai_tak_terbaca"])
+            if v["golongan"] == "dibuang":
+                teks += " (tidak masuk omzet)"
+            elif not v["final"]:
+                teks += " (sudah masuk omzet, belum final, bisa berubah bila batal/retur)"
+            bagian.append(teks)
+        kal.append("Rincian per status: " + "; ".join(bagian) + ".")
+        if h["dibuang_per_tanggal"]:
+            bagian = ["{} {} {} ({})".format(tgl_id(x["tanggal"]), x["jumlah_pesanan"], satuan_pesanan, x["status"])
+                      for x in h["dibuang_per_tanggal"]]
+            kal.append("Pesanan yang tidak dihitung menurut tanggal pesanan: " + "; ".join(bagian) + ".")
+        else:
+            kal.append("Tidak ada pesanan batal/retur pada periode ini.")
+    top = h["produk_terlaris"][:3]
+    if top:
+        kal.append("Produk terlaris menurut omzet: " + gabung_daftar(
+            "{} ({} pcs, {})".format(x["produk"], angka_qty(x["qty"]), rupiah(x["omzet"])) for x in top) + ".")
+    kal.append("Omzet tertinggi pada {} ({}) dan terendah pada {} ({}).".format(
+        tgl_id(h["hari_terbaik"]["tanggal"]), rupiah(h["hari_terbaik"]["omzet"]),
+        tgl_id(h["hari_terendah"]["tanggal"]), rupiah(h["hari_terendah"]["omzet"])))
+    t = h["hari_transaksi_terbanyak"]
+    kal.append("Transaksi terbanyak: {} {} per hari, pada {}.".format(
+        t["jumlah"], satuan_pesanan, gabung_daftar(tgl_id(x) for x in t["semua_tanggal_seri"])))
+    if h["baris_dilewati"]:
+        kal.append("Catatan: {} baris tidak terbaca dan tidak dihitung.".format(h["baris_dilewati"]))
+    return "RINGKASAN SIAP TEMPEL\n" + "\n".join(kal)
+
+
 def baca_csv(path):
     mentah = open(path, "rb").read()
     for enc in ("utf-8-sig", "cp1252", "latin-1"):
@@ -177,6 +254,9 @@ def main():
     grup.add_argument("--kolom-total", help="Total harga per baris")
     grup.add_argument("--kolom-harga", help="Harga satuan (dikali qty)")
     p.add_argument("--kolom-status", help="Kolom status pesanan (untuk membuang batal/retur)")
+    p.add_argument("--kolom-pesanan",
+                   help="Kolom nomor pesanan/transaksi (mis. 'No. Pesanan'); jumlah pesanan per hari dihitung unik. "
+                        "Tanpa ini, jumlah transaksi = jumlah baris valid.")
     p.add_argument("--abaikan-status",
                    help="Kata status yang dibuang, pisahkan koma. MENGGANTI seluruh daftar bawaan: "
                         + ", ".join(STATUS_BATAL_DEFAULT))
@@ -195,7 +275,7 @@ def main():
 
     kolom = list(baris[0].keys())
     wajib = [a.kolom_tanggal, a.kolom_produk, a.kolom_total or a.kolom_harga]
-    wajib += [k for k in (a.kolom_qty, a.kolom_status) if k]
+    wajib += [k for k in (a.kolom_qty, a.kolom_status, a.kolom_pesanan) if k]
     hilang = [k for k in wajib if k not in kolom]
     if hilang:
         keluar_error({"error": "Kolom tidak ditemukan", "hilang": hilang, "kolom_tersedia": kolom})
@@ -214,35 +294,61 @@ def main():
     varian_nama = defaultdict(set)   # kunci -> semua ejaan asli
     status_dihitung = defaultdict(int)
     per_hari = defaultdict(float)
+    baris_per_hari = defaultdict(int)
+    pesanan_per_hari = defaultdict(set)
     dilewati = defaultdict(int)
     dibuang_status = defaultdict(int)
     total, n = 0.0, 0
 
-    for r in baris:
+    # Per status (dihitung & dibuang): baris, pesanan unik, nilai. Dibuang per tanggal pesanan.
+    per_status = {}
+    dibuang_tgl = defaultdict(lambda: {"baris": 0, "pesanan": set(), "nilai": 0.0})
+    pesanan_dihitung = set()
+
+    def catat_status(st, golongan, no, nilai):
+        d = per_status.setdefault(st, {"golongan": golongan, "baris": 0, "pesanan": set(), "omzet": 0.0,
+                                       "baris_nilai_tak_terbaca": 0})
+        d["baris"] += 1
+        d["pesanan"].add(no)
+        if nilai is None:
+            d["baris_nilai_tak_terbaca"] += 1
+        else:
+            d["omzet"] += nilai
+
+    for i, r in enumerate(baris):
+        no = ((r.get(a.kolom_pesanan) or "").strip() if a.kolom_pesanan else "") or "(baris %d)" % (i + 2)
+        tgl = parse_tanggal(r.get(a.kolom_tanggal), urutan)
+        teks_qty = (r.get(a.kolom_qty) or "").strip() if a.kolom_qty else ""
+        qty = parse_angka(teks_qty) if teks_qty else 1.0   # qty kosong dianggap 1
+        if a.kolom_total:
+            nilai = parse_angka(r.get(a.kolom_total))
+        else:
+            harga = parse_angka(r.get(a.kolom_harga))
+            nilai = harga * qty if (harga is not None and qty is not None) else None
         if a.kolom_status:
             st = (r.get(a.kolom_status) or "").strip()
             st_kecil = st.lower()
             if any(k in st_kecil for k in abaikan) and not any(k in st_kecil for k in PENGECUALIAN_STATUS):
                 dibuang_status[st] += 1
+                catat_status(st, "dibuang", no, nilai)
+                kunci_tgl = (tgl.isoformat() if tgl else "(tanggal tidak terbaca)", st)
+                dibuang_tgl[kunci_tgl]["baris"] += 1
+                dibuang_tgl[kunci_tgl]["pesanan"].add(no)
+                dibuang_tgl[kunci_tgl]["nilai"] += nilai or 0.0
                 continue
             status_dihitung[st or "(kosong)"] += 1
-        tgl = parse_tanggal(r.get(a.kolom_tanggal), urutan)
         if tgl is None:
             dilewati["tanggal tidak terbaca"] += 1
             continue
-        teks_qty = (r.get(a.kolom_qty) or "").strip() if a.kolom_qty else ""
-        qty = parse_angka(teks_qty) if teks_qty else 1.0   # qty kosong dianggap 1
         if qty is None:
             dilewati["qty tidak valid"] += 1
             continue
-        if a.kolom_total:
-            nilai = parse_angka(r.get(a.kolom_total))
-        else:
-            harga = parse_angka(r.get(a.kolom_harga))
-            nilai = harga * qty if harga is not None else None
         if nilai is None:
             dilewati["harga/total tidak valid atau meragukan"] += 1
             continue
+        if a.kolom_status:
+            catat_status(st or "(kosong)", "dihitung", no, nilai)
+        pesanan_dihitung.add(no)
         asli = " ".join((r.get(a.kolom_produk) or "").split()) or "(tanpa nama)"
         kunci = asli.casefold()
         nama_tampil.setdefault(kunci, asli)
@@ -251,6 +357,8 @@ def main():
         per_produk[produk]["qty"] += qty
         per_produk[produk]["omzet"] += nilai
         per_hari[tgl.isoformat()] += nilai
+        baris_per_hari[tgl.isoformat()] += 1
+        pesanan_per_hari[tgl.isoformat()].add(no)
         total += nilai
         n += 1
 
@@ -262,6 +370,14 @@ def main():
     hari = sorted(per_hari.items())
     terbaik = max(hari, key=lambda x: x[1])
     terendah = min(hari, key=lambda x: x[1])
+    if a.kolom_pesanan:
+        transaksi_harian = {k: len(pesanan_per_hari[k]) for k, _ in hari}
+        satuan_transaksi = "pesanan unik (kolom {})".format(a.kolom_pesanan)
+    else:
+        transaksi_harian = {k: baris_per_hari[k] for k, _ in hari}
+        satuan_transaksi = "baris transaksi"
+    maks_trx = max(transaksi_harian.values())
+    tgl_maks_trx = [k for k, v in transaksi_harian.items() if v == maks_trx]
     awal, akhir = date.fromisoformat(hari[0][0]), date.fromisoformat(hari[-1][0])
     hari_kalender = (akhir - awal).days + 1
 
@@ -288,6 +404,9 @@ def main():
         "hari_terbaik": {"tanggal": terbaik[0], "omzet": round(terbaik[1], 2)},
         "hari_terendah": {"tanggal": terendah[0], "omzet": round(terendah[1], 2)},
         "omzet_harian": {k: round(v, 2) for k, v in hari},
+        "hari_transaksi_terbanyak": {"tanggal": tgl_maks_trx[0], "jumlah": maks_trx,
+                                     "semua_tanggal_seri": tgl_maks_trx, "satuan": satuan_transaksi},
+        "jumlah_transaksi_harian": transaksi_harian,
         "baris_dilewati": sum(dilewati.values()),
         "alasan_dilewati": dict(dilewati),
         "dibuang_karena_status": dict(dibuang_status),
@@ -296,6 +415,26 @@ def main():
         "urutan_tanggal_dipakai": urutan,
         "peringatan": peringatan,
     }
+    hasil["jumlah_pesanan_dihitung"] = len(pesanan_dihitung)
+    hasil["satuan_pesanan"] = "pesanan unik" if a.kolom_pesanan else "baris"
+    hasil["per_status"] = {
+        st: {"golongan": v["golongan"],
+             "final": v["golongan"] == "dihitung" and any(k in st.lower() for k in STATUS_FINAL),
+             "jumlah_baris": v["baris"],
+             "jumlah_pesanan": len(v["pesanan"]),
+             "omzet": round(v["omzet"], 2),
+             "baris_nilai_tak_terbaca": v["baris_nilai_tak_terbaca"]}
+        for st, v in sorted(per_status.items(), key=lambda x: (x[1]["golongan"] != "dihitung", -x[1]["omzet"]))
+    }
+    hasil["dibuang_per_tanggal"] = [
+        {"tanggal": t, "status": st, "jumlah_baris": v["baris"], "jumlah_pesanan": len(v["pesanan"]),
+         "nilai": round(v["nilai"], 2)}
+        for (t, st), v in sorted(dibuang_tgl.items())
+    ]
+    hasil["catatan_tanggal"] = ("Tanggal di dibuang_per_tanggal = isi kolom {} (biasanya tanggal pesanan dibuat), "
+                                "bukan tanggal pembatalan.".format(a.kolom_tanggal))
+    hasil["ringkasan_siap_tempel"] = susun_ringkasan(hasil, bool(a.kolom_status),
+                                                     "pesanan" if a.kolom_pesanan else "baris transaksi")
     print(json.dumps(hasil, ensure_ascii=False, indent=2))
 
 

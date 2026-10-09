@@ -75,3 +75,6 @@ Anda tidak pernah dimasukkan ke draf pesan. Item yang sudah selesai bisa dibersi
 Tanggal ditulis bebas: "3/10", "3 Okt", "besok", "Jumat". Jika tahun tidak disebut, asisten memilih tanggal
 terdekat dan memberi tahu pilihannya supaya bisa Anda koreksi. Tanggal yang mustahil (mis. 31/2) langsung
 ditolak dengan penjelasan.
+
+## Catatan revisi 1.0.6 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: draf tagihan sempat memuat `[rekening]` tanpa disebut sebagai bagian yang perlu dilengkapi. Kini setiap placeholder seperti `[rekening]` wajib disebut ke pemilik sebagai yang harus diisi sebelum draf dikirim.

@@ -5,6 +5,8 @@ description: Membuat teks halaman jualan berbahasa Indonesia untuk landing page,
 
 # Copy Landing Page
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 Mengubah info produk seadanya menjadi teks halaman jualan yang lengkap, jujur, dan siap tempel — untuk landing page sendiri, link-in-bio (Linktree/Saweria/bio Instagram), atau halaman produk di website/toko online.
 
 ## Kapan digunakan
@@ -38,7 +40,10 @@ Tanyakan (atau simpulkan dari cerita pengguna):
 - Tidak ada testimoni/angka penjualan yang disebut sama sekali (lebih baik kosong daripada karangan).
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Cek kepatuhan dulu.** Baca [references/dasar-hukum-klaim.md](references/dasar-hukum-klaim.md). Kalau produk masuk kategori sensitif (obat, suplemen, kosmetik, makanan/minuman berklaim kesehatan, jasa medis/klinik, keuangan/investasi), tandai klaim yang butuh izin resmi dan JANGAN tuliskan klaim tersebut kecuali pengguna memastikan izin/sertifikatnya ada.
+   Jika produk pangan olahan, kosmetik, suplemen, atau obat tradisional/obat: ingatkan izin edar (BPOM / SPP-IRT) wajib ada sebelum dijual dan dipromosikan. Bila pengguna bilang izin belum ada, tampilkan peringatan di atas output dan di Ceklis Kepatuhan.
 2. **Susun struktur halaman** mengikuti kerangka di [references/struktur-halaman.md](references/struktur-halaman.md): Headline → Sub-headline → Masalah → Manfaat (3–5, fokus hasil bukan fitur) → Cara Kerja/Cara Pesan (3–4 langkah) → Bukti Sosial → Penawaran (harga, ongkir, cara bayar) → Garansi/Retur → FAQ → CTA penutup.
 3. **Tulis 3 variasi headline** dengan pendekatan berbeda (hasil, pertanyaan, sebelum/sesudah) — lihat contoh formula di references.
 4. **Bukti sosial:** jika pengguna memberi testimoni/data asli, pakai kata-kata mereka (boleh dirapikan, jangan diubah maknanya). Jika tidak ada, tulis placeholder `[ISI TESTIMONI ASLI — nama & kota pembeli]` — JANGAN PERNAH mengarang testimoni, jumlah pelanggan, rating bintang, atau angka "terjual X pcs".
@@ -46,9 +51,14 @@ Tanyakan (atau simpulkan dari cerita pengguna):
 6. **Tulis versi pendek** (link-in-bio / satu layar HP): headline + 1 kalimat manfaat utama + 1 bukti sosial singkat (atau dilewati kalau tidak ada) + tombol CTA. Maksimal setara satu layar ponsel tanpa scroll panjang.
 7. **Buat meta title & meta description SEO.** Meta title target ≤60 karakter, meta description ≤155 karakter (batas ditampilkan Google bisa berbeda per perangkat, ini batas aman umum). Kalau ada Python: `python3 scripts/bangun_tautan_wa.py meta --title "..." --desc "..."` menghitung panjang persis dan menandai jika melebihi batas. Kalau tidak ada Python, hitung karakter manual dan tampilkan angkanya.
 8. **Ceklis klaim berisiko** (wajib ditampilkan di akhir output): tandai setiap kalimat yang menyinggung kesehatan/obat/BPOM/halal/"nomor 1"/"dijamin"/harga coret, sesuai daftar di references/dasar-hukum-klaim.md, dan minta pengguna mengonfirmasi dasarnya sebelum publish.
-9. Tutup dengan ringkasan asumsi yang dipakai (kalau ada) dan pengingat: ganti placeholder `[NOMOR WA KAMU]` / `[ISI TESTIMONI ASLI]` sebelum halaman dipublikasikan.
+9. Periksa setiap janji layanan (garansi, area kirim, lama proses) berasal dari pengguna atau berupa placeholder `[isi: …]`; hapus yang dikarang.
+10. Tutup dengan ringkasan asumsi yang dipakai (kalau ada) dan pengingat: ganti placeholder `[NOMOR WA KAMU]` / `[ISI TESTIMONI ASLI]` sebelum halaman dipublikasikan.
 
 ## Format Output
+**Seluruh isi halaman WAJIB tampil di chat** (minimal Versi Lengkap + Versi Pendek + tautan WA); jangan hanya menyimpan ke file atau memberi ringkasan. Bila juga menyimpan file (mis. .html/.md), itu hanya salinan: sebutkan **lokasi file lengkap** (path) di akhir. Pengguna Telegram tidak bisa membuka file workspace.
+
+**Janji layanan** (garansi, jangkauan/area kirim, "hari kerja", "tanpa biaya tersembunyi") hanya boleh ditulis bila berasal dari pemilik; selain itu tulis `[isi: garansi ...]` / `[isi: area kirim ...]`.
+
 Selalu berikan dalam urutan ini:
 
 1. **Versi Lengkap (Landing Page)** — seluruh struktur di Langkah 2, format Markdown dengan heading per bagian, siap ditempel ke page builder (Google Sites, WordPress, Carrd, dsb.) atau dirapikan sendiri.

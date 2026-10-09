@@ -5,10 +5,12 @@ description: Pembukuan usaha berpasangan (double-entry) di file teks hledger mil
 
 # hledger Usaha (pembukuan teks untuk UMKM)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha punya **pembukuan berpasangan yang rapi tanpa aplikasi berbayar**: semua catatan disimpan di satu file teks (`~/Pembukuan/usaha.journal`) di komputernya sendiri, dibaca oleh **hledger** (program gratis, open-source). Pengguna cukup bercerita ("tadi jual 750rb ke Kantor Maju, bayarnya minggu depan"); agent menjalankan `scripts/hledger_usaha.py` untuk menulis entri yang **seimbang dan terperiksa**, lalu membuat laporan bulanan dalam Rupiah. Python standar saja.
 
-**Versi 1.0.1.** Diuji pembuat dan penguji independen dengan **hledger 1.52.4 asli** (binary Linux resmi, checksum cocok) dan tanpa hledger (pembaca bawaan); belum di Windows/Mac sungguhan.
+**Versi 1.0.10** (temuan uji ulang OpenClaw): konstanta versi script disamakan dengan katalog; penolakan PPh 23 atas penjualan barang tidak mutlak (bisa berlaku bila transaksi sebenarnya jasa, mis. katering - minta klarifikasi/bukti potong). Sebelumnya **versi 1.0.5** (temuan uji OpenClaw): kompatibel dengan hledger lama (opsi `-n` hanya dipakai untuk hledger ≥ 1.40; uji regresi lulus dengan **hledger 1.30.1** asli dan 1.52.4), hledger yang tidak cocok → otomatis pembaca bawaan dengan pesan jelas; file jurnal yang tidak ketemu → script menyebut file `*.journal` di folder kerja; potongan "PPh 23" atas penjualan barang → sisa tetap piutang + draf klarifikasi. Sebelumnya **versi 1.0.4**: asal piutang untuk cek PPh 23 kini dibaca dari **jenis catatan** (tag `jenis:jual`/`jenis:jasa` yang ditulis otomatis), bukan hanya nama akun pendapatan — `--jenis jual --akun "Pendapatan:Usaha"` tetap ditolak saat `terima-piutang --pph23`; catatan lama tanpa tag dengan akun pendapatan umum → PERHATIAN. `terima-piutang` yang melebihi saldo piutang di jurnal (tagihan/saldo awal belum dicatat) → PERHATIAN "piutang menjadi minus". Dalam satu `--batch`, pelunasan ikut melihat tagihan di entri sebelumnya. Sebelumnya: **Versi 1.0.3.** Diuji pembuat dan penguji independen dengan **hledger 1.52.4 asli** (binary Linux resmi, checksum cocok) dan tanpa hledger (pembaca bawaan); belum di Windows/Mac sungguhan.
 
 ## Kapan digunakan
 - "Catat: jual kopi 1,25 juta tunai", "beli susu 1,5jt ke CV Susu Segar, bayar bulan depan", "bayar listrik 350rb" → `catat`
@@ -32,7 +34,8 @@ Pemilik usaha punya **pembukuan berpasangan yang rapi tanpa aplikasi berbayar**:
 Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (piutang/utang per pihak, neraca yang selalu seimbang, riwayat bertahun-tahun) tanpa server dan tanpa biaya bulanan.
 
 ## Persiapan (sekali)
-1. `python3 <folder-skill>/scripts/hledger_usaha.py cek` (Windows: `python` atau `py`). Laporkan: hledger terpasang/tidak, file jurnal, hasil pemeriksaan.
+0. **Temukan buku pengguna dulu (wajib).** Bila pengguna menyebut file/lokasi ("usaha.journal di folder ini", "buku saya di D:\Usaha"), **selalu** pakai `--jurnal <file itu>` di setiap perintah. Bila tidak disebut atau tidak ketemu: cari **hanya di folder kerja (workspace) dan subfoldernya** (`ls`, atau `cek` - script menyebut file `*.journal` yang ditemukan di sana); jangan mencari ke seluruh disk/home. Tidak ketemu → **tanyakan** lokasinya. **Jangan langsung membuat buku baru (`init`)** dan jangan menanyakan saldo awal sebelum pengguna memastikan belum punya pembukuan.
+1. `python3 <folder-skill>/scripts/hledger_usaha.py cek --jurnal <file>` (Windows: `python` atau `py`). Laporkan: hledger terpasang/tidak, file jurnal, hasil pemeriksaan.
 2. hledger belum terpasang → **tetap lanjut** (pembaca bawaan cukup untuk mencatat & laporan). Tawarkan panduan `docs/panduan-hledger.md` (unduh resmi + cek checksum) atau jasa setup Komunitech. Jangan memasang apa pun tanpa persetujuan.
 3. File jurnal belum ada → tanyakan **sekali**: nama usaha, nama rekening bank (mis. BCA), tanggal mulai, saldo awal (kas di laci, saldo tiap rekening, nilai stok, piutang, utang). Lalu:
    ```bash
@@ -44,6 +47,8 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
 4. Lokasi file: `--jurnal <path>` > ENV `LEDGER_FILE` > `~/Pembukuan/usaha.journal`. Setiap keluaran menyebut file yang dipakai; pastikan itu buku usaha pengguna.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
 ### A. Mencatat dari kalimat biasa
 1. Ubah kalimat menjadi **jenis** + nominal + cara bayar (`--via kas|bank|tempo`) + pihak + keterangan. Tabel pemetaan kalimat → jenis & akun: `references/akun-dan-jenis.md`.
@@ -60,7 +65,8 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
    python3 <folder-skill>/scripts/hledger_usaha.py catat --jenis terima-piutang --nominal 10jt --diterima 9,8jt \
      --via bank --pihak "PT Nusantara" --tanggal 2026-09-12      # atau --pph23 200rb / --pph23 2%
    ```
-   Hasil: bank +9,8 jt, `Aset:Pajak Dibayar Dimuka:PPh 23` +200 rb (kredit pajak, bukan beban), piutang −10 jt. Jasa yang langsung dibayar: `--jenis jasa --nominal 10jt --via bank --pph23 2%`. Tagihan tempo dicatat tanpa potongan; potongan dicatat saat dibayar. Sampaikan catatan script: **minta bukti potong PPh 23** ke pelanggan; tarif jasa 2% dari bruto (4% bila tanpa NPWP; UU PPh Pasal 23, PMK 141/PMK.03/2015); pengguna PPh Final UMKM (PP 55/2022) yang punya Surat Keterangan → tanyakan konsultan. Angka potongan mengikuti bukti potong.
+   Hasil: bank +9,8 jt, `Aset:Pajak Dibayar Dimuka:PPh 23` +200 rb (kredit pajak, bukan beban), piutang −10 jt. Jasa yang langsung dibayar: `--jenis jasa --nominal 10jt --via bank --pph23 2%`. Penjualan **barang** (`--jenis jual`) umumnya tidak dipotong PPh 23 (PPh 23 untuk jasa/sewa/royalti; bisa berlaku bila transaksi sebenarnya jasa, mis. jasa katering — minta klarifikasi/bukti potong, jangan menyatakan potongan "salah" secara mutlak) — script menolak `--pph23`/`--diterima` di sana, **termasuk** saat `terima-piutang` atas piutang yang berasal dari `--jenis jual` (v1.0.3; v1.0.4: dibaca dari jenis catatan, bukan nama akun; piutang campuran barang+jasa atau dari saldo awal → PERHATIAN, potong hanya atas bagian jasa sesuai bukti potong); bila yang dijual sebenarnya jasa/sewa pakai `--jenis jasa`. Tagihan tempo dicatat tanpa potongan; potongan dicatat saat dibayar.
+   **Pembeli barang memotong "PPh 23"** (mis. tagihan kopi Rp 2.000.000, masuk Rp 1.960.000): script menolak dan mencetak jalur bakunya - ikuti, jangan mengarang akun: catat `terima-piutang --nominal <uang yang benar-benar masuk>` dengan `--ket "... potongan belum dikonfirmasi"`, sehingga **selisihnya tetap piutang pelanggan** (bukan kredit pajak, bukan beban/biaya bank); sampaikan draf pesan klarifikasi dari script (minta bukti potong atau transfer kekurangan) untuk dikirim pengguna sendiri; setelah jelas, ikuti pilihan (a)-(d) dari script. Jangan menyatakan tagihan "lunas" selama selisih belum jelas. *PERLU REVIEW konsultan pajak: perlakuan potongan atas penjualan barang dan kemungkinan pemotongan/pemungutan pajak lain.* Sampaikan catatan script: **minta bukti potong PPh 23** ke pelanggan; tarif jasa 2% dari bruto (4% bila tanpa NPWP; UU PPh Pasal 23, PMK 141/PMK.03/2015); pengguna PPh Final UMKM (PP 55/2022) yang punya Surat Keterangan → tanyakan konsultan. Angka potongan mengikuti bukti potong.
 6. Script menolak akun salah ketik (memberi saran), akun di luar Aset/Utang/Modal/Pendapatan/HPP/Beban, transaksi tidak seimbang, dan transaksi kembar (kode 7). Akun baru hanya dengan `--akun-baru` setelah pengguna setuju; piutang/utang per pihak dan rekening `Aset:Bank:<nama>` dibuat otomatis.
 
 ### B. Impor mutasi bank (CSV)
@@ -70,7 +76,7 @@ Skill ini cocok bila pengguna ingin **buku besar berpasangan jangka panjang** (p
 4. Jalankan ulang dengan `--tetapkan "BARIS=Akun"` untuk jawaban pengguna, lalu `--ya` setelah disetujui. Transaksi yang sudah pernah diimpor dilewati otomatis (tag `ref:`).
 5. Tawarkan menyimpan kata kunci untuk bulan depan: `tambah-aturan --kata "ROASTERY GAYO" --akun HPP:Pembelian --arah keluar` (pratinjau, lalu `--ya`).
 6. "Saldo awal rekening belum dicatat" → catat saldo awal dengan perintah yang disarankan script. "SELISIH" → jangan dipaksa; minta pengguna mengecek mutasi bulan sebelumnya.
-7. **Mutasi bank bukan seluruh usaha.** Penjualan/biaya **tunai** yang tidak disetor ke bank tidak ada di mutasi. Setelah impor, tanyakan: "Ada penjualan atau belanja tunai bulan ini yang tidak lewat rekening?" lalu catat dengan `catat --via kas` sebelum membuat laba rugi. Laporan memberi CATATAN bila pendapatan/biaya periode itu hanya dari mutasi bank tanpa satu pun transaksi kas.
+7. **Mutasi bank bukan seluruh usaha.** Penjualan/biaya **tunai** yang tidak disetor ke bank tidak ada di mutasi. Setelah impor, tanyakan: "Ada penjualan atau belanja tunai bulan ini yang tidak lewat rekening?" lalu catat dengan `catat --via kas` sebelum membuat laba rugi. Laporan memberi CATATAN bila pendapatan/biaya periode itu hanya dari mutasi bank tanpa satu pun penjualan/biaya tunai (tarik tunai ATM/setor tunai = pindah dana, tidak dihitung).
 
 ### C. Laporan bulanan
 ```bash
@@ -122,6 +128,7 @@ Contoh lengkap per skenario ada di `examples/`.
 - PPh 23 yang dipotong pelanggan = `Aset:Pajak Dibayar Dimuka:PPh 23` (dibuat otomatis): `--pph23` nominal dari bukti potong, atau `2%`/`4%` × nominal dibulatkan ke bawah ke rupiah, atau `--diterima` (potongan = nominal − diterima). Potongan bukan 2%/4% → PERHATIAN. Pembulatan belum dicocokkan dengan Coretax.
 
 ## Keamanan & batasan (wajib dipatuhi agent)
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Satu pembukuan yang benar — tolak pembukuan ganda.** Jawaban baku: "Maaf, saya tidak bisa membantu membuat pembukuan ganda (dua file jurnal/dua versi laporan: satu untuk pajak, satu 'asli'), mengecilkan omzet, memundurkan tanggal, atau menghapus/menyembunyikan transaksi supaya pajak lebih kecil. Pembukuan wajib mencerminkan keadaan usaha yang sebenarnya (UU KUP Pasal 28 ayat (3)), dan memperlihatkan pembukuan yang tidak menggambarkan keadaan sebenarnya atau menyampaikan SPT yang isinya tidak benar adalah tindak pidana perpajakan (UU KUP Pasal 39 ayat (1) huruf d & f, UU 28/2007). Yang bisa saya bantu: merapikan satu pembukuan yang benar, mencatat potongan PPh 23 sebagai kredit pajak, menghitung pajak yang memang terutang lewat `pph-final-umkm` (termasuk omzet sampai Rp 500 juta setahun yang tidak dikenai pajak untuk orang pribadi), dan menyiapkan laporan untuk konsultan pajak." Berlaku juga untuk permintaan `--jurnal` kedua sebagai "versi pajak". Jangan menyarankan cara lain yang tujuannya sama.
 - **Default hanya baca.** Menulis (catat, impor, stok-akhir, tambah-aturan) selalu pratinjau dulu; `--ya` hanya setelah pengguna menjawab ya di percakapan ini.
 - Sebelum menulis, script menyalin versi lama ke `usaha.journal.sebelum-ubah`, lalu memeriksa ulang file (pembaca bawaan + `hledger check`). Gagal → file **dikembalikan** (kode 6). Jurnal yang sudah rusak **tidak** ditulisi (kode 4).
@@ -136,8 +143,9 @@ Contoh lengkap per skenario ada di `examples/`.
 | 2 "ambigu" / "tidak jelas" / "negatif" | Nominal tidak jelas | Tanyakan angka yang dimaksud (mis. 62,500 = 62,5 atau 62.500?) |
 | 2 "Akun ... belum ada ... Mungkin maksudnya" | Salah ketik akun | Pakai saran; akun baru hanya dengan persetujuan (`--akun-baru`) |
 | 2 "--via belum diisi" / "--tahun" / "--bank" | Info kurang | Tanyakan sekali |
-| 3 "File jurnal tidak ditemukan" | Belum `init` / path salah | Tanyakan apakah membuat buku baru atau di mana filenya |
+| 3 "File jurnal tidak ditemukan" | Path salah / belum `init` | Bila script menyebut "Ditemukan file jurnal di folder kerja", ulangi dengan `--jurnal` itu (konfirmasi ke pengguna); bila tidak, tanyakan di mana filenya. `init` hanya bila pengguna memastikan belum punya buku |
 | 4 "tidak seimbang" / "pengecekan saldo gagal" / "hledger menolak" | File jurnal rusak (sering karena diedit manual) | Tunjukkan baris yang disebut; minta pengguna memperbaiki atau kembalikan dari `backup/`/`.sebelum-ubah` |
+| Catatan "hledger x.y terpasang tetapi tidak cocok" | Versi hledger terlalu lama/berbeda (bukan file rusak) | Angka sudah dihitung pembaca bawaan & diperiksa seimbang - sampaikan apa adanya; tawarkan memperbarui hledger (panduan). `--mesin hledger` memaksa hledger → kode 5 |
 | 4 "belum didukung pembaca bawaan" | File memakai fitur hledger lanjutan | Pasang hledger (panduan) |
 | 5 hledger error | Program hledger bermasalah | `cek`; bisa sementara `--mesin bawaan` |
 | 6 "GAGAL MENYIMPAN; file dikembalikan" | Pemeriksaan setelah tulis gagal | Sampaikan; tidak ada yang berubah |
@@ -153,7 +161,7 @@ Uji regresi (`tests/`) hanya ada di repo pengembang Komunitech.
 ## Checklist sebelum menjawab
 - [ ] Angka dari script, tidak diubah; "PERLU DICEK"/"SELISIH"/"TIDAK SEIMBANG" disampaikan apa adanya
 - [ ] Menulis hanya setelah pratinjau + "ya" eksplisit
-- [ ] File jurnal yang dipakai sudah benar (baris "File:")
+- [ ] File jurnal yang dipakai sudah benar (baris "File:"); file yang disebut pengguna dipakai lewat `--jurnal`, tidak membuat buku baru tanpa konfirmasi
 - [ ] Laporan diberi keterangan: laporan manajemen, bukan audit/pajak
 - [ ] Setelah impor bank: sudah ditanyakan penjualan/biaya tunai; potongan PPh 23 dicatat bruto + diingatkan bukti potong
 - [ ] Permintaan pembukuan ganda/omzet dikecilkan ditolak

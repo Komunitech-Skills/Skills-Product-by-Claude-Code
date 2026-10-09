@@ -116,8 +116,26 @@ def parse_angka(nilai, nama="angka"):
     return -d if negatif else d
 
 
+def pola_buram(v):
+    """Angka dengan digit buram yang ditandai '?', mis. '92?.000' atau 'Rp 9.32?.000'. Kembalikan pola atau None."""
+    if not isinstance(v, str):
+        return None
+    t = re.sub(r"^\s*(?:rp|idr)\.?\s*", "", v.strip(), flags=re.IGNORECASE)
+    if "?" in t and re.search(r"\d", t) and re.fullmatch(r"[\d.,?\s]+", t):
+        return t.strip()
+    return None
+
+
+def cocok_pola(nilai, pola):
+    """True bila angka bulat `nilai` sesuai pola buram (setiap '?' = satu digit apa pun)."""
+    if nilai is None or pola is None:
+        return None
+    inti = re.sub(r"[,]\d*$", "", re.sub(r"\s", "", pola)).replace(".", "")
+    return re.fullmatch(inti.replace("?", r"\d"), str(int(nilai))) is not None
+
+
 def tidak_terbaca(v):
-    return isinstance(v, str) and v.strip().lower() in _PENANDA_TT
+    return isinstance(v, str) and (v.strip().lower() in _PENANDA_TT or pola_buram(v) is not None)
 
 
 def kosong(v):
@@ -126,10 +144,10 @@ def kosong(v):
 
 class Nilai:
     """Pembungkus nilai angka: ada (Decimal), tidak ada (None), atau tidak terbaca."""
-    __slots__ = ("angka", "tt")
+    __slots__ = ("angka", "tt", "pola")
 
-    def __init__(self, angka=None, tt=False):
-        self.angka, self.tt = angka, tt
+    def __init__(self, angka=None, tt=False, pola=None):
+        self.angka, self.tt, self.pola = angka, tt, pola
 
     @property
     def ada(self):
@@ -142,7 +160,7 @@ def baca_nilai(obj, kunci, label, catat_tt):
         return Nilai()
     if tidak_terbaca(v):
         catat_tt.append(label)
-        return Nilai(tt=True)
+        return Nilai(tt=True, pola=pola_buram(v))
     return Nilai(parse_angka(v, label))
 
 
@@ -518,7 +536,8 @@ def cek_dokumen(dok, urut, hari_ini):
             hasil.append(("info", "DPP tidak tercantum. Bila barang biasa: DPP = {} x 100/111 = {} dan PPN di "
                           "dalamnya +- {} (dihitung script, bukan dari dokumen)".format(
                               format_rp(dasar), format_rp(dpp_kira), format_rp(floor(dpp_kira * Decimal("0.11"))))))
-    elif dpp is None and not f["dpp"].tt and dasar is not None and (ppn is not None or jenis_ppn in ("umum", "mewah")):
+    elif dpp is None and not f["dpp"].tt and dasar is not None and (ppn is not None or f["ppn"].tt
+                                                                    or jenis_ppn in ("umum", "mewah")):
         dpp = dasar
         dpp_dihitung = dasar
         hasil.append(("info", "DPP tidak tertulis; dihitung script = subtotal setelah diskon {}".format(format_rp(dpp))))
@@ -555,6 +574,18 @@ def cek_dokumen(dok, urut, hari_ini):
         if dnl is not None and f["dpp_nilai_lain"].ada and not dekat(dnl, f["dpp_nilai_lain"].angka):
             hasil.append(("selisih", "DPP nilai lain tertulis {}, seharusnya 11/12 x DPP = {}".format(
                 format_rp(f["dpp_nilai_lain"].angka), format_rp(dnl.quantize(Decimal(1), ROUND_HALF_UP)))))
+    elif dpp is not None and f["ppn"].tt and not termasuk:
+        # PPN buram: jangan ditebak, tetapi isi "PPN Seharusnya" dari DPP sebagai pembanding.
+        harus, cara, _ = ppn_seharusnya(dpp, jenis_ppn or "umum", tanggal)
+        ppn_harus = harus
+        pola = f["ppn"].pola
+        ket = ""
+        if pola:
+            ket = (" — sesuai pola terbaca '{}'".format(pola) if cocok_pola(harus, pola)
+                   else " — TIDAK sesuai pola terbaca '{}' (mungkin dihitung lain; tanyakan penjual)".format(pola))
+        hasil.append(("info", "[cek: ppn] PPN tidak terbaca{} — tidak ditebak. Pembanding hitungan script: {} ({}), "
+                      "dihitung dari DPP, BUKAN dibaca dari dokumen{}. Cocokkan dengan dokumen asli.".format(
+                          " ('{}')".format(pola) if pola else "", format_rp(harus), cara, ket)))
     elif dpp is not None and ppn is None and not f["ppn"].tt and jenis in ("faktur_pajak",):
         hasil.append(("peringatan", "Faktur pajak tanpa angka PPN; cek ulang dokumen"))
 
@@ -603,6 +634,32 @@ def cek_dokumen(dok, urut, hari_ini):
             else:
                 hasil.append(("selisih", "Total tertulis {}, hitungan script {} (selisih {})".format(
                     format_rp(total), format_rp(harap), format_rp(total - harap))))
+    elif not any(f[k].tt for k in ("ppnbm", "biaya_lain", "potongan_lain")) and (f["total"].tt or f["ppn"].tt) \
+            and (dasar if dasar is not None else dpp) is not None \
+            and (termasuk or ppn is not None or ppn_harus is not None):
+        # Total dan/atau PPN buram: hitung "Total Seharusnya" dari angka yang terbaca sebagai pembanding.
+        basis = dasar if dasar is not None else dpp
+        total_harus = basis + (0 if termasuk else (ppn if ppn is not None else ppn_harus)) + \
+            (f["ppnbm"].angka or 0) + (f["biaya_lain"].angka or 0) - (f["potongan_lain"].angka or 0)
+        if f["total"].tt:
+            pola = f["total"].pola
+            ket = ""
+            if pola:
+                ket = (" — sesuai pola terbaca '{}'".format(pola) if cocok_pola(total_harus, pola)
+                       else " — TIDAK sesuai pola terbaca '{}' (cek PPh/meterai/biaya lain)".format(pola))
+            hasil.append(("info", "[cek: total] Total tidak terbaca{} — tidak ditebak. Pembanding hitungan script: {} "
+                          "(dari angka yang terbaca{}), BUKAN dibaca dari dokumen{}. Total TIDAK ikut rekap sampai "
+                          "dicocokkan.".format(" ('{}')".format(pola) if pola else "", format_rp(total_harus),
+                                               "" if ppn is not None or termasuk else " + PPN seharusnya", ket)))
+        elif total is None:
+            if jenis != "faktur_pajak":
+                hasil.append(("peringatan", "Total tidak tercantum di dokumen"))
+        elif dekat(total_harus, total):
+            hasil.append(("info", "Total tertulis {} cocok dengan DPP/subtotal + PPN hitungan script".format(
+                format_rp(total))))
+        else:
+            hasil.append(("peringatan", "Total tertulis {}, sedangkan DPP/subtotal + PPN hitungan script {}; cek "
+                          "angka PPN di dokumen".format(format_rp(total), format_rp(total_harus))))
     elif total is None and not f["total"].tt and jenis not in ("faktur_pajak",):
         hasil.append(("peringatan", "Total tidak tercantum di dokumen"))
     total_rekap = total
@@ -637,8 +694,10 @@ def cek_dokumen(dok, urut, hari_ini):
         hasil.append(("info", "Kuitansi di atas Rp5.000.000 wajib bermeterai Rp10.000 (UU 10/2020). "
                       "Pastikan meterai tertempel; bila tidak, minta penjual melengkapi."))
 
+    pola_tt = OrderedDict((k, f[k].pola) for k in f if f[k].tt and f[k].pola)
     for k in tt:
-        hasil.append(("tidak_terbaca", "Kolom '{}' tidak terbaca — tidak ditebak, mohon dicek dari dokumen asli".format(k)))
+        hasil.append(("tidak_terbaca", "[cek: {}] Kolom '{}' tidak terbaca{} — tidak ditebak, mohon dicek dari dokumen "
+                      "asli".format(k, k, " (terlihat '{}')".format(pola_tt[k]) if k in pola_tt else "")))
 
     level = {h[0] for h in hasil}
     if "selisih" in level:
@@ -676,6 +735,7 @@ def cek_dokumen(dok, urut, hari_ini):
         ("status_cek", status),
         ("hasil_cek", [OrderedDict([("level", h[0]), ("pesan", h[1])]) for h in hasil]),
         ("kolom_tidak_terbaca", tt),
+        ("pola_buram", pola_tt),
     ])
     return rapi
 
@@ -863,7 +923,8 @@ def ke_csv(docs, mode, pemisah, desimal, id_polos):
         for i, d in enumerate(docs, 1):
             w.writerow([i, d["id"], d["tanggal"] or "", d["jenis"], _id_csv(d["nomor"] or d["nsfp"], id_polos), d["penjual"]["nama"] or "",
                         _id_csv(d["penjual"]["npwp"], id_polos), d["pembeli"]["nama"] or "", d["kategori"]] +
-                       [_angka_csv(d[k], desimal) for k in ("subtotal", "diskon", "dpp", "ppn", "pph", "biaya_lain",
+                       [("[cek: {}]".format(d.get("pola_buram", {})[k]) if k in (d.get("pola_buram") or {})
+                         else _angka_csv(d[k], desimal)) for k in ("subtotal", "diskon", "dpp", "ppn", "pph", "biaya_lain",
                                                              "total", "subtotal_dihitung", "dpp_dihitung",
                                                              "ppn_seharusnya", "total_seharusnya", "total_rekap")] +
                        ["ya" if d["ikut_rekap"] else "tidak", d["jatuh_tempo"] or "",

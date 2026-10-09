@@ -49,6 +49,19 @@ class TestTanggal(unittest.TestCase):
         self.assertEqual(d, date(2026, 2, 28))
         self.assertIsNotNone(cat)
 
+    def test_bulan_lagi_tahun_kabisat(self):
+        # 29 Jan 2028 + 1 bulan -> 2028 kabisat, Februari PUNYA tanggal 29 -> tidak boleh turun ke 28.
+        d, cat = pp.parse_tanggal("1 bulan lagi", date(2028, 1, 29))
+        self.assertEqual(d, date(2028, 2, 29))
+        self.assertIsNone(cat)  # tanggal asli tetap terpakai, tidak ada penyesuaian
+        # Tahun BUKAN kabisat: tetap turun ke 28 seperti sebelumnya.
+        d2, cat2 = pp.parse_tanggal("1 bulan lagi", date(2029, 1, 29))
+        self.assertEqual(d2, date(2029, 2, 28))
+        self.assertIsNotNone(cat2)
+        # 30 Apr + 10 bulan -> Februari 2027 (bukan kabisat): turun ke 28.
+        d3, _ = pp.parse_tanggal("10 bulan lagi", date(2026, 4, 30))
+        self.assertEqual(d3, date(2027, 2, 28))
+
     def test_nama_hari(self):
         # ACUAN = Sabtu 26 Sep 2026
         self.assertEqual(self.t("Senin"), date(2026, 9, 28))
@@ -89,6 +102,27 @@ class TestValidasiIsi(unittest.TestCase):
     def test_jenis_umum_lolos(self):
         for kata in ("kontrol", "vaksin", "cabut jahitan", "cek gigi", "vaksin hewan", "groom", "sunat"):
             self.assertTrue(pp.rapikan_jenis(kata))
+
+    def test_nama_vaksin_lolos_berkonteks_vaksin(self):
+        # Temuan TINGGI uji Akun B 2026-09-26: nama vaksin/imunisasi harus tetap boleh dicatat.
+        for kata in ("imunisasi campak", "vaksin rabies", "vaksin MR", "imunisasi difteri (DPT)",
+                     "vaksinasi tetanus", "booster covid", "suntik rabies", "vaksin hepatitis B",
+                     "imunisasi polio"):
+            self.assertTrue(pp.rapikan_jenis(kata), kata)
+
+    def test_nama_vaksin_tetap_ditolak_bila_bernada_diagnosis(self):
+        for kata in ("riwayat campak", "kena difteri", "positif rabies", "didiagnosis tbc",
+                      "hasil lab campak", "menderita hepatitis", "sakit campak"):
+            with self.assertRaises(pp.Gagal, msg=kata):
+                pp.rapikan_jenis(kata)
+
+    def test_diagnosis_umum_diluar_daftar_lama_ditolak(self):
+        # Temuan SEDANG uji Akun B 2026-09-26: celah blocklist untuk penyakit umum sehari-hari.
+        for kata in ("kontrol batu ginjal", "cek asma", "kontrol maag", "pasca usus buntu",
+                     "kontrol vertigo", "kontrol katarak", "cek amandel", "kontrol wasir",
+                     "cek anemia", "kontrol migrain", "kontrol hernia", "cek tiroid"):
+            with self.assertRaises(pp.Gagal, msg=kata):
+                pp.rapikan_jenis(kata)
 
     def test_data_pribadi_ditolak(self):
         with self.assertRaises(pp.DataPribadi):
@@ -147,10 +181,23 @@ class TestCLI(unittest.TestCase):
         r = self.jalan("draf", "--id", "1", cek=False)
         self.assertEqual(r.returncode, 1)
 
-    def test_jenis_diagnosis_ditolak_exit_2(self):
+    def test_jenis_diagnosis_ditolak_exit_1(self):
+        # v1.0.2: nama uji & docstring script diperbaiki -- diagnosis pakai kode keluar 1
+        # (error input biasa via Gagal), BUKAN kode 2 (khusus data pribadi pihak lain/DataPribadi).
         r = self.jalan("tambah", "--nama", "Rina", "--wa", "0812-3333-4444", "--jenis", "kontrol tumor",
                         "--tanggal", "besok", "--persetujuan", "ya", cek=False)
         self.assertEqual(r.returncode, 1)
+
+    def test_jenis_imunisasi_campak_diterima(self):
+        # Regresi temuan TINGGI uji Akun B: "imunisasi campak" harus bisa dicatat lewat CLI.
+        d, _ = self.baca("tambah", "--nama", "Adik Rara", "--wa", "0812-3333-4444",
+                          "--jenis", "imunisasi campak", "--tanggal", "besok", "--persetujuan", "ya")
+        self.assertTrue(d["ok"])
+
+    def test_jenis_vaksin_rabies_diterima(self):
+        d, _ = self.baca("tambah", "--nama", "Kucing Mimi", "--wa", "0812-3333-4444",
+                          "--jenis", "vaksin rabies", "--tanggal", "besok", "--persetujuan", "ya")
+        self.assertTrue(d["ok"])
 
     def test_nomor_hp_di_nama_ditolak_exit_2(self):
         r = self.jalan("tambah", "--nama", "0812-9999-8888", "--wa", "0812-1111-2222", "--jenis", "kontrol",
@@ -249,6 +296,67 @@ class TestCLI(unittest.TestCase):
         r = self.jalan("tambah", "--nama", "Bu Sari", "--wa", "0812-0000-1111", "--jenis", "kontrol",
                         "--tanggal", "besok", cek=False)
         self.assertNotEqual(r.returncode, 0)  # argparse menolak (--persetujuan wajib)
+
+
+
+class UjiPosisiOpsiUmum(unittest.TestCase):
+    """Regresi uji OpenClaw 2026-10-01: `<perintah> [opsi] --json` (sintaks di SKILL.md) gagal rc=2."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="uji-pasien-")
+        self.file = os.path.join(self.tmp, "DAFTAR.csv")
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def jalan(self, argv):
+        return subprocess.run([sys.executable, SCRIPT] + argv, capture_output=True, text=True, timeout=60)
+
+    def test_json_dan_file_setelah_perintah(self):
+        r = self.jalan(["tambah", "--nama", "Bu Sari", "--wa", "0812-0000-1111", "--jenis", "kontrol",
+                        "--tanggal", "besok", "--persetujuan", "ya", "--file", self.file,
+                        "--hari-ini", "2026-09-26", "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertTrue(json.loads(r.stdout)["ok"])
+        r = self.jalan(["daftar", "--kapan", "besok", "--file", self.file, "--hari-ini", "2026-09-26", "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("Bu Sari", json.loads(r.stdout)["teks"])
+
+    def test_posisi_lama_tetap_jalan_dan_tidak_tertimpa(self):
+        r = self.jalan(["--file", self.file, "--hari-ini", "2026-09-26", "--json", "tambah", "--nama", "Bu Sari",
+                        "--wa", "0812-0000-1111", "--jenis", "kontrol", "--tanggal", "besok", "--persetujuan", "ya"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertTrue(os.path.exists(self.file))
+        json.loads(r.stdout)
+        # campuran: --file di depan, --json di belakang
+        r = self.jalan(["--file", self.file, "--hari-ini", "2026-09-26", "info", "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        json.loads(r.stdout)
+        # tanpa --json di posisi mana pun -> teks, bukan JSON
+        r = self.jalan(["--file", self.file, "info"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertFalse(r.stdout.lstrip().startswith("{"))
+
+    def test_contoh_sintaks_skill_md(self):
+        # Contoh persis dari SKILL.md bagian "Cara menjalankan script"
+        r = self.jalan(["ringkasan", "--samarkan", "--file", self.file, "--json"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        json.loads(r.stdout)
+
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "pengingat_pasien.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["--file", os.path.join(t, "p.csv"), "hapus", "--id", "1", "--y"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+            self.assertFalse(os.path.exists(os.path.join(t, "p.csv")), "singkatan flag tidak boleh menulis apa pun")
 
 
 if __name__ == "__main__":

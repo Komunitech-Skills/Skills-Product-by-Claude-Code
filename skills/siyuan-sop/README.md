@@ -37,7 +37,7 @@ Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
 - "Gabungkan semua FAQ toko jadi satu file untuk agen CS"
 
 ## Instalasi singkat
-1. **Pasang SiYuan** (gratis) dan amankan sesuai `docs/panduan-siyuan.md` di paket - **wajib** dibaca sebelum dipakai (matikan "network serving", set kata sandi kunci layar, ambil token API). ±10 menit.
+1. **Pasang SiYuan** (gratis) dan amankan sesuai `references/panduan-siyuan.md` di paket - **wajib** dibaca sebelum dipakai (matikan "network serving", set kata sandi kunci layar, ambil token API). ±10 menit.
 2. Salin folder `siyuan-sop` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
@@ -61,7 +61,10 @@ Tidak oleh skill ini. Script hanya berbicara dengan SiYuan di komputer Anda (`12
 Tidak: membuat dokumen baru di path yang sudah terisi akan **ditolak** kecuali Anda memberi izin eksplisit (`--timpa` + konfirmasi "ya"), dan menambah isi (`tambah`) tidak pernah menghapus isi lama.
 
 **Apakah SiYuan aman?**
-SiYuan software sumber terbuka yang cukup populer dan aktif dikembangkan. Komunitech mengaudit celah keamanan yang diketahui sebelum merilis skill ini (lihat `research/sources/siyuan-2026-09-26.md`) - kesimpulannya aman dipakai **selama** mengikuti panduan keamanan di `docs/panduan-siyuan.md` (jangan buka ke internet, jangan pasang plugin pihak ketiga, jangan aktifkan fitur "Publish").
+SiYuan software sumber terbuka yang cukup populer dan aktif dikembangkan. Komunitech mengaudit celah keamanan yang diketahui sebelum merilis skill ini (lihat `research/sources/siyuan-2026-09-26.md`) - kesimpulannya aman dipakai **selama** mengikuti panduan keamanan di `references/panduan-siyuan.md` (jangan buka ke internet, jangan pasang plugin pihak ketiga, jangan aktifkan fitur "Publish").
+
+## Riwayat versi
+- **1.0.10 (2026-10-02)** — dari uji regresi OpenClaw v1.0.9 (temuan rendah): cadangan isi lama saat menimpa dokumen kini disimpan di folder data Anda `~/KomunitechData/siyuan/cadangan/` (di luar folder skill, konsisten dengan skill Komunitech lain) sehingga tidak ikut terhapus saat skill diperbarui; sebelumnya bisa tersimpan di dalam folder skill. Script mencetak path lengkap berkas cadangan dan pratinjau timpa menyebut foldernya. Folder bisa diubah dengan `--cadangan-dir` atau ENV `KOMUNITECH_SIYUAN_CADANGAN`/`KOMUNITECH_DATA`. Tes unit ditambah (52 tes).
 
 ---
 Komunitech tidak berafiliasi dengan proyek SiYuan/b3log; SiYuan adalah merek milik pemiliknya.

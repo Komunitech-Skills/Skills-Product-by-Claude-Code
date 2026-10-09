@@ -1,0 +1,92 @@
+# Odoo Usaha: Tanya Odoo Lewat Chat, Laporan Tiap Malam
+
+**Tanya "penjualan hari ini berapa?", "siapa yang belum bayar?", atau "stok apa yang mau habis?" — AI Anda langsung membaca Odoo milik usaha Anda dan menjawab dengan angka yang dihitung, bukan dikira. Laporan harian bisa dikirim otomatis ke Telegram pemilik, dan penawaran (quotation) bisa disiapkan sebagai draf tanpa membuka menu Odoo.**
+
+> Komunitech **tidak berafiliasi** dengan Odoo S.A. Odoo adalah software milik Odoo S.A. (edisi Community berlisensi LGPL-3.0). Skill dan panduan ini adalah karya orisinal Komunitech yang memakai **API eksternal resmi** Odoo milik Anda sendiri. Odoo tidak disertakan dalam paket.
+
+> **Status jujur (v1.0.1, 30 Sep 2026):** sudah diuji ke **Odoo Community 18 & 19 asli** (dijalankan lokal dengan data uji fiktif) oleh penguji independen, plus 51 uji otomatis. **Belum** diuji ke Odoo Online (*.odoo.com), Enterprise, atau Odoo 16/17/20, maupun data usaha sungguhan. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda. Bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
+
+## Manfaat
+- ✅ **Tanpa buka banyak menu.** Penjualan hari ini vs kemarin, produk terlaris, faktur terbit, piutang per umur, dan stok kritis — cukup satu kalimat biasa.
+- ✅ **Tahu siapa yang harus ditagih hari ini.** Piutang dikelompokkan (belum jatuh tempo, 1–30, 31–60, 61–90, >90 hari), faktur terlama di atas, nota kredit yang belum dipakai ikut diingatkan.
+- ✅ **Belanja stok tepat jumlah.** Memakai aturan stok minimum Odoo Anda sendiri: mana yang minus/habis/menipis dan berapa saran jumlah pesannya.
+- ✅ **Laporan tiap malam di Telegram** (lewat OpenClaw), dengan **nama pelanggan disamarkan** — aman walau HP dipinjam orang.
+- ✅ **Penawaran cepat tapi tetap aman.** AI menyiapkan **draf** quotation, menunjukkan pratinjau dan hitungan PPN (standar 12% × DPP 11/12), baru menyimpan setelah Anda jawab "ya". Mengirim/mengonfirmasi tetap Anda yang klik.
+
+## Cocok untuk siapa
+- Usaha **mapan** (distributor, grosir, F&B multi-cabang, manufaktur ringan, jasa B2B) yang **sudah memakai Odoo** — self-host di server kantor/VPS, atau **Odoo Online paket Custom**.
+- Pemilik yang ingin ringkasan harian tanpa login ke Odoo, dan admin penjualan yang sering membuat penawaran.
+
+**Kurang cocok:** belum punya Odoo (pakai `dolibarr-usaha` atau `frappe-books-usaha` yang lebih ringan, atau minta **jasa setup Komunitech**); **Odoo Online paket One App Free/Standard** (Odoo tidak membuka API di paket itu); yang ingin AI mengonfirmasi pesanan, memposting faktur, atau menagih pelanggan otomatis (sengaja tidak didukung).
+
+## Contoh sebelum & sesudah
+**Sebelum (tanpa skill):** AI hanya bisa menjelaskan cara membuka menu laporan Odoo, atau menulis kode API yang harus Anda jalankan sendiri — tanpa membaca data Anda, tanpa pengaman sebelum menulis.
+
+**Sesudah:** ketik *"Laporan harian Odoo"*
+```
+LAPORAN HARIAN ODOO
+Rabu, 30 September 2026
+
+PENJUALAN
+Pesanan terkonfirmasi: 3, total Rp 1.917.352,95 (+28,0% vs kemarin)
+Faktur diposting: 2 (+1 nota kredit), total Rp 1.717.552,95
+
+PIUTANG (per 2026-09-30)
+Belum lunas: 7 faktur, Rp 11.424.502,95
+Lewat jatuh tempo: 4 faktur, Rp 8.658.000
+- INV/2026/00170 (H.M.I.) sisa Rp 5.661.000, lewat 103 hari
+
+STOK
+- [SRP-VNL] Sirup Vanila 750ml: -2 (MINUS)
+- [GA-1KG] Gula Aren Cair 1kg: 8 (MENIPIS)
+```
+Ketik *"Buatkan penawaran untuk CV Maju Jaya: kopi robusta 3, gula aren 2 harga 32.500"* → AI menampilkan pratinjau (DPP Rp 332.345, perkiraan PPN Rp 36.557), menunggu "ya", lalu:
+```
+TERSIMPAN: S00108 (ID 108), status DRAF/Penawaran
+Menurut Odoo: sebelum pajak Rp 332.345 | pajak Rp 36.557,95 | total Rp 368.902,95
+Sebelum pajak: COCOK
+Pajak: COCOK
+```
+(Contoh dari server Odoo tiruan dengan data fiktif — lihat `examples/`.)
+
+## Cara pakai
+Setelah tersambung, cukup ketik:
+- "Cek Odoo saya sudah nyambung belum"
+- "Penjualan hari ini berapa? Produk apa yang paling laku?"
+- "Siapa yang belum bayar? Yang paling telat siapa?"
+- "Stok apa yang perlu dibeli?"
+- "Buatkan penawaran untuk [pelanggan]: [barang] [jumlah] ..."
+- "Kirim laporan harian Odoo ke Telegram saya tiap jam 9 malam" (OpenClaw)
+
+## Instalasi singkat
+1. **Odoo** sudah berjalan (versi 16–20; self-host atau Odoo Online paket Custom). Buat **pengguna khusus** untuk AI + **kunci API** — langkah lengkap di `docs/panduan-odoo.md` (atau pakai **jasa setup Komunitech**).
+2. Salin folder `odoo-usaha` ke folder skills AI agent:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+(Rincian & verifikasi lokasi ada di `docs/instalasi.md`.)
+
+3. Di terminal Anda sendiri (bukan di chat), simpan alamat lalu kunci:
+   `python3 ~/.openclaw/skills/odoo-usaha/scripts/odoo.py atur --url https://tokosaya.odoo.com`
+   `python3 ~/.openclaw/skills/odoo-usaha/scripts/odoo.py simpan-kunci` (Windows: `python` / `py`).
+4. Coba: "Cek Odoo saya sudah nyambung belum?"
+
+## FAQ
+**Apakah data usaha saya dikirim ke Komunitech?**
+Tidak. Script hanya menghubungi Odoo **milik Anda** (komputer ini, `*.odoo.com`, atau server yang Anda daftarkan sendiri). Tidak ada data ke Komunitech; laporan ke Telegram hanya bila Anda sendiri mengaturnya. Kunci API disimpan di komputer Anda dengan izin khusus pemilik dan tidak pernah ditampilkan.
+
+**Bisakah AI salah mengubah atau menghapus data Odoo saya?**
+Skill ini hanya membaca, dan satu-satunya yang bisa ditulis adalah **draf penawaran** — itu pun selalu pratinjau dulu dan menunggu jawaban "ya". Tidak ada perintah hapus, konfirmasi pesanan, posting faktur, atau pembayaran; script menolak semua itu bahkan bila kuncinya milik administrator (sudah diuji). Catatan jujur: Odoo sendiri tidak punya peran Penjualan yang "hanya bisa melihat", jadi pakai pengguna khusus AI dengan hak secukupnya (bukan administrator) agar kerusakan terbatas bila kunci bocor — lihat `docs/panduan-odoo.md` §5.
+
+**Odoo saya versi baru/lama, apakah jalan?**
+Dirancang untuk Odoo 16–20: Odoo 19 ke atas memakai API JSON-2 yang baru, Odoo 16–18 memakai XML-RPC (dipilih otomatis). Sudah diuji ke Odoo Community 18 & 19; versi lain dan Odoo Online (harus **paket Custom** agar API aktif) belum diuji, jadi cocokkan angka pertama kali dengan layar Odoo Anda.
+
+## Riwayat versi
+- **1.0.2 (30 Sep 2026)** — panduan §5: sisa saran hak akses versi lama (Billing/Own Documents) dihapus; hanya satu tabel hak akses.
+- **1.0.1 (30 Sep 2026)** — perbaikan dari uji ke Odoo Community 18 & 19 asli: (1) hak *Own Documents* tidak lagi menghasilkan angka penjualan/faktur kecil (bisa Rp 0) diam-diam — `cek` menampilkan cakupan data, laporan memberi **PERINGATAN DATA SEBAGIAN** + kode 9 (`--terima-sebagian` bila memang disengaja); (2) `piutang --per-tanggal` di masa lalu tidak lagi memasukkan faktur yang belum terbit dan memperhitungkan pelunasan setelah tanggal itu; (3) panduan hak pengguna diperbaiki secara jujur (Odoo tidak punya peran Penjualan baca-saja; pengaman tulis ada di script); (4) keterangan "barang masuk terjadwal" di stok menipis; (5) ENV `ODOO_HOST_DIIZINKAN` dihapus (host hanya lewat `atur --izinkan-host`).
+- **1.0.0 (30 Sep 2026)** — rilis awal.

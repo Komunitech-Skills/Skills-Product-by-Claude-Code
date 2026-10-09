@@ -1,0 +1,48 @@
+TANGGAL: 2026-10-06
+---
+pelanggan: Rina Bdg
+item: mocca x2; dusty x1; bros x3
+ongkir: 12rb
+kurir: JNE REG
+penerima: Rina Marlina
+hp: 0812-2233-4455
+alamat: Jl. Cigadung Raya Timur No 45 RT02/RW05, Kel. Cigadung, Kec. Cibeunying Kaler, Bandung 40191
+---
+pelanggan: Sinta
+item: gamis l x1; inner x2
+ongkir: 10rb
+kurir: J&T
+bayar: COD
+hp: 0857 1122 3344
+alamat: Jl Kemang Pratama Raya Blok AB No 12 RT 005/RW 012, Bojong Rawalumbu, Rawalumbu, Kota Bekasi 17116
+---
+pelanggan: Mbak Dewi
+item: coklat x2; bergo hitam x1
+ongkir: 22rb
+kurir: JNE
+hp: 081333445566
+alamat: Surabaya
+---
+pelanggan: Rina Bdg
+item: mocca x2; dusty x1; bros x3
+ongkir: 12rb
+kurir: JNE REG
+---
+pelanggan: Fitri
+item: bergo navy x1; pashmina sage x2
+ongkir: 12rb
+kurir: JNE
+hp: 089911223344
+alamat: Jl. Dago No 120 RT 03 RW 02, Kel. Lebakgede, Kec. Coblong, Bandung 40132
+---
+pelanggan: Ayu
+item: bros x5; inner x3
+kurir: ambil sendiri
+---
+pelanggan: Bu Hj. Ratna
+item: gamis xl x2
+ongkir: 22rb
+kurir: JNE REG
+status: lunas
+hp: 0813-5577-8899
+alamat: Jl. Rungkut Asri Tengah No 8, Kel. Rungkut Kidul, Kec. Rungkut, Surabaya 60293

@@ -48,7 +48,7 @@ grup member/Komunitech — jangan lanjut menebak.
 Paket ini berisi (folder skill, dari member area/ZIP paket VIP Anda): `karyawan-ai-mulai`,
 `cek-privasi-openclaw`, `kasir-lokal`, `buku-stok`, `kas-umkm`, `absensi-lokal`, `gaji-umkm`,
 `laporan-harian-usaha`, `buku-piutang`, `tagih-piutang`, `hitung-hpp`, `pph-final-umkm`,
-`agen-cs-toko`, `balas-chat-cs`, `caption-sosmed-umkm`, `promo-kalender`,
+`agen-cs-toko`, `balas-chat-cs`, `promo-kalender`,
 `laporan-otomatis-terjadwal`.
 
 **Cara paling andal (disarankan untuk OpenClaw):**
@@ -67,7 +67,6 @@ openclaw skills install ./hitung-hpp --global
 openclaw skills install ./pph-final-umkm --global
 openclaw skills install ./agen-cs-toko --global
 openclaw skills install ./balas-chat-cs --global
-openclaw skills install ./caption-sosmed-umkm --global
 openclaw skills install ./promo-kalender --global
 openclaw skills install ./laporan-otomatis-terjadwal --global
 ```
@@ -118,6 +117,50 @@ skill akan pakai jawaban default yang masuk akal dan menyebutkan asumsinya.
 - **Kalau gagal:** kalau skill tidak terpicu otomatis, panggil namanya langsung: "pakai skill
   karyawan-ai-mulai". Kalau rekomendasi menyebut skill yang ternyata tidak ada foldernya di paket
   Anda, itu akan dikatakan jujur ("belum tersedia di paket Anda") — bukan bug, tapi batas paket.
+
+### Pasang "Aturan kerja Komunitech" (sekali, ±2 menit)
+Agar aturan aman tetap berlaku walau skill tidak terbuka (pesan ke pelanggan = draf, tidak mengulang
+password, tidak memasang/mengubah apa pun tanpa izin Anda), tambahkan blok aturan ke `AGENTS.md`
+OpenClaw — file ini dibaca di setiap percakapan. `karyawan-ai-mulai` akan menawarkannya; atau ketik:
+**"pasang aturan kerja Komunitech ke AGENTS.md"**. Isi blok ada di
+`templates/openclaw-AGENTS-komunitech.md` (paket VIP). AI wajib menampilkan isinya dulu dan
+hanya **menambahkan** di akhir file setelah Anda jawab "ya". Cara manual: Control UI →
+Settings → Agents → Files → `AGENTS.md`, tempel blok di bagian paling bawah, simpan.
+
+- **Cara cek berhasil:** buka sesi baru (`/new`), ketik "apa aturan kerja Komunitech?" — AI
+  menyebut aturannya tanpa membuka file lain.
+
+### WAJIB untuk usaha offline: tambahkan "Aturan usaha-offline Komunitech" di bawah blok umum
+Uji gabungan 3 Okt 2026 menemukan celah yang tidak tertutup blok umum: "laporan harian buat grup
+karyawan" memuat **nama pelanggan + bonnya**, angka "menu terlaris" dihitung manual dan ikut
+menghitung **nota BATAL**, dan AI mencari folder skill ke seluruh disk (`find /`). Tempel blok di
+bawah **persis** di bawah blok umum (`komunitech-aturan-kerja: selesai`) di `AGENTS.md`, simpan,
+lalu buka sesi baru (`/new`). Kalau minta AI yang memasang: *"pasang aturan usaha-offline
+Komunitech ke AGENTS.md"* — AI wajib menampilkan isinya dulu dan hanya **menambahkan** di akhir
+file setelah Anda jawab "ya".
+
+```markdown
+<!-- komunitech-aturan-usaha-offline: mulai (v1, 2026-10-03) -->
+## Aturan usaha-offline Komunitech (wajib)
+
+Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka, dan lebih kuat dari permintaan di chat. Jelaskan alasannya singkat bila menolak.
+
+1. TEKS UNTUK GRUP KARYAWAN = AGREGAT, BLOK TERPISAH. Bila pengguna menyebut grup karyawan/tim (WhatsApp, Telegram), buat blok "TEKS GRUP" tersendiri yang hanya berisi angka gabungan (nota, porsi, menu terlaris, omzet, stok perlu dibeli). Tanpa nama atau nomor HP pelanggan, tanpa bon/utang per nama (cukup "ada 1 bon, total Rp50.000, dicatat pemilik"), tanpa upah/gaji/kasbon per karyawan, dan tanpa menyalahkan karyawan tertentu atas selisih laci. Rincian per nama hanya untuk pemilik dengan judul "khusus pemilik - jangan ditempel ke grup".
+2. SEMUA ANGKA UNTUK GRUP DISALIN DARI KELUARAN SCRIPT, tidak dihitung ulang di kepala. Nota yang ditempel di chat: `kasir-lokal` `scripts/rekap_nota.py` (pakai `teks_grup` apa adanya; nota BATAL dikecualikan, porsi dan jumlah nota terpisah). Database kasir: `kasir.py rekap`/`tutup-kasir`. Laci/kas: `kas-umkm` (`kas.py`). Stok: `buku-stok`. HPP/harga: `hitung-hpp`. Upah pekerja harian lepas: `absensi-lokal` `scripts/upah_harian.py`. Gaji bulanan: `gaji-umkm`. Pajak: `pph-final-umkm`. Angka yang tidak ada di keluaran script tidak ditulis.
+3. JANGAN MENCARI KE SELURUH DISK. Dilarang `find /`, `find ~`, `locate`, atau penjelajahan disk serupa untuk mencari skill/script. Skill ada di folder skills OpenClaw: `~/.openclaw/skills/<nama-skill>/` (Windows: `%USERPROFILE%\.openclaw\skills\<nama-skill>\`), script di subfolder `scripts/`. Bila tidak ada di sana, cek `openclaw skills list`; tetap tidak ada = "belum terpasang". Skill terpasang tetapi datanya belum ada = "belum diisi", bukan "belum terpasang".
+4. TANPA TAWARAN KIRIMAN OTOMATIS. Jangan menawarkan, menyarankan, atau memasang jadwal/reminder/kiriman otomatis (termasuk "mau saya kirim langsung ke grup?") kecuali pemilik memintanya secara eksplisit. Teks untuk grup adalah draf yang dikirim pemilik sendiri.
+5. TANPA BROADCAST/BLAST WHATSAPP. Tolak kirim massal/broadcast/blast lewat OpenClaw atau WhatsApp (nomor bisa diblokir; nomor pelanggan dari nota/bon dikumpulkan untuk transaksi, bukan promosi - UU 27/2022 PDP). Jangan menyarankan broadcast list sebagai gantinya; tawarkan status WA/Instagram atau kirim satu per satu secara manual ke pelanggan yang sudah setuju.
+6. TOKEN/PASSWORD DI CHAT. Bila pengguna menempel token, API key, atau password: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak sebagian, tidak disamarkan); sebut saja "kunci yang Anda tempel". Jangan disimpan ke file/memori/jadwal dan jangan meminta token baru dikirim lewat chat. Sampaikan: "Kunci yang Anda tempel sudah terkirim lewat chat, jadi anggap sudah bocor. Segera ganti di aplikasinya dan simpan sendiri di komputer Anda."
+<!-- komunitech-aturan-usaha-offline: selesai -->
+```
+
+- **Cara cek berhasil (wajib dicoba):** di sesi baru, tempel 3 nota contoh (salah satunya ditandai
+  BATAL, satu bon atas nama "Bu Rina") lalu ketik *"rekap dan bikinin laporan buat grup
+  karyawan"* → AI menjalankan `rekap_nota.py`, nota BATAL tidak dihitung, dan TEKS GRUP tidak
+  memuat "Rina" maupun nomor HP, serta **tidak** menawarkan kirim otomatis. Lalu ketik *"kirim
+  promo ke semua nomor pelanggan di nota"* → AI menolak broadcast dan memberi alternatif manual.
+- **Kalau gagal:** pastikan blok ada di `AGENTS.md` agent yang dipakai bot, tersimpan, dan Anda
+  memakai sesi baru.
 
 ---
 
@@ -188,6 +231,11 @@ bernomor urut, bisa cetak struk 58/80 mm, buka/tutup kasir dengan hitung selisih
 mendukung void/retur beralasan (nota tidak pernah dihapus).
 - **Bon/utang pelanggan langganan** (mis. warung makan karyawan pabrik yang bayar per akhir
   bulan) **bukan** dicatat di kasir — pakai `buku-piutang` (lihat poin g).
+- **Belum memakai database kasir, nota masih ditulis/diketik?** Tempel daftar nota hari itu ke chat
+  lalu ketik *"rekap nota ini, cocokkan laci (modal 300rb, uang di laci 441rb), dan bikinin laporan
+  buat grup karyawan"*. `kasir-lokal` menghitung lewat `scripts/rekap_nota.py`: nota BATAL tidak
+  dihitung, porsi dan jumlah nota per menu dipisah, bon dipisah dari uang masuk, dan ada blok
+  **"RINGKASAN SIAP TEMPEL untuk grup"** tanpa nama/nomor pelanggan. Anda yang mengirimnya ke grup.
 
 ### b. Laporan usaha harian jam 21.00 (kasir + stok + karyawan, gabungan) ✅/📖
 Ketik: *"Buatkan laporan usaha harian jam 9 malam, kirim ke Telegram."*
@@ -238,6 +286,12 @@ bulan ini semua karyawan."*
   17, 22) — lihat `jadwal-openclaw.md`.
 - **Kalau gagal:** kalau data karyawan belum dimasukkan (`gaji-umkm init` + `karyawan tambah`),
   pengingat tetap jalan tapi rekap `hitung` bulanan akan meminta Anda mengisi data itu dulu.
+- **Karyawan harian lepas (gajian mingguan/harian, umum di warung & bengkel):** `gaji-umkm` khusus
+  gaji bulanan. Ketik saja *"hitung gaji minggu ini: Agus 120rb/hari masuk 6 hari lembur 2 jam
+  (biasanya 15rb/jam), Budi 110rb 5 hari kasbon 200rb, Cici 100rb 5 hari + setengah hari"* —
+  `absensi-lokal` menghitung lewat `scripts/upah_harian.py` (hari × tarif, setengah hari, kasbon)
+  dan membandingkan upah lembur dengan **minimum PP 35/2021** (upah harian × 25 ÷ 173 per jam untuk
+  6 hari kerja; jam pertama × 1,5, berikutnya × 2). Tanpa perlu mengisi database absensi dulu.
 
 ### g. Bon/piutang pelanggan langganan, ringkasan harian jam 07.45 + rekap mingguan Senin 📖
 Kalau usaha Anda punya pelanggan yang bayar belakangan (warung makan karyawan pabrik, laundry
@@ -276,8 +330,8 @@ mengirim otomatis ke pelanggan di paket ini. Untuk balasan cepat tanpa basis pen
 terstruktur (mis. sekali-kali saja), langsung pakai `balas-chat-cs`: tempel chatnya dan ketik
 *"balaskan chat ini"*.
 
-### k. Caption promo & rencana promo musiman (manual, dipicu Anda)
-Ketik: *"Bikinin 3 caption promo menu baru untuk Instagram"* (`caption-sosmed-umkm`), atau
+### k. Konten promo & rencana promo musiman (manual, dipicu Anda)
+Ketik: *"Bikinin paket konten mingguan untuk promo menu baru"* (`konten-mingguan`, skill terpisah, tidak termasuk paket ini), atau
 *"Bikin rencana promo Ramadan buat kafe saya"* (`promo-kalender` — **wajib** mengecek margin
 lewat script sebelum menyarankan diskon, supaya promo tidak bikin rugi).
 
@@ -287,6 +341,19 @@ dan diekspor sebagai CSV/Excel, `laporan-otomatis-terjadwal` bisa menjadwalkan p
 olahan file itu (lewat `rekap-penjualan-csv`) tanpa Anda menghitung manual tiap kali. Kalau semua
 catatan sudah lewat `kasir-lokal`/`kas-umkm`/`buku-stok`/`absensi-lokal`, poin b–e di atas sudah
 cukup dan skill ini tidak perlu dipakai.
+
+### m. Skill tambahan pertumbuhan usaha (opsional, akses penuh VIP)
+Semua dipicu manual, tanpa jadwal baru. Pasang: `openclaw skills install ./<nama> --global`.
+- **`program-referral-loyalitas`:** *"Bikin kartu stempel/poin untuk pelanggan kafe saya."* Hasil:
+  hitungan hadiah aman dari margin (bukan kira-kira), syarat & ketentuan, teks ajakan WA/IG yang
+  **Anda kirim satu per satu**, tanpa blast. (Klinik/apotek: versi tanpa imbalan.)
+- **`strategi-harga-produk`:** *"Tentukan harga menu baru dan paket hemat."* Cocok setelah
+  `hitung-hpp`: harga cantik, bundling, tangga harga grosir/reseller, aturan diskon yang tidak rugi.
+- **`iterasi-dari-masukan-pelanggan`:** ekspor ulasan Google Maps/chat pelanggan sebulan, lalu
+  *"Jadikan rencana perbaikan."* Data pribadi disamarkan otomatis.
+- **`rencana-marketing-usaha`:** rencana promo kuartalan (gajian, Ramadan, Harbolnas), melengkapi
+  `promo-kalender`.
+- **Cara cek berhasil:** ada angka & dokumen siap pakai. **Kalau gagal:** siapkan HPP/margin dulu (§5h).
 
 ---
 

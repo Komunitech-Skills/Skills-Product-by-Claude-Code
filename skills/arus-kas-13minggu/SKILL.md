@@ -5,6 +5,8 @@ description: Membuat proyeksi arus kas 13 minggu (cash flow forecast mingguan) u
 
 # Proyeksi Arus Kas 13 Minggu
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjawab pertanyaan pemilik usaha: **"Minggu ke berapa uang saya akan kurang, berapa kurangnya, dan apa yang bisa saya lakukan sekarang?"** Hasilnya tabel saldo per minggu, tanda bahaya, opsi tindakan beserta angka dampaknya, dan file CSV untuk Excel.
 
@@ -54,9 +56,9 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor), conto
    - `kritis`: `ya` (wajib dibayar tepat waktu) / `tidak` (bisa ditunda). Kosong → ditebak dari kata kunci. **Gaji, upah, THR, bonus karyawan, cicilan, angsuran, leasing, kredit, pajak, BPJS selalu kritis** (walau diisi `tidak`) dan tidak pernah ikut simulasi "tunda". Pos yang ditebak tidak kritis dilaporkan di `peringatan` → konfirmasi ke pengguna. Pembayaran bahan/stok ikut simulasi "termin supplier" walau kolom `kritis` kosong, karena termin adalah negosiasi, bukan menunda sepihak.
    - Beri kata **"piutang/pelunasan/tagihan"** pada penerimaan dari pelanggan, dan **"bahan/supplier/stok"** pada pembayaran pemasok, agar simulasi opsi mengenalinya.
    - Template kosong: `templates/rencana-kas.csv`.
-2. **Jalankan script** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+2. **Jalankan script.** Script `proyeksi_kas.py` ada di subfolder `scripts/` di folder yang sama dengan file SKILL.md ini (mis. di OpenClaw: `~/.openclaw/skills/arus-kas-13minggu/scripts/proyeksi_kas.py`). Pakai path itu langsung — **jangan mencari script atau file ke seluruh disk** (`find /` dsb.). Windows: `python` atau `py`:
    ```bash
-   python3 <folder-skill-ini>/scripts/proyeksi_kas.py rencana-kas.csv \
+   python3 scripts/proyeksi_kas.py rencana-kas.csv \
      --saldo-awal "Rp 20.000.000" --mulai 2026-10-05 --batas-aman "Rp 10.000.000" \
      --output-csv proyeksi-kas-13-minggu.csv
    ```
@@ -64,8 +66,10 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor), conto
    - `--pemisah ,` jika Excel pengguna berbahasa Inggris (default `;` untuk Excel berbahasa Indonesia). File selalu UTF-8 dengan BOM agar huruf tidak rusak di Excel.
    - Opsi simulasi: `--geser-piutang 2`, `--geser-supplier 2`, `--geser-nonkritis 4` (minggu).
    - Horizon lain: `--jumlah-minggu N` (4–26), mis. "sampai Lebaran" atau "sampai akhir tahun" → hitung jumlah minggu dari tanggal mulai. Judul output menyesuaikan ("Proyeksi Kas N Minggu").
-3. **Baca hasil**: `ringkasan` (minggu negatif, minggu di bawah batas, saldo terendah, tambahan dana dibutuhkan, `arus_kas_bersih`, `defisit_struktural`), `simulasi_opsi` (dampak tiap opsi + `rincian_digeser` + `saldo_setelah_kewajiban_tertunda` + `hanya_menunda`), `baris_dilewati`, `peringatan`.
+3. **Baca hasil**: `ringkasan` (minggu negatif, minggu di bawah batas, saldo terendah, tambahan dana dibutuhkan, `arus_kas_bersih`, `defisit_struktural`, `kejadian_minggu_kritis`), `per_minggu[].kejadian_teks` (pos apa saja yang jatuh di tiap minggu), `simulasi_opsi` (dampak tiap opsi + `rincian_digeser` + `saldo_setelah_kewajiban_tertunda` + `hanya_menunda`), `baris_dilewati`, `peringatan`.
 4. **Tulis jawaban** dengan format di bawah. Angka hanya dari output script.
+   - **Nomor minggu & pos penyebab wajib dikutip dari `kejadian_teks`/`kejadian_minggu_kritis`**, bukan disimpulkan sendiri. Contoh: bila `kejadian_teks` minggu 12 hanya memuat gaji & bahan, jangan menulis "cicilan jatuh di minggu 12" — cicilan disebut di minggu yang tercantum di `kejadian_teks`-nya. Sebelum mengirim, cocokkan setiap kalimat "minggu X … [pos]" dengan baris kejadian minggu X.
+   - **Pos yang ditanyakan tapi tidak dijawab pengguna** (mis. BPJS, PPh 21, THR) dan tidak ada di CSV → tulis di Asumsi: "**Belum termasuk:** [pos] (belum ada angkanya) — saldo sebenarnya bisa lebih rendah."
 5. **Susun 3–5 opsi tindakan konkret** (lihat `references/opsi-tindakan.md`), urutkan dari dampak terbesar & paling mudah. Setiap opsi wajib menyebut: siapa/pos apa, nominal, dari minggu berapa ke minggu berapa, dan hasil simulasinya. Jangan beri saran generik.
    - Opsi dengan `jatuh_setelah_horizon` > 0: selalu sebut nominal yang pindah ke setelah minggu terakhir dan `saldo_setelah_kewajiban_tertunda`.
    - Opsi berlabel **`hanya_menunda: true` DILARANG ditulis sebagai solusi**. Boleh disebut hanya sebagai "menunda masalah", dengan saldo setelah kewajiban tertunda yang negatif.
@@ -135,7 +139,9 @@ Catatan: cicilan bank Rp 4.250.000 jatuh 10 Jan 2027, 7 hari setelah minggu 13.
 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka berasal dari output script (atau fallback manual yang disebutkan).
-- [ ] Minggu negatif & di bawah batas disebut jelas beserta penyebab utamanya (pos terbesar minggu itu).
+- [ ] Minggu negatif & di bawah batas disebut jelas beserta penyebab utamanya (pos terbesar minggu itu), dikutip dari `kejadian_teks` minggu tersebut.
+- [ ] Setiap "minggu X + nama pos" di narasi cocok dengan `kejadian_teks` minggu X.
+- [ ] Pos yang ditanyakan tetapi tidak dijawab ditulis "Belum termasuk" di Asumsi.
 - [ ] 3–5 opsi, masing-masing ada nominal, minggu asal → tujuan, dan hasil simulasi.
 - [ ] Peringatan "jatuh setelah minggu 13" disampaikan beserta `saldo_setelah_kewajiban_tertunda` — menunda bukan menghapus kewajiban.
 - [ ] Tidak ada opsi berlabel `hanya_menunda` yang ditulis sebagai solusi.

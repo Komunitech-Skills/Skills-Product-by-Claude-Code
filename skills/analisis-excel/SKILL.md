@@ -5,6 +5,8 @@ description: Menganalisis file spreadsheet milik pengguna (Excel .xlsx atau CSV,
 
 # Analisis Excel & CSV untuk Awam
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pengguna awam cukup mengirim file Excel/CSV dan bertanya dengan bahasa sehari-hari; agent menjawab
 dengan **tabel siap tempel, angka yang dihitung script, narasi temuan, dan saran grafik**. Semua
@@ -52,6 +54,8 @@ nilai uangnya: Nominal atau Harga? Mau dibandingkan bulan apa dengan apa?"). Bil
 "langsung aja", pakai default di atas dan tulis asumsinya di awal jawaban.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` dengan `python` atau `py`.
 
 1. **WAJIB: jalankan `profil` dulu sebelum menyebut angka apa pun** (juga bila pengguna sudah
@@ -88,6 +92,7 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    python3 <...>/analisis.py ringkas  "<file>" [--kolom "Nominal"]
    python3 <...>/analisis.py pivot    "<file>" --grup "Kategori" --nilai "Nominal" [--fungsi jumlah|rata|median|hitung|min|max] [--kolom-pivot "Divisi"]
    python3 <...>/analisis.py pivot    "<file>" --grup "Tanggal" --per bulan --nilai "Nominal"
+   python3 <...>/analisis.py pivot    "<file>" --grup "Divisi" --nilai "Gaji Pokok+Tunjangan"   # jumlah beberapa kolom + rincian + % dari total
    python3 <...>/analisis.py tren     "<file>" --nilai "Nominal" [--tanggal "Tanggal"] [--per bulan|minggu|hari|kuartal|tahun]
    python3 <...>/analisis.py tren     "<file.xlsx>" --sheet semua --nilai "Total"      # gabung sheet Q1+Q2+Q3
    python3 <...>/analisis.py top      "<file>" --grup "Pelanggan" --nilai "Total" --n 10 [--terbawah]
@@ -143,6 +148,16 @@ Path script relatif terhadap folder SKILL.md ini. **Windows:** ganti `python3` d
    keluaran script (bagian "Temuan" sudah berisi fakta terhitung).
 5. **Tawarkan langkah lanjut** yang relevan (mis. setelah `pivot` → "mau saya lihat trennya per
    bulan?"), dan tawarkan `--keluar` bila pengguna ingin tabelnya dibuka di Excel.
+6. **File baru (`bersihkan`, `--keluar`) hanya setelah pengguna setuju:** sebutkan dulu path lengkap
+   file yang akan dibuat (mis. "Saya simpan versi bersih ke `<folder-kerja>/biaya-bersih.csv`, oke?"),
+   tulis setelah ia mengiyakan. File asli **tidak pernah** diubah/ditimpa; path `--keluar` tidak boleh
+   sama dengan file asli. Bila pengguna minta "langsung aja", tetap sebutkan path file yang dibuat, dan file yang sudah ada tidak pernah ditimpa tanpa izin.
+   **Sebelum memakai `--keluar`, cek apakah file itu sudah ada.** Bila ada, tanyakan: "File X sudah ada,
+   timpa atau simpan sebagai X-2?". Jangan menimpa tanpa jawaban tegas; "langsung aja" bukan izin
+   menimpa. `--timpa` hanya dipakai setelah pengguna setuju (tanpa `--timpa`, script menolak dengan
+   "GAGAL: File keluaran sudah ada").
+   Peringatan script seperti "rumus tanpa nilai tersimpan" disampaikan apa adanya beserta sarannya
+   (buka di Excel lalu Simpan); jangan menilai sendiri bahwa dampaknya "tidak signifikan".
 
 Bila script gagal (kode keluar 2) → baca pesan `GAGAL:` (sudah berbahasa awam), sampaikan ke
 pengguna, dan ikuti sarannya (mis. sebutkan kolom yang tersedia, minta simpan ulang file).
@@ -162,8 +177,9 @@ Excel/Google Sheets yang setara), dan katakan hasil **belum diverifikasi script*
 
 **Saran grafik:** <dari script + 1 kalimat cara buatnya di Excel/Sheets>
 
-**Perlu dicek:** <baris yang DIKELUARKAN + isinya; kemungkinan baris ringkasan + total DENGAN/TANPA
-(bila belum dikonfirmasi pengguna); lalu peringatan script lain, diringkas bahasa awam>
+**Perlu dicek:** <WAJIB SELALU ADA. Salin dari bagian "Perlu dicek" keluaran script: baris yang
+DIKELUARKAN + isinya; kemungkinan baris ringkasan + total DENGAN/TANPA (bila belum dikonfirmasi);
+kategori yang digabung; peringatan lain, diringkas bahasa awam. Bila script menulis "tidak ada", tulis "tidak ada".>
 (Asumsi: <kolom/sheet/periode yang dipakai>) — File hasil: <nama CSV bila --keluar>
 ```
 Template lengkap: `templates/laporan-analisis.md`. Angka rupiah pakai titik ribuan (`Rp 1.250.000`),
@@ -184,11 +200,19 @@ Contoh lengkap nyata: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.
 ## Aturan penting
 - **Jangan mengarang angka.** Setiap angka di jawaban harus ada di keluaran script. Bila perlu
   angka yang belum ada, jalankan subperintah lagi (mis. `--filter`).
+- **Jangan menghitung persen, porsi, selisih, atau jumlah gabungan sendiri** (v1.0.17 — uji nyata: agent
+  menulis 65,6% padahal 83,8%, dan 26% padahal 27,4%). Ambil dari script: porsi kelompok = kolom
+  "% dari total" `pivot`/`top`; jumlah beberapa kolom (mis. gaji pokok + tunjangan) = `--nilai "A+B"`
+  (porsinya ikut dihitung); porsi tiap kelompok di periode kedua & sumbangan ke kenaikan = `banding`
+  ("% dari total <periode>", Temuan "menyumbang …"); porsi satu transaksi/barang di dalam satu kategori
+  & bulan = `top --grup "Keterangan" --filter "Kategori=X" --dari 2026-09 --sampai 2026-09`. Bila angka
+  yang dibutuhkan tidak bisa dihasilkan script, **jangan tulis angkanya** — sebut nominal dari script saja.
 - **Sampaikan semua peringatan** yang memengaruhi angka: nilai tidak valid yang tidak dihitung,
   baris Total yang dilewati, rumus tanpa nilai, sel gabungan, tanggal ambigu, periode tidak penuh,
   kategori yang digabung. Jangan disembunyikan.
 - **Periode tidak penuh** (mis. data September baru sampai tanggal 26) → jangan menyimpulkan
-  "turun" tanpa menyebutnya; tawarkan pembanding rata-rata per hari (sudah dihitung `banding`).
+  "turun" tanpa menyebutnya. "Rata-rata per hari kalender" di `banding` hanya menyamakan panjang
+  bulan (31 vs 30 hari), **bukan** koreksi untuk data yang belum lengkap — jangan menyajikannya begitu.
 - **Tanggal ambigu** (semua tanggal ≤ 12, mis. 01/02/2026) → tanya pengguna format hari/bulan
   atau bulan/hari; bila bulan/hari, ulangi dengan `--urutan-tanggal mdy`.
 - **"Rata-rata" ambigu** (mis. rata-rata jam lembur per catatan atau per karyawan?) → tanyakan

@@ -1,0 +1,10 @@
+pos;sifat;satuan;unit_anggaran;unit_realisasi;harga_anggaran;harga_realisasi;anggaran;realisasi
+Penjualan pashmina;;pcs;2400;2950;85000;79000;;
+Penjualan bergo instan;;pcs;1800;1500;65000;66000;;
+Penjualan gamis;;pcs;600;520;245000;245000;;
+HPP;variabel;;;;;;234.000.000;241.200.000
+Komisi marketplace;variabel;;;;;;37.440.000;41.350.000
+Kemasan;variabel;;;;;;7.200.000;7.900.000
+Iklan marketplace;;;;;;;18.000.000;26.500.000
+Subsidi ongkir;;;;;;;9.000.000;6.100.000
+Gaji admin & packing;;;;;;;27.000.000;27.000.000

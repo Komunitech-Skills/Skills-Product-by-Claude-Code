@@ -387,6 +387,46 @@ class UjiSetahun(Dasar):
 
 
 # --------------------------------------------------------------------------- THR
+class UjiDTP(Dasar):
+    def test_slip_dtp_dipotong_lalu_dibayar_tunai(self):
+        # PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Lampiran B (cek 2026-10-05): PPh 21 dipotong, DTP tunai nilai sama,
+        # gaji bersih tidak berkurang karena pajak (bukan gaji + DTP), setoran bagian DTP Rp 0
+        k = self.tambah("Rina", "--ptkp", "TK/0", "--gaji-pokok", "6jt", "--masuk", "2020-01-01", "--dtp", "ya",
+                        "--bruto-tetap-januari", "6jt")["kode"]
+        h, _ = self.hasil("2026-09")
+        p = h[k]["payroll"]
+        self.assertTrue(p["dtp"])
+        pph = p["potongan"]["PPh 21"]
+        self.assertGreater(pph, 0)
+        self.assertEqual(p["pendapatan"]["PPh 21 DTP dibayar tunai"], pph)
+        self.assertEqual(p["pph_disetor"], 0)
+        i = p["iuran"]
+        self.assertEqual(p["take_home_pay"], 6000000 - i["kes_karyawan"] - i["jht_karyawan"] - i["jp_karyawan"])
+        slip = self.ok("slip", "--bulan", "2026-09", "--karyawan", "Rina", "--keluar", self.dir)["teks"]
+        self.assertIn("tetap dipotong", slip)
+        self.assertIn("Setoran PPh 21 ke negara untuk karyawan ini: Rp 0", slip)
+
+    def test_total_dtp_dipotong_vs_disetor_dipisah(self):
+        # v1.0.11: total.pph21_dipotong = yang DIPOTONG (termasuk DTP); pph21_dtp & pph21_disetor_ke_negara terpisah
+        self.tambah("Rina", "--ptkp", "TK/0", "--gaji-pokok", "6jt", "--masuk", "2020-01-01", "--dtp", "ya",
+                    "--bruto-tetap-januari", "6jt")
+        self.tambah("Andi", "--ptkp", "K/1", "--gaji-pokok", "9jt", "--masuk", "2022-01-01")
+        h, out = self.hasil("2026-09")
+        tot = out["total"]
+        dipotong = sum(Decimal(str(x["payroll"]["potongan"]["PPh 21"])) for x in h.values())
+        dtp = sum(Decimal(str(x["payroll"]["pendapatan"]["PPh 21 DTP dibayar tunai"])) for x in h.values())
+        setor = sum(Decimal(str(x["payroll"]["pph_disetor"])) for x in h.values())
+        self.assertGreater(dtp, 0)
+        self.assertGreater(setor, 0)
+        self.assertEqual(Decimal(str(tot["pph21_dipotong"])), dipotong)
+        self.assertEqual(Decimal(str(tot["pph21_dtp"])), dtp)
+        self.assertEqual(Decimal(str(tot["pph21_disetor_ke_negara"])), setor)
+        self.assertEqual(Decimal(str(tot["setor_pph21"])), setor)
+        self.assertEqual(dipotong, dtp + setor)
+        self.assertIn("PPh 21 dipotong dari gaji bulan ini: %s (termasuk DTP %s" % (G.rp(dipotong), G.rp(dtp)), out["teks"])
+        self.assertIn("- Setor PPh 21 ke negara: %s" % G.rp(setor), out["teks"])
+
+
 class UjiTHR(Dasar):
     def test_thr_cocok_hitung_thr(self):
         self.tambah("Gita", "--ptkp", "TK/0", "--gaji-pokok", "5jt", "--tunjangan-tetap", "500rb", "--masuk", "2019-07-01")
@@ -746,13 +786,17 @@ class UjiV101(Dasar):
             self.ok("hitung", "--bulan", kode)
             self.ok("final", "--bulan", kode, "--ya")
         self.ok("karyawan", "keluar", "--karyawan", l, "--tanggal", "2026-12-31", "--ya")
-        self.ok("isi", "--bulan", "2026-12", "--karyawan", l, "--gaji-pokok-dibayar", "1jt")
+        # v1.0.2: keluar 31/12 = bulan penuh; gaji pokok turun ke 1 jt butuh persetujuan khusus (dasar BPJS turun)
+        self.ok("isi", "--bulan", "2026-12", "--karyawan", l, "--gaji-pokok-dibayar", "1jt", "--ya-saya-paham",
+                "--alasan-khusus", "data uji fiktif: gaji Desember dipotong sesuai PK")
         h, out = self.hasil("2026-12")
         kembali = Decimal(str(h[l]["payroll"]["pendapatan"]["Pengembalian kelebihan PPh 21"]))
         self.assertGreater(kembali, 0)
-        dipotong = sum(Decimal(str(x["payroll"]["pph_disetor"])) for x in h.values())
+        dipotong = sum(Decimal(str(x["payroll"]["pph_disetor"])) for x in h.values())   # tanpa DTP: = dipotong
         tot = out["total"]
         self.assertEqual(Decimal(str(tot["pph21_dipotong"])), dipotong)
+        self.assertEqual(Decimal(str(tot["pph21_dtp"])), Decimal(0))
+        self.assertEqual(tot["pph21_disetor_ke_negara"], tot["setor_pph21"])
         self.assertEqual(Decimal(str(tot["pengembalian_pph21"])), kembali)
         self.assertEqual(Decimal(str(tot["setor_pph21"])), max(dipotong - kembali, Decimal(0)))
         self.assertEqual(Decimal(str(tot["lebih_bayar_pph21"])), max(kembali - dipotong, Decimal(0)))
@@ -784,6 +828,15 @@ class UjiV101(Dasar):
         t = G.lengkapi_total({"setor_pph21": Decimal(100), "pengembalian_pph21": Decimal(250)})
         self.assertEqual((t["setor_pph21"], t["lebih_bayar_pph21"]), (Decimal(0), Decimal(150)))
 
+    def test_total_lama_v1010_dtp_diubah_ke_arti_baru(self):
+        # total tersimpan <= 1.0.10: pph21_dipotong berisi jumlah DISETOR (tanpa DTP)
+        t = G.lengkapi_total({"pph21_dipotong": Decimal(300000), "pph21_dtp_tunai": Decimal(45000),
+                              "setor_pph21": Decimal(300000), "pengembalian_pph21": Decimal(0)})
+        self.assertEqual((t["pph21_dipotong"], t["pph21_dtp"], t["pph21_disetor_ke_negara"], t["setor_pph21"]),
+                         (Decimal(345000), Decimal(45000), Decimal(300000), Decimal(300000)))
+        # idempoten: dipanggil ulang pada total baru tidak menambah DTP lagi
+        self.assertEqual(G.lengkapi_total(t)["pph21_dipotong"], Decimal(345000))
+
     def test_pengingat_jp_tidak_digeser_jht_digeser(self):
         self.tambah("Andi", "--ptkp", "K/1", "--gaji-pokok", "6jt", "--masuk", "2022-01-01")
         self.ok("hitung", "--bulan", "2026-10")
@@ -808,6 +861,97 @@ class UjiV101(Dasar):
         umk = [p for p in out["peringatan_hitung"] if "di bawah UMK" in p]
         self.assertTrue(umk)
         self.assertTrue(all("prorata" in p for p in umk))
+
+
+# --------------------------------------------------------------------------- v1.0.2: temuan uji ulang v1.0.1 (Akun B)
+class UjiV102(Dasar):
+    def test_isi_gaji_pokok_dibayar_bulan_penuh_dipagari(self):
+        e = self.tambah("Eka", "--ptkp", "TK/0", "--gaji-pokok", "15jt", "--masuk", "2022-01-01")["kode"]
+        _, out = self.hasil("2026-09")
+        iuran_penuh = out["karyawan"][0]["payroll"]["iuran"]
+        arg = ["isi", "--bulan", "2026-09", "--karyawan", e, "--gaji-pokok-dibayar", "5jt", "--bonus", "10jt"]
+        # tanpa persetujuan khusus: ditolak (isi menyimpan langsung, jadi tanpa flag selalu ditolak), DB tidak berubah
+        for tambahan in ([], ["--ya"]):
+            out = self.gagal(*(arg + tambahan))
+            self.assertEqual(out["masalah_kepatuhan"], ["dasar_bpjs_turun_bulan_penuh"])
+            self.assertIn("--ya-saya-paham", out["error"])
+            self.assertIn("sebulan penuh", out["error"])
+        self.assertEqual(self.jumlah("SELECT COUNT(*) FROM isian"), 0)
+        # dengan persetujuan khusus: tersimpan + tercatat di log
+        out = self.ok(*(arg + ["--ya-saya-paham", "--alasan-khusus", "cuti di luar tanggungan 20 hari sesuai PK"]))
+        self.assertEqual(out["konfirmasi_kepatuhan"]["masalah"], ["dasar_bpjs_turun_bulan_penuh"])
+        c = sqlite3.connect(self.db)
+        log = c.execute("SELECT ringkasan FROM log WHERE perintah='isi' ORDER BY id DESC").fetchone()[0]
+        c.close()
+        self.assertIn("konfirmasi_kepatuhan", log)
+        self.assertIn("cuti di luar tanggungan", log)
+        # hitung memakai dasar 5 jt dan tetap mengingatkan; iuran diverifikasi Decimal (dibulatkan ke rupiah)
+        _, out = self.hasil("2026-09")
+        self.assertTrue(any("Eka: gaji pokok + tunjangan tetap" in p and "sebulan penuh" in p
+                            for p in out["peringatan_hitung"]))
+        iuran = out["karyawan"][0]["payroll"]["iuran"]
+        dasar, dasar_penuh = Decimal(5000000), Decimal(15000000)
+        r = lambda x: x.quantize(Decimal(1))                                   # noqa: E731
+        self.assertEqual(Decimal(iuran["kes_perusahaan"]), r(dasar * Decimal("0.04")))           # 200.000
+        self.assertEqual(Decimal(iuran["jht_perusahaan"]), r(dasar * Decimal("0.037")))          # 185.000
+        self.assertEqual(Decimal(iuran["jkk"]), r(dasar * Decimal("0.0024")))                    # 12.000
+        self.assertEqual(Decimal(iuran["jkm"]), r(dasar * Decimal("0.003")))                     # 15.000
+        self.assertEqual(Decimal(iuran_penuh["kes_perusahaan"]), r(min(dasar_penuh, Decimal(12000000)) *
+                                                                   Decimal("0.04")))              # 480.000
+        self.assertEqual(Decimal(iuran_penuh["jht_perusahaan"]), r(dasar_penuh * Decimal("0.037")))  # 555.000
+
+    def test_isi_tanpa_penurunan_atau_bulan_masuk_tidak_dipagari(self):
+        e = self.tambah("Eka", "--ptkp", "TK/0", "--gaji-pokok", "15jt", "--masuk", "2022-01-01")["kode"]
+        self.ok("isi", "--bulan", "2026-09", "--karyawan", e, "--bonus", "1jt")               # bukan gaji pokok
+        out = self.ok("isi", "--bulan", "2026-09", "--karyawan", e, "--gaji-pokok-dibayar", "15jt")  # tidak turun
+        self.assertFalse(out["perlu_persetujuan_khusus"])
+        k = self.tambah("Kiki", "--ptkp", "TK/0", "--gaji-pokok", "6jt", "--masuk", "2026-09-15")["kode"]
+        out = self.ok("isi", "--bulan", "2026-09", "--karyawan", k, "--gaji-pokok-dibayar", "3,2jt")  # prorata masuk
+        self.assertFalse(out["perlu_persetujuan_khusus"])
+        l = self.tambah("Lina", "--ptkp", "TK/0", "--gaji-pokok", "8jt", "--masuk", "2020-01-01")["kode"]
+        self.ok("karyawan", "keluar", "--karyawan", l, "--tanggal", "2026-09-14", "--ya")
+        out = self.ok("isi", "--bulan", "2026-09", "--karyawan", l, "--gaji-pokok-dibayar", "3,7jt")  # prorata keluar
+        self.assertFalse(out["perlu_persetujuan_khusus"])
+
+    def test_isi_file_gaji_pokok_turun_dipagari(self):
+        self.tambah("Eka", "--ptkp", "TK/0", "--gaji-pokok", "15jt", "--masuk", "2022-01-01")
+        f = self.file("komp.csv", "nama;gaji_pokok;bonus\nEka;5000000;10000000\n")
+        out = self.ok("isi", "--bulan", "2026-09", "--file", f)                           # pratinjau
+        self.assertTrue(out["perlu_persetujuan_khusus"])
+        self.assertIn("--ya-saya-paham", out["teks"])
+        self.assertNotIn("Simpan? Jalankan perintah yang sama + --ya setelah", out["teks"])
+        out = self.gagal("isi", "--bulan", "2026-09", "--file", f, "--ya")
+        self.assertEqual(out["masalah_kepatuhan"], ["dasar_bpjs_turun_bulan_penuh:K001"])
+        self.assertEqual(self.jumlah("SELECT COUNT(*) FROM isian"), 0)
+        self.ok("isi", "--bulan", "2026-09", "--file", f, "--ya", "--ya-saya-paham", "--alasan-khusus", "uji")
+        self.assertEqual(self.jumlah("SELECT COUNT(*) FROM isian"), 2)
+
+    def test_teks_pratinjau_persetujuan_khusus_menyebut_flag(self):
+        e = self.tambah("Eka", "--ptkp", "TK/0", "--gaji-pokok", "15jt", "--masuk", "2022-01-01")["kode"]
+        out = self.ok("karyawan", "ubah", "--karyawan", e, "--bpjs", "tidak")
+        self.assertTrue(out["perlu_persetujuan_khusus"])
+        penutup = out["teks"].rsplit("\n\n", 1)[-1]
+        self.assertIn("--ya --ya-saya-paham", penutup)
+        self.assertNotIn("Simpan? Jalankan perintah yang sama + --ya setelah", out["teks"])
+        # pratinjau biasa tetap memakai kalimat baku
+        out = self.ok("karyawan", "ubah", "--karyawan", e, "--jabatan", "Kasir")
+        self.assertIn("Simpan? Jalankan perintah yang sama + --ya setelah pengguna setuju.", out["teks"])
+
+
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "gaji.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["init", "--db", os.path.join(t, "a.db"), "--y"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+            self.assertFalse(os.path.exists(os.path.join(t, "a.db")), "singkatan flag tidak boleh menulis apa pun")
 
 
 if __name__ == "__main__":

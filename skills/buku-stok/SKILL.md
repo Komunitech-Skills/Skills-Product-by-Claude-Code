@@ -5,6 +5,8 @@ description: Aplikasi buku stok/inventori lokal (SQLite di komputer pengguna) ya
 
 # Buku Stok (inventori lokal)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjadi "aplikasi stok" pengguna tanpa langganan: semua data ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat script `scripts/stok.py`. Hasil akhirnya: stok selalu tercatat, HPP dihitung otomatis, stok terpotong dari file pesanan marketplace, daftar ambil barang siap cetak, dan laporan harian siap kirim.
 
@@ -51,10 +53,13 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Mulai ("catat stok toko saya")
 1. `info --json`. Jika gagal karena database belum ada → kirim satu pesan: (1) boleh disimpan di `~/KomunitechData/stok.db`? (2) kirim daftar barang (file Excel/CSV, contoh format `templates/daftar-produk.csv`) atau ketik per baris: nama, varian, harga beli, harga jual, stok sekarang, stok minimum, rak.
 2. `init` → konfirmasi → `init --ya`.
 3. Banyak barang: `produk impor daftar.csv` (XLSX juga bisa) → tampilkan pemetaan kolom, jumlah produk, nilai stok awal, baris rusak → setuju → `--ya`. Sedikit barang: `produk tambah --sku ... --nama ... --varian ... --harga-beli ... --harga-jual ... --stok-min ... --lokasi ... --stok-awal ...`.
+   **Pesan pertama sekaligus menyebut barang datang** (mis. "terus hari ini datang 50 pcs @34rb, ongkir 25rb"): konfirmasi pertama (init + produk) **sudah memuat** baris barang masuk lengkap dengan perubahan HPP, karena `masuk` belum bisa dipratinjau sebelum produk tersimpan. Hitung dengan rumus HPP di Batasan dan tulis rumusnya, mis. "Kaos Hitam M +50 @ Rp 34.000 + ongkir Rp 500/pcs → stok 24 → 74, HPP Rp 35.000 → Rp 34.662 ((24×35.000 + 50×34.500) ÷ 74)". Setelah "ya": simpan init & produk, jalankan pratinjau `masuk`; jika `hpp_sesudah` & stok sama dengan yang sudah disetujui → simpan dengan `--ya`; jika berbeda → tampilkan angka script dan minta konfirmasi ulang.
 4. Tutup dengan `laporan stok` + saran: "setiap barang datang/terjual, cukup bilang ke saya".
 
 ### B. Transaksi harian
@@ -93,6 +98,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ```
 Saya akan mencatat (belum disimpan):
 - <ringkasan per item: SKU, perubahan stok lama -> baru, HPP/nilai>
+- Barang masuk: WAJIB tulis perubahan HPP "HPP Rp <hpp_sebelum> → Rp <hpp_sesudah>" (dari pratinjau script) di konfirmasi pertama, bukan baru setelah tersimpan
 Catatan: <peringatan dari script, jika ada>
 Simpan? Balas "ya" untuk menyimpan.
 ```
@@ -126,12 +132,14 @@ Kelola: `openclaw automations list`, `openclaw automations run <id>` (uji sekara
 
 ## Checklist sebelum menjawab
 - [ ] Perintah tulis sudah dipratinjau dan pengguna sudah setuju sebelum `--ya`
+- [ ] Konfirmasi barang masuk sudah menampilkan perubahan HPP (lama → baru) sebelum pengguna menjawab "ya"
 - [ ] Pemetaan kolom impor ditunjukkan dan disetujui
 - [ ] Semua `peringatan` dari script disampaikan (stok minus, status tidak dikenal, SKU belum terdaftar, baris dilewati)
 - [ ] Angka rupiah ditulis `Rp 1.250.000`, qty dari script
 - [ ] `--db` konsisten bila pengguna memakai lokasi selain default
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Bukan akuntansi penuh**: tidak ada jurnal, piutang, pajak, biaya admin marketplace. Laba kotor di laporan = omzet tercatat − HPP (perkiraan). Untuk pembukuan pakai `laporan-keuangan-emkm`.
 - HPP memakai **rata-rata tertimbang bergerak**: HPP baru = (stok lama × HPP lama + qty masuk × harga beli) ÷ (stok lama + qty masuk). Barang keluar tidak mengubah HPP. Jika stok lama ≤ 0, HPP = harga beli terbaru. HPP disimpan 4 desimal; rupiah ditampilkan dibulatkan ke rupiah terdekat (0,5 ke atas).
 - Nama kolom & status ekspor marketplace bisa berubah; deteksi memakai kata kunci umum, jadi **pemetaan selalu dikonfirmasi**. Status tidak dikenal tetap dihitung terjual + diberi peringatan (bisa diatur `--abaikan-status`).

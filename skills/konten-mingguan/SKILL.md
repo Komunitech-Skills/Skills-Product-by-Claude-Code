@@ -1,9 +1,16 @@
 ---
 name: konten-mingguan
-description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari berisi platform (Instagram/TikTok/Facebook/WA Status/LinkedIn/X-Twitter) & format, pilar konten, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting saran — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar, cek Ramadan/Lebaran). TIDAK memposting otomatis ke Instagram/TikTok/Facebook/LinkedIn — hanya menyiapkan draf untuk dijadwalkan sendiri. Gunakan saat pengguna minta "paket konten minggu ini/depan", "rencana konten mingguan", weekly content plan/pack, atau content calendar untuk 1 minggu (bukan 30 hari — untuk sebulan penuh pakai kalender-konten-30hari).
+description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari: platform, pilar, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar). ATURAN PERTAMA: SELURUH paket post (semua hari, caption lengkap) WAJIB ditulis di balasan chat; file hanya salinan opsional. Dilarang mengarang fakta usaha (promo, harga, kelangkaan, proses, durasi, pengiriman, jam/hari libur, kepopuleran, sterilisasi, sertifikat) yang tidak diberikan pengguna: pakai [isian]. TIDAK memposting otomatis. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Pakai untuk paket konten minggu ini/depan, weekly content plan/pack (sebulan: kalender-konten-30hari).
 ---
 
 # Konten Mingguan
+
+> **ATURAN PERTAMA (mengalahkan semua yang lain):** SELURUH paket post (setiap hari: hook, caption lengkap, hashtag, CTA, brief) WAJIB ditulis di balasan chat ini juga. Pengguna (mis. Telegram) tidak bisa membuka file. **Jangan menulis file sama sekali kecuali pengguna memintanya**; bila ditulis, file hanya salinan, dibuat SETELAH paket tampil di chat. DILARANG menulis "sudah tampil di atas/di chat di atas/terlampir" kecuali paketnya memang ada di balasan itu. Balasan yang hanya berisi ringkasan, penolakan, atau "tersimpan di file" = GAGAL.
+> **Dilarang mengarang fakta usaha (tegas):** SEMUA fakta tentang usaha ini (layanan/produk, proses & cara membuat, durasi, satuan harga, harga, promo, kelangkaan, pengiriman/antar/COD, jam buka & hari libur, kepopuleran/"favorit"/"pasien kami", alat/bahan, sterilisasi, sertifikat/izin) HANYA boleh ditulis bila diberikan pengguna; selain itu tulis `[isian: ...]` atau kalimat umum yang tidak mengklaim fakta. Edukasi umum yang benar untuk semua usaha sejenis boleh.
+> - Boleh: "scaling dianjurkan berkala sesuai saran dokter gigi", "Pesan lewat WA" (bila cara order diberikan), "Brownies Rp45.000" (persis seperti diberikan).
+> - Tidak boleh (kecuali diberikan pengguna): "alat steril", "scaling 30-60 menit", "pasien kami", "dibuat sesuai pesanan/fresh/handmade", "favorit pelanggan", "Rp45.000 per loyang", "bisa diantar", "Minggu libur", tips simpan kue, "slot/stok terbatas", "tanpa pengawet".
+> - Asumsi yang terpaksa dipakai (hari libur, satuan harga, jam tayang, cara pembuatan) WAJIB dicantumkan di daftar asumsi di akhir; lebih baik tidak dipakai.
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Memberi pemilik usaha paket konten **satu minggu**, siap tempel per hari, tanpa harus memikirkan ide dari
@@ -45,6 +52,8 @@ Kalau info ini benar-benar belum ada, tulis placeholder eksplisit seperti `[nama
 hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angka atau nama.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Baca atau buat `konten/PROFIL.md`.** Kalau sudah ada, pakai isinya. Kalau belum, wawancara singkat
    (lihat Input), lalu tulis file itu dari `templates/PROFIL.md`. Perhatikan kolom "Larangan klaim" —
    ini menentukan apa yang **tidak boleh** ditulis di konten minggu ini.
@@ -86,9 +95,16 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
    jaminan untung/"terbaik no.1" tanpa bukti dari pengguna; produk kesehatan/kosmetik/keuangan/pangan →
    sisipkan peringatan singkat (cek BPOM/PIRT/OJK sesuai kategori); musik/gambar berhak cipta hanya yang
    diizinkan di `PROFIL.md`.
-7. **Simpan arsip** hasil isian ke `konten/minggu-<label_minggu>.md` (label dari output script, mis.
-   `minggu-2026-W40.md`) di workspace pengguna, memakai isi lengkap `templates/paket-mingguan.md`.
-8. **Sampaikan ke pengguna** dalam format output di bawah, lalu tawarkan: (a) automation mingguan +
+   **Izin edar:** bila produk pangan olahan/minuman, kosmetik, suplemen, atau obat tradisional/obat, ingatkan di awal paket (satu kalimat) bahwa izin edar BPOM / PIRT-SPP-IRT (atau sertifikat halal bila dicantumkan) harus ada **sebelum** dijual dan dipromosikan. Bila pengguna bilang izin "belum ada/masih proses", tampilkan peringatan ini lebih tegas dan jangan menulis klaim izin/BPOM di konten mana pun.
+7. **Arsip file: hanya bila pengguna memintanya**, dan setelah paket lengkap tampil di chat: simpan ke `konten/minggu-<label_minggu>.md` (mis. `minggu-2026-W40.md`) memakai `templates/paket-mingguan.md`. Tanpa permintaan, jangan menulis file (tawarkan saja).
+   **Tolak sebagian, serahkan semuanya (wajib):** bila permintaan memuat unsur terlarang (testimoni/before-after
+   pasien, diskon tindakan medis, imbalan rujukan, klaim menyembuhkan, dsb.), tulis 1-2 kalimat penolakan + dasar
+   aturannya di bagian atas, lalu **di balasan yang SAMA langsung serahkan paket lengkap pengganti yang aman**
+   (default 5-6 hari, setiap hari lengkap: judul/topik, caption siap tempel, ide visual, hashtag, CTA, hari tayang).
+   **DILARANG** berhenti di penolakan, hanya menawarkan daftar topik, atau bertanya "boleh saya lanjutkan?/mau
+   dibuatkan yang aman?" — penolakan bukan alasan menunda hasil. Info yang kurang diisi placeholder/asumsi, bukan
+   pertanyaan izin. Berlaku untuk SEMUA jenis usaha, bukan hanya klinik.
+8. **Sampaikan ke pengguna** dalam format output di bawah. **Caption lengkap + hashtag + hook + CTA setiap hari WAJIB tampil di chat** (lihat ATURAN PERTAMA); file arsip bukan pengganti. Bila terlalu panjang, kirim bertahap per 2-3 hari, bukan dipangkas. Lalu lalu tawarkan: (a) automation mingguan +
    pengingat harian lewat OpenClaw (`references/openclaw-jadwal.md`), (b) buat brief foto detail lewat
    `foto-produk-brief`, (c) buat naskah live untuk salah satu hari lewat `naskah-live-jualan`.
 9. **Jika Python tidak bisa dijalankan:** hitung tanggal manual dari kalender (Senin minggu depan dari
@@ -97,6 +113,8 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
 
 ## Format output
 ```
+[Bila ada unsur terlarang: 1-2 kalimat "Tidak saya buatkan: <unsur> — <dasar aturan>", lalu LANGSUNG paket di bawah, tanpa pertanyaan izin]
+
 # Paket Konten Minggu <label_minggu> — <nama usaha>
 Periode: <Senin, tgl> s.d. <Minggu, tgl>  |  Platform: <daftar>
 
@@ -111,9 +129,10 @@ Hashtag: <daftar>
 CTA: <cta>
 --- (ulangi per hari, 5-7 hari) ---
 
-📥 Arsip disimpan: konten/minggu-<label_minggu>.md
+(Baris arsip HANYA bila pengguna meminta file: "📥 Salinan: konten/minggu-<label_minggu>.md")
 📝 Asumsi: <daftar asumsi yang dipakai bila profil belum lengkap>
-⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/TikTok Studio (lihat "Cara jadwalkan sendiri" di file arsip), atau aktifkan pengingat harian OpenClaw.
+(Penutup HANYA pernyataan, bukan izin: satu kalimat asumsi + tawaran opsional. Jangan akhiri dengan "boleh saya lanjutkan?".)
+⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/TikTok Studio (lihat `references/jadwal-platform.md`), atau aktifkan pengingat harian OpenClaw.
 ```
 
 ## Contoh
@@ -126,7 +145,7 @@ order lewat WA/GoFood. Sanggup 2 video seminggu, sisanya foto/Story aja."
 Pilar: Promo Gajian  |  Momen: Hari gajian (tgl 1) — TAPI juga Hari Kesaktian Pancasila (peringatan):
 konten dibuat non-hardselling, promo dipindah ke esok  |  Jam disarankan: 11.00 & 17.00 (perkiraan umum)
 Hook 3 detik: "Gajian udah cair?"
-Caption: "Rayakan gajian pertama bulan ini dengan ngopi santai. Kopi susu gula aren favorit, tetap Rp18.000.
+Caption: "Rayakan gajian pertama bulan ini dengan ngopi santai. Kopi susu gula aren, tetap Rp18.000.
 Order gampang lewat WA/GoFood ya! ☕"
 Brief foto/video: foto gelas kopi dekat jendela, cahaya pagi, tanpa promo besar-besaran (hari peringatan)
 Hashtag: #kopisusu #kedaikopi #gajian #ngopiyuk
@@ -134,6 +153,28 @@ CTA: Order lewat WA/GoFood
 ```
 📝 Asumsi: profil belum lengkap → target pembeli disimpulkan "pekerja & mahasiswa sekitar kedai"; jam
 posting pakai acuan umum WA Status siang & sore.
+
+**Contoh permintaan sebagian terlarang (klinik):** "Buatin konten seminggu klinik gigi saya: testimoni pasien
++ before-after (pasien sudah izin) + diskon scaling 20% pasien baru."
+
+**Output yang benar (cuplikan):**
+```
+Tidak saya buatkan testimoni pasien, before-after, dan diskon tindakan: iklan/publikasi pelayanan kesehatan
+(Permenkes 1787/2010) melarangnya, walau pasien sudah izin (PERLU REVIEW tenaga medis/hukum). Ini paket 6 hari
+pengganti yang aman, siap tempel:
+
+## Senin 12 Okt 2026 — Instagram/Feed
+Pilar: Edukasi  |  Momen: -  |  Jam disarankan: 19.00 (perkiraan umum)
+Hook 3 detik: "Sikat gigi 2x sehari, tapi karang gigi tetap ada?"
+Caption: "Karang gigi tidak hilang dengan sikat biasa. Pemeriksaan rutin tiap 6 bulan membantu ... Jadwal praktik &
+booking: lihat bio."
+Brief foto/video: foto ruang praktik rapi (tanpa pasien), cahaya terang.
+Hashtag: #klinikgigi #sehatgigi #edukasigigi
+CTA: Booking jadwal lewat WA
+... (Selasa-Sabtu lengkap dengan format yang sama)
+📝 Asumsi: nama klinik/jadwal praktik memakai placeholder [isi]; paket 6 hari (Senin-Sabtu) tanpa klaim hari libur klinik.
+```
+Salah: berhenti setelah penolakan dengan pertanyaan "boleh saya lanjutkan dengan konten edukasi?".
 
 ## Checklist sebelum mengirim hasil
 - [ ] Tanggal & momen dari `nomor_minggu.py` (atau dihitung manual dengan keterangan jelas)
@@ -143,9 +184,16 @@ posting pakai acuan umum WA Status siang & sore.
 - [ ] Kategori sensitif (kesehatan/kosmetik/keuangan/pangan) diberi peringatan singkat
 - [ ] Setiap caption punya hook, CTA, dan panjang sesuai platform
 - [ ] Ditulis jelas bahwa paket ini **belum terposting** dan jam posting adalah **perkiraan**
-- [ ] Arsip `konten/minggu-<label_minggu>.md` disimpan
+- [ ] **Apakah semua post (setiap hari, caption lengkap) ada di balasan chat ini?** Bukan hanya di file. Jangan menulis "sudah tampil di atas" bila tidak
+- [ ] Tidak ada promo/harga/combo/kelangkaan/klaim produksi karangan; semua dari pengguna atau `[isian]`
+- [ ] Setiap klaim tentang usaha ini (layanan, proses, durasi, satuan, pengiriman, jam/hari libur, kepopuleran, sterilisasi, sertifikat) berasal dari pengguna atau `[isian]`?
+- [ ] Semua asumsi (hari libur, satuan harga, jam tayang, minggu yang dipilih dan alasannya) tercantum di daftar asumsi akhir?
+- [ ] Ejaan hashtag dicek huruf demi huruf (mis. `#klinikgigi`, bukan `#kliniktgigi`) dan nama usaha/kata baku benar
+- [ ] File arsip hanya ditulis bila diminta, dan setelah chat
+- [ ] Bila ada unsur terlarang: penolakan singkat + paket lengkap pengganti ada di balasan yang sama (tanpa pertanyaan izin)
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Skill ini TIDAK memposting** ke Instagram/TikTok/Facebook/WA dan tidak login ke akun media sosial
   mana pun. Permintaan "postingkan otomatis" atau "login-kan akun IG saya" **ditolak** — jelaskan bahwa
   paket dikirim ke pengguna untuk dijadwalkan sendiri (lihat `references/jadwal-platform.md`), dan
@@ -155,9 +203,16 @@ posting pakai acuan umum WA Status siang & sore.
   "beli 1000 like", "pasang bot komentar otomatis"). Jelaskan risikonya (akun bisa ditangguhkan/shadow-
   ban, tidak ada nilai nyata untuk penjualan) dan tawarkan alternatif sah: konten konsisten + hook kuat
   + interaksi organik (bales komentar asli, ajak follower like/share dengan cara jujur).
-- **Klinik/kecantikan/kesehatan**: foto/video before-after dan testimoni pasien **wajib** ada izin
-  tertulis dari pasien (lihat `references/aturan-iklan.md`). Tanpa izin tertulis, materi itu **tidak**
-  dipakai di paket — tawarkan alternatif (fasilitas, alat, edukasi umum).
+- **Fasilitas kesehatan (klinik, praktik dokter/dokter gigi/bidan, apotek, lab, fisioterapi):**
+  **tanpa testimoni pasien dan klaim "sembuh"** di iklan/medsos (termasuk before-after pasien),
+  **walau ada izin tertulis**; **tanpa promo diskon/potongan tindakan medis** (termasuk "diskon pasien
+  baru" dan layanan gratis seperti "cek gigi gratis"); dan **tanpa imbalan rujukan** — tidak ada
+  diskon, poin, voucher, hadiah, merchandise, komisi, atau layanan gratis bagi pasien yang mengajak/
+  merujuk orang lain. Jangan menawarkan testimoni "asal ada izin" atau diskon lain sebagai pengganti.
+  Dasar umum: aturan iklan & publikasi pelayanan kesehatan (Permenkes 1787/2010) & kode etik profesi
+  — PERLU REVIEW tenaga medis/hukum. Tolak singkat, lalu **langsung serahkan** paket pengganti (edukasi bersumber resmi, foto fasilitas/tim, dan
+  info layanan/jadwal yang jujur; lihat `references/aturan-iklan.md`) di balasan yang sama — jangan bertanya izin dulu.
+- **Salon/kosmetik non-medis**: before-after/testimoni pelanggan hanya dengan izin pelanggan.
 - `nomor_minggu.py` menolak `--mulai` yang bukan hari Senin, tanggal tidak valid, dan `--gajian-tanggal`
   di luar 1-31, dengan pesan `ERROR: ...` (exit code ≠ 0). Perbaiki input lalu jalankan ulang.
 - Momen bertanggal berubah (Ramadan/Lebaran/Imlek/libur sekolah) tidak pernah ditebak tanpa kepastian

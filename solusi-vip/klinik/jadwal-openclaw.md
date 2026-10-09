@@ -57,13 +57,47 @@ openclaw automations add "0 16 * * 5" \
 diposting — skill tidak menggantikan tinjauan profesional, dan OpenClaw **tidak memposting
 otomatis** ke Instagram/TikTok/Facebook.
 
-## 4. Skill baru tanpa jadwal (dokumen, dipicu manual)
+## 4. Ringkasan pengingat pasien harian (kontrol/vaksin), jam 07.30 WIB 📖
+Perintah disalin **persis** dari `skills/pengingat-pasien-klinik/references/openclaw-jadwal.md`
+(flag inti sudah ✅ terbukti untuk `crm-wa`/`pengingat-follow-up`; kombinasi utuh dengan script
+`pengingat_pasien.py` belum diuji di Gateway sungguhan — 📖). Jadwal ini **hanya** menjalankan
+perintah baca `ringkasan` — tidak pernah `tambah`/`ubah`/`hapus`/`impor`.
+
+1. Cari path lengkap script (`--command-argv` tidak mengenal `~`):
+   ```bash
+   python3 -c "import os; print(os.path.expanduser('~/.openclaw/skills/pengingat-pasien-klinik/scripts/pengingat_pasien.py'))"
+   ```
+2. Buat jadwalnya:
+   ```bash
+   openclaw automations add --name "Ringkasan pengingat pasien harian" --cron "30 7 * * *" --tz Asia/Jakarta \
+     --command-argv '["python3","/home/NAMA/.openclaw/skills/pengingat-pasien-klinik/scripts/pengingat_pasien.py","--file","/path/ke/pasien/DAFTAR.csv","ringkasan","--samarkan"]' \
+     --announce --channel telegram --to "<ID chat Telegram pemilik/PIC>"
+   ```
+   - Ganti `/home/NAMA/.openclaw/...` dan `/path/ke/pasien/DAFTAR.csv` dengan path sungguhan di
+     komputer klinik (hasil langkah 1 dan lokasi file `DAFTAR.csv` yang dipakai staf).
+   - **Selalu pakai `--samarkan`** karena hasilnya tersimpan di riwayat chat Telegram pemilik.
+     Ringkasan **tidak pernah** memuat nomor WA (dengan atau tanpa opsi ini). Tambahkan
+     `"--tanpa-nama"` untuk hanya menampilkan angka, tanpa daftar nama sama sekali.
+   - WITA: `--tz Asia/Makassar`; WIT: `--tz Asia/Jayapura`. Windows: ganti `"python3"` dengan
+     `"py"` (belum diuji ⚠️).
+   - **Cara cek berhasil:** `openclaw automations run <id> --wait` menampilkan ringkasan angka
+     tanpa satu pun nomor WA sebelum jadwal dianggap aktif.
+3. **Draf pesan per pasien tidak dan tidak boleh dijadwalkan otomatis** — draf hanya dibuat lewat
+   `daftar`/`draf` yang dijalankan staf secara sadar (lihat `PANDUAN.md` §5i langkah 2), agar
+   tidak ada risiko draf berisi nama+nomor WA pasien tersimpan otomatis di riwayat chat Telegram/
+   WhatsApp pemilik.
+
+## 5. Skill baru tanpa jadwal (dokumen, dipicu manual)
 `kebijakan-privasi-pdp`, `sop-onboarding`, dan `kontrak-kerja-pkwt` (lihat `PANDUAN.md` §5f–h)
 adalah skill dokumen yang dipicu **manual** per kebutuhan (buat/cek kebijakan privasi, onboarding
 staf baru, buat/periksa kontrak) — sengaja **tidak** dijadwalkan otomatis karena kebutuhannya
 muncul sewaktu-waktu (staf baru masuk, kebijakan perlu diperbarui), bukan rutin di jam tetap.
 
-## 5. Mengelola jadwal (✅, sama seperti paket lain)
+## 5b. Skill tambahan klinik: tanpa jadwal
+`program-referral-loyalitas` (versi tanpa imbalan) dan `iterasi-dari-masukan-pelanggan` dipicu
+**manual** (lihat `PANDUAN.md` §5j). Sengaja tidak dijadwalkan dan tidak ada pengiriman massal ke pasien.
+
+## 6. Mengelola jadwal (✅, sama seperti paket lain)
 ```bash
 openclaw automations list --all
 openclaw automations run <id> --wait
@@ -91,5 +125,7 @@ openclaw automations rm <id>          # hanya id, permanen
 - Membuat jadwal di atas langsung lewat chat WhatsApp/Telegram.
 - Pesan benar-benar tiba di Telegram/WhatsApp pembeli (uji internal tidak memakai token/nomor
   asli).
-- **Pengingat kontrol/vaksin per pasien terjadwal** — sengaja **tidak** disediakan di sini, lihat
-  "Celah" di `solusi-vip/README.md`.
+- **Ringkasan pengingat pasien harian (§4)** — flag inti (`--command-argv`, `--announce`,
+  `--channel telegram`) sudah ✅ terbukti untuk skill lain, tapi kombinasi utuh dengan script
+  `pengingat_pasien.py` di Gateway OpenClaw sungguhan belum dicoba — uji sekali (`run --wait`)
+  sebelum mengaktifkan jadwal sungguhan.

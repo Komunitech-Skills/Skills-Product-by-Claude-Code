@@ -1,0 +1,13 @@
+{
+  "posisi": "Kasir Minimarket",
+  "wajib": [
+    {"nama": "Pengalaman kasir", "kata": ["kasir"], "bobot": 3, "min_tahun": 1},
+    {"nama": "Mesin kasir/POS dan pembayaran digital", "kata": ["pos", "mesin kasir", "qris", "edc"], "bobot": 2},
+    {"nama": "Hitung dan rekap kas", "kata": ["rekap kas", "tutup kas", "hitung uang", "kas harian", "setoran", "memberi kembalian", "serah terima uang"], "bobot": 2},
+    {"nama": "Bisa kerja sistem shift", "kata": ["shift"], "bobot": 1}
+  ],
+  "nilai_tambah": [
+    {"nama": "Stok dan penataan rak", "kata": ["stok", "rak", "menata barang"], "bobot": 1},
+    {"nama": "Memimpin atau melatih", "kata": ["supervisor", "melatih", "memimpin"], "bobot": 1}
+  ]
+}

@@ -29,7 +29,7 @@ import json
 import os
 import re
 import sys
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP
 
 sys.dont_write_bytecode = True  # jangan membuat __pycache__ di folder skill
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +38,8 @@ from hitung_ppn import hitung_ppn_dari_dpp, parse_angka, format_rp, format_angka
 BATAS_METERAI = Decimal(5000000)
 TARIF_METERAI = Decimal(10000)
 TANGGAL_ATURAN = "2026-09-23"
+VERSI = "1.0.4"
+TARIF_PPH23_JASA = Decimal(2)   # UU PPh Pasal 23 ayat (1) huruf c; tanpa NPWP 100% lebih tinggi (ayat 1a)
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
               "Oktober", "November", "Desember"]
 
@@ -115,13 +117,94 @@ def potongan(teks, dasar, nama):
     return rupiah_bulat(nilai), None
 
 
-def nomor_berikutnya(terakhir):
-    m = re.search(r"(\d+)(?!.*\d)", terakhir)
-    if not m:
-        raise ValueError("nomor terakhir '{}' tidak mengandung angka urut".format(terakhir))
+ROMAWI = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"]
+
+
+def _bulan_token(tok):
+    """Token bulan: '09'/'9' (1-12, maks. 2 digit) atau angka Romawi I-XII. Kembalikan (bulan, gaya) atau None."""
+    if tok.isdigit() and len(tok) <= 2 and 1 <= int(tok) <= 12:
+        return int(tok), "angka{}".format(len(tok))
+    if tok.upper() in ROMAWI:
+        return ROMAWI.index(tok.upper()) + 1, "romawi" if tok.isupper() else "romawi-kecil"
+    return None
+
+
+def _tulis_bulan(bulan, gaya):
+    if gaya.startswith("romawi"):
+        r = ROMAWI[bulan - 1]
+        return r if gaya == "romawi" else r.lower()
+    return str(bulan).zfill(2 if gaya == "angka2" else 1)
+
+
+def nomor_berikutnya(terakhir, tgl=None, urut_lanjut=False):
+    """Nomor baru = nomor terakhir + 1, dengan aturan ganti periode.
+
+    Mengenali tahun (4 digit 19xx/20xx), bulan di sebelah tahun (01-12 atau Romawi I-XII), dan angka urut
+    (angka lain; bila lebih dari satu, yang paling kanan). Contoh: INV/2026/09/0012, 012/INV/IX/2026, INV-2026-0012.
+    - Periode tanggal dokumen SAMA dengan periode nomor terakhir -> urut + 1 (0012 -> 0013).
+    - Periode dokumen LEBIH BARU (ganti bulan/tahun) -> tahun/bulan diganti ke periode dokumen dan urut mulai
+      0001 (atau urut + 1 bila urut_lanjut=True, untuk usaha yang nomornya tidak di-reset).
+    - Periode dokumen LEBIH LAMA -> error (nomor mundur; isi nomor manual bila memang disengaja).
+    Kembalikan (nomor_baru, keterangan).
+    """
+    s = str(terakhir or "").strip()
+    if not s:
+        raise ValueError("nomor terakhir kosong")
+    tok = re.split(r"([/\-.\s_]+)", s)
+    idx = [i for i in range(0, len(tok), 2) if tok[i]]
+    i_tahun = next((i for i in reversed(idx) if re.fullmatch(r"(19|20)\d\d", tok[i])), None)
+    i_bulan = None
+    if i_tahun is not None:
+        for j in (i_tahun + 2, i_tahun - 2):
+            if 0 <= j < len(tok) and j != i_tahun and tok[j] and _bulan_token(tok[j]):
+                # angka urut tetap harus ada di luar tahun/bulan
+                if any(re.search(r"\d", tok[k]) for k in idx if k not in (i_tahun, j)):
+                    i_bulan = j
+                    break
+    kandidat = [i for i in idx if i not in (i_tahun, i_bulan) and re.search(r"\d", tok[i])]
+    if not kandidat:
+        raise ValueError("nomor terakhir '{}' tidak mengandung angka urut (contoh benar: INV/2026/09/0012)"
+                         .format(s))
+    i_urut = kandidat[-1]
+    m = re.search(r"(\d+)(?!.*\d)", tok[i_urut])
     angka = m.group(1)
-    baru = str(int(angka) + 1).zfill(len(angka))
-    return terakhir[:m.start(1)] + baru + terakhir[m.end(1):]
+
+    def pasang(n):
+        t = list(tok)
+        t[i_urut] = t[i_urut][:m.start(1)] + str(n).zfill(len(angka)) + t[i_urut][m.end(1):]
+        return t
+
+    urut_lama = int(angka)
+    if tgl is None or i_tahun is None:
+        baru = "".join(pasang(urut_lama + 1))
+        return baru, "Nomor terakhir dibaca: {} -> nomor baru: {} (urut {} + 1).".format(s, baru, urut_lama)
+
+    th_lama = int(tok[i_tahun])
+    bl_lama, gaya = _bulan_token(tok[i_bulan]) if i_bulan is not None else (None, None)
+    per_lama = (th_lama, bl_lama or 0)
+    per_dok = (tgl.year, tgl.month if bl_lama else 0)
+    label_lama = "{:02d}/{}".format(bl_lama, th_lama) if bl_lama else str(th_lama)
+    label_dok = "{:02d}/{}".format(tgl.month, tgl.year) if bl_lama else str(tgl.year)
+    if per_dok < per_lama:
+        raise ValueError("tanggal dokumen ({}) lebih lama dari periode nomor terakhir {} ({}). Nomor tidak boleh "
+                         "mundur; periksa tanggal atau isi 'nomor' manual bila memang disengaja."
+                         .format(tanggal_id(tgl), s, label_lama))
+    if per_dok == per_lama:
+        baru = "".join(pasang(urut_lama + 1))
+        return baru, "Nomor terakhir dibaca: {} -> nomor baru: {} (urut {} + 1).".format(s, baru, urut_lama)
+    t = pasang(urut_lama + 1 if urut_lanjut else 1)
+    t[i_tahun] = str(tgl.year)
+    if i_bulan is not None:
+        t[i_bulan] = _tulis_bulan(tgl.month, gaya)
+    baru = "".join(t)
+    if urut_lanjut:
+        ket = ("Nomor terakhir dibaca: {} -> nomor baru: {}. Periode berganti ({} -> {}); urut dilanjutkan "
+               "(--urut-lanjut).".format(s, baru, label_lama, label_dok))
+    else:
+        ket = ("Nomor terakhir dibaca: {} -> nomor baru: {}. Periode berganti ({} -> {}), jadi nomor urut mulai "
+               "lagi dari 1. Jika usaha Anda melanjutkan nomor lintas {}, jalankan ulang dengan --urut-lanjut."
+               .format(s, baru, label_lama, label_dok, "bulan" if bl_lama else "tahun"))
+    return baru, ket
 
 
 def nomor_dari_counter(path, prefix, tgl):
@@ -199,6 +282,33 @@ def hitung(d):
         ppn = hitung_ppn_dari_dpp(dpp, jenis_ppn, "bawah")
         ppn["ongkir_kena_ppn"] = ongkir_kena
     total = setelah_diskon + ongkir + (ppn["ppn"] if ppn else 0)
+
+    # PPh 23 (info saja: dipotong & disetor pembeli/pemberi kerja; TIDAK mengubah total tagihan)
+    pph23 = None
+    cfg23 = d.get("pph23") or False
+    if cfg23:
+        if not isinstance(cfg23, dict):
+            cfg23 = {"aktif": bool(cfg23)}
+        if cfg23.get("aktif", True):
+            if jenis_dok != "invoice":
+                raise ValueError("pph23 hanya untuk invoice (bukan kuitansi)")
+            tanpa_npwp = bool(cfg23.get("tanpa_npwp", False))
+            tarif = parse_angka(cfg23["tarif"], "pph23.tarif") if cfg23.get("tarif") not in (None, "") \
+                else TARIF_PPH23_JASA * (2 if tanpa_npwp else 1)
+            if not 0 < tarif <= 15:
+                raise ValueError("pph23.tarif harus di atas 0 s.d. 15 (persen)")
+            if cfg23.get("dasar") not in (None, ""):
+                dasar = rupiah_bulat(parse_angka(cfg23["dasar"], "pph23.dasar"))
+                sumber_dasar = "diisi pengguna"
+                if dasar <= 0 or dasar > setelah_diskon + ongkir:
+                    raise ValueError("pph23.dasar harus lebih dari 0 dan tidak melebihi nilai sebelum PPN ({})"
+                                     .format(format_rp(setelah_diskon + ongkir)))
+            else:
+                dasar = setelah_diskon
+                sumber_dasar = "subtotal setelah diskon, tanpa PPN" + (" dan tanpa ongkir" if ongkir else "")
+            potong = (dasar * tarif / 100).quantize(Decimal(1), ROUND_FLOOR)
+            pph23 = {"tarif": tarif, "dasar": dasar, "sumber_dasar": sumber_dasar, "pph23": potong,
+                     "tanpa_npwp": tanpa_npwp, "estimasi_diterima_bersih": total - potong}
 
     # pembayaran
     bayar = []
@@ -293,13 +403,30 @@ def hitung(d):
         "jenis_dokumen": jenis_dok, "tanggal": tgl, "jatuh_tempo": jatuh_tempo,
         "penjual": penjual, "pembeli": pembeli, "baris": baris, "subtotal": subtotal,
         "diskon": diskon, "diskon_persen": diskon_persen, "setelah_diskon": setelah_diskon, "ongkir": ongkir,
-        "ppn": ppn, "total": total, "pembayaran": bayar, "dibayar": dibayar, "sisa": max(sisa, Decimal(0)),
+        "ppn": ppn, "pph23": pph23, "total": total, "pembayaran": bayar, "dibayar": dibayar, "sisa": max(sisa, Decimal(0)),
         "termin": termin, "status": status, "meterai": meterai, "peringatan": peringatan,
         "terbilang_total": terbilang(total),
         "terbilang_diterima": terbilang(dibayar) if dibayar else None,
         "rekening": d.get("rekening") or [], "catatan": str(d.get("catatan") or ""),
         "tanda_tangan": d.get("tanda_tangan") or {},
     }
+
+
+# ---------------------------------------------------------------- data yang belum diberikan
+ISI = "[isi]"
+ISI_KOTA = "[isi kota]"
+ISI_NAMA = "[isi nama penanda tangan]"
+
+
+def kolom_kosong(h):
+    """Data yang tidak diberikan pengguna -> placeholder [isi ...], tidak pernah dikarang."""
+    tt = h["tanda_tangan"] if isinstance(h["tanda_tangan"], dict) else {}
+    kosong = []
+    if not str(tt.get("kota") or "").strip():
+        kosong.append("kota")
+    if not str(tt.get("nama") or "").strip():
+        kosong.append("nama penanda tangan")
+    return kosong
 
 
 # ---------------------------------------------------------------- output Markdown
@@ -346,6 +473,14 @@ def teks_terbilang(h):
     if h["jenis_dokumen"] == "kuitansi":
         return h["terbilang_diterima"] or terbilang(0)
     return terbilang(h["sisa"]) if h["pembayaran"] else h["terbilang_total"]
+
+
+def teks_pph23(h):
+    q = h["pph23"]
+    return ("_Info PPh 23 (dipotong & disetor oleh {}, tidak mengurangi total tagihan): {}% x {} = {}. "
+            "Estimasi diterima bersih: {}. Mohon kirimkan bukti potong PPh 23._".format(
+                md(h["pembeli"]["nama"]), format_angka(q["tarif"]).replace(".", ","), format_rp(q["dasar"]),
+                format_rp(q["pph23"]), format_rp(q["estimasi_diterima_bersih"])))
 
 
 def markdown(h, nomor):
@@ -399,6 +534,8 @@ def markdown(h, nomor):
     if h["jenis_dokumen"] == "invoice":
         out.append("")
         out.append("Terbilang: _{}_".format(teks_terbilang(h)))
+    if h.get("pph23"):
+        out += ["", teks_pph23(h)]
     if h["termin"]:
         out += ["", "**Jadwal pembayaran**", "", "| Termin | Persen | Jumlah | Jatuh tempo |", "|---|---:|---:|---|"]
         for t in h["termin"]:
@@ -413,12 +550,13 @@ def markdown(h, nomor):
     if h["catatan"]:
         out += ["", "**Catatan:** " + md(h["catatan"])]
     tt = h["tanda_tangan"]
-    out += ["", "{}{}".format(md(tt.get("kota")) + ", " if tt.get("kota") else "", tanggal_id(h["tanggal"]))]
+    out += ["", "{}, {}".format(md(tt.get("kota")) if tt.get("kota") else ISI_KOTA, tanggal_id(h["tanggal"]))]
     if h["meterai"]["wajib"]:
         out.append("[ Meterai Rp10.000 ]")
-    out += ["", "", "**{}**".format(md(tt.get("nama") or h["penjual"]["nama"]))]
+    out += ["", "", "**{}**".format(md(tt["nama"]) if tt.get("nama") else ISI_NAMA)]
     if tt.get("jabatan"):
         out.append(md(tt["jabatan"]))
+    out.append(md(h["penjual"]["nama"]))
     return "\n".join(out)
 
 
@@ -494,6 +632,8 @@ def html_dok(h, nomor):
             e(pb.get("nama")), e(format_rp(h["dibayar"])), e(teks_terbilang(h)),
             e(", ".join(b["nama"] for b in h["baris"])), sisa)
     tb = "<p class='terbilang'>Terbilang: {}</p>".format(e(teks_terbilang(h))) if h["jenis_dokumen"] == "invoice" else ""
+    if h.get("pph23"):
+        tb += "<p class='kecil'><em>{}</em></p>".format(e(teks_pph23(h).strip("_")))
     termin = ""
     if h["termin"]:
         termin = "<p class='label'>Jadwal pembayaran</p><table class='item'><tr><th>Termin</th><th class='kanan'>Persen</th>" \
@@ -511,9 +651,9 @@ def html_dok(h, nomor):
     cat = "<p class='kecil'><strong>Catatan:</strong> {}</p>".format(e(h["catatan"])) if h["catatan"] else ""
     tt = h["tanda_tangan"]
     meterai = "<div class='meterai'>Meterai<br>Rp10.000</div><br>" if h["meterai"]["wajib"] else "<br><br><br>"
-    ttd = "<div class='ttd'>{}{}<br>{}<strong>{}</strong>{}</div>".format(
-        e(tt.get("kota") + ", ") if tt.get("kota") else "", e(tanggal_id(h["tanggal"])), meterai,
-        e(tt.get("nama") or pj.get("nama")), "<br>" + e(tt["jabatan"]) if tt.get("jabatan") else "")
+    ttd = "<div class='ttd'>{}, {}<br>{}<strong>{}</strong>{}<br>{}</div>".format(
+        e(tt.get("kota") or ISI_KOTA), e(tanggal_id(h["tanggal"])), meterai,
+        e(tt.get("nama") or ISI_NAMA), "<br>" + e(tt["jabatan"]) if tt.get("jabatan") else "", e(pj.get("nama")))
     return """<!DOCTYPE html>
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{judul} {nomor}</title><style>{css}</style></head><body><div class="hal">
@@ -541,6 +681,8 @@ def main(argv=None):
     p.add_argument("--file", required=True, help="File JSON data invoice (lihat templates/contoh-invoice.json)")
     p.add_argument("--html", help="Simpan juga versi HTML siap cetak ke path ini")
     p.add_argument("--nomor-terakhir", help="Nomor invoice terakhir, mis. INV/2026/09/0007 -> dibuat 0008")
+    p.add_argument("--urut-lanjut", action="store_true",
+                   help="Dengan --nomor-terakhir: saat bulan/tahun berganti, urut dilanjutkan (bukan mulai 0001)")
     p.add_argument("--counter-file", help="File JSON penyimpan nomor urut (dibuat/diperbarui otomatis)")
     p.add_argument("--format", choices=["markdown", "json"], default="markdown")
     a = p.parse_args(argv)
@@ -559,12 +701,14 @@ def main(argv=None):
         prefix = str(d.get("prefix") or ("KWT" if h["jenis_dokumen"] == "kuitansi" else "INV")).strip("/")
         data_counter = None
         catatan_nomor = None
+        keterangan_nomor = None
         if d.get("nomor"):
             nomor = str(d["nomor"])
         elif a.nomor_terakhir:
-            nomor = nomor_berikutnya(a.nomor_terakhir)
+            nomor, keterangan_nomor = nomor_berikutnya(a.nomor_terakhir, h["tanggal"], a.urut_lanjut)
         elif a.counter_file:
             nomor, data_counter = nomor_dari_counter(a.counter_file, prefix, h["tanggal"])
+            keterangan_nomor = "Nomor dari file counter {}: {}.".format(a.counter_file, nomor)
         else:
             nomor = "{}/{}/{:02d}/0001".format(prefix, h["tanggal"].year, h["tanggal"].month)
             catatan_nomor = ("Nomor urut memakai 0001. Sebutkan nomor dokumen terakhir Anda agar nomor berurutan "
@@ -589,6 +733,8 @@ def main(argv=None):
     if a.format == "json":
         h2 = dict(h)
         h2["nomor"] = nomor
+        h2["keterangan_nomor"] = keterangan_nomor
+        h2["perlu_diisi"] = kolom_kosong(h)
         h2["html_disimpan_ke"] = a.html
         print(json.dumps(h2, default=lambda x: x.isoformat() if isinstance(x, datetime.date) else ke_json(x),
                          ensure_ascii=False, indent=2))
@@ -597,14 +743,34 @@ def main(argv=None):
         print("")
         print("---")
         print("Info untuk penjual (jangan ikut dikirim):")
+        if keterangan_nomor:
+            print("- Nomor: " + keterangan_nomor)
         print("- Bea meterai: " + h["meterai"]["pesan"])
         if h["ppn"]:
             print("- PPN dihitung dengan DPP nilai lain 11/12 (PMK 131/2024, berlaku per {}): dari DPP persis lalu "
                   "dibulatkan ke bawah sekali. Pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti "
                   "Coretax. Invoice ini bukan faktur pajak; buat faktur pajak di Coretax.".format(TANGGAL_ATURAN))
+        if h.get("pph23"):
+            q = h["pph23"]
+            print("- PPh 23 (info, TIDAK mengubah total tagihan): {}% x {} ({}) = {}, dibulatkan ke bawah. Dipotong & "
+                  "disetor oleh {} (pemberi kerja/pembeli jasa) saat membayar; Anda menerima bukti potong (simpan "
+                  "untuk SPT Tahunan). Bila Anda memakai PPh final UMKM 0,5% dan sudah memberi Surat Keterangan PP 55 "
+                  "ke pembeli, PPh 23 tidak dipotong - matikan pph23. Estimasi diterima bersih: {} - {} = {}.{}{} Dasar: UU PPh Pasal 23 "
+                  "(jasa 2%; tanpa NPWP 100% lebih tinggi). Pembulatan belum dicocokkan dengan Coretax.".format(
+                      format_angka(q["tarif"]).replace(".", ","), format_rp(q["dasar"]), q["sumber_dasar"],
+                      format_rp(q["pph23"]), h["pembeli"]["nama"], format_rp(h["total"]), format_rp(q["pph23"]),
+                      format_rp(q["estimasi_diterima_bersih"]),
+                      " Bila ada DP/termin, PPh 23 dipotong per pembayaran sesuai porsinya." if h["dibayar"] or
+                      h["termin"] else "",
+                      " Bila invoice juga berisi barang (bukan jasa), isi pph23.dasar dengan nilai jasanya saja."
+                      if q["sumber_dasar"] != "diisi pengguna" else ""))
         print("- Pembulatan: jumlah baris & diskon dibulatkan ke rupiah terdekat.")
         for w in h["peringatan"]:
             print("- PERHATIAN: " + w)
+        kosong = kolom_kosong(h)
+        if kosong:
+            print("- PERLU DIISI: {} belum diberikan, ditulis \"{}\" di dokumen. Tanyakan ke pengguna atau "
+                  "biarkan ia mengisi sendiri; jangan dikarang.".format(", ".join(kosong), ISI))
         if a.html:
             print("- Versi HTML siap cetak disimpan di: {}".format(a.html))
     return 0

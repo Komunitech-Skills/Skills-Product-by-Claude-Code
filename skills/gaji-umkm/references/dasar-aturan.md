@@ -1,4 +1,4 @@
-# Dasar aturan gaji-umkm — berlaku per 23 September 2026 (diperbarui 26 September 2026, v1.0.1)
+# Dasar aturan gaji-umkm — berlaku per 23 September 2026 (diperbarui 26 September 2026, v1.0.2)
 
 > Ringkasan untuk alat bantu hitung, bukan nasihat hukum/pajak. **gaji-umkm tidak menetapkan tarif sendiri.** Semua tarif, batas upah, tabel TER, dan rumus berasal dari script skill Komunitech berikut, disalin persis di `scripts/mesin/` (sha256 di `scripts/mesin/SUMBER.json`). Rincian sumber resmi & status verifikasi ada di dokumen skill sumbernya.
 
@@ -10,7 +10,7 @@
 | Lembur: 1/173 upah sebulan; hari kerja jam ke-1 ×1,5, berikutnya ×2; hari libur sesuai tangga pola 5/6 hari | `payroll.py` | PP 35/2021 Pasal 26, 31, 32 |
 | PPh 21 TER bulanan (kategori A/B/C), bruto pajak termasuk premi JKK, JKM, BPJS Kesehatan perusahaan | `payroll.py` + `ter_core.py` + `ter_tabel.json` | PP 58/2023 (tabel TER), PMK 168/2023 |
 | Masa Pajak Terakhir (Desember/bulan berhenti): hitung ulang setahun dengan tarif Pasal 17, biaya jabatan 5% maks Rp 500.000 × jumlah bulan kerja, PTKP, PKP dibulatkan ke bawah ribuan | `payroll.py` + `ter_core.py`; dicek ulang dengan `pph21.py` (pph21-ter 1.0.1) | PMK 168/2023 Pasal 8–10; UU 7/2021 HPP (PTKP & Pasal 17) |
-| PPh 21 DTP 2026 (sektor tertentu, bruto tetap ≤ Rp 10 jt) | `payroll.py` | PMK 105/2025 |
+| PPh 21 DTP 2026 (sektor tertentu, bruto tetap ≤ Rp 10 jt): PPh 21 tetap dipotong, nilai sama dibayar tunai → gaji bersih tidak berkurang karena pajak (bukan gaji + DTP); setoran bagian DTP Rp 0. Rincian: `references/dtp-pmk105.md` | `payroll.py` | PMK 105/2025 Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B |
 | THR: ≥12 bulan = 1 bulan upah; 1–<12 bulan = masa kerja/12 × upah; batas bayar H-7 | `thr.py` (hitung-thr 1.0.1) | Permenaker 6/2016; SE Menaker M/3/HK.04.00/III/2026 |
 
 ## Pembulatan (standar seluruh library Komunitech)
@@ -43,6 +43,7 @@
 
 ## Pagar kepatuhan BPJS (v1.0.1)
 - UU 24/2011 Pasal 15 ayat (1)–(2): pemberi kerja wajib mendaftarkan dirinya dan pekerjanya ke BPJS serta memberikan data yang lengkap dan benar. PP 86/2013: sanksi administratif (teguran tertulis, denda, tidak mendapat pelayanan publik tertentu). Perpres 82/2018 jo. 64/2020 Pasal 32: dasar iuran BPJS Kesehatan = gaji pokok + tunjangan tetap, batas atas Rp 12.000.000 (batas bawah UMK di mesin slip-gaji-bpjs).
+- v1.0.2: gaji pokok/tunjangan tetap "dibayar" (`isi`) yang lebih kecil dari data karyawan pada bulan **penuh** ikut dipagari, karena dasar iuran BPJS (Kesehatan & Ketenagakerjaan) bulan itu ikut turun; bulan masuk/keluar tengah bulan (prorata) tidak dipagari.
 - JP tidak dipagari karena kewajiban JP bertahap menurut skala usaha (usaha mikro/kecil belum wajib JP) — tetap tampil di data karyawan.
 
 ## Sumber

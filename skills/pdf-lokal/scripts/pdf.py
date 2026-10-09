@@ -3,7 +3,8 @@
 
 Script ini TIDAK memproses PDF sendiri. Ia memanggil REST API lokal Stirling-PDF
 (default http://localhost:8080) yang harus sudah terpasang & berjalan di komputer
-yang sama (lihat docs/panduan-stirling-pdf.md). Hanya library standar Python 3.8+,
+yang sama (lihat references/pasang-stirling.md). Bila Stirling-PDF belum ada,
+lihat scripts/pdf_cadangan.py (qpdf/Ghostscript/pdftk yang sudah terpasang). Hanya library standar Python 3.8+,
 lintas OS (Windows/macOS/Linux), tanpa paket tambahan.
 
 Alamat server & kunci API (opsional, hanya bila keamanan Stirling-PDF diaktifkan):
@@ -44,7 +45,7 @@ import uuid
 import zipfile
 from pathlib import Path
 
-VERSI = "1.0.2"
+VERSI = "1.0.5"
 APLIKASI = "pdf-lokal"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1", "0.0.0.0"}
 
@@ -166,7 +167,7 @@ def panggil_stirling(base_url, api_key, path, field_biasa=None, field_file=None,
                 "salah satu dari 2 cara ini:\n"
                 "  1) Kalau kamu jalankan Stirling-PDF lewat Docker & ini komputer/pemakaian "
                 "pribadi: matikan login dengan menambahkan '-e SECURITY_ENABLELOGIN=false' saat "
-                "menjalankan 'docker run' (lihat docs/panduan-stirling-pdf.md bagian Keamanan), "
+                "menjalankan 'docker run' (lihat references/pasang-stirling.md), "
                 "lalu jalankan ulang containernya.\n"
                 "  2) Kalau login memang sengaja diaktifkan (mis. komputer dipakai bersama): "
                 "buka aplikasi Stirling-PDF > ikon gerigi > Account Settings > salin API Key, "
@@ -180,7 +181,7 @@ def panggil_stirling(base_url, api_key, path, field_biasa=None, field_file=None,
                     "'lokal saja' (Settings > Connection), OCR & konversi dokumen memang TIDAK "
                     "disertakan di mode itu (perlu masuk akun Stirling Cloud atau menyambung ke "
                     "server self-hosted). Solusi gratis & tetap lokal: jalankan Stirling-PDF lewat "
-                    "Docker (lihat docs/panduan-stirling-pdf.md Jalur B) lalu di aplikasi desktop "
+                    "Docker (lihat references/pasang-stirling.md Jalur B) lalu di aplikasi desktop "
                     "pilih Settings > Connection > Self-hosted server > http://localhost:8080."
                 )
             raise Gagal(
@@ -215,9 +216,10 @@ def panggil_stirling(base_url, api_key, path, field_biasa=None, field_file=None,
     except urllib.error.URLError as e:
         raise Gagal(
             f"Tidak bisa menghubungi Stirling-PDF di {base_url} ({e.reason}). Pastikan aplikasi "
-            "Stirling-PDF sudah dibuka & sedang berjalan di komputer ini. Lihat "
-            "docs/panduan-stirling-pdf.md untuk cara memasang dan menyalakannya, atau ikuti "
-            "'Cara manual tanpa script' di SKILL.md bila belum sempat memasangnya."
+            "Stirling-PDF sudah dibuka & sedang berjalan di komputer ini. JALUR CADANGAN: untuk "
+            "gabung/pisah/kompres/putar/kunci/buka-kunci jalankan 'python3 scripts/pdf_cadangan.py alat' "
+            "- memakai qpdf/Ghostscript/pdftk yang sudah terpasang, tanpa memasang apa pun. "
+            "Cara memasang Stirling-PDF: references/pasang-stirling.md."
         ) from None
     except TimeoutError:
         raise Gagal(
@@ -428,7 +430,7 @@ def cmd_ocr(args):
                 f"Catatan: bahasa {', '.join(dilewati)} belum terpasang di Stirling-PDF-mu, "
                 f"OCR hanya memakai: {', '.join(bahasa_dipakai) or '(tidak ada)'}. Untuk memasang "
                 "bahasa Indonesia: buka aplikasi Stirling-PDF > menu OCR > unduh paket bahasa "
-                "'ind' (lihat docs/panduan-stirling-pdf.md)."
+                "'ind' (lihat references/pasang-stirling.md)."
             )
         if not bahasa_dipakai:
             raise Gagal(

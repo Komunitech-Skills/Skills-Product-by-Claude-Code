@@ -14,6 +14,7 @@ Aturan emas: **jika ragu antara usulan dan keputusan, pilih usulan + ⚠️.** K
 - Label pembicara ("Speaker 1", "Pembicara 2") → pakai apa adanya bila nama tidak disebut; tanyakan di "Perlu dikonfirmasi" siapa mereka.
 - Kata yang salah dengar (mis. "roti tawar" padahal konteksnya "rapat tahunan") → jangan dikoreksi diam-diam; tulis versi yang paling masuk akal + ⚠️ "(di transkrip tertulis: '...')".
 - Angka dalam kata ("lima belas juta") → tulis `Rp 15.000.000` dan pastikan konsisten.
+- Angka sesudah nama alat/tempat ("forklift 2", "mesin 3", "gudang 2") = nomor/kode unit, bukan jumlah. Jangan ubah menjadi "2 unit". Ragu → tulis apa adanya + `[cek: nomor unit atau jumlah?]`.
 - Bahasa daerah: terjemahkan maknanya; kutipan penting boleh disertakan dalam kurung.
 
 ## 3. Status action item

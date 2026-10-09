@@ -17,7 +17,7 @@
 - Pemilik/admin yang ingin cukup bertanya ke AI (OpenClaw, Claude Code, Codex, Cursor) tanpa menghafal tampilan Vikunja.
 - Tim yang koordinasi kerjanya masih lewat grup WA dan sering ada tugas "hilang" karena tenggelam di chat.
 
-**Kurang cocok:** belum punya server/komputer yang bisa menyala terus untuk Vikunja (lihat instalasi — bisa laptop kantor biasa); butuh sub-tugas, tugas berulang otomatis, atau tampilan Kanban lewat AI (masih harus lewat layar Vikunja langsung di v1.0.0); tim besar (>20 orang) dengan struktur organisasi kompleks — Vikunja tetap bisa, tapi nilai tambah skill ini paling terasa di tim kecil.
+**Kurang cocok:** belum punya server/komputer yang bisa menyala terus untuk Vikunja (lihat instalasi — bisa laptop kantor biasa); butuh sub-tugas, tugas berulang otomatis, atau tampilan Kanban lewat AI (masih harus lewat layar Vikunja langsung di v1.0.x); tim besar (>20 orang) dengan struktur organisasi kompleks — Vikunja tetap bisa, tapi nilai tambah skill ini paling terasa di tim kecil.
 
 ## Contoh sebelum & sesudah
 **Sebelum:** buka Vikunja → cari proyek → klik "+ New Task" → ketik judul → klik kalender pilih tanggal → cari nama di kolom assignee → simpan. Untuk tahu status tim: buka tiap proyek satu-satu, baca satu per satu tugas siapa pegang apa.

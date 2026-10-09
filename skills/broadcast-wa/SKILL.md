@@ -1,9 +1,17 @@
 ---
 name: broadcast-wa
-description: Membuat pesan broadcast WhatsApp promosi yang personal ({nama}, {sapaan}) dalam 3–5 variasi, lengkap dengan teks berhenti (opt-out) wajib, saran jadwal kirim bertahap, pengingat UU PDP, dan — bila ada file kontak CSV — daftar kirim siap pakai yang hanya berisi kontak yang setuju plus link wa.me per kontak. Gunakan saat pengguna minta pesan broadcast/blast WA, promo lewat WhatsApp, atau info promo ke pelanggan (WhatsApp broadcast, WA marketing message, bulk message). Bukan untuk membalas chat satu pelanggan (balas-chat-cs) atau menagih utang (tagih-piutang).
+description: Membuat pesan broadcast WhatsApp promosi yang personal ({nama}, {sapaan}) dalam 3–5 variasi, lengkap dengan teks berhenti (opt-out) wajib, saran jadwal kirim bertahap, pengingat UU PDP, dan — bila ada file kontak CSV — daftar kirim siap pakai yang hanya berisi kontak yang setuju plus link wa.me per kontak. Gunakan saat pengguna minta pesan broadcast/blast WA, promo lewat WhatsApp, atau info promo ke pelanggan (WhatsApp broadcast, WA marketing message, bulk message). Berlaku juga saat permintaan ditolak (kontak tanpa izin/database beli): draf pesan yang tetap ditulis wajib lolos cek fakta dan tanpa klaim/urgensi karangan ("Khusus hari ini", "sebelum kehabisan", "stok terbatas"). Bukan untuk membalas chat satu pelanggan (balas-chat-cs) atau menagih utang (tagih-piutang).
 ---
 
 # Broadcast WA
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
+## ATURAN WAJIB (berlaku di SEMUA jalur, termasuk saat menolak permintaan)
+
+1. Setiap draf teks pesan yang ditulis, **juga di jalur penolakan tanpa file kontak** (database beli, nomor tanpa izin) dan draf "siap dipakai nanti", WAJIB lolos `python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file pesan.txt --fakta-file fakta.txt --abaikan jam` (`HASIL: LULUS`) sebelum ditampilkan.
+2. DILARANG menulis sifat produk/rasa/tekstur ("empuk", "fresh", "favorit"), urgensi/kelangkaan ("Khusus hari ini", "Hari ini ada promo", "sebelum kehabisan", "stok terbatas"), periode, atau layanan yang tidak diberikan pengguna. Pakai `[isi: periode promo]` atau tanyakan. Hanya angka & frasa dari pengguna.
+3. Jalur penolakan: tolak daftar kirim, jelaskan UU PDP singkat, tawarkan cara kumpulkan izin, lalu bila menulis draf pakai hanya fakta pengguna + placeholder.
 
 ## Tujuan
 Membantu pemilik usaha mengirim promo lewat WhatsApp yang terasa personal, tidak mengganggu, dan patuh
@@ -37,12 +45,14 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
 pakai default dan sebutkan asumsinya di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Baca `references/aturan-pdp-wa.md`.** Pastikan penerima adalah kontak yang setuju. Jika pengguna
    belum punya data persetujuan, tetap bantu buat pesannya, tapi sertakan cara mengumpulkan izin.
 2. **Tulis 3–5 variasi pesan** (±300–600 karakter, maks. ±700) dengan pembuka, isi, dan penutup yang
    berbeda-beda, bukan sekadar ganti satu kata. Setiap variasi wajib:
-   - menyapa dengan `{sapaan} {nama}` (hasilnya mis. "Bu Siti", "Kak Rina") — kecuali versi khusus daftar
-     siaran WhatsApp Business, yang memakai sapaan umum tanpa placeholder;
+   - menyapa dengan `{sapaan} {nama}` (hasilnya mis. "Bu Siti", "Kak Rina"). Bila CSV punya kolom sapaan
+     (Sapaan/Panggilan), script memakai isinya; kolom kosong → awalan nama/gelar → default "Kak";
    - menyebut nama toko dan alasan singkat mereka menerima pesan (mis. "pelanggan setia Laundry X");
    - isi promo yang **persis** dari pengguna (harga, periode, syarat) — **jangan menghitung angka baru**
      (persen hemat, total); jika pengguna ingin menyebut "hemat X%", minta angkanya;
@@ -54,13 +64,24 @@ pakai default dan sebutkan asumsinya di akhir.
    Pakai satu sapaan yang konsisten dalam satu pesan: jika menyapa "{sapaan} {nama}", jangan ganti ke "Kamu"
    di kalimat berikutnya (pakai "{sapaan}" lagi).
    Emoji secukupnya (maks. 3), tanpa huruf kapital semua, tanpa "URGENT!!!", maks. 1 link.
+   - **Anti-karang:** klaim urgensi/reputasi/label/layanan ("stok terbatas", "terlaris", "halal", "gratis ongkir",
+     "besok harga naik") hanya boleh bila **disebut pemilik**. Tidak disebut → jangan ditulis (boleh tanya).
+   - **Versi daftar siaran** (WhatsApp Business, tanpa `{nama}`, sapaan umum "Halo Kak") ditulis di bagian
+     **terpisah** dan **tidak** dimasukkan ke file pesan untuk daftar kirim personal — script menolak variasi tanpa
+     `{nama}` bila CSV punya kolom nama.
 3. **Saran jadwal kirim** sesuai audiens: jam kirim, hari, bertahap per batch (lihat references).
-4. **Jika pengguna memberi file kontak CSV**, simpan variasi ke file teks (dipisah baris `---`), lalu jalankan
+4. **Jika pengguna memberi file kontak CSV**, simpan variasi personal ke file teks (dipisah baris `---`), salin
+   **kata-kata pengguna tentang promo apa adanya** ke `fakta.txt` (jangan ditambah), lalu jalankan
    (path relatif terhadap folder SKILL.md ini; Windows: `python`/`py`):
    ```bash
    python3 <folder-skill-ini>/scripts/siapkan_broadcast.py --kontak pelanggan.csv --pesan pesan.txt \
-     --mulai "2026-09-28 10:00" --jam-kirim 09:00-20:00 --output broadcast_siap.csv
+     --fakta-file fakta.txt --mulai "2026-09-28 10:00" --jam-kirim 09:00-20:00 --output broadcast_siap.csv
    ```
+   Cek fakta berjalan **otomatis** di script ini (tanpa `--fakta-file`, semua klaim dianggap karangan dan script GAGAL).
+   Bila script menolak karena "klaim yang tidak disebut pemilik", hapus klaim itu dari variasi (atau tanyakan ke
+   pemilik) lalu jalankan ulang — jangan melewati pemeriksaan ini. Tanpa CSV, cek variasi dengan
+   `python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file pesan.txt --fakta-file fakta.txt --abaikan jam`
+   (harus `HASIL: LULUS`). Kolom sapaan terdeteksi otomatis (Sapaan, Panggilan, Sebutan; atau `--kolom-sapaan`).
    Script hanya meloloskan kontak yang setuju, membuang yang minta berhenti (kolom Berhenti berisi apa pun
    selain kosong/tidak/0/-, misalnya "ya", "STOP", "x", atau tanggal; juga `--daftar-berhenti stop.txt`).
    Nomor yang pernah berhenti/tidak setuju di satu baris tetap dikecualikan walau muncul lagi di baris lain. Script juga
@@ -97,6 +118,9 @@ pakai default dan sebutkan asumsinya di akhir.
 
 ### Variasi 2
 ...
+
+### Versi daftar siaran WhatsApp Business (tanpa nama — JANGAN dipakai untuk kirim personal)
+<pesan dengan sapaan umum, tanpa placeholder>
 
 ### Jadwal kirim yang disarankan
 - <hari/tanggal>, <jam> <zona>, bertahap <n> pesan per batch, jeda <...>
@@ -143,7 +167,9 @@ File: broadcast_siap.csv (berisi jadwal & link wa.me per kontak — simpan, jang
 ## Checklist sebelum mengirim hasil
 - [ ] Setiap variasi punya {sapaan} {nama}, nama toko, CTA, dan teks berhenti
 - [ ] Angka promo persis dari pengguna; tidak ada angka hasil hitungan sendiri
-- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, terlaris, "stok terakhir" palsu)
+- [ ] Tidak ada klaim yang tidak diberikan pengguna (halal, BPOM, terlaris, "stok terbatas/terakhir") — dicek
+      script `--fakta-file` / `cek_fakta.py`
+- [ ] Sapaan mengikuti kolom Sapaan pengguna bila ada; versi daftar siaran terpisah dari variasi personal
 - [ ] Variasi benar-benar berbeda (pembuka, susunan, CTA), maks. 1 link, emoji ≤ 3
 - [ ] Ada saran jadwal bertahap & pengingat UU PDP
 - [ ] Jika memakai file kontak: ringkasan script dilaporkan, daftar nomor tidak ditempel di chat

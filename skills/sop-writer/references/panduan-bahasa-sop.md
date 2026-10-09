@@ -11,7 +11,9 @@ Tujuan: karyawan lulusan SD–SMA, karyawan baru, atau karyawan paruh waktu bisa
 6. **Pakai "kamu" atau kalimat perintah netral.** Hindari "Saudara", "karyawan wajib..." di setiap baris.
 7. **Jelaskan alasan untuk langkah kritis** (⚠️) dalam 1 kalimat pendek.
 8. **Pelaksana berbeda:** jika satu langkah dikerjakan peran lain, tulis `(Peran)` di akhir langkah, mis. "Cetak resi. (Admin)".
-9. **Gambar/foto:** sarankan pengguna menambahkan foto contoh "benar vs salah" untuk langkah packing/display/kebersihan.
+9. **Satu tindakan hanya muncul sekali.** Sebelum mengirim, cek tidak ada tindakan yang sama ditulis di dua langkah (mis. "sisihkan modal" di langkah 7 dan "sisihkan kembali modal" di langkah 12). Bila perlu diingatkan lagi, rujuk nomornya: "(modal sudah dipisah di langkah 7)".
+10. **SOP yang menyangkut uang (closing kasir, setoran, kas kecil):** wajib satu baris rumus sebelum langkah hitung, mis. **"Uang seharusnya di laci = modal Rp [isi] + penjualan tunai di laporan. Setoran = uang di laci − modal."** Telusuri alur uang dari awal sampai amplop/brankas: modal dipisah satu kali, setoran = sisanya, angka di form sama dengan isi amplop.
+11. **Gambar/foto:** sarankan pengguna menambahkan foto contoh "benar vs salah" untuk langkah packing/display/kebersihan.
 
 ## Kamus pengganti jargon
 | Hindari | Pakai |

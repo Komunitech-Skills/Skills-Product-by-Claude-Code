@@ -5,6 +5,8 @@ description: Menyusun rencana kampanye promo momen belanja Indonesia (gajian, 9.
 
 # Rencana Promo Momen Belanja
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membuat rencana promo yang **tetap untung**: mekanisme dipilih berdasarkan hitungan margin (bukan feeling), target dan anggaran jelas, linimasa bertanggal, dan syarat promo jujur sesuai UU Perlindungan Konsumen.
 
@@ -33,9 +35,9 @@ Membuat rencana promo yang **tetap untung**: mekanisme dipilih berdasarkan hitun
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai default dan tulis asumsinya di bagian akhir.
 
 ## Langkah kerja
-1. **Tentukan momen & tanggal.** Tanggal kembar/gajian/tahun baru dihitung script. Ramadan, Lebaran, Imlek, awal tahun ajaran berubah tiap tahun → minta tanggal ke pengguna atau pakai perkiraan di `references/momen-promo.md` dengan label **"(perkiraan — cek SKB 3 Menteri/kalender pendidikan)"**.
+1. **Tentukan momen, tanggal, dan DURASI promo (jumlah hari) sekali di awal** — mis. "11 Nov saja (1 hari)" atau "10–12 Nov (3 hari)". Durasi ini dipakai **sama persis** di `--unit-normal`/target, linimasa, dan S&K. Bila pengguna tidak menyebut, pilih satu default, tulis sebagai asumsi, dan jangan menawarkan durasi lain tanpa menghitung ulang. **Tentukan tanggal:** Tanggal kembar/gajian/tahun baru dihitung script. Ramadan, Lebaran, Imlek, awal tahun ajaran berubah tiap tahun → minta tanggal ke pengguna atau pakai perkiraan di `references/momen-promo.md` dengan label **"(perkiraan — cek SKB 3 Menteri/kalender pendidikan)"**.
 2. **Pilih 2–3 opsi mekanisme** yang cocok dengan momen & produk (`references/mekanisme-promo.md`). Produk margin tipis → utamakan bundling/hadiah, bukan diskon besar.
-3. **WAJIB cek margin tiap opsi** (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+3. **WAJIB cek margin tiap opsi.** Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jangan mencarinya ke seluruh disk (`find /`). Windows: `python` atau `py`.
    ```bash
    python3 <folder-skill-ini>/scripts/cek_promo.py margin --produk "Kaos Polos" --harga-normal "Rp 89.000" \
      --hpp 52.000 --diskon-persen 20 --biaya-platform 10 --biaya-per-pesanan 1.250 \
@@ -51,16 +53,17 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika 
    - Pakai angka "klaim aman" dari script untuk materi promo (dibulatkan ke bawah).
    - Ada voucher? "Diskon maksimal TOTAL (termasuk voucher)" = gabungan diskon harga + voucher. Batas diskon harga saat voucher tetap berjalan ada di baris "Jika voucher ... tetap berjalan". Jangan menjumlahkan keduanya.
    - **Membandingkan opsi**: jalankan tiap opsi terpisah (atau config dengan nama produk sama / `"bandingkan": true` — ringkasan tidak dijumlah). Config dengan total kampanye hanya untuk rencana final (satu opsi per produk).
+   - `--unit-normal` = penjualan normal **selama durasi promo yang sama** (60/bulan, promo 1 hari → 2; promo 3 hari → 6). Target unit hanya berlaku untuk durasi itu.
    - Perhatikan baris `PERINGATAN INPUT` (mis. "1,250" dibaca 1,25) dan konfirmasi ke pengguna.
 4. **Buat linimasa bertanggal:**
    ```bash
    python3 <folder-skill-ini>/scripts/cek_promo.py jadwal --momen 11.11
    python3 <folder-skill-ini>/scripts/cek_promo.py jadwal --momen "Lebaran 2027 (perkiraan)" --tanggal 2027-03-10
    ```
-   (`--momen gajian --tanggal-gajian 25`, `--dari YYYY-MM-DD` untuk tanggal acuan, `--sampai YYYY-MM-DD` untuk promo beberapa hari, `--pola lebaran|panjang|standar|kilat`).
+   (`--momen gajian --tanggal-gajian 25`, `--dari YYYY-MM-DD` untuk tanggal acuan, `--sampai YYYY-MM-DD` untuk promo beberapa hari — **wajib** bila durasi > 1 hari agar linimasa sama dengan durasi di langkah 3, `--pola lebaran|panjang|standar|kilat`).
    - Waktu mepet: fase persiapan yang tanggalnya sudah lewat **digeser otomatis** ke hari tersisa (ditandai "digeser dari ..."). Gajian yang tinggal < 7 hari otomatis dipindah ke bulan berikutnya; untuk promo bulan ini pakai `--tanggal <tgl> --pola kilat`.
 5. **Tulis rencana** dengan format di bawah: angka & tabel margin disalin **apa adanya** dari script.
-6. **Syarat & ketentuan promo** ditulis jujur: periode & jam, kuota, minimum belanja, produk yang ikut, tidak dapat digabung (jika benar), cara klaim hadiah. Jangan pakai "terlaris", "harga termurah", atau hitung mundur palsu.
+6. **Syarat & ketentuan promo** ditulis jujur (`templates/syarat-promo.md`): periode & jam (= durasi langkah 1), kuota, minimum belanja, produk yang ikut, tidak dapat digabung (jika benar), cara klaim hadiah. Jangan pakai "terlaris", "harga termurah", atau hitung mundur palsu. **Hal operasional yang tidak diberikan pengguna jangan dikarang** — waktu kirim, kuota, batas beli per akun, boleh digabung atau tidak, kebijakan retur — tulis sebagai isian `[isi: …]` (mis. "Pesanan dikirim paling lambat [isi: jumlah] hari kerja setelah pembayaran") dan sebutkan di daftar yang perlu dilengkapi.
 7. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tunjukkan langkahnya, dan tulis "dihitung manual, belum diverifikasi script".
 
 ## Rumus (untuk hitung manual)
@@ -122,7 +125,8 @@ Diskon maksimal agar tidak rugi: 33,5%.
 - [ ] % biaya platform berasal dari pengguna, atau dilabel "contoh — cek angka terbaru di Seller Center"; bila 0%, disebut.
 - [ ] Tanggal momen yang berubah tiap tahun diberi label perkiraan; linimasa memakai tanggal dari script (nama hari benar).
 - [ ] Klaim diskon memakai angka "klaim aman"; harga normal = harga yang benar-benar berlaku sebelumnya.
-- [ ] S&K promo lengkap & jujur (periode, kuota, min. belanja); tidak ada undian tanpa catatan izin.
+- [ ] Durasi promo sama di asumsi `--unit-normal`/target, Periode di judul, linimasa, dan S&K; bila berubah, hitung ulang script.
+- [ ] S&K promo lengkap & jujur (periode, kuota, min. belanja); hal operasional yang tidak disebut pengguna (waktu kirim, kuota, retur) ditulis `[isi: …]`, bukan dikarang; tidak ada undian tanpa catatan izin.
 - [ ] Format Rupiah `Rp 1.250.000`; asumsi & disclaimer ada.
 
 ## Batasan & penanganan error

@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import os
 import unittest
 import zipfile
 from datetime import date
@@ -954,7 +955,7 @@ class UjiTemuanV102(unittest.TestCase):
         self.assertNotEqual(modul.samarkan("anggota01@contoh.id"), modul.samarkan("anggota04@contoh.id"))
         self.assertEqual(modul.samarkan("ani@contoh.id"), "a•••@contoh.id")
         code, out, _e = jalankan("top", self.ang, "--grup", "Email", "--nilai", "Simpanan Wajib", "--n", "3")
-        self.assertNotIn("anggota", out.split("Perlu diperhatikan")[0].replace("anggota-koperasi", ""))
+        self.assertNotIn("anggota", out.split("Perlu dicek")[0].replace("anggota-koperasi", ""))
 
     def test_n6_uang_lembur_sensitif_dan_simpanan_uang(self):
         with tempfile.TemporaryDirectory() as t:
@@ -2499,6 +2500,187 @@ class UjiSatuLogikaRingkasanV1011(unittest.TestCase):
         self.assertFalse(modul._baris_ringkasan("Total Care", mr, prof, 3))
         self.assertTrue(modul._baris_ringkasan("Total", mr, prof, 3))
         self.assertTrue(modul._baris_ringkasan("Total Care", mr[:2] + [(None, None)], prof, 3))
+
+
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import os
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "analisis.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["profil", os.path.join(t, "x.csv"), "--pak"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60, cwd=t)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+
+
+class UjiHardLinkDanTabelKosong(unittest.TestCase):
+    """v1.0.15: hard link ke file asli tetap ditolak walau --timpa; --keluar tanpa tabel diberi peringatan."""
+
+    def test_hard_link_ke_asli_ditolak(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli = Path(t) / "data.csv"
+            isi = "Kategori,Jumlah\nA,1\nB,2\n"
+            asli.write_text(isi, encoding="utf-8")
+            link = Path(t) / "lain.csv"
+            try:
+                os.link(asli, link)
+            except (OSError, AttributeError):
+                self.skipTest("hard link tidak didukung")
+            code, out, err = jalankan("pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah",
+                                      "--keluar", link, "--timpa")
+            self.assertNotEqual(code, 0, out + err)
+            self.assertIn("tidak boleh menimpa file asli", err)
+            self.assertEqual(asli.read_text(encoding="utf-8"), isi)
+
+    def test_daftar_keluar_diberi_peringatan(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli = Path(t) / "data.csv"
+            asli.write_text("Kategori,Jumlah\nA,1\n", encoding="utf-8")
+            baru = Path(t) / "baru.csv"
+            code, out, err = jalankan("daftar", asli, "--keluar", baru)
+            self.assertEqual(code, 0, out + err)
+            self.assertFalse(baru.exists())
+            self.assertIn("TIDAK dibuat", out)
+
+
+class UjiTimpaFileKeluaran(unittest.TestCase):
+    """v1.0.14: --keluar ke file yang sudah ada ditolak tanpa --timpa; file asli tidak pernah bisa ditimpa."""
+
+    ISI = "Tanggal,Kategori,Jumlah\n2026-09-01,Bensin,50000\n2026-09-02,Parkir,10000\n2026-09-03,Bensin,30000\n"
+
+    def _siapkan(self, t):
+        asli = Path(t) / "biaya.csv"
+        asli.write_text(self.ISI, encoding="utf-8")
+        ada = Path(t) / "ada.csv"
+        ada.write_text("KEEP", encoding="utf-8")
+        return asli, ada
+
+    def test_bersihkan_dan_pivot_ditolak_tanpa_timpa(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, ada = self._siapkan(t)
+            for argv in (["bersihkan", asli, "--keluar", ada],
+                         ["pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah", "--keluar", ada]):
+                code, out, err = jalankan(*argv)
+                self.assertNotEqual(code, 0, out + err)
+                self.assertIn("GAGAL: File keluaran sudah ada: {}".format(ada), err)
+                self.assertIn("--timpa", err)
+                self.assertNotIn("Traceback", err)
+                self.assertEqual(ada.read_text(encoding="utf-8"), "KEEP")
+            self.assertEqual(asli.read_text(encoding="utf-8"), self.ISI)
+
+    def test_dengan_timpa_berhasil(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, ada = self._siapkan(t)
+            for argv in (["bersihkan", asli, "--keluar", ada, "--timpa"],
+                         ["pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah", "--keluar", ada, "--timpa"]):
+                ada.write_text("KEEP", encoding="utf-8")
+                code, out, err = jalankan(*argv)
+                self.assertEqual(code, 0, err)
+                self.assertNotEqual(ada.read_text(encoding="utf-8-sig"), "KEEP")
+            self.assertIn("Bensin", ada.read_text(encoding="utf-8-sig"))
+            self.assertEqual(asli.read_text(encoding="utf-8"), self.ISI)
+
+    def test_file_baru_tetap_bisa_dibuat_tanpa_timpa(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, _ = self._siapkan(t)
+            baru = Path(t) / "baru.csv"
+            code, out, err = jalankan("bersihkan", asli, "--keluar", baru)
+            self.assertEqual(code, 0, err)
+            self.assertTrue(baru.exists())
+
+    def test_file_asli_tidak_bisa_ditimpa_walau_timpa(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, _ = self._siapkan(t)
+            for argv in (["bersihkan", asli, "--keluar", asli, "--timpa"],
+                         ["pivot", asli, "--grup", "Kategori", "--nilai", "Jumlah", "--keluar", asli, "--timpa"]):
+                code, out, err = jalankan(*argv)
+                self.assertNotEqual(code, 0, out + err)
+                self.assertIn("tidak boleh menimpa file asli", err)
+                self.assertEqual(asli.read_text(encoding="utf-8"), self.ISI)
+
+    def test_singkatan_timpa_ditolak(self):
+        with tempfile.TemporaryDirectory() as t:
+            asli, ada = self._siapkan(t)
+            code, out, err = jalankan("bersihkan", asli, "--keluar", ada, "--tim")
+            self.assertNotEqual(code, 0)
+            self.assertEqual(ada.read_text(encoding="utf-8"), "KEEP")
+
+
+class TestV1017PersenDariScript(unittest.TestCase):
+    """v1.0.17 (uji OpenClaw 2026-10-01): persen/porsi wajib dari script, bagian 'Perlu dicek' selalu ada."""
+    GAJI = ("Nama,Divisi,Gaji Pokok,Tunjangan\nA,Produksi,4000000,300000\nB,Produksi,4100000,250000\n"
+            "C,Produksi,4000000,300000\nD,Toko,4000000,250000\nE,Toko,4000000,250000\n"
+            "F,Kurir,3600000,450000\nG,Kurir,3600000,\n")
+    BIAYA = ("Tanggal,Kategori,Keterangan,Nominal\n2026-08-03,Transport,Bensin,400000\n"
+             "2026-08-10,Transport,Tol,395000\n2026-08-05,Sewa,Sewa ruko,3000000\n"
+             "2026-09-02,Transport,Bensin,465000\n2026-09-12,Transport,Ganti ban mobil boks,2400000\n"
+             "2026-09-05,Sewa,Sewa ruko,3000000\n2026-09-28,Listrik,PLN,800000\n")
+
+    def _file(self, t, nama, isi):
+        f = Path(t) / nama
+        f.write_text(isi, encoding="utf-8")
+        return f
+
+    def test_pivot_nilai_gabungan_dan_porsi(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = self._file(t, "gaji.csv", self.GAJI)
+            code, out, err = jalankan("pivot", f, "--grup", "Divisi", "--nilai", "Gaji Pokok+Tunjangan", "--json")
+            self.assertEqual(code, 0, err)
+            h = json.loads(out)
+            tb = h["tabel"][0]
+            self.assertIn("Jumlah Gaji Pokok", tb["kolom"])
+            self.assertIn("Jumlah Tunjangan", tb["kolom"])
+            baris = {r[0]: r for r in tb["baris"]}
+            i_tot, i_p = tb["kolom"].index("Jumlah Gaji Pokok + Tunjangan"), tb["kolom"].index("% dari total")
+            total = 12100000 + 850000 + 8000000 + 500000 + 7200000 + 450000   # G: tunjangan kosong = 0
+            self.assertEqual(Decimal(baris["Kurir"][i_tot]), 7650000)
+            self.assertEqual(Decimal(baris["TOTAL"][i_tot]), total)
+            persen = Fraction(7650000 * 100, total)
+            self.assertAlmostEqual(float(Decimal(baris["Kurir"][i_p])), float(persen), places=6)
+            self.assertTrue(any("terisi sebagian" in p for p in h["peringatan"]))
+            code, out, err = jalankan("pivot", f, "--grup", "Divisi", "--nilai", "Gaji Pokok+Tunjangan")
+            self.assertIn("26,3%", out)        # 7.650.000 / 29.100.000
+            self.assertIn("Rp 29.100.000", out)
+
+    def test_nilai_gabungan_salah(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = self._file(t, "gaji.csv", self.GAJI)
+            code, out, err = jalankan("pivot", f, "--grup", "Divisi", "--nilai", "Gaji Pokok+Gaji Pokok")
+            self.assertEqual(code, 2)
+            code, out, err = jalankan("pivot", f, "--grup", "Divisi", "--nilai", "Gaji Pokok+Nama")
+            self.assertEqual(code, 2)
+
+    def test_banding_porsi_dan_sumbangan(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = self._file(t, "biaya.csv", self.BIAYA)
+            code, out, err = jalankan("banding", f, "--nilai", "Nominal", "--periode-a", "2026-08",
+                                      "--periode-b", "2026-09", "--grup", "Kategori")
+            self.assertEqual(code, 0, err)
+            self.assertIn("% dari total Sep 2026", out)
+            self.assertIn("43,0%", out)          # 2.865.000 / 6.665.000
+            self.assertIn("72,1% dari total kenaikan", out)   # 2.070.000 / 2.870.000
+            self.assertIn("hari kalender", out)
+            # porsi satu transaksi dalam kategori & bulan: top --filter (83,8% = 2.400.000 / 2.865.000)
+            code, out, err = jalankan("top", f, "--grup", "Keterangan", "--nilai", "Nominal", "--filter",
+                                      "Kategori=Transport", "--dari", "2026-09", "--sampai", "2026-09")
+            self.assertIn("83,8%", out)
+
+    def test_perlu_dicek_selalu_ada(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = self._file(t, "rapi.csv", "Kategori,Jumlah\nA,100\nB,200\n")
+            code, out, err = jalankan("pivot", f, "--grup", "Kategori", "--nilai", "Jumlah")
+            self.assertEqual(code, 0, err)
+            self.assertIn("### Perlu dicek", out)
+            self.assertIn("- tidak ada", out.split("### Perlu dicek")[1])
+            f2 = self._file(t, "biaya.csv", self.BIAYA)
+            code, out, err = jalankan("banding", f2, "--nilai", "Nominal", "--periode-a", "2026-08",
+                                      "--periode-b", "2026-09")
+            self.assertNotIn("- tidak ada", out.split("### Perlu dicek")[1])
 
 
 if __name__ == "__main__":

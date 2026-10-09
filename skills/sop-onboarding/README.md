@@ -56,6 +56,8 @@ Masa percobaan hanya berlaku untuk karyawan tetap (PKWTT) dan **maksimal** 3 bul
 Bisa. Sebutkan jumlah shift dan cabang saat meminta, jadwal dan buku saku akan disesuaikan; script jadwal juga mendukung 5 atau 6 hari kerja per minggu, libur nasional bawaan 2026/2027, dan file libur tambahan perusahaan.
 
 ## Riwayat versi
+- **Catatan revisi 1.0.6 (2026-10-05):** uji bot Telegram asli (DENGAN 8, tepat di batas): tabel 6 kolom tampil sebagai teks berpipa, urutan evaluasi keputusan vs batas percobaan membingungkan, kata "skill" bocor. Kini jadwal di chat berupa daftar bernomor kronologis (tabel maks. 2 kolom hanya untuk dokumen), evaluasi keputusan selalu ditulis sebelum batas percobaan, kata proses (skill, script, file, path, cek) dilarang di balasan. Menunggu uji ulang independen.
+- **Catatan revisi 1.0.5 (2026-10-05):** pra-cek Telegram G9: untuk "paket onboarding kasir minimarket, karyawan tetap, 3 bulan, mulai Senin 12 Oktober 2026" bot hanya mengajukan 6 pertanyaan dan membocorkan "sudah saya cek". Kini wajib "kerjakan dulu, tanya di akhir": paket utuh di chat (jadwal minggu 1, checklist, SOP kasir ringkas, evaluasi masa percobaan dengan tanggal, catatan PP 35/2021 & cek UMK) dengan [isian], maks. 3 pertanyaan di akhir, tanpa kata proses. Menunggu uji ulang independen.
 - **1.0.2** (lulus) — Perbaikan kecil hasil uji ulang independen: batas 3 bulan akhir masa percobaan kini
   dinyatakan tegas sebagai **tafsir** (bukan kepastian hukum), dengan saran konfirmasi ke Disnaker/konsultan
   bila ragu (SKILL.md, script, `references/dasar-hukum-onboarding.md`); kalimat contoh di SKILL.md diperbaiki

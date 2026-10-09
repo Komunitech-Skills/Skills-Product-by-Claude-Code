@@ -1,5 +1,7 @@
 # Digest harian "tugas hari ini & terlambat" ke Telegram (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (jujur).** Bentuk perintah di bawah mengikuti pola yang sudah dijalankan
 sungguhan di Gateway lokal OpenClaw **2026.9.5/2026.9.6** untuk skill lain di repo ini (`dolibarr-usaha`,
 `kasir-lokal`, `pengingat-follow-up`: job diterima, jadwal & zona waktu tersimpan, `automations run`
@@ -16,7 +18,7 @@ Telegram belum diuji (butuh token bot asli). Jika sebuah opsi ditolak, jalankan
 - **Privasi:** teks laporan berisi judul tugas dan nama anggota (username Vikunja), dan akan tersimpan di riwayat chat Telegram pemilik. Beri tahu pemilik. Judul tugas adalah data tim internal (bukan data pelanggan/PII pihak ketiga), tapi tetap sampaikan hal ini sebelum membuat jadwal.
 
 ## Syarat
-- Gateway OpenClaw berjalan di komputer/jaringan yang bisa menjangkau Vikunja (idealnya **komputer yang sama** dengan Vikunja, karena Vikunja dibatasi ke `127.0.0.1` — lihat `docs/panduan-vikunja.md` §4) dan **menyala saat jadwal** (laptop/mini PC yang selalu menyala atau VPS milik pemilik; Komunitech menyediakan jasa setup berbayar).
+- Gateway OpenClaw berjalan di komputer/jaringan yang bisa menjangkau Vikunja (idealnya **komputer yang sama** dengan Vikunja, karena Vikunja dibatasi ke `127.0.0.1` — lihat `references/panduan-vikunja.md` §4) dan **menyala saat jadwal** (laptop/mini PC yang selalu menyala atau VPS milik pemilik; Komunitech menyediakan jasa setup berbayar).
 - Kanal Telegram sudah tersambung dan ID chat pemilik diketahui.
 - Token API **baca-saja** sudah disimpan (`simpan-kunci`, lihat SKILL.md bagian Persiapan) — **jangan** pakai token baca-tulis untuk jadwal otomatis.
 - Zona waktu jadwal (`--tz` di `openclaw automations add` dan `--tz` di `vikunja.py`) sebaiknya sama, mis. `Asia/Jakarta` untuk WIB.

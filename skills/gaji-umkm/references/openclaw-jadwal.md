@@ -1,5 +1,7 @@
 # Pengingat gajian & setoran otomatis ke Telegram (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (jujur).** Bentuk perintah di bawah disalin dari pola `crm-wa` (dijalankan sungguhan pada Gateway
 lokal OpenClaw 2026.9.5/2026.9.6 untuk skill `kasir-lokal`, `pengingat-follow-up`, dan `crm-wa`). Khusus gaji-umkm,
 jadwal **belum** diuji di Gateway; pengiriman ke Telegram belum diuji (butuh token bot asli). Jika sebuah opsi

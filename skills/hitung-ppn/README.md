@@ -47,3 +47,6 @@ Boleh untuk simulasi, misalnya mengecek tagihan supplier. Tapi kamu tidak boleh 
 
 **Apakah ini menggantikan faktur pajak?**
 Tidak. Faktur pajak resmi tetap dibuat di Coretax. Skill ini membantu menghitung dan mengecek angkanya.
+
+## Catatan revisi 1.0.4 (2026-10-01)
+- Hasil hitung kini menyertakan **teks siap tempel** untuk penawaran/chat yang selalu memuat baris "DPP nilai lain (11/12)", agar pembaca tidak mengira "PPN 12%" salah hitung.

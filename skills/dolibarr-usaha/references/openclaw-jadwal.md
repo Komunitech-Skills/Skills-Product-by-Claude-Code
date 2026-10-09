@@ -1,5 +1,7 @@
 # Laporan Dolibarr otomatis ke Telegram pemilik (OpenClaw)
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 **Status verifikasi (24 September 2026, OpenClaw 2026.9.6, CLI asli, HOME sementara, Gateway lokal
 `gateway run --dev --allow-unconfigured --bind loopback --auth token`), terhadap Dolibarr asli 24.0.1:**
 - ✅ `skills check --json` → `dolibarr-usaha` ada di `eligible`, `modelVisible`, `commandVisible`.

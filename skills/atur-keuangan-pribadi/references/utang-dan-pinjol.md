@@ -6,7 +6,7 @@
 | Jenis | Batas | Dasar | Dipakai untuk |
 |---|---|---|---|
 | Kartu kredit | 1,75% per bulan (±21% per tahun) | Ketentuan Bank Indonesia, berlaku sejak Juli 2021, masih dipertahankan | Peringatan bila bunga kartu kredit yang dimasukkan lebih tinggi |
-| Pinjaman daring (pinjol/LPBBTI) konsumtif | 0,1% per hari (2026) — sebelumnya 0,3% (2024) dan 0,2% (2025) | SEOJK No. 19/SEOJK.05/2023 (penurunan bertahap) | Bunga > ±3% per bulan → curigai pinjol ilegal |
+| Pinjaman daring (pinjol/LPBBTI) konsumtif | 0,1% per hari (2026) — sebelumnya 0,3% (2024) dan 0,2% (2025) | SEOJK No. 19/SEOJK.06/2023 (penurunan bertahap) | Bunga > ±3% per bulan → curigai pinjol ilegal |
 | Pinjol produktif | 0,067% per hari (2026) | SEOJK yang sama | Informasi |
 
 Catatan: "manfaat ekonomi" pinjol legal mencakup bunga dan biaya lain; bila total biaya yang diminta jauh di atas batas, itu tanda bahaya.

@@ -5,6 +5,8 @@ description: Buku jadwal lokal pengingat kontrol/vaksin pasien untuk klinik, pra
 
 # Pengingat Pasien Klinik (Kontrol & Vaksin)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Klinik, praktik dokter/bidan/dokter gigi, dan klinik hewan sering lupa mengingatkan pasien soal
 jadwal kontrol atau vaksin berikutnya. Skill ini menjadi **buku jadwal lokal minimal** — hanya
@@ -12,6 +14,16 @@ nama panggilan, nomor WA, jenis kunjungan umum, dan tanggal — lalu setiap hari
 siapa yang harus diingatkan (H-3, H-1, hari ini, terlambat) beserta **draf pesan WA sopan siap
 disalin**. **Staf yang menyalin dan mengirim sendiri.** Tidak ada pengiriman otomatis, tidak ada
 broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
+
+**Versi 1.0.8** (2026-10-02): rujukan skill untuk laporan mingguan/rekap kunjungan dipertegas.
+
+**Versi 1.0.7** (2026-10-02): aturan teks grup staf (nama panggilan, tanpa nomor/keterangan
+medis), izin pengingat ≠ izin promo, dan wajib memberi tahu bila keterangan medis tidak
+disimpan. Script tidak berubah.
+
+**Versi 1.0.6** (revisi rendah, 2026-10-01): opsi umum `--json`, `--file`, `--hari-ini`, `--tz`
+kini diterima sebelum **atau** sesudah nama perintah (sebelumnya `<perintah> --json` gagal kode 2);
+lokasi script ditulis eksplisit. Uji regresi 38/38.
 
 ## Kapan digunakan
 - "Catat: Bu Sari, WA 0812-0000-1111, kontrol gigi tanggal 10 Oktober, setuju dihubungi."
@@ -27,8 +39,18 @@ broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
 - **Diagnosis, rekam medis, hasil lab, atau instruksi medis** apa pun → **tolak**, arahkan ke
   tenaga kesehatan. Skill ini hanya mencatat *jenis kunjungan umum* (kontrol, vaksin, cabut
   jahitan, cek gigi, vaksin hewan, groom, sunat, medical check up, dll), **bukan** nama penyakit.
-- Leaflet edukasi pasien, FAQ klinik, balasan chat umum, atau rekap kunjungan agregat →
-  `edukasi-pasien-klinik`.
+  Pengecualian: **nama vaksin/imunisasi boleh disebut apa adanya** (mis. "imunisasi campak",
+  "vaksin rabies", "vaksin MR", "imunisasi difteri (DPT)") karena itu jenis kunjungan, bukan
+  diagnosis pasien — yang tetap ditolak adalah kalimat bernada hasil pemeriksaan, mis. "riwayat
+  campak", "positif rabies", "didiagnosis difteri". Kalau ditolak dan bukan diagnosis, tulis jenis
+  kunjungan netral, mis. "kontrol lanjutan".
+- Leaflet edukasi pasien, FAQ klinik, atau balasan chat umum → `edukasi-pasien-klinik`.
+- **Laporan mingguan/operasional klinik** (angka kunjungan, tidak datang, jam ramai, pendapatan
+  yang diketik pengguna) untuk pemilik/grup staf → `laporan-status-kantor` (format 3P). Rekap
+  angka dari **file CSV kunjungan** sistem pendaftaran → bagian rekap kunjungan
+  `edukasi-pasien-klinik` (`scripts/rekap_kunjungan.py`). Skill ini (pengingat) hanya membuat
+  ringkasan pengingat harian, bukan laporan kunjungan/pendapatan. Sebut nama skill rujukan persis
+  seperti ini.
 - **Kirim pesan otomatis/broadcast ke pasien** → **tolak**. Keputusan pemilik: OpenClaw memakai
   WhatsApp Web (tidak resmi); pesan otomatis ke pasien berisiko nomor diblokir **dan** melanggar
   prinsip "manusia yang mengirim" untuk data kesehatan. Skill ini hanya menyiapkan draf.
@@ -51,6 +73,24 @@ broadcast, dan **tidak ada diagnosis atau rekam medis** yang disimpan.
   permanen. Jalankan segera bila pasien meminta datanya dihapus.
 - Ringkasan untuk pemilik (`ringkasan`) **tidak pernah** memuat nomor WA; pakai `--samarkan`
   agar nama tampil inisial (mis. "Bu S.") untuk laporan yang dikirim lewat jadwal OpenClaw.
+- **Keterangan medis yang sengaja tidak disimpan — WAJIB diberitahukan.** Bila pengguna
+  menyelipkan diagnosis/riwayat penyakit (mis. "pasien diabetes", "darah tinggi", "habis
+  operasi X"), simpan jenis kunjungan yang netral saja dan **katakan terus terang** di
+  konfirmasi: "Keterangan penyakit yang Anda sebut sengaja **tidak** saya simpan (hanya jenis
+  kunjungan umum, demi kerahasiaan pasien & UU PDP)." Jangan membuangnya diam-diam dan jangan
+  mengulang nama penyakitnya di balasan.
+- **Teks untuk grup staf/kanal bersama** (grup WA/Telegram tim, papan tugas, laporan yang
+  dibaca banyak orang): **nama panggilan saja** (atau inisial), **tanpa nomor WA**, **tanpa
+  keterangan medis**. Jenis kunjungan yang menyiratkan penyakit (mis. "kontrol gula darah",
+  "kontrol tensi", "kontrol jantung") ditulis umum menjadi "kontrol"; atau cukup jumlah per
+  kelompok (TERLAMBAT/HARI INI/BESOK). Nomor WA + draf pesan hanya untuk staf yang mengirim,
+  di chat pribadi dengan agent — bukan di grup.
+- **Izin pengingat ≠ izin promo.** Persetujuan `ya` hanya berarti pasien setuju **diingatkan
+  jadwal kunjungannya**. Daftar ini **tidak boleh** dipakai untuk promosi, penawaran, diskon,
+  ucapan berisi promo, survei pemasaran, atau broadcast — juga tidak "dikirim staf satu per
+  satu". Promo butuh persetujuan terpisah dari pasien; untuk faskes, promosi diskon/imbalan
+  rujukan memang dilarang (lihat `edukasi-pasien-klinik`). Diminta memakai daftar untuk promo →
+  tolak dengan alasan ini dan jangan menawarkan daftar pasien sebagai gantinya.
 
 ## Input
 | Info | Wajib? | Default jika tidak diberikan |
@@ -67,11 +107,22 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 termasuk pertanyaan persetujuan. Jangan pernah mengasumsikan persetujuan "ya" tanpa pasien
 menyatakannya.
 
+**Pembulatan tanggal "N bulan lagi":** bila tanggal acuan tidak ada di bulan tujuan (mis. 31
+Januari + 1 bulan → Februari tidak punya tanggal 31), script **turun ke tanggal terakhir bulan
+itu** (28 Februari, atau 29 di tahun kabisat) — bukan meloncat ke bulan berikutnya atau menolak
+input. Script menambahkan Catatan yang menyebutkan penyesuaian ini apa adanya (mis. "Tanggal 31
+tidak ada di bulan itu; dipakai 28 Februari 2027"); tampilkan catatan itu ke pengguna, jangan
+menyembunyikannya.
+
 ## Cara menjalankan script
-Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python`/`py`):
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill, mis.
+`~/.openclaw/skills/pengingat-pasien-klinik/scripts/` di OpenClaw); jangan mencarinya ke seluruh
+disk (`find /`). Windows: ganti `python3` dengan `python`/`py`.
 ```bash
-python3 <folder-skill-ini>/scripts/pengingat_pasien.py <perintah> [opsi] --json
+python3 <folder-skill-ini>/scripts/pengingat_pasien.py --json <perintah> [opsi]
+# contoh: python3 <folder-skill-ini>/scripts/pengingat_pasien.py --json daftar --kapan besok
 ```
+`--json`, `--file`, `--hari-ini`, `--tz` boleh ditulis sebelum atau sesudah nama perintah.
 Database default `pasien/DAFTAR.csv` di folder kerja; ganti dengan `--file PATH` bila perlu
 (pakai lokasi yang sama di semua perintah). Semua perintah, contoh, dan opsi lengkap ada di
 `references/perintah.md`.
@@ -83,8 +134,10 @@ Database default `pasien/DAFTAR.csv` di folder kerja; ganti dengan `--file PATH`
 - **Tanyakan persetujuan secara eksplisit** ("Bu Sari setuju diingatkan lewat WA untuk jadwal
   kontrolnya?") sebelum mengisi `--persetujuan`. Jangan menebak "ya".
 - `jenis` hanya kategori umum (kontrol, vaksin, cabut jahitan, cek gigi, vaksin hewan, groom,
-  sunat, medical check up, dll). Kalau pengguna menyebut nama penyakit/diagnosis, script menolak
-  (kode keluar 1) — minta pengguna menyebut jenis kunjungan saja, bukan diagnosisnya.
+  sunat, medical check up, imunisasi/vaksin apa pun namanya — mis. "imunisasi campak", "vaksin
+  rabies", dll). Kalau pengguna menyebut nama penyakit/diagnosis dengan nada hasil pemeriksaan
+  (riwayat, positif, didiagnosis, dll — bukan sekadar nama vaksin), script menolak (kode keluar 1)
+  — minta pengguna menyebut jenis kunjungan yang netral, mis. "kontrol lanjutan".
 - Nomor WA diterima format apa pun (0812…, +62812…, 62812…) dan disimpan sebagai `62…`.
 - Klinik hewan: nama pasien = nama hewan (mis. "Kucing Mimi"), nomor WA = nomor pemilik.
 
@@ -167,10 +220,14 @@ Contoh sesi lengkap: `examples/`.
 - [ ] `jenis` dan `catatan` tidak memuat diagnosis, nama penyakit, atau saran medis.
 - [ ] Tidak ada nomor HP/email/NIK pihak lain yang masuk ke kolom nama/catatan.
 - [ ] Ringkasan untuk pemilik tidak memuat nomor WA.
+- [ ] Teks untuk grup staf: nama panggilan/inisial saja, tanpa nomor WA & keterangan medis.
+- [ ] Keterangan penyakit yang tidak disimpan sudah diberitahukan ke pengguna (tidak dibuang diam-diam).
+- [ ] Daftar pasien tidak dipakai/ditawarkan untuk promo (izin pengingat ≠ izin promo).
 - [ ] Permintaan hapus data dijalankan segera setelah dikonfirmasi.
 - [ ] Tanggal & pengelompokan (terlambat/H-1/H-3) berasal dari script, bukan dihitung manual.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan rekam medis elektronik dan bukan pengganti sistem antrean klinik. Tidak membaca chat WA
   atau riwayat pasien di sistem lain; semua data dimasukkan lewat perintah `tambah`/`impor`.
 - Script keluar `ERROR: ...` (kode 1) untuk input salah/ambigu (tanggal, jenis menyerupai

@@ -1,0 +1,15 @@
+---
+pelanggan: X
+item: nastar x-2; kastengel x0; putri salju x abc; nastar
+diskon: 150%
+ongkir: seratus
+dibayar: 999rb
+---
+pelanggan: Y
+item: nastar x1 @ -5000
+diskon: 500rb
+ongkir: gratis
+---
+pelanggan: Z
+item: Nastar x 1.5; nastar x2 @1,5jt
+ongkir: 1.250.000,50

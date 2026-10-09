@@ -6,7 +6,7 @@ Vikunja adalah program **gratis dan open-source** (lisensi AGPL-3.0) untuk menga
 
 > Komunitech **tidak berafiliasi** dengan proyek Vikunja; Vikunja adalah merek milik pemiliknya (organisasi go-vikunja).
 
-**Status panduan (26 September 2026).** Langkah dan nama menu dicocokkan dengan sumber resmi (vikunja.io/docs, kode sumber go-vikunja/vikunja v2.6.0). Unduhan, pengikatan ke `127.0.0.1`, pendaftaran user, dan pembuatan token API berskop **dicoba langsung** dengan binary Linux resmi v2.6.0 (checksum SHA-256 dicocokkan dengan file resmi). **Belum dicoba langsung** oleh Komunitech: instalasi di Windows/macOS sungguhan dan Docker. Bila tampilan di komputer Anda berbeda, ikuti tulisan di layar atau hubungi kami.
+**Status panduan (26 September 2026, diperbarui setelah uji penguji independen).** Langkah dan nama menu dicocokkan dengan sumber resmi (vikunja.io/docs, kode sumber go-vikunja/vikunja v2.6.0). Unduhan, pengikatan ke `127.0.0.1`, pendaftaran user, dan pembuatan token API berskop **dicoba langsung** dengan binary Linux resmi v2.6.0 (checksum SHA-256 dicocokkan dengan file resmi). Bagian 6 (izin token, termasuk `--ke`/penugasan) diuji ulang lewat REST API mentah langsung ke server v2.6.0 sungguhan (bukan lewat klik di layar) untuk memastikan nama kelompok izin di tabel cocok persis dengan yang dipakai server; penugasan (`--ke`) **berhasil** saat kelompok "Tasks Assignees" dicentang, **gagal dengan pesan "401"/token tidak valid** (bukan "kurang izin") saat kelompok itu tidak dicentang — lihat catatan di bagian 6. **Belum dicoba langsung** oleh Komunitech: instalasi di Windows/macOS sungguhan dan Docker. Bila tampilan di komputer Anda berbeda, ikuti tulisan di layar atau hubungi kami.
 
 ## Daftar isi
 1. Sebelum mulai
@@ -114,19 +114,45 @@ Istilah: **Vikunja** = programnya (satu file "binary" yang sudah berisi tampilan
 
 ---
 
+## 5a. Tambahkan anggota tim ke proyek (wajib sebelum `--ke`/penugasan)
+Skill bisa menugaskan tugas ke seseorang (`tambah --ke <username>`) **hanya** kalau orang itu sudah jadi **kolaborator proyek** itu di Vikunja — cukup punya akun Vikunja **tidak** otomatis membuatnya bisa ditugaskan di semua proyek.
+1. Buka proyek yang dimaksud → klik ikon **Share/Bagikan** (ikon orang, biasanya di pojok kanan atas halaman proyek, di sebelah judul proyek).
+2. Pilih tab **Add User** (atau **Add Team** untuk menambah seluruh tim sekaligus, bila Anda sudah punya tim lewat menu Teams).
+3. Ketik username orang itu, pilih hak akses (**Read Write** untuk anggota biasa), lalu simpan.
+4. Ulangi untuk tiap proyek yang perlu — hak kolaborator per-proyek, bukan berlaku otomatis ke semua proyek.
+- ✅ **Cek berhasil:** nama orang itu muncul di daftar kolaborator proyek; `tambah --ke <username>` pada proyek itu berhasil.
+- ❌ **Kalau `--ke` tetap gagal** dengan "Anggota '...' tidak ditemukan di proyek ini": pastikan usernamenya persis sama (bukan nama tampilan/email), dan token Anda punya izin `projects: projectusers` (lihat bagian 6).
+
+---
+
 ## 6. Buat token API berskop minimal
 Jangan pernah memberi AI **sandi akun** Anda. Vikunja punya **token API** yang bisa dibatasi haknya (skop) — mirip kunci cadangan yang hanya bisa membuka sebagian ruangan.
 
 1. Masuk ke Vikunja di browser → klik foto profil/avatar (pojok kanan) → **Settings** → **API Tokens**.
 2. Klik **Create a token**. Beri nama, mis. `Skill Baca` untuk laporan harian.
-3. **Pilih izin (permissions) SEKECIL MUNGKIN** sesuai kebutuhan:
+3. **Pilih izin (permissions) SEKECIL MUNGKIN** sesuai kebutuhan. Halaman pembuatan token menampilkan
+   izin sebagai **beberapa kelompok kotak centang terpisah**, masing-masing dengan judulnya sendiri
+   (mis. "Projects", "Tasks", "Tasks Assignees", "Projects Users", dst., berurutan dari atas ke
+   bawah) — bukan satu daftar gabungan. **Kelompok "Tasks Assignees" letaknya TERPISAH dan di BAWAH
+   kelompok "Tasks"**, jadi mudah terlewat kalau Anda hanya mencentang isi kelompok "Tasks" dan
+   langsung scroll ke tombol Create:
 
-   | Kebutuhan | Izin yang dicentang |
+   | Kebutuhan | Izin yang dicentang (nama kelompok — kotak di dalamnya) |
    |---|---|
-   | Laporan/lihat saja: `hari-ini`, `terlambat`, `minggu-ini`, `ringkasan`, `daftar-proyek`, `cek` | **Projects**: Read All, Read One · **Tasks**: Read All, Read One |
-   | + Menambah tugas (`tambah`) | tambahkan **Tasks**: Create |
-   | + Menandai selesai (`selesai`) | tambahkan **Tasks**: Update |
-   | + Menugaskan ke anggota (`tambah --ke <username>`) | tambahkan **Tasks Assignees**: Create, Read All · **Projects**: Project Users |
+   | Laporan/lihat saja: `hari-ini`, `terlambat`, `minggu-ini`, `ringkasan`, `daftar-proyek`, `cek` | **Projects** — Read All, Read One · **Tasks** — Read All, Read One |
+   | + Menambah tugas (`tambah`) | tambahkan **Tasks** — Create |
+   | + Menandai selesai (`selesai`) | tambahkan **Tasks** — Update |
+   | + Menugaskan ke anggota (`tambah --ke <username>`) | tambahkan **Tasks Assignees** — Create, Read All (kelompok TERPISAH, lihat catatan di atas) · dari kelompok **Projects** centang juga kotak **Projectusers** (satu kata, tanpa spasi — ini BUKAN kelompok "Projects Users" yang terpisah; kotak "Projectusers" ada DI DALAM kelompok "Projects", bersebelahan dengan "Read All"/"Read One") |
+
+   Nama di atas persis seperti tulisan di layar Vikunja 2.6.0 (dicoba langsung, lihat catatan status
+   di awal dokumen). Kalau tampilan versi Anda berbeda, cocokkan lewat kata kuncinya: kelompok yang
+   isinya "Create"/"Read All"/"Delete"/"Update bulk" untuk aksi menugaskan orang ke tugas adalah yang
+   dimaksud "Tasks Assignees" di sini, apa pun urutannya di layar.
+
+   **Kalau `--ke` (penugasan) tetap gagal dengan pesan "401"/token tidak valid** walau token sudah
+   berizin baca-tulis Tasks: 99% penyebabnya kelompok "Tasks Assignees" belum dicentang sama sekali
+   (Vikunja melaporkannya sebagai "token tidak valid", BUKAN "kurang izin" — membingungkan tapi
+   memang begitu perilakunya). Buat ulang token, kali ini pastikan kelompok itu ikut dicentang.
 
    **Disarankan (seperti skill Dolibarr kami): buat DUA token** — satu **hanya-baca** (dipakai jadwal laporan harian otomatis) dan satu **baca+tulis** (dipakai hanya saat Anda sendiri minta AI menambah/menyelesaikan/menugaskan tugas). Simpan di file berbeda (`simpan-kunci --kunci-file`).
 4. Isi **Expiration date** (tanggal kedaluwarsa) — jangan pilih "tanpa batas" bila tersedia; pilih 1 tahun dan perbarui nanti.

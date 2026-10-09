@@ -5,6 +5,8 @@ description: Daftar pantauan follow-up lokal (piutang, prospek, timesheet klien,
 
 # Pengingat Follow-up
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha tidak lagi lupa menagih, menindaklanjuti calon pembeli, atau mengirim rekap jam
 kerja ke klien. Semua janji follow-up dicatat di **satu daftar lokal**, lalu setiap pagi pemilik
@@ -57,6 +59,8 @@ Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Kalim
 pertama di atas sudah cukup, jadi langsung simpan.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Semua perintah dijalankan dari folder kerja pengguna. Windows: ganti `python3` dengan `python` atau `py`.
 `S` di bawah = `python3 <folder-skill-ini>/scripts/cek_jatuh_tempo.py`.
 
@@ -110,6 +114,7 @@ item 7 hari ke depan (nomor, nama, tanggal), lalu **DRAF PESAN** per item (maks.
   7–13 hari minta tanggal pasti; 14–29 hari pemberitahuan tertulis **hanya jika sudah ≥ 1 kali diingatkan**;
   ≥ 30 hari pemberitahuan tertulis. ≥ 30 hari dan ≥ 2 kali diingatkan → saran somasi lewat `tagih-piutang`.
 - Prospek: draf singkat yang tidak memaksa. Untuk urutan lengkap → `follow-up-prospek`.
+- Placeholder seperti `[rekening]` di draf adalah bagian yang **wajib disebut** ke pemilik sebagai "perlu Anda lengkapi" (mis. "isi nomor rekening Anda sebelum draf dikirim"); jangan menyerahkan draf ber-placeholder tanpa catatan itu.
 - Timesheet: draf memakai placeholder `[TOTAL JAM]`/`[NILAI]`. Isi dengan Langkah 4 sebelum ditampilkan.
 - Janji: draf konfirmasi jadwal. Lainnya: pengingat untuk pemilik saja (tanpa draf).
 - `baris_ditolak` tidak kosong → **wajib** sebutkan nomor baris & alasannya. Jangan diam-diam dilewati.
@@ -174,6 +179,7 @@ Selamat pagi Bu Rina, kami mengingatkan pembayaran INV-012 sebesar Rp 4.500.000 
 - [ ] Jadwal otomatis hanya dibuat setelah pemilik menjawab "ya", dan tujuannya pemilik sendiri.
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Script keluar dengan `ERROR: ...` (kode 1): sampaikan pesannya dengan bahasa sederhana dan minta data yang benar.
   Jangan menebak. Kode 2 = kolom berisi data kontak. Minta nama panggilan saja.
 - Baris CSV rusak (tanggal 31/2, nominal "abc", kolom berlebih) **tidak** menghentikan rekap.

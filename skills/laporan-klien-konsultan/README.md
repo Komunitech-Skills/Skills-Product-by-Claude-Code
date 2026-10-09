@@ -39,9 +39,9 @@ PT Maju Jaya."
 === VERSI WA/TELEGRAM ===
 
 *Laporan Progres -- PT Maju Jaya*
-_Minggu ini, 21 September 2026 - 27 September 2026_
+_Minggu ini (21 September 2026 - 27 September 2026)_
 
-Periode minggu ini (...): 1 pekerjaan selesai, 1 sedang berjalan, 1 terkendala.
+Minggu ini (...): 1 pekerjaan selesai, 1 sedang berjalan, 1 terkendala.
 Total jam tercatat: 4 jam.
 
 *Selesai:*
@@ -61,6 +61,8 @@ Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
 - "Lagi ngerjain draf SPT Masa PPN buat PT Maju Jaya, masih nunggu faktur pajak dari mereka."
 - "Buatkan laporan mingguan untuk PT Maju Jaya" / "laporan bulanan Kopi Senja"
 - "Klien saya siapa saja yang tercatat?"
+- "Bikinin laporan 22–26 Sep buat PT Sentosa dari file catatan-kerja.csv" (file catatan Anda
+  sendiri dari Excel/Sheets langsung dibaca: pemisah koma/titik koma, "2,5 jam", "90 menit")
 - "Kirim draf laporan tiap Jumat sore ke Telegram saya" (OpenClaw, opsional)
 
 ## Syarat
@@ -94,3 +96,18 @@ ke klien (lihat `references/openclaw-jadwal.md`).
 **Bagaimana kalau saya lupa mencatat jam suatu pekerjaan?**
 Boleh dikosongkan — laporan tetap dibuat, dan bagian Total Jam menandai jelas berapa entri yang
 tidak ikut dihitung, supaya tidak disalahartikan sebagai 0 jam.
+
+## Catatan revisi 1.0.5 (2026-10-01)
+Perbaikan dari uji OpenClaw asli 2026-10-01 (skenario laporan progres dari file CSV):
+- **Jam tidak lagi dibulatkan 1 desimal.** 3,25 jam tampil "3,25 jam" (sebelumnya "3,2"), total
+  tampil "9,75 jam (9 jam 45 menit)" dan selalu sama persis dengan jumlah jam per pekerjaan.
+- **File catatan Anda sendiri langsung terbaca** (`--file`): pemisah koma/titik koma/tab, desimal
+  koma, "90 menit"/"1 jam 30 menit"/"1:30", tanggal 22/09/2026, header Indonesia/Inggris, file
+  dari Excel (BOM, UTF-16, Windows-1252). Bila tetap gagal, pesan error menyebut baris & cara
+  memperbaikinya.
+- **Teks "Periode periode kustom" diperbaiki** -- rentang kustom cukup menampilkan tanggalnya.
+- **"Rencana berikutnya" tidak lagi mengulang judul tugas.** Diisi dari rencana Anda (ucapan,
+  `--rencana`, atau kolom Rencana di file); bila belum ada, muncul isian `[isi: ...]` untuk Anda
+  lengkapi sebelum dikirim.
+- Agent diarahkan memakai script di folder skill sendiri, tidak mencari file ke seluruh disk.
+- Uji regresi: 45/45 lolos (termasuk file contoh skenario `tests/data/catatan-kerja.csv`).

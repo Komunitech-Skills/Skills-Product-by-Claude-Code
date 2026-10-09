@@ -7,7 +7,8 @@ KERANGKA PKWT — Komunitech. Aturan pengisian untuk agent:
 - JANGAN menambah pasal masa percobaan dalam bentuk apa pun.
 - Angka rupiah selalu disertai terbilang. Hapus komentar ini sebelum dicetak.
 - Pasal 7 ayat (2) (PILIH): versi UMUM untuk usaha menengah/besar atau bila status usaha tidak diketahui;
-  versi USAHA MIKRO/KECIL bila pengguna usaha mikro/kecil (PP 35/2021 Pasal 16 ayat (6): besaran = kesepakatan).
+  versi USAHA MIKRO/KECIL hanya bila HASIL PERHITUNGAN scripts/status_usaha.py = usaha mikro/kecil (PP 35/2021 Pasal 16
+  ayat (6): besaran = kesepakatan). Sama untuk Pasal 4 ayat (2). Jangan menebak status dari jenis usaha.
 -->
 
 # PERJANJIAN KERJA WAKTU TERTENTU (PKWT)
@@ -59,7 +60,8 @@ PIHAK PERTAMA dan PIHAK KEDUA (bersama-sama disebut **Para Pihak**) sepakat memb
    - Tunjangan tetap: **Rp{{tunjangan tetap}} ({{terbilang}} rupiah)** [hapus bila tidak ada]
    - Jumlah upah tetap: **Rp{{total}} ({{terbilang}} rupiah)**
    - Tunjangan tidak tetap (bila ada): {{mis. uang makan Rp.../hari hadir}}
-2. Upah tidak lebih rendah dari upah minimum yang berlaku di {{kabupaten/kota}} tahun {{tahun}}, yaitu **Rp{{UMK — diisi & dicek pengguna}}**.
+2. (PILIH) **Versi umum** (bukan usaha mikro/kecil, atau status usaha belum dihitung): Upah tidak lebih rendah dari upah minimum yang berlaku di {{kabupaten/kota}} tahun {{tahun}}, yaitu **Rp{{UMK — diisi & dicek pengguna}}**.
+   **Versi usaha mikro/kecil** (hanya bila hasil perhitungan `scripts/status_usaha.py` = usaha mikro/kecil, dikonfirmasi NIB/OSS): Upah ditetapkan berdasarkan kesepakatan Para Pihak sesuai Pasal 90B UU 13/2003 jo. UU 6/2023 dan Pasal 36 PP 36/2021, yaitu paling sedikit 50% (lima puluh persen) dari rata-rata konsumsi masyarakat di tingkat provinsi {{nama provinsi}} dan paling sedikit 25% (dua puluh lima persen) di atas garis kemiskinan di tingkat provinsi {{nama provinsi}} berdasarkan data BPS, yaitu paling sedikit **Rp{{batas dari status_usaha.py, atau [isi: dicek dari data BPS provinsi]}}**. [Catatan agent: wilayah acuan SELALU provinsi — jangan diganti kota/kabupaten.]
 3. Upah dibayarkan setiap tanggal **{{tanggal bayar}}** melalui {{transfer ke rekening atas nama PIHAK KEDUA / tunai dengan tanda terima}}, disertai slip upah.
 4. Potongan upah hanya untuk hal yang diatur peraturan atau disepakati tertulis, termasuk iuran BPJS bagian pekerja dan PPh 21.
 

@@ -5,6 +5,8 @@ description: Menghitung harga jual minimal (balik modal) dan harga rekomendasi d
 
 # Harga Jual Marketplace
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Menjawab pertanyaan penjual online: "Berapa harga yang harus saya pasang supaya setelah semua potongan marketplace saya tetap untung sesuai target?" — dan sebaliknya, "Kalau saya jual segini, untung bersih saya berapa?"
 
@@ -38,7 +40,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ## Langkah kerja
 1. Kumpulkan modal dan biaya tiap platform. Satu platform → pakai argumen; beberapa platform → buat file JSON seperti `templates/platform-contoh.json` di folder kerja pengguna.
-2. Jalankan script (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
+2. Jalankan script. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
    # Cari harga (target margin 20%)
    python3 <folder-skill-ini>/scripts/harga_marketplace.py --platform "Shopee" --modal 35.000 \
@@ -49,9 +51,11 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    # Bandingkan beberapa platform
    python3 <folder-skill-ini>/scripts/harga_marketplace.py --config platform.json
    ```
+   Cek harga lain terhadap target (mis. harga psikologis): tambahkan `--banding-harga "62.900;59.900"` pada perintah cari harga, atau gabungkan `--harga-jual 62.900 --target-margin 25`.
    Opsi lain: `--pembayaran`, `--iklan` (%), `--voucher 10%` / `--voucher 5000`, `--maks-voucher`, `--qty-per-pesanan`, `--biaya-lain` (Rp/barang), `--target-laba`, `--target-markup`, `--pph22 tidak`, `--bulatkan 1000` (kelipatan pembulatan, default 500), `--format json`.
-3. Sajikan hasil: harga minimal, harga rekomendasi, dan tabel rincian dari script **apa adanya**. Tambahkan 1–2 saran praktis berbasis angka (mis. "voucher 10% menurunkan laba Rp3.500/barang").
-4. Selalu sertakan catatan asumsi dari script (dasar biaya, sumber persentase, PPh 22).
+3. Sajikan hasil: harga minimal, harga rekomendasi, tabel rincian, dan baris **"Status target"** dari script **apa adanya**. Tambahkan 1–2 saran praktis berbasis angka (mis. "voucher 10% menurunkan laba Rp3.500/barang").
+   **Perbandingan terhadap target hanya dari script (wajib):** kata "memenuhi/di atas/di bawah target", "masih untung/rugi", dan angka laba/margin untuk harga apa pun **dikutip dari baris "Status target" atau tabel "Banding harga" keluaran script** — jangan menilai sendiri. Sebelum menyebut atau menyarankan harga lain (mis. harga psikologis Rp62.900), jalankan ulang dengan `--banding-harga` lalu kutip statusnya. Bila belum dihitung, jangan menyebut harga itu.
+4. **Salin blok "Catatan & asumsi" dari script ke balasan chat apa adanya, kata per kata** — termasuk "PPh 22 marketplace 0,5% (PMK 37/2025, berlaku 1 Agustus 2026)", syarat pengecualian omzet ≤ Rp500 juta, baris "Berlaku per <tanggal>" dan "Alat bantu hitung, bukan nasihat pajak". Jangan diringkas menjadi "sesuai PMK terbaru"/"aturan terbaru" dan jangan dihilangkan walau balasan dipersingkat.
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah dan beri tahu bahwa hasil dihitung manual.
 
 ## Rumus (untuk hitung manual)
@@ -80,7 +84,7 @@ Bulatkan harga **ke atas** ke rupiah penuh, lalu ke atas ke kelipatan pembulatan
 - **Harga rekomendasi: Rp ...**
 | Komponen | Nilai |  ← rincian potongan, uang diterima, modal, laba, margin, markup
 (Perbandingan antar-platform bila lebih dari satu)
-**Catatan & asumsi** (sumber persentase, dasar biaya, PPh 22, berlaku per, disclaimer)
+**Catatan & asumsi**  ← disalin utuh dari script (sumber persentase, dasar biaya, PPh 22 + PMK 37/2025 + tanggal berlaku, berlaku per, disclaimer)
 💡 Saran: <1–2 saran berbasis angka>
 ```
 
@@ -108,9 +112,11 @@ Bulatkan harga **ke atas** ke rupiah penuh, lalu ke atas ke kelipatan pembulatan
 ## Checklist sebelum mengirim hasil
 - [ ] Persentase biaya berasal dari pengguna, atau diberi label "contoh — cek Seller Center".
 - [ ] Asumsi dasar biaya (harga setelah voucher) dan target default disebut.
+- [ ] Setiap pernyataan "memenuhi/di bawah target" dikutip dari "Status target"/"Banding harga" script; harga lain yang disebut sudah dihitung dengan `--banding-harga`.
 - [ ] PPh 22 0,5% disertakan (atau dijelaskan kenapa tidak) + catatan pengecualian OP omzet ≤ Rp500 juta dengan surat pernyataan.
 - [ ] Harga rekomendasi dibulatkan ke atas dan laba pada harga itu ditampilkan.
 - [ ] Format Rupiah `Rp 1.250.000`; disclaimer + tanggal berlaku ada.
+- [ ] Blok "Catatan & asumsi" tersalin utuh: nomor aturan "PMK 37/2025", tanggal berlaku "1 Agustus 2026", "Berlaku per …", dan "bukan nasihat pajak" muncul di balasan.
 
 ## Batasan & penanganan error
 - Script keluar kode 2 + `ERROR: ...` bila modal kosong/bukan angka, persen ≥ 100, voucher persen ≥ 100%, qty per pesanan bukan bilangan bulat, atau total persen biaya + target margin ≥ 100% (target mustahil). Jelaskan dan minta angka yang benar.

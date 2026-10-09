@@ -102,3 +102,57 @@ Alasan:
 CACAT-01 (murah: tambah 1 baris aturan default JP eksplisit + selaraskan §Contoh) sebelum
 `beta`, karena ini menyangkut konsistensi output — prinsip inti "reliable" yang dijanjikan
 ke pembeli awam. CACAT-02 boleh dijadwalkan versi berikutnya.
+
+---
+## Riwayat v1.0.5 (2026-10-05) — menunggu uji ulang independen
+Perbaikan dari cacat no. 3 `koordinasi/telegram-gelombang-6-2026-10-05.md` (DENGAN 7,5; selisih +1,5):
+(a) lembar siswa tanpa jawaban + "Kunci Jawaban (untuk guru)" utuh & terpisah; (b) format baku tanpa
+garis pemisah/baris kosong berulang, catatan tempel Word/Docs sesuai tanda `#`; (c) `scripts/buat_docx.py`
+(zipfile+XML, Python standar) + `tests/uji_buat_docx.py` (10 pemeriksaan lulus: XML valid, tabel, halaman baru,
+lembar siswa tanpa "Jawaban:", 4 input buruk); (d) jawaban permintaan kode/bunyi CP: rujukan BSKAP 046/H/KR/2025
+(18 Juli 2025, diverifikasi web 2026-10-05) + langkah mengambil CP + tempat isian. Contoh: `07-minta-kode-bunyi-cp-resmi.md`.
+Status: **uji ulang independen selesai 2026-10-05 — LULUS** (OpenClaw 2026.9.6 lokal, sebelum/sesudah: rata-rata 5,75 -> 8,5, selisih +2,75; tanpa salah fakta/angka pada sisi SESUDAH). Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.5". Sisa cacat minor (bukan salah fakta): isi utuh tidak ditampilkan di chat, penanda `>`/`####`/`*..*` muncul literal di .docx.
+
+---
+## Riwayat v1.0.6 (2026-10-05) — perbaikan minor pasca-LULUS, menunggu cek penguji
+Menutup 3 cacat minor uji ulang v1.0.5: (1) isi modul utuh wajib di chat (aturan atas SKILL.md, checklist, description); (2) `buat_docx.py` mendukung `>`, `####`, `*miring*` + 9 pemeriksaan baru di `tests/uji_buat_docx.py` (semua lulus); (3) jalur file dicetak script dan wajib disebut sesuai output, atau file tidak disebut. Belum diuji ulang di OpenClaw.
+
+---
+## Cek v1.0.6 (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH saja (SEBELUM tetap 5,75 dari v1.0.5): S1-A 8, S1-B 8,5, S2 (RPP Matematika SD kelas 4 + Word) 9; rata-rata **8,5** (selisih +2,75). **VERDIK: LULUS** — isi utuh di chat, .docx valid tanpa `>`/`####` literal, jalur file nyata, CP tidak dikarang, angka/waktu benar (python). Sisa minor: 1 kalimat "File ...:" tanpa jalur (S1-B), 1 `*` literal di docx (bold di dalam miring), bunyi CP persis tidak selalu diberikan. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.6".
+
+---
+## Riwayat v1.0.7 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.6, menunggu uji ulang independen
+Uji Telegram v1.0.6 (topik 724) skor 5 (TANPA 6): bot hanya mengirim ringkasan, menulis "isi lengkap ada di file .md di workspace" (tidak sampai ke guru), dan bertanya "mau dibuatkan .docx?" padahal guru menyebut supervisi besok. Perbaikan: aturan paling atas (isi utuh di chat, dipecah per bagian; .docx langsung + lampiran kanal chat bila bisa; tidak menulis .md di workspace) dan `description`. Status: menunggu uji ulang independen, termasuk konteks Telegram (isi utuh terkirim berurutan, .docx dilampirkan atau jalur disebut). Belum diuji di OpenClaw.
+
+---
+## Uji ulang v1.0.7 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH saja via `uji-tg.sh` (SEBELUM tetap 5,75). Skenario 1 (pesan persis gelombang 6): 5 percobaan, hanya 1 selesai (skor 8; isi utuh 4 bagian, kunci terpisah, .docx nyata, CP tidak dikarang; jalur file kosong di chat); 4 lainnya tanpa balasan (model idle timeout/900 dtk). Skenario 2 (RPP Matematika SD kelas 4, cetak): skor 6; isi utuh & angka benar, tetapi klaim palsu "File Word ... sudah saya lampirkan". Rata-rata percobaan selesai **7,0**. **VERDIK: BELUM** (rata-rata < 8, 1/5 percobaan skenario 1 lulus, klaim lampiran palsu). Tidak ada salah fakta/angka. Detail & saran di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.7".
+
+---
+## Riwayat v1.0.8 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.7, menunggu uji ulang independen
+Menutup cacat uji v1.0.7 (VERDIK BELUM; 1/5 percobaan skenario 1 selesai): (1) format default RINGKAS (±4.000-6.000 karakter, utuh) untuk mencegah idle timeout akibat balasan 13-15 ribu karakter; versi lengkap hanya bila diminta; (2) .docx sekali setelah isi chat, kalimat baku "File Word: <jalur dari output script>", dilarang klaim lampiran/terkirim tanpa alat kirim file; (3) tool call dibatasi (baca SKILL.md sekali, web fetch maks. 2 hanya bila bunyi CP persis diminta). Contoh baru: `09-format-ringkas-telegram.md`. Status: menunggu uji ulang independen di konteks Telegram. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.8 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75). Skenario 1 (pesan persis gelombang 6) x3 berurutan: S1-A timeout model idle (782 dtk), S1-B timeout 900 dtk, S1-C selesai 461 dtk skor 8 (ringkas 6.376 karakter, LKPD bersih, kunci terpisah, rubrik utuh, .docx nyata, CP tidak dikarang). Skenario 2 (RPP Matematika SD kelas 4, cetak): skor 8, 248 dtk, angka benar (70 menit, rubrik 100), .docx nyata, tanpa klaim lampiran palsu. Rata-rata selesai **8,0**, tetapi skenario 1 hanya 1/3 lulus (timeout = gagal). **VERDIK: BELUM**. Tidak ada salah fakta/angka. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.8".
+
+---
+## Riwayat v1.0.9 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.8, menunggu uji ulang independen
+Skenario "tulis kode dan bunyi CP resminya persis" pada v1.0.8: 2 dari 3 timeout (782 dtk idle, 900 dtk), satu-satunya yang selesai memakai `web_fetch` (461 dtk). Perbaikan: dokumen CP resmi tidak diambil lewat web sama sekali (izin "maks. 2 fetch" dihapus di aturan atas, checklist, Batasan, dan description); jawaban = rujukan BSKAP 046/H/KR/2025 + URL resmi + langkah mencari Fase & elemen + kolom "Tempel bunyi CP resmi di sini" + TP selaras elemen. Checklist baru: "tidak ada web_fetch dokumen CP". Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.9 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+Sisi SESUDAH via `uji-tg.sh` (SEBELUM 5,75), berurutan. Skenario 1 (pesan persis gelombang 6) x3: 237/229/208 dtk, tanpa timeout, skor 8/7/8; Skenario 2 (RPP Matematika SD kelas 4, cetak): 280 dtk, skor 9. Tool: read/ls/exec/write/edit, **tanpa web_fetch**. Modul ringkas, LKPD tanpa jawaban, kunci terpisah, rubrik utuh; CP tidak dikarang (rujukan BSKAP 046/H/KR/2025 + kolom tempel); tanpa klaim lampiran palsu; menit & rubrik dihitung ulang benar. Rata-rata **8,0**, skenario 1 lulus 3/3. **VERDIK: LULUS**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.9".
+
+---
+## Riwayat v1.0.10 (2026-10-05) — keputusan pemilik no. 14, menunggu uji ulang independen
+Cacat uji Telegram v1.0.9: file Word tersimpan di komputer bot (mis. /tmp/...) sehingga guru tidak bisa mengambilnya. Perbaikan: setelah isi utuh tampil di chat dan .docx dibuat, agent mencoba melampirkan file lewat alat kirim file kanal chat; berhasil = "File Word terlampir."; gagal/tidak ada = tanpa jalur file + kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; kanal CLI/IDE boleh menyebut jalur. Diperbarui: aturan atas SKILL.md, checklist, description, contoh 08, README. Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.10 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+`uji-tg.sh`, 2 percobaan berurutan, home bersih (modul SMP Bahasa Inggris + CP persis + supervisi). A: 401 dtk, skor 6, GAGAL (menulis "File Word terlampir." tanpa lampiran terkirim, tanpa kalimat tawaran "kirim file"). B: 439 dtk, skor 9, lulus (isi utuh, tanpa jalur /tmp, kalimat tawaran ada). Tanpa timeout; CP tidak dikarang; menit dan skor benar. Rata-rata **7,5**, lulus 1/2. **VERDIK: BELUM**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.10".
+
+---
+## Riwayat v1.0.11 (2026-10-05) — keputusan pemilik no. 14 (lanjutan), menunggu uji ulang independen
+Cacat uji Telegram v1.0.10 percobaan A: menulis "File Word terlampir." tanpa lampiran terkirim. Perbaikan: di kanal chat tidak ada pelampiran otomatis dan tidak ada kata "terlampir/di bawah/sudah dikirim" untuk file; balasan ditutup kalimat baku "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan."; .docx dibuat hanya setelah guru membalas "kirim file", dan "File Word terlampir." hanya bila alat kirim file mengembalikan sukses (gagal = dikatakan jujur). Diperbarui: aturan atas SKILL.md, checklist, description, contoh 08, README. Status: menunggu uji ulang independen. Belum diuji di OpenClaw.
+
+## Uji ulang v1.0.11 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal
+`uji-tg.sh`, 3 percobaan berurutan, home bersih. A 385 dtk skor 9, B 350 dtk skor 9, C 120 dtk skor 8: semua lulus giliran pertama (isi utuh di chat, tanpa jalur file, tanpa klaim "terlampir", kalimat baku "balas 'kirim file'" ada, CP tidak dikarang, menit 80 benar). Giliran kedua "kirim file" (C): model timeout, tanpa alat, tanpa klaim palsu; kirim file belum terverifikasi. Rata-rata **8,7**, lulus 3/3. **VERDIK: LULUS**. Detail di `00-openclaw-sebelum-sesudah.md` bagian "Cek v1.0.11".

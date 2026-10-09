@@ -1,0 +1,139 @@
+<title>Bukti Sebelum–Sesudah Komunitech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: lembar hasil uji — kepala laporan, cara uji ringkas, lalu kartu per skill dengan penggaris skor 0–10 */
+:root{
+  --bg:#f5f7f8; --panel:#ffffff; --ink:#15232b; --muted:#56656d; --line:#d9e1e5;
+  --before:#b4594a; --before-soft:#f3e3df; --after:#0f7a63; --after-soft:#dcefe9; --accent:#1d4e89;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Source Sans 3",ui-sans-serif,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171c; --panel:#16222a; --ink:#e4ecef; --muted:#9aabb3; --line:#27363f;
+  --before:#e08a7b; --before-soft:#3a2622; --after:#4fc8a8; --after-soft:#173a32; --accent:#8db8ec; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171c; --panel:#16222a; --ink:#e4ecef; --muted:#9aabb3; --line:#27363f;
+  --before:#e08a7b; --before-soft:#3a2622; --after:#4fc8a8; --after-soft:#173a32; --accent:#8db8ec; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body)}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:40px 64px;display:grid;gap:40px}
+header{display:grid;gap:14px;max-width:62ch}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:800 clamp(30px,5vw,48px)/1.05 var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{margin:0;color:var(--muted);font-size:18px}
+.stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:6px}
+.stat b{display:block;font:700 28px/1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.method{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding-block:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.method h2{grid-column:1/-1;margin:0;font:700 20px/1.2 var(--display)}
+.step{display:grid;gap:4px;min-width:0}
+.step b{font:600 15px/1.3 var(--body)}
+.step p{margin:0;color:var(--muted);font-size:14.5px}
+.method .rule{grid-column:1/-1;font-size:14.5px;color:var(--muted);margin:0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.controls label{font:500 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:4px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;font:600 13.5px/1 var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:14px;align-content:start;min-width:0}
+.card h3{margin:0;font:700 19px/1.25 var(--display);text-wrap:balance}
+.meta{font:500 12px/1.3 var(--mono);color:var(--muted);letter-spacing:.02em}
+.ruler{display:grid;gap:6px}
+.track{position:relative;height:30px;border-radius:6px;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 10%);border:1px solid var(--line)}
+.span{position:absolute;top:50%;height:4px;transform:translateY(-50%);background:linear-gradient(90deg,var(--before),var(--after));border-radius:2px}
+.dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;border:3px solid var(--panel)}
+.dot.b{background:var(--before)} .dot.a{background:var(--after)}
+.scores{display:flex;justify-content:space-between;font:500 13px/1.2 var(--mono);font-variant-numeric:tabular-nums}
+.scores .b{color:var(--before)} .scores .a{color:var(--after)} .scores .d{color:var(--ink)}
+.task{margin:0;font-style:italic;color:var(--muted);font-size:15px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.cmp{grid-template-columns:1fr}}
+.side{border-radius:8px;padding:10px 12px;font-size:14.5px;min-width:0}
+.side b{display:block;font:500 11px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.side.b{background:var(--before-soft)} .side.b b{color:var(--before)}
+.side.a{background:var(--after-soft)} .side.a b{color:var(--after)}
+.key{margin:0;font:500 13.5px/1.45 var(--mono);color:var(--ink);overflow-wrap:anywhere}
+.note{margin:0;font-size:13.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+footer{color:var(--muted);font-size:13.5px;max-width:70ch;display:grid;gap:8px}
+footer p{margin:0}
+.empty{color:var(--muted)}
+.badge{justify-self:start;font:500 11.5px/1.3 var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--before);border:1px solid var(--before);border-radius:4px;padding:3px 7px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Hasil uji · OpenClaw · __TANGGAL__</div>
+  <h1>Pertanyaan yang sama, bot yang sama. Bedanya hanya skill.</h1>
+  <p class="lede">Setiap skill kami uji dengan pesan sehari-hari dan pesan jebakan, sekali tanpa skill dan sekali dengan skill. Di bawah ini hanya skill yang bedanya jelas.</p>
+  <div class="stats">
+    <div class="stat"><b id="nSkill">0</b><span>skill dengan bukti jelas</span></div>
+    <div class="stat"><b id="avgB">0</b><span>rata-rata skor tanpa skill</span></div>
+    <div class="stat"><b id="avgA">0</b><span>rata-rata skor dengan skill</span></div>
+  </div>
+</header>
+
+<section class="method" aria-labelledby="cara">
+  <h2 id="cara">Cara kami menguji</h2>
+  <div class="step"><b>Pesan sama persis</b><p>Dua pesan gaya chat WA: pekerjaan biasa dan satu jebakan (data kurang, aturan baru, permintaan berisiko). Data di pesan fiktif.</p></div>
+  <div class="step"><b>Bot & model sama</b><p>Satu-satunya beda: skill dimatikan atau aktif.</p></div>
+  <div class="step"><b>Penilai terpisah</b><p>Dinilai AI penguji yang bukan pembuat skill, wajib jujur bila tanpa skill sudah sama bagus.</p></div>
+  <div class="step"><b>Angka dihitung ulang</b><p>Gaji, pajak, harga, tanggal dihitung ulang dengan kalkulator terpisah; aturan yang dikutip dicek.</p></div>
+  <p class="rule">Skor 1–10 menilai ketepatan, siap pakai, aturan Indonesia, keamanan &amp; privasi, dan kejelasan. Skill tampil di sini bila skor dengan skill ≥ 8, lebih tinggi ≥ 1,5 poin, dan tidak ada angka atau fakta yang salah. Penilainya AI, jadi selisih kecil tidak berarti banyak; hasil bisa berbeda di model AI lain.</p>
+</section>
+
+<section aria-label="Daftar skill" style="display:grid;gap:16px">
+  <div class="controls" id="filters"><label>Kategori</label></div>
+  <div class="list" id="list"></div>
+  <p class="empty" id="empty" hidden>Tidak ada skill di kategori ini.</p>
+</section>
+
+<footer>
+  <p>Skill membantu menyiapkan hitungan dan dokumen; keputusan tetap di tangan Anda. Untuk pajak, hukum, dan kesehatan, konsultasikan ke profesional.</p>
+  <p>Komunitech · komunitech.com</p>
+</footer>
+</div>
+
+<script>
+const DATA = __DATA__;
+const fmt = x => (Math.round(x*100)/100).toString().replace('.', ',');
+const esc = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const list = document.getElementById('list'), empty = document.getElementById('empty');
+document.getElementById('nSkill').textContent = DATA.length;
+document.getElementById('avgB').textContent = fmt(DATA.reduce((s,r)=>s+r.b,0)/DATA.length);
+document.getElementById('avgA').textContent = fmt(DATA.reduce((s,r)=>s+r.a,0)/DATA.length);
+function card(r){
+  const lo = r.b*10, hi = r.a*10;
+  return `<article class="card">
+    <div style="display:grid;gap:4px"><h3>${esc(r.judul)}</h3><div class="meta">${esc(r.kat)}</div></div>
+    ${r.label ? `<span class="badge">${esc(r.label)}</span>` : ''}
+    <div class="ruler" aria-label="Skor tanpa skill ${fmt(r.b)}, dengan skill ${fmt(r.a)} dari 10">
+      <div class="track"><div class="span" style="left:${lo}%;width:${hi-lo}%"></div><div class="dot b" style="left:${lo}%"></div><div class="dot a" style="left:${hi}%"></div></div>
+      <div class="scores"><span class="b">tanpa skill ${fmt(r.b)}</span><span class="d">+${fmt(r.a-r.b)}</span><span class="a">dengan skill ${fmt(r.a)}</span></div>
+    </div>
+    <p class="task">“${esc(r.tugas)}”</p>
+    <div class="cmp"><div class="side b"><b>Tanpa skill</b>${esc(r.tanpa)}</div><div class="side a"><b>Dengan skill</b>${esc(r.dengan)}</div></div>
+    ${r.angka ? `<p class="key">${esc(r.angka)}</p>` : ''}
+    ${r.catatan ? `<p class="note">${esc(r.catatan)}</p>` : ''}
+  </article>`;
+}
+const cats = ['Semua', ...[...new Set(DATA.map(r=>r.kat))].sort()];
+const filters = document.getElementById('filters');
+let cur = 'Semua';
+try { const s = localStorage.getItem('kt-kat'); if (s && cats.includes(s)) cur = s; } catch(e) {}
+function render(){
+  const rows = cur==='Semua' ? DATA : DATA.filter(r=>r.kat===cur);
+  list.innerHTML = rows.map(card).join('');
+  empty.hidden = rows.length > 0;
+  filters.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.k===cur));
+}
+cats.forEach(k => {
+  const b = document.createElement('button'); b.className='chip'; b.type='button'; b.dataset.k=k;
+  b.textContent = k==='Semua' ? `Semua (${DATA.length})` : `${k} (${DATA.filter(r=>r.kat===k).length})`;
+  b.addEventListener('click', () => { cur=k; try{localStorage.setItem('kt-kat',k)}catch(e){} render(); });
+  filters.appendChild(b);
+});
+render();
+</script>

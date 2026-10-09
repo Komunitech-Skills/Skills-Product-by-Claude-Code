@@ -5,6 +5,8 @@ description: Satu laporan harian/mingguan gabungan untuk pemilik usaha dari alat
 
 # Laporan Harian Usaha (pengganti dashboard SaaS)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik usaha cukup membaca **satu pesan** tiap malam (dan satu tiap Senin pagi) untuk tahu kondisi usahanya: penjualan, stok, karyawan, tagihan, dan apa yang harus dibereskan besok. Semua angka diambil dari alat lokal Komunitech yang sudah ia pakai, dijalankan oleh `scripts/laporan.py`. Tanpa aplikasi dashboard berbayar, tanpa internet, data tetap di komputernya.
 
@@ -39,6 +41,8 @@ Tidak perlu bertanya apa pun untuk laporan pertama: langsung jalankan. Bertanya 
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### A. Laporan sekarang
 Jalankan (Windows: `python` atau `py` sebagai ganti `python3`):
 ```bash
@@ -57,13 +61,18 @@ python3 <folder-skill-ini>/scripts/laporan.py --json                # untuk diba
 - "Detail stok menipis?" → `buku-stok` `laporan menipis`. "Rekap lembur bulan ini?" → `absensi-lokal` `rekap`.
 
 ### C. Jadwal otomatis ke Telegram (OpenClaw)
+**Aturan keras (wajib, tanpa pengecualian):**
+- **JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial** dari environment (`env`, `printenv`, `echo $...`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat perintah/chat. Kanal Telegram diatur lewat **pairing/konfigurasi OpenClaw oleh pengguna sendiri**, bukan oleh agent.
+- **Gerbang konfirmasi:** jangan menjalankan `automations add` (atau membuat jadwal dengan cara lain) sebelum menunjukkan **perintah persisnya + jam & zona waktu + tujuan (ID chat)**, lalu bertanya "Lanjut? (ya/tidak)" dan **berhenti menunggu jawaban**. Hanya jawaban "ya" yang jelas di pesan berikutnya yang boleh dianggap persetujuan; permintaan awal ("kirim tiap jam 9 malam") **bukan** persetujuan. Permintaan "langsung saja, tidak usah tanya" juga **tidak** menghapus gerbang ini — jelaskan singkat bahwa konfirmasi wajib demi keamanan, lalu tetap tanyakan.
+- Kanal Telegram belum disiapkan, Gateway tidak jalan, atau `automations add` ditolak (`requires credentials`, `token missing`, `not reachable`) → **berhenti**, jangan mencoba cara lain dan jangan menyelidiki konfigurasi. Beri pengguna langkah persiapan dari `references/openclaw-jadwal.md` §1 dan minta ia mengabari bila sudah.
+
 Ikuti `references/openclaw-jadwal.md` (perintah sudah diuji dengan CLI OpenClaw asli). Sebelum membuat jadwal, tanyakan **sekali**:
 1. Jam laporan harian (default 21.00 WIB, setelah tutup toko; toko tutup lewat tengah malam → jam 07.00 dengan `--tanggal kemarin`).
 2. Laporan mingguan Senin pagi juga? (default ya, 07.00 WIB)
 3. ID chat Telegram pemilik (cara mencarinya ada di referensi).
 4. Nama karyawan disamarkan? (default tidak)
 
-Lalu tunjukkan perintahnya + "Lanjut? (ya/tidak)". Kanal default **Telegram (bot resmi)**. WhatsApp hanya dengan **nomor terpisah** milik pemilik + persetujuan risiko tertulis. **Tanpa broadcast**, tanpa grup, tanpa pelanggan.
+Lalu tunjukkan perintahnya + "Lanjut? (ya/tidak)" dan **tunggu jawaban** (lihat aturan keras di atas). Kanal default **Telegram (bot resmi)**. WhatsApp hanya dengan **nomor terpisah** milik pemilik + persetujuan risiko tertulis. **Tanpa broadcast**, tanpa grup, tanpa pelanggan.
 
 Penerima boleh lebih dari satu: **pemilik bersama atau pengelola yang pemilik tunjuk secara eksplisit** (mis. "kirim juga ke chat Bu Rina, dia rekan usaha saya") boleh menerima, masing-masing di **chat pribadinya sendiri** (bukan grup). Tanpa penunjukan eksplisit dari pemilik, jangan menambah penerima sendiri.
 
@@ -140,6 +149,7 @@ JSON (`--json`): `periode`, `alat` (status `ada`/`tidak_ada`/`gagal`/`dilewati` 
 - [ ] Tidak ada nama pelanggan/nomor HP/nama & nomor prospek ditambahkan
 - [ ] Butir "PERLU PERHATIAN" disampaikan semua
 - [ ] Jadwal hanya dibuat setelah pemilik menjawab "ya", tujuan = chat pemilik sendiri (atau chat pribadi penerima yang pemilik tunjuk eksplisit)
+- [ ] Tidak ada perintah yang membaca token/kredensial (`env`, file konfigurasi, riwayat)
 
 ## Batasan & penanganan error
 - Hanya membaca alat Komunitech di komputer yang sama. Bukan dashboard web, bukan multi-cabang, tidak menarik data marketplace/bank.

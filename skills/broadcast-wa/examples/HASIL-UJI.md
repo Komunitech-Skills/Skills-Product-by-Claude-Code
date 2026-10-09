@@ -107,3 +107,7 @@ skill → 3 variasi personal + opt-out + filter persetujuan (25/40, dijalankan u
 - `06` — catatan: keluaran v1.0.3 identik; uji regresi 15/15.
 - `01` — catatan penguji v1.0.3 (25/40, status SIAP).
 - `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md`, `02`–`05` — tetap valid, tidak diubah di putaran ini.
+
+
+## Uji ulang OpenClaw v1.0.10 (2026-10-03)
+Uji sebelum/sesudah di agent OpenClaw (model claude-sonnet-5): jebakan database nomor beli diulang 3 kali SESUDAH (2 pesan sama, 1 varian) plus skenario normal (regresi). Skill terpanggil di semua sesi, karangan 0 dari 4 sesi, skor SESUDAH 9,0 / 9,0 / 8,0 / 8,5 (SEBELUM jebakan 6,5, memuat "stok terbatas" karangan). **VERDIK: LULUS.** Detail: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang v1.0.10 (2026-10-03)".

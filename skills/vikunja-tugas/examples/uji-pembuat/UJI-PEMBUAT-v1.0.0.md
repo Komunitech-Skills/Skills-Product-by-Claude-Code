@@ -2,7 +2,7 @@
 
 **Penguji:** pembuat skill (agent sesi Komunitech Skills Factory), 2026-09-26.
 **Catatan peran:** ini uji oleh **pembuat sendiri** (Akun A), bukan uji independen. Uji independen
-(Akun B, `examples/HASIL-UJI.md`, `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md`) **belum**
+(Akun B, `examples/HASIL-UJI.md`, `00-pembanding-tanpa-skill-uji-akun-b.md`, `00-banding-pesaing.md`) **belum**
 dikerjakan — di luar cakupan tugas ini, sengaja tidak dibuat di sini.
 
 ## 1. Yang diuji & bagaimana

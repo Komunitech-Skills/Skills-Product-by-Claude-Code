@@ -1,0 +1,13 @@
+{
+  "posisi": "Admin Toko Online",
+  "wajib": [
+    {"nama": "Kelola toko marketplace", "kata": ["shopee", "tokopedia", "tiktok shop", "lazada", "marketplace"], "bobot": 3, "min_tahun": 1},
+    {"nama": "Input pesanan, resi, dan stok", "kata": ["input pesanan", "input order", "resi", "stok", "packing"], "bobot": 2},
+    {"nama": "Spreadsheet", "kata": ["excel", "google sheet", "spreadsheet"], "bobot": 2},
+    {"nama": "Layani chat pembeli", "kata": ["chat", "customer service", "whatsapp", "komplain"], "bobot": 2}
+  ],
+  "nilai_tambah": [
+    {"nama": "Iklan marketplace", "kata": ["shopee ads", "tokopedia ads", "iklan"], "bobot": 2},
+    {"nama": "Desain dan foto produk", "kata": ["canva", "foto produk", "desain"], "bobot": 1}
+  ]
+}

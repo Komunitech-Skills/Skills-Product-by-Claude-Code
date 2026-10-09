@@ -1,0 +1,8 @@
+Proprietary - Komunitech (komunitech.com)
+Hak cipta (c) 2026 Komunitech. Seluruh hak dilindungi.
+
+Skill ini (SKILL.md, README.md, scripts/, references/, examples/, dan panduan terkait) adalah karya orisinal Komunitech dan dilisensikan kepada pembeli untuk pemakaian pribadi/usaha sendiri. Dilarang menjual ulang, membagikan ulang, atau mempublikasikan isi skill ini tanpa izin tertulis. Disediakan apa adanya tanpa jaminan. Perhitungan pajak adalah alat bantu administrasi, bukan nasihat pajak.
+
+Tentang Odoo: skill ini adalah program terpisah yang berkomunikasi dengan server Odoo MILIK PENGGUNA lewat API eksternal resmi Odoo (XML-RPC /xmlrpc/2 dan JSON-2 /json/2, didokumentasikan di https://www.odoo.com/documentation/). Skill ini tidak menyalin, memodifikasi, atau menyertakan kode Odoo. Odoo Community berlisensi LGPL-3.0 (https://github.com/odoo/odoo, file LICENSE); Odoo Enterprise dan Odoo Online tunduk pada ketentuan Odoo S.A. Odoo TIDAK didistribusikan dalam paket ini; pembeli memakai Odoo yang ia pasang/langgan sendiri.
+
+"Odoo" adalah merek milik Odoo S.A. Komunitech TIDAK berafiliasi dengan, tidak disponsori, dan tidak didukung oleh Odoo S.A.; nama dipakai hanya untuk menjelaskan kompatibilitas. Nama produk/platform pihak ketiga lain yang disebut (OpenClaw, Telegram, WhatsApp, Coretax DJP) hanya sebagai penyebut produk; Komunitech tidak berafiliasi dengan pemiliknya.

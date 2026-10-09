@@ -12,11 +12,13 @@ pelanggan/karyawan/nomor HP di repo Komunitech.
       error, memang tidak jalan).
 
 ## Pemasangan skill
-- [ ] 17 skill paket terpasang di **folder yang sama** (`openclaw skills list` menampilkan
+- [ ] 16 skill paket terpasang di **folder yang sama** (`openclaw skills list` menampilkan
       semuanya): `karyawan-ai-mulai`, `cek-privasi-openclaw`, `kasir-lokal`, `buku-stok`,
       `kas-umkm`, `absensi-lokal`, `gaji-umkm`, `laporan-harian-usaha`, `buku-piutang`,
       `tagih-piutang`, `hitung-hpp`, `pph-final-umkm`, `agen-cs-toko`, `balas-chat-cs`,
-      `caption-sosmed-umkm`, `promo-kalender`, `laporan-otomatis-terjadwal`.
+      `promo-kalender`, `laporan-otomatis-terjadwal`.
+- [ ] (Opsional) skill tambahan: `program-referral-loyalitas`, `strategi-harga-produk`,
+      `iterasi-dari-masukan-pelanggan`, `rencana-marketing-usaha` (manual, tanpa blast).
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, member sudah punya 1 hasil nyata di tangan.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, laporan lampu lalu lintas sudah dibaca member, dan
       setiap perbaikan 🔴/🟡 yang disetujui sudah dijalankan **satu per satu**.

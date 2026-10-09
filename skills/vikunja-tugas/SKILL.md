@@ -5,10 +5,20 @@ description: Mengoperasikan Vikunja (manajer tugas/proyek open-source, self-host
 
 # Vikunja Tugas (asisten Vikunja lokal)
 
+> Jika pengguna menempel kunci/token/password di chat: JANGAN menulis ulang satu karakter pun darinya (tidak utuh, tidak sebagian, tidak awalan/akhiran seperti "tk_7f3a9...", tidak disamarkan). Sebut "kunci yang Anda tempel". Sebelum langkah lain, balasan WAJIB memuat templat ini (boleh disesuaikan sedikit, kalimat "segera ganti token ini" tidak boleh dihapus): "Kunci yang Anda tempel sudah terkirim lewat chat, jadi anggap sudah bocor. Jangan kirim token ke chat lagi dan jangan minta token baru dikirim lewat chat. **Segera ganti token ini:** di Vikunja buka Settings → API Tokens, hapus token lama, buat token baru, lalu simpan sendiri di komputer Anda lewat `python3 scripts/vikunja.py simpan-kunci` dari folder skill ini (token diketik tersembunyi, tidak tampil di chat)." Jangan menyimpan kunci itu ke file/memori/jadwal.
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (pengganti Trello/ClickUp/Asana berbayar) cukup mengetik permintaan biasa, dan agent menjalankan `scripts/vikunja.py` untuk membaca atau menyiapkan tugas lewat **REST API resmi Vikunja** (`/api/v1`, header `Authorization: Bearer tk_...`). Data tetap di komputer/server pengguna. Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.0 (draft).** Diuji pembuat dengan **Vikunja 2.6.0 ASLI** (binary resmi linux-amd64, checksum SHA-256 dicocokkan, dijalankan sungguhan terikat ke 127.0.0.1) untuk `cek`, `daftar-proyek`, `hari-ini`, `terlambat`, `tambah`, `selesai`, `ringkasan`, `cari`, penugasan (`--ke`), dan `tambah --batch`; plus uji regresi otomatis dengan server tiruan (62 skenario, termasuk 401/404/500/timeout) dan lulus uji muat OpenClaw 2026.9.6 (`scripts/uji_openclaw.sh`). **Belum** diuji penguji independen, belum di Windows/Mac sungguhan, belum uji Docker.
+**Versi 1.0.9** (revisi dokumentasi: pemicu `dari-teks` diperjelas; arahan pemasangan Vikunja + jasa setup). **Versi 1.0.5** (revisi rendah, uji regresi saja): `dari-teks` tidak lagi menangkap kata permintaan pembuka sebagai nama PIC — "Mohon:", "Tolong:", "Harap:", "Silakan:", "Dimohon:", "Pastikan:", "Please:", dll. (dulu `Mohon: Bu Rina kirim faktur` → `ke: "Mohon"`); nama asli dan `--anggota` tetap menang. Uji regresi 71. Sebelumnya:
+
+**Versi 1.0.3** (revisi rendah, uji regresi saja): `dari-teks` tidak lagi menangkap kata judul/header notulen berbentuk `Kata:` sebagai nama PIC — "TOPIC:", "INFO:", "UPDATE:", "STATUS:", "NOTE:", "AGENDA:", "SUBJECT:", "Next Step:", "FYI:", "Perihal:", "Topik:", dll. (dulu `TOPIC: bahas rencana marketing` → `ke: "TOPIC"`). Baris seperti itu kini tanpa PIC dan judulnya utuh; nama asli (`Budi:`, `ANDI:`, `Siti Aminah:`) dan label `PIC: Nama` tetap terbaca; anggota yang disebut lewat `--anggota` selalu menang. Uji regresi 69/69. Sebelumnya:
+
+**Versi 1.0.2** (revisi rendah, belum diuji ulang server asli — hanya uji regresi & dokumentasi): (1) `--ke` sekarang didokumentasikan mensyaratkan target sudah jadi **kolaborator proyek** di Vikunja + cara menambahkannya (bagian D.4); (2) `dari-teks` kini mendeteksi label eksplisit `PIC: Nama` di mana pun dalam baris (dulu hanya `Nama: tugas` di awal baris; `PIC: Andi kirim penawaran` dulu tidak terbaca, sekarang `ke: "Andi"`). Uji regresi 67/67. Sebelumnya:
+
+**Versi 1.0.1.** Diuji pembuat dengan **Vikunja 2.6.0 ASLI** (binary resmi linux-amd64, checksum SHA-256 dicocokkan, dijalankan sungguhan terikat ke 127.0.0.1) untuk `cek`, `daftar-proyek`, `hari-ini`, `terlambat`, `tambah`, `selesai`, `ringkasan`, `cari`, penugasan (`--ke`), dan `tambah --batch`; plus uji regresi otomatis dengan server tiruan (64 skenario, termasuk 401/404/500/timeout) dan lulus uji muat OpenClaw 2026.9.6 (`scripts/uji_openclaw.sh`). **Diuji penguji independen** (Akun B, 2026-09-26): menemukan bahwa penugasan (`--ke`) lewat token API mentah bisa GAGAL dengan pesan "401 token tidak valid" bila token belum dicentang kelompok izin terpisah "Tasks Assignees" (bukan bug skrip — begitu perilaku Vikunja sendiri, lihat `references/panduan-vikunja.md` bagian 6). Direproduksi ulang lewat REST API v2.6.0 sungguhan (bukan lewat UI): `--ke` **berhasil** saat kelompok itu dicentang, dan pesan galat sekarang menyebut penyebab paling mungkin secara eksplisit. Belum di Windows/Mac sungguhan, belum uji Docker.
 
 ## Kapan digunakan
 - "Cek Vikunja saya nyambung?" → `cek`
@@ -18,23 +28,25 @@ Pemilik/admin usaha kecil yang memakai **Vikunja di server/komputer sendiri** (p
 - "Tambahkan tugas: cek stok cat, jatuh tempo Jumat, tugaskan ke Budi" → `tambah`
 - "Tandai tugas #12 selesai" → `selesai`
 - "Siapa pegang tugas apa sekarang?", "ringkasan tugas tim" → `ringkasan`
-- "Ini notulen rapat/grup WA, tolong jadikan daftar tugas" → `dari-teks`, lalu `tambah --batch`
+- **Setiap kali pengguna menempel/menyebut notulen rapat, rangkuman grup WA, atau daftar poin ("ubah jadi to-do", "buatkan daftar tugas dari ini", "siapa harus ngapain dari catatan ini")** → WAJIB jalankan `dari-teks` (Langkah G) dulu; jangan menyusun tugas/PIC/tenggat sendiri dari kepala. Perintah ini tidak butuh token/Vikunja. Setelah pratinjau dicek pengguna → `tambah --batch`
 - "Kirim tugas hari ini & yang telat ke Telegram tiap pagi" → `hari-ini`/`terlambat` + `references/openclaw-jadwal.md`
 
 ## Kapan TIDAK digunakan
-- Belum punya Vikunja → arahkan ke `docs/panduan-vikunja.md` di paket, atau **jasa setup Komunitech**. Tanpa Vikunja, catatan tugas sederhana → cukup buku catatan/checklist biasa.
+- Belum punya Vikunja (atau `cek` gagal "tidak bisa dihubungi" dan pengguna belum pernah memasangnya) → **jangan mengunduh/memasang sendiri**. Arahkan ke **panduan pemasangan di paket Komunitech: `references/panduan-vikunja.md`** (unduh resmi, jalankan, amankan ke 127.0.0.1, buat token), dan tawarkan **jasa setup berbayar Komunitech** (pasang, amankan, token, jadwal laporan Telegram, cadangan; hubungi admin komunitech.com). Sementara itu `dari-teks` tetap bisa dipakai untuk menyusun draf daftar tugas. Tanpa Vikunja sama sekali, catatan tugas sederhana → cukup buku catatan/checklist biasa.
 - Mengatur anggota tim baru, tim (teams), berbagi proyek ke orang luar, webhook, lampiran file, Kanban/Gantt tampilan → dilakukan **manusia di layar Vikunja**. Skill ini sengaja tidak punya perintah itu.
 - Menghapus tugas/proyek → tidak ada perintah hapus di skill ini; hapus lewat layar Vikunja bila memang perlu.
 - Vikunja di internet tanpa HTTPS/tanpa izin eksplisit → tolak (lihat Keamanan).
 - Broadcast tugas ke banyak orang lewat WA/Telegram → tolak. Skill ini hanya melapor ke pemilik/admin.
 
 ## Persiapan (sekali, lakukan bersama pengguna)
-1. Jalankan `cek` (lihat Langkah A). Gagal → ikuti pesan `GALAT:`; panduan lengkap ada di `docs/panduan-vikunja.md` (unduh resmi, jalankan, amankan ke 127.0.0.1, buat token).
-2. **Token API**: minta pengguna menjalankan SENDIRI di terminalnya `python3 <folder-skill>/scripts/vikunja.py simpan-kunci`, lalu menempel token (tidak tampil). Token tersimpan di `~/.komunitech/vikunja-kunci.txt` berizin 600. **Jangan pernah minta pengguna menempel token di chat**; jika terlanjur ditempel, jangan menyalinnya ke file apa pun, dan sarankan menghapus token itu di Vikunja lalu buat token baru. Alternatif: ENV `VIKUNJA_TOKEN`. Urutan: `--kunci-file` (selalu menang; ENV `VIKUNJA_TOKEN` yang juga terisi akan diabaikan dengan PERINGATAN) → ENV `VIKUNJA_TOKEN` → ENV `VIKUNJA_TOKEN_FILE` → file default. Token kedua (baca-tulis) → `simpan-kunci --kunci-file ~/.komunitech/vikunja-kunci-tulis.txt` (lihat `docs/panduan-vikunja.md` bagian 6 untuk izin per token).
+1. Jalankan `cek` (lihat Langkah A). Gagal → ikuti pesan `GALAT:`; panduan lengkap ada di `references/panduan-vikunja.md` (unduh resmi, jalankan, amankan ke 127.0.0.1, buat token).
+2. **Token API**: minta pengguna menjalankan SENDIRI di terminalnya `python3 <folder-skill>/scripts/vikunja.py simpan-kunci`, lalu menempel token (tidak tampil). Token tersimpan di `~/.komunitech/vikunja-kunci.txt` berizin 600. **Jangan pernah minta pengguna menempel token di chat**; jika terlanjur ditempel, jangan menyalinnya ke file apa pun, dan sarankan menghapus token itu di Vikunja lalu buat token baru. Alternatif: ENV `VIKUNJA_TOKEN`. Urutan: `--kunci-file` (selalu menang; ENV `VIKUNJA_TOKEN` yang juga terisi akan diabaikan dengan PERINGATAN) → ENV `VIKUNJA_TOKEN` → ENV `VIKUNJA_TOKEN_FILE` → file default. Token kedua (baca-tulis) → `simpan-kunci --kunci-file ~/.komunitech/vikunja-kunci-tulis.txt` (lihat `references/panduan-vikunja.md` bagian 6 untuk izin per token).
 3. Alamat default `http://127.0.0.1:3456`. Beda? pakai ENV `VIKUNJA_URL` atau `--url` (ditulis SETELAH nama perintah, mis. `vikunja.py cek --url ...`).
 4. Opsi umum (`--url`, `--kunci-file`, `--izinkan-jarak-jauh`, `--tz`, `--json`, `--timeout`) ditulis setelah nama perintah.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 Perintah (Windows: `python` atau `py` sebagai ganti `python3`). Tambah `--json` untuk hasil terstruktur.
 
 ### A. Cek koneksi & izin
@@ -56,7 +68,7 @@ python3 <folder-skill>/scripts/vikunja.py terlambat
 python3 <folder-skill>/scripts/vikunja.py minggu-ini
 python3 <folder-skill>/scripts/vikunja.py cari "semen"
 ```
-Tanpa `--proyek`: lintas semua proyek yang token bisa lihat. "Hari ini"/"minggu ini" dihitung dari tanggal **lokal** (`--tz`, default WIB), bukan zona server. Tugas tanpa tanggal jatuh tempo tidak pernah muncul di tiga laporan ini (bukan berarti tidak ada tugas — cek `daftar-proyek` + buka Vikunja untuk tugas tanpa tenggat).
+Tanpa `--proyek`: lintas semua proyek yang token bisa lihat. "Hari ini"/"minggu ini" dihitung dari tanggal **lokal** (`--tz`, default WIB), bukan zona server. Tugas tanpa tanggal jatuh tempo tidak pernah muncul di tiga laporan ini (bukan berarti tidak ada tugas — cek `daftar-proyek` + buka Vikunja untuk tugas tanpa tenggat). **Tugas yang jatuh tempo hari ini tapi jamnya sudah lewat muncul di `hari-ini` MAUPUN `terlambat` sekaligus** (disengaja, bukan bug — dua sudut pandang berbeda); jangan menjumlahkan kedua daftar sebagai jumlah tugas unik tanpa mengecek id yang sama. Perintahnya sendiri menampilkan catatan ini setiap kali dipanggil.
 
 ### D. Tambah tugas
 1. Tentukan proyek (id atau nama, dicari dengan `daftar-proyek` bila perlu), judul, dan opsional tenggat/prioritas/PIC.
@@ -67,7 +79,7 @@ Tanpa `--proyek`: lintas semua proyek yang token bisa lihat. "Hari ini"/"minggu 
    ```
    Tenggat menerima: `hari ini`, `besok`, `lusa`, `N hari lagi`, nama hari (`Jumat`, `Jumat depan`), `minggu depan`, `25/10`, `25/10/2026`, `25 Oktober 2026`, `2026-10-25` — boleh diakhiri `jam 14:00` (default jam **17:00** waktu `--tz` bila tidak disebut). Prioritas 0–5 (0=tanpa, 3=tinggi, 4=mendesak, 5=lakukan sekarang).
 3. Tunjukkan pratinjau **apa adanya**, tanya "Simpan ke Vikunja? (ya/tidak)", lalu ulangi dengan `--ya`.
-4. `--ke <username>` menugaskan ke anggota **setelah** tugas tersimpan; bila gagal (nama tidak ditemukan/izin kurang), tugas **tetap tersimpan**, hanya penugasannya yang gagal — sampaikan keduanya apa adanya.
+4. `--ke <username>` menugaskan ke anggota **setelah** tugas tersimpan; bila gagal (nama tidak ditemukan/izin kurang), tugas **tetap tersimpan**, hanya penugasannya yang gagal — sampaikan keduanya apa adanya. **Syarat:** orang itu harus sudah jadi **kolaborator proyek** itu di Vikunja (bukan cukup punya akun) — kalau belum, `--ke` gagal dengan pesan "Anggota '...' tidak ditemukan di proyek ini". Cara menambahkan: di Vikunja, buka proyeknya → tombol **Share/Bagikan** (ikon orang di pojok kanan atas halaman proyek) → **Add User** → masukkan username, pilih hak akses (Read/Write) → simpan. Detail & tangkapan layar terbaru: `references/panduan-vikunja.md` bagian 6.
 5. Banyak tugas sekaligus: `dari-teks` (bagian F) atau buat sendiri file JSON list `[{"judul":...,"proyek":...,"tenggat":...,"prioritas":...,"ke":...,"catatan":...}, ...]`, lalu `tambah --batch file.json [--proyek <default>] --ya`. Proyek per baris menang atas `--proyek` default. Semua baris divalidasi (proyek ada, tanggal jelas) **sebelum** ada yang dikirim; bila satu baris gagal DI TENGAH pengiriman (jaringan putus/galat server), baris sebelumnya **tetap tersimpan** — script menyebut mana yang sudah dan mana yang belum, jangan mengulang seluruh batch begitu saja.
 
 ### E. Tandai selesai
@@ -90,7 +102,8 @@ python3 <folder-skill>/scripts/vikunja.py dari-teks --teks "- Budi: follow up su
 ```
 Atau `--file notulen.txt` / `--file -` (dari input). Aturan (pasti, bukan tebakan AI bebas):
 - Hanya baris berawalan `-`, `*`, `•`, atau `1.`/`1)` yang dianggap tugas; baris lain diabaikan (dihitung, ditampilkan jumlahnya).
-- `Nama: sisa kalimat` atau `Nama - sisa kalimat` di awal baris → `ke` (PIC) TERDETEKSI bila "Nama" 1–3 kata berawalan huruf besar (atau ada di `--anggota "Budi,Siti,..."`). Kata seperti "PIC"/"Catatan"/"Deadline" **tidak** dianggap nama.
+- `Nama: sisa kalimat` atau `Nama - sisa kalimat` di awal baris → `ke` (PIC) TERDETEKSI bila "Nama" 1–3 kata berawalan huruf besar (atau ada di `--anggota "Budi,Siti,..."`). Kata seperti "Catatan"/"Deadline" **tidak** dianggap nama.
+- Label eksplisit **`PIC: Nama`** (atau `PIC - Nama`) di mana pun dalam baris — awal, tengah, atau akhir — juga TERDETEKSI sebagai `ke`, mis. `- Follow up klien ABC PIC: Budi` → `ke: "Budi"`, judul jadi `Follow up klien ABC`. "Nama" dibatasi 1–3 kata berawalan huruf besar.
 - Tenggat dicari di sisa kalimat dengan kosakata yang sama seperti bagian D; kata "mendesak/urgent/penting/segera/asap" → prioritas 4.
 - Hasil ditulis ke file JSON (draf), **belum masuk Vikunja**. Tunjukkan pratinjau ke pengguna, **wajib** minta mereka memeriksa PIC/tenggat (hanya tebakan) dan mengisi proyek, baru jalankan `tambah --batch <file> --proyek <default> --ya`.
 
@@ -108,6 +121,8 @@ Jumlah: 1
 Contoh lain (tambah, ringkasan, dari-teks, batch, error) di `examples/`. `--json` berisi field yang sama secara terstruktur.
 
 ## Batasan & penanganan error
+**Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 | Pesan / kode keluar | Artinya | Yang dilakukan agent |
 |---|---|---|
 | 4 "tidak bisa dihubungi" | Vikunja mati atau alamat/port salah | Minta nyalakan Vikunja, buka alamat di browser (panduan §3/§7) |
@@ -117,7 +132,8 @@ Contoh lain (tambah, ringkasan, dari-teks, batch, error) di `examples/`. `--json
 | 8 "MUNGKIN sudah masuk sebagian" / timeout saat menulis | Koneksi putus/timeout/galat 5xx **saat** menambah tugas atau menugaskan | **Jangan ulangi otomatis.** Sampaikan tugas mana yang sudah pasti tersimpan (dari respons sebelumnya), minta pengguna cek Vikunja dulu |
 | 2 "Tenggat tidak dikenali" | Format tanggal tidak cocok pola yang didukung | Tunjukkan format yang didukung (lihat bagian D), tanyakan ulang |
 | 2 "Proyek ... tidak ditemukan" / "cocok lebih dari satu" | Nama proyek salah/ambigu | Tunjukkan daftar dari `daftar-proyek`, tanyakan yang mana |
-| 2 "Anggota ... tidak ditemukan" | Username salah, atau orang itu belum di proyek, atau token kurang izin `projects: projectusers` | Sampaikan; tugas tetap tersimpan tanpa PIC, biarkan pengguna menugaskan manual di Vikunja |
+| 2 "Anggota ... tidak ditemukan" | Username salah, atau orang itu belum di proyek, atau token kurang izin kotak "Projectusers" (di dalam kelompok "Projects") | Sampaikan; tugas tetap tersimpan tanpa PIC, biarkan pengguna menugaskan manual di Vikunja |
+| "GAGAL menugaskan ke '...': 401 ..." (setelah `tambah --ke`) | Hampir selalu: token belum dicentang kelompok izin **"Tasks Assignees"** (terpisah dari "Tasks") — Vikunja melaporkannya sebagai "token tidak valid", bukan "kurang izin" | Tugas TETAP tersimpan tanpa PIC. Arahkan ke panduan §6, minta buat ulang token dengan kelompok "Tasks Assignees" (Create, Read All) dicentang |
 | 3 "File kunci ... tidak ditemukan" | Token belum disimpan | Jalankan `simpan-kunci` |
 | 3 "File kunci ... sudah ada" | `simpan-kunci` akan menimpa token lama | Tanyakan: ganti (`--ya`) atau simpan sebagai token kedua (`--kunci-file`) |
 | 2 "Alamat ... bukan komputer ini" / "wajib HTTPS" | URL bukan 127.0.0.1 tanpa `--izinkan-jarak-jauh`, atau publik tanpa HTTPS | Tolak; jelaskan risiko (panduan §4). Hanya lanjut bila pengguna menegaskan itu server miliknya sendiri |
@@ -135,4 +151,5 @@ Contoh lain (tambah, ringkasan, dari-teks, batch, error) di `examples/`. `--json
 - [ ] Tindakan menulis (tambah, selesai, tugaskan) hanya setelah pratinjau + "ya" eksplisit
 - [ ] `dari-teks` selalu disebut sebagai DRAF, belum masuk Vikunja
 - [ ] Token API tidak muncul di jawaban/berkas
+- [ ] Bila token tertempel di chat: kalimat "Segera ganti token ini" ada di balasan
 - [ ] Batasan (tanpa sub-tugas/label/lampiran/repeat) disebut bila relevan

@@ -1,0 +1,23 @@
+id,status,catatan
+M01,tidak_berlaku,Iklan klik-ke-WhatsApp saja
+M02,gagal,Percakapan dimulai 180 vs chat nyata masuk 131 (selisih 37% > 30%)
+M03,gagal,Tidak ada catatan chat yang jadi booking
+M04,gagal,Mantan freelancer masih admin; 2FA belum aktif
+M05,gagal,2 dari 3 kampanye pakai Tingkatkan Postingan
+M06,lulus,
+M07,tidak_tahu,
+M08,lulus,Radius 15 km dari klinik
+M09,gagal,
+M10,lulus,"Rp38rb per chat; kira-kira 1 dari 4 chat jadi booking (perkiraan admin) = Rp152rb per booking, di bawah laba per treatment Rp250rb"
+M11,gagal,
+M12,lulus,
+M13,sebagian,Ad set utama hanya 2 iklan
+M14,lulus,
+M15,gagal,1 iklan ditolak: foto sebelum-sesudah jerawat
+M16,sebagian,Balasan WA rata-rata 25 menit
+M17,tidak_berlaku,
+M18,gagal,Frekuensi 7 hari 4.6 di audiens baru
+M19,tidak_tahu,
+M20,gagal,
+M21,lulus,
+M22,tidak_berlaku,Iklan klik-ke-WhatsApp saja (tanpa website)

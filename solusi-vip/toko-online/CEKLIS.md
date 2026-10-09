@@ -12,12 +12,20 @@ pelanggan/nomor HP di repo Komunitech.
       error, memang tidak jalan).
 
 ## Pemasangan skill
-- [ ] 18 skill paket terpasang (`openclaw skills list` menampilkan semuanya):
+- [ ] 21 skill paket terpasang (`openclaw skills list` menampilkan semuanya):
       `karyawan-ai-mulai`, `cek-privasi-openclaw`, `listing-marketplace`,
       `harga-jual-marketplace`, `balas-ulasan-pelanggan`, `analisis-ulasan`, `promo-kalender`,
-      `naskah-live-jualan`, `buku-stok`, `agen-cs-toko`, `foto-produk-brief`,
+      `naskah-live-jualan`, `buku-stok`, `agen-cs-toko`, `balas-chat-cs`, `foto-produk-brief`,
       `laporan-otomatis-terjadwal`, `rekap-penjualan-csv`, `konten-mingguan`, `pesan-prospek-wa`,
-      `crm-wa`, `analisis-excel`, `brainstorming-ide-usaha`.
+      `crm-wa`, `analisis-excel`, `kas-umkm`, `buku-piutang`,
+      `laporan-iklan-mingguan`.
+- [ ] (Opsional) skill tambahan sesuai kebutuhan: `program-referral-loyalitas`,
+      `iterasi-dari-masukan-pelanggan`, `umami-analitik`, `listmonk-newsletter`,
+      `luncurkan-produk-baru`, `uji-pasar-produk-cepat`, `studio-video-pendek-ai`. Umami/listmonk
+      perlu dipasang (jasa setup); tidak ada blast, email hanya ke yang mendaftar sendiri.
+- [ ] Blok "Aturan kerja Komunitech" **dan** blok "Aturan toko Komunitech" (PANDUAN §2) sudah
+      ada di `AGENTS.md`, dan kedua uji "cara cek berhasil" (daftar promo dari ekspor Shopee; bot
+      WA auto-reply) sudah dicoba di sesi baru.
 - [ ] `karyawan-ai-mulai` sudah dijalankan sekali, member sudah punya 1 hasil nyata di tangan.
 - [ ] `cek-privasi-openclaw` sudah dijalankan, laporan lampu lalu lintas sudah dibaca member, dan
       setiap perbaikan 🔴/🟡 yang disetujui sudah dijalankan **satu per satu**.
@@ -45,6 +53,9 @@ pelanggan/nomor HP di repo Komunitech.
 | Pengingat posting harian | 08.00 WIB | ☐ | ☐ |
 | Rekap CS harian (Copilot) | 20.00 WIB | ☐ | ☐ |
 | Follow-up CRM harian (crm-wa, opsional) | 08.00 WIB | ☐ | ☐ |
+| Ringkasan kas harian (kas-umkm, opsional) | 21.00 WIB | ☐ | ☐ |
+| Ringkasan piutang reseller (buku-piutang, opsional) | 07.45 WIB | ☐ | ☐ |
+| Laporan iklan mingguan (laporan-iklan-mingguan, opsional) | Senin 08.00 WIB | ☐ | ☐ |
 
 ## Privasi (wajib dicentang semua)
 - [ ] Tidak ada data pelanggan/pasien (nama, nomor HP, alamat) yang ditulis ke log/laporan yang

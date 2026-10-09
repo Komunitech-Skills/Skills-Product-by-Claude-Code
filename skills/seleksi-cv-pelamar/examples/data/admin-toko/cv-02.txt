@@ -1,0 +1,24 @@
+CURRICULUM VITAE
+
+Nama: Bima Aditya Wirawan
+Tempat/Tanggal Lahir: Jakarta, 21 Januari 1999
+Jenis Kelamin: Laki-laki
+Status: Belum menikah
+Agama: Kristen
+Alamat: Jl. Contoh Fiktif No. 12, Kota Contoh
+No. HP: 0812-5550-1234
+Email: bima@contoh.id
+
+PENDIDIKAN
+2017 - 2021 S1 Sistem Informasi, Universitas Fiktif Raya
+
+PENGALAMAN KERJA
+2021 - 2024 | Admin Marketplace, CV Gadget Prima
+- Mengelola toko di Tokopedia dan TikTok Shop
+- Rekap penjualan harian pakai Excel dengan rumus VLOOKUP
+- Menangani chat dan komplain pembeli
+2020 - 2021 | Magang Admin, Toko Aksesoris Bima
+- Packing dan input resi
+
+KEAHLIAN
+Excel, Google Sheet, foto produk, Canva

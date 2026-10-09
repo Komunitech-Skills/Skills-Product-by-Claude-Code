@@ -1,9 +1,11 @@
 ---
 name: surat-peringatan-karyawan
-description: Menyusun Surat Peringatan karyawan (SP1, SP2, SP3) yang proporsional dan terdokumentasi, berisi fakta pelanggaran, dasar perjanjian kerja/peraturan perusahaan, masa berlaku 6 bulan yang dihitung script, harapan perbaikan, kolom tanda tangan, plus berita acara klarifikasi dan catatan proses. Gunakan saat pengguna minta buat SP, surat teguran, surat peringatan pertama/kedua/ketiga, menindak karyawan telat/bolos, atau employee warning letter, disciplinary letter. Bukan untuk surat PHK.
+description: Menyusun Surat Peringatan karyawan (SP1, SP2, SP3) yang proporsional dan terdokumentasi, berisi fakta pelanggaran, dasar perjanjian kerja/peraturan perusahaan, masa berlaku 6 bulan yang dihitung script, harapan perbaikan, kolom tanda tangan, plus berita acara klarifikasi dan catatan proses. Gunakan saat pengguna minta buat SP, surat teguran, surat peringatan pertama/kedua/ketiga, menindak karyawan telat/bolos, atau employee warning letter, disciplinary letter. Juga dipakai saat pengguna ingin langsung memecat/PHK karyawan karena pelanggaran (mis. ketahuan menggelapkan uang): skill memberi langkah aman sebelum PHK (klarifikasi, skorsing dengan upah tetap dibayar, cek dasar di PK/PP/PKB); surat PHK final tidak disusun.
 ---
 
 # Surat Peringatan Karyawan (SP1/SP2/SP3)
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Membantu pemilik usaha dan staf HR memberi sanksi yang **adil, proporsional, dan tercatat rapi**: tingkat SP tepat, fakta jelas (bukan emosi), dasar aturan disebut, masa berlaku benar, dan karyawan diberi kesempatan memperbaiki diri.
@@ -15,7 +17,8 @@ Membantu pemilik usaha dan staf HR memberi sanksi yang **adil, proporsional, dan
 
 ## Kapan TIDAK digunakan
 - **Surat PHK / pemecatan / pesangon** → jangan buat. Jelaskan singkat bahwa PHK punya prosedur dan hak pekerja yang wajib dipenuhi, lalu arahkan ke ahli hukum ketenagakerjaan atau Disnaker setempat.
-- Dugaan tindak pidana (pencurian, penggelapan, kekerasan, pelecehan) → boleh bantu kronologi & berita acara, tapi sarankan konsultasi ahli hukum sebelum mengambil tindakan.
+- Dugaan tindak pidana (pencurian, penggelapan, kekerasan, pelecehan) → boleh bantu kronologi & berita acara, tapi sarankan konsultasi ahli hukum sebelum mengambil tindakan. **Jangan mengutip nomor pasal pidana (KUHP)** di surat maupun penjelasan, kecuali pengguna memintanya; cukup tulis "dugaan pencurian/penggelapan — konsultasikan ke ahli hukum/kepolisian". Bila diminta: KUHP baru (UU 1/2023) berlaku sejak **2 Januari 2026**; Pasal 374 KUHP lama tidak dipakai lagi (padanannya Pasal 488 UU 1/2023, penggelapan karena hubungan kerja) — tetap minta dicek ahli hukum.
+- **Surat skorsing** hanya bila pengguna meminta, dan **wajib** memuat kalimat: "Selama masa skorsing, upah beserta hak lain yang biasa diterima tetap dibayar penuh." Jangan pernah menulis upah "ditentukan kemudian", dipotong, atau tidak dibayar (UU 13/2003 Pasal 157A ayat (2) s.t.d.d. UU 6/2023; Putusan MK 168/PUU-XXI/2023: kewajiban berjalan sampai proses perselisihan berkekuatan hukum tetap). Lihat `references/regulasi.md` bagian 3.
 - Kontrak kerja → `perjanjian-sederhana`. Lowongan → `lowongan-kerja`. Surat resmi lain → `surat-resmi`. SOP → `sop-writer`.
 
 ## Input
@@ -33,6 +36,8 @@ Membantu pemilik usaha dan staf HR memberi sanksi yang **adil, proporsional, dan
 Jika info wajib kurang, tanyakan **sekali** (maks 5 pertanyaan bernomor). Jika pengguna ingin cepat, buat dengan placeholder dan sebutkan asumsinya.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Susun fakta, bukan kesan.** Ubah keluhan ("dia malas") menjadi fakta terukur: tanggal, jam, jumlah kejadian, bukti (absensi fingerprint, CCTV, chat, laporan pelanggan, saksi). Jika tidak ada fakta terukur, minta dulu; jangan menulis tuduhan umum.
 2. **Tentukan tingkat SP secara proporsional** dengan matriks di `references/proses-dan-proporsionalitas.md`:
    - Belum ada SP aktif → umumnya **SP1** (untuk pelanggaran ringan pertama kali, sarankan dulu teguran lisan tercatat).
@@ -139,6 +144,7 @@ Untuk PHK atau sengketa, konsultasikan ke ahli hukum ketenagakerjaan atau Disnak
 ## Batasan & penanganan error
 - Jangan menulis ancaman PHK langsung. Tulis konsekuensi bertahap sesuai ketentuan perusahaan.
 - Jika pengguna ingin langsung SP3/PHK untuk pelanggaran ringan pertama, jelaskan risiko (tidak proporsional, dapat digugat) dan sarankan SP1.
+- **Pelanggaran berat (pencurian, penggelapan, kekerasan):** dasar PHK tanpa SP berjenjang = PP 35/2021 Pasal 52 ayat (2) — pelanggaran bersifat mendesak **yang diatur dalam PK/PP/PKB**. **Jangan** menyebut syarat "tertangkap tangan / pengakuan / minimal 2 saksi" sebagai aturan: itu Pasal 158 UU 13/2003 lama yang dibatalkan MK (012/PUU-I/2003) dan dihapus UU Cipta Kerja/UU 6/2023. Saksi & berita acara boleh disarankan sebagai praktik baik pembuktian. Jangan menulis "denda" sebagai akibat PHK tidak sah. Lihat `references/regulasi.md`.
 - Jika SP sebelumnya sudah berakhir (cek script), pelanggaran baru umumnya kembali ke SP1 kecuali PK/PP/PKB mengatur lain.
 - Jika script error (format tanggal salah), baca pesan error, perbaiki input (mis. `23-09-2026`), jalankan ulang.
 - Aturan ketenagakerjaan sedang dalam proses perubahan (RUU Pelindungan Ketenagakerjaan ditargetkan Oktober 2026). Dasar aturan, tanggal berlaku, dan hal yang perlu verifikasi ada di `references/regulasi.md`.

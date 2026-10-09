@@ -25,6 +25,7 @@
 - Estimasi waktu kirim: [isi ... — beri rentang, jangan janji pasti]
 
 ## Cara bayar
+> Khusus chat WhatsApp. Di chat Shopee/marketplace lain, jangan arahkan transaksi atau pembayaran ke luar platform (rekening, WA, link); arahkan ke checkout resmi marketplace.
 - Metode: [isi ... — transfer, QRIS, COD, dll.]
 - Rekening/nomor tujuan: [isi ...] (hanya info yang memang publik di toko; jangan simpan data pembayaran pelanggan)
 

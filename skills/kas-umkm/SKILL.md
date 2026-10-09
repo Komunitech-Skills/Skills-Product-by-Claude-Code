@@ -1,9 +1,11 @@
 ---
 name: kas-umkm
-description: Buku kas harian lokal untuk warung, toko, dan UMKM (SQLite di komputer pemilik, tanpa langganan/internet), dioperasikan lewat chat. Catat uang masuk/keluar per kategori (penjualan, modal, beli stok, gaji, listrik/air, sewa, prive, pajak, pinjaman), saldo per akun (laci, rekening, e-wallet, QRIS), pindah dana antar akun, hitung uang laci + selisih, rekap harian/mingguan/bulanan, peringatan prive berlebihan, impor CSV/mutasi bank dan rekap kasir-lokal, ekspor ke laporan-keuangan-emkm & arus-kas-13minggu, ringkasan harian ke Telegram (OpenClaw). Gunakan untuk "catat pengeluaran", "uang masuk hari ini", "saldo kas", "hitung laci", "rekap kas", "ambil uang pribadi", cash book, petty cash, daily cash log.
+description: Buku kas harian lokal untuk warung, toko, dan UMKM (SQLite di komputer pemilik, tanpa langganan/internet), dioperasikan lewat chat. Catat uang masuk/keluar per kategori (penjualan, modal, beli stok, gaji, listrik/air, sewa, prive, pajak, pinjaman/cicilan utang, kasbon karyawan), saldo per akun (laci, rekening, e-wallet, QRIS), pindah dana antar akun, hitung uang laci + selisih, rekap harian/mingguan/bulanan, peringatan prive berlebihan, impor CSV/mutasi bank dan rekap kasir-lokal, ekspor ke laporan-keuangan-emkm & arus-kas-13minggu, ringkasan harian ke Telegram (OpenClaw), juga rekap sekali jalan dari catatan kas teks/file tanpa database. Gunakan untuk "catat pengeluaran", "saldo kas", "hitung laci", "rekap kas", "rekap catatan kas dari file", "uang di laci harusnya berapa", "kok laci kurang", "untung hari ini", cash book, petty cash, cash count, cash drawer shortage, daily cash recap.
 ---
 
 # Buku Kas UMKM (kas-umkm)
+
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 ## Tujuan
 Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan keluar tercatat per kategori dan per akun (laci, rekening, e-wallet), saldo selalu jelas, uang laci dicocokkan dengan hitungan fisik, dan pemilik tahu kapan **uang usaha terpakai untuk pribadi**. Semua data ada di satu file di komputer pemilik; kamu (agent) mengoperasikannya lewat `scripts/kas.py`.
@@ -12,6 +14,7 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 - "Catat pengeluaran 25 ribu beli es batu", "hari ini jualan tunai 1,2 juta, QRIS 350 ribu", "bayar listrik 200rb dari BRI"
 - "Ambil 300 ribu buat belanja rumah" (prive), "masukin modal 2 juta", "setor laci ke BRI 1 juta" (pindah dana)
 - "Hitung laci: 100rb 5 lembar, 50rb 3 lembar, receh 3.500" (opname), "kok uang laci kurang?"
+- "Ini catatan kas hari ini (file/teks), rekap: pemasukan, pengeluaran, untung, uang di laci harusnya berapa?" → **langkah B0** (tanpa database)
 - "Saldo kas sekarang berapa?", "rekap kas hari ini / minggu lalu / bulan September"
 - "Impor mutasi BRI ini", "masukkan rekap kasir hari ini ke buku kas"
 - "Kirim ringkasan kas ke Telegram saya tiap malam" (OpenClaw)
@@ -20,6 +23,7 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 - **Laporan laba rugi & neraca SAK EMKM** (untuk bank/KUR) → `laporan-keuangan-emkm`. kas-umkm hanya pencatatan harian; ekspornya dibaca skill itu (`ekspor --format emkm`).
 - **Proyeksi kas ke depan** ("uang cukup sampai kapan") → `arus-kas-13minggu`. kas-umkm menyiapkan draf rencana dari riwayat (`ekspor --format arus-kas`).
 - Transaksi kasir per nota/struk → `kasir-lokal` (lalu impor rekap hariannya ke sini). Stok barang → `buku-stok`. Piutang/bon pelanggan → `buku-piutang`/`tagih-piutang`. Cocokkan mutasi dengan invoice → `rekonsiliasi-bank`. Hitung pajak → `pph-final-umkm`/`hitung-ppn`.
+- Sudah memakai aplikasi **Actual Budget** dan butuh anggaran per kategori (sisa/jebol) → `actual-budget-usaha`.
 - Mengirim/menerima pembayaran, cek saldo bank otomatis, banyak cabang/banyak komputer sekaligus → tidak bisa. Satu database = satu usaha di satu komputer.
 - **Pembukuan ganda untuk pajak** (dua buku kas / dua versi laporan, omzet "dikecilkan", catatan dihapus/disembunyikan/dibatalkan palsu agar pajak kecil) → **tolak dengan sopan** (Aturan 7), termasuk bila diminta memakai database kedua atau `--db` lain untuk "versi pajak".
 
@@ -35,11 +39,11 @@ Menjadi **buku kas harian** pemilik usaha kecil: setiap rupiah yang masuk dan ke
 7. **Satu buku yang benar — tolak pembukuan ganda.** Jawaban baku: "Maaf, saya tidak bisa membantu membuat pembukuan ganda (satu versi untuk pajak, satu versi 'asli'), mengecilkan omzet, atau menghapus/menyembunyikan catatan supaya pajak lebih kecil. Pencatatan wajib mencerminkan keadaan usaha yang sebenarnya (UU KUP Pasal 28 ayat (3)), dan memperlihatkan pembukuan yang tidak menggambarkan keadaan sebenarnya atau menyampaikan SPT yang isinya tidak benar adalah tindak pidana perpajakan (UU KUP Pasal 39 ayat (1) huruf d & f, UU 28/2007). Yang bisa saya bantu: merapikan satu buku kas yang benar, menghitung pajak yang memang terutang (mis. PPh Final UMKM 0,5% lewat `pph-final-umkm`, termasuk omzet sampai Rp 500 juta setahun yang tidak dikenai pajak untuk orang pribadi), dan menyiapkan ringkasan untuk konsultan pajak." Jangan menyarankan cara lain yang tujuannya sama.
 
 ## Cara menjalankan script
-Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` dengan `python` atau `py`):
+Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). File yang disebut pengguna dicari di folder kerja/workspace saja. Windows: ganti `python3` dengan `python` atau `py`:
 ```bash
 python3 <folder-skill-ini>/scripts/kas.py <perintah> [opsi] --json
 ```
-- Pakai `--json`. Field penting: `ok`, `mode` (`pratinjau`/`tersimpan`/`baca`), `perlu_konfirmasi`, `perlu_izin`, `peringatan`, `error`, `teks` (siap tempel). Kode keluar 1 = gagal (pesan di `error`), 2 = perintah salah tulis.
+- Pakai `--json`. Field penting: `ok`, `mode` (`pratinjau`/`tersimpan`/`baca`), `perlu_konfirmasi`, `perlu_izin`, `peringatan`, `error`, `pertanyaan` (saat gagal: kalimat tanya untuk pengguna awam; juga per baris di `perlu_dicek` impor), `teks` (siap tempel). Kode keluar 1 = gagal (pesan di `error`), 2 = perintah salah tulis.
 - Database default `~/KomunitechData/kas/kas.db`; ganti dengan `--db PATH` (ditulis **setelah** nama perintah) atau ENV `KOMUNITECH_KAS_DB` / `KOMUNITECH_DATA`. Pakai lokasi yang sama di semua perintah.
 - Semua opsi: `references/perintah.md`. Integrasi kasir-lokal, laporan-keuangan-emkm, arus-kas-13minggu: `references/integrasi.md`. Jadwal Telegram: `references/openclaw-jadwal.md`.
 
@@ -62,11 +66,39 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 2. `init --nama-usaha "..." --kas-awal 500rb [--mulai DD/MM/YYYY] [--batas-prive 3jt] [--zona WIB]` → konfirmasi → `--ya`.
 3. Per rekening: `akun tambah --nama BRI --jenis bank --saldo-awal 3jt [--terima-qris]` / `--jenis e-wallet` → konfirmasi → `--ya`. Saldo awal = saldo **per tanggal mulai** (default hari ini).
 
+### B0. Rekap catatan kas dari teks/file (sekali jalan, tanpa database)
+Untuk "ini catatan kas hari ini, rekap / untung berapa / laci harusnya berapa / kok kurang" — **pakai skill ini**, jangan hitung sendiri.
+1. Baca file/teks pengguna (di folder kerja). Ubah **setiap** baris uang menjadi `arah;jumlah;kategori;metode;catatan`:
+   - kategori dari daftar di B.2 (kosong = ditebak script); "(dr laci)" = `tunai`, QRIS = `qris`, transfer = `transfer`; kasbon karyawan = `kasbon`, ambil pribadi = `prive`, setor/tarik antar akun sendiri = `pindah`.
+   - "modal laci pagi" → `--laci-awal`; "uang di laci pas tutup diitung" → `--fisik` (atau `--pecahan`).
+   - Satuan: "@85.000 × 2 org" → tulis totalnya (170.000) dan sebut di catatan; jangan menghitung lain di luar itu.
+2. Jalankan (tidak menulis database apa pun, tidak perlu `--ya`):
+   ```bash
+   python3 <folder-skill-ini>/scripts/kas.py cek-catatan --laci-awal 500rb --fisik 2.580.000 \
+     --baris "masuk;1.250.000;penjualan;tunai;jual nasi pagi" --baris "masuk;735rb;penjualan;qris;qris" \
+     --baris "keluar;66rb;beli-stok;tunai;gas 3 tabung" --baris "keluar;100rb;kasbon;tunai;kasbon Dedi" --json
+   ```
+   Banyak baris → tulis ke file `catatan-kas-<tanggal>.txt` di folder kerja (satu baris per entri) lalu `--file`.
+3. Salin ke chat apa adanya: tabel per baris, **hasil usaha**, hitungan **uang laci seharusnya**, **selisih (KURANG/LEBIH)**, kemungkinan penyebab, uang yang tidak lewat laci (QRIS/transfer), catatan, dan asumsi (kategori "ditebak", cara bayar dianggap tunai, baris "PERLU DICEK"). Tanyakan sekali, dalam satu pesan, kategori baris yang "PERLU DICEK".
+   **v1.0.12:** selama masih ada baris "PERLU DICEK" (`hasil_usaha_final: false`), script menulis **dua angka**: "Hasil usaha SEMENTARA … (belum termasuk Rp… yang perlu dicek)" dan "bila semua baris perlu dicek ternyata uang usaha". **Dilarang** menulis hasil usaha sebagai angka final (teks grup, laporan pimpinan, ringkasan) sebelum baris itu digolongkan; bila terpaksa mengirim, salin kedua angka beserta kata "sementara". Biaya operasional (operasional, bensin/BBM/solar, uang makan sopir, tol, parkir, transport, ongkir, uang jalan) = pengeluaran usaha (`lain-lain`), bukan "perlu dicek".
+4. Tawarkan menyimpan ke buku kas: jalankan `catat --baris ...` (format sama) → pratinjau → simpan setelah "ya" (Aturan keamanan 1–2).
+
 ### B. Catat uang masuk/keluar (inti)
 1. Satu transaksi: `catat --keluar 25rb --kategori beli-stok --metode tunai --catatan "es batu"`.
    Beberapa sekaligus (mis. laporan akhir hari): `--baris "arah;jumlah;kategori;metode;catatan;akun;tanggal"` diulang, kolom setelah jumlah boleh kosong:
    `catat --baris "masuk;1,2jt;penjualan;tunai;jualan" --baris "masuk;350rb;penjualan;qris" --baris "keluar;100rb;prive;;jajan anak"`
-2. **Kategori**: `penjualan` (masuk; keluar = retur/refund), `modal` (masuk dari pemilik), `beli-stok`, `gaji`, `listrik-air`, `sewa`, `prive` (ambil pribadi), `pajak`, `pinjaman` (masuk = pinjaman cair, keluar = cicilan), `lain-lain`. Kosong → ditebak dari catatan (disebut "ditebak"); tidak jelas → script menolak, kamu bertanya.
+2. **Kategori**: `penjualan` (masuk; keluar = retur/refund), `modal` (masuk dari pemilik), `beli-stok`, `gaji`, `listrik-air`, `sewa`, `prive` (ambil pribadi), `pajak`, `pinjaman` (masuk = pinjaman/utang diterima, keluar = cicilan/bayar **pokok** utang), `kasbon` (keluar = kasbon/uang muka karyawan diberikan, masuk = dikembalikan/dipotong gaji; piutang, bukan biaya), `lain-lain`. Kosong → ditebak dari catatan (disebut "ditebak"); tidak jelas → script menolak, kamu bertanya.
+   **v1.0.3:** `lain-lain` yang catatannya jelas bukan biaya dipindah otomatis dengan peringatan "Kategori diubah dari lain-lain ke …" (juga di `impor --tetapkan N=lain-lain` dan `golongkan`): kasbon/uang muka karyawan → `kasbon`; keperluan pribadi (belanja rumah, SPP, jajan…) → `prive`; utang/cicilan/angsuran → `pinjaman` (bunga/denda/biaya admin tetap `lain-lain`). Sampaikan peringatannya; bila keliru, pengguna memilih kategori lain sebelum `--ya`. Cicilan untuk melunasi bon belanja stok yang belum pernah dicatat = `beli-stok`.
+   **v1.0.4:** kata bunga/denda/telat/biaya/admin/provisi **menang** atas kata cicilan/angsuran/pinjaman ("denda telat cicilan" = biaya, diekspor `beban_keuangan`). **Utang/bon ke pemasok/toko/grosir** bukan pinjaman bank: tanpa kategori → script menolak (`utang_pemasok`) → tanyakan `beli-stok` (stok/bahan) atau `lain-lain` (barang/jasa lain; tetap biaya, diekspor `bayar_utang_usaha`); di impor jadi "Perlu dicek" dengan saran itu. Uang **masuk** "pelanggan bayar hutang/bon belanja" = `penjualan`, bukan pinjaman. "X pinjam uang" (keluar) = `kasbon`. Denda/sanksi pajak tetap kategori `pajak` tetapi diekspor `beban_lain` (bukan PPh; tidak boleh dikurangkan fiskal, UU PPh Pasal 9 ayat (1) huruf k). Memilih `pinjaman` untuk kasus-kasus itu tetap boleh, tetapi ada peringatan — sampaikan.
+   **v1.0.5:** (a) satu catatan berisi **pokok angsuran/cicilan + denda/bunga/biaya** ("angsuran motor + denda") → script menolak (`gabungan_pokok_denda`), apa pun kategorinya → tanyakan nominal dendanya lalu catat **dua baris** (pokok = `pinjaman`, denda = `lain-lain`); di impor jadi "Perlu dicek". (b) Uang keluar/masuk **"bayar utang/hutang/bon" tanpa menyebut bank/koperasi/leasing/pinjaman** ("bayar utang ke Pak Joko", "Pak Budi bayar hutang") → ditolak (`utang_ambigu`) → tanyakan: pinjaman uang atau bon belanja/jasa. Uang masuk "<nama> bayar hutang servis/cuci/jahit/laundry…" = `penjualan`. (c) "belanja dapur/sayur rumah" = `prive`. (d) Keterangan **ngebon/tempo/belum dibayar/bayar belakangan** → ditolak (`belum_ada_uang`): belum ada uang bergerak, catat saat dibayar (DP: catat yang dibayar saja). (e) Peringatan juga muncul bila `pinjaman` dipilih untuk bunga/denda/biaya atau uang yang dipinjam karyawan (itu `kasbon`), dan bila denda pajak dicatat `lain-lain`. "PAJAK BUNGA" di mutasi bank = PPh final atas bunga (diekspor `beban_pajak_penghasilan`), bukan denda.
+   **v1.0.6:** (a) aturan (a) v1.0.5 juga berlaku untuk akhiran **-nya** ("angsuran plus dendanya", "cicilan sama bunganya") dan untuk **KUR/kredit/pinjaman/leasing/setoran/koperasi/utang** yang disambung ke denda/bunga/biaya ("bayar KUR BRI termasuk bunga", "setoran kredit + bunga") — di `catat`, `--kategori pinjaman`, dan impor ("Perlu dicek"). Negasi bukan gabungan: "tanpa denda", "bebas bunga", "bunga 0%" → pokok biasa. (b) Uang **masuk** yang menyebut bayar/terima/pembayaran/lunas ("Bu Ida bayar laundry yang kemarin ngebon", "terima pembayaran laundry hotel (tempo 14 hari)") **tidak** ditolak; uang masuk dengan `--kategori` pilihan pengguna selalu diterima, dengan peringatan "pastikan uangnya sudah diterima". Uang **keluar** ngebon/tempo tetap ditolak walau kategorinya dipilih (mencegah pengeluaran dobel). (c) "belanja dapur" + `lain-lain` → peringatan "untuk rumah atau usaha?". (d) Tebakan usaha jasa: cuci kiloan/laundry/servis/jahit (masuk) = `penjualan`; deterjen/pewangi/plastik = `beli-stok`; service mesin, fotokopi nota, ongkir, parkir, internet = `lain-lain` (tetap disebut "ditebak").
+   **v1.0.7:** (a) bahan pangan umum ditebak `beli-stok` ("beli tepung/terigu/gula/mentega/margarin/telur/ragi", "minyak goreng", "gas elpiji/LPG"; tetap disebut "ditebak"). (b) Negasi "denda nihil", "dendanya dihapus/diputihkan", "bunga dibebaskan", "denda tidak dikenakan" → pokok biasa (bukan gabungan). (c) Ekspor emkm: pengeluaran `lain-lain` tidak lagi dikosongkan, melainkan diberi kode beban usaha (servis → `beban_perawatan`, parkir/ongkir → `beban_transportasi`, gas/internet → `beban_utilitas`, materai → `beban_pajak_lain`, iklan → `beban_pemasaran`, kemasan/ATK → `beban_perlengkapan`, admin marketplace → `beban_admin_penjualan`, selebihnya `beban_lain`) agar tidak masuk "BELUM TERKLASIFIKASI"; hanya pembelian alat/aset yang tetap dikosongkan (dinilai emkm, diperingatkan). Laba emkm tetap = hasil usaha.
+   **v1.0.8:** (a) **Konteks rumah tangga menang atas tebakan bahan**: "beli gula buat di rumah", "beli sayur untuk rumah", "belanja telur buat masak di rumah", "sarapan anak", "makan keluarga", "belanja dapur rumah" → ditebak `prive` dengan peringatan "untuk rumah atau untuk usaha?" — **tanyakan**; bila untuk usaha (mis. katering yang masak di rumah) → `beli-stok`. "rumah makan", "rumah pelanggan", "produksi di rumah" tetap bahan usaha. (b) Ekspor emkm dengan cicilan pinjaman: catatan **"PERTANYAAN BUNGA"** — tanyakan **sekali** untuk seluruh periode ("Apakah semua cicilan ini sudah tanpa bunga?"). Bila ya, jalankan `perintah_pokok_saja` (berisi `--bunga N=0` untuk tiap baris cicilan) agar emkm tidak bertanya per baris; bila ada cicilan yang masih termasuk bunga, ganti 0 di baris itu dengan nominal bunganya.
+   - **Setiap penolakan berisi field `pertanyaan`**: kalimat tanya siap kirim untuk pengguna awam (tanpa istilah teknis). Pakai itu (atau kalimat serupa), **jangan** meneruskan isi `error` (berisi flag/kode untuk kamu). Contoh:
+     - pokok + bunga satu catatan → "Dari Rp 1.100.000 untuk 'bayar KUR BRI termasuk bunga' itu, berapa bunganya? Nanti saya catat terpisah: cicilan pokoknya (mengurangi utang) dan bunganya (biaya usaha)."
+     - ngebon/tempo → "Uangnya sudah dibayar hari ini, atau masih ngebon/nanti dibayar? Kalau sudah dibayar sebagian (DP), berapa yang sudah dibayar?"
+     - bayar utang tidak jelas → "Itu utang apa? (a) cicilan uang pinjaman (bank/koperasi/orang), atau (b) melunasi bon belanja ke toko/pemasok?"
+     - kategori belum jelas → "Pengeluaran Rp 25.000 'beli perlengkapan' itu untuk apa? Beli stok/bahan, gaji, listrik/air, sewa, keperluan pribadi, cicilan utang, atau biaya lain?"
    - Uang usaha untuk keperluan pribadi (belanja rumah, SPP, jajan, "gaji saya") = **prive**, bukan beban. Uang pribadi masuk ke usaha = **modal**.
    - Setoran laci ke bank, tarik tunai, top up e-wallet = **pindah dana** (langkah C), bukan masuk/keluar.
 3. **Metode**: `tunai` (→ akun tunai), `transfer`/`kartu` (→ rekening bank), `qris` (→ akun penampung QRIS), `e-wallet`. Tidak disebut → tunai (disebut sebagai asumsi). Beberapa rekening bank → sebut `--akun`.
@@ -85,7 +117,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 ### E. Rekap & saldo
 - `rekap --tanggal hari-ini|kemarin|DD/MM/YYYY`, `rekap --minggu ini|lalu`, `rekap --bulan ini|lalu|09/2026`, `rekap --dari .. --sampai ..`. Kirim `teks` apa adanya (siap Telegram/WA).
 - `saldo [--tanggal ..]` untuk saldo per akun; `daftar --tanggal ..|--bulan .. [--kategori ..] [--cari ..]` untuk melihat catatan beserta ID.
-- **Hasil usaha** = masuk usaha − keluar usaha (tanpa modal, pinjaman, prive, pindah dana, dan catatan "Perlu dicek"). Ini hitungan kas, **bukan laba akuntansi** (belum menghitung stok tersisa, piutang, penyusutan). Untuk laba resmi → `laporan-keuangan-emkm`.
+- **Hasil usaha** = masuk usaha − keluar usaha (tanpa modal, pinjaman/cicilan pokok utang, kasbon karyawan, prive, pindah dana, dan catatan "Perlu dicek"). Ini hitungan kas, **bukan laba akuntansi** (belum menghitung stok tersisa, piutang, penyusutan). Untuk laba resmi → `laporan-keuangan-emkm`.
 
 ### F. Peringatan prive (uang usaha dipakai pribadi)
 Script memperingatkan otomatis (di `catat` prive dan di `rekap`) bila: prive bulan berjalan **melebihi hasil usaha** (kelebihannya memakan modal), hasil usaha nol/minus tetapi tetap ada prive, atau prive melewati **batas bulanan** pemilik (`atur --batas-prive 3jt`). Sampaikan dengan sopan, sertakan angkanya, lalu beri 1–2 saran praktis (mis. tetapkan "gaji pemilik" tetap per bulan dan catat sebagai prive; pisahkan dompet pribadi dari laci). Jangan menggurui.
@@ -100,7 +132,7 @@ Script memperingatkan otomatis (di `catat` prive dan di `rekap`) bila: prive bul
 - File Excel (.xlsx) / PDF → minta disimpan sebagai CSV.
 
 ### H. Ekspor
-`ekspor --format emkm|arus-kas|lengkap [--bulan ..] --csv file.csv`. Teks script berisi perintah lanjutan yang siap dijalankan di skill tujuan (`references/integrasi.md`).
+`ekspor --format emkm|arus-kas|lengkap [--bulan ..] --csv file.csv`. Teks script berisi perintah lanjutan yang siap dijalankan di skill tujuan (`references/integrasi.md`). **v1.0.6:** bila ada pembelian alat/aset (rak, mesin, etalase…) berkategori `lain-lain`, ekspor memberi catatan: laporan-keuangan-emkm dapat menggolongkannya **aset tetap** (disusutkan), sehingga laba di laporan bisa lebih besar dari hasil usaha buku kas sebesar nilai itu. Itu benar menurut SAK EMKM; sampaikan ke pengguna agar tidak dikira salah hitung.
 
 ### I. Backup
 Otomatis sekali sehari sebelum perubahan pertama (folder `backup-kas/`, 30 terakhir) dan sebelum impor/restore. Manual: `backup`; daftar: `backup --daftar`; pulihkan: `restore --dari <file>` (pratinjau → `--ya`). Database rusak tanpa cadangan: `init --mulai-baru` (file rusak dipindah, tidak dihapus).
@@ -140,6 +172,7 @@ Total: Rp 18.284.500 (awal periode Rp 16.916.000, naik Rp 1.368.500)
 - [ ] Catatan "Perlu dicek" (BELUM DIGOLONGKAN) ditanyakan ke pengguna; permintaan pembukuan ganda ditolak (Aturan 7)
 
 ## Batasan & penanganan error
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - Bukan aplikasi akuntansi penuh (tidak ada jurnal, stok, piutang, penyusutan), bukan mesin pembayaran, bukan multi-komputer. Jangan simpan database di folder sinkron (Google Drive/Dropbox) yang dibuka dua komputer sekaligus.
 - Semua nominal rupiah bulat (integer). Nominal bersen dari file bank dibulatkan ke rupiah terdekat (0,5 ke atas) dan diberitahukan. Rata-rata di ekspor arus kas dibulatkan ke rupiah terdekat.
 - Saldo akun dinilai **per akhir hari** (urutan catat dalam satu hari tidak membuat peringatan minus).

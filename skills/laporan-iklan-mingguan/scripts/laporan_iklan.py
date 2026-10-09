@@ -23,7 +23,20 @@ sebagai baris total (dulu dianggap "kuat" hanya karena diawali angka, walau kata
 bukan kata cakupan seperti "kampanye"/"iklan") - sekarang dihitung sebagai kampanye biasa kecuali
 pengaman silang N2 bilang lain. SETIAP baris yang tetap dibuang sebagai baris total (label
 "kuat" ATAU "sedang", bukan cuma yang angkanya tidak cocok) sekarang SELALU dapat ⚠️ menyebut
-nama & biayanya, supaya pengguna bisa memverifikasi sendiri.
+nama & biayanya, supaya pengguna bisa memverifikasi sendiri. Label yang sisanya HANYA angka
+("Total 12.12", "Jumlah 2") juga dianggap nama, dan label total di kolom LAIN sementara kolom nama
+berisi nama biasa tidak lagi membuang baris: keduanya hanya dianggap total bila lolos cek silang
+±2%. M2: biaya ≈ jumlah baris lain dalam ±5% (bukan ±2%) sudah memberi ⚠️ "TERHITUNG DUA KALI".
+M3: kolom nama kosong + label mirip total di kolom lain → dibuang HANYA bila biaya, tayangan &
+klik ≈ (±2%) jumlah baris-baris tepat di atas/bawahnya (subtotal); selain itu dihitung + ⚠️.
+
+v1.0.4 (N3, examples/08-uji-ulang-v103-akun-b.md): subtotal buatan admin DI KOLOM NAMA yang
+memuat nama kampanye ("Subtotal: Retarget Video", "Retarget Video Total", "Jumlah sementara")
+tidak lagi terhitung dua kali. Dikenali dari (a) awalan Subtotal/Sub total/Sub-total/Jumlah
+sementara -> selalu dikecualikan, atau (b) nama = nama kampanye di atasnya + kata total, atau
+(c) nama sama persis tetapi baris tanpa tanggal, dengan biaya ≈ (±2%) jumlah baris-baris kampanye
+itu tepat di atasnya. Setiap baris yang dikecualikan diberi ⚠️ nama + biaya; nama yang hanya
+MIRIP subtotal tetapi angkanya tidak cocok tetap dihitung + ⚠️. Kalimat ⚠️ M2 dilunakkan.
 """
 import argparse
 import csv
@@ -411,6 +424,54 @@ KOLOM_PERIODE_AKHIR = {"reporting ends", "end date", "tanggal selesai", "tanggal
 KOLOM_MATA_UANG = {"currency", "currency code", "mata uang", "kode mata uang", "account currency",
                    "account currency code"}
 
+# v1.0.10: tujuan (objective) kampanye. Kampanye bertujuan Traffic/Awareness/Reach/Video views/
+# Engagement memang tidak dirancang menghasilkan pesan/pembelian, jadi tidak dinilai dari "hasil".
+KOLOM_TUJUAN = {"objective", "campaign objective", "tujuan", "tujuan kampanye", "tujuan iklan",
+                "result indicator", "indikator hasil", "result type", "jenis hasil", "optimization goal",
+                "tujuan optimasi", "campaign type", "jenis kampanye", "tipe kampanye"}
+# (label, kata kunci di sel kolom tujuan, kata kunci di NAMA kampanye/iklan - lebih ketat)
+TUJUAN_LAIN = [
+    ("Traffic", ["traffic", "outcome traffic", "link click", "link clicks", "landing page view",
+                 "landing page views", "lalu lintas", "klik tautan", "kunjungan profil", "profile visit"],
+     ["traffic", "lalu lintas"]),
+    ("Awareness", ["awareness", "outcome awareness", "brand awareness", "kesadaran", "kesadaran merek"],
+     ["awareness", "brand awareness", "kesadaran merek"]),
+    ("Reach", ["reach", "jangkauan"], ["reach", "jangkauan"]),
+    ("Video views", ["video views", "video view", "thruplay", "tayangan video", "video"],
+     ["video views", "thruplay", "tayangan video"]),
+    ("Engagement", ["engagement", "outcome engagement", "post engagement", "interaksi", "keterlibatan"],
+     ["engagement", "keterlibatan"]),
+]
+
+
+KATA_TUJUAN_HASIL = ["message", "messages", "messaging", "pesan", "whatsapp", "conversation", "conversations",
+                     "percakapan", "lead", "leads", "prospek", "purchase", "purchases", "pembelian",
+                     "conversion", "conversions", "konversi", "sales", "penjualan", "app install", "app installs"]
+
+
+def _norm_tujuan(teks):
+    return " ".join(re.sub(r"[_:.\-/|]+", " ", str(teks or "").lower()).split())
+
+
+def deteksi_tujuan_lain(isi_kolom_tujuan, nama_nama):
+    """Label tujuan non-konversi ('Traffic', ...) atau None. Sel kolom tujuan diutamakan;
+    bila kolom itu ada dan berisi tujuan konversi/pesan, nama kampanye TIDAK dipakai."""
+    sel = _norm_tujuan(isi_kolom_tujuan)
+    if sel and any(_ada_kata(k, sel) for k in KATA_TUJUAN_HASIL):
+        return None        # mis. Meta "OUTCOME_ENGAGEMENT" + pesan WA = tetap kampanye pesan
+    if sel:
+        for label, kunci_sel, _ in TUJUAN_LAIN:
+            if any(_ada_kata(k, sel) for k in kunci_sel):
+                return label
+        return None
+    for nama in nama_nama:
+        n = _norm_tujuan(nama)
+        for label, _, kunci_nama in TUJUAN_LAIN:
+            if any(_ada_kata(k, n) for k in kunci_nama):
+                return label
+    return None
+
+
 AMBANG_FINGERPRINT = 2
 FINGERPRINT_PLATFORM = [
     ("Meta Ads (Facebook/Instagram)", [("ad set name", 2), ("reach", 1), ("link clicks", 1),
@@ -630,8 +691,9 @@ def baca_csv(path, override=None):
 #              "Total: Account", "Total 4 kampanye", "TOTAL - Semua").
 #   "sedang" : sisa HANYA berisi kata cakupan/angka ("Total of 2 campaigns", "Totals", "Total Akun",
 #              "Jumlah Keseluruhan", "Grand total all campaigns").
-#   "lemah"  : sisa berisi kata lain ("Total Look Hijab") -> tetap dihitung sebagai kampanye, kecuali
-#              angkanya ≈ jumlah baris lain (pengaman silang di analisis_file).
+#   "lemah"  : sisa berisi kata lain ("Total Look Hijab", "Total 12.12 Flash Sale") ATAU hanya angka
+#              ("Total 12.12", "Jumlah 2") -> tetap dihitung sebagai kampanye, kecuali angkanya
+#              ≈ jumlah baris lain (pengaman silang di analisis_file). (v1.0.3)
 KEPALA_TOTAL = r"(?:grand[\s-]*totals?|sub[\s-]*totals?|totals?|jumlah|summary|ringkasan|keseluruhan|" \
                r"overall|semua\s+kampanye|all\s+campaigns)"
 POLA_KEPALA_TOTAL = re.compile(r"^[^\w]*" + KEPALA_TOTAL + r"(?![a-z0-9])(.*)$", re.IGNORECASE | re.DOTALL)
@@ -649,6 +711,38 @@ KATA_CAKUPAN = {
 }
 TANDA_BACA_TOTAL = set(":(-–—=|/,.[#*;")
 TOLERANSI_TOTAL = Decimal("0.02")   # ±2%: batas "hampir sama" untuk cek angka baris total
+TOLERANSI_CURIGA = Decimal("0.05")  # ±5%: biaya saja ≈ jumlah baris lain -> hanya ⚠️ (M2), tidak dibuang
+
+# v1.0.4 (N3): awalan subtotal di KOLOM NAMA. "Subtotal"/"Sub total"/"Sub-total"/"Jumlah sementara"
+# hampir tidak pernah dipakai sebagai nama kampanye -> baris ini selalu dikecualikan (+ ⚠️).
+POLA_AWALAN_SUBTOTAL = re.compile(r"^[^\w]*(?:sub[\s-]*totals?|jumlah\s+sementara)(?![a-z0-9])(.*)$",
+                                  re.IGNORECASE | re.DOTALL)
+# Kata yang boleh menempel pada nama kampanye untuk membentuk label subtotal ("Retarget Video Total",
+# "Total: Retarget Video", "Jumlah Retarget Video").
+KATA_SUBTOTAL = {"total", "totals", "subtotal", "subtotals", "sub", "jumlah", "sementara", "sum", "jml",
+                 "grand"}
+
+
+def _norm_nama(teks):
+    return " ".join(str(teks or "").split()).lower()
+
+
+def awalan_subtotal(nama):
+    """Sisa nama (tanpa tanda baca pinggir) bila `nama` diawali kata subtotal, else None."""
+    m = POLA_AWALAN_SUBTOTAL.match(_norm_nama(nama))
+    if not m:
+        return None
+    return re.sub(r"^[\W_]+|[\W_]+$", "", m.group(1))
+
+
+def nama_subtotal_dari(nama, induk):
+    """True bila `nama` = `induk` + HANYA kata total/subtotal/tanda baca, mis. 'Retarget Video Total'
+    atau 'Total: Retarget Video' untuk induk 'Retarget Video'."""
+    n, k = _norm_nama(nama), _norm_nama(induk)
+    if not k or n == k or k not in n:
+        return False
+    token = re.findall(r"[^\W_]+", n.replace(k, " ", 1))
+    return bool(token) and all(t in KATA_SUBTOTAL for t in token)
 
 
 def jenis_label_total(teks):
@@ -671,6 +765,10 @@ def jenis_label_total(teks):
         return "kuat"
     token = re.findall(r"[^\W\d_]+|\d+", sisa)
     semua_cakupan = bool(token) and all(t.isdigit() or t in KATA_CAKUPAN or POLA_KATA_KEPALA.match(t) for t in token)
+    if token and all(t.isdigit() for t in token):
+        # "Total 12.12", "Jumlah 2", "Total (3)": sisa hanya angka -> bisa nama kampanye
+        # (tanggal promo/jumlah pcs). Dianggap total hanya lewat cek silang angka.
+        return "lemah"
     if sisa[0] in TANDA_BACA_TOTAL or sisa[0].isdigit():
         return "kuat" if (semua_cakupan or not token) else "lemah"
     return "sedang" if semua_cakupan else "lemah"
@@ -767,6 +865,9 @@ def analisis_file(path, override, args):
                 f"yang boros tidak tersembunyi di dalam total induknya. Untuk rincian per "
                 f"{'kampanye' if level_rincian != 'kampanye' else level_rincian}, jalankan ulang dengan "
                 f"--kolom-nama \"{kolom_induk[-1]}\".")
+    # v1.0.5 (P-3): kolom grup aset (Google Performance Max) sebagai nama cadangan bila kolom nama kosong
+    kolom_aset = next((h for h in header if h and h != kolom.get("nama") and _tanpa_label_uang(_norm(h)) in
+                       {"asset group", "asset group name", "grup aset", "nama grup aset"}), None)
     if info["baris_judul"]:
         catatan.append(f"{len(info['baris_judul'])} baris judul/keterangan di atas tabel dilewati "
                        f"(mis. '{info['baris_judul'][0][:60]}').")
@@ -774,6 +875,7 @@ def analisis_file(path, override, args):
         catatan.append("File berformat UTF-16 (CSV ala Excel) dan sudah dibaca otomatis.")
 
     kolom_uang = next((h for h in header if _norm(h) in KOLOM_MATA_UANG), None)
+    kolom_tujuan = next((h for h in header if h and _tanpa_label_uang(_norm(h)) in KOLOM_TUJUAN), None)
     kolom_awal = next((h for h in header if _norm(h) in KOLOM_PERIODE_AWAL), None)
     kolom_akhir = next((h for h in header if _norm(h) in KOLOM_PERIODE_AKHIR), None)
 
@@ -796,13 +898,22 @@ def analisis_file(path, override, args):
     # "sedang" - dipakai supaya SETIAP baris yang dibuang selalu dapat ⚠️ menyebut nama & biayanya
     # (temuan M1), bukan cuma label "sedang" yang angkanya tidak cocok seperti versi sebelumnya.
     baris_total_info = []
-    nama_kosong_berlabel = []                # (no_baris, label, biaya_mentah) untuk M3
+    # v1.0.5 (P-4): (indeks peringatan, biaya baris, dihitung?) -> setelah total dihitung, ⚠️ subtotal/total
+    # yang meragukan ditambah kalimat "bila baris itu (tidak) dihitung, total belanja menjadi ...".
+    alt_total = []
 
     for r in data:
         sel = [s for s in r["__sel__"] if (s or "").strip()]
         if not sel:
             continue
         label_total = teks_total(r, header)
+        # v1.0.3 (M1): label total di kolom LAIN, sementara kolom nama berisi nama biasa (bukan label
+        # total) -> baris itu kampanye bernama; hanya dianggap total lewat cek silang angka.
+        if label_total and label_total[1] in ("kuat", "sedang") and kolom.get("nama"):
+            isi_nama = " ".join((r.get(kolom["nama"]) or "").split())
+            # "--"/"-" (placeholder Google Ads di baris total) bukan nama.
+            if any(c.isalnum() for c in isi_nama) and jenis_label_total(isi_nama) not in ("kuat", "sedang"):
+                label_total = (label_total[0], "lemah")
         if label_total and label_total[1] in ("kuat", "sedang"):
             baris_total.append(label_total[0])
             st_b, v_b, _ = baca_sel(r.get(kolom["biaya"]))
@@ -811,6 +922,14 @@ def analisis_file(path, override, args):
 
         nama = " ".join((r.get(kolom["nama"]) or "").split()) if kolom.get("nama") else ""
         nama_asli_kosong = not nama
+        if not nama and not label_total:
+            # v1.0.5 (P-3): baris tanpa grup iklan/iklan (mis. Google Performance Max) memakai nama
+            # grup aset, lalu nama induknya (kampanye), bukan "(tanpa nama, baris N)".
+            for h in [kolom_aset] + kolom_induk:
+                isi = " ".join((r.get(h) or "").split()) if h else ""
+                if any(c.isalnum() for c in isi) and jenis_label_total(isi) not in ("kuat", "sedang"):
+                    nama = isi if h == kolom_aset else f"{isi} (tanpa {level_rincian or 'nama'})"
+                    break
         if not nama:
             nama = f"(tanpa nama, baris {r['__no_baris__']})"
 
@@ -834,19 +953,16 @@ def analisis_file(path, override, args):
         if biaya < 0:
             biaya_negatif.append((nama, biaya))
 
-        # M3 (examples/07-uji-ulang-v1.0.2.md, Rendah): kolom nama kosong TAPI ada kolom lain di
-        # baris ini yang berbunyi mirip label total/ringkasan (mis. "Subtotal Kamp A" di kolom
-        # induk) - baris ini TETAP dihitung sebagai kampanye seperti biasa (aman, tidak ada
-        # deteksi otomatis nested-subtotal yang bisa dipercaya untuk kasus ini), tapi dicatat
-        # untuk diberi ⚠️ eksplisit (setelah kurs diketahui, di bawah) supaya pengguna bisa cek
-        # manual apakah ini sungguhan subtotal ganda.
-        if nama_asli_kosong and label_total:
-            nama_kosong_berlabel.append((r["__no_baris__"], label_total[0], biaya))
-
-        nilai = {"nama": nama, "biaya": biaya,
+        nilai = {"nama": nama, "biaya": biaya, "no_baris": r["__no_baris__"],
+                 "nama_asli": "" if nama_asli_kosong else nama, "n3": False,
+                 # M3: kolom nama kosong + label mirip total di kolom lain -> kandidat subtotal,
+                 # dicek silang dengan baris-baris tetangganya setelah loop.
+                 "kandidat_subtotal": label_total[0] if (nama_asli_kosong and label_total) else None,
                  "induk": tuple(" ".join((r.get(h) or "").split()) for h in kolom_induk),
                  "label_lemah": label_total[0] if label_total else None,
                  "tgl_ok": [], "tgl_rusak": []}
+        nilai["tujuan_lain"] = deteksi_tujuan_lain(r.get(kolom_tujuan) if kolom_tujuan else "",
+                                                   [nama] + [x for x in nilai["induk"] if x])
         if st_biaya == "kosong":
             kosong_per_kolom["biaya"].append(nilai)
         for peran in peran_angka[1:]:
@@ -940,19 +1056,196 @@ def analisis_file(path, override, args):
     elif not kode_semua:
         catatan_mata_uang.append("Tidak ada label mata uang di file; diasumsikan IDR (Rupiah).")
 
-    # M3: emit peringatan baris tanpa nama yang punya label mirip total di kolom lain (dikumpulkan
-    # di loop atas, ditunda ke sini karena `kurs` baru diketahui sekarang).
-    for no_baris, label, biaya_mentah in nama_kosong_berlabel:
-        peringatan.append(
-            f"Baris {no_baris} tidak ada nama di kolom {level_rincian or 'kampanye'}, tapi kolom lain berbunyi "
-            f"'{label}' (mirip label total/ringkasan). Baris ini TETAP dihitung sebagai kampanye "
-            f"biasa (biaya {fmt_rp(biaya_mentah * kurs)}) - kalau ini sebenarnya baris subtotal, "
-            "hapus baris itu dari file lalu jalankan ulang, atau beri nama yang jelas.")
+    def _dekat(a, b, batas=TOLERANSI_TOTAL):
+        return abs(a - b) <= b * batas
+
+    metrik_silang = ("biaya", "tayangan", "klik")
+
+    def _cocok_jumlah(x, grup, semua_metrik):
+        """Biaya x ≈ (±2%) jumlah biaya grup; tayangan & klik ikut dicek bila semua_metrik, atau bila
+        baris x memang punya angkanya (subtotal yang hanya mengisi biaya tetap dikenali)."""
+        if x["biaya"] <= 0 or not grup:
+            return False
+        for k in metrik_silang:
+            acc = sum((g[k] for g in grup), NOL)
+            if k == "biaya" or semua_metrik or x[k] != 0:
+                if not _dekat(x[k], acc):
+                    return False
+        return True
+
+    def _jalan(i, arah, x):
+        """Cari n baris beruntun tepat di atas (arah -1) / bawah (+1) yang jumlahnya ≈ baris x."""
+        grup, j = [], i + arah
+        while 0 <= j < len(rekaman) and not rekaman[j]["kandidat_subtotal"] and not rekaman[j]["n3"]:
+            grup.append(rekaman[j])
+            if _cocok_jumlah(x, grup, False):
+                return grup
+            if sum((g["biaya"] for g in grup), NOL) > x["biaya"] * (1 + TOLERANSI_TOTAL):
+                return None
+            j += arah
+        return None
+
+    # --- N3 (v1.0.4): subtotal buatan admin DI KOLOM NAMA ("Subtotal: Retarget Video") ---
+    for i, x in enumerate(rekaman):
+        if x["kandidat_subtotal"] or not x["nama_asli"]:
+            continue
+        # baris-baris beruntun tepat di atasnya yang namanya sama (mis. 3 baris harian "Retarget Video")
+        run, j = [], i - 1
+        while j >= 0 and not rekaman[j]["kandidat_subtotal"] and not rekaman[j]["n3"] and (
+                not run or _norm_nama(rekaman[j]["nama_asli"]) == _norm_nama(run[0]["nama_asli"])):
+            if not rekaman[j]["nama_asli"]:
+                break
+            run.append(rekaman[j])
+            j -= 1
+        induk = run[0]["nama_asli"] if run else ""
+        b_x = fmt_rp(x["biaya"] * kurs)
+        sisa = awalan_subtotal(x["nama_asli"])
+        if sisa is not None:
+            alasan = None
+            if run and _norm_nama(sisa) == _norm_nama(induk) and _cocok_jumlah(x, run, False):
+                alasan = (f"sama dengan jumlah {len(run)} baris '{induk}' tepat di atasnya "
+                          f"({fmt_rp(sum((g['biaya'] for g in run), NOL) * kurs)})")
+            else:
+                for arah, kata_arah in ((-1, "di atasnya"), (1, "di bawahnya")):
+                    grup = _jalan(i, arah, x)
+                    if grup:
+                        alasan = (f"sama dengan jumlah {len(grup)} baris tepat {kata_arah} "
+                                  f"({fmt_rp(sum((g['biaya'] for g in grup), NOL) * kurs)})")
+                        break
+            if alasan is None and sisa:
+                grup = [y for y in rekaman if y is not x and not y["n3"]
+                        and _norm_nama(y["nama_asli"]) == _norm_nama(sisa)]
+                if _cocok_jumlah(x, grup, False):
+                    alasan = (f"sama dengan jumlah semua baris '{grup[0]['nama_asli']}' "
+                              f"({fmt_rp(sum((g['biaya'] for g in grup), NOL) * kurs)})")
+            x["n3"] = True
+            if alasan:
+                peringatan.append(
+                    f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) tampaknya subtotal "
+                    f"buatan lembar kerja: biayanya {alasan}. Baris ini tidak dihitung supaya biayanya "
+                    "tidak terjumlah dua kali. Bila itu kampanye sungguhan, mohon ganti namanya di file "
+                    "lalu jalankan ulang.")
+            else:
+                alt_total.append((len(peringatan), x["biaya"], False))
+                peringatan.append(
+                    f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) diawali kata "
+                    "'Subtotal'/'Jumlah sementara', jadi dianggap subtotal dan tidak dihitung, walaupun "
+                    "angkanya tidak cocok dengan jumlah baris di sekitarnya. Mohon cek file; bila itu "
+                    "kampanye sungguhan, ganti namanya lalu jalankan ulang.")
+            continue
+        if not run:
+            continue
+        b_run = fmt_rp(sum((g["biaya"] for g in run), NOL) * kurs)
+        if nama_subtotal_dari(x["nama_asli"], induk):
+            if _cocok_jumlah(x, run, False):
+                x["n3"] = True
+                peringatan.append(
+                    f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) tampaknya subtotal "
+                    f"buatan lembar kerja: biayanya sama dengan jumlah {len(run)} baris '{induk}' tepat "
+                    f"di atasnya ({b_run}). Baris ini tidak dihitung supaya biayanya tidak terjumlah dua "
+                    "kali. Bila itu kampanye sungguhan, mohon ganti namanya di file lalu jalankan ulang.")
+            else:
+                alt_total.append((len(peringatan), x["biaya"], True))
+                peringatan.append(
+                    f"Nama baris '{x['nama_asli']}' (biaya {b_x}) mirip subtotal dari '{induk}', tetapi "
+                    f"angkanya tidak sama dengan jumlah baris '{induk}' di atasnya ({b_run}), jadi TETAP "
+                    "dihitung sebagai kampanye. Bila itu sebenarnya subtotal, mohon hapus baris itu dari "
+                    "file lalu jalankan ulang.")
+        elif (_norm_nama(x["nama_asli"]) == _norm_nama(induk) and len(run) >= 2
+              and (not kolom_tgl_semua or (not x["tgl_ok"] and not x["tgl_rusak"]
+                                           and all(g["tgl_ok"] or g["tgl_rusak"] for g in run)))
+              and _cocok_jumlah(x, run, True)):
+            # Nama sama persis: hanya bila biaya, tayangan & klik semuanya cocok DAN baris ini tidak
+            # bertanggal sementara baris-baris di atasnya bertanggal (baris harian asli tidak kena).
+            x["n3"] = True
+            peringatan.append(
+                f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) tampaknya subtotal: "
+                f"{'tanpa tanggal, dan ' if kolom_tgl_semua else ''}biaya, tayangan & kliknya sama "
+                f"dengan jumlah {len(run)} baris '{induk}' tepat di atasnya ({b_run}). Baris ini tidak "
+                "dihitung supaya biayanya tidak terjumlah dua kali. Bila itu data sungguhan, mohon "
+                "beri tahu agar dihitung ulang.")
+    for x in [y for y in rekaman if y["n3"]]:
+        baris_total.append(x["nama_asli"])
+        rekaman.remove(x)
+
+    # --- v1.0.6: baris total kampanye TANPA label (kolom grup iklan/iklan kosong) di file bertingkat ---
+    # Bila kampanye yang sama punya baris rincian bernama, baris berkolom-rinci-kosong itu bisa berupa total
+    # kampanye (mis. "Search Brand,,700000,..." di bawah dua grup iklan). Biaya, tayangan & klik ≈ (±2%)
+    # jumlah baris rincian -> dibuang dengan ⚠️ (tidak dihitung dua kali); selain itu tetap dihitung + ⚠️.
+    if kolom_induk:
+        for x in list(rekaman):
+            if x["nama_asli"] or x["kandidat_subtotal"] or not any(x["induk"]):
+                continue
+            saudara = [y for y in rekaman if y is not x and y["nama_asli"] and y["induk"] == x["induk"]]
+            if not saudara:
+                continue
+            b_x = fmt_rp(x["biaya"] * kurs)
+            b_s = fmt_rp(sum((g["biaya"] for g in saudara), NOL) * kurs)
+            kamp = x["induk"][-1] or x["induk"][0]
+            if _cocok_jumlah(x, saudara, True):
+                x["n3"] = True
+                peringatan.append(
+                    f"Baris kampanye '{kamp}' tanpa {level_rincian} (baris {x['no_baris']}, biaya {b_x}) "
+                    f"tampaknya total kampanye: biaya, tayangan & kliknya sama dengan jumlah {len(saudara)} "
+                    f"baris {level_rincian} kampanye itu ({b_s}). Baris ini tidak dihitung supaya biayanya "
+                    "tidak terjumlah dua kali. Bila itu data sungguhan (mis. Performance Max), mohon "
+                    "beri tahu agar dihitung ulang.")
+            else:
+                peringatan.append(
+                    f"Baris kampanye '{kamp}' tanpa {level_rincian} (baris {x['no_baris']}, biaya {b_x}) "
+                    f"tetap dihitung, tetapi kampanye itu juga punya {len(saudara)} baris {level_rincian} "
+                    f"bernama (jumlah {b_s}). Mohon cek: bila baris ini sebenarnya total kampanye, hapus "
+                    "dari file lalu jalankan ulang agar tidak terjumlah dua kali.")
+        for x in [y for y in rekaman if y["n3"] and not y["nama_asli"]]:
+            baris_total.append(f"total {x['induk'][-1] or x['induk'][0]}")
+            rekaman.remove(x)
+
+    # --- M3: kolom nama kosong + label mirip total di kolom lain (mis. "Subtotal Kamp A") ---
+    # Dibuang HANYA bila biaya, tayangan & klik ≈ (±2%) jumlah beberapa baris data tepat di atas
+    # ATAU tepat di bawahnya (pola subtotal). Selain itu tetap dihitung + ⚠️.
+    subtotal_dibuang = []
+    for i, x in enumerate(rekaman):
+        if not x["kandidat_subtotal"]:
+            continue
+        cocok = None
+        if x["biaya"] > 0:
+            for arah, kata_arah in ((-1, "di atasnya"), (1, "di bawahnya")):
+                acc = {k: NOL for k in metrik_silang}
+                j, n = i + arah, 0
+                while 0 <= j < len(rekaman) and not rekaman[j]["kandidat_subtotal"]:
+                    for k in metrik_silang:
+                        acc[k] += rekaman[j][k]
+                    n += 1
+                    if all(_dekat(x[k], acc[k]) for k in metrik_silang):
+                        cocok = (n, kata_arah, acc["biaya"])
+                        break
+                    if acc["biaya"] > x["biaya"] * (1 + TOLERANSI_TOTAL):
+                        break
+                    j += arah
+                if cocok:
+                    break
+        if cocok:
+            n, kata_arah, b_grup = cocok
+            subtotal_dibuang.append(x)
+            baris_total.append(x["kandidat_subtotal"])
+            peringatan.append(
+                f"Baris {x['no_baris']} (kolom {level_rincian or 'kampanye'} kosong, berlabel "
+                f"'{x['kandidat_subtotal']}', biaya {fmt_rp(x['biaya'] * kurs)}) sama dengan jumlah {n} baris "
+                f"tepat {kata_arah} (biaya {fmt_rp(b_grup * kurs)}), jadi dianggap SUBTOTAL dan tidak "
+                "dihitung. Bila itu iklan sungguhan, beri nama di file lalu jalankan ulang.")
+        else:
+            alt_total.append((len(peringatan), x["biaya"], True))
+            peringatan.append(
+                f"Baris {x['no_baris']} tidak ada nama di kolom {level_rincian or 'kampanye'}, tapi kolom lain "
+                f"berbunyi '{x['kandidat_subtotal']}' (mirip label total/ringkasan). Angkanya tidak cocok "
+                "dengan jumlah baris di sekitarnya, jadi baris ini TETAP dihitung sebagai kampanye biasa "
+                f"(biaya {fmt_rp(x['biaya'] * kurs)}) - kalau ini sebenarnya baris subtotal, hapus baris itu "
+                "dari file lalu jalankan ulang, atau beri nama yang jelas.")
+    for x in subtotal_dibuang:
+        rekaman.remove(x)
 
     # --- N2: pengaman silang angka baris total ---
     # Hanya baris berbiaya TERBESAR yang mungkin = jumlah semua baris lain (biaya >= 0).
-    def _dekat(a, b, batas=TOLERANSI_TOTAL):
-        return abs(a - b) <= b * batas
 
     if len(rekaman) >= 3:
         jml = {k: sum((x[k] for x in rekaman), NOL) for k in ("biaya", "tayangan", "klik")}
@@ -974,15 +1267,16 @@ def analisis_file(path, override, args):
                 peringatan.append(
                     f"Baris '{x['nama']}' {alasan_total}, jadi dianggap baris TOTAL dan tidak dihitung "
                     "lagi. Bila itu memang iklan sungguhan, beri tahu agar dihitung ulang.")
-            elif _dekat(x["biaya"], lain["biaya"]):
+            elif _dekat(x["biaya"], lain["biaya"], TOLERANSI_CURIGA):   # M2: ±5%, hanya ⚠️
                 berlabel = (f" (berlabel '{x['label_lemah']}')"
                             if x["label_lemah"] and x["label_lemah"] != x["nama"] else "")
                 peringatan.append(
                     f"Biaya baris '{x['nama']}'{berlabel} ({b_x}) hampir sama dengan jumlah semua baris lain "
-                    f"({b_lain}). Bila baris itu sebenarnya baris total/ringkasan, total belanja di laporan "
-                    f"ini TERHITUNG DUA KALI: seharusnya {b_lain}, bukan "
-                    f"{fmt_rp((x['biaya'] + lain['biaya']) * kurs)}. Cek file; hapus baris itu lalu jalankan "
-                    "ulang bila memang baris total.")
+                    f"({b_lain}). Baris ini tetap dihitung. Mohon dicek sebentar: kalau ternyata itu baris "
+                    "total/ringkasan, biayanya mungkin terjumlah dua kali, dan total belanja minggu ini "
+                    f"seharusnya {b_lain}, bukan {fmt_rp((x['biaya'] + lain['biaya']) * kurs)}. Bila benar, "
+                    "hapus baris itu dari file lalu jalankan ulang. Bila itu kampanye sungguhan, abaikan "
+                    "catatan ini.")
 
     # v1.0.3 (M1): SETIAP baris berlabel total "kuat"/"sedang" yang dibuang selalu dapat ⚠️
     # menyebut nama & biayanya, supaya pengguna bisa cek sendiri - sebelumnya hanya label
@@ -997,6 +1291,7 @@ def analisis_file(path, override, args):
                     "(biayanya tidak terbaca sebagai angka, jadi tidak bisa dicek silang). Cek dulu file "
                     "asli kalau itu ternyata kampanye sungguhan.")
             elif jml_biaya > 0 and not _dekat(b, jml_biaya):
+                alt_total.append((len(peringatan), b, False))
                 peringatan.append(
                     f"Baris '{lbl}' dianggap baris total/ringkasan dan tidak dihitung, tetapi biayanya "
                     f"({fmt_rp(b * kurs)}) tidak sama dengan jumlah baris lain ({fmt_rp(jml_biaya * kurs)}). "
@@ -1024,7 +1319,10 @@ def analisis_file(path, override, args):
     # --- agregasi per nama kampanye ---
     per_kampanye = defaultdict(lambda: {"biaya": NOL, "tayangan": NOL, "klik": NOL,
                                         "hasil": NOL, "nilai_hasil": NOL})
+    tujuan_per_kampanye = {}
     for x in rekaman:
+        if x.get("tujuan_lain") and x["nama"] not in tujuan_per_kampanye:
+            tujuan_per_kampanye[x["nama"]] = x["tujuan_lain"]
         k = per_kampanye[x["nama"]]
         k["biaya"] += x["biaya"] * kurs
         k["nilai_hasil"] += x["nilai_hasil"] * kurs
@@ -1037,8 +1335,19 @@ def analisis_file(path, override, args):
     for nama, v in per_kampanye.items():
         for kk in total:
             total[kk] += v[kk]
-        daftar_kampanye.append({"nama": nama, **metrik(v, ada_nilai)})
+        daftar_kampanye.append({"nama": nama, **metrik(v, ada_nilai),
+                                "tujuan_lain": tujuan_per_kampanye.get(nama)})
     t = metrik(total, ada_nilai)
+    for idx, b_baris, dihitung in alt_total:                     # v1.0.5 (P-4)
+        b_rp = b_baris * kurs
+        if dihitung:
+            peringatan[idx] += (f" Total belanja file ini sekarang {fmt_rp(total['biaya'])} (baris itu ikut "
+                                f"dihitung); bila baris itu ternyata subtotal, totalnya menjadi "
+                                f"{fmt_rp(total['biaya'] - b_rp)}.")
+        else:
+            peringatan[idx] += (f" Total belanja file ini sekarang {fmt_rp(total['biaya'])} (baris itu tidak "
+                                f"dihitung); bila baris itu ternyata kampanye sungguhan, totalnya menjadi "
+                                f"{fmt_rp(total['biaya'] + b_rp)}.")
 
     # --- periode ---
     tgl_judul = []
@@ -1112,14 +1421,29 @@ def analisis_file(path, override, args):
         peringatan.append(f"ROAS {fmt_x(t['roas'])} tidak wajar. Kemungkinan kolom biaya ('{kolom['biaya']}') "
                           f"atau nilai ('{kolom.get('nilai_hasil')}') salah pilih. Periksa sebelum dikirim.")
 
-    terbaik, terburuk, dijeda = pilih_terbaik_terburuk(daftar_kampanye, args.top)
+    # v1.0.10: kampanye bertujuan lain (Traffic/Awareness/...) TANPA hasil tidak dinilai dari hasil
+    tujuan_berbeda = sorted((k for k in daftar_kampanye if k.get("tujuan_lain") and k["hasil"] <= 0
+                             and k["biaya"] > 0), key=lambda k: (-k["biaya"], k["nama"]))
+    id_beda = {id(k) for k in tujuan_berbeda}
+    dinilai = [k for k in daftar_kampanye if id(k) not in id_beda]
+    terbaik, terburuk, dijeda = pilih_terbaik_terburuk(dinilai, args.top)
     if dijeda:
         catatan.append(f"{len(dijeda)} kampanye tanpa biaya minggu ini (mis. dijeda) tidak dinilai: "
                        f"{daftar_nama([k['nama'] for k in dijeda])}.")
-    saran = susun_saran(daftar_kampanye, t, nama_hasil, terbaik)
+    saran = susun_saran(dinilai, t, nama_hasil, terbaik)
+    if tujuan_berbeda:
+        biaya_beda = sum((k["biaya"] for k in tujuan_berbeda), NOL)
+        sisa_biaya = t["biaya"] - biaya_beda
+        teks_beda = (f"{len(tujuan_berbeda)} kampanye bertujuan lain ({daftar_nama([k['nama'] for k in tujuan_berbeda])}; "
+                     f"belanja {fmt_rp(biaya_beda)}) dinilai dari klik/tayangan, bukan {nama_hasil}")
+        if t["hasil"] > 0 and sisa_biaya > 0:
+            teks_beda += (f". Biaya per {nama_hasil} di atas ikut menghitung belanja itu; khusus kampanye "
+                          f"bertujuan {nama_hasil}: {fmt_rp(bagi(sisa_biaya, t['hasil']))}")
+        catatan.append(teks_beda + ".")
 
     kolom_dipakai = dict(kolom)
     kolom_dipakai["mata_uang"] = kolom_uang
+    kolom_dipakai["tujuan"] = kolom_tujuan
     return {
         "platform_terdeteksi": platform_terdeteksi,
         "mata_uang": mata_uang_final,
@@ -1141,6 +1465,7 @@ def analisis_file(path, override, args):
         "per_kampanye": sorted(daftar_kampanye, key=lambda k: -k["biaya"]),
         "tiga_terbaik": terbaik,
         "tiga_terburuk": terburuk,
+        "tujuan_berbeda": tujuan_berbeda,
         "saran": saran,
         "catatan": catatan,
         "peringatan": peringatan,
@@ -1195,6 +1520,11 @@ def susun_saran(daftar, t, nama_hasil, terbaik):
                 kalimat = (f"Tinjau/matikan iklan '{k['nama']}': biaya per {nama_hasil} "
                            f"{fmt_rp(k['biaya_per_hasil'])}, {fmt_x(k['biaya_per_hasil'] / rata)} rata-rata "
                            f"semua iklan ({fmt_rp(rata)}).")
+                if k.get("tujuan_lain"):
+                    kalimat = (f"Iklan '{k['nama']}' bertujuan {k['tujuan_lain']}, jadi wajar lebih mahal per "
+                               f"{nama_hasil} ({fmt_rp(k['biaya_per_hasil'])}, {fmt_x(k['biaya_per_hasil'] / rata)} "
+                               f"rata-rata {fmt_rp(rata)}); nilai juga dari CPC {fmt_rp(k['cpc'])} & CTR "
+                               f"{fmt_persen(k['ctr_persen'])} sebelum memutuskan.")
                 if k["hasil"] < AMBANG_SAMPEL_KECIL:
                     kalimat += (f" Baru {fmt_angka(k['hasil'])} {nama_hasil}, sampel kecil: pantau 1 minggu "
                                 "lagi sebelum memutuskan.")
@@ -1266,6 +1596,13 @@ def _blok_peringatan(L, peringatan):
 
 def susun_teks(h, pembanding=None, omzet=None):
     L = [f"LAPORAN IKLAN MINGGUAN — {h['platform_terdeteksi']}", f"Periode: {h['periode']['label']}"]
+    kd = h["kolom_dipakai"]
+    # v1.0.10: "Kolom dibaca" di bagian atas (bukan ekor Catatan) supaya selalu ikut terkirim.
+    L.append("Kolom dibaca: " + ", ".join(
+        f"{lbl}='{kd[p]}'" for p, lbl in (("nama", "nama"), ("biaya", "biaya"), ("tayangan", "tayangan"),
+                                           ("klik", "klik"), ("hasil", "hasil"), ("nilai_hasil", "nilai"),
+                                           ("tujuan", "tujuan"))
+        if kd.get(p)) + ".")
     _blok_peringatan(L, h.get("peringatan", []))
     L.append("")
     t = h["total"]
@@ -1309,6 +1646,15 @@ def susun_teks(h, pembanding=None, omzet=None):
                 L.append(f"{i}. {k['nama']}: {fmt_rp(k['biaya_per_hasil'])}/{nh} "
                          f"({fmt_angka(k['hasil'])} {nh}, {fmt_rp(k['biaya'])})")
 
+    if h.get("tujuan_berbeda"):
+        L.append("")
+        L.append(f"TUJUAN BERBEDA (Traffic/Awareness dll. — tidak dinilai dari {nh}, jangan dimatikan hanya karena 0 {nh})")
+        for i, k in enumerate(h["tujuan_berbeda"], 1):
+            L.append(f"{i}. {k['nama']} [{k['tujuan_lain']}]: {fmt_rp(k['biaya'])} | Klik {fmt_angka(k['klik'])} "
+                     f"| CPC {fmt_rp(k['cpc'])} | CTR {fmt_persen(k['ctr_persen'])} | CPM {fmt_rp(k['cpm'])}")
+        L.append(f"   Bandingkan dengan CPC rata-rata akun {fmt_rp(t['cpc'])}. Matikan hanya bila tujuan itu "
+                 "memang tidak dibutuhkan; untuk mendatangkan pesan, pakai kampanye bertujuan pesan/konversi.")
+
     L.append("")
     L.append("SARAN")
     for i, s in enumerate(h["saran"], 1):
@@ -1322,11 +1668,6 @@ def susun_teks(h, pembanding=None, omzet=None):
                        "tidak dihitung dua kali.")
     if omzet:
         catatan.append(omzet["catatan"])
-    kd = h["kolom_dipakai"]
-    catatan.append("Kolom dibaca: " + ", ".join(
-        f"{lbl}='{kd[p]}'" for p, lbl in (("nama", "nama"), ("biaya", "biaya"), ("tayangan", "tayangan"),
-                                           ("klik", "klik"), ("hasil", "hasil"), ("nilai_hasil", "nilai"))
-        if kd.get(p)) + ".")
     L.append("")
     L.append("Catatan:")
     for c in catatan:

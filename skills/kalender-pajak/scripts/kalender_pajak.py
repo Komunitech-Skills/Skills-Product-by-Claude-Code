@@ -26,7 +26,7 @@ from pathlib import Path
 SINI = Path(__file__).resolve().parent
 REF = SINI.parent / "references"
 TANGGAL_CEK = "2026-09-26"
-VERSI = "1.0.3"
+VERSI = "1.0.7"
 TAHUN_MIN, TAHUN_MAKS = 2025, 2100
 
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
@@ -45,12 +45,12 @@ KEWAJIBAN_MASA = {
         "setor": 15, "lapor": None,
         "catatan": "Setor yang tervalidasi dianggap sudah lapor SPT Masa (PMK 81/2024). "
                    "Hanya bila ada PPh terutang: orang pribadi tidak setor selama omzet kumulatif "
-                   "setahun masih <= Rp500 juta. Besarannya: skill pph-final-umkm.",
+                   "setahun masih <= Rp500 juta. Besarannya: skill pph-final-umkm (bila terpasang).",
     },
     "pph21": {
         "pajak": "PPh 21/26 (pemberi kerja)",
         "setor": 15, "lapor": 20, "nama_spt": "SPT Masa PPh 21/26",
-        "catatan": "Besarannya: skill pph21-ter. Bukti potong dibuat di Coretax.",
+        "catatan": "Besarannya: skill pph21-ter (bila terpasang). Bukti potong dibuat di Coretax.",
     },
     "unifikasi": {
         "pajak": "PPh Unifikasi (PPh 4(2), 15, 22, 23, 26 non-pegawai)",
@@ -66,7 +66,7 @@ KEWAJIBAN_MASA = {
                    "persetujuan DJP paling lambat tgl 20 bulan berikutnya setelah tanggal pembuatan faktur "
                    "(PER-11/PJ/2025 Ps. 44 ayat 1); faktur yang tidak disetujui bukan faktur pajak sah. "
                    "Batas unggah faktur TIDAK bergeser walau tgl 20 hari libur (PER-11/PJ/2025 tidak memuat "
-                   "ketentuan pergeseran; PERLU REVIEW) - unggah sebelum tgl 20. Besarannya: skill hitung-ppn.",
+                   "ketentuan pergeseran; PERLU REVIEW) - unggah sebelum tgl 20. Besarannya: skill hitung-ppn (bila terpasang).",
     },
     "pph25": {
         "pajak": "PPh 25 (angsuran bulanan)",
@@ -125,9 +125,18 @@ SEMUA_KEWAJIBAN = list(KEWAJIBAN_MASA) + list(KEWAJIBAN_TAHUNAN)
 # pemanfaatan dari luar Daerah Pabean oleh bukan-PKP). Dicocokkan dengan naskah resmi 2026-09-26.
 TAHUNAN_TIDAK_GESER = ("spt-op", "spt-badan")
 
-# Perpanjangan khusus DJP yang sudah diketahui (tanggal di kalender TIDAK diubah; hanya diberi catatan).
+# Kebijakan khusus DJP yang sudah diketahui (tanggal di kalender TIDAK diubah; hanya diberi catatan).
+# KEP-55/PJ/2026 TIDAK memperpanjang jatuh tempo: jatuh tempo SPT OP TP 2025 tetap 31 Mar 2026;
+# yang dihapus hanya sanksi administratif (denda/bunga) bila lapor/bayar s.d. 30 Apr 2026, khusus
+# orang pribadi. Sumber resmi: https://pajak.go.id/en/node/119611 (dicek 2026-09-30).
+# Badan: KEP-71/PJ/2026 juga TIDAK mengubah jatuh tempo (4 bulan setelah akhir tahun pajak); sanksi
+# denda/bunga dihapus bila lapor/bayar s.d. 1 bulan setelah jatuh tempo. Sumber resmi:
+# https://www.pajak.go.id/id/pengumuman/kebijakan-penghapusan-sanksi-administratif-atas-keterlambatan-pembayaran-dan-pelaporan-1
 PERPANJANGAN_KHUSUS = {
-    ("spt-op", 2025): "tahun pajak 2025 diperpanjang DJP sampai 30 Apr 2026 (KEP-55/PJ/2026)",
+    ("spt-op", 2025): ("jatuh tempo tetap 31 Mar 2026; KEP-55/PJ/2026 menghapus sanksi denda/bunga "
+                       "bila lapor/bayar paling lambat 30 Apr 2026 (khusus orang pribadi, bukan perpanjangan)"),
+    ("spt-badan", 2025): ("jatuh tempo tetap; KEP-71/PJ/2026 menghapus sanksi denda/bunga bila lapor/bayar "
+                          "paling lambat 1 bulan setelah jatuh tempo (bukan perpanjangan)"),
 }
 
 DISCLAIMER = (
@@ -406,6 +415,86 @@ def baris_info(info):
     return o
 
 
+BATAS_BEBAS_OP = 500000000
+_SATUAN_RP = [("miliar", 10 ** 9), ("milyar", 10 ** 9), ("juta", 10 ** 6), ("ribu", 10 ** 3), ("jt", 10 ** 6),
+              ("rb", 10 ** 3), ("m", 10 ** 9), ("k", 10 ** 3)]
+
+
+def rupiah(teks, nama):
+    """'600jt' | '1,2 M' | '48.000.000' | 'Rp 50 juta' -> int rupiah (>= 0)."""
+    asli = str(teks)
+    t = re.sub(r"(?i)^\s*(rp\.?|idr)\s*", "", asli.strip()).lower().replace(" ", "")
+    kali = 1
+    for akhiran, k in _SATUAN_RP:
+        if t.endswith(akhiran):
+            t, kali = t[:-len(akhiran)], k
+            break
+    if kali > 1:
+        t = t.replace(",", ".") if t.count(",") == 1 and "." not in t else t.replace(",", "")
+        if t.count(".") > 1:
+            raise InputSalah("%s: '%s' tidak dikenali (mis. 600jt, 1,2 miliar, 48.000.000)" % (nama, asli))
+    else:
+        if not re.fullmatch(r"\d{1,3}(\.\d{3})+|\d+", t):
+            raise InputSalah("%s: '%s' tidak dikenali (mis. 600jt, 1,2 miliar, 48.000.000)" % (nama, asli))
+        t = t.replace(".", "")
+    try:
+        nilai = float(t) * kali
+    except ValueError:
+        raise InputSalah("%s: '%s' bukan angka" % (nama, asli))
+    if nilai < 0:
+        raise InputSalah("%s tidak boleh negatif" % nama)
+    return int(round(nilai))
+
+
+def fmt_rp(n):
+    return "Rp " + "{:,}".format(int(n)).replace(",", ".")
+
+
+def hitung_lewat_batas(tahun, omzet_bulanan, sumber, libur, tahun_ada, kurang):
+    """Bulan pertama omzet kumulatif orang pribadi MELEWATI Rp500 juta (PP 55/2022: s.d. Rp500 juta tidak
+    dikenai PPh final). omzet_bulanan: list omzet Januari, Februari, ... (maks 12)."""
+    baris, kum, lewat = [], 0, None
+    for i, o in enumerate(omzet_bulanan, start=1):
+        sebelum = kum
+        kum += o
+        baris.append("- %s %d: omzet %s, kumulatif %s%s" % (
+            BULAN[i - 1], tahun, fmt_rp(o), fmt_rp(kum),
+            "  <- MELEWATI Rp500 juta" if sebelum <= BATAS_BEBAS_OP < kum else ""))
+        if lewat is None and sebelum <= BATAS_BEBAS_OP < kum:
+            lewat = (i, sebelum, kum)
+    o = ["**Kapan omzet kumulatif melewati Rp500 juta** (orang pribadi; dihitung script, %s)" % sumber,
+         "Rumus: kumulatif = jumlah omzet Januari s.d. bulan itu. Omzet s.d. Rp500 juta setahun tidak dikenai "
+         "PPh final (PP 55/2022); bulan pertama kumulatif > Rp500 juta = masa pertama yang wajib setor."] + baris
+    hasil = {"sumber": sumber, "bulan_lewat": None, "kumulatif_akhir": kum}
+    if lewat:
+        i, sebelum, sesudah = lewat
+        th, bl = bulan_berikut(tahun, i, 1)
+        normal = tgl_aturan(th, bl, 15)
+        t, alasan = geser(normal, libur, tahun_ada, kurang)
+        o.append("Hasil: omzet kumulatif melewati Rp500 juta pada **%s %d** (s.d. %s %s; s.d. %s %s). Masa "
+                 "sebelumnya tidak ada setoran PPh final. Omzet %s %d yang kena pajak = %s - Rp 500.000.000 = %s; "
+                 "bulan-bulan sesudahnya seluruh omzet kena. Setoran pertama (masa %s %d) paling lambat **%s**%s."
+                 % (BULAN[i - 1], tahun, BULAN[i - 2] if i > 1 else "awal tahun", fmt_rp(sebelum), BULAN[i - 1],
+                    fmt_rp(sesudah), BULAN[i - 1], tahun, fmt_rp(sesudah), fmt_rp(sesudah - BATAS_BEBAS_OP),
+                    BULAN[i - 1], tahun, fmt_panjang(t),
+                    (" (bergeser dari %s karena %s)" % (fmt_pendek(normal), "; ".join(alasan))) if alasan else ""))
+        hasil.update({"bulan_lewat": i, "kumulatif_sebelum": sebelum, "kumulatif_sesudah": sesudah,
+                      "omzet_kena_bulan_lewat": sesudah - BATAS_BEBAS_OP, "setor_pertama": t.isoformat()})
+    else:
+        o.append("Hasil: s.d. %s %d omzet kumulatif %s, belum melewati Rp500 juta (sisa %s). Belum ada "
+                 "setoran PPh final untuk masa-masa ini." % (BULAN[len(omzet_bulanan) - 1], tahun, fmt_rp(kum),
+                                                            fmt_rp(BATAS_BEBAS_OP - kum)))
+    o.append("Besaran pajaknya tidak dihitung di sini - pakai skill pph-final-umkm bila terpasang. Badan "
+             "(PT perorangan/koperasi) tidak mendapat pembebasan Rp500 juta.")
+    hasil["teks"] = o
+    return hasil
+
+
+def blok_omzet(info):
+    om = info.get("omzet")
+    return ([""] + om["teks"]) if om else []
+
+
 def keluaran_md(acara, info):
     o = []
     o.append("## Kalender Pajak %s - %s" % (info["judul_rentang"], info["label_profil"]))
@@ -422,6 +511,7 @@ def keluaran_md(acara, info):
         o.append("|---|---|---|")
         for e in acara:
             o.append("| %s | %s | %s |" % (fmt_panjang(e["tanggal"]), e["judul"], ket_geser(e)))
+    o += blok_omzet(info)
     o += ["", "**Catatan per kewajiban**"]
     for k in info["kewajiban"]:
         a = KEWAJIBAN_MASA.get(k) or KEWAJIBAN_TAHUNAN[k]
@@ -449,7 +539,8 @@ def keluaran_checklist(acara, info):
                                                e["judul"], tambahan))
     if not acara:
         o.append("_Tidak ada tenggat dalam rentang ini._")
-    o += ["", "Sebelum setor: siapkan angka (skill pph-final-umkm / pph21-ter / hitung-ppn), buat kode "
+    o += blok_omzet(info)
+    o += ["", "Sebelum setor: siapkan angka (skill pph-final-umkm / pph21-ter / hitung-ppn bila terpasang), buat kode "
               "billing di Coretax, bayar, simpan bukti penerimaan negara (BPN/NTPN).",
           "", "_%s_" % DISCLAIMER]
     return "\n".join(o) + "\n"
@@ -475,6 +566,7 @@ def keluaran_hari_ini(acara, info, hari_ini, rentang):
         t = berikut[0]["tanggal"]
         o += ["", "Tenggat berikutnya sesudah rentang ini: **%s** (%d hari lagi) - %s" % (
             fmt_panjang(t), (t - hari_ini).days, "; ".join(e["judul"] for e in berikut))]
+    o += blok_omzet(info)
     o += [""] + ["Data libur: %s." % info["sumber_libur"]]
     o += ["", "_%s_" % DISCLAIMER]
     return "\n".join(o) + "\n"
@@ -507,6 +599,7 @@ def keluaran_json(acara, info):
             "keterangan": ket_geser(e),
             "catatan": e["catatan"], "uid": e["uid"],
         } for e in acara],
+        "omzet_lewat_500jt": ({k: v for k, v in info["omzet"].items()} if info.get("omzet") else None),
         "disclaimer": DISCLAIMER,
     }, ensure_ascii=False, indent=2) + "\n"
 
@@ -619,6 +712,10 @@ def jalankan(argv, sekarang_utc=None):
     p.add_argument("--acara-pengingat", action="store_true",
                    help="khusus --format ics: tambah acara pengingat terpisah H-3 & H-1 (untuk Google Calendar)")
     p.add_argument("--daftar-profil", action="store_true", help="tampilkan daftar profil lalu keluar")
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--omzet-bulanan", help="omzet per bulan mulai Januari, dipisah koma/titik koma/spasi "
+                                           "(mis. '48jt;45jt;52jt'): hitung bulan omzet kumulatif melewati Rp500 juta")
+    g.add_argument("--omzet-setahun", help="perkiraan omzet setahun (mis. 600jt), dianggap merata per bulan")
     a = p.parse_args(argv)
 
     if a.daftar_profil:
@@ -658,6 +755,28 @@ def jalankan(argv, sekarang_utc=None):
             BULAN[bm - 1], tahun, BULAN[abl - 1], ath)
 
     acara, kurang = buat_acara(kewajiban, awal, akhir, libur, tahun_ada)
+    omzet = None
+    if a.omzet_bulanan or a.omzet_setahun:
+        if "pph-final-umkm" not in kewajiban or "badan-umkm" in profil:
+            raise InputSalah("--omzet-bulanan/--omzet-setahun hanya untuk orang pribadi PPh final 0,5% "
+                             "(profil op-umkm); badan tidak mendapat pembebasan Rp500 juta")
+        th_omzet = awal.year
+        if a.omzet_setahun:
+            setahun = rupiah(a.omzet_setahun, "--omzet-setahun")
+            if setahun % 12:
+                per = [setahun // 12 + (1 if i < setahun % 12 else 0) for i in range(12)]
+            else:
+                per = [setahun // 12] * 12
+            sumber = "perkiraan %s setahun dibagi rata 12 bulan = %s/bulan%s" % (
+                fmt_rp(setahun), fmt_rp(setahun // 12), "" if setahun % 12 == 0 else " (sisa pembagian dibagi ke bulan awal)")
+        else:
+            # pemisah: ; spasi ", " atau koma di antara dua nilai bersatuan (48jt,45jt). "1,2jt" = desimal.
+            bag = [x for x in re.split(r"[;\s]+|,(?=\s)|(?<=[a-z]),(?=\d)", a.omzet_bulanan.strip().lower()) if x]
+            if not 1 <= len(bag) <= 12:
+                raise InputSalah("--omzet-bulanan harus berisi 1-12 nilai (Januari dst.), sekarang %d" % len(bag))
+            per = [rupiah(x, "omzet %s" % BULAN[i]) for i, x in enumerate(bag)]
+            sumber = "omzet per bulan dari pengguna"
+        omzet = hitung_lewat_batas(th_omzet, per, sumber, libur, tahun_ada, kurang)
     berikutnya = []
     if a.hari_ini:
         # tenggat terdekat sesudah rentang (cari sampai 400 hari; tanpa memengaruhi peringatan)
@@ -688,7 +807,7 @@ def jalankan(argv, sekarang_utc=None):
         "kewajiban_nama": [(KEWAJIBAN_MASA.get(k) or KEWAJIBAN_TAHUNAN[k])["pajak"] for k in kewajiban],
         "peringatan": pesan_kurang(kurang, tahun_ada, tahun_pengguna),
         "awal": awal, "akhir": akhir, "cakupan_lanjut": cakupan_lanjut, "sumber_libur": sumber_libur,
-        "berikutnya": berikutnya,
+        "berikutnya": berikutnya, "omzet": omzet,
     }
     if a.hari_ini and fmt == "md":
         teks = keluaran_hari_ini(acara, info, awal, (akhir - awal).days)

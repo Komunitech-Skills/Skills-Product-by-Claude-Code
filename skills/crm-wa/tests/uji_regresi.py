@@ -834,6 +834,72 @@ class UjiRevisi101(Dasar):
         self.assertEqual(d["jenis"], "sapaan-ulang")
         self.assertNotIn("terima kasih sudah menghubungi", d["draf"])
 
+    def test_sapaan_awal_tidak_kaku_dan_batal_tidak_ikut_draf_massal(self):
+        for i in range(3):
+            self.ok("tambah", "--nama", "Bu Lead%d" % i, "--wa", "08120000008%d" % i, "--masuk", "24/9/2026",
+                    "--followup", "24/9/2026")
+        for i in range(3):
+            d = self.ok("draf", "--kontak", "Lead%d" % i)["draf"]
+            self.assertNotIn("terima kasih sudah menghubungi", d)
+            self.assertIn("Sari", d)
+        self.ok("tambah", "--nama", "Bu Batal", "--wa", "081200000099", "--followup", "24/9/2026")
+        self.ok("catat", "--kontak", "Batal", "--tahap", "batal", "--alasan", "tidak mau dihubungi")
+        self.assertIn("batal", self.gagal("draf", "--kontak", "Batal")["error"].lower())
+        out = self.ok("hari-ini")
+        self.assertNotIn("Bu Batal", json.dumps(out, ensure_ascii=False))
+
+
+class UjiPersetujuanDatabase(unittest.TestCase):
+    """Regresi v1.0.3 (uji platform OpenClaw 2026-09-29): database tidak boleh dibuat sebelum pengguna setuju."""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.fol = os.path.join(self.dir, "belum-ada", "crm")
+        self.db = os.path.join(self.fol, "crm.db")
+
+    def tearDown(self):
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def run_cli(self, *argv):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            kode = C.main(list(argv) + ["--db", self.db, "--json", "--hari-ini", HARI])
+        return kode, json.loads(buf.getvalue())
+
+    def test_init_tanpa_ya_tidak_menulis_apa_pun(self):
+        kode, out = self.run_cli("init", "--nama-usaha", "Dapur Mama Tia", "--pengirim", "Tia")
+        self.assertEqual(kode, 0)
+        self.assertEqual(out["mode"], "pratinjau")
+        self.assertTrue(out["perlu_konfirmasi"])
+        self.assertIn(self.db, out["teks"])          # lokasi file ditunjukkan ke pengguna
+        self.assertIn("BERHENTI", out["instruksi_agent"])
+        self.assertFalse(os.path.exists(os.path.join(self.dir, "belum-ada")))
+
+    def test_perintah_lain_tidak_membuat_database_diam_diam(self):
+        perintah = [("info",), ("hari-ini",), ("rekap",), ("daftar",), ("cek-duplikat",), ("ekspor",), ("backup",),
+                    ("backup", "--daftar"), ("tambah", "--nama", "Bu Dewi", "--wa", "081200000091"),
+                    ("catat", "--kontak", "Dewi", "--isi", "tanya kue lapis"), ("atur", "--pengirim", "Tia"),
+                    ("tunda", "--kontak", "Dewi", "--ke", "besok"), ("terkirim", "--kontak", "Dewi"),
+                    ("draf", "--kontak", "Dewi"), ("hapus", "--kontak", "Dewi", "--ya")]
+        for p in perintah:
+            kode, out = self.run_cli(*p)
+            self.assertFalse(os.path.exists(os.path.join(self.dir, "belum-ada")), p)
+            if p[0] not in ("info", "backup"):
+                self.assertEqual(kode, 1, p)
+                self.assertIn("init", out["error"], p)
+
+    def test_init_dengan_ya_baru_membuat(self):
+        kode, out = self.run_cli("init", "--nama-usaha", "Dapur Mama Tia", "--ya")
+        self.assertEqual((kode, out["mode"]), (0, "tersimpan"))
+        self.assertNotIn("instruksi_agent", out)
+        self.assertTrue(os.path.isfile(self.db))
+
+    def test_skill_md_mewajibkan_menunggu_persetujuan(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as f:
+            isi = f.read()
+        self.assertIn("pesan berikutnya", isi)
+        self.assertIn("JANGAN pernah mencari, membaca, atau menampilkan token", isi)
+
 
 class UjiKeamanan(unittest.TestCase):
     def test_script_tanpa_akses_jaringan(self):
@@ -842,6 +908,29 @@ class UjiKeamanan(unittest.TestCase):
         for terlarang in ("import socket", "urllib.request", "http.client", "import requests", "subprocess",
                           "smtplib", "webbrowser"):
             self.assertNotIn(terlarang, src)
+
+
+
+class UjiSingkatanFlag(unittest.TestCase):
+    """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
+
+    def test_singkatan_flag_konfirmasi_ditolak(self):
+        import subprocess
+        import tempfile
+        skrip = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "crm.py")
+        with tempfile.TemporaryDirectory() as t:
+            argv = ["init", "--db", os.path.join(t, "a.db"), "--y"]
+            p = subprocess.run([sys.executable, skrip] + argv, capture_output=True, text=True, timeout=60)
+            self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
+            self.assertIn("unrecognized arguments", p.stdout + p.stderr)
+            self.assertFalse(os.path.exists(os.path.join(t, "a.db")), "singkatan flag tidak boleh menulis apa pun")
+
+
+class TestProfilUsaha(Dasar):
+    def test_hari_ini_dan_info_menampilkan_profil(self):
+        self.assertIn("Usaha: Dapur Contoh | Pengirim: Sari", self.ok("hari-ini")["teks"])
+        self.assertIn("Usaha: Dapur Contoh", self.ok("info")["teks"])
+        self.assertIn("Dapur Contoh", self.ok("rekap")["teks"])
 
 
 if __name__ == "__main__":

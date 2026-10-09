@@ -5,6 +5,8 @@ description: Menyusun Kebijakan Privasi sesuai UU 27/2022 Pelindungan Data Priba
 
 # Kebijakan Privasi & Kepatuhan UU PDP untuk Usaha
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu UMKM dan usaha Indonesia memenuhi kewajiban dasar UU 27/2022 tentang Pelindungan Data Pribadi (UU PDP) lewat dokumen yang siap tempel: kebijakan privasi, pemberitahuan & persetujuan, tanggapan permintaan pelanggan, dan langkah bila data bocor. Isinya mengikuti praktik usaha yang sebenarnya, tidak ada yang dikarang, dan dasar aturannya disebut. Ini draf, **bukan nasihat hukum**.
 
@@ -48,6 +50,8 @@ Jika pengguna ingin cepat: katakan "cukup jawab no. 1–3 dulu", lalu buat draf 
 
 ## Langkah kerja
 
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
+
 ### Mode 1 — SUSUN kebijakan privasi
 1. **Saring cakupan** (lihat "Kapan TIDAK digunakan"). Bila ada data spesifik skala besar (mis. klinik dengan ribuan pasien, aplikasi kesehatan, layanan anak), tetap buat draf tetapi beri label **"DRAF — WAJIB DITINJAU KONSULTAN HUKUM"** dan ingatkan kemungkinan wajib DPO (Pasal 53 + Putusan MK 151/PUU-XXII/2024) dan penilaian dampak (Pasal 34).
 2. **Petakan data** dalam tabel: Data → Tujuan → Dasar pemrosesan (Pasal 20 ayat (2): persetujuan / pelaksanaan perjanjian / kewajiban hukum / kepentingan vital / tugas umum / kepentingan sah) → Penerima → Masa simpan. Aturan:
@@ -60,7 +64,7 @@ Jika pengguna ingin cepat: katakan "cukup jawab no. 1–3 dulu", lalu buat draf 
    ```bash
    python3 <folder-skill-ini>/scripts/cek_kebijakan.py draf-kebijakan.md
    ```
-   Target: skor struktur 100, tanpa frasa berisiko. Selama masih ada `[isi: ...]`, status = `BELUM SIAP` (kecuali strukturnya pun < 60 → `KURANG LENGKAP`; urutan status: `--daftar` / kunci JSON `alasan_status`) dan skor dibatasi maks. 84 (unsur yang isinya masih kosong ditandai `BELUM DIISI`); sebutkan daftar isian ke pengguna. Skor = **kelengkapan struktur**, bukan jaminan isi benar.
+   Target: skor struktur 100, tanpa frasa berisiko. Selama masih ada `[isi: ...]`, status = `BELUM SIAP` (kecuali strukturnya pun < 60 → `KURANG LENGKAP`; urutan status: `--daftar` / kunci JSON `alasan_status`) dan skor dibatasi maks. 84 (unsur yang isinya masih kosong ditandai `BELUM DIISI`); sebutkan daftar isian ke pengguna. **Jumlah isian di header HARUS sama dengan jumlah butir di daftar** (hitung butir unik `[isi: ...]`; bila ada yang muncul berkali-kali tulis "n isian (m tempat)"). **Setiap asumsi** (masa simpan, jangka waktu, standar vendor, kebijakan internal yang tidak diberikan pengguna, mis. "paling lambat 7 hari", "penyedia ber-standar memadai") ditulis sebagai `[isi: ...]` atau dihapus, dan dicantumkan di "Asumsi yang saya pakai" — jangan ditulis seolah fakta. Langkah pemberitahuan insiden: tindakan yang belum dikonfirmasi pengguna ditulis `[centang bila sudah: ...]`, bukan "sudah kami lakukan". Skor = **kelengkapan struktur**, bukan jaminan isi benar.
 6. **Sajikan** sesuai format output, lalu tawarkan: pemberitahuan singkat (mode 2) untuk formulir/WA, dan template tanggapan hak subjek (mode 4).
 
 ### Mode 2 — PEMBERITAHUAN & PERSETUJUAN
@@ -150,6 +154,7 @@ Sebagian layanan yang kami gunakan (WhatsApp/Meta, Meta Pixel, [isi: layanan clo
 - [ ] Setiap data punya tujuan, dasar pemrosesan, dan masa simpan; promo & data spesifik memakai persetujuan terpisah.
 - [ ] Transfer luar negeri jujur sesuai layanan yang dipakai; ada kalimat "Kami tidak menjual data pribadi Anda."
 - [ ] Hak subjek data + cara mengajukan + 3×24 jam; pemberitahuan kebocoran 3×24 jam.
+- [ ] Jumlah isian di header = jumlah butir di daftar; tidak ada asumsi tanpa placeholder `[isi: ...]`
 - [ ] `cek_kebijakan.py` tanpa temuan pola **dan** draf sudah kamu baca ulang per kategori K1–K16; skor dan sisa isian disebutkan.
 - [ ] Mode CEK: temuan pembacaan agent ditulis lebih dulu, selisih dengan script dijelaskan, tidak ada klaim "aman" yang hanya bersandar pada script.
 - [ ] Disclaimer + tanggal cek + status PP 33/2026 & lembaga pengawas tercantum.

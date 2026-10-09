@@ -9,7 +9,7 @@ pembelian.
 
 Skill ini **memanggil** REST API lokal aplikasi **Stirling-PDF**
 (https://github.com/Stirling-Tools/Stirling-PDF), yang **HARUS dipasang sendiri oleh
-pengguna** di komputernya (lihat `docs/panduan-stirling-pdf.md`). Stirling-PDF:
+pengguna** di komputernya (lihat `references/pasang-stirling.md`). Stirling-PDF:
 
 - **TIDAK didistribusikan/disalin di dalam paket skill ini.** Skill ini hanya berisi
   kode yang mengirim permintaan HTTP ke `http://localhost:8080` (alamat default
@@ -32,3 +32,11 @@ pengguna** di komputernya (lihat `docs/panduan-stirling-pdf.md`). Stirling-PDF:
 Bila Stirling-PDF mengganti lisensi intinya di kemudian hari (sudah pernah terjadi
 pada beberapa proyek open-core lain), skill ini perlu ditinjau ulang - lihat
 `research/software-pengganti-saas-2026-09-23.md` poin risiko lisensi.
+
+## Alat lokal jalur cadangan (v1.0.5)
+
+`scripts/pdf_cadangan.py` hanya **memanggil** program yang sudah terpasang di komputer
+pengguna bila ada: qpdf (Apache-2.0), Ghostscript (AGPL-3.0 / lisensi komersial Artifex),
+dan pdftk (GPL). Tidak ada kode, binari, atau aset dari program tersebut yang disalin ke
+paket ini; memanggil program terpisah lewat baris perintah tidak menjadikan skill ini
+karya turunannya. Komunitech tidak berafiliasi dengan proyek-proyek tersebut.

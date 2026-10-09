@@ -5,6 +5,8 @@ description: Pendamping UMKM ikut pengadaan barang/jasa pemerintah (tender, sele
 
 # Tender Checklist (Pengadaan Pemerintah untuk UMKM)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha kecil yang awam tender untuk: memutuskan **layak ikut atau tidak**, menyiapkan **dokumen lengkap**, **tidak telat unggah**, dan mengirim **harga yang benar hitungannya** — sehingga tidak gugur karena kesalahan yang bisa dicegah.
 
@@ -38,6 +40,8 @@ Membantu pemilik usaha kecil yang awam tender untuk: memutuskan **layak ikut ata
 Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat → pakai default & tulis "Asumsi".
 
 ## Langkah Kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. **Pahami paket.** Minta (atau baca bila ditempel) ringkasan dari dokumen pemilihan: metode, jenis, kualifikasi usaha, KBLI/SBU, HPS, pagu, jadwal, jaminan penawaran, masa berlaku penawaran. Ingatkan: **dokumen pemilihan + adendum adalah acuan utama**.
 2. **Cek kelayakan** (tabel A di `references/checklist-dokumen.md`). Beri status per butir: ✅ memenuhi / ❌ tidak / ❓ perlu dicek. Aturan kunci:
    - Paket barang/konstruksi/jasa lainnya **pagu s.d. Rp15 miliar** pada dasarnya untuk usaha mikro, kecil & koperasi (Perpres 16/2018 jo. 46/2025 Pasal 65 ayat (3)), kecuali paket yang menuntut kemampuan teknis yang tidak dapat dipenuhi UMK (Pasal 65 ayat (4)).

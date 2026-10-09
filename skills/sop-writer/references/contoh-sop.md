@@ -88,7 +88,7 @@ D. Serah kurir
 ---
 ## 4. SOP Kebersihan Dapur Harian — Kedai/Katering Rumahan, Surabaya
 Poin khas: cuci tangan sebelum masak & setelah pegang bahan mentah; talenan dipisah mentah/matang (beri warna); suhu kulkas dicek pagi & sore; bahan lama dipakai dulu (FIFO); lantai dipel akhir shift; sampah basah dibuang setiap hari.
-Catatan: untuk sertifikasi (PIRT/SLHS/halal), ikuti ketentuan resmi instansi terkait dan verifikasi ke petugas; SOP ini hanya operasional harian.
+Catatan: warung/rumah makan/katering (pangan siap saji) memakai **Sertifikat Laik Higiene Sanitasi (SLHS)** atau label pengawasan/pembinaan untuk usaha risiko rendah dari Dinas Kesehatan kab/kota (Permenkes 14/2021; dicek 1 Oktober 2026). **PIRT/SPP-IRT** hanya untuk pangan olahan kemasan produksi rumah tangga — bukan izin warung makan. Untuk sertifikasi (SLHS/halal), ikuti ketentuan resmi dan verifikasi ke petugas; SOP ini hanya operasional harian.
 
 ---
 ## Template checklist harian (cetak)

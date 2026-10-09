@@ -39,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.11"
+VERSI = "1.0.17"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)
@@ -2638,6 +2638,37 @@ class Data:
                                 "memilih yang lain.".format(", ".join(tgl), tgl[0]))
         return tgl[0]
 
+    def cari_nilai(self, spec, peran="nilai"):
+        """v1.0.17: --nilai "A+B" = jumlah beberapa kolom angka per baris (mis. Gaji Pokok+Tunjangan), dihitung
+        script agar agent tidak menjumlah/memersenkan sendiri. Nama kolom asli yang memuat '+' tetap diutamakan."""
+        if spec is None:
+            return None
+        cf = rapikan_teks(spec).casefold()
+        if "+" not in spec or any(n.casefold() == cf for n in self.kolom):
+            return self.cari(spec, ("angka",), peran)
+        bagian = [self.cari(x.strip(), ("angka",), peran) for x in spec.split("+") if x.strip()]
+        if len(bagian) < 2 or len(set(bagian)) != len(bagian):
+            raise InputError("Format --nilai gabungan: \"Kolom A+Kolom B\" (minimal dua kolom angka berbeda).")
+        nama = " + ".join(bagian)
+        if nama not in self.kol:
+            vals, sebagian = [], []
+            for i in range(len(self.mentah)):
+                vs = [self.kol[b]["nilai"][i] for b in bagian]
+                if all(v is None for v in vs):
+                    vals.append(None)
+                    continue
+                if any(v is None for v in vs):
+                    sebagian.append(self.baris_no[i])
+                vals.append(sum((v for v in vs if v is not None), NOL))
+            k0 = self.kol[bagian[0]]
+            self.kol[nama] = {
+                "nama": nama, "tipe": "angka", "nilai": vals, "terisi": sum(1 for v in vals if v is not None),
+                "kosong": sum(1 for v in vals if v is None), "galat": 0, "tidak_valid": [],
+                "uang": any(self.kol[b]["uang"] for b in bagian), "gaya": k0.get("gaya"), "urutan": None,
+                "urutan_ambigu": False, "sensitif": any(self.kol[b]["sensitif"] for b in bagian),
+                "gabung_kategori": [], "komponen": bagian, "sebagian_kosong": sebagian}
+        return nama
+
     def jenis_nilai(self, nama):
         if nama is None:
             return "bulat"
@@ -2680,7 +2711,18 @@ class Data:
     def peringatan_kolom(self, nama_list):
         """Peringatan untuk kolom yang dipakai dalam perhitungan."""
         out = []
+        daftar = []
         for n in nama_list:
+            if n and self.kol[n].get("komponen"):
+                daftar += self.kol[n]["komponen"]
+                if self.kol[n]["sebagian_kosong"]:
+                    sk = self.kol[n]["sebagian_kosong"]
+                    out.append("Kolom gabungan '{}': {} baris hanya terisi sebagian kolomnya; sel kosong dihitung 0 "
+                               "(baris {}{}).".format(n, len(sk), ", ".join(map(str, sk[:8])),
+                                                      ", dll." if len(sk) > 8 else ""))
+            else:
+                daftar.append(n)
+        for n in daftar:
             if not n:
                 continue
             k = self.kol[n]
@@ -2738,8 +2780,11 @@ class Data:
         if not nilai:
             return [], 0
         k = self.kol[nilai]
-        j = self.kolom.index(nilai)
-        kosong = [self.baris_no[i] for i in idx if k["nilai"][i] is None and adalah_kosong(self.mentah[i][j])]
+        if k.get("komponen"):
+            kosong = [self.baris_no[i] for i in idx if k["nilai"][i] is None]
+        else:
+            j = self.kolom.index(nilai)
+            kosong = [self.baris_no[i] for i in idx if k["nilai"][i] is None and adalah_kosong(self.mentah[i][j])]
         tak_terhitung = sum(1 for i in idx if k["nilai"][i] is None)
         if not kosong:
             return [], tak_terhitung
@@ -3215,7 +3260,7 @@ def _sisip_terisi(rows, header, jenis_k, pos, terisi):
 
 
 def _siapkan_nilai(data, args):
-    nilai = data.cari(args.nilai, ("angka",), "nilai") if args.nilai else None
+    nilai = data.cari_nilai(args.nilai) if args.nilai else None
     fungsi = args.fungsi or ("jumlah" if nilai else "hitung")
     if fungsi != "hitung" and not nilai:
         raise InputError("Fungsi '{}' butuh --nilai \"Kolom Angka\".".format(fungsi))
@@ -3285,7 +3330,8 @@ def cmd_pivot(args, data):
         h["saran_grafik"] = ("Grafik batang berkelompok (clustered bar): sumbu = {}, warna = {}. Alternatif: "
                              "tabel dengan pewarnaan bersyarat (heatmap) di Excel.".format(grup, kolom2))
     else:
-        rows, terisi = [], []
+        rows, terisi, komp = [], [], []
+        komponen = data.kol[nilai].get("komponen") if (nilai and fungsi == "jumlah") else None
         for g in urut_nama:
             ig = kelompok[g]
             vs = _vals(data, nilai, ig)
@@ -3295,19 +3341,27 @@ def cmd_pivot(args, data):
                 row.append(v / total * SERATUS if v is not None else None)
             rows.append(row)
             terisi.append(Decimal(len(vs)))
+            komp.append([agregasi(_vals(data, c, ig), "jumlah") for c in komponen] if komponen else [])
         if args.urut == "nilai" or (args.urut is None and data.kol[grup]["tipe"] not in ("tanggal", "angka")):
             urutan = sorted(range(len(rows)), key=lambda j: (rows[j][2] is None, -(rows[j][2] or 0)))
-            rows, terisi = [rows[j] for j in urutan], [terisi[j] for j in urutan]
+            rows, terisi, komp = [rows[j] for j in urutan], [terisi[j] for j in urutan], [komp[j] for j in urutan]
         header = [grup, "Baris", judul_nilai] + (["% dari total"] if bisa_persen else [])
         jenis_k = ["teks", "bulat", jenis] + (["persen"] if bisa_persen else [])
         if args.n:
-            rows, terisi = rows[:args.n], terisi[:args.n]
+            rows, terisi, komp = rows[:args.n], terisi[:args.n], komp[:args.n]
         tot = ["TOTAL", Decimal(len(idx)), total] + ([SERATUS] if bisa_persen else [])
         if nilai and tak_terhitung:
             tabel_rows = [list(r) for r in rows] + [list(tot)]
             _sisip_terisi(tabel_rows, header, jenis_k, len(header), terisi + [Decimal(len(semua_vals))])
         else:
-            tabel_rows = rows + [tot]
+            tabel_rows = [list(r) for r in rows] + [list(tot)]
+        if komponen:
+            # v1.0.17: rincian per kolom komponen di ujung kanan (indeks kolom lain tetap)
+            jn = [data.jenis_nilai(c) for c in komponen]
+            header += ["Jumlah " + c for c in komponen]
+            jenis_k += jn
+            for r, kv in zip(tabel_rows, komp + [[agregasi(_vals(data, c, idx), "jumlah") for c in komponen]]):
+                r += kv
         h["tabel"].append(tabel(h["judul"], header, jenis_k, tabel_rows))
         if fungsi in ("jumlah", "hitung") and not bisa_persen and any(v < 0 for v in semua_vals):
             h["catatan"].append("Kolom '% dari total' tidak ditampilkan karena ada nilai negatif (mis. retur/"
@@ -3553,7 +3607,7 @@ def _data_banding(args):
 def cmd_banding(args, _data=None):
     da, ia, la, db, ib, lb, hari_a, hari_b = _data_banding(args)
     nilai_a, fungsi = _siapkan_nilai(da, args)
-    nilai_b = db.cari(args.nilai, ("angka",), "nilai (file B)") if (args.nilai and db is not da) else nilai_a
+    nilai_b = db.cari_nilai(args.nilai, "nilai (file B)") if (args.nilai and db is not da) else nilai_a
     jenis = _jenis_hasil(da, nilai_a, fungsi)
     judul_nilai = buat_judul_nilai(fungsi, nilai_a)
     h = hasil_dasar(da, "banding", "Perbandingan {}: {} vs {}".format(judul_nilai, la, lb))
@@ -3600,13 +3654,23 @@ def cmd_banding(args, _data=None):
                                            "(ditulis '-').".format(label_g, lab_p))
         rows.sort(key=lambda r: (r[3] is None, -abs(r[3] or 0)))
         judul_kol = ga
+        porsi_ok = (fungsi in ("jumlah", "hitung") and tot_b and tot_b > 0
+                    and all(r[2] is not None and r[2] >= 0 for r in rows))
         h["peringatan"] += da.peringatan_kolom([ga])
     else:
         judul_kol = "Keterangan"
+        porsi_ok = False
     sel_tot = (tot_b - tot_a) if (tot_a is not None and tot_b is not None) else None
     rows.append(["TOTAL" if args.grup else judul_nilai, tot_a, tot_b, sel_tot, persen_ubah(tot_a, tot_b)])
-    h["tabel"].append(tabel(h["judul"], [judul_kol, la, lb, "Selisih", "Perubahan %"],
-                            ["teks", jenis, jenis, jenis, "persen"], rows))
+    kolom_b = [judul_kol, la, lb, "Selisih", "Perubahan %"]
+    jenis_b = ["teks", jenis, jenis, jenis, "persen"]
+    if porsi_ok:
+        # v1.0.17: porsi tiap kelompok dari total periode B (agar agent tidak menghitung persen sendiri)
+        kolom_b.append("% dari total " + lb)
+        jenis_b.append("persen")
+        for r in rows:
+            r.append(r[2] / tot_b * SERATUS)
+    h["tabel"].append(tabel(h["judul"], kolom_b, jenis_b, rows))
     h["temuan"].append("{}: {}.".format(judul_nilai, kalimat_ubah(tot_a, tot_b, fmt)))
     h["temuan"].append("Jumlah baris: {} vs {}.".format(fmt_angka(Decimal(len(ia))), fmt_angka(Decimal(len(ib)))))
     if args.grup and len(rows) > 1:
@@ -3615,6 +3679,9 @@ def cmd_banding(args, _data=None):
         if naik:
             r = max(naik, key=lambda x: x[3])
             h["temuan"].append("Naik paling besar: {} — {}.".format(r[0], kalimat_ubah(r[1], r[2], fmt)))
+            if sel_tot and sel_tot > 0 and not turun:
+                h["temuan"].append("{} menyumbang {} dari total kenaikan {} ({}).".format(
+                    r[0], fmt_persen(r[3] / sel_tot * SERATUS), fmt(sel_tot), fmt(r[3])))
         if turun:
             r = min(turun, key=lambda x: x[3])
             h["temuan"].append("Turun paling besar: {} — {}.".format(r[0], kalimat_ubah(r[1], r[2], fmt)))
@@ -3624,8 +3691,10 @@ def cmd_banding(args, _data=None):
             h["temuan"].append("Tidak muncul lagi di {}: {}.".format(lb, ", ".join(map(str, hilang[:8]))))
     if hari_a and hari_b and hari_a != hari_b and fungsi in ("jumlah", "hitung"):
         ra, rb = tot_a / hari_a, tot_b / hari_b
-        h["temuan"].append("Panjang periode beda ({} vs {} hari). Rata-rata per hari: {} vs {} — {}.".format(
-            hari_a, hari_b, fmt(ra), fmt(rb), kalimat_ubah(ra, rb, fmt)))
+        h["temuan"].append("Panjang periode kalender beda ({} vs {} hari). Rata-rata per hari kalender: {} vs {} — "
+                           "{}. Ini hanya menyamakan panjang bulan, BUKAN koreksi data yang belum lengkap (lihat "
+                           "peringatan periode tidak penuh bila ada).".format(
+                               hari_a, hari_b, fmt(ra), fmt(rb), kalimat_ubah(ra, rb, fmt)))
     h["peringatan"] += da.peringatan_kolom([nilai_a]) + da.peringatan_duplikat(ia)
     if db is not da:
         h["peringatan"] += db.peringatan_kolom([nilai_b]) + db.peringatan_duplikat(ib)
@@ -3661,11 +3730,27 @@ def _nilai_csv(v, jenis, excel_id):
     return aman_csv(str(v))
 
 
+def periksa_keluaran(args, path):
+    """Pengaman file keluaran: tidak pernah menimpa file asli; file lain yang sudah ada hanya dengan --timpa."""
+    asli = [args.file] + ([args.file_b] if getattr(args, "file_b", None) else [])
+    def _sama(a):
+        if os.path.realpath(path) == os.path.realpath(a):
+            return True
+        try:  # hard link / beda kapital di sistem file tak peka huruf besar-kecil
+            return os.path.exists(path) and os.path.samefile(path, a)
+        except OSError:
+            return False
+    if any(_sama(a) for a in asli):
+        raise InputError("File keluaran tidak boleh menimpa file asli.")
+    if os.path.lexists(path) and not getattr(args, "timpa", False):
+        raise InputError("File keluaran sudah ada: {}. Pakai nama lain atau tambahkan --timpa bila pengguna "
+                         "sudah setuju menimpa.".format(path))
+
+
 def cmd_bersihkan(args, data):
     h = hasil_dasar(data, "bersihkan", "Data dibersihkan")
     keluar = args.keluar or os.path.splitext(args.file)[0] + "-bersih.csv"
-    if os.path.abspath(keluar) == os.path.abspath(args.file):
-        raise InputError("File keluaran tidak boleh menimpa file asli.")
+    periksa_keluaran(args, keluar)
     buang_dup = args.buang_duplikat
     seen = set()
     dup = 0
@@ -3773,8 +3858,14 @@ def render_md(h):
     if h.get("saran_grafik"):
         out += ["### Saran grafik", "", h["saran_grafik"], ""]
     lain = [p for p in h["peringatan"] if p not in atas]
-    if lain:
-        out += ["### Perlu diperhatikan", ""] + ["- \u26a0\ufe0f " + p for p in lain] + [""]
+    # v1.0.17: bagian "Perlu dicek" SELALU ada (wajib disalin ke jawaban; "tidak ada" bila kosong)
+    out += ["### Perlu dicek (wajib ada di jawaban)", ""]
+    if atas:
+        out.append("- Blok BARIS DIKELUARKAN / PERINGATAN TEGAS di atas: sebutkan ke pengguna baris mana dan isinya.")
+    out += ["- \u26a0\ufe0f " + p for p in lain]
+    if not atas and not lain:
+        out.append("- tidak ada")
+    out.append("")
     if h["catatan"]:
         out += ["### Catatan", ""] + ["- " + c for c in h["catatan"]] + [""]
     return "\n".join(out)
@@ -3788,10 +3879,12 @@ def _json_default(o):
     return str(o)
 
 
-def tulis_csv_hasil(h, path, excel_id):
+def tulis_csv_hasil(h, path, excel_id, args):
     if not h["tabel"]:
+        h["peringatan"].append("Tidak ada tabel hasil, jadi file {} TIDAK dibuat.".format(path))
         return
     t = h["tabel"][0]
+    periksa_keluaran(args, path)
     try:
         with open(path, "w", newline="", encoding="utf-8-sig") as f:
             w = csv.writer(f, delimiter=";" if excel_id else ",")
@@ -4173,7 +4266,7 @@ def muat(args, path, sheet, pakai_opsi_baris=True):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("file", help="File .csv / .xlsx")
     umum.add_argument("--sheet", help="Nama atau nomor sheet (XLSX). \"semua\" = gabung semua sheet terlihat "
                       "berstruktur sama; \"Q1,Q2,Q3\" = gabung sheet tertentu. Default: sheet pertama yang terlihat")
@@ -4206,6 +4299,8 @@ def buat_parser():
                       help="Tetap hitung baris ini sebagai data walau tampak ringkasan/catatan, mis. \"12\"")
     umum.add_argument("--json", action="store_true", help="Keluaran JSON (untuk agent)")
     umum.add_argument("--keluar", help="Simpan tabel hasil utama ke file CSV ini")
+    umum.add_argument("--timpa", action="store_true",
+                      help="Izinkan menimpa file --keluar yang sudah ada (hanya setelah pengguna setuju; file asli tetap tidak bisa ditimpa)")
     umum.add_argument("--excel-id", action="store_true",
                       help="CSV keluaran untuk Excel berbahasa Indonesia (pemisah ; dan koma desimal)")
     umum.add_argument("--paksa", action="store_true",
@@ -4214,31 +4309,31 @@ def buat_parser():
     umum.add_argument("--tampilkan-pribadi", action="store_true",
                       help="Tampilkan NIK/HP/email/rekening lengkap (default disamarkan; UU PDP)")
 
-    nilai = argparse.ArgumentParser(add_help=False)
+    nilai = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     nilai.add_argument("--nilai", help="Kolom angka yang dihitung (kosong = hitung banyak baris)")
     nilai.add_argument("--fungsi", choices=["jumlah", "rata", "median", "hitung", "min", "max"],
                        help="Default: jumlah (atau hitung bila tanpa --nilai)")
     nilai.add_argument("--per", choices=["hari", "minggu", "bulan", "kuartal", "tahun"],
                        help="Pengelompokan tanggal (default: bulan)")
 
-    ap = argparse.ArgumentParser(description="Analisis spreadsheet CSV/XLSX untuk pengguna awam (Komunitech).")
+    ap = argparse.ArgumentParser(description="Analisis spreadsheet CSV/XLSX untuk pengguna awam (Komunitech).", allow_abbrev=False)
     ap.add_argument("--versi", action="version", version=VERSI)
     sub = ap.add_subparsers(dest="perintah")
-    sub.add_parser("daftar", parents=[umum], help="Daftar sheet & info pembacaan")
-    sub.add_parser("profil", parents=[umum], help="Profil data")
-    p = sub.add_parser("ringkas", parents=[umum], help="Ringkasan statistik")
+    sub.add_parser("daftar", parents=[umum], help="Daftar sheet & info pembacaan", allow_abbrev=False)
+    sub.add_parser("profil", parents=[umum], help="Profil data", allow_abbrev=False)
+    p = sub.add_parser("ringkas", parents=[umum], help="Ringkasan statistik", allow_abbrev=False)
     p.add_argument("--kolom", action="append", help="Batasi ke kolom ini (bisa diulang)")
-    p = sub.add_parser("pivot", parents=[umum, nilai], help="Group-by / pivot")
+    p = sub.add_parser("pivot", parents=[umum, nilai], help="Group-by / pivot", allow_abbrev=False)
     p.add_argument("--grup", required=True, help="Kolom pengelompokan (kategori atau tanggal)")
     p.add_argument("--kolom-pivot", help="Kolom kedua untuk tabel silang (opsional)")
     p.add_argument("--urut", choices=["nilai", "nama"], help="Urutan baris (default: nilai; tanggal: waktu)")
     p.add_argument("--n", type=int, help="Tampilkan N baris pertama saja")
-    sub.add_parser("tren", parents=[umum, nilai], help="Tren per periode")
-    p = sub.add_parser("top", parents=[umum, nilai], help="Top-N / bottom-N")
+    sub.add_parser("tren", parents=[umum, nilai], help="Tren per periode", allow_abbrev=False)
+    p = sub.add_parser("top", parents=[umum, nilai], help="Top-N / bottom-N", allow_abbrev=False)
     p.add_argument("--grup", help="Kolom kategori (kosong = per baris)")
     p.add_argument("--n", type=int, help="Jumlah (default 10)")
     p.add_argument("--terbawah", action="store_true", help="Urutkan dari terkecil")
-    p = sub.add_parser("banding", parents=[umum, nilai], help="Bandingkan dua periode / dua file")
+    p = sub.add_parser("banding", parents=[umum, nilai], help="Bandingkan dua periode / dua file", allow_abbrev=False)
     p.add_argument("--periode-a", help="Periode pembanding (lama), mis. 2026-08")
     p.add_argument("--periode-b", help="Periode yang dinilai (baru), mis. 2026-09")
     p.add_argument("--file-b", help="File kedua (bandingkan file A vs file B)")
@@ -4246,7 +4341,7 @@ def buat_parser():
     p.add_argument("--grup", help="Rinci perbandingan per kategori")
     p.add_argument("--label-a", help="Label periode/file A")
     p.add_argument("--label-b", help="Label periode/file B")
-    p = sub.add_parser("bersihkan", parents=[umum], help="Tulis CSV bersih")
+    p = sub.add_parser("bersihkan", parents=[umum], help="Tulis CSV bersih", allow_abbrev=False)
     p.add_argument("--buang-duplikat", action="store_true", help="Buang baris yang persis sama")
     return ap
 
@@ -4271,7 +4366,7 @@ def jalankan(argv=None):
         data = muat(args, args.file, args.sheet)
         h = PERINTAH[args.perintah](args, data)
     if args.keluar and args.perintah != "bersihkan":
-        tulis_csv_hasil(h, args.keluar, args.excel_id)
+        tulis_csv_hasil(h, args.keluar, args.excel_id, args)
     # buang duplikat peringatan, pertahankan urutan
     h["peringatan"] = list(OrderedDict.fromkeys(h["peringatan"]))
     h["catatan"] = list(OrderedDict.fromkeys(h["catatan"]))

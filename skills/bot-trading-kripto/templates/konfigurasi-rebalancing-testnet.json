@@ -1,0 +1,21 @@
+{
+  "mode": "testnet",
+  "bursa": "binance",
+  "pasangan": "BTCUSDT",
+  "koin": "BTC",
+  "kutipan": "USDT",
+  "strategi": {
+    "jenis": "rebalancing",
+    "target_persen_koin": "50",
+    "ambang_deviasi_persen": "5"
+  },
+  "batas_risiko": {
+    "modal_maks_per_order": "200",
+    "modal_maks_total": "1000",
+    "stop_loss_persen": "20",
+    "rugi_harian_maks": "100",
+    "order_terbuka_maks": 2
+  },
+  "biaya": {"fee_persen": "0.1", "pajak": "tidak_dihitung"},
+  "kunci": {"file": "~/.komunitech/kunci-testnet-binance.json"}
+}

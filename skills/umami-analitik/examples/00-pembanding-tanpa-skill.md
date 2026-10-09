@@ -1,0 +1,5 @@
+# A/B skenario 1 (penguji): tanpa skill vs dengan skill
+Tugas: "Berapa pengunjung web minggu lalu, naik nggak?"
+**Tanpa skill** (agent hanya tahu API Umami dari pengetahuan umum, kunci view-only): `GET /api/websites` -> `{"data":[],"count":0}` (website tim tidak muncul untuk akun view-only; harus tahu `/me/teams` + `/teams/{id}/websites`). Bila ID website diketahui, `/stats` memberi angka mentah `{pageviews:23,visitors:11,visits:12,bounces:3,totaltime:580,comparison:{...}}` dalam milidetik epoch: agent harus menghitung sendiri zona waktu WIB, batas Senin-Minggu, bounce %, rata-rata lama (580/12), persen naik, dan tidak menjelaskan arti "pengunjung unik" atau bahwa WA tercatat "Langsung". Tebakan endpoint/tanggal rawan salah; tidak ada perlindungan kunci/redirect.
+**Dengan skill:** satu perintah, tim otomatis ditemukan, teks siap tempel dengan label periode & pembanding, bounce 25%, 48 dtk, naik +175%, catatan cara baca. Angka identik dengan API mentah.
+Kesimpulan: skill jelas lebih baik (menang di keandalan, kecepatan, bahasa awam, keamanan).

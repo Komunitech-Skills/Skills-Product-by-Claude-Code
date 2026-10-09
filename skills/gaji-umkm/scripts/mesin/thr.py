@@ -12,6 +12,10 @@ Dasar (status per 2026-09-23, rincian di references/regulasi.md):
 Contoh:
   python3 thr.py --hari-raya 2027-03-10 --nama-hari-raya "Idul Fitri 1448 H" --data karyawan.csv
   python3 thr.py --hari-raya 2026-12-25 --nama Budi --ptkp K/1 --gaji-pokok 5jt --tunjangan-tetap 500rb --mulai 2026-04-01
+  python3 thr.py --hari-raya 2026-12-25 --nama-hari-raya "Natal 2026" --data karyawan.csv --format pengumuman
+
+Privasi: rincian per orang (nama + nominal) hanya untuk pemilik/HR. --format pengumuman mencetak teks grup
+saja (tanpa nama & nominal per orang).
 
 Hanya library standar Python 3.8+. Tidak ada akses jaringan. Keluar dengan kode 2 bila input salah.
 """
@@ -20,8 +24,10 @@ import csv
 import datetime
 import io
 import json
+import os
 import re
 import sys
+import tempfile
 from decimal import Decimal
 
 import ter_core as tc
@@ -161,20 +167,33 @@ def hitung_karyawan(r, cfg):
         if not r.get("tanggal_mulai"):
             raise InputError("{}: isi tanggal_mulai (tanggal mulai kerja) atau masa_kerja_bulan".format(label))
         mulai = parse_tanggal(r["tanggal_mulai"], label + ": tanggal_mulai")
+        hari_ini = cfg.get("hari_ini")
+        if hari_ini and mulai > hari_ini:
+            peringatan.append("{}: tanggal mulai kerja {} masih DI MASA DEPAN (setelah hari ini, {}). Pastikan bukan "
+                              "salah ketik (mis. tahun) dan konfirmasi ke pengguna sebelum angka dipakai/diumumkan."
+                              .format(label, format_tanggal(mulai), format_tanggal(hari_ini)))
+        if berhenti and mulai > berhenti:
+            raise InputError("{}: tanggal_mulai {} setelah tanggal_berhenti {} — cek lagi datanya".format(
+                label, mulai, berhenti))
         n = bulan_penuh(mulai, acuan)
         if n < 0:
-            raise InputError("{}: tanggal_mulai {} setelah tanggal hari raya/berhenti".format(label, mulai))
+            # Masuk setelah hari raya: belum berhak THR untuk hari raya ini. Tidak menghentikan seluruh rekap.
+            peringatan.append("{}: tanggal mulai kerja {} SETELAH tanggal hari raya {} — belum berhak THR hari raya "
+                              "ini. Bila ini salah ketik, perbaiki tanggalnya lalu hitung ulang.".format(
+                                  label, format_tanggal(mulai), format_tanggal(acuan)))
+            berhak, alasan = False, "Mulai kerja setelah hari raya — belum berhak THR hari raya ini."
+            n = 0
         masa = Decimal(n)
         sumber_masa = "bulan penuh dari {} s.d. {} (inklusif)".format(mulai.strftime("%d/%m/%Y"),
                                                                         acuan.strftime("%d/%m/%Y"))
-        if n < 12:
+        if 0 <= n < 12 and mulai <= acuan:
             kurang = kurang_hari_ke_bulan_berikut(mulai, acuan, n)
             if 0 < kurang <= 3:
                 peringatan.append("{}: masa kerja {} bulan, kurang {} hari lagi menjadi {} bulan{}. Aturan tidak mengatur "
                                   "pecahan bulan; pertimbangkan membulatkan ke atas agar tidak dipersoalkan (isi "
                                   "masa_kerja_bulan).".format(label, n, kurang, n + 1,
                                                               " (THR penuh)" if n + 1 == 12 else ""))
-    if masa < 1:
+    if masa < 1 and berhak:
         berhak, alasan = False, "Masa kerja kurang dari 1 bulan — belum wajib THR (Permenaker 6/2016 Pasal 2)."
 
     # --- upah 1 bulan
@@ -290,7 +309,7 @@ def hitung_karyawan(r, cfg):
 # ---------------------------------------------------------------- input/output
 def norm_kolom(k):
     k = (k or "").strip().lower().replace(" ", "_").replace("-", "_")
-    alias = {"nama_karyawan": "nama", "status_ptkp": "ptkp", "gaji": "gaji_pokok", "upah_pokok": "gaji_pokok",
+    alias = {"nama_karyawan": "nama", "status_ptkp": "ptkp", "gaji": "gaji_pokok", "upah_pokok": "gaji_pokok", "gaji_sebulan": "gaji_pokok", "gaji_bulanan": "gaji_pokok",
              "tunjangan": "tunjangan_tetap", "mulai_kerja": "tanggal_mulai", "tgl_mulai": "tanggal_mulai",
              "tanggal_masuk": "tanggal_mulai", "status": "jenis", "status_kerja": "jenis", "masa_kerja": "masa_kerja_bulan",
              "tgl_berhenti": "tanggal_berhenti", "tanggal_keluar": "tanggal_berhenti", "upah": "upah_bulanan"}
@@ -335,17 +354,21 @@ def pengumuman(cfg, perusahaan):
     return "\n".join([
         "Yth. Rekan-rekan karyawan {},".format(perusahaan or "kami"),
         "",
-        "Menyambut {}, perusahaan akan membayarkan Tunjangan Hari Raya (THR) Keagamaan pada {} (paling lambat {}, "
-        "yaitu 7 hari sebelum hari raya).".format(cfg["nama_hari_raya"], format_tanggal(cfg["tanggal_bayar"]),
-                                                   format_tanggal(cfg["batas_bayar"])),
+        ("Menyambut {}, perusahaan akan membayarkan Tunjangan Hari Raya (THR) Keagamaan paling lambat {} (7 hari "
+         "sebelum hari raya).".format(cfg["nama_hari_raya"], format_tanggal(cfg["batas_bayar"]))
+         if cfg["tanggal_bayar"] == cfg["batas_bayar"] else
+         "Menyambut {}, perusahaan akan membayarkan Tunjangan Hari Raya (THR) Keagamaan pada {} (paling lambat {}, "
+         "yaitu 7 hari sebelum hari raya).".format(cfg["nama_hari_raya"], format_tanggal(cfg["tanggal_bayar"]),
+                                                    format_tanggal(cfg["batas_bayar"]))),
         "",
         "Ketentuan besaran THR (Permenaker 6/2016 & SE Menaker M/3/HK.04.00/III/2026):",
         "• Masa kerja 12 bulan atau lebih: 1 bulan upah (gaji pokok + tunjangan tetap).",
         "• Masa kerja 1 bulan s.d. kurang dari 12 bulan: masa kerja ÷ 12 × 1 bulan upah.",
         "• THR dibayar penuh, tidak dicicil, dan dikenai PPh 21 sesuai ketentuan pajak.",
         "",
-        "Rincian THR masing-masing akan disampaikan secara pribadi. Jika ada pertanyaan, silakan hubungi bagian "
-        "HR/keuangan.",
+        "Rincian THR masing-masing (nominal dan potongan PPh 21, bila ada) akan dikirim secara PRIBADI kepada "
+        "setiap karyawan melalui slip/pesan pribadi dari bagian HR/keuangan. Mohon tidak membagikan rincian "
+        "pribadi di grup. Jika ada pertanyaan tentang THR Anda, silakan hubungi bagian HR/keuangan secara langsung.",
         "",
         "Selamat menyambut hari raya. Terima kasih atas kerja keras Bapak/Ibu.",
         "",
@@ -354,8 +377,16 @@ def pengumuman(cfg, perusahaan):
     ]).rstrip()
 
 
+LABEL_REKAP = "REKAP PER ORANG — KHUSUS PEMILIK/HR (rahasia; kirim per orang lewat pesan pribadi, JANGAN ditempel ke grup)"
+LABEL_GRUP = ("TEKS GRUP — draf untuk Anda tempel sendiri ke grup karyawan (tanpa nama & nominal per orang; "
+              "agent tidak mengirim ke grup)")
+
+
 def teks_hasil(hasil, cfg, total, csv_path):
-    o = ["**Rincian THR {} — {}**".format(cfg["nama_hari_raya"], cfg["perusahaan"] or "-"),
+    judul = "Rincian THR {}".format(cfg["nama_hari_raya"]) + (" — {}".format(cfg["perusahaan"]) if cfg["perusahaan"]
+                                                              else "")
+    o = ["### A. " + LABEL_REKAP, "",
+         "**{}**".format(judul),
          "Hari raya: {} · **Batas bayar (H-7): {}** · Rencana bayar: {}".format(
              format_tanggal(cfg["hari_raya"]), format_tanggal(cfg["batas_bayar"]), format_tanggal(cfg["tanggal_bayar"])),
          "", "| Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR | PPh 21 karena THR | THR diterima |",
@@ -389,7 +420,10 @@ def teks_hasil(hasil, cfg, total, csv_path):
                          tc.format_rp(p["bruto_reguler"]), tc.format_rp(h["thr"]), tc.format_rp(p["pph_dengan_thr"]),
                          tc.format_persen(p["tarif_tanpa_thr"]), tc.format_rp(p["bruto_reguler"]),
                          tc.format_rp(p["pph_tanpa_thr"]), tc.format_rp(p["tambahan_pph_thr"]),
-                         " (ditanggung pemerintah, dibayar tunai — THR diterima utuh)" if p["dtp"] else ""))
+                         (" — PPh 21 DTP (PMK 105/2025): {} tetap dipotong, lalu {} dibayar tunai kembali bersama "
+                          "THR, jadi THR diterima utuh; setoran PPh 21 ke negara untuk bagian ini Rp 0".format(
+                              tc.format_rp(p["tambahan_pph_thr"]), tc.format_rp(p["tambahan_pph_thr"]))
+                          if p["dtp"] else "")))
     pr = [x for h in hasil for x in h["peringatan"]] + cfg["peringatan"]
     if pr:
         o += ["", "⚠️ Peringatan:"] + ["- " + x for x in pr]
@@ -404,7 +438,7 @@ def teks_hasil(hasil, cfg, total, csv_path):
           "pecahan bulan). Ubah dengan kolom masa_kerja_bulan bila perusahaan memakai cara lain."]
     if csv_path:
         o += ["", "File rekap: " + csv_path]
-    o += ["", "**Draf pengumuman untuk karyawan (siap kirim WA/email):**", "", "```", pengumuman(cfg, cfg["perusahaan"]),
+    o += ["", "### B. " + LABEL_GRUP, "", "```", pengumuman(cfg, cfg["perusahaan"]),
           "```", "", "_" + DISCLAIMER + "_"]
     return "\n".join(o)
 
@@ -430,7 +464,8 @@ def buat_parser():
     p.add_argument("--perusahaan", default="")
     p.add_argument("--data", help="CSV karyawan")
     p.add_argument("--csv", help="Simpan rekap ke file CSV ini")
-    p.add_argument("--format", choices=["teks", "json"], default="teks")
+    p.add_argument("--format", choices=["teks", "json", "pengumuman"], default="teks",
+                   help="teks = rekap pemilik + teks grup; json; pengumuman = teks grup saja (tanpa nama & nominal)")
     for k in ("nama", "jabatan", "jenis", "ptkp", "gaji-pokok", "tunjangan-tetap", "mulai", "masa-kerja-bulan",
               "tanggal-berhenti", "upah-bulanan", "thr-kebijakan", "bruto-bulan-bayar", "dtp", "bruto-tetap-januari"):
         p.add_argument("--" + k)
@@ -443,7 +478,7 @@ def jalankan(args):
     bayar = parse_tanggal(args.tanggal_bayar, "--tanggal-bayar") if args.tanggal_bayar else batas
     hari_ini = parse_tanggal(args.hari_ini, "--hari-ini") if args.hari_ini else datetime.date.today()
     cfg = {"hari_raya": hari_raya, "batas_bayar": batas, "tanggal_bayar": bayar, "bulan_bayar": bayar.month,
-           "nama_hari_raya": args.nama_hari_raya, "perusahaan": args.perusahaan, "peringatan": []}
+           "hari_ini": hari_ini, "nama_hari_raya": args.nama_hari_raya, "perusahaan": args.perusahaan, "peringatan": []}
     if bayar > batas:
         cfg["peringatan"].append("Rencana bayar {} melewati batas H-7 ({}). Keterlambatan dikenai denda 5% dari total "
                                  "THR (Permenaker 6/2016 Pasal 10).".format(format_tanggal(bayar), format_tanggal(batas)))
@@ -471,6 +506,26 @@ def jalankan(args):
     return hasil, galat, cfg
 
 
+def peringatan_folder_sementara(path):
+    """Beri PERINGATAN (stderr) bila path keluaran ada di folder sementara sistem. Tidak memblokir."""
+    try:
+        target = os.path.realpath(path)
+        akar = {tempfile.gettempdir(), "/tmp", "/var/tmp"}
+        for k in ("TEMP", "TMP", "TMPDIR"):
+            if os.environ.get(k):
+                akar.add(os.environ[k])
+        for a in akar:
+            a = os.path.realpath(a)
+            if target == a or target.startswith(a.rstrip(os.sep) + os.sep):
+                print("PERINGATAN: file keluaran ditulis di folder sementara ({}). Data gaji bersifat pribadi; "
+                      "folder sementara bisa dibaca pengguna lain dan terhapus otomatis. Simpan di folder kerja "
+                      "yang disepakati.".format(target), file=sys.stderr)
+                return True
+    except (OSError, ValueError):
+        pass
+    return False
+
+
 def main(argv=None):
     args = buat_parser().parse_args(argv)
     try:
@@ -488,6 +543,7 @@ def main(argv=None):
                         Decimal(0)),
              "diterima": sum((h["thr_setelah_pph"] for h in hasil), Decimal(0))}
     if args.csv:
+        peringatan_folder_sementara(args.csv)
         try:
             with open(args.csv, "w", encoding="utf-8-sig", newline="") as f:
                 w = csv.writer(f, delimiter=";")
@@ -502,11 +558,19 @@ def main(argv=None):
         except OSError as e:
             print("ERROR: tidak bisa menulis {}: {}".format(args.csv, e.strerror), file=sys.stderr)
             return 2
-    if args.format == "json":
+    if args.format == "pengumuman":
+        print(pengumuman(cfg, cfg["perusahaan"]))
+        jml = sum(len(h["peringatan"]) for h in hasil) + len(cfg["peringatan"])
+        print("CATATAN: teks grup tanpa nama & nominal per orang. Rekap per orang hanya untuk pemilik/HR "
+              "(jalankan tanpa --format pengumuman){}.".format(
+                  "; ada {} peringatan data — cek dulu sebelum diumumkan".format(jml) if jml else ""), file=sys.stderr)
+    elif args.format == "json":
         print(json.dumps(ke_json({"hari_raya": cfg["hari_raya"], "batas_bayar": cfg["batas_bayar"],
                                   "tanggal_bayar": cfg["tanggal_bayar"], "karyawan": hasil, "total": total,
                                   "peringatan_umum": cfg["peringatan"],
-                                  "pengumuman": pengumuman(cfg, cfg["perusahaan"])}), ensure_ascii=False, indent=2))
+                                  "pengumuman": pengumuman(cfg, cfg["perusahaan"]),
+                                  "privasi": "Data 'karyawan' (nama + nominal) hanya untuk pemilik/HR; yang boleh "
+                                             "ditempel ke grup hanya 'pengumuman'."}), ensure_ascii=False, indent=2))
     else:
         print(teks_hasil(hasil, cfg, total, args.csv))
     return 0

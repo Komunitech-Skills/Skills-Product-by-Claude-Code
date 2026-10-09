@@ -1,5 +1,7 @@
 # Jadwal OpenClaw siap salin — Draf laporan klien tiap Jumat sore
 
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+
 Sumber pola: `skills/pengingat-follow-up/references/openclaw-jadwal.md` — dokumen paling lengkap
 verifikasinya di seluruh library (diuji sungguhan di OpenClaw **2026.9.5 (ec9c1a1)** dan **2026.9.6
 (eb377ac)** terhadap Gateway lokal `gateway run --dev --allow-unconfigured --bind loopback`).

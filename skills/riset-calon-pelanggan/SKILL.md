@@ -5,6 +5,8 @@ description: Membantu UMKM/B2B menentukan profil pelanggan ideal (ICP), menyusun
 
 # Riset Calon Pelanggan (ICP & Prospecting)
 
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+
 ## Tujuan
 Membantu pemilik usaha/tim sales menemukan calon pelanggan yang tepat: menentukan profil pelanggan ideal (ICP), menyusun daftar calon pelanggan dari sumber publik yang sah, mengurutkan prospek mana yang paling layak dihubungi dulu (skor kualifikasi lewat script), dan menyiapkan pesan pembuka yang sopan serta patuh UU PDP.
 
@@ -16,7 +18,7 @@ Membantu pemilik usaha/tim sales menemukan calon pelanggan yang tepat: menentuka
 - "Bantu susun ICP untuk produk kemasan makanan ramah lingkungan"
 
 ## Kapan TIDAK digunakan
-- Pengguna sudah punya SATU calon pelanggan yang jelas dan hanya minta pesan pertamanya dibuatkan/diperiksa ("bikinkan pesan pembuka WA ke Bu Rina dari pameran kemarin") → `pesan-prospek-wa` (3 varian, cek spam/jam kirim/panjang lewat script, tautan wa.me). Batas cakupan: skill INI untuk MENCARI & MENYARING calon pelanggan; draf pesan pembuka di sini hanya singkat (2–3 kalimat per prospek). Jika `pesan-prospek-wa` tidak terpasang, tetap buatkan satu draf singkat dan sebutkan bahwa pesan bisa diperdalam.
+- Pengguna sudah punya SATU calon pelanggan yang jelas dan hanya minta pesan pertamanya dibuatkan/diperiksa ("bikinkan pesan pembuka WA ke Bu Rina dari pameran kemarin") → `pesan-prospek-wa` (3 varian, cek spam/jam kirim/panjang lewat script, tautan wa.me). Batas cakupan: skill INI untuk MENCARI & MENYARING calon pelanggan; draf pesan pembuka di sini hanya singkat (2–3 kalimat per prospek). Jika `pesan-prospek-wa` tidak terpasang, tetap buatkan satu draf singkat dan sebutkan bahwa pesan bisa diperdalam. **Jangan menyebut cara memasang skill lain** (mis. "install dari ClawHub" — keliru, itu skill Komunitech): sebut nama skill Komunitech terkait saja, dan hanya bila sudah terpasang.
 - Prospek yang **sudah** dihubungi dan sedang ditindaklanjuti (belum balas, minta waktu, dll.) → `follow-up-prospek`.
 - Menyusun proposal kerja sama resmi setelah prospek tertarik → `proposal-kerjasama`.
 - Menyusun surat penawaran harga formal → `surat-penawaran-harga`.
@@ -37,6 +39,8 @@ Membantu pemilik usaha/tim sales menemukan calon pelanggan yang tepat: menentuka
 Jika info wajib kurang, tanyakan **sekali** (maks. 5 pertanyaan bernomor). Jika pengguna ingin cepat, pakai asumsi masuk akal dan sebutkan di akhir.
 
 ## Langkah kerja
+
+> **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 
 1. **Susun atau konfirmasi ICP (Ideal Customer Profile).** Bantu pengguna menjawab: siapa yang paling diuntungkan produk/jasa ini, seberapa besar usahanya (omzet/jumlah karyawan/skala), di mana lokasinya, masalah apa yang mereka punya, siapa pengambil keputusan (owner/manajer/divisi apa), dan berapa kira-kira kemampuan bayar mereka. Tulis ICP dalam 1 paragraf ringkas + daftar ciri (bullet).
 

@@ -73,3 +73,24 @@
 Skor 9/10 — **layak lanjut** ke uji platform asli (Tahap 6 poin 10) dan kemudian program beta
 (poin 11) tanpa revisi wajib. Dua temuan di atas bersifat opsional/kosmetik dan bisa dimasukkan
 sebagai perbaikan kecil pada revisi berikutnya tanpa menahan status saat ini.
+
+---
+
+## Uji ulang v1.0.1 (2026-09-28)
+
+Penguji independen, scratchpad terpisah, tidak mengubah `scripts/`/`SKILL.md`.
+
+- **CSV 0-byte**: sebelumnya (v1.0.0) dibaca senyap sebagai 0 baris tanpa galat. Diuji ulang dengan
+  file benar-benar 0 byte (`touch`, bukan header salah) lewat `laporan --file <0-byte>.csv ...` →
+  sekarang **ditolak dengan pesan galat spesifik**: "File log '...' kosong total (0 byte, tanpa baris
+  header) -- ini beda dari 'belum ada catatan': file yang benar selalu punya baris header pertama
+  (...) meski belum ada data. Kemungkinan file rusak/terhapus isinya tanpa sengaja. Jalankan `init
+  --file <path>` untuk membuat ulang filenya..., lalu `catat` ulang." Exit kode 1. Perbaikan ini
+  menutup temuan RENDAH dari uji U9 sebelumnya.
+- **Konversi "90 menit"**: dikonfirmasi terdokumentasi eksplisit di `SKILL.md` — "pengguna menyebut
+  waktu dalam menit (mis. '90 menit', '45 menit tadi'), agent yang mengonversi... 90 menit → `--jam
+  1.5`; 45 menit → `--jam 0.75`; 100 menit → `--jam 1.67`". Menutup temuan RENDAH lain dari U9.
+- `tests/uji_regresi.py`: **28/28 lulus**, tanpa regresi.
+
+**Skor: 9/10.** Kedua temuan RENDAH dari uji U9 (CSV 0-byte diam-diam, konversi menit belum eksplisit)
+terverifikasi sudah diperbaiki di v1.0.1. Tidak ada temuan baru. Skor dipertahankan 9/10 seperti U9.

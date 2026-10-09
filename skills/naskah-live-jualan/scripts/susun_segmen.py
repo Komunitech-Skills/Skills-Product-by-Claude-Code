@@ -125,10 +125,13 @@ def main():
         print(json.dumps(hasil, ensure_ascii=False, indent=2))
         return
     print("Rundown live {} menit, {} produk (pola {}).".format(a.durasi, len(produk), jenis))
+    if not mulai:
+        print("Jam mulai tidak diberikan: tulis rundown dengan menit relatif seperti di bawah (atau [isi: jam mulai]); "
+              "jangan menulis jam seperti 19:00 kecuali pengguna menyebutnya.")
     print("| Waktu | Menit | Segmen | Produk |")
     print("|---|---|---|---|")
     for s in segmen:
-        waktu = "{}–{}".format(s["jam_mulai"], s["jam_selesai"]) if mulai else "{}–{}".format(
+        waktu = "{}–{}".format(s["jam_mulai"], s["jam_selesai"]) if mulai else "menit {}–{}".format(
             s["mulai_menit"], s["selesai_menit"])
         print("| {} | {} | {} | {} |".format(waktu, s["durasi"], s["segmen"], s["produk"]))
 

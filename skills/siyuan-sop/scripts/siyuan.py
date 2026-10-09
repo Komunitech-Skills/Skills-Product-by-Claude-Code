@@ -24,6 +24,8 @@ Perintah:
   cari KATA                            cari teks di semua dokumen (judul + path + cuplikan)
   baca (--id ID | --notebook ID --path /jalur)   baca isi dokumen sebagai Markdown
   buat --notebook ID --path /jalur (--md TEKS | --md-file FILE | --md -)   buat dokumen baru
+                                        (--timpa: cadangan isi lama ke ~/KomunitechData/siyuan/cadangan/,
+                                        path absolut dicetak; ubah dengan --cadangan-dir)
   tambah --id ID (--md TEKS | --md-file FILE | --md -)   tambah isi ke dokumen/blok yang sudah ada
   lama [--hari N] [--notebook ID]      dokumen yang belum diperbarui > N hari (default 90)
   ekspor-basis --notebook ID [--file F] [--filter KATA]   gabungkan semua dokumen 1 buku catatan
@@ -54,7 +56,27 @@ VERSI_SKRIP = "1.0.0"
 URL_DEFAULT = "http://127.0.0.1:6806"
 BATAS_WAKTU = 20
 FILE_KUNCI_DEFAULT = os.path.expanduser(os.path.join("~", ".komunitech", "siyuan-kunci.txt"))
-PER_HALAMAN_SNIPPET = 160
+PER_HALAMAN_SNIPPET = 400
+
+
+def folder_cadangan_default():
+    """v1.0.10: cadangan isi lama disimpan di folder data pengguna, DI LUAR folder skill (agar tidak ikut
+    terhapus saat skill diperbarui/diinstal ulang), konsisten dengan skill Komunitech lain. Urutan:
+    ENV KOMUNITECH_SIYUAN_CADANGAN -> ENV KOMUNITECH_DATA/siyuan/cadangan -> ~/KomunitechData/siyuan/cadangan."""
+    env = os.environ.get("KOMUNITECH_SIYUAN_CADANGAN")
+    if env:
+        return os.path.abspath(os.path.expanduser(env))
+    data = os.environ.get("KOMUNITECH_DATA")
+    if data:
+        return os.path.abspath(os.path.join(os.path.expanduser(data), "siyuan", "cadangan"))
+    return os.path.join(os.path.expanduser("~"), "KomunitechData", "siyuan", "cadangan")
+
+
+def _folder_cadangan(folder_cadangan=None):
+    """Folder cadangan sebagai path ABSOLUT (dari --cadangan-dir bila diisi, selain itu default)."""
+    if folder_cadangan:
+        return os.path.abspath(os.path.expanduser(folder_cadangan))
+    return folder_cadangan_default()
 
 KELUAR_ARG, KELUAR_KONEKSI, KELUAR_AKSES, KELUAR_LAIN, KELUAR_DOBEL, KELUAR_TIDAK_PASTI = 2, 3, 5, 6, 7, 8
 
@@ -163,36 +185,36 @@ def cek_izin_file_kunci(path):
               f"Jalankan: chmod 600 {path}")
 
 
+def _baca_file_kunci(p, asal):
+    try:
+        with open(p, "r", encoding="utf-8") as f:
+            isi = f.read().strip()
+    except OSError as e:
+        raise Gagal(f"File kunci ({asal}) '{p}' tidak ditemukan/kosong: {e}", KELUAR_AKSES) from e
+    if not isi:
+        raise Gagal(f"File kunci '{p}' kosong.", KELUAR_AKSES)
+    return isi
+
+
 def ambil_token(args):
+    """Prioritas: --kunci-file > file kunci tersimpan (simpan-kunci) > ENV SIYUAN_TOKEN_FILE > ENV SIYUAN_TOKEN.
+    Kunci tersimpan SELALU menang atas token di ENV (token ENV bisa berasal dari token yang ditempel di chat)."""
     dipakai = None
     sumber = None
     if args.kunci_file:
         cek_izin_file_kunci(args.kunci_file)
-        try:
-            with open(args.kunci_file, "r", encoding="utf-8") as f:
-                isi = f.read().strip()
-        except OSError as e:
-            raise Gagal(f"File kunci (dari --kunci-file) '{args.kunci_file}' tidak ditemukan/kosong: {e}",
-                        KELUAR_AKSES) from e
-        if not isi:
-            raise Gagal(f"File kunci '{args.kunci_file}' kosong.", KELUAR_AKSES)
-        dipakai, sumber = isi, "--kunci-file"
-        if os.environ.get("SIYUAN_TOKEN"):
-            cetak("PERINGATAN: ENV SIYUAN_TOKEN juga terisi tapi DIABAIKAN karena --kunci-file dipakai.")
-    elif os.environ.get("SIYUAN_TOKEN"):
-        dipakai, sumber = os.environ["SIYUAN_TOKEN"], "ENV SIYUAN_TOKEN"
-    elif os.environ.get("SIYUAN_TOKEN_FILE"):
-        p = os.environ["SIYUAN_TOKEN_FILE"]
-        try:
-            with open(p, "r", encoding="utf-8") as f:
-                dipakai, sumber = f.read().strip(), "ENV SIYUAN_TOKEN_FILE"
-        except OSError as e:
-            raise Gagal(f"File kunci (dari ENV SIYUAN_TOKEN_FILE) '{p}' tidak ditemukan/kosong: {e}",
-                        KELUAR_AKSES) from e
+        dipakai, sumber = _baca_file_kunci(args.kunci_file, "dari --kunci-file"), "--kunci-file"
     elif os.path.exists(FILE_KUNCI_DEFAULT):
         cek_izin_file_kunci(FILE_KUNCI_DEFAULT)
-        with open(FILE_KUNCI_DEFAULT, "r", encoding="utf-8") as f:
-            dipakai, sumber = f.read().strip(), FILE_KUNCI_DEFAULT
+        dipakai, sumber = _baca_file_kunci(FILE_KUNCI_DEFAULT, "tersimpan"), FILE_KUNCI_DEFAULT
+    elif os.environ.get("SIYUAN_TOKEN_FILE"):
+        p = os.environ["SIYUAN_TOKEN_FILE"]
+        dipakai, sumber = _baca_file_kunci(p, "dari ENV SIYUAN_TOKEN_FILE"), "ENV SIYUAN_TOKEN_FILE"
+    elif os.environ.get("SIYUAN_TOKEN"):
+        dipakai, sumber = os.environ["SIYUAN_TOKEN"], "ENV SIYUAN_TOKEN"
+    if sumber in ("--kunci-file", FILE_KUNCI_DEFAULT, "ENV SIYUAN_TOKEN_FILE") and os.environ.get("SIYUAN_TOKEN"):
+        cetak(f"PERINGATAN: ENV SIYUAN_TOKEN juga terisi tapi DIABAIKAN; yang dipakai kunci tersimpan ({sumber}). "
+              "Jangan menempel token di chat; bila token pernah tertempel, ganti di SiYuan lalu jalankan simpan-kunci --ya.")
     if not dipakai:
         raise Gagal(
             "Token API SiYuan belum diatur. Jalankan dulu: "
@@ -344,7 +366,9 @@ def p_cari(url, token, lokal, kata, maks):
         return {"teks": f"Tidak ada dokumen yang cocok dengan '{kata}'.", "hasil": []}
     baris = [f"HASIL PENCARIAN '{kata}' ({len(hasil)} dokumen)"]
     for h in hasil:
-        baris.append(f"- {h['judul']}  [{h['path']}]\n    ...{h['cuplikan']}...")
+        baris.append(f"- {h['judul']}  [{h['path']}]  (id {h['id']})\n    ...{h['cuplikan']}...")
+    baris.append("Cuplikan bisa terpotong. Untuk menjawab pertanyaan isi, jalankan `baca --id <id>` pada dokumen "
+                 "yang cocok dan jawab dari isi lengkapnya.")
     return {"teks": "\n".join(baris), "hasil": hasil}
 
 
@@ -363,7 +387,17 @@ def p_baca(url, token, lokal, doc_id, notebook, path):
             "path": data.get("hPath"), "markdown": data.get("content", "")}
 
 
-def p_buat(url, token, lokal, notebook, path, markdown, ya, timpa):
+def _ringkas_isi(md):
+    baris = [b for b in str(md or "").splitlines() if b.strip()]
+    return len(baris), len(str(md or ""))
+
+
+def _slug(path):
+    t = re.sub(r"[^A-Za-z0-9]+", "-", path).strip("-")
+    return (t or "dokumen")[:60]
+
+
+def p_buat(url, token, lokal, notebook, path, markdown, ya, timpa, konfirmasi_timpa=False, folder_cadangan=None):
     if not notebook or not path:
         raise Gagal("Isi --notebook dan --path.", KELUAR_ARG)
     if not path.startswith("/"):
@@ -372,26 +406,75 @@ def p_buat(url, token, lokal, notebook, path, markdown, ya, timpa):
     if ada and not timpa:
         raise Gagal(
             f"TIDAK DIBUAT: sudah ada dokumen di path '{path}' (id {ada[0]}). Pakai perintah `tambah` untuk "
-            "menambahkan isi tanpa menghapus yang lama, atau `buat ... --timpa --ya` untuk MENGGANTI seluruh isi.",
+            "menambahkan isi tanpa menghapus yang lama, atau `buat ... --timpa` untuk MENGGANTI seluruh isi "
+            "(wajib pratinjau + konfirmasi akhir + cadangan).",
             KELUAR_DOBEL,
         )
     pratinjau = {
         "notebook": notebook, "path": path, "aksi": "GANTI (dokumen lama akan DIHAPUS)" if (ada and timpa) else "BARU",
         "panjang_markdown": len(markdown), "cuplikan": markdown.strip()[:300],
     }
+    lama_md = None
+    if ada and timpa:
+        data = panggil(url, token, "/api/export/exportMdContent", {"id": ada[0]}, lokal)
+        lama_md = data.get("content", "") if isinstance(data, dict) else ""
+        b_lama, k_lama = _ringkas_isi(lama_md)
+        b_baru, k_baru = _ringkas_isi(markdown)
+        pratinjau.update({"judul": path.rsplit("/", 1)[-1], "baris_lama": b_lama, "baris_baru": b_baru,
+                          "baris_hilang": max(0, b_lama - b_baru)})
     if not ya:
         teks = (
             f"PRATINJAU BUAT DOKUMEN\nBuku catatan: {notebook}\nPath: {path}\n"
-            f"Aksi: {pratinjau['aksi']}\nIsi ({len(markdown)} karakter):\n---\n{markdown.strip()[:500]}\n---\n"
-            "Simpan ke SiYuan? Jalankan ulang dengan --ya" + (" --timpa" if ada else "") + "."
+            f"Aksi: {pratinjau['aksi']}\n"
         )
+        if lama_md is not None:
+            teks += (
+                f"Judul dokumen: {pratinjau['judul']}\n"
+                f"ISI LAMA: {b_lama} baris berisi, {k_lama} karakter. ISI BARU: {b_baru} baris berisi, {k_baru} karakter. "
+                f"Baris yang hilang bila ditimpa: {pratinjau['baris_hilang']} (selisih; seluruh isi lama diganti).\n"
+                f"Cuplikan isi lama:\n---\n{lama_md.strip()[:500]}\n---\n"
+            )
+        teks += f"Isi baru ({len(markdown)} karakter):\n---\n{markdown.strip()[:500]}\n---\n"
+        if lama_md is not None:
+            teks += ("Tampilkan pratinjau ini ke pengguna dan minta konfirmasi akhir yang eksplisit "
+                     "(mis. 'Ketik TIMPA untuk melanjutkan'). Setelah itu jalankan ulang dengan "
+                     f"--timpa --ya --konfirmasi-timpa. Cadangan isi lama otomatis disimpan ke folder {_folder_cadangan(folder_cadangan)} "
+                     "(di luar folder skill).")
+        else:
+            teks += "Simpan ke SiYuan? Jalankan ulang dengan --ya."
         return {"teks": teks, "pratinjau": pratinjau, "disimpan": False}
+    if ada and timpa and not konfirmasi_timpa:
+        raise Gagal(
+            "TIDAK DITIMPA: menimpa wajib pratinjau dan konfirmasi akhir eksplisit dari pengguna. Jalankan dulu "
+            "tanpa --ya untuk pratinjau, tunjukkan ke pengguna, lalu setelah pengguna mengonfirmasi tegas "
+            "jalankan dengan --timpa --ya --konfirmasi-timpa.", KELUAR_ARG)
     try:
         panggil(url, token, "/api/notebook/openNotebook", {"notebook": notebook}, lokal)
     except Gagal:
         pass  # notebook mungkin sudah terbuka / tidak kritis untuk lanjut
+    berkas_cadangan = None
     if ada and timpa:
+        folder = _folder_cadangan(folder_cadangan)
+        os.makedirs(folder, exist_ok=True)
+        berkas_cadangan = os.path.join(folder, f"{_slug(path)}-sebelum-{dt.datetime.now():%Y-%m-%d-%H%M%S}.md")
+        with open(berkas_cadangan, "w", encoding="utf-8") as f:
+            f.write(lama_md)
         panggil(url, token, "/api/filetree/removeDocByID", {"id": ada[0]}, lokal)
+        try:
+            doc_id = panggil(url, token, "/api/filetree/createDocWithMd",
+                             {"notebook": notebook, "path": path, "markdown": markdown}, lokal)
+        except Gagal as g:
+            try:  # pulihkan isi lama dari cadangan
+                panggil(url, token, "/api/filetree/createDocWithMd",
+                        {"notebook": notebook, "path": path, "markdown": lama_md}, lokal)
+                pulih = "Dokumen lama sudah dipulihkan dari cadangan."
+            except Gagal:
+                pulih = "Pemulihan otomatis GAGAL; pulihkan manual dari berkas cadangan."
+            raise Gagal(f"Pembuatan dokumen baru gagal ({g.pesan}). {pulih} Cadangan: {berkas_cadangan}",
+                        KELUAR_TIDAK_PASTI, mungkin_terkirim=True) from g
+        return {"teks": f"TERSIMPAN: dokumen '{path}' DITIMPA (id {doc_id}). Cadangan isi lama: {berkas_cadangan} "
+                         "(path lengkap, di luar folder skill - sebutkan path ini ke pengguna)",
+                "id": doc_id, "disimpan": True, "cadangan": berkas_cadangan}
     doc_id = panggil(url, token, "/api/filetree/createDocWithMd", {"notebook": notebook, "path": path,
                                                                      "markdown": markdown}, lokal)
     return {"teks": f"TERSIMPAN: dokumen '{path}' dibuat di SiYuan (id {doc_id}).", "id": doc_id, "disimpan": True}
@@ -466,30 +549,30 @@ def p_ekspor_basis(url, token, lokal, notebook, file_tujuan, filter_kata):
 
 # ------------------------------------------------------------------ CLI
 def buat_parser():
-    ap = argparse.ArgumentParser(prog="siyuan.py", description="Asisten SiYuan lokal (Komunitech)")
+    ap = argparse.ArgumentParser(prog="siyuan.py", description="Asisten SiYuan lokal (Komunitech)", allow_abbrev=False)
     ap.add_argument("--url", default=os.environ.get("SIYUAN_URL", URL_DEFAULT))
     ap.add_argument("--kunci-file")
     ap.add_argument("--izinkan-jarak-jauh", action="store_true")
     ap.add_argument("--json", action="store_true")
     sub = ap.add_subparsers(dest="perintah", required=True)
 
-    sub.add_parser("cek")
-    sp = sub.add_parser("simpan-kunci")
+    sub.add_parser("cek", allow_abbrev=False)
+    sp = sub.add_parser("simpan-kunci", allow_abbrev=False)
     sp.add_argument("--ya", action="store_true")
     sp.add_argument("--token")  # untuk pengujian otomatis saja; interaktif dianjurkan di pemakaian nyata
 
-    sub.add_parser("daftar-buku")
+    sub.add_parser("daftar-buku", allow_abbrev=False)
 
-    sc = sub.add_parser("cari")
+    sc = sub.add_parser("cari", allow_abbrev=False)
     sc.add_argument("kata")
     sc.add_argument("--maks", type=int, default=20)
 
-    sb = sub.add_parser("baca")
+    sb = sub.add_parser("baca", allow_abbrev=False)
     sb.add_argument("--id")
     sb.add_argument("--notebook")
     sb.add_argument("--path")
 
-    sm = sub.add_parser("buat")
+    sm = sub.add_parser("buat", allow_abbrev=False)
     sm.add_argument("--notebook", required=True)
     sm.add_argument("--path", required=True)
     sm.add_argument("--md")
@@ -497,19 +580,23 @@ def buat_parser():
     sm.add_argument("--stdin", action="store_true", help="baca Markdown dari input standar")
     sm.add_argument("--ya", action="store_true")
     sm.add_argument("--timpa", action="store_true")
+    sm.add_argument("--konfirmasi-timpa", action="store_true",
+                    help="hanya setelah pengguna mengonfirmasi tegas pratinjau penimpaan")
+    sm.add_argument("--cadangan-dir", help="folder cadangan isi lama (default: ~/KomunitechData/siyuan/cadangan, di luar folder skill; "
+                         "ENV KOMUNITECH_SIYUAN_CADANGAN atau KOMUNITECH_DATA)")
 
-    st = sub.add_parser("tambah")
+    st = sub.add_parser("tambah", allow_abbrev=False)
     st.add_argument("--id", required=True)
     st.add_argument("--md")
     st.add_argument("--md-file")
     st.add_argument("--stdin", action="store_true")
     st.add_argument("--ya", action="store_true")
 
-    sl = sub.add_parser("lama")
+    sl = sub.add_parser("lama", allow_abbrev=False)
     sl.add_argument("--hari", type=int, default=90)
     sl.add_argument("--notebook")
 
-    se = sub.add_parser("ekspor-basis")
+    se = sub.add_parser("ekspor-basis", allow_abbrev=False)
     se.add_argument("--notebook", required=True)
     se.add_argument("--file")
     se.add_argument("--filter")
@@ -521,6 +608,9 @@ def main(argv=None):
     args = ap.parse_args(argv)
     try:
         if args.perintah == "simpan-kunci":
+            if args.token:
+                cetak("PERINGATAN: token lewat argumen --token terlihat di riwayat perintah & daftar proses. "
+                      "Pakai tanpa --token (diketik interaktif) untuk pemakaian nyata.")
             token = args.token or input("Tempel token API SiYuan lalu Enter (tidak akan tampil di log): ").strip()
             if not token:
                 raise Gagal("Token tidak boleh kosong.", KELUAR_ARG)
@@ -542,7 +632,8 @@ def main(argv=None):
             hasil = p_baca(args.url, token, lokal, args.id, args.notebook, args.path)
         elif args.perintah == "buat":
             markdown = baca_teks_masukan(args.md, args.md_file, args.stdin)
-            hasil = p_buat(args.url, token, lokal, args.notebook, args.path, markdown, args.ya, args.timpa)
+            hasil = p_buat(args.url, token, lokal, args.notebook, args.path, markdown, args.ya, args.timpa,
+                            args.konfirmasi_timpa, args.cadangan_dir)
         elif args.perintah == "tambah":
             markdown = baca_teks_masukan(args.md, args.md_file, args.stdin)
             hasil = p_tambah(args.url, token, lokal, args.id, markdown, args.ya)

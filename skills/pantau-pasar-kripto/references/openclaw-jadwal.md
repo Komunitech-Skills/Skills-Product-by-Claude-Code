@@ -1,4 +1,12 @@
-# Perintah OpenClaw untuk automation pantau-pasar-kripto (v1.0.2)
+# Perintah OpenClaw untuk automation pantau-pasar-kripto (v1.0.2; catatan v1.0.10)
+
+> **v1.0.10:** draf siap tempel dibuat oleh `scripts/draf_jadwal.py` (cukup itu; file ini hanya
+> dibaca untuk uji §3 atau bila script tidak bisa dijalankan). Folder kerja default draf =
+> `$HOME/.openclaw/workspace` (Windows `%USERPROFILE%\.openclaw\workspace`). **Jangan** mengisi
+> `--workspace`/`--command-cwd` dengan path tebakan atau path lingkungan agent; `<folder-workspace-member>`
+> di bawah = folder yang disebut pengguna, atau default tadi.
+
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 
 **Koreksi v1.0.2 (S2-3, lihat `examples/HASIL-UJI.md` "Uji ulang v1.0.1"):** pola utama
 diganti dari `--command` (string) ke `--command-argv` (array argv). Alasan: `--command`

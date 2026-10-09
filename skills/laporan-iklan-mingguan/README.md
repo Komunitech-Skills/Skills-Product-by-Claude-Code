@@ -14,7 +14,9 @@ lengkap dengan iklan mana yang harus dimatikan.**
 - ✅ Baca CSV Meta Ads, TikTok Ads Manager, Shopee Ads, TikTok Shop Ads (dulu Tokopedia Ads), dan
   Google Ads — bahkan bisa digabung jadi satu laporan lintas platform
 - ✅ Langsung dari file ekspor apa adanya: baris judul, baris "Total", sel kosong, dan kolom
-  rata-rata bawaan ditangani otomatis dan dicatat di laporan, bukan dihitung dua kali atau dibuang
+  rata-rata bawaan ditangani otomatis dan dicatat di laporan, bukan dihitung dua kali atau dibuang.
+  Kampanye bernama "Total 12.12 Flash Sale" atau "Jumlah 2 Pcs Bundling" tetap dihitung, dan setiap
+  baris yang dikecualikan sebagai total selalu disebut nama & biayanya di bagian ⚠️
 - ✅ Tidak pernah menghitung dolar sebagai Rupiah: kalau file ternyata mata uang asing, AI berhenti
   dan menanyakan kurs dulu
 
@@ -57,7 +59,7 @@ demi keamanan akun Anda), lalu cukup ketik ke AI agent kamu, misalnya:
 ## Yang perlu Anda ketahui (jujur)
 - Nama kolom Meta Ads dan bentuk ekspor Google Ads/TikTok di skill ini disusun dari dokumentasi
   resmi dan sumber pihak ketiga, **belum dicocokkan dengan file ekspor asli dari setiap
-  platform**. Karena itu setiap laporan mencantumkan "Kolom dibaca: ..." di bagian Catatan. Cek
+  platform**. Karena itu setiap laporan mencantumkan "Kolom dibaca: ..." di baris ke-3 laporan. Cek
   sekali di minggu pertama; bila ada yang keliru, AI bisa diberi tahu kolom yang benar.
 - Biaya di file ekspor biasanya belum termasuk PPN yang ditagihkan platform. Cek invoice platform
   untuk angka tagihan sebenarnya.
@@ -93,3 +95,12 @@ Anda cukup ditanya satu kali nama kolom mana yang dimaksud — tidak ada yang di
 Bisa, lewat skill `laporan-otomatis-terjadwal` yang memang khusus menjadwalkan (panduannya ada di
 `references/openclaw-jadwal.md` dalam paket ini). Skill ini sendiri fokus menghitung laporannya
 dengan benar dulu.
+
+## Catatan revisi 1.0.10 (2026-10-01)
+Dari uji sebelum/sesudah OpenClaw: laporan sempat menyarankan mematikan kampanye *Traffic* dan
+*Awareness* hanya karena "0 pesan WA", padahal tujuannya memang bukan pesan. Kini tiap kampanye
+dinilai terhadap **tujuannya** (dari kolom Objective/Result indicator, atau dari nama kampanye):
+kampanye Traffic/Awareness/Reach/Video views/Engagement tampil di bagian **TUJUAN BERBEDA** dengan
+CPC, CTR, dan CPM, tidak lagi masuk daftar "matikan". Catatan juga menyebut biaya per pesan khusus
+kampanye bertujuan pesan. Baris **"Kolom dibaca"** dipindah ke baris ke-3 laporan supaya selalu
+ikut terkirim, tidak terpotong.

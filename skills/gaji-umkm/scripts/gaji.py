@@ -41,7 +41,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 APLIKASI = "gaji-umkm"
 SKEMA = 1
 FOLDER = Path(__file__).resolve().parent
@@ -466,6 +466,12 @@ def jalankan_tulis(args, perintah, kerja, besar=False, label_backup=None):
         teks += "\n\n" + "\n".join("Catatan: " + p for p in data["peringatan"])
     if simpan and besar:
         teks = "TERSIMPAN.\n" + teks + (("\nCadangan sebelum perubahan: " + backup) if backup else "")
+    elif not simpan and data.get("perlu_persetujuan_khusus"):
+        teks = ("PRATINJAU (belum disimpan):\n" + teks +
+                "\n\nBELUM BISA DISIMPAN DENGAN --ya SAJA: data ini butuh persetujuan khusus pemilik (lihat PERLU "
+                "PERSETUJUAN KHUSUS di atas). Sarankan memperbaiki datanya. Hanya bila pemilik sendiri sudah membaca "
+                "peringatan dan menyetujuinya, jalankan perintah yang sama + --ya " + FLAG_PAHAM +
+                " --alasan-khusus \"...\" (dicatat di log). Jangan menambahkan " + FLAG_PAHAM + " atas inisiatif sendiri.")
     elif not simpan:
         teks = ("PRATINJAU (belum disimpan):\n" + teks +
                 "\n\nSimpan? Jalankan perintah yang sama + --ya setelah pengguna setuju.")
@@ -780,9 +786,10 @@ def masalah_kepatuhan(o, cfg):
     return m
 
 
-def pagar_kepatuhan(args, baru):
+def pagar_kepatuhan(args, baru, langsung_simpan=False):
     """baru: {kode_masalah: pesan} yang MUNCUL karena perintah ini. Tanpa --ya-saya-paham: pratinjau diberi
-    peringatan; penyimpanan (--ya) ditolak. Dengan flag: disimpan dan dicatat di log (audit)."""
+    peringatan; penyimpanan (--ya) ditolak. Dengan flag: disimpan dan dicatat di log (audit).
+    langsung_simpan=True untuk perintah yang menyimpan tanpa --ya (mis. `isi`): tanpa flag selalu ditolak."""
     if not baru:
         return [], None
     pesan = list(baru.values())
@@ -793,7 +800,7 @@ def pagar_kepatuhan(args, baru):
                 "kerja, hari tua).\nBila ada alasan sah (mis. iuran sudah dibayar lewat sistem lain, atau sudah "
                 "dikonfirmasi ke BPJS), pemilik harus membaca peringatan ini lalu menjalankan perintah yang sama + "
                 "--ya " + FLAG_PAHAM + " [--alasan-khusus \"...\"]. Persetujuan ini dicatat di log aplikasi.")
-        if getattr(args, "ya", False):
+        if getattr(args, "ya", False) or langsung_simpan:
             raise Gagal("Belum disimpan. " + teks, masalah_kepatuhan=sorted(baru))
         return [teks], None
     catat = {"masalah": sorted(baru), "pesan": pesan, "alasan": bersih(getattr(args, "alasan_khusus", "") or "", 200),
@@ -801,6 +808,33 @@ def pagar_kepatuhan(args, baru):
     return ["DISIMPAN DENGAN PERSETUJUAN KHUSUS PEMILIK (%s%s), tercatat di log aplikasi:\n- %s\nRisiko tetap "
             "ditanggung pemberi kerja (%s)." % (FLAG_PAHAM, "; alasan: " + catat["alasan"] if catat["alasan"] else "",
                                                 "\n- ".join(pesan), DASAR_KEPATUHAN)], catat
+
+
+def bulan_penuh(k, kode):
+    """True bila karyawan bekerja sebulan penuh di periode ini (tidak masuk/keluar di tengah bulan)."""
+    awal, akhir = rentang_periode(kode)
+    masuk_tengah = awal.isoformat() < k["tanggal_masuk"] <= akhir.isoformat()
+    keluar_tengah = bool(k["tanggal_keluar"]) and awal.isoformat() <= k["tanggal_keluar"] < akhir.isoformat()
+    return not masuk_tengah and not keluar_tengah
+
+
+def masalah_dasar_turun(k, isi, kode):
+    """v1.0.2: gaji pokok/tunjangan tetap 'dibayar' yang menurunkan dasar iuran BPJS di bulan PENUH (bukan bulan
+    masuk/keluar). Dasar BPJS = gaji pokok + tunjangan tetap; menurunkannya tanpa dasar sah = melaporkan upah lebih
+    kecil. Kembalikan {kode_masalah: pesan} (kosong bila tidak ada masalah)."""
+    if not bulan_penuh(k, kode) or not ("gaji_pokok" in isi or "tunjangan_tetap" in isi):
+        return {}
+    penuh = D(k["gaji_pokok"]) + D(k["tunjangan_tetap"])
+    dibayar = D(isi.get("gaji_pokok", k["gaji_pokok"])) + D(isi.get("tunjangan_tetap", k["tunjangan_tetap"]))
+    if dibayar >= penuh:
+        return {}
+    return {"dasar_bpjs_turun_bulan_penuh": (
+        "%s: gaji pokok + tunjangan tetap %s diisi %s, lebih kecil dari data karyawan %s, padahal %s bekerja sebulan "
+        "penuh (bukan bulan masuk/keluar). Dasar iuran BPJS Kesehatan & Ketenagakerjaan bulan ini ikut turun. Bila "
+        "gaji memang dipotong karena alasan sah (mis. cuti di luar tanggungan menurut perjanjian kerja), jelaskan di "
+        "--alasan-khusus; bila tujuannya menghemat iuran (mis. bonus dinaikkan, gaji pokok diturunkan), itu tidak "
+        "dibenarkan - pakai data gaji penuh." % (k["nama"], nama_periode(kode), rp(dibayar), rp(penuh),
+                                                 k["nama"]))}
 
 
 def cmd_karyawan_tambah(args):
@@ -1085,10 +1119,17 @@ def cmd_isi(args):
         isi = isian_karyawan(conn, per, k)
         if "lembur_rp" in isi and ("lembur_hari_kerja" in isi or "lembur_hari_libur" in isi):
             raise Gagal("Isi jam lembur ATAU lembur_rp, jangan keduanya (hapus yang satu dengan nilai '-').")
+        pr_k, catat = [], None
+        if "gaji_pokok" in nilai or "tunjangan_tetap" in nilai:
+            pr_k, catat = pagar_kepatuhan(args, masalah_dasar_turun(k, isi, kode), langsung_simpan=True)
         t = "Tersimpan untuk %s, %s (belum dihitung): %s\nLanjut: gaji.py hitung --bulan %s" % (
             k["nama"], nama_periode(kode), teks_isian(isi), kode)
-        return {"karyawan": k["kode"], "periode": kode, "isian": isi, "peringatan": pr,
-                "ringkasan": {"periode": kode, "karyawan": k["kode"], "kolom": sorted(nilai)}}, t
+        ringkasan = {"periode": kode, "karyawan": k["kode"], "kolom": sorted(nilai)}
+        if catat:
+            ringkasan["konfirmasi_kepatuhan"] = catat
+        return {"karyawan": k["kode"], "periode": kode, "isian": isi, "peringatan": pr_k + pr,
+                "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
+                "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "isi", kerja)
 
 
@@ -1101,23 +1142,33 @@ def cmd_isi_file(args, kode):
         if not ({"kode", "nama"} & set(kepala)) or not kolom:
             raise Gagal("File wajib punya kolom kode atau nama, dan minimal satu komponen (%s)." %
                         ", ".join(sorted(ISIAN)))
-        galat, ok = [], []
+        galat, ok, masalah = [], [], {}
         aktif = {k["id"] for k in karyawan_periode(conn, kode)}
         for r in rows:
             try:
                 k = cari_karyawan(conn, r.get("kode") or r.get("nama"))
                 if k["id"] not in aktif:
                     raise Gagal("%s tidak aktif di %s" % (k["nama"], nama_periode(kode)))
-                for c in kolom:
-                    if r.get(c, "") != "":
-                        set_isian(conn, per, k, "potongan_lain" if c == "kasbon" else c, r[c])
-                ok.append((k, isian_karyawan(conn, per, k)))
+                diisi = [c for c in kolom if r.get(c, "") != ""]
+                for c in diisi:
+                    set_isian(conn, per, k, "potongan_lain" if c == "kasbon" else c, r[c])
+                isi_k = isian_karyawan(conn, per, k)
+                if {"gaji_pokok", "tunjangan_tetap"} & set(diisi):
+                    for kd, ps in masalah_dasar_turun(k, isi_k, kode).items():
+                        masalah["%s:%s" % (kd, k["kode"])] = ps
+                ok.append((k, isi_k))
             except Gagal as e:
                 galat.append("baris %d: %s" % (r["_baris"], e.pesan))
         if galat:
             raise Gagal("Tidak ada yang disimpan; perbaiki dulu:\n- " + "\n- ".join(galat), galat=galat)
+        pr_k, catat = pagar_kepatuhan(args, masalah)
         t = "Komponen %s:\n%s" % (nama_periode(kode), "\n".join("- %s: %s" % (k["nama"], teks_isian(i)) for k, i in ok))
-        return {"periode": kode, "jumlah": len(ok), "ringkasan": {"periode": kode, "jumlah": len(ok)}}, t
+        ringkasan = {"periode": kode, "jumlah": len(ok)}
+        if catat:
+            ringkasan["konfirmasi_kepatuhan"] = catat
+        return {"periode": kode, "jumlah": len(ok), "peringatan": pr_k,
+                "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
+                "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "isi --file", kerja, besar=True, label_backup="isian")
 
 
@@ -1315,6 +1366,9 @@ def susun_masukan(conn, per, cfg):
             catatan.append(ps + " Wajib menurut " + DASAR_KEPATUHAN.split(";")[0] + ". Bila iuran sudah dibayar "
                            "lewat sistem lain, pastikan tercatat; bila belum, daftarkan/perbaiki (gaji.py karyawan "
                            "ubah --karyawan %s --bpjs kes,tk,jp / --dasar-bpjs-kesehatan -)." % k["kode"])
+        for ps in masalah_dasar_turun(k, isi, kode).values():
+            catatan.append(ps + " (Diisi lewat gaji.py isi; bila sudah disetujui pemilik dengan alasan sah, "
+                           "tercatat di log.)")
         mt = None
         if keluar or int(kode[5:7]) == 12:
             try:
@@ -1397,7 +1451,8 @@ def total_perusahaan(hasil):
                           "total_pendapatan", "bruto_pajak", "potongan_karyawan", "take_home_pay", "biaya_perusahaan",
                           "bpjs_kes_perusahaan", "bpjs_kes_karyawan", "jht_perusahaan", "jht_karyawan", "jkk", "jkm",
                           "jp_perusahaan", "jp_karyawan", "setor_bpjs_kesehatan", "setor_bpjs_ketenagakerjaan",
-                          "pph21_terutang", "setor_pph21", "pph21_dtp_tunai", "pengembalian_pph21",
+                          "pph21_terutang", "pph21_dipotong", "pph21_dtp", "setor_pph21", "pph21_dtp_tunai",
+                          "pengembalian_pph21",
                           "potongan_tidak_masuk", "potongan_lain", "zakat")}
     for h in hasil:
         p = h["payroll"]
@@ -1417,7 +1472,7 @@ def total_perusahaan(hasil):
         for c in ("jht_perusahaan", "jht_karyawan", "jkk", "jkm", "jp_perusahaan", "jp_karyawan"):
             t[c] += D(i[c])
         t["pph21_terutang"] += D(p["pph"])
-        t["setor_pph21"] += D(p["pph_disetor"])
+        t["pph21_dipotong"] += D(pt["PPh 21"])
         t["pph21_dtp_tunai"] += D(pd["PPh 21 DTP dibayar tunai"])
         t["pengembalian_pph21"] += D(pd["Pengembalian kelebihan PPh 21"])
         t["potongan_tidak_masuk"] += D(h["potongan_tidak_masuk"])
@@ -1426,6 +1481,7 @@ def total_perusahaan(hasil):
     t["setor_bpjs_kesehatan"] = t["bpjs_kes_perusahaan"] + t["bpjs_kes_karyawan"]
     t["setor_bpjs_ketenagakerjaan"] = sum((t[c] for c in ("jht_perusahaan", "jht_karyawan", "jkk", "jkm",
                                                            "jp_perusahaan", "jp_karyawan")), NOL)
+    t["pph21_dtp"] = t["pph21_dtp_tunai"]
     t["jumlah_karyawan"] = len(hasil)
     return lengkapi_total(t)
 
@@ -1434,27 +1490,44 @@ def lengkapi_total(t):
     """PPh 21 per masa di SPT Masa dihitung agregat seluruh karyawan: kelebihan potong Masa Pajak Terakhir yang
     dikembalikan ke karyawan mengurangi PPh 21 yang disetor masa itu; bila hasilnya minus = lebih bayar yang dapat
     diperhitungkan ke masa berikutnya (PMK 168/2023 Pasal 21 ayat (1) & (3); artikel DJP 12-03-2025).
-    - pph21_dipotong  : jumlah PPh 21 positif yang dipotong dari gaji bulan ini (jumlah pph_disetor mesin)
+    - pph21_dipotong  : jumlah PPh 21 positif yang DIPOTONG dari gaji bulan ini, TERMASUK bagian DTP
+                        (PMK 105/2025: PPh 21 DTP tetap dipotong lalu dibayar tunai ke karyawan)
+    - pph21_dtp       : bagian PPh 21 DTP (= pph21_dtp_tunai); dibayar tunai ke karyawan, TIDAK disetor
     - pengembalian_pph21: kelebihan potong yang dikembalikan ke karyawan (sudah di gaji bersih)
-    - setor_pph21     : PERKIRAAN setor = max(0, dipotong - dikembalikan)
-    - lebih_bayar_pph21: max(0, dikembalikan - dipotong)
-    Total lama (v1.0.0) belum punya pph21_dipotong; saat itu setor_pph21 = jumlah dipotong."""
+    - pph21_disetor_ke_negara: PERKIRAAN setor = max(0, dipotong - DTP - dikembalikan)
+    - setor_pph21     : sama dengan pph21_disetor_ke_negara (nama lama, dipertahankan untuk kompatibilitas)
+    - lebih_bayar_pph21: max(0, dikembalikan - (dipotong - DTP))
+    Total tersimpan versi lama (<= 1.0.10) belum punya pph21_dtp; di sana pph21_dipotong berisi jumlah yang disetor
+    (tanpa DTP) dan pada v1.0.0 kunci itu belum ada (setor_pph21 = jumlah tersebut). Dilengkapi otomatis di sini."""
     t = dict(t)
-    if "pph21_dipotong" not in t:
-        t["pph21_dipotong"] = t.get("setor_pph21", NOL)
-    dipotong, kembali = D(t["pph21_dipotong"]), D(t.get("pengembalian_pph21"))
-    t["setor_pph21"] = max(dipotong - kembali, NOL)
-    t["lebih_bayar_pph21"] = max(kembali - dipotong, NOL)
+    dtp = D(t.get("pph21_dtp_tunai"))
+    if "pph21_dtp" not in t:                       # total lama: ubah ke arti baru
+        lama = t["pph21_dipotong"] if "pph21_dipotong" in t else t.get("setor_pph21", NOL)
+        t["pph21_dipotong"] = D(lama) + dtp
+        t["pph21_dtp"] = dtp
+    dipotong, dtp, kembali = D(t["pph21_dipotong"]), D(t["pph21_dtp"]), D(t.get("pengembalian_pph21"))
+    wajib_setor = max(dipotong - dtp, NOL)
+    t["pph21_disetor_ke_negara"] = max(wajib_setor - kembali, NOL)
+    t["setor_pph21"] = t["pph21_disetor_ke_negara"]
+    t["lebih_bayar_pph21"] = max(kembali - wajib_setor, NOL)
     return t
 
 
 def baris_setor_pph21(total):
     dipotong, kembali = D(total["pph21_dipotong"]), D(total.get("pengembalian_pph21"))
-    if not kembali:
+    dtp = D(total.get("pph21_dtp"))
+    if not kembali and not dtp:
         return ["- Setor PPh 21: %s" % rp(total["setor_pph21"])]
-    o = ["- PPh 21 dipotong bulan ini: %s" % rp(dipotong),
+    if not kembali:
+        return ["- PPh 21 dipotong dari gaji bulan ini: %s (termasuk DTP %s yang dibayar tunai ke karyawan dan tidak "
+                "disetor, PMK 105/2025)" % (rp(dipotong), rp(dtp)),
+                "- Setor PPh 21 ke negara: %s" % rp(total["setor_pph21"])]
+    o = ["- PPh 21 dipotong bulan ini: %s" % rp(dipotong)]
+    if dtp:
+        o.append("- Bagian PPh 21 DTP (dibayar tunai ke karyawan, tidak disetor, PMK 105/2025): %s" % rp(dtp))
+    o += [
          "- Kelebihan PPh 21 dikembalikan ke karyawan (Masa Pajak Terakhir, sudah di gaji bersih): %s" % rp(kembali),
-         "- Perkiraan setor PPh 21: %s (= dipotong - kelebihan dikembalikan; SPT Masa PPh 21 dihitung gabungan semua "
+         "- Perkiraan setor PPh 21: %s (= dipotong - DTP - kelebihan dikembalikan; SPT Masa PPh 21 dihitung gabungan semua "
          "karyawan, PMK 168/2023 Pasal 21)" % rp(total["setor_pph21"])]
     if D(total.get("lebih_bayar_pph21")):
         o.append("- Lebih bayar PPh 21 %s: tidak ada yang disetor masa ini; kelebihan dapat diperhitungkan dengan PPh 21 "
@@ -1805,7 +1878,10 @@ def slip_md(h, kode, per_status, revisi, cfg, karyawan_row):
         o.append("_PPh 21: TER kategori %s %s%% x penghasilan bruto pajak %s (termasuk premi JKK, JKM, BPJS Kesehatan "
                  "bagian perusahaan)._" % (info["kategori"], str(info["tarif"]).replace(".", ","), rp(info["bruto"])))
     if p["dtp"]:
-        o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025) dibayarkan tunai; tidak mengurangi gaji._")
+        o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025): PPh 21 %s tetap dipotong, lalu %s dibayar tunai kembali "
+                 "bersama gaji, jadi gaji bersih tidak berkurang karena pajak. Setoran PPh 21 ke negara untuk karyawan "
+                 "ini: %s._" % (rp(p["potongan"]["PPh 21"]), rp(p["pendapatan"]["PPh 21 DTP dibayar tunai"]),
+                                rp(p["pph_disetor"])))
     if p.get("lembur"):
         o.append("_Lembur: upah sejam = 1/173 x %s (PP 35/2021)._" % rp(p["lembur"]["dasar_upah"]))
     o += ["", "_" + DISCLAIMER + "_"]
@@ -2370,53 +2446,53 @@ class ParserID(argparse.ArgumentParser):
 
 
 def buat_parser():
-    umum = argparse.ArgumentParser(add_help=False)
+    umum = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     umum.add_argument("--db", help="File database (default ~/KomunitechData/gaji/gaji.db; ENV KOMUNITECH_GAJI_DB)")
     umum.add_argument("--json", action="store_true", help="Output JSON (untuk agent)")
     umum.add_argument("--hari-ini", help=argparse.SUPPRESS)
-    tulis = argparse.ArgumentParser(add_help=False)
+    tulis = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     tulis.add_argument("--ya", action="store_true", help="Simpan perubahan besar (tanpa ini hanya pratinjau)")
-    kel = argparse.ArgumentParser(add_help=False)
+    kel = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     kel.add_argument("--keluar", help="Folder file keluaran (default: keluaran/<periode> di sebelah database)")
 
-    p = ParserID(prog="gaji.py", description="Penggajian bulanan lokal UMKM (gaji-umkm %s)" % VERSI)
+    p = ParserID(prog="gaji.py", description="Penggajian bulanan lokal UMKM (gaji-umkm %s)" % VERSI, allow_abbrev=False)
     p.add_argument("--versi", action="version", version="gaji-umkm " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     sub.required = True
 
-    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database baru")
+    s = sub.add_parser("init", parents=[umum, tulis], help="Buat database baru", allow_abbrev=False)
     s.add_argument("--nama-usaha")
-    sub.add_parser("info", parents=[umum], help="Lokasi database, pengaturan, pemeriksaan")
-    s = sub.add_parser("atur", parents=[umum], help="Pengaturan usaha")
+    sub.add_parser("info", parents=[umum], help="Lokasi database, pengaturan, pemeriksaan", allow_abbrev=False)
+    s = sub.add_parser("atur", parents=[umum], help="Pengaturan usaha", allow_abbrev=False)
     for o in ("nama-usaha", "umk", "jkk", "batas-jp", "tanggal-gajian", "potongan-per-hari-alpa", "dasar-potongan"):
         s.add_argument("--" + o)
 
-    s = sub.add_parser("karyawan", help="Data karyawan: tambah/ubah/daftar/impor")
+    s = sub.add_parser("karyawan", help="Data karyawan: tambah/ubah/daftar/impor", allow_abbrev=False)
     ks = s.add_subparsers(dest="aksi", parser_class=ParserID)
     ks.required = True
-    opsi_k = argparse.ArgumentParser(add_help=False)
+    opsi_k = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     for o in ("nama", "jabatan", "jenis", "ptkp", "gaji-pokok", "tunjangan-tetap", "tunjangan-tidak-tetap", "zakat",
               "bpjs", "jkk", "hari-kerja", "dasar-bpjs-kesehatan", "dtp", "bruto-tetap-januari", "nik", "bank",
               "rekening", "atas-nama", "kode-absensi", "masuk"):
         opsi_k.add_argument("--" + o)
-    paham = argparse.ArgumentParser(add_help=False)
+    paham = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     paham.add_argument(FLAG_PAHAM, dest="ya_saya_paham", action="store_true",
                        help="Persetujuan khusus pemilik untuk data yang tidak sesuai kewajiban BPJS (dicatat di log)")
     paham.add_argument("--alasan-khusus", help="Alasan persetujuan khusus (dicatat di log)")
-    a = ks.add_parser("tambah", parents=[umum, tulis, opsi_k, paham], help="Tambah karyawan")
+    a = ks.add_parser("tambah", parents=[umum, tulis, opsi_k, paham], help="Tambah karyawan", allow_abbrev=False)
     a.add_argument("--kode")
-    a = ks.add_parser("ubah", parents=[umum, tulis, opsi_k, paham], help="Ubah data karyawan / catat keluar")
+    a = ks.add_parser("ubah", parents=[umum, tulis, opsi_k, paham], help="Ubah data karyawan / catat keluar", allow_abbrev=False)
     a.add_argument("--karyawan", required=True)
     a.add_argument("--keluar", help="Tanggal keluar/berhenti (YYYY-MM-DD; '-' batal)")
-    a = ks.add_parser("keluar", parents=[umum, tulis, paham], help="Catat karyawan berhenti")
+    a = ks.add_parser("keluar", parents=[umum, tulis, paham], help="Catat karyawan berhenti", allow_abbrev=False)
     a.add_argument("--karyawan", required=True)
     a.add_argument("--tanggal", required=True)
-    a = ks.add_parser("daftar", parents=[umum], help="Daftar karyawan (NIK/rekening disamarkan)")
+    a = ks.add_parser("daftar", parents=[umum], help="Daftar karyawan (NIK/rekening disamarkan)", allow_abbrev=False)
     a.add_argument("--semua", action="store_true", help="Termasuk yang sudah keluar")
-    a = ks.add_parser("impor", parents=[umum, tulis, paham], help="Impor dari CSV")
+    a = ks.add_parser("impor", parents=[umum, tulis, paham], help="Impor dari CSV", allow_abbrev=False)
     a.add_argument("file")
 
-    s = sub.add_parser("isi", parents=[umum, tulis], help="Isi komponen tidak tetap/penyesuaian satu periode")
+    s = sub.add_parser("isi", parents=[umum, tulis, paham], help="Isi komponen tidak tetap/penyesuaian satu periode", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
     s.add_argument("--karyawan")
     s.add_argument("--file", help="CSV banyak karyawan (kolom kode/nama + komponen)")
@@ -2429,11 +2505,11 @@ def buat_parser():
     s.add_argument("--tunjangan-tetap-dibayar")
     s.add_argument("--keterangan")
 
-    s = sub.add_parser("impor-absensi", parents=[umum, tulis], help="Impor CSV rekap dari skill absensi-lokal")
+    s = sub.add_parser("impor-absensi", parents=[umum, tulis], help="Impor CSV rekap dari skill absensi-lokal", allow_abbrev=False)
     s.add_argument("file")
     s.add_argument("--bulan", required=True)
 
-    s = sub.add_parser("saldo-awal", parents=[umum], help="PPh/bruto Januari s.d. sebelum memakai aplikasi")
+    s = sub.add_parser("saldo-awal", parents=[umum], help="PPh/bruto Januari s.d. sebelum memakai aplikasi", allow_abbrev=False)
     s.add_argument("--karyawan", required=True)
     s.add_argument("--tahun", required=True, type=int)
     s.add_argument("--sampai-bulan", required=True, type=int)
@@ -2441,42 +2517,42 @@ def buat_parser():
         s.add_argument("--" + o)
     s.add_argument("--hapus", action="store_true")
 
-    s = sub.add_parser("hitung", parents=[umum], help="Hitung massal satu periode (draf)")
+    s = sub.add_parser("hitung", parents=[umum], help="Hitung massal satu periode (draf)", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
-    s = sub.add_parser("final", parents=[umum, tulis], help="Kunci periode")
+    s = sub.add_parser("final", parents=[umum, tulis], help="Kunci periode", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
-    s = sub.add_parser("revisi", parents=[umum, tulis], help="Buka revisi tercatat untuk periode final")
+    s = sub.add_parser("revisi", parents=[umum, tulis], help="Buka revisi tercatat untuk periode final", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
     s.add_argument("--alasan", required=True)
-    sub.add_parser("periode", parents=[umum], help="Daftar periode & riwayat revisi")
-    s = sub.add_parser("rekap", parents=[umum], help="Rekap perusahaan satu periode atau setahun")
+    sub.add_parser("periode", parents=[umum], help="Daftar periode & riwayat revisi", allow_abbrev=False)
+    s = sub.add_parser("rekap", parents=[umum], help="Rekap perusahaan satu periode atau setahun", allow_abbrev=False)
     g = s.add_mutually_exclusive_group(required=True)
     g.add_argument("--bulan")
     g.add_argument("--tahun")
-    s = sub.add_parser("slip", parents=[umum, kel], help="Slip per karyawan (Markdown)")
+    s = sub.add_parser("slip", parents=[umum, kel], help="Slip per karyawan (Markdown)", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
     s.add_argument("--karyawan")
-    s = sub.add_parser("transfer", parents=[umum, kel], help="Daftar transfer CSV (periode final)")
+    s = sub.add_parser("transfer", parents=[umum, kel], help="Daftar transfer CSV (periode final)", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
     s.add_argument("--pemisah", choices=[";", ","], default=";")
     s.add_argument("--penuh", action="store_true", help="Periode revisi: tulis gaji bersih penuh, bukan selisih")
     s.add_argument("--rekening-lengkap", action="store_true",
                    help="Tulis nomor rekening lengkap HANYA di file CSV (tidak pernah ditampilkan)")
-    s = sub.add_parser("thr", parents=[umum, tulis], help="Hitung THR (mesin hitung-thr) dan masukkan ke periode")
+    s = sub.add_parser("thr", parents=[umum, tulis], help="Hitung THR (mesin hitung-thr) dan masukkan ke periode", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
     s.add_argument("--hari-raya", required=True)
     s.add_argument("--nama-hari-raya", default="Hari Raya Keagamaan")
     s.add_argument("--tanggal-bayar")
     s.add_argument("--karyawan", action="append")
-    s = sub.add_parser("pph21-tahunan", parents=[umum], help="Cek PPh 21 setahun dengan mesin pph21-ter")
+    s = sub.add_parser("pph21-tahunan", parents=[umum], help="Cek PPh 21 setahun dengan mesin pph21-ter", allow_abbrev=False)
     s.add_argument("--tahun", required=True)
     s.add_argument("--karyawan")
-    s = sub.add_parser("pengingat", parents=[umum], help="Tenggat gajian & setoran N hari ke depan (hanya baca)")
+    s = sub.add_parser("pengingat", parents=[umum], help="Tenggat gajian & setoran N hari ke depan (hanya baca)", allow_abbrev=False)
     s.add_argument("--rentang", default="3")
-    s = sub.add_parser("backup", parents=[umum], help="Buat/daftar cadangan")
+    s = sub.add_parser("backup", parents=[umum], help="Buat/daftar cadangan", allow_abbrev=False)
     s.add_argument("--daftar", action="store_true")
     s.add_argument("--label")
-    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan")
+    s = sub.add_parser("restore", parents=[umum, tulis], help="Pulihkan dari cadangan", allow_abbrev=False)
     s.add_argument("--dari", required=True)
     return p
 
