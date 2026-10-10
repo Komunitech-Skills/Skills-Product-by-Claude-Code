@@ -1,5 +1,7 @@
 # Routine (jadwal otomatis) — templat untuk Akun A & Akun B
 
+> **Cursor Cloud (Akun C)** → iterasi otomatis lewat Cursor Automations: [`koordinasi/rutin-cursor-cloud.md`](rutin-cursor-cloud.md) (+ bagian di `.cursor/CLOUD.md`). **Mode intensif (limit sisa):** cron default **`15 * * * *`** UTC (tiap jam :15); overlap run → **`15 */2 * * *`** — detail § Mode intensif di rutin-cursor-cloud.md.
+
 Routine membuat sesi Claude Code melanjutkan kerja sendiri tiap beberapa jam, tanpa menunggu pemilik mengetik.
 Routine hanya bisa dibuat **oleh sesi itu sendiri** (akun lain tidak bisa membuatkannya).
 
@@ -79,21 +81,4 @@ PILIH MODEL AGENT (CLAUDE.md bagian 5): Opus untuk pajak/gaji/keuangan/hukum + v
 HEMAT CONTEXT: serahkan pekerjaan berat ke agent; minta laporan balik ringkas (≤200 kata); jangan membaca transkrip agent. Bila stop hook mengeluh ada berkas belum di-commit saat agent masih jalan, commit sebagai `wip:`.
 
 Batasan tetap: jangan simpan data pribadi member/pembeli, API key, atau token di repo; jangan commit dist/; jangan ubah visibilitas repo; rm -rf hanya dengan "${VAR:?}"; bot produksi tidak dipakai untuk uji; data di pesan uji fiktif; tidak ada identitas model di commit/PR. Perbarui laporan sesi di reports/YYYY-MM-DD.md setiap selesai satu batch. Akhiri giliran dengan ringkasan singkat berbahasa Indonesia untuk pemilik. Berhenti hanya jika pemilik menulis "stop".
-```
-
-
-## Prompt routine Akun C (agent Cursor Cloud) — versi 2026-10-10
-
-Cursor Cloud tidak punya routine bawaan seperti claude-code-remote; pemilik memicu run baru secara manual (atau lewat fitur jadwal/otomasi Cursor bila tersedia) dengan prompt yang sama setiap kali. Tiap run mulai dari VM baru: `setup-cursor.sh` memasang OpenClaw otomatis, lalu agent membaca repo untuk tahu posisi terakhir. Secrets wajib di environment repo (bukan Personal Runtime): `Ninerouter_key`, `bot_token`, `tester_bot_token`.
-
-```
-[Giliran rutin Akun C — Cursor Cloud, dipicu pemilik] Kamu Akun C di repo Komunitech Skills. Baca AGENTS.md, .cursor/CLOUD.md, CLAUDE.md, lalu koordinasi/papan-tugas.md (bagian SERAH TERIMA Akun B → Akun A dan Aturan untuk Akun C) dan laporan terbaru di reports/ (akun-c, akun-b, dan tanpa akhiran). Base branch: claude/claude-code-cli-differences-btizz5 (git fetch dulu, mulai dari ujungnya). Jangan menunggu Akun A/B.
-
-LANGKAH NOL — lingkungan: `test -n "${Ninerouter_key:-}" && echo KEY_SET`, `test -n "${bot_token:-}" && echo BOT_SET`, `test -n "${tester_bot_token:-}" && echo TESTER_SET` (tanpa mencetak nilai). Bila KEY_SET tidak muncul: jangan menguji; tulis satu baris di laporan bahwa secret belum ter-inject (lihat diagnosa reports/2026-10-10-akun-c.md) dan kerjakan hanya tugas non-uji. `bash $HOME/komunitech-uji/openclaw-real/oc.sh --version` harus OK; bila BOT_SET, `bash $HOME/komunitech-uji/openclaw-real/gw-cek.sh` harus HIDUP/DINYALAKAN ULANG. Bila `uji.sh` gagal karena unshare, pakai run-uji.sh setara (perintah inti sama, tanpa isolasi mount), catat di laporan.
-
-LANGKAH SATU — Telegram: bila TESTER_SET, baca balasan pemilik di topik 242 lewat getUpdates bot penguji (hanya baca; jangan offset=-1) dan jalankan keputusan yang sudah dijawab (nomor terakhir ada di reports/ atau koordinasi/). Kirim ke topik 242 (@nikioktarian di awal) hanya yang baru: hasil uji (skor tanpa → dengan, verdik, satu kalimat pembeda) dan hal yang butuh keputusan (ringkasan bernomor + rekomendasi + alasan), satu pesan ringkas per run.
-
-LANGKAH DUA — kerja, urut prioritas: (1) keputusan pemilik yang sudah dijawab; (2) uji ulang skill berstatus `uji` yang sudah direvisi atau uji penuh skill `draft`/`uji` yang belum punya examples/HASIL-UJI.md (kamu penguji independen; jangan ubah SKILL.md/script/catalog.csv; pembuat ≠ penguji); (3) uji konteks Telegram (uji-tg.sh skenario 1) untuk skill lulus yang jawabannya panjang/berupa file dan belum dicek; (4) pra-cek calon gelombang Telegram 12 (LULUS, belum pernah tampil, urut selisih) lalu usulkan ke pemilik; (5) bila tidak ada yang bisa diuji, draf skill baru dari daftar S4/backlog sebagai PEMBUAT (status `uji`, examples/ kosong) dan tulis di papan tugas bahwa pengujinya harus sesi lain. Acuan LULUS: sesudah ≥ 8 DAN selisih ≥ 1,5; skill di bawah itu tidak diiterasi, usulkan arsip. Semua angka diverifikasi python sendiri. Skill lulus: catat di laporan; pembaruan catalog.csv/promosi dilakukan Akun A/B (atau kamu bila pemilik meminta di prompt).
-
-AKHIR RUN (wajib, sebelum waktu habis): `python3 scripts/validate.py` lolos; perbarui/tambah bagian di reports/YYYY-MM-DD-akun-c.md (ringkasan, tabel skill berubah, PERLU REVIEW, temuan platform, rekomendasi); perbarui status tugasmu di koordinasi/papan-tugas.md; commit (`uji: ...`, `skill: ...`, `docs: ...`) di branch cursor/<tugas>-<id> dan push. Jangan buat PR kecuali diminta; jangan merge. Batasan: tidak ada token/kunci/data pribadi di repo atau log, tidak commit dist/, rm -rf hanya dengan "${VAR:?}", bot produksi tidak dipakai, tidak ada identitas model di commit. Akhiri dengan ringkasan singkat berbahasa Indonesia.
 ```
