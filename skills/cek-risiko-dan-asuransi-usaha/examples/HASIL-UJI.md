@@ -54,3 +54,36 @@ Ambang rata-rata (8,0) dan selisih (1,7) terpenuhi, tetapi ada **kesalahan isi s
 ## PERLU REVIEW
 - `references/jenis-perlindungan.md` (sudah ditandai sendiri): istilah & perluasan polis perlu dicek tenaga asuransi bila dipakai sebagai materi jual.
 - Perbaikan aturan respons B2/B3 (keputusan isi, bukan sekadar kode).
+
+---
+
+## Uji ulang 1.0.1 (Akun C, 2026-10-10)
+
+- Penguji independen (bukan pembuat). **OpenClaw sebelum/sesudah:** tidak dijalankan — `Ninerouter_key` tidak terpasang di environment secrets Cursor (401); `uji.sh` gagal `unshare` di VM. Detail: `00-openclaw-sebelum-sesudah.md`.
+- Tes script: `python3 tests/uji_regresi.py` → **16/16 OK** (v1.0.0: 9 tes).
+- Verifikasi angka: `examples/data/verifikasi-independen.py` + jalankan `cek_risiko.py` v1.0.1 pada skenario 01–03, 05 → **cocok**; B1/B4 diperbaiki di kode; B2/B3 membutuhkan agent menulis `bisa_diasuransikan: false` pada risiko non-asuransi (instruksi SKILL.md, bukan otomatis di JSON contoh uji).
+
+### Skor per skenario (simulasi penguji; OpenClaw wajib konfirmasi)
+
+| # | Skenario | SEBELUM | SESUDAH |
+|---|---|---|---|
+| 01 | Kafe | 6,5 | 8,5 |
+| 02 | Bengkel | 6,5 | 8,5 |
+| 03 | Toko online | 6,5 | 8,0 |
+| 04 | Katering | 6 | 8,5 |
+| 05 | Jebakan | 6 | 9 |
+| | **Rata-rata** | **6,3** | **8,5** |
+
+Selisih **+2,2**. Acuan promosi (sesudah ≥ 8, selisih ≥ 1,5): **terpenuhi pada simulasi**.
+
+### VERDIK: **BELUM** (gate OpenClaw) — usulan skor kualitas **8/10**
+Cacat berat v1.0.0 (B1 angka diam-diam, B4 cicilan) **terverifikasi diperbaiki** di script. Sisa risiko: agent OpenClaw harus konsisten memakai `bisa_diasuransikan: false` (uji model nyata belum jalan). **LULUS** formal setelah `uji.sh`/`uji-tg.sh` 5 skenario tanpa regresi angka.
+
+**Pembeda satu kalimat:** Tabel risiko plus dana darurat dan cicilan menabung dihitung script (input biaya ambigu ditolak), bukan perkiraan di kepala model.
+
+### Cacat tersisa (urut dampak)
+1. **OpenClaw belum diuji** — skor simulasi bisa meleset dari bot member.
+2. **B2 operasional:** bila agent lupa flag `bisa_diasuransikan: false`, kolom asuransi bisa menyesatkan (script default true).
+3. **Ringan:** pesan argparse bahasa Inggris pada beberapa input invalid; label BPJS vs "tidak perlu asuransi" perlu konsisten di output agent.
+
+### Usulan `skor_kualitas`: **8** (naik dari 7 setelah perbaikan script; konfirmasi OpenClaw pending)
