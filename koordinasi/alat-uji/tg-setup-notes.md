@@ -54,3 +54,8 @@ Topics can be deleted with Bot API deleteForumTopic (IDs in tg-topics.json; old 
 
 ## 2026-10-06 — Pelajaran gelombang 11
 Setelah ubah `channels.telegram.*` (topik/skills per topik) di openclaw.json, hot reload membuat semua balasan ditolak ("PlatformMessageNotDispatchedError: The reply channel changed"). Solusi: hentikan gateway dengan PID tepat (`pgrep -f "^openclaw-gateway$"` → `kill -TERM <pid>`), lalu `gw-cek.sh` untuk menyalakan ulang. Lakukan SEBELUM mengirim gelombang.
+
+## 2026-10-10 — Gateway bot uji pindah ke agent Cursor Cloud (keputusan pemilik)
+- Pemilik memilih memakai bot penguji LAMA (@KTclaude1_bot) di VM Cursor. Gateway di sesi Akun B dipastikan MATI (tidak ada proses `openclaw-gateway`; proses terakhir mati sendiri setelah kontainer idle, log terakhir gw-20261006-1227.log) dan routine Akun B dijeda sehingga `gw-cek.sh` tidak menyalakannya lagi.
+- Aturan: hanya SATU gateway per token bot. Selama Cursor memegang `bot_token`, sesi Akun A/B tidak boleh menjalankan `gw-cek.sh`/`oc-tg.sh gateway run`. Bila pekerjaan dikembalikan ke Claude Code, hapus dulu secret `bot_token` di Cursor.
+- Di Cursor: `bash $HOME/komunitech-uji/openclaw-real/gw-cek.sh` menyalakan gateway tiap run (VM ulang dari snapshot, gateway tidak bertahan antar run).
