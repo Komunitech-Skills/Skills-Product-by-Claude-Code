@@ -1,12 +1,12 @@
 # Progress otomatis — Akun C (Cursor Cloud)
 
-Log run cron/automation. Pembaruan terakhir: **2026-10-10 ~18:50 UTC**.
+Log run cron/automation. Pembaruan terakhir: **2026-10-10 ~19:35 UTC**.
 
 ## Run berikutnya (prioritas)
 
-1. **Pemilik:** jawab keputusan **no. 26** (gelombang 12 — 8 pesan, lihat `koordinasi/telegram-gelombang-12-usulan-2026-10-10.md`); pra-cek wajib untuk `iterasi-dari-masukan-pelanggan` & `cek-risiko-dan-asuransi-usaha` sebelum kirim.
-2. **Akun A/B:** merge branch uji (`cursor/uji-c5-*`, `cursor/web-search-cari-prospek-8b42`, `cursor/c1-gelombang-11b-8b42`) → default; `catalog.csv` / promosi.
-3. **Akun C:** bila no. 26 setuju — jalankan G12 (topik baru, restart gateway); bila tidak — C1/C2/C5 sudah selesai, fokus pra-cek G12 atau bundle no. 27.
+1. **Pemilik:** jawab keputusan **no. 26** (gelombang 12 — 8 pesan); pra-cek **4/4** selesai — siap kirim bila setuju.
+2. **Akun C:** bila no. 26 **setuju** — jalankan G12 (topik baru, `skills: []` TANPA, restart gateway, `msgs-g12` + kirim-urut2); pastikan `web_search` hidup untuk pasangan cari-prospek bila dimasukkan nanti.
+3. **Akun A/B:** merge branch uji → default; `catalog.csv` / promosi; usulan bundle **no. 27** belum dijawab.
 
 ## Format Telegram (thread 242)
 
@@ -20,6 +20,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan | Verdik | Telegram 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-10 ~19:35 | `cursor/iterasi-otomatis-akun-c-d315` | *(commit run ini)* | G12 pra-cek TG iterasi + cek-risiko; fix run-uji path | — | LOLOS TG | ya |
 | 2026-10-10 ~18:50 | `cursor/iterasi-otomatis-akun-c-ea49` | 15e3770b | S5 usulan G12 + pra-cek TG 2 skill | — | usulan | ya |
 | 2026-10-10 ~18:20 | `cursor/c1-gelombang-11b-8b42` | 884a23c1 | koordinasi log otomasi + G11b msgs | — | selesai | ya |
 | 2026-10-10 ~18:10 | `cursor/web-search-cari-prospek-8b42` | 9d97e53b | cari-prospek-web v1.0.2 + C2 web_search | 6,7 → 8,2 (+1,5) | LULUS | ya |

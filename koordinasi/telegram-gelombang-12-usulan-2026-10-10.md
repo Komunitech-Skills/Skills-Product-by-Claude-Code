@@ -8,8 +8,8 @@
 |---|---|---|---|---|
 | persiapan-jual-atau-wariskan-usaha | 1.0.1 | 8034 | ya (`read`, `exec`) | Utuh di chat; cocok S1 Bu Sri (OpenClaw 2026-10-10). C3 sudah LOLOS di run sebelumnya. |
 | checklist-keamanan-pangan-usaha | 1.0.x | 8246 | ya (`read`, `ls`) | Utuh di chat; checklist + log suhu siap tempel. |
-| iterasi-dari-masukan-pelanggan | 1.0.x | *(belum di-run run ini)* | — | Butuh file `chat-wa-september.txt` + CSV di workspace sebelum uji; kandidat kuat (selisih +1,7). Pra-cek wajib sebelum kirim. |
-| cek-risiko-dan-asuransi-usaha | 1.0.2 | *(panjang)* | — | LULUS OpenClaw Akun C 6,6→9,0; belum tampil pilot. Pra-cek wajib. |
+| iterasi-dari-masukan-pelanggan | 1.0.10 | 7417 | ya (`read`, `exec`, `write`) | Utuh di chat TG; data uji `chat-wa-september.txt` + `ulasan-shopee-september.csv` di workspace (salin dari `examples/data/`). Pra-cek Akun C 2026-10-10 ~19:30 UTC. |
+| cek-risiko-dan-asuransi-usaha | 1.0.2 | 4048 | ya (`read`, `exec`, `write`) | Utuh di chat (tabel risiko + dana darurat Rp47,4 jt, kekurangan Rp39,4 jt). Pra-cek Akun C 2026-10-10 ~19:32 UTC. |
 | cari-prospek-web | 1.0.2 | *(butuh web_search)* | — | LULUS 6,7→8,2 setelah C2 DuckDuckGo; pra-cek + pastikan `web_search` hidup di bot uji. |
 
 ## Rekomendasi daftar kirim (maks 10 pesan = 5 skill × TANPA/DENGAN)

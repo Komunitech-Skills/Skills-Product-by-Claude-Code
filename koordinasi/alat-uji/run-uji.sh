@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # run-uji.sh — VM Cursor: sama intinya dengan uji.sh tanpa unshare (mount namespace tidak diizinkan).
 # HOME SESI KELUAR "pesan" → hasil di $R/hasil/$KELUAR.{json,txt,err}
-R="$(cd "$(dirname "$0")" && pwd)"
-BASE="${BASE:-$HOME/komunitech-uji}"
+BASE="${SCRATCHPAD:-${BASE:-$HOME/komunitech-uji}}"
+R="$BASE/openclaw-real"
 OC="$BASE/openclaw-prod/node_modules/.bin/openclaw"
 NODE_BIN="$BASE/node-v24.21.0-linux-x64/bin"
 HN=$1; S=$2; O=$3; shift 3
