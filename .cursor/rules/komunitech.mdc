@@ -1,0 +1,5 @@
+---
+description: Aturan kerja repo Komunitech Skills untuk agent Cursor (Akun C)
+alwaysApply: true
+---
+Baca dan patuhi `CLAUDE.md` (sumber kebenaran) dan `AGENTS.md` (tambahan khusus agent non-Claude) di root repo sebelum mengerjakan apa pun. Rahasia hanya dari environment variable; jangan pernah mencetak atau menyimpannya. Satu tugas = satu branch `cursor/<nama>` = satu PR ke `claude/claude-code-cli-differences-btizz5`; jangan merge sendiri; commit + push sebelum run berakhir. Pembuat skill dan pengujinya harus sesi berbeda. Jalankan `python3 scripts/validate.py` sebelum commit.
