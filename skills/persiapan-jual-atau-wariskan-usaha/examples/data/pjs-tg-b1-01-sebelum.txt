@@ -1,0 +1,47 @@
+Oke Bu Sri, saya hitungkan pelan-pelan ya. Ini perkiraan kasar (rule of thumb), bukan appraisal resmi — tapi cukup untuk pegangan nego.
+
+**1. Sesuaikan dulu labanya**
+Laba yang Ibu kasih sudah dipotong gaji Ibu sendiri 4 jt/bln (48 jt/th). Tapi nanti manajer pengganti digaji 5 jt/bln (60 jt/th). Jadi laba "versi pemilik baru" = laba lama + 48 jt − 60 jt = laba lama − 12 jt/th:
+• 2023: 96 → 84 jt
+• 2024: 118 → 106 jt
+• 2025: 134 → 122 jt
+
+Tren naik, jadi saya pakai rata-rata tertimbang (tahun terbaru bobot lebih besar) ≈ **Rp110 juta/tahun** sebagai dasar laba.
+
+**2. Kalikan patokan broker (2–3x)**
+Rp110 jt × 2 = Rp221 jt
+Rp110 jt × 3 = Rp331 jt
+
+**3. Potong 15% karena resep cuma di kepala Ibu**
+→ Rp188 jt – Rp281 jt
+Ini kira-kira **harga jual** yang wajar ditawarkan (titik tengah ±Rp235 jt).
+
+**4. Potong 5% biaya notaris/perantara**
+→ Rp178 jt – Rp267 jt
+
+**5. Lunasi sisa KUR Rp45 juta**
+→ **Uang bersih masuk kantong Ibu: ±Rp133 juta – Rp222 juta** (titik tengah ±Rp178 juta)
+
+**Bandingkan dengan kebutuhan pensiun**
+8 jt × 24 bulan = **Rp192 juta**
+• Skenario rendah (kelipatan 2x): kurang ±Rp59 jt
+• Titik tengah: kurang tipis ±Rp14 jt
+• Skenario tinggi (3x): lebih ±Rp30 jt
+
+Supaya pas menutup Rp192 jt, harga jual (setelah diskon resep, sebelum biaya) perlu sekitar **Rp249–250 juta** — itu setara kelipatan **±2,65x–2,7x**, di atas titik tengah kisaran broker. Jadi Ibu perlu nego cukup gigih kalau resep tetap "rahasia di kepala".
+
+**Insight penting:** kalau resep & SOP dibuat tertulis (hilangkan diskon 15%), target itu cuma butuh kelipatan **±2,25x–2,3x** — dekat batas bawah patokan broker, jauh lebih mudah dicapai. Ini pengungkit nilai terbesar yang Ibu kendalikan sendiri, dan gratis (tinggal waktu menulis).
+
+Sebagai pembanding bawah: nilai alat (etalase, alat masak, freezer, motor) setelah susut 30% ≈ Rp147 juta (bukan ditambah ke hitungan di atas, kelipatan laba sudah mencakup nilai pakai alat — ini cuma cek sanity kalau warung "cuma" dijual sebagai aset).
+
+**Yang perlu Ibu siapkan sebelum jual:**
+• Tulis resep & SOP dapur — naikkan nilai jual signifikan (lihat di atas)
+• Cek status sewa tempat: apakah kontrak bisa dialihkan ke pembeli baru & berapa sisa masa sewanya — ini krusial, kalau tidak jelas pembeli bisa minta diskon besar
+• Urus status KUR: konfirmasi ke bank apakah bisa dilunasi langsung dari hasil jual atau perlu proses pengalihan
+• Rapikan laporan keuangan 3 tahun (yang sudah Ibu kasih ini bagus, lanjutkan formatnya)
+• Daftar aset lengkap + kondisi (biar basis "turun 30%" bisa dibuktikan, bukan cuma perkiraan)
+• Legalitas usaha (NIB, izin dari pemda/PIRT kalau ada) dipastikan bisa dialihkan
+• Rencana masa transisi: Ibu dampingi manajer baru beberapa bulan agar resep & relasi pelanggan/supplier tidak putus
+• Konsultasi notaris untuk akta jual-beli usaha + konsultan pajak soal kewajiban pajak atas pengalihan usaha (ini saya tidak berani kasih angka pasti, beda kasus beda aturan)
+
+Kalau Ibu mau, saya bisa bantu susun draf checklist dokumen atau simulasi angka dengan asumsi lain (misal multiple beda, atau diskon resep 0%/10%). Mau?
