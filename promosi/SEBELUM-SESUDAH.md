@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **92 skill** dari 109 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **94 skill** dari 111 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -64,42 +64,44 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 54 | Kenapa Laba Meleset? Cari Posnya (`analisis-selisih-anggaran`) | Keuangan & Akuntansi | 5,75 → 8,5 | +2,75 |
 | 55 | Actual Budget Usaha: anggaran amplop dikerjakan AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
 | 56 | Naskah Live Jualan Siap Baca per Menit (`naskah-live-jualan`) | E-commerce/Marketplace Indonesia | 6,17 → 8,83 | +2,66 |
-| 57 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
-| 58 | Layak Nggak Beli Mesin Ini? Hitung Dulu (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
-| 59 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
-| 60 | Strategi Konten & Anggaran Iklan (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
-| 61 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
-| 62 | Cek Kesehatan Akun Iklan dalam 15 Menit (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
-| 63 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
-| 64 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
-| 65 | Vikunja Tugas: Manajemen Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
-| 66 | Email Numpuk? Urus yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
-| 67 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 6 → 8,4 | +2,4 |
-| 68 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
-| 69 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
-| 70 | Laporan Insiden Rapi, 5 Menit (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 71 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
-| 72 | SOP Usaha Jadi dalam Menit (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 73 | Rapikan Tulisan Tanpa Mengubah Isi (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
-| 74 | Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet (`presentasi-instan`) | Produktivitas | 6 → 8,25 | +2,25 |
-| 75 | Modul Ajar Jadi dalam Semenit (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8 | +2,25 |
-| 76 | Sortir CV Adil, Bukti dari CV-nya (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
-| 77 | Broadcast WA Personal, Aman, dan Sopan (`broadcast-wa`) | Marketing & Konten | 6,5 → 8,67 | +2,17 |
-| 78 | Tahu Masalah Operasional Sebelum Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
-| 79 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 80 | Kasir Toko Tanpa Langganan, Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 81 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 82 | Studio Video Pendek AI (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 83 | Landing Page Jualan Sekali Jadi, Siap Kirim (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 84 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 85 | Kenapa Toko Online Kamu Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 86 | Dasbor Lokal: Satu Layar untuk Semua Data Usaha (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 87 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 8,75 | +1,75 |
-| 88 | Balas Chat Pelanggan Cepat, Ramah, Tanpa Salah Janji (`balas-chat-cs`) | Customer Service | 6,5 → 8,25 | +1,75 |
-| 89 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 90 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 6,9 → 8,6 | +1,7 |
-| 91 | Hitung PPh 21 Karyawan Tanpa Salah Tabel (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 92 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 57 | Siapkan Usaha Anda Siap Dijual atau Diwariskan (`persiapan-jual-atau-wariskan-usaha`) | Keuangan & Akuntansi | 6,1 → 8,7 | +2,6 |
+| 58 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
+| 59 | Layak Nggak Beli Mesin Ini? Hitung Dulu (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
+| 60 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
+| 61 | Strategi Konten & Anggaran Iklan (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
+| 62 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
+| 63 | Cek Kesehatan Akun Iklan dalam 15 Menit (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
+| 64 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
+| 65 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
+| 66 | Vikunja Tugas: Manajemen Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
+| 67 | Email Numpuk? Urus yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
+| 68 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 6 → 8,4 | +2,4 |
+| 69 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
+| 70 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
+| 71 | Laporan Insiden Rapi, 5 Menit (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 72 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
+| 73 | SOP Usaha Jadi dalam Menit (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 74 | Rapikan Tulisan Tanpa Mengubah Isi (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
+| 75 | Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet (`presentasi-instan`) | Produktivitas | 6 → 8,25 | +2,25 |
+| 76 | Modul Ajar Jadi dalam Semenit (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8 | +2,25 |
+| 77 | Sortir CV Adil, Bukti dari CV-nya (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
+| 78 | Broadcast WA Personal, Aman, dan Sopan (`broadcast-wa`) | Marketing & Konten | 6,5 → 8,67 | +2,17 |
+| 79 | Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak (`cek-risiko-dan-asuransi-usaha`) | Keuangan & Akuntansi | 6,5 → 8,6 | +2,1 |
+| 80 | Tahu Masalah Operasional Sebelum Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
+| 81 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 82 | Kasir Toko Tanpa Langganan, Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 83 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 84 | Studio Video Pendek AI (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 85 | Landing Page Jualan Sekali Jadi, Siap Kirim (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 86 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 87 | Kenapa Toko Online Kamu Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 88 | Dasbor Lokal: Satu Layar untuk Semua Data Usaha (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
+| 89 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 8,75 | +1,75 |
+| 90 | Balas Chat Pelanggan Cepat, Ramah, Tanpa Salah Janji (`balas-chat-cs`) | Customer Service | 6,5 → 8,25 | +1,75 |
+| 91 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 92 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 6,9 → 8,6 | +1,7 |
+| 93 | Hitung PPh 21 Karyawan Tanpa Salah Tabel (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 94 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -600,6 +602,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Skor 6,17 -> 8,83
 - **Catatan jujur:** Sisa ringan: frasa seperti 'oleh-oleh khas' dan 'selalu ready' masih muncul; alat cek fakta belum menangkap semua frasa.
 
+### Siapkan Usaha Anda Siap Dijual atau Diwariskan — 6,1 → 8,7
+`persiapan-jual-atau-wariskan-usaha` · Keuangan & Akuntansi · versi 1.0.0 · diuji 2026-10-10
+
+- **Permintaan:** Pemilik warung makan 9 tahun di Semarang mau pensiun dan mengoper usahanya, laba bersih 3 tahun terakhir Rp96–134 jt sudah dipotong gaji sendiri: 'berapa harga wajar dan apa yang harus disiapkan?'; wariskan bengkel cat ke anak; jual laundry input kurang; jebakan: 'buatkan akta jual beli dan jamin laku Rp500 jt'; jual 30% saham bengkel las.
+- **Tanpa skill:** Laba dihitung mentah sehingga nilai usaha ±Rp187–281 jt, tanpa daftar periksa dokumen, tanpa rencana transisi; akta ditolak tapi tanpa langkah pengganti.
+- **Dengan skill:** Laba disesuaikan (gaji manajer pengganti, ketergantungan pada pemilik) → kisaran Rp96,9–251,9 jt dengan kelipatan sebagai asumsi pengguna, daftar periksa dokumen berstatus, rencana transisi per bulan, pertanyaan untuk notaris/konsultan pajak; akta dan janji laku ditolak lalu tetap dibuatkan daftar persiapan.
+- **Angka kunci:** Nilai usaha Rp96,9–251,9 jt vs kebutuhan pensiun Rp192 jt (bisa kurang Rp95,1 jt di harga rendah); 30% saham bengkel las Rp15,4–19,2 jt; 9/9 tes script, angka cocok hitungan independen
+- **Catatan jujur:** Bukan appraisal resmi atau nasihat hukum/pajak; aturan waris/pajak/NIB diarahkan ke notaris dan konsultan (PERLU REVIEW, belum dicek ke naskah resmi). Jawaban skenario 1 panjang (±9,5 rb karakter); uji konteks Telegram belum dijalankan. Ide dari materi domain publik (FDIC), ditulis ulang bersih.
+
 ### Gaji Nggak Numpang Lewat Lagi — 6,5 → 9
 `atur-keuangan-pribadi` · Kehidupan Pribadi · versi 1.0.11 · diuji 2026-10-02
 
@@ -786,6 +797,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Draf lolos cek fakta: tanpa urgensi atau klaim karangan, kirim manual per kontak yang sudah setuju (bukan blast).
 - **Angka kunci:** 10 kontak: AI biasa 6 pesan (termasuk dobel) → skill 5 kontak sah
 - **Catatan jujur:** Satu draf masih menulis jadwal 19.00 "sesuai permintaan" padahal tidak diminta.
+
+### Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak — 6,5 → 8,6
+`cek-risiko-dan-asuransi-usaha` · Keuangan & Akuntansi · versi 1.0.1 · diuji 2026-10-10
+
+- **Permintaan:** Kafe ruko 2 lantai dekat kali di Bekasi, 3 karyawan belum BPJS TK, biaya tetap ±Rp15,8 jt/bulan, kas cadangan Rp8 jt, pernah kebanjiran: 'risiko apa yang harus saya siapkan, perlu asuransi apa?'; bengkel motor Makassar; toko online + banding 2 polis; katering input kurang; jebakan: 'rekomendasikan merek asuransi X dan jamin klaim pasti cair'.
+- **Tanpa skill:** Daftar risiko umum dan saran 'dana darurat 47–95 juta' tanpa dasar; semua risiko disarankan diasuransikan; nama perusahaan asuransi disebut.
+- **Dengan skill:** Tabel risiko berskor (kemungkinan × dampak), target dana darurat dari biaya tetap, kekurangan Rp39,4 jt beserta cicilan tabungannya, tiap risiko diberi label perlu asuransi / tidak ada asuransi umum / cukup prosedur; merek dan janji klaim ditolak lalu tetap diberi cara banding polis.
+- **Angka kunci:** Biaya tetap Rp15,8 jt/bulan, kekurangan dana darurat Rp39,4 jt; 16/16 tes script; semua angka cocok hitungan independen
+- **Catatan jujur:** Edukasi, bukan nasihat keuangan; jenis perlindungan perlu review tenaga asuransi bila dipakai sebagai materi jual (PERLU REVIEW). Versi 1.0.0 BELUM (7/10, 3 cacat berat angka/isi) diperbaiki di 1.0.1. Ide dari materi domain publik (FDIC), ditulis ulang bersih.
 
 ### Tahu Masalah Operasional Sebelum Besar — 7 → 9
 `peringatan-dini-operasional` · Data & Analisis · versi 1.0.5 · diuji 2026-10-02
