@@ -14,3 +14,4 @@ Tunduk pada `LISENSI.txt` dalam paket pembelian. Bukan nasihat hukum, pajak, ata
 
 ## Riwayat versi
 - 1.0.0 (2026-10-09): rilis awal (status uji).
+- 1.0.1 (2026-10-10): perbaikan dari uji isi agent 2026-10-09 (biaya sekali per tahun, utang konsisten, porsi sekutu, dasar aturan di `references/dasar-aturan.md`). Rujukan aturan ditulis sendiri dari situs instansi/ulasan publik, tidak disalin.
