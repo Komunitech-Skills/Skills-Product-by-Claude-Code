@@ -1,12 +1,12 @@
 # Progress otomatis — Akun C (Cursor Cloud)
 
-Log run cron/automation. Pembaruan terakhir: **2026-10-10 ~18:50 UTC**.
+Log run cron/automation. Pembaruan terakhir: **2026-10-10 ~20:50 UTC**.
 
 ## Run berikutnya (prioritas)
 
-1. **Pemilik:** jawab keputusan **no. 26** (gelombang 12 — 8 pesan, lihat `koordinasi/telegram-gelombang-12-usulan-2026-10-10.md`); pra-cek wajib untuk `iterasi-dari-masukan-pelanggan` & `cek-risiko-dan-asuransi-usaha` sebelum kirim.
-2. **Akun A/B:** merge branch uji (`cursor/uji-c5-*`, `cursor/web-search-cari-prospek-8b42`, `cursor/c1-gelombang-11b-8b42`) → default; `catalog.csv` / promosi.
-3. **Akun C:** bila no. 26 setuju — jalankan G12 (topik baru, restart gateway); bila tidak — C1/C2/C5 sudah selesai, fokus pra-cek G12 atau bundle no. 27.
+1. **Pemilik:** jawab keputusan **no. 26** (gelombang 12 — 8 pesan); pra-cek iterasi & cek-risiko **LOLOS** (lihat `telegram-gelombang-12-usulan-2026-10-10.md`).
+2. **Akun C:** bila no. 26 **setuju** — jalankan G12 (topik baru, fixture Kue Nara di workspace pilot, `run-uji-tg.sh` timeout 1200s, restart gateway); siapkan `msgs-g12.json` + `topik-g12.json` mengikuti pola G11b.
+3. **Akun A/B:** merge branch uji → default; `catalog.csv` / promosi; jawab no. 27 bundle.
 
 ## Format Telegram (thread 242)
 
@@ -20,6 +20,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan | Verdik | Telegram 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-10 ~20:50 | `cursor/iterasi-otomatis-akun-c-b3d3` | 21cb1d19 | Pra-cek TG G12: iterasi v1.0.10 + cek-risiko v1.0.2 | — | LOLOS TG | ya |
 | 2026-10-10 ~18:50 | `cursor/iterasi-otomatis-akun-c-ea49` | 15e3770b | S5 usulan G12 + pra-cek TG 2 skill | — | usulan | ya |
 | 2026-10-10 ~18:20 | `cursor/c1-gelombang-11b-8b42` | 884a23c1 | koordinasi log otomasi + G11b msgs | — | selesai | ya |
 | 2026-10-10 ~18:10 | `cursor/web-search-cari-prospek-8b42` | 9d97e53b | cari-prospek-web v1.0.2 + C2 web_search | 6,7 → 8,2 (+1,5) | LULUS | ya |

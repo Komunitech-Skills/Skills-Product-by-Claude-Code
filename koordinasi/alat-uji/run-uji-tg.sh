@@ -13,7 +13,7 @@ timeout 900 env -i HOME="$H" PATH="$NODE_BIN:/usr/local/bin:/usr/bin:/bin" LANG=
   NODE_EXTRA_CA_CERTS="${NODE_EXTRA_CA_CERTS:-}" SSL_CERT_FILE="${SSL_CERT_FILE:-}" \
   NINEROUTER_UJI_KEY="${Ninerouter_key:-}" TELEGRAM_BOT_TOKEN="${bot_token:-}" \
   TAVILY_API_KEY="${TAVILY_API_KEY:-${tavily:-}}" \
-  "$OC" agent --local --session-id "$S" -m "$*" --channel telegram --json --timeout 800 \
+  "$OC" agent --local --session-id "$S" -m "$*" --channel telegram --json --timeout 1200 \
   > "$R/hasil/$O.json" 2> "$R/hasil/$O.err"
 echo "rc=$?"
 python3 - "$R/hasil/$O.json" "$R/hasil/$O.txt" <<'PY'
