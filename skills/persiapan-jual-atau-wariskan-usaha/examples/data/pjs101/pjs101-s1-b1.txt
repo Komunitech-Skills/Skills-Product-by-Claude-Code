@@ -1,0 +1,65 @@
+# Estimasi Harga Jual "Bakso Mas Darto"
+
+Saya hitung pakai metode standar valuasi UMKM: **normalisasi laba → kali multiplier → sesuaikan aset, utang, risiko, dan biaya transaksi**. Ini rincian langkah per langkah supaya Bapak bisa cek sendiri angkanya.
+
+## 1. Normalisasi Laba (laba "riil" kalau dijual ke orang lain)
+
+Laba bersih yang Bapak sebut sudah dipotong ambilan pribadi 3 juta/bulan. Tapi kalau pembeli nanti pakai **orang gajian 3,5 juta/bulan**, berarti biaya tenaga kerja naik 0,5 juta/bulan = 6 juta/tahun. Renovasi 12 juta di 2024 itu biaya sekali saja, jadi harus ditambah balik (bukan biaya rutin).
+
+| Tahun | Laba dilaporkan | Penyesuaian | Laba Normal |
+|---|---|---|---|
+| 2023 | 84 jt | −6 jt (selisih gaji) | **78 jt** |
+| 2024 | 97 jt | −6 jt +12 jt (renovasi) | **103 jt** |
+| 2025 | 91 jt | −6 jt | **85 jt** |
+
+**Rata-rata laba normal ≈ Rp 88,7 juta/tahun** — ini basis yang dipakai calon pembeli untuk menilai, bukan angka laba mentah.
+
+## 2. Kali Multiplier (2x–3x)
+
+- 2,0x → Rp 177,3 jt
+- 2,5x → Rp 221,7 jt
+- 3,0x → Rp 266,0 jt
+
+## 3. Potong Risiko Resep (20%)
+
+Karena resep hanya Bapak yang pegang, nilainya dipotong 20%:
+
+- 2,0x → Rp 141,9 jt
+- 2,5x → Rp 177,3 jt
+- 3,0x → Rp 212,8 jt
+
+## 4. Tambah Nilai Aset Fisik
+
+Alat (gerobak, freezer, meja-kursi, motor) 65 jt turun 25% → nilai sekarang **Rp 48,75 juta**. Ini ditambahkan karena aset fisik nilainya terpisah dari "nama usaha/resep".
+
+## 5. Kurangi Utang Koperasi (18 jt)
+
+## 6. Kurangi Biaya Notaris/Perantara (4%)
+
+## Hasil Akhir: Perkiraan Harga Jual Bersih
+
+| Multiplier | Harga kotor (setelah resep+aset−utang) | **Bersih diterima (setelah biaya 4%)** |
+|---|---|---|
+| 2,0x (tawaran tetangga) | 172,6 jt | **≈ Rp 165,7 juta** |
+| 2,5x (titik tengah) | 208,1 jt | **≈ Rp 199,8 juta** |
+| 3,0x (keinginan Bapak) | 243,6 jt | **≈ Rp 233,8 juta** |
+
+**Jadi kisaran realistis: Rp 166 juta – Rp 234 juta, titik tengah wajar sekitar Rp 200 juta.**
+
+Tawaran tetangga "2x laba" kalau dihitung dari laba mentah (rata-rata ~90,7 jt) itu sekitar Rp 181 jt — masih di bawah hasil normalisasi Bapak karena belum memperhitungkan nilai aset dan belum dipotong utang/biaya. **Ini modal nego kuat**: tunjukkan hitungan ini, posisi Bapak di 2,3x–2,7x (≈Rp 190–215 jt) itu adil untuk kedua pihak.
+
+## Cek Kebutuhan Pensiun
+
+Kebutuhan: 6 jt × 18 bulan = **Rp 108 juta**. Bahkan di skenario terendah (Rp 165,7 jt), masih sisa ~Rp 58 juta untuk dana darurat/modal baru. Aman.
+
+## Yang Harus Disiapkan
+
+1. **Legalitas sewa kios** — cek klausul sewa: bisa dialihkan (assignment) ke pembeli baru atau tidak. Sisa kontrak 2 tahun ini nilai jual penting, pastikan sah secara hukum lewat pemilik kios.
+2. **Dokumen keuangan** — laporan laba-rugi 3 tahun + catatan kas harian sebagai bukti, supaya pembeli percaya angka laba.
+3. **Bukti kepemilikan aset** — BPKB/STNK motor, nota beli gerobak/freezer.
+4. **Surat keterangan utang koperasi** — sepakati sebelum closing: dilunasi dulu oleh Bapak, atau dipotong langsung dari harga jual (yang sudah saya hitung di atas).
+5. **Strategi transfer resep** — sediakan masa pendampingan 1-2 bulan + buat perjanjian kerahasiaan (NDA). Ini bisa menurunkan diskon 20% jadi 10-15% kalau pembeli yakin resep benar-benar ter-transfer, artinya harga bisa naik.
+6. **Akta jual-beli usaha via notaris** — sekaligus urus balik nama aset bermotor dan peralihan sewa.
+7. **Skema pembayaran** — minta DP cukup besar di muka (supaya dana 108 jt untuk 18 bulan aman duluan), sisanya bisa cicil 2-3 bulan.
+
+Kalau Bapak mau, saya bisa bantu buatkan draf term sheet/poin negosiasi tertulis untuk dibawa ke tetangga tersebut.

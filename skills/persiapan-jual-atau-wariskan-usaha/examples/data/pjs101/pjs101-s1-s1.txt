@@ -1,0 +1,115 @@
+# Persiapan Jual/Wariskan Usaha — Bakso Mas Darto (Klaten)
+
+## 1) Ringkasan situasi dan asumsi
+- Usaha perorangan, 7 tahun jalan, kios sewa dengan sisa kontrak 2 tahun.
+- Tujuan: pensiun, rencana oper tahun depan (±12 bulan dari sekarang).
+- Laba bersih 2023 Rp84.000.000, 2024 Rp97.000.000, 2025 Rp91.000.000 — sudah dipotong ambilan pribadi Bapak Rp3.000.000/bulan.
+- Asumsi yang saya pakai (semuanya dari Bapak, bukan angka pasar):
+  - Gaji pengganti bila pembeli pakai orang: Rp3.500.000/bulan (Rp42.000.000/tahun).
+  - Renovasi kios+gerobak Rp12.000.000 hanya tahun 2024 (biaya sekali jalan, tidak disebar ke tahun lain).
+  - Aset (gerobak, freezer, meja-kursi, motor) Rp65.000.000, disusutkan 25%.
+  - Utang koperasi sisa Rp18.000.000.
+  - Kelipatan laba 2–3x (sesuai perkiraan Bapak sendiri; tawaran tetangga "2x" dipakai sebagai batas bawah).
+  - Diskon ketergantungan pemilik 20% (karena resep bumbu hanya Bapak yang tahu).
+  - Biaya notaris/perantara 4%.
+  - Kebutuhan hidup pasca-pensiun Rp6.000.000/bulan x 18 bulan.
+
+## 2) Daftar periksa kesiapan
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan | Setengah | Ada angka laba 3 tahun, tapi belum jelas apakah tercocokkan dengan mutasi rekening/laporan pajak — rapikan agar meyakinkan calon pembeli. |
+| Pemisahan uang pribadi-usaha | Belum diketahui | Pastikan dan dokumentasikan. |
+| SOP | Belum | Resep bumbu hanya Bapak yang tahu — belum tertulis. Ini titik risiko terbesar. |
+| Ketergantungan pemilik | Belum | Resep rahasia = usaha sangat bergantung pada Bapak. Perlu rencana pendokumentasian + pendampingan. |
+| Aset | Setengah | Nilai perkiraan sudah ada, tapi bukti kepemilikan (kuitansi/BPKB motor dll.) belum disebut. |
+| Utang | Setengah | Sisa Rp18.000.000 sudah diketahui; lengkapi jatuh tempo dan surat keterangan dari koperasi. |
+| Kontrak sewa kios | Setengah | Sisa 2 tahun disebut, tapi **belum jelas apakah boleh dialihkan ke pembeli baru** — ini penting, tanyakan ke pemilik kios. |
+| Izin (NIB dll.) | Belum diketahui | Cek NIB atas nama siapa dan apakah pembeli perlu NIB sendiri. |
+| Pelanggan/pemasok kunci | Belum diketahui | Daftar pemasok daging/bahan bumbu dan pelanggan langganan. |
+| Karyawan | Belum diketahui | Saat ini tampaknya Bapak sendiri yang jaga; bila ada bantuan keluarga/karyawan tak tetap, catat. |
+| Aset tak berwujud | Belum diketahui | Nama "Bakso Mas Darto", akun media sosial/GoFood-GrabFood (bila ada), nomor WA usaha — atas nama siapa? |
+| Penerus/pembeli | Setengah | Sudah ada tetangga yang menawar — belum ada kesepakatan/kerahasiaan formal. |
+
+**Prioritas pembenahan (3-5):**
+1. **Tulis resep & SOP bumbu** secara rahasia (disimpan aman), rencanakan masa pendampingan ke pembeli — ini paling menentukan nilai dan keberhasilan serah terima.
+2. **Cek status kontrak sewa kios**: apakah boleh dialihkan, atau pembeli harus bikin kontrak baru dengan pemilik kios.
+3. **Rapikan pembukuan 3 tahun** dan cocokkan dengan mutasi rekening/laporan pajak.
+4. **Daftar aset + bukti kepemilikan**, dan cek NIB/izin atas nama siapa.
+5. **Tetapkan batas harga terendah** yang Bapak terima, sebelum lanjut nego dengan tetangga.
+
+## 3) Perkiraan rentang nilai (bahan diskusi, bukan harga pasti)
+
+Laba setelah penyesuaian (ambilan pribadi ditambah balik, gaji pengganti dikurangi, renovasi 2024 ditambah balik hanya ke tahun itu):
+- 2023: Rp78.000.000
+- 2024: Rp103.000.000
+- 2025: Rp85.000.000
+- Rata-rata 3 tahun: Rp88.666.667; tahun terakhir: Rp85.000.000 → **basis dipakai Rp85.000.000** (karena tahun terakhir lebih rendah dari rata-rata, dipakai angka yang lebih hati-hati).
+
+| Metode | Rumus | Hasil |
+|---|---|---|
+| Kelipatan laba normalisasi | basis Rp85.000.000 x kelipatan [2–3] x (100−20%)/100 | Rp136.000.000 s/d Rp204.000.000 |
+| Nilai aset (batas bawah bila hanya aset dijual) | Rp65.000.000 x (100−25%)/100 | Rp48.750.000 |
+
+- **Nilai usaha 100%, sebelum utang:** Rp136.000.000 s/d Rp204.000.000
+- Utang Rp18.000.000 diasumsikan dilunasi Bapak dari hasil jual (usaha diserahkan bebas utang ke pembeli) → tidak mengubah harga, tapi mengurangi hasil bersih ke Bapak.
+- **Harga yang dibayar pembeli:** Rp136.000.000 s/d Rp204.000.000
+- Setelah biaya notaris/perantara 4%: Rp130.560.000 s/d Rp195.840.000
+- **Hasil bersih ke Bapak (setelah biaya dan pelunasan utang koperasi): Rp112.560.000 s/d Rp177.840.000**
+- Gambaran batas bawah jika usaha ditutup saja dan aset dijual lepas (bukan dijual sebagai usaha berjalan): aset dikurangi utang = Rp30.750.000 — jauh lebih rendah, jadi menjual sebagai usaha berjalan jelas lebih menguntungkan daripada menutup.
+
+**Soal tawaran tetangga "dua kali laba":** itu persis sama dengan batas bawah rentang di atas (kelipatan 2 → Rp136.000.000 sebelum biaya, hasil bersih ±Rp112.560.000). Wajar sebagai titik awal nego, tapi ada ruang naik ke arah 2,5–3x bila Bapak bisa menunjukkan pembukuan rapi dan rencana pendampingan resep yang meyakinkan (mengurangi "diskon ketergantungan pemilik").
+
+**Cek kebutuhan hidup pasca-pensiun:** kebutuhan Rp6.000.000 x 18 bulan = Rp108.000.000. Selisih hasil bersih vs kebutuhan: **Rp4.560.000 s/d Rp69.840.000**.
+PERINGATAN: di batas bawah (skenario tawaran tetangga apa adanya), selisihnya hanya sekitar Rp4,56 juta di atas kebutuhan — tipis sekali. Pajak dari penjualan usaha/aset belum dihitung di sini dan bisa memakan sisa itu. Sebaiknya jangan terima di batas bawah tanpa kepastian pajak, atau naikkan posisi tawar lewat poin pembenahan di atas.
+
+## 4) Pilihan struktur (tanyakan ke notaris/konsultan pajak untuk masing-masing)
+- Jual seluruh usaha (aset + nama/resep + hak sewa bila boleh dialihkan) — paling umum untuk kasus ini.
+- Jual aset-aset saja (gerobak, freezer, dll.) tanpa nama/resep — kemungkinan nilai mendekati Rp48.750.000, jauh lebih rendah; kurang disarankan kecuali tetangga memang hanya mau alat.
+- Dibayar sekaligus vs bertahap (mis. cicilan dari laba bulanan usaha).
+- Masa pendampingan Bapak (misal 1-3 bulan) untuk transfer resep dan kenalan ke pemasok/pelanggan — ini biasanya menaikkan kepercayaan pembeli dan bisa dinegokan sebagai bagian harga.
+
+## 5) Rencana transisi (12 bulan, sesuai target "tahun depan")
+
+| Bulan | Fokus | Tugas konkret |
+|---|---|---|
+| 1 | Foto kondisi | Isi daftar periksa di atas sampai tuntas; kumpulkan laporan 3 tahun; tetapkan batas harga terendah yang diterima |
+| 2-3 | Rapikan | Cocokkan pembukuan dengan rekening; daftar aset+bukti milik; cek sisa kontrak sewa dan tanyakan ke pemilik kios apakah boleh dialihkan |
+| 3-5 | Kurangi ketergantungan | **Tulis resep bumbu dan SOP masak/racik** (disimpan rahasia sampai ada kesepakatan); mulai latih satu orang kepercayaan |
+| 4-6 | Konsultasi profesional | Bawa daftar pertanyaan di bawah ke notaris dan konsultan pajak |
+| 6-9 | Nego dengan tetangga | Diskusikan harga berdasarkan rentang di atas; siapkan perjanjian kerahasiaan sebelum membagikan resep/angka detail |
+| 9-12 | Serah terima | Masa pendampingan Bapak ke tetangga (ajarkan resep langsung); urus pengalihan izin/kontrak sewa/akun usaha; umumkan ke pelanggan tetap |
+
+Rencana darurat: siapkan satu salinan resep dan daftar pemasok di tempat aman (mis. amplop tertutup ke keluarga) untuk jaga-jaga bila Bapak mendadak sakit sebelum serah terima selesai.
+
+## 6) Dokumen yang perlu disiapkan
+- Rekap laba/kas 3 tahun (2023-2025) + bukti pendukung
+- Daftar aset (gerobak, freezer, meja-kursi, motor) dengan bukti milik
+- Rincian utang koperasi (sisa, jatuh tempo, surat keterangan)
+- Salinan kontrak sewa kios (cek klausul pengalihan)
+- NIB/izin usaha (bila ada)
+- Resep & SOP bumbu (dijaga rahasia sampai ada kesepakatan dan perjanjian kerahasiaan)
+- Daftar pelanggan tetap/pemasok bahan (tanpa kontak lengkap sebelum calon serius)
+- Bukti kepemilikan nama "Bakso Mas Darto" / akun media sosial/ojol bila ada
+
+## 7) Pertanyaan untuk notaris & konsultan pajak
+**Notaris:**
+- Usaha perorangan — apakah tetangga (pembeli) perlu NIB dan izin usaha sendiri, dan apa yang terjadi dengan NIB Bapak?
+- Bagaimana kontrak sewa kios dialihkan ke pembeli baru — perlu persetujuan pemilik kios?
+- Bagaimana perjanjian kerahasiaan dan perjanjian pendampingan masa transisi (untuk transfer resep) dibuat?
+- Pasangan (bila menikah): apakah usaha ini harta bersama dan perlu persetujuan tertulis istri untuk menjual?
+- Dokumen apa bukti peralihan aset (gerobak, motor, dll.)?
+
+**Konsultan pajak:**
+- PPh atas keuntungan penjualan usaha/aset — berapa dan bagaimana dihitung untuk kasus ini?
+- Apakah Bapak PKP? Bila ya, apakah penjualan aset (gerobak, freezer, motor) kena PPN?
+- Bagaimana laporan pajak tahun-tahun lalu perlu dirapikan sebelum dijual?
+- Apakah pajak sebaiknya ikut dipertimbangkan saat menetapkan batas harga terendah?
+
+## 8) Catatan penutup
+Rentang Rp136-204 juta (hasil bersih ke Bapak Rp112,5-177,8 juta) adalah bahan diskusi dari angka dan asumsi Bapak sendiri, bukan harga pasti atau jaminan laku. Titik paling genting bukan di angka, tapi di **resep yang cuma Bapak yang tahu** dan **status sewa kios** — keduanya bisa menggeser nilai jauh lebih besar daripada selisih 2x vs 3x.
+
+Tiga hal yang perlu saya ketahui untuk menajamkan ini:
+1. Kontrak sewa kiosnya boleh dialihkan ke pembeli baru, atau pembeli harus bikin kontrak baru dengan pemilik kios?
+2. Bapak bersedia mendokumentasikan resep dan mendampingi tetangga selama masa transisi, atau ingin dijual sebagai rahasia tertutup?
+3. Berapa batas harga terendah yang benar-benar Bapak terima, supaya bisa dibandingkan langsung dengan rentang di atas saat nego?

@@ -1,0 +1,91 @@
+Saya enggak bisa bikin akta jual beli (itu tugas notaris/PPAT, bukan saya) dan enggak ada yang bisa pastikan toko laku Rp500 juta bulan depan — harga dan laku/tidaknya ditentukan pasar, bukan dijamin siapa pun. Tapi saya bisa siapkan bahan supaya prosesnya cepat dan rapi begitu Anda ke notaris, plus kasih gambaran rentang nilai kalau Anda kasih angka labanya.
+
+Berikut persiapannya dengan info yang ada (sangat minim — toko belum disebut jenis, umur, laba, aset, utang). Saya isi apa adanya, sisanya saya tandai perlu diisi.
+
+---
+
+# Persiapan Jual Usaha — Toko Anda
+
+## 1) Ringkasan situasi & asumsi
+- Jenis usaha: [isian: toko apa — kelontong/pakaian/bangunan/dll?]
+- Umur usaha, lokasi (sewa/milik): [isian]
+- Tujuan: dijual (asumsi dari pesan Anda)
+- Target waktu: Anda sebut "bulan depan" — itu **sangat singkat** untuk toko kecil-menengah; kebanyakan butuh 3-12 bulan karena pembeli perlu cek pembukuan, aset, izin dulu. Saya pakai kerangka 3 bulan di bawah sebagai versi dipercepat, tapi realistiskan ekspektasi ke diri sendiri.
+
+## 2) Daftar periksa kesiapan
+| Area | Pertanyaan | Status | Langkah berikut |
+|---|---|---|---|
+| Pembukuan | Catatan uang masuk-keluar 2-3 tahun, cocok dengan mutasi rekening? | Belum diketahui | Kumpulkan segera — ini syarat #1 pembeli serius |
+| Pemisahan uang | Rekening pribadi vs usaha terpisah? | Belum diketahui | |
+| SOP | Kerja inti tertulis? | Belum diketahui | |
+| Ketergantungan pemilik | Toko tetap jalan kalau Anda absen 1 bulan? | Belum diketahui | |
+| Aset | Daftar alat/stok/kendaraan/tempat + bukti milik? | Belum diketahui | |
+| Utang | Semua utang/cicilan/kasbon tercatat? | Belum diketahui | |
+| Kontrak | Sewa tempat (sisa masa, boleh dialihkan?), pemasok, pelanggan besar? | Belum diketahui | |
+| Izin | NIB dan izin lain, atas nama siapa? | Belum diketahui | |
+| Pelanggan/pemasok kunci | 5 terbesar masing-masing? | Belum diketahui | |
+| Karyawan | Daftar, masa kerja, hak tertunda? | Belum diketahui | |
+| Aset tak berwujud | Merek, akun medsos/marketplace, no. WA toko — atas nama siapa? | Belum diketahui | |
+| Penerus/calon pembeli | Sudah ada calon? | Belum diketahui | |
+
+**Prioritas 3-5 (karena Anda butuh cepat):**
+1. Siapkan laporan keuangan 2-3 tahun terakhir (atau minimal tahun berjalan) — tanpa ini, tidak ada pembeli serius yang berani kasih harga pasti.
+2. Pisahkan dan rapikan daftar aset + utang.
+3. Pastikan izin (NIB dll) dan status sewa tempat jelas dan bisa dialihkan.
+4. Cari tahu apakah toko ini harta bersama (jika menikah) — perlu persetujuan pasangan untuk menjual.
+5. Tentukan batas harga terendah yang Anda terima, supaya tidak tergesa saat ditawar.
+
+## 3) Perkiraan rentang nilai
+**Belum bisa dihitung** — saya butuh minimal: laba bersih 1-3 tahun terakhir (atau omzet+margin kasar), nilai aset, dan utang kalau ada. Kelipatan laba yang dipakai pasar juga harus dari Anda/perantara, bukan saya karang.
+
+Begitu ada angka laba, saya hitung langsung dan tunjukkan rumusnya. Target Rp500 juta Anda bisa jadi masuk akal atau tidak, tergantung laba dan aset riil — saya tidak bisa konfirmasi tanpa data.
+
+## 4) Pilihan struktur (tanyakan ke notaris mana yang cocok)
+- Jual seluruh usaha vs sebagian
+- Jual aset-aset toko saja vs badan usaha (kalau berbentuk CV/PT)
+- Bayar sekaligus vs bertahap
+- Masa pendampingan Anda ke pembeli baru (biasa 1-3 bulan, bantu transisi pelanggan/pemasok)
+
+## 5) Rencana transisi (dipercepat, 3 bulan)
+| Bulan | Fokus | Tugas | Penanggung jawab |
+|---|---|---|---|
+| 1 | Foto kondisi | Lengkapi daftar periksa di atas; kumpulkan laporan keuangan; tetapkan harga terendah yang diterima | Anda |
+| 1-2 | Rapikan & konsultasi | Pisahkan uang pribadi-usaha; cek izin/kontrak; bawa daftar pertanyaan ke notaris & konsultan pajak | Anda |
+| 2-3 | Cari pembeli & serah terima | Tawarkan ke calon pembeli; setelah ada kesepakatan, notaris buat akta; urus balik nama izin/rekening | Anda + notaris |
+
+Rencana darurat: siapkan siapa pegang kunci/rekening/kontak penting dan catatannya, kalau Anda tiba-tiba tidak bisa hadir.
+
+## 6) Dokumen yang disiapkan untuk calon pembeli
+- [ ] Laporan keuangan/rekap kas + mutasi rekening
+- [ ] Daftar aset (nama, jumlah, kondisi, bukti milik) dan stok
+- [ ] Daftar utang dan kewajiban
+- [ ] Kontrak sewa tempat, pemasok, pelanggan besar
+- [ ] NIB dan izin usaha lain
+- [ ] Daftar karyawan, masa kerja, kewajiban tertunda
+- [ ] SOP/alur kerja inti
+- [ ] Bukti kepemilikan merek, akun online, nomor WA toko
+- [ ] Perjanjian kerahasiaan sebelum bagi data sensitif (minta notaris siapkan)
+
+## 7) Pertanyaan untuk notaris & konsultan pajak
+**Notaris/PPAT:**
+- Bentuk usaha saya (perorangan/CV/PT) — apa yang harus diubah saat pindah tangan?
+- Apakah pembeli perlu NIB sendiri, dan NIB saya jadi apa?
+- Bagaimana akta jual beli dibuat dan dokumen apa saja yang jadi bukti peralihan aset?
+- **Kalau Anda menikah:** apakah toko ini harta bersama dan butuh persetujuan tertulis pasangan untuk dijual?
+- Bagaimana kontrak sewa/pemasok/pelanggan dialihkan ke pembeli baru?
+
+**Konsultan pajak:**
+- Kewajiban pajak saat jual usaha/aset: PPh atas keuntungan, PPh final bila ada tanah/bangunan, BPHTB bagi pembeli.
+- Kalau PKP: apakah penjualan aset (mesin/kendaraan/peralatan) kena PPN?
+- Bagaimana laporan pajak tahun lalu perlu dirapikan dulu sebelum dijual?
+
+**Ketenagakerjaan (kalau ada karyawan):**
+- Apakah karyawan otomatis ikut ke pemilik baru, hak apa yang beralih?
+
+## 8) Catatan penutup
+Target "laku Rp500 juta bulan depan" ini saya enggak bisa jamin — baik harga maupun waktunya tergantung kondisi toko dan pasar, bukan sesuatu yang bisa dipastikan di awal. Yang bisa dipercepat: rapikan dokumen di atas secepatnya supaya begitu ada calon pembeli, Anda enggak kehilangan waktu.
+
+Biar saya bisa kasih rentang nilai yang lebih konkret (apakah Rp500 juta realistis), tolong jawab:
+1. Jenis toko dan berapa laba bersih per tahun (1-3 tahun terakhir, atau minimal omzet & margin kasar)?
+2. Ada aset (alat/stok/kendaraan/sewa tempat) senilai berapa, dan utang berapa?
+3. Toko ini milik pribadi atau harta bersama dengan pasangan?

@@ -1,0 +1,98 @@
+# Persiapan Pengalihan Bagian Sekutu "CV Mitra Teknik"
+
+## 1. Ringkasan situasi & asumsi
+- Jalur: **beli bagian sekutu** — Rudi (60%) membeli bagian Yanto (40%) yang keluar dari CV Mitra Teknik.
+- Laba yang Anda berikan sudah dipotong gaji kalian berdua (Rp7 juta/bulan masing-masing). Karena Yanto keluar, gajinya (Rp84.000.000/tahun) ditambahkan kembali ke laba, lalu dikurangi gaji kepala teknisi pengganti (Rp72.000.000/tahun). Gaji Rudi tetap dianggap biaya karena ia tetap bekerja di CV.
+- Kelipatan 2-2,5x laba: **kesepakatan Anda berdua**, bukan angka pasar — saya pakai apa adanya.
+- Biaya notaris dkk. 3%: asumsi Anda.
+- Utang leasing mobil Rp60.000.000: karena ini pembelian **sebagian** (bukan jual usaha utuh), utang tetap berada di CV dan dikurangkan dari nilai usaha dulu, baru dikalikan porsi 40%.
+- Kerangka waktu belum disebut — saya pakai **6 bulan** sebagai default; sebutkan kalau beda.
+- Baru 2 tahun data laba (2024-2025): rentang nilai kurang kuat untuk meyakinkan pihak lain (mis. bank bila Anda butuh pinjaman untuk bayar Yanto).
+
+## 2. Daftar periksa kesiapan
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan | Setengah (ada 2 tahun) | Lengkapi/rapikan 1 tahun lagi bila ada; cocokkan dengan mutasi rekening CV |
+| Ketergantungan pada Yanto | Belum diketahui | Pelanggan/proyek mana yang selama ini dipegang langsung oleh Yanto? |
+| SOP teknis | Belum diketahui | Tulis SOP pasang & servis AC sebelum Yanto benar-benar keluar |
+| Aset operasional | Siap (nilai & penyusutan disebutkan: Rp180.000.000, turun 20%) | Lengkapi bukti milik (BPKB mobil, kuitansi alat) |
+| Utang leasing | Setengah (jumlah diketahui) | Leasing atas nama CV atau pribadi (Rudi/Yanto)? Sisa tenor berapa bulan? |
+| Akta CV & izin | Belum diketahui | Cek akta pendirian: aturan soal sekutu keluar, hak beli lebih dulu, NIB atas nama siapa |
+| Kontrak pelanggan/garansi berjalan | Belum diketahui | Daftar proyek pemasangan yang masih dalam masa garansi, siapa penanggung jawabnya setelah Yanto keluar |
+| Karyawan | Setengah (pengganti sudah ditentukan: kepala teknisi, Rp6 juta/bulan) | Teknisi lain yang ada, status kerja, hak yang tertunda |
+
+**Prioritas pembenahan:**
+1. Baca akta pendirian CV: apa katanya soal sekutu keluar dan siapa yang berhak membeli bagiannya.
+2. Buat daftar proyek/pelanggan yang selama ini dipegang Yanto, lalu rencanakan serah terima ke kepala teknisi pengganti.
+3. Cek status leasing mobil (atas nama siapa, bisa dilanjut CV tanpa Yanto atau perlu diubah).
+4. Tulis SOP inti servis/pasang AC sebelum pengetahuan Yanto hilang dari CV.
+
+## 3. Perkiraan rentang nilai
+*(bahan diskusi dan negosiasi antar sekutu — bukan harga pasti, bukan nasihat pajak)*
+
+Laba setelah penyesuaian: 2024 **Rp252.000.000**; 2025 **Rp282.000.000** → rata-rata/basis **Rp267.000.000**.
+
+| Metode | Rumus | Hasil (100% CV, sebelum utang) |
+|---|---|---|
+| Kelipatan laba normalisasi | Rp267.000.000 × 2 s/d 2,5 | Rp534.000.000 s/d Rp667.500.000 |
+| Nilai aset setelah penyesuaian (batas bawah bila hanya aset dijual) | Rp180.000.000 × (100-20)/100 | Rp144.000.000 (sebelum utang) |
+
+**Nilai usaha CV 100% (sebelum utang): Rp534.000.000 s/d Rp667.500.000.**
+
+Karena ini jual-beli sebagian (bukan utuh), utang leasing Rp60.000.000 dikurangkan dulu dari nilai sebelum dikalikan porsi 40%:
+
+- (Rp534.000.000 − Rp60.000.000) × 40% = **Rp189.600.000**
+- (Rp667.500.000 − Rp60.000.000) × 40% = **Rp243.000.000**
+
+Setelah biaya notaris dkk. 3%:
+
+- **Bagian Yanto, perkiraan bersih: Rp183.912.000 s/d Rp235.710.000**
+
+Catatan: gambaran "aset dikurangi utang" bila CV bubar/aset dijual habis = Rp180.000.000×0,8 − Rp60.000.000 = Rp84.000.000 untuk seluruh CV — jauh di bawah batas bawah kelipatan laba, jadi metode kelipatan laba yang relevan di sini, bukan nilai aset likuidasi.
+
+**Peringatan:**
+- Hanya 2 tahun data laba — rentang kurang kuat.
+- Pajak atas transaksi ini belum dihitung.
+- Siapa menanggung biaya notaris 3% (Rudi, Yanto, atau dibagi) perlu disepakati eksplisit — di atas saya asumsikan ditanggung dari harga yang diterima Yanto.
+
+## 4. Pilihan struktur (tanyakan ke notaris/konsultan pajak)
+- **Bayar sekaligus** vs **cicil**. Contoh cicil 12 bulan dari rentang bagian Yanto: Rp15.326.000 s/d Rp19.642.500/bulan (belum termasuk bunga bila disepakati ada).
+- **Masa pendampingan** Yanto 1-3 bulan untuk serah terima pelanggan & teknis ke kepala teknisi baru.
+- **Status CV setelah Yanto keluar**: CV butuh minimal 2 sekutu (sekutu komanditer & komplementer). Bila Yanto keluar dan tidak ada pengganti sekutu, status CV perlu ditanyakan ke notaris — apakah bisa tetap jadi CV dengan sekutu baru, atau perlu diubah bentuk usahanya.
+- **Jaminan pribadi**: bila Yanto pernah jadi penjamin pribadi untuk leasing mobil atau utang CV lain, pelepasannya perlu persetujuan kreditur (leasing).
+
+## 5. Rencana transisi (6 bulan)
+
+| Bulan | Fokus | Tugas |
+|---|---|---|
+| 1 | Sepakati angka & baca akta | Sepakati harga final dari rentang di atas; baca akta CV soal sekutu keluar |
+| 2 | Konsultasi profesional | Temui notaris & konsultan pajak dengan bahan di bawah |
+| 2-3 | Serah terima operasional | Yanto serahkan daftar proyek/pelanggan & garansi berjalan ke kepala teknisi baru; mulai tulis SOP |
+| 3-4 | Akta & pembayaran | Akta perubahan CV (sekutu keluar + sekutu baru/perubahan bentuk bila perlu); pembayaran tahap pertama ke Yanto |
+| 4-5 | Perubahan administratif | Update NIB, rekening CV, leasing (bila perlu ganti penjamin) |
+| 5-6 | Umumkan & tutup transisi | Informasikan ke pelanggan tetap & pemasok; selesaikan sisa pembayaran |
+
+## 6. Dokumen yang disiapkan
+- Akta pendirian & perubahan CV, NIB
+- Laporan keuangan/laba-rugi 2024-2025 (idealnya tambah 2023 bila ada)
+- Daftar aset & bukti milik (BPKB mobil, nota alat)
+- Perjanjian leasing mobil (sisa tenor, penjamin)
+- Daftar proyek/pelanggan berjalan + garansi yang masih aktif
+- Daftar karyawan/teknisi & hak yang tertunda
+
+## 7. Pertanyaan untuk notaris & konsultan pajak
+- Apa yang diatur akta pendirian CV soal sekutu keluar — apakah Rudi otomatis berhak membeli, atau perlu persetujuan/prosedur tertentu?
+- Dengan tinggal 1 sekutu (Rudi), apa status CV ini — perlu sekutu baru atau ubah bentuk badan usaha? Bagaimana akta perubahan dan pendaftarannya?
+- Bagaimana melepaskan jaminan pribadi Yanto (bila ada) atas leasing/utang CV, dan apakah kreditur leasing harus menyetujui peralihan?
+- Apa kewajiban pajak Rudi dan Yanto atas pembelian bagian sekutu ini (PPh atas keuntungan Yanto; apakah ada kewajiban lain)?
+- Apakah perjanjian kerja teknisi yang ada otomatis berlanjut tanpa perubahan hak mereka?
+- Apakah harta bersama berlaku — perlu persetujuan tertulis pasangan Rudi dan/atau pasangan Yanto atas transaksi ini?
+
+## 8. Catatan penutup
+Ini bahan diskusi dan persiapan, **bukan** nasihat hukum/pajak atau penilaian resmi usaha. Kelipatan 2-2,5x dan biaya 3% sepenuhnya asumsi Anda berdua, bukan angka pasar. Pajak dan BPHTB (bila ada aset tanah/bangunan) belum dihitung. Dasar aturan yang saya sebut di atas (sekutu CV, jaminan utang) masih "belum terverifikasi" di catatan acuan saya per Oktober 2026 — pastikan ditanyakan langsung ke notaris.
+
+Tiga hal yang perlu saya tahu untuk memperjelas:
+1. Leasing mobil Rp60 juta itu atas nama CV, Rudi pribadi, atau Yanto pribadi?
+2. Siapa yang menanggung biaya notaris 3% — Rudi, Yanto, atau dibagi?
+3. Target penyelesaian pengalihan ini kapan (apakah 6 bulan cocok, atau Anda mau lebih cepat)?

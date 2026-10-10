@@ -1,0 +1,60 @@
+Oke, saya hitung pakai metode yang kalian sepakati (earnings multiple + aset bersih), dengan asumsi laba sudah net dari gaji kalian berdua jadi tinggal disesuaikan untuk pergantian Yanto → kepala teknisi.
+
+## Langkah hitung
+
+**1. Laba dasar (rata-rata 2024–2025)**
+(240 jt + 270 jt) / 2 = **255 jt/tahun**
+
+**2. Penyesuaian biaya setelah Yanto keluar**
+Gaji Yanto yang tadinya expense 7 jt/bln (84 jt/thn) hilang, diganti gaji kepala teknisi baru 6 jt/bln (72 jt/thn) → **hemat 12 jt/thn**.
+
+→ Laba disesuaikan (maintainable profit) = 255 + 12 = **267 jt/tahun**
+
+**3. Nilai dari laba (multiple 2x–2,5x)**
+- 267 × 2,0 = 534 jt
+- 267 × 2,25 = 600,75 jt (tengah)
+- 267 × 2,5 = 667,5 jt
+
+**4. Aset bersih (alat, mobil operasional, dll)**
+180 jt turun 20% → nilai wajar sekarang = 144 jt
+Dikurangi utang leasing mobil 60 jt
+→ **Net aset = 84 jt**
+
+**5. Nilai total CV (100%)**
+
+| Skenario | Nilai dari laba | + Net aset | = Total CV |
+|---|---|---|---|
+| Rendah (2x) | 534 jt | 84 jt | **618 jt** |
+| Tengah (2,25x) | 600,75 jt | 84 jt | **684,75 jt** |
+| Tinggi (2,5x) | 667,5 jt | 84 jt | **751,5 jt** |
+
+**6. Bagian Yanto (40%)**
+
+| Skenario | 40% dari Total CV | + biaya notaris 3% | Total dana disiapkan |
+|---|---|---|---|
+| Rendah | 247,2 jt | 7,4 jt | ≈ **254,6 jt** |
+| Tengah | 273,9 jt | 8,2 jt | ≈ **282,1 jt** |
+| Tinggi | 300,6 jt | 9,0 jt | ≈ **309,6 jt** |
+
+## Kesimpulan angka
+Bagian Yanto wajar di kisaran **Rp 247–301 juta**, titik tengah masuk akal **≈ Rp 274 juta**. Kalau dihitung total dana yang perlu Rudi siapkan (termasuk biaya notaris dkk), kira-kira **Rp 255–310 juta**, tengah **≈ Rp 282 juta**.
+
+Catatan penting:
+- Siapa yang nanggung 3% notaris (Rudi saja atau dibagi) perlu disepakati dulu — di atas saya asumsikan ditanggung Rudi sebagai pembeli.
+- Kalau mau lebih presisi, bisa cek dulu: ada piutang/tagihan belum masuk? tunggakan pajak? kontrak klien jalan yang nilainya besar? Itu bisa geser angka di luar perhitungan sederhana ini.
+
+## Yang harus diurus (legal & administrasi, karena bentuknya CV)
+
+1. **Akta perubahan CV di notaris** — akta pengunduran diri Yanto sebagai sekutu + akta pengalihan porsi ke Rudi (atau sekutu baru kalau direkrut pengganti sebagai sekutu, bukan sekadar karyawan).
+2. **Perjanjian jual-beli bagian sekutu** — nilai transaksi, skema pembayaran (tunai atau cicilan), dan klausul **pembebasan Yanto dari tanggung jawab utang CV ke depan** (penting karena sekutu aktif CV tanggung jawabnya tidak terbatas).
+3. **Daftar ke AHU (Kemenkumham)** — update data CV pasca perubahan sekutu.
+4. **Update NIB/OSS** — ubah data pengurus/penanggung jawab di sistem OSS.
+5. **Update NPWP badan usaha** — lapor perubahan susunan pengurus ke KPP.
+6. **Urusan leasing mobil (utang 60 jt)** — konfirmasi ke pihak leasing bahwa kewajiban tetap di CV/Rudi, bukan Yanto lagi — apalagi kalau Yanto ikut jadi penjamin/pihak di kontrak.
+7. **Rekening bank CV** — kalau Yanto salah satu penanda tangan, ganti otorisasi.
+8. **Sertifikasi teknis** — kalau ada sertifikasi K3/kompetensi AC (BNSP) atas nama Yanto yang dipakai untuk izin usaha/klien korporat, pastikan kepala teknisi baru punya sertifikasi setara.
+9. **Due diligence ringan** sebelum serah terima: cek piutang, utang lain, kontrak klien aktif, kewajiban pajak tertunda.
+10. **Konsultasi pajak** — pengalihan bagian sekutu CV bisa kena implikasi pajak tertentu; sebaiknya ditanyakan langsung ke notaris/konsultan pajak saat proses akta, karena aturannya beda dengan jual-beli saham PT.
+11. **Transisi operasional** — training kepala teknisi baru, komunikasi ke klien & karyawan soal perubahan.
+
+Mau saya bantu susun draf poin-poin perjanjian jual-beli bagian sekutunya juga, atau cukup angka dan checklist ini dulu?

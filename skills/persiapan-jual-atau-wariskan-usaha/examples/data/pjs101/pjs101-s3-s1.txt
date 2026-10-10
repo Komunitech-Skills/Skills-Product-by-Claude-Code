@@ -1,0 +1,60 @@
+Oke, bantu siapkan. Baru dengan info "kafe, mau oper" aja, jadi aku kerjakan bagian yang bisa dan tandai sisanya. Nilai pastinya belum bisa dihitung tanpa angka laba — itu aku taruh di pertanyaan akhir.
+
+# Persiapan Jual/Wariskan Usaha — Kafe [isian: nama kafe]
+
+**1. Ringkasan & asumsi**
+Jalur: dijual (asumsi, sebut kalau beda — wariskan/serahkan ke karyawan juga beda treatment). Kerangka waktu: 12 bulan (default, sebut kalau mau lebih cepat). Umur usaha, lokasi sewa/milik: [isian].
+
+**2. Daftar periksa kesiapan** (semua "Belum diketahui" dulu — isi nanti biar makin akurat)
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan 2-3 tahun | Belum diketahui | Kumpulkan catatan kas/mutasi rekening |
+| Pemisahan uang pribadi-usaha | Belum diketahui | Cek rekening |
+| SOP kerja inti (racikan, kasir, stok) | Belum diketahui | Tulis kalau belum ada |
+| Ketergantungan ke kamu pribadi | Belum diketahui | Tanya: kafe tetap jalan kalau kamu absen 1 bulan? |
+| Aset (alat, kendaraan, interior) | Belum diketahui | Buat daftar + bukti milik |
+| Utang/cicilan | Belum diketahui | Catat sisa & pemberi pinjaman |
+| Kontrak sewa tempat & pemasok | Belum diketahui | Cek sisa masa sewa, boleh dialihkan? |
+| Izin (NIB, dll) | Belum diketahui | Cek masih berlaku, atas nama siapa |
+| Karyawan | Belum diketahui | Daftar + hak tertunda |
+| Merek/akun medsos/WA usaha | Belum diketahui | Cek atas nama siapa |
+
+**3-5 prioritas pembenahan (umum untuk kafe):**
+1. Rapikan pembukuan laba 2-3 tahun terakhir — ini kunci untuk hitung nilai.
+2. Pisahkan uang pribadi dari uang kafe kalau belum.
+3. Tulis SOP racikan/kasir/stok supaya kafe tidak bergantung penuh ke kamu.
+
+**3. Perkiraan rentang nilai**
+Belum bisa dihitung — butuh minimal laba bersih per tahun (1-3 tahun terakhir). Lihat pertanyaan di bawah.
+
+**4. Pilihan struktur** (tanyakan ke notaris/konsultan pajak sebelum memutuskan)
+- Jual seluruh usaha vs jual aset-aset saja (meja-kursi-mesin kopi vs badan usahanya).
+- Bayar sekaligus vs bertahap/cicil dari laba pembeli baru.
+- Masa pendampingan kamu setelah serah terima (biasanya menaikkan rasa percaya pembeli).
+
+**5. Rencana transisi (12 bulan)**
+
+| Bulan | Fokus | Tugas |
+|---|---|---|
+| 1 | Foto kondisi | Isi daftar periksa, kumpulkan laporan laba, tetapkan harga terendah yang kamu terima |
+| 2-3 | Rapikan | Pisah uang pribadi-usaha, lengkapi aset & utang, cek izin & kontrak sewa |
+| 3-5 | Kurangi ketergantungan | Tulis SOP, delegasikan ke staf senior |
+| 4-6 | Konsultasi profesional | Bawa daftar pertanyaan ke notaris & konsultan pajak |
+| 6-9 | Cari pembeli | Kenalkan calon pembeli ke pemasok/pelanggan tetap (setelah ada kerahasiaan) |
+| 9-12 | Serah terima | Pendampingan, ubah nama izin/rekening/akun, umumkan ke karyawan |
+
+**6. Dokumen yang disiapkan**
+Laporan kas 2-3 tahun, daftar aset & utang, kontrak sewa/pemasok, NIB & izin, daftar karyawan, SOP, daftar pelanggan/pemasok kunci (tanpa kontak lengkap dulu), bukti merek/akun medsos/WA usaha, dan perjanjian kerahasiaan sebelum data sensitif dibagikan ke calon pembeli.
+
+**7. Pertanyaan untuk notaris & konsultan pajak**
+- Notaris: usaha perorangan atau CV/PT? Apa yang harus diubah saat pindah tangan, dan apakah pembeli perlu NIB sendiri? Kalau menikah: apakah kafe termasuk harta bersama dan perlu persetujuan pasangan untuk dijual?
+- Konsultan pajak: pajak apa yang berlaku atas keuntungan penjualan usaha/aset (PPh), dan kalau PKP apakah penjualan mesin/alat kena PPN?
+- Penilai/perantara: kelipatan laba yang lazim untuk kafe di daerahmu, dan kisaran biaya jasa mereka.
+
+**8. Catatan penutup**
+Ini bukan nasihat hukum/pajak/penilaian resmi — arahkan ke notaris, konsultan pajak, atau penilai berizin sebelum tanda tangan apa pun. Supaya aku bisa kasih **rentang nilai**, tolong jawab:
+
+1. Laba bersih per tahun (1-3 tahun terakhir) — kira-kira berapa tiap tahun?
+2. Ada aset berharga (mesin kopi, interior, kendaraan) dan utang/cicilan yang masih jalan? Nilainya kira-kira berapa?
+3. Pernah ada perantara/calon pembeli yang sebut kelipatan laba atau tawaran harga? Kalau belum, aku bisa pakai ilustrasi (kelipatan 1,5-3,5x) yang jelas-jelas bukan angka pasar.
