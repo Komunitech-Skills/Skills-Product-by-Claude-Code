@@ -1,0 +1,49 @@
+Analisis cepat sebelum pesannya:
+
+**Urutan prioritas penagihan (duluan ke belakang):**
+
+1. **Pak Brian (Kopitiam Digital)** — paling lama nunggak (jatuh tempo 20 Agustus = **51 hari telat**), baru bayar separuh, dan baru saja **mengingkari janji bayar** (5 Okt). Ini sinyal risiko tertinggi, harus ditindaklanjuti segera dengan nada tegas tapi tetap sopan.
+2. **PT Cahaya Digital** — nominal terbesar (Rp 8,5 juta), **22 hari kena denda** sesuai pasal 6 kontrak, dan sudah 2x WA tidak dibalas sama sekali (red flag komunikasi). Saatnya kirim pesan formal yang menyebutkan denda kontraktual, sebelum lanjut ke eskalasi (telepon/surat somasi ringan).
+3. **Kak Mira** — paling ringan: baru 7 hari telat, belum pernah ditagih sama sekali, orangnya kooperatif. Cukup reminder ramah tanpa tekanan.
+
+Perhitungan denda PT Cahaya Digital (pasal 6): jatuh tempo 15 Sep, tenggang 3 hari → denda berjalan sejak 19 Sep. Sampai 10 Okt = 22 hari × 0,1% = 2,2% → denda Rp 187.000. **Total tagihan sekarang: Rp 8.687.000** (akan terus naik sampai cap 5% / Rp 425.000, dicapai sekitar awal November kalau tetap belum dibayar).
+
+---
+
+**1️⃣ Pesan ke PT Cahaya Digital (kirim duluan, nada formal)**
+
+Yth. Bapak/Ibu PT Cahaya Digital,
+
+Menindaklanjuti invoice INV-2026-014 (desain logo & brand guide) sebesar Rp 8.500.000 yang jatuh tempo pada 15 September 2026, hingga saat ini pembayaran belum kami terima. Kami sudah mengirimkan pengingat pada 22 September dan 1 Oktober namun belum mendapat tanggapan.
+
+Sesuai Pasal 6 perjanjian kerja sama, keterlambatan pembayaran setelah masa tenggang 3 hari dikenakan denda 0,1% per hari (maksimal 5%). Per hari ini (10 Oktober 2026), denda yang berjalan adalah Rp 187.000, sehingga total tagihan menjadi:
+
+*Rp 8.687.000*
+
+Mohon konfirmasi rencana pembayaran paling lambat *3 hari kerja* dari pesan ini. Jika ada kendala, kami terbuka untuk berdiskusi — tapi mohon infonya agar bisa kami tindak lanjuti dengan baik. Terima kasih.
+
+---
+
+**2️⃣ Pesan ke Pak Brian (Kopitiam Digital)**
+
+Selamat siang Pak Brian,
+
+Menindaklanjuti invoice INV-2026-011 sebesar Rp 6.000.000 (jatuh tempo 20 Agustus 2026). Sudah ada pembayaran Rp 2.000.000, terima kasih — sisa tagihan saat ini *Rp 4.000.000*.
+
+Sebelumnya Bapak sempat menjanjikan pelunasan pada 5 Oktober, namun sampai hari ini (10 Oktober) belum ada pembayaran masuk. Ini sudah pengingat ke-4 dari saya.
+
+Saya mengerti bisa saja ada kendala di sisi Bapak, tapi saya perlu kepastian tanggal pelunasan yang bisa dipegang kali ini. Mohon konfirmasi tanggal pastinya paling lambat *besok*, supaya saya bisa menyesuaikan jadwal penagihan saya. Terima kasih atas pengertiannya, Pak.
+
+---
+
+**3️⃣ Pesan ke Kak Mira (Toko Kue Mira) — paling santai, kirim terakhir**
+
+Hai Kak Mira! 😊
+
+Mau reminder santai aja nih soal invoice INV-2026-017 sebesar Rp 2.400.000 (desain untuk Toko Kue Mira), jatuh temponya kemarin 3 Oktober ya kak. Mungkin kelewat aja di tengah kesibukan 😄
+
+Kalau Kakak bisa transfer dalam beberapa hari ke depan, aku sangat terbantu. Kalau ada kendala atau mau nego waktu, kabari aja ya, santai kok. Makasih banyak Kak Mira! 🙏
+
+---
+
+Mau aku sesuaikan nada salah satu pesan (lebih keras/lebih lunak), atau sekalian siapin draft lanjutan kalau PT Cahaya Digital tetap tidak merespons dalam 3 hari?

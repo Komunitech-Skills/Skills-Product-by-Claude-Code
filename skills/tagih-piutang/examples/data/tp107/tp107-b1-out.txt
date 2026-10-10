@@ -1,0 +1,42 @@
+Sudah saya cek CSV-nya. Berikut ringkasannya:
+
+## Urutan prioritas penagihan (hari ini, 10 Okt 2026)
+
+| # | Nota | Pelanggan | Sisa Tagihan | Telat | Catatan |
+|---|------|-----------|--------------|-------|---------|
+| 1 | NT-0460 | PT Bangun Persada | Rp61.500.000 | 1 hari | Nilai **terbesar**, baru lewat tempo — tagih sekarang sebelum menumpuk |
+| 2 | NT-0388 | Pak Haji Umar | Rp17.800.000 | **101 hari** | Paling lama nunggak, sudah 3x diingatkan & ingkar janji — risiko macet tinggi |
+| 3 | NT-0431 | CV Karya Mandiri | Rp42.300.000 | 35 hari | Nilai besar tapi **belum pernah ditagih sama sekali** |
+| 4 | NT-0412 | Pak Slamet (proyek Sudirman) | Rp13.750.000 | 59 hari | Sudah ingkar janji bayar (janji 30 Sep, tidak ditepati) |
+| 5 | NT-0422 | Bu Wati | Rp640.000 | 51 hari | Kecil, tapi tetangga toko — gampang ditagih langsung |
+| 6 | NT-0441 | Pak Anton | Rp4.200.000 | 22 hari | Sudah diingatkan 1x |
+| 7 | NT-0450 | Bu Ratna | Rp2.350.000 | 12 hari | Pelanggan lama, masih wajar |
+
+**Belum jatuh tempo** (belum perlu ditagih, cukup reminder H-1/H-2): Pak Dedi NT-0455 (jatuh tempo 15 Okt) dan CV Sinar Baja NT-0470 (jatuh tempo 13 Okt).
+**Lunas:** UD Maju Jaya NT-0399.
+
+## Total yang sudah telat
+**Rp142.540.000** (7 nota yang sudah lewat jatuh tempo).
+*(Kalau ditambah yang belum jatuh tempo Rp15.000.000, total piutang beredar seluruhnya Rp157.540.000)*
+
+## Pesan WA untuk 3 piutang terbesar yang telat
+
+**1. PT Bangun Persada**
+```
+Selamat siang, Bapak/Ibu PT Bangun Persada.
+Kami ingin mengingatkan invoice No. NT-0460 untuk termin 2 proyek gudang sebesar Rp61.500.000, jatuh tempo 9 Oktober 2026 (sudah lewat 1 hari). Mohon konfirmasi rencana pembayarannya ya Pak/Bu agar bisa segera kami proses. Terima kasih 🙏
+```
+
+**2. CV Karya Mandiri**
+```
+Selamat siang, Bapak/Ibu CV Karya Mandiri.
+Kami ingin menginformasikan invoice No. NT-0431 sebesar Rp42.300.000, jatuh tempo 5 September 2026, saat ini sudah telat 35 hari dan belum ada pembayaran. Mohon kesediaannya untuk segera melunasi atau menginformasikan jadwal pembayarannya. Terima kasih atas kerja samanya 🙏
+```
+
+**3. Pak Haji Umar**
+```
+Selamat siang, Pak Haji Umar.
+Mohon maaf mengingatkan kembali untuk invoice No. NT-0388, sisa tagihan Rp17.800.000 (dari total Rp27.800.000, sudah dibayar Rp10.000.000), jatuh tempo 1 Juli 2026 dan sekarang sudah telat 101 hari. Kami sudah beberapa kali menghubungi dan sempat dijanjikan pelunasan akhir September, namun belum terealisasi. Mohon kepastian Bapak untuk segera menyelesaikan tagihan ini. Terima kasih 🙏
+```
+
+Mau saya buatkan juga pesan WA untuk sisanya (Pak Slamet, Bu Wati, Pak Anton, Bu Ratna), atau format tabel ini jadi file terpisah?
