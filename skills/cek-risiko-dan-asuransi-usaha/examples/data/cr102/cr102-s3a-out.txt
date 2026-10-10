@@ -1,0 +1,35 @@
+Asumsi: toko bangunan di ruko/gudang kota besar, sekitar 2 karyawan untuk bongkar-muat, status BPJS belum diketahui (koreksi saya kalau beda).
+
+**Tabel risiko**
+
+| No | Risiko | Kemungkinan | Dampak | Skor/Tingkat | Langkah murah | Perlu asuransi? |
+|---|---|---|---|---|---|---|
+| 1 | Kebakaran (cat, tiner, instalasi listrik) | 3 | 4 | 12 TINGGI | APAR + cek tanggal isi ulang, kabel tidak bertumpuk, cat/tiner jauh dari sumber api | Ya, pertimbangkan |
+| 2 | Karyawan cedera saat bongkar-muat/angkat berat | 3 | 3 | 9 SEDANG | Sarung tangan, sepatu safety, cara angkat yang benar | **BPJS** (kewajiban pemberi kerja — JKK untuk kecelakaan kerja, BPJS Kesehatan untuk sakit; cek aturan terbaru) |
+| 3 | Pencurian stok dan kas | 3 | 3 | 9 SEDANG | CCTV, kunci ganda gudang, setor kas harian, stock opname berkala | Tidak perlu |
+| 4 | Gempa bumi (rak/tumpukan material runtuh) | 2 | 4 | 8 SEDANG | Ikat rak tinggi ke dinding, barang berat di bawah, jalur keluar bebas | Ya, pertimbangkan |
+| 5 | Bergantung 1 orang kunci (pemilik/kepala toko) | 2 | 3 | 6 SEDANG | Tulis SOP, latih 1 cadangan, kontak darurat | Tidak ada asuransi umum; mitigasi lain |
+| 6 | Bergantung 1 pemasok utama (semen/besi) | 2 | 3 | 6 SEDANG | Cari pemasok kedua | Tidak ada asuransi umum; mitigasi lain |
+| 7 | Kecelakaan truk/kendaraan pengantar material | 2 | 3 | 6 SEDANG | Servis rutin, pastikan SIM & muatan sesuai batas | Tidak perlu |
+| 8 | Stok rusak kena air/bocor (semen, gypsum, kayu, cat) | 2 | 3 | 6 SEDANG | Palet, atap/terpal cek bocor, stok rawan air di rak tinggi | Tidak perlu |
+| 9 | Tanggung jawab ke pelanggan (material jatuh/cedera, barang cacat) | 2 | 3 | 6 SEDANG | Area tumpukan aman, kebijakan retur tertulis | Tidak perlu |
+
+**Dana darurat:** belum bisa dihitung pasti — perlu biaya tetap bulanan Anda (sewa, gaji, listrik, cicilan). Formula: target = biaya tetap bulanan × bulan (3 bulan normal, 6 bulan kalau penjualan musiman atau bergantung 1-2 pelanggan besar). Kasih saya angkanya, saya hitung langsung termasuk kekurangan dan cicilan menabung per bulan.
+
+**Jenis perlindungan umum yang relevan** (nama generik, bukan merek):
+- **Asuransi kebakaran/properti** — bangunan, stok (cat, semen, besi, dll) dari kebakaran; perluasan gempa/banjir dicek terpisah per polis.
+- **Tanggung gugat umum** — kalau material/barang Anda menyebabkan pelanggan cedera atau rugi.
+- **Asuransi kendaraan** — kalau punya truk/pickup antar material (all risk atau kerugian total saja).
+- **Program jaminan sosial (BPJS)** — Kesehatan + Ketenagakerjaan (JKK, JKM, JHT, JP, JKP) untuk karyawan; ini wajib, bukan opsional.
+
+**Prioritas 3 langkah minggu ini:**
+1. Pasang APAR dan cek instalasi listrik/area cat-tiner (risiko kebakaran tertinggi).
+2. Daftarkan karyawan ke BPJS Ketenagakerjaan & Kesehatan kalau belum.
+3. Ikat rak/tumpukan material tinggi ke dinding, cegah runtuh saat gempa/tersenggol.
+
+Disclaimer: ini bukan nasihat asuransi/keuangan/hukum — hitungan skala awam, bukan hitungan aktuaria. Beli polis hanya lewat perusahaan berizin OJK dan agen terdaftar.
+
+Pertanyaan saya (maks 3):
+1. Berapa biaya tetap bulanan (sewa, gaji, listrik, cicilan) — buat hitung dana darurat pasti?
+2. Ada berapa karyawan, dan sudah terdaftar BPJS atau belum?
+3. Toko ini punya kendaraan/truk sendiri untuk antar material?

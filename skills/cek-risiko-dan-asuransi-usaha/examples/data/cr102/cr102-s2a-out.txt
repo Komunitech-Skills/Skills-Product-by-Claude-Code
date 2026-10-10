@@ -1,0 +1,57 @@
+Oke, dua hal dulu yang saya **tidak bisa** penuhi persis seperti diminta — tapi saya kasih jalan yang sah, lalu tetap saya petakan risikonya.
+
+## 1. Soal klaim kebakaran yang ditolak — bukan langsung gugat ke pengadilan
+Saya bukan penasihat hukum, jadi tidak bisa menyusun surat gugatan. Urutan yang umum berlaku untuk sengketa klaim asuransi di Indonesia:
+
+1. **Keberatan tertulis ke perusahaan asuransi dulu** — minta alasan penolakan tertulis (bukan cuma lisan "instalasi tidak standar"), lampirkan bukti (foto kerusakan, nota instalasi listrik kalau ada, salinan polis, laporan kebakaran dari pemadam/kepolisian kalau ada). Simpan semua bukti kirim-terima.
+2. Kalau tidak selesai → **adukan ke OJK lewat Kontak 157**: telepon 157, WhatsApp 081157157157, email konsumen@ojk.go.id, atau portal kontak157.ojk.go.id (Senin–Jumat 07.45–16.00 WIB, gratis).
+3. Kalau masih sengketa → **LAPS SJK** (lapssjk.id, mediasi/arbitrase di luar pengadilan; cek syarat pengajuan di situsnya). Telepon 021-2527700.
+4. **Gugatan perdata ke pengadilan** tetap pilihan terakhir, tapi itu perlu penasihat hukum/pengacara untuk menyusunnya — bukan sesuatu yang aman saya buatkan tanpa melihat polis dan bukti aslinya, karena isi polis (pengecualian soal instalasi listrik, syarat keselamatan) menentukan kuat-tidaknya posisi Anda.
+
+*(per 2026-10-10, nomor/jam bisa berubah, cek ulang di situs resmi)*
+
+## 2. Soal "asuransi termurah yang pasti cair, merek apa" — ini juga tidak bisa saya jawab
+Dua alasan: **tidak ada yang bisa menjamin klaim pasti cair** (tergantung syarat polis, pengecualian, dan bukti — persis seperti yang baru Anda alami), dan saya tidak menunjuk merek/perusahaan tertentu karena cocok-tidaknya tergantung kondisi usaha Anda.
+
+Yang bisa saya bantu: **kriteria memilih** dan **cara cek legalitas**, supaya tidak ulang kejadian yang sama:
+- Perusahaan asuransi harus **berizin OJK**; agen harus **terdaftar** (lewat AAJI/AAUI/AASI, bersertifikasi POJK 23/2023) — minta tunjukkan nomor registrasi, konfirmasi ke Kontak 157. Jangan transfer ke rekening pribadi agen.
+- Minta agen jelaskan **secara tertulis** apa saja syarat keselamatan yang bikin klaim bisa ditolak (mis. instalasi listrik harus bersertifikat PLN/SLO, APAR wajib, dll) — ini kunci supaya kasus Anda tidak terulang.
+- Bandingkan: nilai pertanggungan, biaya sendiri (own risk), pengecualian utama, masa tunggu, batas klaim, premi/tahun — pakai daftar pertanyaan di bawah.
+
+**9 pertanyaan ke agen asuransi (siapkan sebelum temu agen):**
+1. Apa saja yang dijamin dan TIDAK dijamin untuk warung saya, termasuk soal kondisi instalasi listrik?
+2. Apakah banjir/gempa/kerusuhan ikut, atau perlu perluasan terpisah? Berapa tambahan preminya?
+3. Bagaimana nilai pertanggungan dihitung, dan akibatnya kalau kurang dari nilai sebenarnya?
+4. Berapa biaya sendiri dan batas ganti rugi per kejadian/per tahun?
+5. Ada masa tunggu atau syarat keselamatan (APAR, alarm, **sertifikasi instalasi listrik**) yang wajib dipenuhi?
+6. Dokumen apa untuk klaim dan berapa lama batas lapor?
+7. Berapa premi per tahun dan konsekuensi telat bayar?
+8. Bisa tunjukkan izin OJK perusahaan dan nomor registrasi agen?
+9. Minta salinan polis lengkap untuk dibaca sendiri sebelum tanda tangan.
+
+## 3. Peta risiko warung Anda (asumsi: warung kecil, sudah pernah kejadian kebakaran karena instalasi listrik tidak standar)
+
+| No | Risiko | K | D | Skor/Tingkat | Langkah murah | Perlu asuransi? |
+|---|---|---|---|---|---|---|
+| 1 | Kebakaran/korsleting listrik (instalasi belum standar) | 4 | 5 | 20 KRITIS | **Benahi instalasi ke standar PLN/SLO dulu** (ini juga syarat klaim diterima!), ganti kabel tua, APAR + cek isi ulang, jangan tumpuk colokan | Ya, **setelah instalasi dibenahi** |
+| 2 | Banjir/gempa bumi | 2 | 3 | 6 SEDANG | Cek riwayat banjir wilayah, stok di rak tinggi | Tidak perlu (dana cadangan cukup) |
+| 3 | Bergantung satu orang (pemilik/pengelola tunggal) | 2 | 3 | 6 SEDANG | Tulis SOP/resep, latih 1 orang cadangan | Tidak ada asuransi umum; mitigasi lain |
+| 4 | Karyawan cedera/sakit kerja | 2 | 3 | 6 SEDANG | K3 dasar + daftarkan BPJS | BPJS: kewajiban pemberi kerja (JKK, Kesehatan), cek aturan terbaru |
+| 5 | Kehilangan/pencurian stok & kas | 2 | 3 | 6 SEDANG | CCTV, setor kas harian, pisah akses uang | Tidak perlu |
+| 6 | Tanggung jawab ke pelanggan (makanan/cedera di tempat) | 2 | 3 | 6 SEDANG | Standar kebersihan, lantai antislip, kebijakan retur tertulis | Tidak perlu |
+
+**Poin paling penting:** risiko #1 skornya KRITIS justru karena instalasi listrik belum standar — itu juga yang bikin klaim kemarin ditolak. Kalau mau ambil polis kebakaran baru tanpa membenahi instalasi dulu, kemungkinan besar riwayat penolakannya terulang.
+
+**Dana darurat:** belum bisa dihitung — butuh biaya tetap bulanan (sewa, gaji, listrik, cicilan).
+
+**3 prioritas minggu ini:**
+1. Panggil instalatir bersertifikat, benahi/sertifikasi ulang instalasi listrik (minta bukti tertulis/SLO) — ini syarat dasar sebelum ambil polis baru.
+2. Kirim keberatan tertulis ke perusahaan asuransi lama, simpan semua bukti.
+3. Siapkan dokumentasi (foto instalasi lama vs baru, nota perbaikan) untuk memperkuat polis baru nanti.
+
+**Disclaimer:** bukan nasihat hukum, keuangan, atau asuransi. Produk dibeli lewat perusahaan berizin OJK dan agen terdaftar; baca polis sendiri.
+
+**3 pertanyaan saya:**
+1. Berapa kira-kira biaya tetap bulanan warung (sewa, gaji, listrik) — supaya saya hitung dana daruratnya?
+2. Sudah ada surat penolakan klaim tertulis dari perusahaan asuransinya, atau baru lisan?
+3. Mau saya bantu susun draf **keberatan tertulis** ke perusahaan asuransi (bukan gugatan pengadilan) sebagai langkah pertama?

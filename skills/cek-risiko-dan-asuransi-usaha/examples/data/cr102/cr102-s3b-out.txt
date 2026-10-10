@@ -1,0 +1,29 @@
+Belum ada catatan soal angka bisnis toko bangunan ini di memory, jadi aku kasih kerangka umum dulu — kalau kasih tahu omzet/biaya bulanan, aku bisa pas-kan angkanya.
+
+**Asuransi yang relevan buat toko bangunan:**
+
+1. **Asuransi kebakaran (Fire Insurance)** — wajib banget. Stok semen, kayu, cat, bahan kimia bangunan rawan terbakar, dan kerugian bisa langsung habisin modal.
+2. **Asuransi properti/bangunan (property all risk)** — cover bangunan toko + gudang dari risiko lain (banjir, gempa kalau opsional, kebocoran pipa, dll). Kalau sewa, minimal asuransikan isi toko & stok, bukan bangunannya.
+3. **Asuransi stok/inventori** — khusus cover nilai barang dagangan (semen, besi, cat, keramik) dari rusak/hilang/kebakaran/banjir.
+4. **Asuransi tanggung gugat pihak ketiga (public liability)** — kalau ada pelanggan/kuli yang cedera di toko atau barang jatuh menimpa orang, ini nutup klaimnya.
+5. **Asuransi kendaraan operasional** — kalau punya truk/pickup antar bahan bangunan, pastikan kendaraan + kargo (muatan) diasuransikan terpisah dari asuransi mobil pribadi.
+6. **BPJS Ketenagakerjaan untuk karyawan** — bukan "asuransi swasta" tapi wajib secara hukum dan murah, cover kecelakaan kerja (sering terjadi di toko bangunan — angkat barang berat, dll).
+7. Opsional kalau owner jadi tulang punggung operasional: **asuransi jiwa/kesehatan pribadi** biar bisnis tidak kolaps kalau owner sakit/meninggal.
+
+**Dana darurat — berapa?**
+
+Rumus standar untuk bisnis ritel: **3–6 bulan biaya operasional tetap** (sewa, gaji, listrik, cicilan, bukan termasuk stok dagangan).
+
+- Kalau toko relatif stabil & punya cadangan supplier/kredit: pakai **3 bulan**.
+- Kalau musiman (proyek konstruksi naik-turun) atau baru berdiri <2 tahun: pakai **6 bulan**, karena toko bangunan rawan fluktuasi ikut siklus proyek/cuaca (musim hujan = sepi).
+
+Contoh hitung cepat:
+Dana darurat = (gaji karyawan + sewa + listrik/air + cicilan + biaya rutin lain) × 3~6
+
+Taruh di rekening terpisah, instrumen likuid (tabungan/deposito jangka pendek), **jangan** campur dengan modal stok barang.
+
+Kalau kamu kasih tahu kira-kira:
+- biaya operasional tetap per bulan (gaji + sewa + listrik dll), dan
+- nilai stok barang dagangan saat ini,
+
+aku bisa hitungkan angka dana darurat yang pas dan estimasi premi asuransi kasarannya.

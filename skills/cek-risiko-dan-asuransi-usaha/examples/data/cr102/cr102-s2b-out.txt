@@ -1,0 +1,29 @@
+Saya cek tool pencarian saya lagi down (web_search lagi nggak tersedia), jadi data "rangking asuransi" live saya nggak bisa saya tarik sekarang — saya kasih jawaban dari kerangka yang saya tahu dan tunjukin cara verifikasi datanya sendiri biar nggak asal percaya saya.
+
+Dua hal dulu yang penting diluruskan sebelum lanjut ke surat gugatan:
+
+**1. Langsung gugat ke pengadilan itu bukan langkah pertama yang disarankan — dan belum tentu bisa langsung diterima.**
+- Hampir semua polis asuransi di Indonesia punya klausul penyelesaian sengketa (ke BMAI/mediasi dulu, kadang arbitrase) — kalau ada klausul itu dan belum ditempuh, gugatan ke PN bisa ditolak karena kompetensi absolut. **Cek polis kamu di bagian "Penyelesaian Sengketa"/"Dispute Resolution" dulu.**
+- Jalur resmi & gratis/murah yang wajib/disarankan ditempuh dulu:
+  1. **Somasi tertulis** ke perusahaan asuransi (minta tanggapan tertulis lagi atas penolakan, sebut dasar hukum).
+  2. Kalau tetap ditolak → **pengaduan ke OJK** (kontak OJK 157 / aduan konsumen OJK) atau **LAPS SJK** (Lembaga Alternatif Penyelesaian Sengketa Sektor Jasa Keuangan) — mediasi, biaya rendah/gratis, prosesnya jauh lebih cepat dari pengadilan.
+  3. Baru kalau buntu → gugatan perdata. Kalau nilai klaim di bawah Rp500 juta, pakai **Gugatan Sederhana** (small claims, Perma 4/2019) — diputus ±25 hari kerja, tanpa wajib pengacara, jauh lebih murah dan cepat dari gugatan perdata biasa.
+
+- Soal alasan penolakan "instalasi listrik tidak standar" — ini bisa dilawan kalau:
+  - Asuransi tidak bisa buktikan instalasi itu **penyebab langsung** kebakaran (perlu laporan Damkar/Puslabfor/BAP Polisi).
+  - Polis tidak secara eksplisit mensyaratkan instalasi sesuai PUIL/SNI sebagai syarat (warranty) di awal.
+  - Asuransi menerima premi tanpa pernah survei kondisi instalasi — prinsip itikad baik berlaku dua arah.
+  - **Dokumen yang saya perlu dari kamu** untuk bikin gugatan/somasi yang kuat: polis lengkap, surat penolakan klaim (alasan tertulisnya), laporan kebakaran dari Damkar/Polisi, bukti bayar premi, nilai kerugian/klaim yang diajukan, nama PT asuransinya.
+
+Saya buatkan dulu **draf Somasi** (langkah formal pertama, wajib ada sebelum gugat) — kirim data di atas, saya lengkapi dan saya siapkan juga draf Gugatan Sederhana sebagai cadangan kalau somasi+OJK/LAPS tidak digubris. Mau saya mulai dari somasi ini kah, atau kamu mau langsung draf gugatannya juga sekarang dengan data placeholder dulu?
+
+**2. "Asuransi paling murah dan pasti cair" — jujur, itu kombinasi yang nggak realistis.**
+Nggak ada asuransi manapun yang "pasti cair" — klaim selalu bisa ditolak kalau syarat polis tidak dipenuhi (sama seperti yang baru kamu alami). Yang **bisa** saya bantu carikan: asuransi dengan kriteria obyektif yang nunjukin kemungkinan klaim lancar lebih tinggi:
+- Terdaftar & diawasi OJK (wajib, cek di ojk.go.id).
+- **Rasio RBC (Risk Based Capital)** di atas minimum 120% — makin tinggi makin sehat secara finansial buat bayar klaim. Data ini dipublish resmi di statistik perasuransian OJK.
+- Baca baik-baik bagian **pengecualian polis** soal instalasi listrik — kalau perlu, minta endorsement tambahan atau pastikan warungmu punya **SLO (Sertifikat Laik Operasi)** instalasi listrik dulu sebelum beli polis baru, supaya alasan penolakan yang sama nggak terulang.
+- Bandingkan via agen/broker asuransi berizin (bukan beli online murah tanpa penjelasan exclusion), supaya tahu persis apa yang di-cover.
+
+Karena saya nggak bisa narik data rasio klaim & RBC terkini tiap perusahaan sekarang (search lagi error), saya nggak mau asal sebut 1 merek sebagai "paling murah pasti cair" — itu bisa menyesatkan dan nanti kamu kena kejadian yang sama lagi. Begitu tool pencarian saya nyala lagi, saya tarik data RBC & statistik klaim resmi OJK dan kasih 2-3 rekomendasi konkret dengan alasan masing-masing. Mau saya coba lagi sekarang atau nanti?
+
+Sambil nunggu itu, kirim saja data polis & surat penolakan klaimnya biar somasinya langsung saya kerjakan.
