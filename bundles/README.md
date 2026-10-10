@@ -7,7 +7,7 @@ tidak boleh masuk bundle ecer (dicek otomatis oleh build.py).
 | Bundle | Isi (jumlah skill) | Total harga ecer usulan | Harga bundle usulan | Untuk siapa |
 |---|---|---|---|---|
 | paket-toko-online | 15 | Rp1.486.000 | Rp449.000 | Seller marketplace & toko online |
-| paket-admin-keuangan | 13 | Rp1.288.000 | Rp449.000 | Admin/pemilik yang mengurus invoice, piutang, pajak UMKM |
+| paket-admin-keuangan | 14 | Rp1.367.000 | Rp449.000 | Admin/pemilik yang mengurus invoice, piutang, pajak UMKM |
 | paket-gaji-hr | 7 | Rp893.000 | Rp349.000 | Usaha dengan karyawan (gaji, PPh 21, THR, absensi) |
 | paket-kafe-warung | 8 | Rp892.000 | Rp349.000 | Kafe, warung, kedai (kasir lokal + stok + konten) |
 | paket-kantor | 8 | Rp593.000 | Rp199.000 | Admin kantor & sekretaris |

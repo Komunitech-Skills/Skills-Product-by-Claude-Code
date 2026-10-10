@@ -70,7 +70,10 @@ for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh; do
       "$ALAT/$f" > "$R/$f"
   chmod +x "$R/$f"
 done
-mkdir -p "$R/pilot" && cp "$ALAT"/pilot/*.py "$R/pilot/" && cp "$ALAT"/brief/*.md "$R/" 2>/dev/null || true
+mkdir -p "$R/pilot" && cp "$ALAT"/brief/*.md "$R/" 2>/dev/null || true
+for f in "$ALAT"/pilot/*; do
+  sed -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g" "$f" > "$R/pilot/$(basename "$f")"
+done
 
 # 6. Cek
 "$R/oc.sh" --version >/dev/null && echo "[setup] openclaw OK: $("$R/oc.sh" --version 2>/dev/null | head -1)"
