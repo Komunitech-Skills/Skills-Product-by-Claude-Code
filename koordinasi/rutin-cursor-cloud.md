@@ -20,7 +20,102 @@ Playbook untuk pemilik membuat **Automation** di dashboard Cursor yang menjalank
 | Telegram keputusan | Akun A baca `getUpdates`, kirim topik 242 | Akun C: kirim **laporan hasil uji** ke topik 242 bila selesai uji; **gelombang tampilan** hanya setelah persetujuan pemilik |
 | Lingkungan uji | Scratchpad Akun A/B | `$HOME/komunitech-uji` via `koordinasi/alat-uji/setup-cursor.sh` (`.cursor/environment.json`) |
 
-**API Cursor:** run agent ini **tidak** membuat Automation lewat API (hanya `get-automation` untuk lookup). Pemilik membuat/mengedit jadwal di **UI**.
+**API Cursor:** Cloud Agent MCP hanya **`get-automation`** (lookup by UUID). **Tidak ada** API `create-automation` / `update-automation` yang bisa dipanggil dari run ini — pemilik wajib membuat/mengedit Automation di **dashboard UI**. Daftar **Tools** (mis. **Open Pull Request**) juga **hanya** di UI; API tidak bisa mematikan tool PR otomatis.
+
+---
+
+## Konfigurasi UI (copy-paste)
+
+Gunakan blok ini saat membuat Automation baru di dashboard (sesuai screenshot: tab **Triggers**, **Agent Instructions**, daftar **Tools**).
+
+### Nama
+
+`Akun C — iterasi 3 jam`
+
+_(Alternatif panjang: `Komunitech Skills — Akun C (iterasi tiap 3 jam)`.)_
+
+### Repository & environment
+
+| Field | Nilai |
+|--------|--------|
+| **Repository** | `Komunitech-Skills/Skills-Product-by-Claude-Code` |
+| **Base / checkout branch** | `claude/claude-code-cli-differences-btizz5` |
+| **Environment** | Environment repo yang menjalankan `koordinasi/alat-uji/setup-cursor.sh` (`.cursor/environment.json`) |
+| **Secrets** | `Ninerouter_key` (wajib uji OpenClaw); `bot_token` (opsional, gateway / Telegram) |
+
+Branch awal run: **kosongkan** (biar agent pilih `cursor/*` dari prompt), kecuali satu tugas panjang — isi mis. `cursor/uji-risiko-suksesi-8b42`.
+
+### Triggers (jadwal)
+
+1. Tab **Triggers** → **Add trigger** / **Schedule**.
+2. Pilih **Cron** (bukan interval sederhana bila ingin selaras Akun A/B).
+3. Ekspresi cron: **`15 */3 * * *`**
+4. Timezone: **UTC** (bila UI menanyakan).
+5. **Enable** trigger setelah automation disimpan.
+
+Arti: menit **15** pasti, setiap **3 jam** (00:15, 03:15, 06:15, … UTC) — offset dari Akun A (`32 */3`) dan B (`25 */3`).
+
+### Tools (penting — no auto PR)
+
+Di panel **Tools** / **Agent tools**, sesuaikan dengan playbook:
+
+| Tool | Setting |
+|------|---------|
+| **Open Pull Request** | **OFF / disabled** — Akun C hanya commit + push; PR hanya bila pemilik minta eksplisit di chat run |
+| Shell, Git, Read file, dll. | **ON** — diperlukan untuk uji, validate, push |
+| Tool lain | Default OK; jangan aktifkan apa pun yang membuat PR atau merge otomatis |
+
+Cursor **tidak** mengekspos API untuk daftar tool ini; checklist di atas harus dicek manual setiap kali edit automation.
+
+### Model
+
+| Rekomendasi | Kapan |
+|-------------|--------|
+| **Auto** atau **Claude Sonnet** (tier terbaru yang tersedia di Cloud) | Default automation — uji skill umum, docs, koordinasi, OpenClaw (kecuali hitungan berat) |
+| **Opus** (atau model reasoning terkuat) | Run manual sekali-kali bila giliran itu hanya uji skill **pajak/gaji/keuangan/hukum** + verifikasi angka (`CLAUDE.md` §5) |
+
+Jangan andalkan model lemah untuk uji regresi script pajak; jadwalkan Opus lewat **Run now** di minggu itu, bukan mengganti cron.
+
+### Memories
+
+| Setting | Alasan |
+|---------|--------|
+| **Memories: OFF** | Setiap jadwal = run Cloud Agent **baru** (VM/snapshot baru). Konteks benar ada di **git** (`papan-tugas.md`, `reports/`, branch `cursor/*`). Memories dari chat pemilik bisa salah arahkan prioritas antar-run. |
+| Jika UI memaksa Memories ON | Kosongkan / jangan simpan memory khusus automation; andalkan prompt + repo saja |
+
+### Agent Instructions (salin seluruh blok)
+
+Tempel isi **hanya** teks di dalam code fence di bawah ke field **Agent Instructions** (tanpa baris ``` pembuka/penutup).
+
+```
+[Pengingat otomatis — iterasi Komunitech Skills Akun C (Cursor Cloud)] Kamu Akun C (agent Cursor Cloud). Repo: Komunitech-Skills/Skills-Product-by-Claude-Code. Default branch: claude/claude-code-cli-differences-btizz5. Aturan lengkap: baca AGENTS.md, .cursor/CLOUD.md, lalu CLAUDE.md saat mengerjakan skill.
+
+WAJIB BEKERJA setiap run — jangan menjawab "No response requested" atau berhenti tanpa commit bila ada pekerjaan di papan tugas. Setiap run = VM baru; tidak ada memori chat run sebelumnya — andalkan git + koordinasi/papan-tugas.md + reports/YYYY-MM-DD-akun-c.md.
+
+LANGKAH NOL — BACA & GIT: Baca AGENTS.md dan .cursor/CLOUD.md. Jalankan git fetch origin. Baca koordinasi/papan-tugas.md (Akun C, SERAH TERIMA, Permintaan antar-akun). Pilih branch: lanjutkan cursor/* yang sudah dipakai untuk tugas aktif, atau buat cursor/<nama-tugas>-8b42 dari default branch. Merge origin/claude/claude-code-cli-differences-btizz5 bila perlu (merge commit, bukan rebase).
+
+LANGKAH SATU — GATEWAY (hanya jika run ini menguji OpenClaw/Telegram): bash $HOME/komunitech-uji/openclaw-real/gw-cek.sh. Jangan cetak token/kunci. Matikan gateway hanya lewat PID pgrep -f "^openclaw-gateway$". Setelah ubah channels.* di config bot uji, restart gateway sebelum uji Telegram. scripts/uji_openclaw.sh memakai /tmp/uji-openclaw — jangan arahkan ke openclaw-prod. Bot produksi tidak dipakai.
+
+LANGKAH KERJA — PEMBUAT ≠ PENGUJI: Run ini hanya BOLEH salah satu per skill: (A) membuat/merevisi SKILL.md/script/README/catalog, ATAU (B) menulis examples/00-openclaw-sebelum-sesudah.md, 01–04, HASIL-UJI.md, skor. Jangan keduanya untuk skill yang sama dalam satu run kecuali run hanya docs koordinasi tanpa uji skill itu.
+
+Uji (bila ditugaskan): ikuti koordinasi/alat-uji/brief/tester-umum.md — mk-home.sh + uji.sh (fallback run-uji.sh jika unshare gagal, lihat CLOUD.md). uji-tg.sh untuk pra-cek skill panjang/file. Commit uji: uji: <nama> vX.Y.Z <skor>/10. Jangan ubah catalog.csv (Akun A/B yang merge). Laporkan hasil uji ke Telegram topik "Ringkasan uji" (chat_id -1004407409583, thread 242) lewat pilot/tg.py, awali @nikioktarian — hanya laporan uji baru, bukan gelombang tampilan tanpa persetujuan pemilik.
+
+Sebelum commit: python3 scripts/validate.py dan tes regresi skill terkait. Jangan commit dist/, API key, token, data pribadi, identitas model. rm -rf hanya dengan "${VAR:?}".
+
+GIT AKHIR RUN: commit + push wajib (git push -u origin HEAD). Jangan buat PR kecuali pemilik minta eksplisit di instruksi run. Jangan merge PR sendiri.
+
+Laporan: perbarui atau buat reports/YYYY-MM-DD-akun-c.md (format §6 CLAUDE.md): progres, skill berubah, PERLU REVIEW, temuan platform, rekomendasi berikutnya.
+
+Prioritas: (1) uji independen Akun C di papan tugas (mis. S4), (2) draf skill jika ditugaskan, (3) perbarui status di papan-tugas bila selesai item. Berhenti otomatis hanya jika pemilik menulis "stop" di automation prompt atau dashboard disable.
+
+Akhiri run dengan ringkasan singkat Bahasa Indonesia: branch, commit, apa yang selesai / apa yang menunggu run berikutnya.
+```
+
+### Setelah simpan
+
+1. **Enable** automation.
+2. **Run now** sekali — cek log setup, push ke `origin/cursor/...`, laporan `reports/YYYY-MM-DD-akun-c.md`.
+3. Catat **automation id** (UUID dari URL dashboard) di tabel Status di bawah.
 
 ---
 
@@ -28,7 +123,7 @@ Playbook untuk pemilik membuat **Automation** di dashboard Cursor yang menjalank
 
 | Item | Rekomendasi | Catatan |
 |------|-------------|---------|
-| Nama automation | `Komunitech Skills — Akun C (iterasi tiap 3 jam)` | Bebas diubah pemilik |
+| Nama automation | **`Akun C — iterasi 3 jam`** (lihat [Konfigurasi UI](#konfigurasi-ui-copy-paste)) | Bebas diubah pemilik |
 | Jadwal | Cron **`15 */3 * * *`** (UTC) — menit 15 tiap 3 jam, disebar dari Akun A (`32 */3`) & B (`25 */3`) | Alternatif: `0 */6 * * *` bila kuota Cloud Agent ketat |
 | Repo | `Komunitech-Skills/Skills-Product-by-Claude-Code` (atau URL canonical repo) | Environment Cloud harus punya akses git push |
 | Environment | Environment yang sudah menjalankan `setup-cursor.sh` + secrets `Ninerouter_key` (wajib uji), `bot_token` (opsional gateway) | Lihat `.cursor/CLOUD.md` |
