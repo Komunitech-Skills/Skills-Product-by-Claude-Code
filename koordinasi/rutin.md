@@ -1,5 +1,7 @@
 # Routine (jadwal otomatis) — templat untuk Akun A & Akun B
 
+> **Cursor Cloud (Akun C)** → iterasi otomatis lewat Cursor Automations: [`koordinasi/rutin-cursor-cloud.md`](rutin-cursor-cloud.md) (+ bagian di `.cursor/CLOUD.md`).
+
 Routine membuat sesi Claude Code melanjutkan kerja sendiri tiap beberapa jam, tanpa menunggu pemilik mengetik.
 Routine hanya bisa dibuat **oleh sesi itu sendiri** (akun lain tidak bisa membuatkannya).
 
