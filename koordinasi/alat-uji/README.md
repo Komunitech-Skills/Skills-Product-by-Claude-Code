@@ -24,3 +24,12 @@ Semua berkas di sini disalin dari scratchpad sesi Akun B (`/tmp/claude-0/.../scr
 4. `bash gw-cek.sh` → harus `GATEWAY: HIDUP`/`DINYALAKAN ULANG`. Gateway sering mati saat idle; routine 3 jam menyalakan ulang.
 5. Uji sebelum/sesudah: `mk-home.sh sebelum` (tanpa skill) dan `mk-home.sh nama-skill nama-skill`, lalu `uji.sh`/`uji-tg.sh` per skenario. Acuan LULUS: sesudah ≥ 8 dan selisih ≥ 1,5.
 6. Setelah mengubah `channels.*` di config bot uji: **restart gateway** (hot reload membuat semua balasan ditolak).
+
+## Agent Cursor Cloud (Akun C) — bootstrap otomatis
+`setup-cursor.sh` membangun seluruh lingkungan uji di VM agent (dipanggil dari `.cursor/environment.json` saat run dimulai, idempoten): Node portabel v24.21.0, `openclaw@2026.9.8` di `$BASE/openclaw-prod`, HOME bot uji dari `config-bot-uji/`, pembungkus `oc.sh`/`oc-tg.sh`, dan salinan `gw-cek.sh`/`mk-home.sh`/`uji.sh`/`uji-tg.sh`/`pilot/` dengan path yang sudah disesuaikan (`pkill -f` sudah diganti kill per PID). Diuji 2026-10-10 di sesi Akun B: ±4 menit, `openclaw --version` OK, `mk-home.sh` OK. `BASE` default `$HOME/komunitech-uji`; `REPO` otomatis = root repo.
+
+Rahasia dipasang pemilik sebagai **environment secrets** di Cursor (Settings → Cloud Agents → environment), nama persis: `Ninerouter_key` (wajib untuk uji sebelum/sesudah) dan `bot_token` (opsional; hanya bila VM ini yang menjalankan gateway bot uji). Jangan pernah menaruhnya di repo, `environment.json`, atau prompt.
+
+**Aturan satu gateway per token:** Telegram hanya mengizinkan satu proses polling per token bot. Bila `bot_token` diberikan ke Cursor, gateway di sesi Akun B/A harus dimatikan dulu, atau pakai token bot penguji **kedua** (bot baru dari @BotFather, dimasukkan ke grup uji) — itu yang disarankan. Tanpa `bot_token`, Cursor tetap bisa menjalankan uji sebelum/sesudah lokal dan konteks Telegram (`uji-tg.sh`, tanpa `--deliver`), hanya gelombang Telegram yang tidak bisa.
+
+VM Cursor ulang dari snapshot tiap run: riwayat sesi bot, topik, dan hasil uji di `$BASE` hilang. Semua hasil harus di-commit ke repo (`examples/`, `koordinasi/telegram-*.md`) sebelum run berakhir.
