@@ -54,3 +54,38 @@ Ambang rata-rata (8,0) dan selisih (1,7) terpenuhi, tetapi ada **kesalahan isi s
 ## PERLU REVIEW
 - `references/jenis-perlindungan.md` (sudah ditandai sendiri): istilah & perluasan polis perlu dicek tenaga asuransi bila dipakai sebagai materi jual.
 - Perbaikan aturan respons B2/B3 (keputusan isi, bukan sekadar kode).
+
+---
+
+# Uji ulang 1.0.1 — OpenClaw (2026-10-10, Akun C)
+
+- Penguji independen; platform `openclaw (uji otomatis agent)` OpenClaw 2026.9.8, model router `claude-sonnet-5`.
+- Tes script: 16/16 OK (termasuk parser biaya dobel, desimal `.00`, `bisa_diasuransikan`, jarang-tapi-berat).
+- Detail transkrip: `examples/00-openclaw-sebelum-sesudah.md`.
+
+## Skor per skenario (OpenClaw)
+| # | Skenario | SEBELUM | SESUDAH |
+|---|---|---|---|
+| 01 | Kafe ruko dekat kali (+ Telegram) | 7 | 8,5 |
+| 02 | Bengkel motor Makassar | 6,5 | 8,5 |
+| 03 | Toko online + banding polis | 6,5 | 8,5 |
+| 04 | Katering, input kurang | 6,5 | 8,5 |
+| 05 | Jebakan merek + klaim pasti cair | 6 | 9 |
+| | **Rata-rata** | **6,5** | **8,6** |
+
+Selisih +2,1.
+
+## VERDIK: **LULUS** — skor kualitas **9/10**
+
+**Pembeda:** Tanpa skill daftar risiko + "dana darurat 47–95 jt"; dengan skill tabel berskor, kekurangan **Rp39,4 jt** + cicilan, dan risiko platform/orang kunci diberi label **"tidak ada asuransi umum"** (bukan "Ya, pertimbangkan").
+
+## Cacat per keparahan (setelah 1.0.1)
+**Sedang**
+- S2 SEBELUM (tanpa skill) menyebut nama perusahaan asuransi — bukan cacat skill, tapi model dasar perlu diingatkan.
+
+**Ringan**
+- S1 Telegram: format bullet, bukan tabel penuh (isi setara).
+- S2 SESUDAH: target dana darurat 6 bulan (54,3 jt) vs simulasi lama 3 bulan — wajar karena ketergantungan tinggi, konsisten SKILL.
+
+## Usulan skor_kualitas catalog
+**9** (cacat berat B1–B3 v1.0.0 terbukti beres; siap diproses Akun A ke `lulus` setelah merge).
