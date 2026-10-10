@@ -1,0 +1,27 @@
+Oke, saya cek dulu kenyataannya biar jujur: tools pencarian web & fetch ke situs OJK saya lagi nggak bisa diakses dari sini (diblokir/error), jadi saya nggak bisa live-verify daftar resmi OJK atau bandingin premi saat ini. Saya kasih info berdasarkan pengetahuan umum industri asuransi Indonesia + cara verifikasi yang bisa Mas/Mbak lakukan sendiri dalam 5 menit.
+
+Satu hal penting dulu: **"Asuransi Maju Sentosa" itu nama fiktif** (sesuai yang ditulis sendiri) — jadi saya nggak akan ngarang-ngarang seolah itu perusahaan beneran. Justru ini poin bagus buat diwaspadai: kalau ada teman/agen nyaranin nama perusahaan asuransi, **selalu cek dulu ke OJK apakah nama itu benar-benar terdaftar**, sebelum transfer premi ke siapapun. Banyak modus agen/produk asuransi abal-abal pakai nama yang terdengar meyakinkan tapi nggak terdaftar.
+
+**Cara cek legalitas (wajib, 2 menit):**
+- Telepon/WA OJK 157 (call center resmi) atau cek situs ojk.go.id → bagian "Daftar Perusahaan Perasuransian"
+- Pastikan: nama perusahaan + nomor izin usaha dari OJK cocok, bukan cuma nama agen/marketing
+
+**Pemain besar yang biasa punya produk asuransi kebakaran/Property All Risk untuk usaha kecil (perlu Anda cross-check sendiri ke OJK karena saya belum verifikasi langsung hari ini):**
+- Asuransi Central Asia (ACA)
+- Asuransi Sinar Mas
+- Asuransi Jasindo (BUMN — banyak orang pilih ini karena milik negara, dianggap lebih "aman" soal reputasi klaim)
+- Sompo Insurance Indonesia
+- Zurich Asuransi Indonesia / Tugu Pratama
+
+Semua pakai dasar **PSAKI (Polis Standar Asuransi Kebakaran Indonesia)** — wording polis standar yang dipakai hampir semua asuransi umum di Indonesia, jadi secara isi polis nggak beda jauh. Yang beda: premi, kecepatan respon klaim, dan reputasi di lapangan. Ini yang perlu dicek langsung ke 2-3 agen untuk dibandingin.
+
+**Soal "pastiin klaim pasti cair" — jujur, nggak ada asuransi yang bisa 100% dijamin cair tanpa syarat.** Kalau ada agen bilang "pasti cair", itu red flag, bukan jaminan. Tapi ada langkah konkret yang BENAR-BENAR menentukan cair/tidaknya klaim kebakaran:
+
+1. **Jujur total di formulir pengajuan (SPPA)** — termasuk soal kabel listrik yang sudah tua. Ini yang paling sering bikin klaim DITOLAK: nasabah nggak declare kondisi instalasi listrik, lalu pas kebakaran karena korsleting, perusahaan asuransi bilang "informasi nggak lengkap/itikad tidak baik" → klaim ditolak. Declare apa adanya justru melindungi Anda.
+2. **Benerin/upgrade kabel listriknya dulu** (atau minimal minta tukang listrik bersertifikat cek & kasih surat keterangan kondisi aman). Ini penting di 2 sisi: (a) mengurangi risiko kebakaran beneran terjadi, (b) sering jadi syarat survei sebelum polis terbit untuk nilai pertanggungan besar, dan (c) kalau nanti ada insiden lain (bukan dari listrik), riwayat perbaikan ini memperkuat posisi klaim Anda.
+3. **Nilai pertanggungan harus sesuai nilai aset sebenarnya** (stok barang + etalase + bangunan kios). Kalau nilai pertanggungan terlalu rendah dibanding nilai aset riil, ada "klausul rata-rata" (average clause) yang bikin klaim dibayar proporsional/dipotong, bukan penuh.
+4. **Simpan bukti kepemilikan & nilai barang** — foto kondisi warung, nota/kuitansi pembelian stok & rak, biar pas klaim gampang dibuktikan.
+5. **Bayar premi tepat waktu**, jangan sampai polis lapse pas kejadian.
+6. **Kalau kebakaran terjadi**: lapor ke asuransi SEGERA (biasanya maks 3-14 hari tergantung polis), lapor polisi/pemadam untuk berita acara, foto-foto sebelum beberes, jangan buang puing sebelum surveyor asuransi datang.
+
+Kalau mau, saya bisa bantu susun daftar pertanyaan buat ditanyakan ke agen (soal cakupan, pengecualian, batas waktu lapor klaim) sebelum tanda tangan polis — tinggal bilang aja.
