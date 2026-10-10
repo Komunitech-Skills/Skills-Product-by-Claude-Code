@@ -30,9 +30,9 @@ Gunakan blok ini saat membuat Automation baru di dashboard (sesuai screenshot: t
 
 ### Nama
 
-`Akun C — iterasi 3 jam`
+`Akun C — iterasi intensif (1 jam)`
 
-_(Alternatif panjang: `Komunitech Skills — Akun C (iterasi tiap 3 jam)`.)_
+_(Alternatif panjang: `Komunitech Skills — Akun C (iterasi intensif, tiap jam)`.)_
 
 ### Repository & environment
 
@@ -49,11 +49,15 @@ Branch awal run: **kosongkan** (biar agent pilih `cursor/*` dari prompt), kecual
 
 1. Tab **Triggers** → **Add trigger** / **Schedule**.
 2. Pilih **Cron** (bukan interval sederhana bila ingin selaras Akun A/B).
-3. Ekspresi cron: **`15 */3 * * *`**
+3. Ekspresi cron (**default agresif — mode intensif**): **`15 * * * *`**
 4. Timezone: **UTC** (bila UI menanyakan).
 5. **Enable** trigger setelah automation disimpan.
 
-Arti: menit **15** pasti, setiap **3 jam** (00:15, 03:15, 06:15, … UTC) — offset dari Akun A (`32 */3`) dan B (`25 */3`).
+Arti: menit **15** pasti, **setiap jam** (00:15, 01:15, 02:15, … UTC) — iterasi nonstop selama kuota Cloud Agent masih longgar (mis. push 7 hari sebelum limit habis).
+
+**Overlap run:** bila **Run History** menunjukkan run sebelumnya masih **Running** saat jadwal berikutnya (uji OpenClaw panjang), ganti cron ke **`15 */2 * * *`** (tiap 2 jam, menit 15). Jangan turunkan ke 3 jam kecuali kuota benar-benar ketat — lihat alternatif di [Status saat ini](#status-saat-ini).
+
+Offset dari Akun A (`32 */3`) dan B (`25 */3`) tetap disebar; Akun C bisa lebih sering karena tiap run = VM baru, bukan sesi panjang Claude Code.
 
 ### Tools (penting — no auto PR)
 
@@ -88,7 +92,7 @@ Jangan andalkan model lemah untuk uji regresi script pajak; jadwalkan Opus lewat
 Tempel isi **hanya** teks di dalam code fence di bawah ke field **Agent Instructions** (tanpa baris ``` pembuka/penutup).
 
 ```
-[Pengingat otomatis — iterasi Komunitech Skills Akun C (Cursor Cloud)] Kamu Akun C (agent Cursor Cloud). Repo: Komunitech-Skills/Skills-Product-by-Claude-Code. Default branch: claude/claude-code-cli-differences-btizz5. Aturan lengkap: baca AGENTS.md, .cursor/CLOUD.md, lalu CLAUDE.md saat mengerjakan skill.
+[MODE INTENSIF — iterasi nonstop selama kuota Cloud tersedia] [Pengingat otomatis — iterasi Komunitech Skills Akun C (Cursor Cloud)] Kamu Akun C (agent Cursor Cloud). Repo: Komunitech-Skills/Skills-Product-by-Claude-Code. Default branch: claude/claude-code-cli-differences-btizz5. Aturan lengkap: baca AGENTS.md, .cursor/CLOUD.md, lalu CLAUDE.md saat mengerjakan skill. Prioritas: iterasi berkelanjutan — ambil item berikutnya dari papan, uji backlog, docs/koordinasi; jangan akhiri run tanpa commit+push bila masih ada pekerjaan yang bisa diselesaikan.
 
 WAJIB BEKERJA setiap run — jangan menjawab "No response requested" atau berhenti tanpa commit bila ada pekerjaan di papan tugas. Setiap run = VM baru; tidak ada memori chat run sebelumnya — andalkan git + koordinasi/papan-tugas.md + reports/YYYY-MM-DD-akun-c.md.
 
@@ -123,8 +127,8 @@ Akhiri run dengan ringkasan singkat Bahasa Indonesia: branch, commit, apa yang s
 
 | Item | Rekomendasi | Catatan |
 |------|-------------|---------|
-| Nama automation | **`Akun C — iterasi 3 jam`** (lihat [Konfigurasi UI](#konfigurasi-ui-copy-paste)) | Bebas diubah pemilik |
-| Jadwal | Cron **`15 */3 * * *`** (UTC) — menit 15 tiap 3 jam, disebar dari Akun A (`32 */3`) & B (`25 */3`) | Alternatif: `0 */6 * * *` bila kuota Cloud Agent ketat |
+| Nama automation | **`Akun C — iterasi intensif (1 jam)`** (lihat [Konfigurasi UI](#konfigurasi-ui-copy-paste)) | Bebas diubah pemilik |
+| Jadwal | Cron **`15 * * * *`** (UTC) — menit 15 **setiap jam** (mode intensif) | Overlap di Run History → **`15 */2 * * *`**; kuota ketat → `0 */6 * * *` atau kembali `15 */3 * * *` |
 | Repo | `Komunitech-Skills/Skills-Product-by-Claude-Code` (atau URL canonical repo) | Environment Cloud harus punya akses git push |
 | Environment | Environment yang sudah menjalankan `setup-cursor.sh` + secrets `Ninerouter_key` (wajib uji), `bot_token` (opsional gateway) | Lihat `.cursor/CLOUD.md` |
 | Status | **Belum diaktifkan** — pemilik buat di dashboard | Setelah dibuat, catat automation id di baris bawah tabel ini |
@@ -141,7 +145,7 @@ Langkah umum (label menu bisa sedikit berbeda per versi Cursor):
 2. **Create automation** / **New**.
 3. **Repository:** pilih repo Skills (branch default checkout = `claude/claude-code-cli-differences-btizz5`, kecuali automation mengizinkan branch awal lain).
 4. **Environment:** pilih environment yang memuat `.cursor/environment.json` (install `koordinasi/alat-uji/setup-cursor.sh`) dan secrets (`Ninerouter_key`, `bot_token` bila perlu).
-5. **Schedule:** Custom cron → contoh `15 */3 * * *` (UTC). Aktifkan timezone UTC di UI bila ada opsi.
+5. **Schedule:** Custom cron → default intensif **`15 * * * *`** (UTC); bila overlap run → **`15 */2 * * *`**. Aktifkan timezone UTC di UI bila ada opsi.
 6. **Prompt / Instructions:** salin **seluruh** blok di bagian [Prompt Automation Akun C](#prompt-automation-akun-c) di bawah (tanpa pembungkus markdown code fence di UI — hanya teks prompt).
 7. **Branch (opsional):** kosongkan agar agent memilih branch dari prompt; atau isi branch kerja tetap hanya bila satu skill panjang (mis. `cursor/uji-risiko-suksesi-8b42`).
 8. Simpan, **Enable** automation. Uji sekali dengan **Run now** / manual trigger.
@@ -179,12 +183,30 @@ Acuan lulus uji OpenClaw: sesudah ≥ **8** dan selisih ≥ **1,5** (`koordinasi
 
 ---
 
+## Mode intensif (limit sisa)
+
+**Kapan:** pemilik mengaktifkan push singkat (mis. ~7 hari sebelum kuota/limit Cloud Agent habis) — **bukan** alasan yang sama dengan limit 3 jam Claude Code Akun A/B; ini khusus **Cursor Cloud Agent**.
+
+**Jadwal UI:** cron **`15 * * * *`** (UTC). Lihat [Triggers](#triggers-jadwal) untuk aturan overlap → **`15 */2 * * *`**.
+
+**Perilaku setiap run (wajib):**
+
+1. **Selalu ambil pekerjaan berikutnya** dari `koordinasi/papan-tugas.md` (Akun C, SERAH TERIMA, Permintaan antar-akun) — uji backlog yang `siap diuji`, draf skill bila ditugaskan, perbaikan docs/koordinasi kecil.
+2. **Jangan mengakhiri run** tanpa **commit + push** (`git push -u origin HEAD`) bila ada pekerjaan yang bisa diselesaikan atau dilanjutkan (meski sebagian).
+3. **Papan kosong / tidak ada baris Akun C:** `git fetch origin` → baca `reports/` terbaru → cek item internal di papan bagian **Permintaan** (promosi, docs, koordinasi) yang boleh Akun C kerjakan tanpa melanggar pembuat≠penguji.
+4. **Satu run = satu fokus batch** (satu uji independen, atau satu draf, atau satu paket docs) — jangan campur pembuat+uji skill yang sama kecuali hanya docs tanpa uji skill itu.
+5. **PR / gelombang Telegram:** tetap aturan normal — tidak otomatis; gelombang hanya setelah persetujuan pemilik.
+
+**Menjeda intensif:** disable automation atau ganti cron ke `15 */3 * * *` / `0 */6 * * *` setelah push selesai atau kuota menipis.
+
+---
+
 ## Prompt Automation Akun C
 
-Salin teks di bawah ke field prompt Automation (versi **2026-10-10**).
+Salin teks di bawah ke field prompt Automation (versi **2026-10-10**, mode intensif).
 
 ```
-[Pengingat otomatis — iterasi Komunitech Skills Akun C (Cursor Cloud)] Kamu Akun C (agent Cursor Cloud). Repo: Komunitech-Skills/Skills-Product-by-Claude-Code. Default branch: claude/claude-code-cli-differences-btizz5. Aturan lengkap: baca AGENTS.md, .cursor/CLOUD.md, lalu CLAUDE.md saat mengerjakan skill.
+[MODE INTENSIF — iterasi nonstop selama kuota Cloud tersedia] [Pengingat otomatis — iterasi Komunitech Skills Akun C (Cursor Cloud)] Kamu Akun C (agent Cursor Cloud). Repo: Komunitech-Skills/Skills-Product-by-Claude-Code. Default branch: claude/claude-code-cli-differences-btizz5. Aturan lengkap: baca AGENTS.md, .cursor/CLOUD.md, lalu CLAUDE.md saat mengerjakan skill. Prioritas: iterasi berkelanjutan — ambil item berikutnya dari papan, uji backlog, docs/koordinasi; jangan akhiri run tanpa commit+push bila masih ada pekerjaan yang bisa diselesaikan.
 
 WAJIB BEKERJA setiap run — jangan menjawab "No response requested" atau berhenti tanpa commit bila ada pekerjaan di papan tugas. Setiap run = VM baru; tidak ada memori chat run sebelumnya — andalkan git + koordinasi/papan-tugas.md + reports/YYYY-MM-DD-akun-c.md.
 

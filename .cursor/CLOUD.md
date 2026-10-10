@@ -108,15 +108,15 @@ Tulis atau tambah bagian di **`reports/YYYY-MM-DD-akun-c.md`** (format ringkas �
 
 ## Iterasi otomatis (Automations)
 
-Pemilik dapat menjadwalkan Akun C seperti routine Claude Code tiap 3 jam — lewat **Cursor Automations** (dashboard), bukan API dari agent.
+Pemilik dapat menjadwalkan Akun C lewat **Cursor Automations** (dashboard), bukan API dari agent. **Mode intensif (2026-10-10):** bila pemilik mengaktifkan push limit sisa (~7 hari), default cron **`15 * * * *`** UTC (setiap jam, menit 15) — nama disarankan *Akun C — iterasi intensif (1 jam)*. Bila **Run History** menunjukkan run overlap (uji OpenClaw panjang), turunkan ke **`15 */2 * * *`**. Bukan terikat limit 3 jam Claude Code Akun A/B.
 
 | Topik | Rincian |
 |--------|---------|
-| Playbook lengkap | [`koordinasi/rutin-cursor-cloud.md`](../koordinasi/rutin-cursor-cloud.md) — prompt siap salin, cron, checklist |
+| Playbook lengkap | [`koordinasi/rutin-cursor-cloud.md`](../koordinasi/rutin-cursor-cloud.md) — prompt siap salin, cron, checklist, § Mode intensif |
 | vs Claude | [`koordinasi/rutin.md`](../koordinasi/rutin.md) memakai `create_trigger` di sesi yang sama; Cloud = **run baru tiap jadwal**, VM dari snapshot |
-| Buat automation | Cursor → **Automations** → repo Skills → environment dengan `setup-cursor.sh` + secrets → cron (disarankan **`15 */3 * * *`** UTC) → tempel prompt dari rutin-cursor-cloud.md → Enable → uji **Run now** |
+| Buat automation | Cursor → **Automations** → repo Skills → environment dengan `setup-cursor.sh` + secrets → cron intensif **`15 * * * *`** UTC (overlap → **`15 */2 * * *`**) → tempel prompt dari rutin-cursor-cloud.md → Enable → uji **Run now** |
 | API agent | Tidak ada tool buat automation dari run; hanya dokumentasi UI. Lookup id: MCP `cursor-cloud` → `get-automation` |
-| Jadwal | Default **tiap 3 jam** (menit 15 UTC); **`0 */6 * * *`** bila kuota ketat — sama niatnya dengan Akun A/B di rutin.md |
+| Jadwal | Default intensif **setiap jam** (`15 * * * *`); overlap → **tiap 2 jam** (`15 */2 * * *`); kuota ketat → `0 */6 * * *` atau `15 */3 * * *` |
 | Branch | Lanjut `cursor/<tugas>-8b42` yang aktif, atau branch baru dari `claude/claude-code-cli-differences-btizz5` — detail di playbook |
 | Push | **Wajib** setiap run (`git push -u origin HEAD`); tanpa push pekerjaan hilang saat VM recycle |
 | PR | **Jangan** otomatis; hanya jika pemilik minta eksplisit (sama tabel Git & PR di atas) |
