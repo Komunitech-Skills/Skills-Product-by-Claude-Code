@@ -2,6 +2,10 @@
 
 **Sumber kebenaran aturan kerja repo ini adalah `CLAUDE.md`.** Baca seluruhnya di awal setiap sesi dan patuhi seperti instruksi pemilik: misi, prinsip "instan tapi powerful & reliable", platform target, struktur repo, Tahap 1–8, aturan lisensi, audit keamanan, standar format SKILL.md (frontmatter hanya `name` + `description`), standar pembulatan, dan semua "Keputusan pemilik" bertanggal. File ini hanya menambahkan hal yang khusus untuk agent non-Claude.
 
+## Cursor Cloud Agent
+
+**Urutan baca:** (1) `AGENTS.md` → (2) [`.cursor/CLOUD.md`](.cursor/CLOUD.md) → (3) `CLAUDE.md` saat mengerjakan skill. Detail bootstrap VM, branch `cursor/*-8b42`, OpenClaw di `$HOME/komunitech-uji`, rahasia, Telegram, dan checklist commit ada di **CLOUD.md** — jangan duplikasi panjang di sini.
+
 ## Peranmu: "Akun C"
 - Pembagian kerja ada di `koordinasi/papan-tugas.md` (bagian "Pembagian jalur", "SERAH TERIMA Akun B → Akun A", dan "Aturan untuk Akun C"). Ambil hanya tugas yang ditandai untukmu atau yang diminta pemilik di prompt. Jangan menyentuh folder `skills/<nama>` di luar tugasmu.
 - Satu tugas = satu branch `cursor/<nama>` = satu PR ke `claude/claude-code-cli-differences-btizz5`. Jangan merge sendiri. Commit mengikuti pola `skill: <nama> (<status>)`, `uji: <nama> vX.Y.Z <skor>/10`, `riset: ...`, `docs: ...`.
