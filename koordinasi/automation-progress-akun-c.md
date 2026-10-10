@@ -20,7 +20,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan | Verdik | Telegram 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-10 ~18:50 | `cursor/iterasi-otomatis-akun-c-ea49` | *(setelah push)* | S5 usulan G12 + pra-cek TG 2 skill | — | usulan | ya |
+| 2026-10-10 ~18:50 | `cursor/iterasi-otomatis-akun-c-ea49` | 15e3770b | S5 usulan G12 + pra-cek TG 2 skill | — | usulan | ya |
 | 2026-10-10 ~18:20 | `cursor/c1-gelombang-11b-8b42` | 884a23c1 | koordinasi log otomasi + G11b msgs | — | selesai | ya |
 | 2026-10-10 ~18:10 | `cursor/web-search-cari-prospek-8b42` | 9d97e53b | cari-prospek-web v1.0.2 + C2 web_search | 6,7 → 8,2 (+1,5) | LULUS | ya |
 | 2026-10-10 ~17:00 | `cursor/c1-c3-20261010-8b42` | c42adfe5 | C1 gelombang 11b Telegram | lihat G11b doc | 2 LULUS / 2 BELUM | ya |
