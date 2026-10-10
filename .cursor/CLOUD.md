@@ -33,6 +33,12 @@
 
 ---
 
+## Cursor Automations (jadwal Cloud)
+
+Setiap **pemicu automation** membuat **Cloud Agent run baru** (`source: automations`) — thread chat terpisah. Hasil giliran **tidak** muncul otomatis di chat manual/desktop/web tempat automation dibuat; buka **Automations → Run History** atau daftar agent (filter `sources: automations`) dan klik URL run (`https://cursor.com/agents/<bcId>`). Commit/branch (`cursor/…`) hanya terlihat di GitHub bila run sempat **push** sebelum VM berakhir. Ringkasan ke pemilik di luar Cursor: instruksikan agent mengirim lewat **Telegram topik 242** (`pilot/tg.py`), sama seperti laporan uji — bukan lewat reply ke chat automation.
+
+---
+
 ## Bootstrap lingkungan (`.cursor/environment.json`)
 
 Saat run Cloud dimulai, Cursor menjalankan:
