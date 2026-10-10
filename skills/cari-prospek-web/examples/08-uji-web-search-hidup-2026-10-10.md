@@ -17,9 +17,9 @@ Pesan identik dengan uji 1.0.2 (`00-openclaw-sebelum-sesudah.md`).
 
 **Skor sementara (1 skenario):** SEBELUM 6,5 / SESUDAH **8,5** — skill lebih patuh batas direktori & kejujuran baris.
 
-## Verdik parsial
+## Verdik parsial (diperbarui)
 
-**Infrastruktur C2: SELESAI** (`web_search` hidup). **Uji penuh 4 skenario + Telegram (keputusan 24): belum** — run berikutnya lanjutkan S1 Telegram, S2–S4; bila rata sesudah ≥ 8 dan selisih ≥ 1,5 catat LULUS, bila tidak usulkan arsip ke pemilik.
+**Infrastruktur C2: SELESAI.** Uji penuh 4 skenario + S1 Telegram selesai run **2026-10-10 ~18:04 UTC** → **LULUS** 6,7→8,2 (+1,5). Detail: `09-openclaw-websearch-hidup-2026-10-10.md`, `HASIL-UJI-openclaw-websearch-2026-10-10.md`.
 
 ## Output mentah (VM uji, tidak di-repo)
 
