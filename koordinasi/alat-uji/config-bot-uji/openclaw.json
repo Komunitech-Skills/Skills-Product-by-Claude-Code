@@ -48,7 +48,7 @@
       "modelPolicyAllowlist": true,
       "utilityModelSeparation": true
     },
-    "lastTouchedVersion": "2026.9.7"
+    "lastTouchedVersion": "2026.9.9"
   },
   "commands": {
     "ownerAllowFrom": [
@@ -298,5 +298,32 @@
     "lastRunVersion": "2026.9.7",
     "lastRunCommand": "doctor",
     "lastRunMode": "local"
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "provider": "tavily"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "duckduckgo": {
+        "enabled": false,
+        "config": {
+          "webSearch": {
+            "region": "id-id"
+          }
+        }
+      },
+      "tavily": {
+        "enabled": true,
+        "config": {
+          "webSearch": {
+            "apiKey": "${TAVILY_API_KEY}"
+          }
+        }
+      }
+    }
   }
 }
