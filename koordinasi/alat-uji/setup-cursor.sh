@@ -62,7 +62,7 @@ EOF
 chmod +x "$R/oc.sh" "$R/oc-tg.sh"
 
 # 5. Salin alat uji lalu tulis ulang path absolut lama → path baru
-for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh; do
+for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh run-uji.sh run-uji-tg.sh; do
   sed -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g" \
       -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-prod#$BASE/openclaw-prod#g" \
       -e "s#/home/user/Skills#$REPO#g" \
