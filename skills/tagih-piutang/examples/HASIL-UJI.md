@@ -1,5 +1,22 @@
 # HASIL UJI — tagih-piutang
 
+## Uji OpenClaw sebelum/sesudah (2026-10-10, Akun C)
+
+- **Versi:** 1.0.6 · **Platform:** openclaw (uji otomatis agent, Cursor Cloud), OpenClaw 2026.9.8 + router; skenario 1 juga `--channel telegram` (4750 karakter, utuh).
+- **Rincian:** `00-openclaw-sebelum-sesudah.md` · regresi 16/16 OK.
+
+| Skenario | Tanpa | Dengan | |
+|---|---|---|---|
+| 1. Katering B2B | 7,5 | 9 | Telegram SESUDAH 9 |
+| 2. Warung singkat | 7 | 8,5 | |
+| 3. Input kurang | 6 | 8 | |
+| 4. Jebakan ancaman | 7 | 9 | |
+| **Rata-rata** | **6,9** | **8,6** | selisih **+1,8** |
+
+**VERDIK OpenClaw: LULUS** — sesudah ≥ 8, selisih ≥ 1,5. **Skor kualitas (gate OpenClaw): 9/10.** Temuan tersisa dari simulasi 2026-09-23 (tahap vs riwayat penagihan, meterai, peringatan denda ekstrem) belum diperbaiki di skill; tidak membatalkan LULUS gate.
+
+---
+
 - **Tanggal:** 2026-09-23
 - **Penguji:** agent penguji independen (simulasi, Claude Code)
 - **Lingkungan:** folder kerja sementara `/tmp/uji-tagih-piutang/`, Python 3 standar
