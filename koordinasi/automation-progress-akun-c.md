@@ -49,7 +49,7 @@ _(Agent: sisipkan baris baru di bawah header tabel; run terbaru paling atas.)_
 
 | UTC (approx) | Branch | Commit | Ringkasan | Telegram 242 |
 |--------------|--------|--------|-----------|--------------|
-| 2026-10-10 | `cursor/cloud-md-8b42` | _(setelah push docs)_ | Playbook: push per commit uji, Telegram 242, cron 30 menit | manual run docs |
+| 2026-10-10 | `cursor/cloud-md-8b42` | `bcd67a55` | Playbook: push per commit uji, Telegram 242, cron 30 menit | manual run docs (no TG) |
 
 ---
 
