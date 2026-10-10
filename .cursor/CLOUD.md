@@ -27,7 +27,8 @@
 | Branch kerja | `cursor/<nama-tugas>-8b42` (satu tugas = satu branch) |
 | Sebelum commit | `python3 scripts/validate.py` harus lolos |
 | Pola commit | `skill: …`, `uji: …`, `riset: …`, `docs: …` |
-| Akhir run (uji/testing atau sesi kerja) | **commit + push** wajib — VM ulang dari snapshot; kerja tidak di-commit hilang |
+| Push | **Setelah setiap commit `uji:`** → `git push -u origin HEAD` segera (jangan menumpuk uji tanpa push). Commit lain: push minimal **sekali** sebelum run berakhir |
+| Akhir run | VM ulang dari snapshot; tanpa push pekerjaan hilang — lihat juga push per-commit uji di atas |
 | Pull request | **Jangan buat PR** otomatis setelah uji/testing atau akhir run. Buat PR **hanya** bila pemilik **secara eksplisit** meminta. |
 | Merge | Jangan merge PR sendiri |
 
@@ -76,6 +77,7 @@ State di `$BASE` **tidak** persist antar run — hasil uji wajib masuk repo (`ex
 |----------|-----------|
 | `Ninerouter_key` | Wajib untuk uji sebelum/sesudah (router model) |
 | `bot_token` | Opsional; gateway bot penguji & gelombang Telegram |
+| `tester_bot_token` | Wajib untuk laporan/progres ke Telegram topik 242 via `pilot/tg.py` (bot penguji, bukan bot OpenClaw) |
 
 - Hanya dari **environment secrets** Cursor (Settings → Cloud Agents → environment). **Jangan** cetak, commit, log, atau tanya ke pemilik.
 - Satu token bot = satu gateway polling. Nyalakan gateway hanya lewat **`gw-cek.sh`**. Matikan hanya per PID: `pgrep -f "^openclaw-gateway$"` lalu `kill` — **dilarang** `pkill -f` (bisa membunuh proses penguji).
@@ -85,8 +87,9 @@ State di `$BASE` **tidak** persist antar run — hasil uji wajib masuk repo (`ex
 
 ## Telegram (bot penguji)
 
-- Laporan uji & hal yang butuh keputusan pemilik → grup uji, topik **"Ringkasan uji"**: `chat_id=-1004407409583`, `message_thread_id=242`.
-- Kirim lewat `pilot/tg.py`, awali `@nikioktarian`, format keputusan di `CLAUDE.md` (2026-10-03). Nomor keputusan lanjut dari entri terakhir di `koordinasi/` / `reports/`.
+- Laporan uji, **progres automation**, & hal yang butuh keputusan pemilik → grup uji, topik **"Ringkasan uji"**: `chat_id=-1004407409583`, `message_thread_id=242`.
+- Kirim lewat `pilot/tg.py` (`tester_bot_token`), awali `@nikioktarian`, format keputusan di `CLAUDE.md` (2026-10-03). Nomor keputusan lanjut dari entri terakhir di `koordinasi/` / `reports/`.
+- **Automation (jadwal Cloud):** setelah **setiap push** commit uji (dan bila run hanya docs — sekali di akhir), kirim satu pesan ringkas + perbarui [`koordinasi/automation-progress-akun-c.md`](../koordinasi/automation-progress-akun-c.md). Run manual/desktop: laporan tetap ke `reports/YYYY-MM-DD-akun-c.md`.
 - **Gelombang tampilan:** hanya setelah persetujuan pemilik; maks. 10 pesan; jeda; tanpa balas-otomatis; topik baru; pra-cek **`uji-tg.sh`** wajib.
 
 ---
@@ -108,15 +111,17 @@ Tulis atau tambah bagian di **`reports/YYYY-MM-DD-akun-c.md`** (format ringkas �
 
 ## Iterasi otomatis (Automations)
 
-Pemilik dapat menjadwalkan Akun C lewat **Cursor Automations** (dashboard), bukan API dari agent. **Mode intensif (2026-10-10):** bila pemilik mengaktifkan push limit sisa (~7 hari), default cron **`15 * * * *`** UTC (setiap jam, menit 15) — nama disarankan *Akun C — iterasi intensif (1 jam)*. Bila **Run History** menunjukkan run overlap (uji OpenClaw panjang), turunkan ke **`15 */2 * * *`**. Bukan terikat limit 3 jam Claude Code Akun A/B.
+Pemilik menjadwalkan Akun C lewat **Cursor Automations** (dashboard), bukan API dari agent. **Jadwal disarankan (2026-10-10):** cron **`*/30 * * * *`** UTC (setiap 30 menit, :00 dan :30) — nama *Akun C — iterasi (30 menit)*. Bila **Run History** overlap (uji OpenClaw >30 menit), naikkan ke **`0 * * * *`** atau **`15 */2 * * *`**. Bukan terikat limit 3 jam Claude Code Akun A/B.
+
+Setiap **pemicu automation** = run Cloud Agent baru (`source: automations`); hasil tidak muncul di chat manual — buka Run History atau pantau **git push** + **Telegram 242** + [`automation-progress-akun-c.md`](../koordinasi/automation-progress-akun-c.md).
 
 | Topik | Rincian |
 |--------|---------|
-| Playbook lengkap | [`koordinasi/rutin-cursor-cloud.md`](../koordinasi/rutin-cursor-cloud.md) — prompt siap salin, cron, checklist, § Mode intensif |
+| Playbook lengkap | [`koordinasi/rutin-cursor-cloud.md`](../koordinasi/rutin-cursor-cloud.md) — prompt, cron 30 menit, push per commit uji |
+| Progres antar-run | [`koordinasi/automation-progress-akun-c.md`](../koordinasi/automation-progress-akun-c.md) — agent wajib perbarui + Telegram setelah push |
 | vs Claude | [`koordinasi/rutin.md`](../koordinasi/rutin.md) memakai `create_trigger` di sesi yang sama; Cloud = **run baru tiap jadwal**, VM dari snapshot |
-| Buat automation | Cursor → **Automations** → repo Skills → environment dengan `setup-cursor.sh` + secrets → cron intensif **`15 * * * *`** UTC (overlap → **`15 */2 * * *`**) → tempel prompt dari rutin-cursor-cloud.md → Enable → uji **Run now** |
-| API agent | Tidak ada tool buat automation dari run; hanya dokumentasi UI. Lookup id: MCP `cursor-cloud` → `get-automation` |
-| Jadwal | Default intensif **setiap jam** (`15 * * * *`); overlap → **tiap 2 jam** (`15 */2 * * *`); kuota ketat → `0 */6 * * *` atau `15 */3 * * *` |
-| Branch | Lanjut `cursor/<tugas>-8b42` yang aktif, atau branch baru dari `claude/claude-code-cli-differences-btizz5` — detail di playbook |
-| Push | **Wajib** setiap run (`git push -u origin HEAD`); tanpa push pekerjaan hilang saat VM recycle |
+| Buat automation | Cursor → **Automations** → repo Skills → environment + secrets (`Ninerouter_key`, `tester_bot_token`, `bot_token` opsional) → cron **`*/30 * * * *`** → prompt dari rutin-cursor-cloud.md → **Open Pull Request OFF** → Enable → **Run now** |
+| API agent | Tidak ada tool buat automation dari run; lookup id: MCP `cursor-cloud` → `get-automation` |
+| Push | **Segera setiap commit `uji:`** + push akhir run untuk commit lain; tanpa push pekerjaan hilang saat VM recycle |
+| Telegram 242 | Satu pesan ringkas setelah push uji (skor, verdik, branch, commit); format di automation-progress-akun-c.md |
 | PR | **Jangan** otomatis; hanya jika pemilik minta eksplisit (sama tabel Git & PR di atas) |
