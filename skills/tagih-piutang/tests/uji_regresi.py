@@ -229,6 +229,184 @@ class Uji(unittest.TestCase):
 
 
 
+CSV_BERANTAKAN = """no nota,pelanggan,total,sdh bayar,jatuh tempo,keterangan
+BM-101,Pak Slamet (ruko),"Rp 18.750.000","Rp 5.000.000",12/08/2026,sudah WA 2x (3 Sep & 20 Sep) janji bayar 30 Sep tidak ditepati
+BM-102,CV Karya Mandiri,"Rp 42.300.000",0,5 Sep 2026,belum pernah ditagih
+BM-103,Bu Ratna,2.350.000,,28/09/2026,pelanggan lama
+BM-104,Pak Dedi,"Rp 1.275.000","Rp 275.000",15/10/2026,belum jatuh tempo
+BM-105,UD Maju Jaya,"Rp 9.600.000","Rp 9.600.000",30/08/2026,lunas
+BM-106,Pak Haji Umar,"Rp 27.800.000","Rp 10.000.000",01/07/2026,diingatkan 3x; janji bayar tidak ditepati
+BM-107,PT Bangun Persada,"Rp 61.500.000",0,9 Okt 2026,termin 2
+BM-108,Bu Wati,640rb,0,20/08/2026,tetangga
+BM-109,Pak Anton,"5,2jt","Rp 1.000.000",18/09/2026,sudah diingatkan 1x
+BM-110,CV Sinar Baja,"Rp 14.000.000",0,13/10/2026,belum jatuh tempo
+"""
+
+
+class UjiKolomPembayaran(unittest.TestCase):
+    """v1.0.7 (uji OpenClaw 2026-10-10): kolom 'sdh bayar' dulu diabaikan diam-diam sehingga nota lunas
+    tampil telat 41 hari. Sekarang kolom pembayaran dikenali, dikurangkan, dan yang tak terbaca diberi peringatan."""
+
+    TGL2 = "2026-10-10"
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def tulis(self, isi, nama="p.csv"):
+        f = os.path.join(self.dir, nama)
+        with open(f, "w", encoding="utf-8") as fh:
+            fh.write(isi)
+        return f
+
+    def jalan(self, f, fmt="json", *extra):
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        p = subprocess.run([sys.executable, SCRIPT, "--file", f, "--tanggal", self.TGL2, "--format", fmt, *extra],
+                           capture_output=True, text=True, env=env)
+        return p.returncode, p.stdout, p.stderr
+
+    def rekap(self, isi, nama="p.csv"):
+        kode, out, err = self.jalan(self.tulis(isi, nama))
+        self.assertEqual(kode, 0, err)
+        return json.loads(out)
+
+    def test_csv_berantakan_sdh_bayar_angka_independen(self):
+        from decimal import Decimal as D
+        from datetime import date as Tgl
+        h = self.rekap(CSV_BERANTAKAN)
+        # pembanding independen (Decimal, ditulis tangan dari data di atas): (no, total, dibayar, jatuh tempo)
+        data = [("BM-101", D(18750000), D(5000000), Tgl(2026, 8, 12)), ("BM-102", D(42300000), D(0), Tgl(2026, 9, 5)),
+                ("BM-103", D(2350000), D(0), Tgl(2026, 9, 28)), ("BM-104", D(1275000), D(275000), Tgl(2026, 10, 15)),
+                ("BM-105", D(9600000), D(9600000), Tgl(2026, 8, 30)), ("BM-106", D(27800000), D(10000000), Tgl(2026, 7, 1)),
+                ("BM-107", D(61500000), D(0), Tgl(2026, 10, 9)), ("BM-108", D(640000), D(0), Tgl(2026, 8, 20)),
+                ("BM-109", D(5200000), D(1000000), Tgl(2026, 9, 18)), ("BM-110", D(14000000), D(0), Tgl(2026, 10, 13))]
+        hari_ini = Tgl(2026, 10, 10)
+        jt = {n: j for n, _, _, j in data}
+        sisa = {n: t - b for n, t, b, _ in data if t - b > 0}
+        telat = {n: s for n, s in sisa.items() if (hari_ini - jt[n]).days > 0}
+        self.assertEqual(h["total_piutang"], int(sum(sisa.values())))
+        self.assertEqual(h["total_piutang"], 157540000)
+        self.assertEqual(h["total_telat"], int(sum(telat.values())))
+        self.assertEqual(h["total_telat"], 142540000)
+        self.assertEqual(h["jumlah_invoice_telat"], 7)
+        d = {x["no_invoice"]: x for x in h["daftar"]}
+        self.assertNotIn("BM-105", d)  # nota lunas tidak ditagih
+        for n, s in sisa.items():
+            self.assertEqual(d[n]["sisa"], int(s), n)
+            self.assertEqual(d[n]["hari_terlambat"], (hari_ini - jt[n]).days, n)
+        self.assertEqual(d["BM-106"]["hari_terlambat"], 101)
+        self.assertEqual([x["no_invoice"] for x in h["lunas_dikecualikan"]], ["BM-105"])
+        self.assertEqual(h["kolom_dipakai"]["dibayar"], "sdh bayar")
+
+    def test_riwayat_pengingat_dari_keterangan(self):
+        h = self.rekap(CSV_BERANTAKAN)
+        d = {x["no_invoice"]: x for x in h["daftar"]}
+        self.assertEqual(d["BM-106"]["sudah_diingatkan"], 3)
+        self.assertEqual(d["BM-101"]["sudah_diingatkan"], 2)
+        self.assertEqual(d["BM-109"]["sudah_diingatkan"], 1)
+        self.assertEqual(d["BM-102"]["sudah_diingatkan"], 0)
+        self.assertEqual(d["BM-106"]["tahap_kode"], 6)   # 101 hari + 3 pengingat -> somasi
+        self.assertEqual(d["BM-102"]["tahap_kode"], 5)   # 35 hari, belum pernah ditagih -> maks tahap 5
+        self.assertTrue(any("dibaca dari" in c for c in d["BM-106"]["catatan"]))
+
+    def test_pengingat_kolom_eksplisit_menang(self):
+        h = self.rekap("pelanggan,total,sdh bayar,jatuh tempo,sudah_diingatkan,keterangan\n"
+                       "A,1000000,0,2026-09-01,1,sudah WA 5x\n")
+        self.assertEqual(h["daftar"][0]["sudah_diingatkan"], 1)
+
+    def test_variasi_judul_kolom_dibayar(self):
+        judul = ["sdh bayar", "Sudah Dibayar", "DIBAYAR", "sudah_dibayar", "Sdh_Dibayar", "SDH-BAYAR", "Terbayar",
+                 "Uang Muka", "DP", "Pembayaran (Rp)", "sudahDibayar", "Sudah Dibayár", "Dibayarkan", "Cicilan",
+                 "Angsuran", "Paid", "Amount Paid"]
+        for j in judul:
+            with self.subTest(judul=j):
+                h = self.rekap('pelanggan,total,"%s",jatuh tempo\nA,"Rp 1.000.000","Rp 400.000",2026-09-01\n' % j)
+                self.assertEqual(h["daftar"][0]["sisa"], 600000)
+                self.assertEqual(h["peringatan"], [])
+
+    def test_beberapa_kolom_pembayaran_dijumlah(self):
+        h = self.rekap('pelanggan,total,DP,Cicilan 1,Cicilan 2,jatuh tempo\nA,1000000,100000,200000,"Rp 50.000",2026-09-01\n')
+        self.assertEqual(h["daftar"][0]["dibayar"], 350000)
+        self.assertEqual(h["daftar"][0]["sisa"], 650000)
+
+    def test_lunas_penuh_dikecualikan_dari_total(self):
+        h = self.rekap("pelanggan,total,dibayar,jatuh tempo\nA,1000000,1000000,2026-09-01\nB,500000,100000,2026-09-01\n")
+        self.assertEqual([x["pelanggan"] for x in h["daftar"]], ["B"])
+        self.assertEqual(h["total_piutang"], 400000)
+        self.assertEqual(h["lunas_dikecualikan"][0]["pelanggan"], "A")
+
+    def test_kolom_lunas_ya_tidak_dan_status(self):
+        h = self.rekap("Pelanggan,Total,Lunas?,Status Pembayaran,Jatuh Tempo\n"
+                       "A,1000000,ya,,2026-09-01\nB,500000,,belum lunas,2026-09-01\n"
+                       "C,700000,,Lunas,2026-09-01\nD,100000,,,2026-09-01\nE,200000,,Lunas sebagian,2026-09-01\n"
+                       "F,300000,tidak,,2026-09-01\n")
+        self.assertEqual(sorted(x["pelanggan"] for x in h["daftar"]), ["B", "D", "E", "F"])
+        self.assertEqual(sorted(x["pelanggan"] for x in h["lunas_dikecualikan"]), ["A", "C"])
+        self.assertEqual(h["total_piutang"], 500000 + 100000 + 200000 + 300000)
+
+    def test_kolom_mirip_pembayaran_tak_dikenal_beri_peringatan(self):
+        isi = "pelanggan,total,sdh transfer,jatuh tempo\nA,1000000,400000,2026-09-01\n"
+        h = self.rekap(isi)
+        self.assertEqual(len(h["peringatan"]), 1)
+        self.assertIn("⚠️", h["peringatan"][0])
+        self.assertIn("sdh transfer", h["peringatan"][0])
+        self.assertIn("TIDAK dikurangkan", h["peringatan"][0])
+        kode, out, err = self.jalan(self.tulis(isi), "teks")
+        self.assertEqual(kode, 0, err)
+        self.assertTrue(out.startswith("⚠️"), out[:80])
+
+    def test_isi_pembayaran_tak_terbaca_beri_peringatan_dan_baris_tetap_ada(self):
+        h = self.rekap('pelanggan,total,sudah dibayar,jatuh tempo\nA,1000000,"transfer 3 okt",2026-09-01\nB,500000,100000,2026-09-01\n')
+        d = {x["pelanggan"]: x for x in h["daftar"]}
+        self.assertEqual(d["A"]["sisa"], 1000000)  # tidak diam-diam dibuang
+        self.assertEqual(d["B"]["sisa"], 400000)
+        self.assertTrue(any("⚠️" in c and "tidak terbaca" in c for c in d["A"]["catatan"]))
+        self.assertTrue(any("tidak terbaca" in w and "baris 2" in w for w in h["peringatan"]))
+
+    def test_tanda_hubung_dan_kosong_dianggap_nol_tanpa_peringatan(self):
+        h = self.rekap("pelanggan,total,dibayar,jatuh tempo\nA,1000000,-,2026-09-01\nB,500000,,2026-09-01\nC,300000,nihil,2026-09-01\n")
+        self.assertEqual(h["peringatan"], [])
+        self.assertEqual(h["total_piutang"], 1800000)
+
+    def test_tanggal_bayar_terisi_tapi_sisa_masih_ada_diperingatkan(self):
+        h = self.rekap("pelanggan,total,tgl bayar,jatuh tempo\nA,1000000,03/10/2026,2026-09-01\n")
+        self.assertTrue(any("tgl bayar" in c for c in h["daftar"][0]["catatan"]))
+
+    def test_bayar_melebihi_tagihan_dilewati_dengan_alasan(self):
+        h = self.rekap("pelanggan,total,dibayar,jatuh tempo\nA,1000000,1500000,2026-09-01\nB,500000,0,2026-09-01\n")
+        self.assertEqual([x["pelanggan"] for x in h["daftar"]], ["B"])
+        self.assertEqual(h["baris_dilewati"][0]["baris"], 2)
+        self.assertIn("melebihi", h["baris_dilewati"][0]["alasan"])
+
+    def test_kolom_sisa_beda_dari_hitungan_diperingatkan(self):
+        h = self.rekap("pelanggan,total,dibayar,sisa,jatuh tempo\nA,1000000,400000,700000,2026-09-01\n")
+        self.assertEqual(h["daftar"][0]["sisa"], 600000)
+        self.assertTrue(any("beda dari hitungan" in c for c in h["daftar"][0]["catatan"]))
+
+    def test_keterangan_lunas_tapi_sisa_masih_ada_diperingatkan(self):
+        h = self.rekap("pelanggan,total,jatuh tempo,keterangan\nA,1000000,2026-09-01,lunas\nB,500000,2026-09-01,belum lunas\n")
+        d = {x["pelanggan"]: x for x in h["daftar"]}
+        self.assertTrue(any("menyebut lunas" in c for c in d["A"]["catatan"]))
+        self.assertFalse(any("menyebut lunas" in c for c in d["B"]["catatan"]))
+
+    def test_tanpa_kolom_pembayaran_diberi_catatan(self):
+        h = self.rekap("pelanggan,total,jatuh tempo\nA,1000000,2026-09-01\n")
+        self.assertTrue(any("tidak ada kolom pembayaran" in w for w in h["peringatan"]))
+
+    def test_xlsx_sdh_bayar(self):
+        f = os.path.join(self.dir, "p.xlsx")
+        buat_xlsx(f, [["pelanggan", "total", "sdh bayar", "jatuh tempo"], ["Toko A", 6300000, 300000, 46270]])
+        kode, out, err = self.jalan(f, "json", "--sheet", "Piutang")
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(json.loads(out)["daftar"][0]["sisa"], 6000000)
+
+    def test_kolom_dibayar_lama_tetap_sama(self):
+        h = self.rekap("pelanggan,no_invoice,nominal,jatuh_tempo,dibayar\nCV B,INV-02,12500000,2026-08-24,2500000\n")
+        self.assertEqual(h["daftar"][0]["sisa"], 10000000)
+
+
 class UjiSingkatanFlag(unittest.TestCase):
     """Regresi keamanan: argparse tidak boleh menerima singkatan flag konfirmasi (mis. --y untuk --ya)."""
 
