@@ -20,10 +20,16 @@ Semua berkas di sini disalin dari scratchpad sesi Akun B (`/tmp/claude-0/.../scr
 ## Membangun ulang (urutan)
 1. Pasang OpenClaw dua kali di scratchpad: `openclaw-prod` (gateway bot uji, `npm i openclaw@2026.9.x` di folder sendiri) dan `/tmp/uji-openclaw` (dipakai `scripts/uji_openclaw.sh`). Jangan pernah menjalankan `uji_openclaw.sh` terhadap instalasi gateway.
 2. Buat `openclaw-real/home/.openclaw/` dari `config-bot-uji/`; set env `bot_token`, `Ninerouter_key` (secret environment, bukan ditempel di chat).
-3. Sesuaikan path absolut di semua `.sh` (variabel `R`, `P`, `S`) ke scratchpad sesi baru.
+3. Path: semua skrip kini memakai `SP=${SCRATCHPAD:?}` (tanpa path sesi tertanam). Jalankan `export SCRATCHPAD=<folder scratchpad sesi>` sebelum memakai skrip, atau (di salinan kerja) ganti baris `SP=...` di atas tiap `.sh`.
 4. `bash gw-cek.sh` → harus `GATEWAY: HIDUP`/`DINYALAKAN ULANG`. Gateway sering mati saat idle; routine 3 jam menyalakan ulang.
 5. Uji sebelum/sesudah: `mk-home.sh sebelum` (tanpa skill) dan `mk-home.sh nama-skill nama-skill`, lalu `uji.sh`/`uji-tg.sh` per skenario. Acuan LULUS: sesudah ≥ 8 dan selisih ≥ 1,5.
 6. Setelah mengubah `channels.*` di config bot uji: **restart gateway** (hot reload membuat semua balasan ditolak).
+
+## Catatan 2026-10-09 (dibangun ulang oleh Akun A)
+- Lingkungan dibangun ulang di scratchpad sesi baru: `openclaw-prod` (Node 24.21.0 dari nodejs.org, SHA-256 cocok dengan SHASUMS256.txt, + `npm i openclaw@2026.9.8` dari registry resmi) dan `openclaw-real` (skrip + `home/.openclaw` dari `config-bot-uji/`). `openclaw-prod` sengaja 2026.9.8, bukan 2026.9.6 milik `/tmp/uji-openclaw`: config bot uji ditulis oleh 2026.9.7 dan 2026.9.6 menolak menjalankan gateway ("binary lebih tua dari config").
+- Perubahan skrip: (1) path sesi tertanam diganti `SP=${SCRATCHPAD:?}` (skrip Python membaca `os.environ["SCRATCHPAD"]`); (2) `gw-cek.sh` tidak lagi memakai `pkill -f`, melainkan `kill` PID persis dari `pgrep -f "^openclaw-gateway$"` (pengecekan hidup memakai pola yang sama); (3) `mk-home.sh` memakai `rm -rf "${R:?}/homes/${N:?}"`. Selain itu isi skrip tidak diubah.
+- Heartbeat tetap mati (`agents.defaults.heartbeat.every: "0m"`), terkonfirmasi di log gateway (`[heartbeat] disabled`).
+- Lanjutan: `pilot/tg.py` membaca env `tester_bot_token` (bukan `bot_token`); isi env itu sebelum memakai skrip pilot. Router model (`r9wtenn.abc-tunnel.us`) bisa sewaktu-waktu mengembalikan HTTP 530 (tunnel mati); itu masalah sisi router, bukan skrip.
 
 ## Agent Cursor Cloud (Akun C) — bootstrap otomatis
 `setup-cursor.sh` membangun seluruh lingkungan uji di VM agent (dipanggil dari `.cursor/environment.json` saat run dimulai, idempoten): Node portabel v24.21.0, `openclaw@2026.9.8` di `$BASE/openclaw-prod`, HOME bot uji dari `config-bot-uji/`, pembungkus `oc.sh`/`oc-tg.sh`, dan salinan `gw-cek.sh`/`mk-home.sh`/`uji.sh`/`uji-tg.sh`/`pilot/` dengan path yang sudah disesuaikan (`pkill -f` sudah diganti kill per PID). Diuji 2026-10-10 di sesi Akun B: ±4 menit, `openclaw --version` OK, `mk-home.sh` OK. `BASE` default `$HOME/komunitech-uji`; `REPO` otomatis = root repo.

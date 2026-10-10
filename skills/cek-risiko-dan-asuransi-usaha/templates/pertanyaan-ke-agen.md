@@ -1,4 +1,4 @@
-# Pertanyaan untuk agen asuransi berizin
+# Pertanyaan untuk agen asuransi terdaftar
 
 1. Apa saja yang dijamin dan TIDAK dijamin (pengecualian) untuk usaha [isian: jenis usaha]?
 2. Apakah banjir, gempa bumi, dan kerusuhan termasuk, atau perlu perluasan terpisah? Berapa premi tambahannya?
@@ -7,6 +7,7 @@
 5. Adakah masa tunggu atau syarat keselamatan (APAR, alarm) yang harus dipenuhi?
 6. Dokumen apa yang dibutuhkan untuk klaim dan berapa lama batas lapor?
 7. Berapa premi per tahun dan bagaimana bila terlambat bayar?
-8. Bisa tunjukkan izin OJK perusahaan dan nomor lisensi agen?
+8. Bisa tunjukkan izin usaha OJK perusahaan, bukti pendaftaran agen (nomor registrasi), dan sertifikasi agen?
+9. Untuk usaha jasa/profesi: apakah kesalahan layanan, kerusakan alat kerja, dan barang titipan pelanggan dijamin, atau perlu produk terpisah?
 
 Tabel banding 2-3 penawaran: Jenis | Premi/tahun | Nilai pertanggungan | Biaya sendiri | Pengecualian utama | Masa tunggu | Batas klaim.

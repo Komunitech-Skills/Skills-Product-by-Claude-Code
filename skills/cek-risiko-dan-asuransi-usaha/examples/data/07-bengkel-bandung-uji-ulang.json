@@ -1,0 +1,8 @@
+[{"nama":"Kebakaran (bensin, oli, las, korsleting)","kemungkinan":2,"dampak":5,"kerugian_rp":120000000},
+{"nama":"Motor pelanggan hilang/rusak saat dititip","kemungkinan":2,"dampak":4,"kerugian_rp":25000000},
+{"nama":"Pemilik (kepala mekanik) sakit/kecelakaan","kemungkinan":2,"dampak":4},
+{"nama":"Mekanik terbaik pindah ke bengkel lain","kemungkinan":3,"dampak":3,"bisa_diasuransikan":false},
+{"nama":"Mekanik cedera kerja","kemungkinan":3,"dampak":3},
+{"nama":"Gempa bumi (dekat sesar Lembang, cek peta resmi)","kemungkinan":2,"dampak":4},
+{"nama":"Pencurian alat/sparepart","kemungkinan":3,"dampak":2},
+{"nama":"Komplain servis gagal (rem/blong)","kemungkinan":2,"dampak":4}]

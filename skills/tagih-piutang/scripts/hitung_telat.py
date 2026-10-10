@@ -2,7 +2,7 @@
 """Hitung keterlambatan piutang, tahap penagihan, dan (opsional) denda sesuai kesepakatan tertulis.
 
 Hanya library standar Python (3.8+). Tidak ada akses jaringan.
-Versi 1.0.4 (2026-10-01).
+Versi 1.0.7 (2026-10-10).
 
 Mode 1 – satu tagihan:
   python3 hitung_telat.py --nominal "Rp 12.500.000" --jatuh-tempo 2026-08-24 --tanggal 2026-09-23
@@ -15,6 +15,10 @@ Mode 2 – banyak tagihan (rekap umur piutang) dari CSV atau Excel .xlsx berkolo
   Nama kolom umum ID/EN juga diterima (mis. no_faktur, nilai_faktur, sudah_dibayar, customer,
   due_date, amount, paid, "Nilai Faktur (Rp)"); kolom lain (no_wa, tanggal_faktur, ...) diabaikan.
   Bila hanya ada kolom sisa (sisa/outstanding/balance), sisa dipakai sebagai nominal belum dibayar.
+  Kolom pembayaran dikenali dari berbagai judul (sdh bayar, sudah dibayar, dibayar, DP, cicilan, lunas,
+  status bayar, ...; tidak peka huruf besar/kecil, spasi, garis bawah, atau aksen) dan DIKURANGKAN dari
+  tagihan; nota yang lunas tidak ditagih. Kolom yang tampak seperti pembayaran tetapi tidak terbaca
+  memunculkan peringatan, tidak pernah diabaikan diam-diam.
   python3 hitung_telat.py --file piutang.csv --tanggal 2026-09-23
   python3 hitung_telat.py --file piutang.xlsx --sheet Piutang --tanggal 2026-09-23
   File .xlsx dibaca dengan library standar (zipfile + xml), TANPA openpyxl/pandas: jangan pernah menginstal
@@ -33,12 +37,13 @@ import json
 import math
 import re
 import sys
+import unicodedata
 import zipfile
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
-VERSI = "1.0.4"
+VERSI = "1.0.7"
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
          "Agustus", "September", "Oktober", "November", "Desember"]
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
@@ -262,7 +267,10 @@ def parse_tgl(teks, nama):
 
 
 def normal_kolom(nama):
-    t = re.sub(r"\(.*?\)", "", str(nama or "").strip().lower())
+    t = unicodedata.normalize("NFKD", str(nama or "").strip())
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    t = re.sub(r"(?<=[a-z])(?=[A-Z])", "_", t)  # sudahDibayar -> sudah_Dibayar
+    t = re.sub(r"\(.*?\)", "", t.lower())
     return re.sub(r"[^0-9a-z]+", "_", t).strip("_")
 
 
@@ -512,6 +520,75 @@ def baca_csv(path):
         raise InputSalah("encoding file tidak dikenali. " + MINTA_CSV)
 
 
+# ---------------------------------------------------------------- kolom pembayaran (v1.0.7)
+_NOL = {"-", "--", "—", "–", "nihil", "n/a", "na", "belum", "blm", "tidak", "tdk", "no", "none", "kosong"}
+_YA = {"ya", "y", "yes", "lunas", "sudah", "sdh", "udah", "v", "x", "ok", "paid", "true", "1", "✓", "✔"}
+_TIDAK = {"", "tidak", "tdk", "t", "no", "n", "belum", "blm", "false", "0", "-", "—", "–"}
+_JANGAN_KOLOM = ("belum", "blm", "sisa", "outstanding", "unpaid", "balance", "kurang", "tempo", "jatuh", "due")
+_BUKAN_JUMLAH = ("metode", "cara", "via", "bukti", "bank", "rekening", "norek", "ket", "catatan", "note")
+_KOLOM_CATATAN = ("keterangan", "ket", "catatan", "note", "notes", "memo", "remark", "remarks", "riwayat", "info")
+_POLA_INGAT = [
+    re.compile(r"(?:diingatkan|di\s*ingatkan|ingatkan|ditagih|tagih|reminder|remind|follow\s*up|\bfu\b|\bwa\b|chat|"
+               r"telepon|telpon|telp|dichat|dihubungi)\D{0,15}?(\d{1,2})\s*(?:x|kali)\b"),
+    re.compile(r"(\d{1,2})\s*(?:x|kali)\s*(?:diingatkan|ditagih|di\s*wa|wa\b|chat|dichat|telepon|telpon|reminder)"),
+]
+
+
+def jenis_kolom(nama):
+    """Kelompokkan kolom yang berkaitan dengan pembayaran: 'jumlah' (nominal yang sudah dibayar), 'lunas' (tanda
+    ya/tidak), 'status' (teks status bayar), 'tgl_bayar' (tanggal pembayaran), 'mirip' (tampak seperti pembayaran
+    tetapi bentuknya tidak dikenali) atau None. Tidak peka huruf besar/kecil, spasi, garis bawah, atau aksen."""
+    n = normal_kolom(nama)
+    if not n:
+        return None
+    rapat = n.replace("_", "")
+    kata = n.split("_")
+    if n == "status" or n.startswith("status_"):
+        return "status"
+    petunjuk = any(x in rapat for x in ("bayar", "paid", "payment", "cicil", "angsur", "uangmuka", "setor",
+                                         "pelunasan", "lunas", "transfer", "terima", "masuk", "settle")) \
+        or "dp" in kata or "tf" in kata
+    if not petunjuk:
+        return None
+    if any(x in rapat for x in ("tgl", "tanggal", "date")):
+        return "tgl_bayar"
+    if any(x in rapat for x in _JANGAN_KOLOM):
+        return "mirip"
+    if any(x in rapat for x in _BUKAN_JUMLAH):
+        return None
+    if "lunas" in rapat and not any(x in rapat for x in ("bayar", "paid", "payment", "cicil", "angsur")):
+        return "lunas"
+    if any(x in rapat for x in ("bayar", "paid", "payment", "cicil", "angsur", "uangmuka")) or "dp" in kata:
+        return "jumlah"
+    return "mirip"
+
+
+def baca_jumlah_bayar(teks, nama):
+    """Nilai sel pembayaran -> Decimal. Kosong atau tanda 'tidak ada' (-, nihil, belum) = 0."""
+    t = str(teks or "").strip()
+    if t.lower() in _NOL or t == "":
+        return Decimal(0)
+    return parse_angka(t, nama)
+
+
+def status_lunas(teks):
+    """True = lunas, False = belum/sebagian, None = teks status tidak bicara soal lunas."""
+    t = str(teks or "").lower()
+    if any(x in t for x in ("belum", "blm", "unpaid", "outstanding", "sebagian", "partial", "cicil", "kurang")):
+        return False
+    if any(x in t for x in ("lunas", "paid", "sudah bayar", "sdh bayar", "terbayar", "settled")):
+        return True
+    return None
+
+
+def hitung_pengingat_dari_catatan(teks):
+    t = str(teks or "").lower()
+    ada = []
+    for pola in _POLA_INGAT:
+        ada += [int(m.group(1)) for m in pola.finditer(t)]
+    return max(ada) if ada else None
+
+
 def olah_baris(baris, tgl):
     if not baris:
         raise InputSalah("file kosong")
@@ -527,42 +604,144 @@ def olah_baris(baris, tgl):
         raise InputSalah("kolom wajib tidak ditemukan: " + "; ".join(f"{k} (nama yang dikenali: {contoh[k]})" for k in kurang)
                          + f". Kolom di file: {', '.join(str(x) for x in asli)}. Ganti nama judul kolom yang sesuai "
                          "di file, lalu jalankan ulang.")
-    # kolom sisa dipakai bila tidak ada nominal, atau ada nominal tanpa kolom pembayaran (agar cicilan tidak hilang)
-    pakai_sisa = "sisa" in peta and ("nominal" not in peta or "dibayar" not in peta)
-    daftar, dilewati = [], []
+    # ---- kolom pembayaran: semua kolom jumlah dijumlahkan; lunas/status menandai nota lunas
+    dipakai_lain = {v for k, v in peta.items() if k not in ("dibayar", "sudah_diingatkan")}
+    kolom_jumlah, kolom_lunas, kolom_status, kolom_tgl, kolom_mirip = [], [], [], [], []
+    for k in asli:
+        if k in dipakai_lain or k == peta.get("sudah_diingatkan"):
+            continue
+        j = jenis_kolom(k)
+        if k == peta.get("dibayar"):
+            j = "jumlah"
+        if j == "jumlah":
+            kolom_jumlah.append(k)
+        elif j == "lunas":
+            kolom_lunas.append(k)
+        elif j == "status":
+            kolom_status.append(k)
+        elif j == "tgl_bayar":
+            kolom_tgl.append(k)
+        elif j == "mirip":
+            kolom_mirip.append(k)
+    if kolom_jumlah:
+        peta["dibayar"] = kolom_jumlah[0]
+    ada_info_bayar = bool(kolom_jumlah or kolom_lunas or kolom_status)
+    # kolom sisa dipakai bila tidak ada nominal, atau ada nominal tanpa info pembayaran (agar cicilan tidak hilang)
+    pakai_sisa = "sisa" in peta and ("nominal" not in peta or not ada_info_bayar)
+    kolom_catatan = None
+    if "sudah_diingatkan" not in peta:
+        for k in asli:
+            if k not in dipakai_lain and normal_kolom(k) in _KOLOM_CATATAN:
+                kolom_catatan = k
+                break
+    peringatan = []
+    if kolom_mirip:
+        peringatan.append(
+            "⚠️ Judul " + ", ".join(repr(x) for x in kolom_mirip) + " tampak seperti kolom pembayaran tetapi tidak dikenali, "
+            "jadi TIDAK dikurangkan dari tagihan. Jika itu pembayaran yang sudah masuk, ganti judulnya menjadi "
+            "'sudah_dibayar' lalu hitung ulang; sampai itu dilakukan, sisa dan hari telat bisa tampak terlalu besar.")
+    daftar, dilewati, lunas = [], [], []
+    tak_terbaca = {}  # kolom -> [nomor baris]
     for no, b in enumerate(baris, start=2):
         mentah = {x: (v if isinstance(v, str) else ("" if v is None else str(v))).strip() for x, v in b.items() if x}
         if not any(mentah.values()):
             continue
         k = {kanon: mentah.get(asal, "") for kanon, asal in peta.items()}
+        catatan = []
         try:
             if pakai_sisa:
                 nominal = bulat(parse_angka(k["sisa"], "sisa"))
                 dibayar = 0
-                if nominal == 0:
-                    continue
             else:
                 nominal = bulat(parse_angka(k["nominal"], "nominal"))
-                dibayar = bulat(parse_angka(k["dibayar"], "dibayar")) if k.get("dibayar") else 0
+                dibayar = 0
+                for kol in kolom_jumlah:
+                    try:
+                        dibayar += bulat(baca_jumlah_bayar(mentah.get(kol, ""), kol))
+                    except InputSalah:
+                        tak_terbaca.setdefault(kol, []).append(no)
+                        catatan.append(f"⚠️ isi {kol!r} ({mentah.get(kol, '')!r}) tidak terbaca; dianggap belum ada pembayaran")
             ingat_teks = k.get("sudah_diingatkan", "")
             if ingat_teks and not ingat_teks.isdigit():
                 raise InputSalah(f"sudah_diingatkan harus angka bulat: {ingat_teks!r}")
             ingat = int(ingat_teks) if ingat_teks else 0
+            if not ingat_teks and kolom_catatan:
+                dari_catatan = hitung_pengingat_dari_catatan(mentah.get(kolom_catatan, ""))
+                if dari_catatan is not None:
+                    ingat = dari_catatan
+                    catatan.append(f"pengingat sebelumnya ({ingat}x) dibaca dari {kolom_catatan!r}; koreksi bila keliru")
             jt = parse_tgl(k["jatuh_tempo"], "jatuh_tempo")
-            if nominal <= 0 or dibayar < 0 or dibayar > nominal:
+            if nominal < 0 or (nominal == 0 and not pakai_sisa) or dibayar < 0:
                 raise InputSalah("nominal/dibayar tidak masuk akal")
+            if dibayar > nominal:
+                raise InputSalah(f"total dibayar ({rupiah(dibayar)}) melebihi nominal tagihan ({rupiah(nominal)})")
         except InputSalah as e:
             dilewati.append({"baris": no, "alasan": str(e)})
             continue
-        hari = (tgl - jt).days
-        sisa = nominal - dibayar
-        if sisa == 0:
+        # tanda lunas (kolom ya/tidak atau status teks)
+        tanda_lunas = None
+        for kol in kolom_lunas:
+            v = mentah.get(kol, "").strip().lower()
+            if v in _YA:
+                tanda_lunas = kol
+            elif v in _TIDAK:
+                pass
+            else:
+                try:  # kolom 'lunas' yang ternyata berisi nominal
+                    tambah = bulat(parse_angka(v, kol))
+                    if not pakai_sisa:
+                        dibayar += tambah
+                except InputSalah:
+                    tak_terbaca.setdefault(kol, []).append(no)
+                    catatan.append(f"⚠️ isi {kol!r} ({mentah.get(kol, '')!r}) tidak terbaca")
+        for kol in kolom_status:
+            st = status_lunas(mentah.get(kol, ""))
+            if st:
+                tanda_lunas = kol
+        if dibayar > nominal and not pakai_sisa:
+            dilewati.append({"baris": no, "alasan": f"total dibayar ({rupiah(dibayar)}) melebihi nominal tagihan ({rupiah(nominal)})"})
             continue
+        sisa = nominal - dibayar
+        if tanda_lunas and sisa > 0:
+            alasan = f"ditandai lunas di kolom {tanda_lunas!r}"
+            if not pakai_sisa and dibayar:
+                alasan += f" (jumlah dibayar {rupiah(dibayar)} < tagihan {rupiah(nominal)}; cek bila ada selisih)"
+            lunas.append({"pelanggan": k["pelanggan"], "no_invoice": k.get("no_invoice", ""), "nominal": nominal,
+                          "alasan": alasan})
+            continue
+        if sisa == 0:
+            lunas.append({"pelanggan": k["pelanggan"], "no_invoice": k.get("no_invoice", ""), "nominal": nominal,
+                          "alasan": "pembayaran sudah menutup seluruh tagihan" if dibayar else "sisa 0"})
+            continue
+        # pemeriksaan silang dengan kolom sisa dari file
+        if not pakai_sisa and "sisa" in peta and k.get("sisa"):
+            try:
+                if bulat(parse_angka(k["sisa"], "sisa")) != sisa:
+                    catatan.append(f"⚠️ kolom {peta['sisa']!r} di file ({k['sisa']}) beda dari hitungan nominal dikurangi "
+                                   f"pembayaran ({rupiah(sisa)}); periksa")
+            except InputSalah:
+                pass
+        for kol in kolom_tgl:
+            if mentah.get(kol):
+                catatan.append(f"⚠️ {kol!r} terisi ({mentah[kol]}) tetapi sisa masih {rupiah(sisa)}; "
+                               "bila itu tanggal pelunasan, nota ini mungkin sudah lunas")
+        ket_lain = mentah.get(kolom_catatan or "", "").lower()
+        if re.search(r"(?<!belum )(?<!blm )\blunas\b", ket_lain) and "belum lunas" not in ket_lain:
+            catatan.append("⚠️ keterangan menyebut lunas tetapi sisa masih " + rupiah(sisa))
+        hari = (tgl - jt).days
         kode, label = tahap(hari)
         kode, label, _ = sesuaikan_riwayat(kode, label, hari, ingat)
-        daftar.append({"pelanggan": k["pelanggan"], "no_invoice": k.get("no_invoice", ""), "sisa": sisa,
+        daftar.append({"pelanggan": k["pelanggan"], "no_invoice": k.get("no_invoice", ""), "nominal": nominal,
+                       "dibayar": dibayar, "sisa": sisa,
                        "jatuh_tempo": jt.isoformat(), "hari_terlambat": hari, "umur": ember_umur(hari),
-                       "tahap_kode": kode, "tahap": label})
+                       "sudah_diingatkan": ingat, "tahap_kode": kode, "tahap": label, "catatan": catatan})
+    for kol, nomor in tak_terbaca.items():
+        peringatan.append(f"⚠️ Isi kolom {kol!r} tidak terbaca di {len(nomor)} baris (baris {', '.join(map(str, nomor[:8]))}"
+                          f"{'...' if len(nomor) > 8 else ''}); baris itu dianggap belum ada pembayaran. Rapikan isinya "
+                          "(mis. 'Rp 2.500.000') lalu hitung ulang.")
+    if not ada_info_bayar and not pakai_sisa and not kolom_mirip:
+        peringatan.append("Catatan: tidak ada kolom pembayaran di daftar, jadi semua nota dianggap belum dibayar sama "
+                          "sekali. Bila ada yang sudah dicicil atau lunas, tambahkan kolom 'sudah_dibayar'.")
     daftar.sort(key=lambda x: (-x["hari_terlambat"], -x["sisa"]))
     urutan = ["Belum jatuh tempo", "1–30 hari", "31–60 hari", "61–90 hari", "> 90 hari"]
     rekap = {u: {"jumlah_invoice": 0, "total": 0} for u in urutan}
@@ -575,8 +754,11 @@ def olah_baris(baris, tgl):
             "total_piutang": sum(d["sisa"] for d in daftar),
             "total_telat": sum(d["sisa"] for d in telat), "jumlah_invoice_telat": len(telat),
             "rekap_umur": rekap, "kolom_dipakai": peta,
+            "kolom_pembayaran": kolom_jumlah + kolom_lunas + kolom_status,
+            "kolom_pengingat_dari_catatan": kolom_catatan,
             "catatan_kolom": (f"Kolom {peta['sisa']!r} dipakai sebagai jumlah yang belum dibayar."
                               if pakai_sisa else None),
+            "peringatan": peringatan, "lunas_dikecualikan": lunas,
             "daftar": daftar, "baris_dilewati": dilewati}
 
 
@@ -617,18 +799,33 @@ def teks_satu(h):
 
 
 def teks_banyak(h):
-    b = [f"Rekap umur piutang per {h['tanggal_hitung_teks']} – total {rupiah(h['total_piutang'])}",
-         f"Sudah lewat jatuh tempo: {h['jumlah_invoice_telat']} invoice, total {rupiah(h['total_telat'])}",
-         "Kolom dipakai: " + ", ".join(f"{k}={v}" for k, v in h["kolom_dipakai"].items()), ""]
+    b = list(h.get("peringatan", []))
+    if b:
+        b.append("")
+    b += [f"Rekap umur piutang per {h['tanggal_hitung_teks']} – total {rupiah(h['total_piutang'])}",
+          f"Sudah lewat jatuh tempo: {h['jumlah_invoice_telat']} invoice, total {rupiah(h['total_telat'])}",
+          "Kolom dipakai: " + ", ".join(f"{k}={v}" for k, v in h["kolom_dipakai"].items())]
+    if h.get("kolom_pembayaran"):
+        b.append("Kolom pembayaran yang dikurangkan: " + ", ".join(h["kolom_pembayaran"]))
+    b.append("")
     if h.get("catatan_kolom"):
         b.insert(-1, "Catatan: " + h["catatan_kolom"])
+    if h.get("lunas_dikecualikan"):
+        b.append(f"Sudah lunas, TIDAK ditagih ({len(h['lunas_dikecualikan'])} nota, tidak masuk total di atas):")
+        for x in h["lunas_dikecualikan"]:
+            b.append(f"- {x['pelanggan']} {x['no_invoice'] or ''} {rupiah(x['nominal'])} – {x['alasan']}".replace("  ", " "))
+        b.append("")
     b += ["| Umur | Jumlah invoice | Total |", "|---|---|---|"]
     for u, v in h["rekap_umur"].items():
         b.append(f"| {u} | {v['jumlah_invoice']} | {rupiah(v['total'])} |")
-    b += ["", "| Pelanggan | No. invoice | Sisa | Jatuh tempo | Terlambat | Tahap |", "|---|---|---|---|---|---|"]
+    b += ["", "| Pelanggan | No. invoice | Sisa | Jatuh tempo | Terlambat | Tahap | Catatan |", "|---|---|---|---|---|---|---|"]
     for d in h["daftar"]:
         t = f"{d['hari_terlambat']} hari" if d["hari_terlambat"] > 0 else "-"
-        b.append(f"| {d['pelanggan']} | {d['no_invoice'] or '-'} | {rupiah(d['sisa'])} | {d['jatuh_tempo']} | {t} | {d['tahap']} |")
+        sisa = rupiah(d["sisa"])
+        if d.get("dibayar"):
+            sisa += f" (dari {rupiah(d['nominal'])}, sudah dibayar {rupiah(d['dibayar'])})"
+        cat = "; ".join(d.get("catatan", [])) or "-"
+        b.append(f"| {d['pelanggan']} | {d['no_invoice'] or '-'} | {sisa} | {d['jatuh_tempo']} | {t} | {d['tahap']} | {cat} |")
     if h["baris_dilewati"]:
         b.append("\nBaris dilewati:")
         b += [f"- baris {x['baris']}: {x['alasan']}" for x in h["baris_dilewati"]]

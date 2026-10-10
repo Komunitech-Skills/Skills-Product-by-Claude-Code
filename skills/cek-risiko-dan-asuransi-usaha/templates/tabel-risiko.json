@@ -16,6 +16,12 @@
     "dampak": 2
   },
   {
+    "nama": "Karyawan cedera kerja",
+    "kemungkinan": 2,
+    "dampak": 3,
+    "kategori": "bpjs"
+  },
+  {
     "nama": "Akun marketplace dibekukan",
     "kemungkinan": 2,
     "dampak": 4,
