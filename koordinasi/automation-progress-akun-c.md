@@ -11,7 +11,7 @@ Log run cron/automation. Pembaruan terakhir: **2026-10-10 ~16:30 UTC**.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan | Verdik | Telegram 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-10 ~16:30 | `cursor/c5-persiapan-jual-8b42` | _(setelah push)_ | persiapan-jual-atau-wariskan-usaha v1.0.1 | 6,0 → 8,75 (+2,75) | LULUS | ya |
+| 2026-10-10 ~16:30 | `cursor/c5-persiapan-jual-8b42` | 90af4994 | persiapan-jual-atau-wariskan-usaha v1.0.1 | 6,0 → 8,75 (+2,75) | LULUS | ya |
 | 2026-10-10 ~15:45 | `cursor/uji-c5-tagih-piutang-8b42` | c31a1f26 | cek-risiko-dan-asuransi-usaha v1.0.2 | 6,6 → 9,0 (+2,4) | LULUS | ya |
 | 2026-10-10 ~14:15 | `cursor/uji-c5-tagih-piutang-8b42` | c04ca5b8 | tagih-piutang v1.0.7 | 6,7 → 8,5 (+1,8) | LULUS | ya |
 | 2026-10-10 ~13:17 | `cursor/uji-persiapan-jual-tg-8b42` | f7198320 | C3 persiapan-jual TG pra-cek | — | LOLOS TG | ya |
