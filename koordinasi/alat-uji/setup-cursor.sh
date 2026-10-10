@@ -9,7 +9,7 @@ set -euo pipefail
 
 REPO="${REPO:-$(cd "$(dirname "$0")/../.." && pwd)}"
 BASE="${BASE:-$HOME/komunitech-uji}"          # tempat instalasi; di Cursor VM: /workspace/../komunitech-uji atau $HOME
-OC_VERSI="${OC_VERSI:-2026.9.8}"
+OC_VERSI="${OC_VERSI:-2026.9.9}"
 NODE_VERSI="${NODE_VERSI:-v24.21.0}"
 ALAT="$REPO/koordinasi/alat-uji"
 
@@ -74,6 +74,29 @@ mkdir -p "$R/pilot" && cp "$ALAT"/brief/*.md "$R/" 2>/dev/null || true
 for f in "$ALAT"/pilot/*; do
   sed -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g" "$f" > "$R/pilot/$(basename "$f")"
 done
+
+# 5b. Plugin pencarian web tanpa kunci (keputusan pemilik 2026-10-10 / C2)
+if [ -d "$H/extensions/duckduckgo" ] || HOME="$R/home" "$BASE/openclaw-prod/node_modules/.bin/openclaw" plugins list 2>/dev/null | grep -q duckduckgo; then
+  echo "[setup] duckduckgo plugin: sudah ada"
+else
+  echo "[setup] pasang @openclaw/duckduckgo-plugin (butuh openclaw@$OC_VERSI)"
+  HOME="$R/home" "$BASE/openclaw-prod/node_modules/.bin/openclaw" plugins install @openclaw/duckduckgo-plugin >/dev/null 2>&1 || echo "[setup] peringatan: plugin duckduckgo gagal — set tools.web.search.provider manual atau secret BRAVE/TAVILY"
+fi
+python3 - "$H/openclaw.json" <<'PY' 2>/dev/null || true
+import json, sys
+p = sys.argv[1]
+with open(p) as f:
+    c = json.load(f)
+c.setdefault("tools", {}).setdefault("web", {}).setdefault("search", {})
+c["tools"]["web"]["search"]["enabled"] = True
+if not c["tools"]["web"]["search"].get("provider"):
+    c["tools"]["web"]["search"]["provider"] = "duckduckgo"
+c.setdefault("plugins", {}).setdefault("entries", {})
+c["plugins"]["entries"].setdefault("duckduckgo", {})["enabled"] = True
+with open(p, "w") as f:
+    json.dump(c, f, indent=2)
+    f.write("\n")
+PY
 
 # 6. Cek
 "$R/oc.sh" --version >/dev/null && echo "[setup] openclaw OK: $("$R/oc.sh" --version 2>/dev/null | head -1)"
