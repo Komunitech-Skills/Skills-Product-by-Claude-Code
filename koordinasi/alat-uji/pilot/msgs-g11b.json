@@ -1,0 +1,58 @@
+[
+ {
+  "skill": "aktifkan-kembali-pelanggan",
+  "sisi": "sebelum",
+  "topic": 962,
+  "text": "@KTclaude1_bot Kak, aku jualan frozen food (dimsum, nugget, bakso, paket arisan). Banyak pelanggan lama yg udah lama ga beli lagi nih 😩 tolong bantu aktifin lagi ya, datanya saya tempel di bawah (ekspor penjualan, format CSV):\n\nTanggal,No Invoice,Nama Pelanggan,No WA,Produk,Total\n03/10/2026,INV-0931,Bu Lestari,0813-2201-4471,Dimsum ayam 2 pak,\"Rp 96.000\"\n01/10/2026,INV-0928,Pak Yusuf,081322014482,Nugget 1kg + sosis,185000\n28/09/2026,INV-0920,Mbak Rani,+62 813 2201 4493,Risol mayo 3 pak,\"Rp 135.000\"\n20/09/2026,INV-0905,Bu Lestari,0813-2201-4471,Bakso sapi 1kg,\"Rp 120.000\"\n14/08/2026,INV-0861,Kak Fikri,081322014504,Paket frozen hemat,\"Rp 250.000\"\n02/08/2026,INV-0840,Bu Wulan,0813 2201 4515,Dimsum mix 5 pak,\"Rp 450.000\"\n25-07-2026,INV-0822,Pak Darto,081322014526,Nugget 2kg,\"Rp 230.000\"\n15/07/2026,INV-0809,Bu Wulan,0813 2201 4515,Paket arisan 40 pcs,\"Rp 1.250.000\"\n9/7/2026,INV-0801,Mbak Tiara,081322014537,Risol mayo 2 pak,90000\n30/06/2026,INV-0790,Bu Hartini,0813-2201-4548,Paket katering kantor,\"Rp 2.100.000\"\n18/06/2026,INV-0776,Kak Fikri,081322014504,Sosis bakar 1kg,\"Rp 110.000\"\n05/06/2026,INV-0760,Pak Bambang,081322014559,Bakso urat 2kg,\"Rp 280.000\"\n31/05/2026,INV-0751,Bu Hartini,0813-2201-4548,Paket katering kantor,\"Rp 1.950.000\"\n20/05/2026,INV-0740,Mbak Nadia,081322014560,Dimsum ayam 3 pak,\"Rp 144.000\"\n02/05/2026,INV-0721,Bu Sari Catering,0813-2201-4571,Paket reseller 10 pak,\"Rp 1.800.000\"\n31/02/2026,INV-0612,Pak Joko,081322014582,Bakso sapi 1kg,\"Rp 120.000\"\n28/03/2026,INV-0655,Bu Sari Catering,0813-2201-4571,Paket reseller 10 pak,\"Rp 1.800.000\"\n22/02/2026,INV-0601,Bu Endah,6.28132E+12,Paket arisan 30 pcs,\"Rp 950.000\"\n05/01/2026,INV-0561,Bu Sari Catering,0813-2201-4571,Paket reseller 5 pak,\"Rp 900.000\"\n20/12/2025,INV-0520,Mbak Ayu,081322014626,Paket natal 20 pcs,\"Rp 640.000\"\n11/11/2025,INV-0488,Pak Gunawan,081322014637,Nugget 3kg,lunas\n03/11/2025,INV-0479,Bu Ningsih,0813-2201-4648,Paket arisan 50 pcs,\"Rp 1.500.000\"\n17-09-2025,INV-0430,Kak Bayu,081322014659,Sosis 1kg,\"Rp 95.000\"\n12/11/2026,INV-0999,Bu Melati,081322014682,Paket arisan 20 pcs,\"Rp 600.000\"",
+  "gel": "11b"
+ },
+ {
+  "skill": "aktifkan-kembali-pelanggan",
+  "sisi": "sesudah",
+  "topic": 963,
+  "text": "@KTclaude1_bot Kak, aku jualan frozen food (dimsum, nugget, bakso, paket arisan). Banyak pelanggan lama yg udah lama ga beli lagi nih 😩 tolong bantu aktifin lagi ya, datanya saya tempel di bawah (ekspor penjualan, format CSV):\n\nTanggal,No Invoice,Nama Pelanggan,No WA,Produk,Total\n03/10/2026,INV-0931,Bu Lestari,0813-2201-4471,Dimsum ayam 2 pak,\"Rp 96.000\"\n01/10/2026,INV-0928,Pak Yusuf,081322014482,Nugget 1kg + sosis,185000\n28/09/2026,INV-0920,Mbak Rani,+62 813 2201 4493,Risol mayo 3 pak,\"Rp 135.000\"\n20/09/2026,INV-0905,Bu Lestari,0813-2201-4471,Bakso sapi 1kg,\"Rp 120.000\"\n14/08/2026,INV-0861,Kak Fikri,081322014504,Paket frozen hemat,\"Rp 250.000\"\n02/08/2026,INV-0840,Bu Wulan,0813 2201 4515,Dimsum mix 5 pak,\"Rp 450.000\"\n25-07-2026,INV-0822,Pak Darto,081322014526,Nugget 2kg,\"Rp 230.000\"\n15/07/2026,INV-0809,Bu Wulan,0813 2201 4515,Paket arisan 40 pcs,\"Rp 1.250.000\"\n9/7/2026,INV-0801,Mbak Tiara,081322014537,Risol mayo 2 pak,90000\n30/06/2026,INV-0790,Bu Hartini,0813-2201-4548,Paket katering kantor,\"Rp 2.100.000\"\n18/06/2026,INV-0776,Kak Fikri,081322014504,Sosis bakar 1kg,\"Rp 110.000\"\n05/06/2026,INV-0760,Pak Bambang,081322014559,Bakso urat 2kg,\"Rp 280.000\"\n31/05/2026,INV-0751,Bu Hartini,0813-2201-4548,Paket katering kantor,\"Rp 1.950.000\"\n20/05/2026,INV-0740,Mbak Nadia,081322014560,Dimsum ayam 3 pak,\"Rp 144.000\"\n02/05/2026,INV-0721,Bu Sari Catering,0813-2201-4571,Paket reseller 10 pak,\"Rp 1.800.000\"\n31/02/2026,INV-0612,Pak Joko,081322014582,Bakso sapi 1kg,\"Rp 120.000\"\n28/03/2026,INV-0655,Bu Sari Catering,0813-2201-4571,Paket reseller 10 pak,\"Rp 1.800.000\"\n22/02/2026,INV-0601,Bu Endah,6.28132E+12,Paket arisan 30 pcs,\"Rp 950.000\"\n05/01/2026,INV-0561,Bu Sari Catering,0813-2201-4571,Paket reseller 5 pak,\"Rp 900.000\"\n20/12/2025,INV-0520,Mbak Ayu,081322014626,Paket natal 20 pcs,\"Rp 640.000\"\n11/11/2025,INV-0488,Pak Gunawan,081322014637,Nugget 3kg,lunas\n03/11/2025,INV-0479,Bu Ningsih,0813-2201-4648,Paket arisan 50 pcs,\"Rp 1.500.000\"\n17-09-2025,INV-0430,Kak Bayu,081322014659,Sosis 1kg,\"Rp 95.000\"\n12/11/2026,INV-0999,Bu Melati,081322014682,Paket arisan 20 pcs,\"Rp 600.000\"",
+  "gel": "11b"
+ },
+ {
+  "skill": "triase-keluhan-pelanggan",
+  "sisi": "sebelum",
+  "topic": 964,
+  "text": "@KTclaude1_bot Saya punya toko online fashion (jual di Shopee, TikTok Shop, dan WA). Hari ini masuk banyak keluhan, saya tempel semuanya:\n\n1. Chat Shopee, Kak Rina (pesanan #SHP2409881, gamis Rp289.000): \"Kak, gamisnya datang jahitan ketiak sobek, ada noda juga di bagian depan. Gimana ini?\"\n2. WA dari Pak Dedi 0812-3456-7781: \"Saya pesan kemeja 2 pcs Rp350.000 transfer sudah 5 hari lalu, resi JNE nggak gerak dari 3 hari lalu. Kapan sampainya??\"\n3. Chat TikTok Shop, Mbak Sari (blazer Rp425.000): \"Ukurannya kekecilan, saya pesan L tapi kayak M. Saya mau retur, bisa?\"\n4. WA dari Bu Lina 0857-1122-3344: \"Kak, paket COD saya kemarin saya tolak karena kurirnya datang pas saya kerja, nggak ada yang terima. Masih bisa dikirim ulang? Isinya 3 kerudung Rp210.000.\"\n5. Chat Shopee, Andi (pesanan #SHP2410023, celana kulot Rp175.000): \"Barang belum sampai, katanya estimasi 2 hari, ini sudah 6 hari. Kalau besok nggak sampai saya laporkan ke Shopee dan kasih bintang 1. Toko penipu!\"\n6. Ulasan Shopee bintang 1 dari akun r***a: \"Admin lambat banget balasnya, chat dari pagi baru dibalas malam. Kecewa.\"\n7. WA dari Mbak Vina 0813-9988-7766: \"Kak, tunik yang warna sage masih ada ukuran XL? Ongkir ke Bandung berapa ya?\"\n8. Chat TikTok Shop, Bu Ratna (set piyama 2 pcs Rp530.000): \"Saya sudah chat 2x dari kemarin belum dibalas. Warnanya beda jauh sama foto, saya mau refund aja.\"\n\nTolong urutkan mana yang harus saya tangani dulu dan bantu balas.",
+  "gel": "11b"
+ },
+ {
+  "skill": "triase-keluhan-pelanggan",
+  "sisi": "sesudah",
+  "topic": 965,
+  "text": "@KTclaude1_bot Saya punya toko online fashion (jual di Shopee, TikTok Shop, dan WA). Hari ini masuk banyak keluhan, saya tempel semuanya:\n\n1. Chat Shopee, Kak Rina (pesanan #SHP2409881, gamis Rp289.000): \"Kak, gamisnya datang jahitan ketiak sobek, ada noda juga di bagian depan. Gimana ini?\"\n2. WA dari Pak Dedi 0812-3456-7781: \"Saya pesan kemeja 2 pcs Rp350.000 transfer sudah 5 hari lalu, resi JNE nggak gerak dari 3 hari lalu. Kapan sampainya??\"\n3. Chat TikTok Shop, Mbak Sari (blazer Rp425.000): \"Ukurannya kekecilan, saya pesan L tapi kayak M. Saya mau retur, bisa?\"\n4. WA dari Bu Lina 0857-1122-3344: \"Kak, paket COD saya kemarin saya tolak karena kurirnya datang pas saya kerja, nggak ada yang terima. Masih bisa dikirim ulang? Isinya 3 kerudung Rp210.000.\"\n5. Chat Shopee, Andi (pesanan #SHP2410023, celana kulot Rp175.000): \"Barang belum sampai, katanya estimasi 2 hari, ini sudah 6 hari. Kalau besok nggak sampai saya laporkan ke Shopee dan kasih bintang 1. Toko penipu!\"\n6. Ulasan Shopee bintang 1 dari akun r***a: \"Admin lambat banget balasnya, chat dari pagi baru dibalas malam. Kecewa.\"\n7. WA dari Mbak Vina 0813-9988-7766: \"Kak, tunik yang warna sage masih ada ukuran XL? Ongkir ke Bandung berapa ya?\"\n8. Chat TikTok Shop, Bu Ratna (set piyama 2 pcs Rp530.000): \"Saya sudah chat 2x dari kemarin belum dibalas. Warnanya beda jauh sama foto, saya mau refund aja.\"\n\nTolong urutkan mana yang harus saya tangani dulu dan bantu balas.",
+  "gel": "11b"
+ },
+ {
+  "skill": "tangani-keberatan-pelanggan",
+  "sisi": "sebelum",
+  "topic": 966,
+  "text": "@KTclaude1_bot Kak tolong bantu. Calon pembeli di WA bilang 'kemahalan kak, di toko sebelah 150rb' padahal hoodie saya 185rb sudah termasuk ongkir se-Jawa, bahannya fleece 330gsm lebih tebal. Toko sebelah setahu saya belum termasuk ongkir, biasanya ongkirnya 20rb. Hoodie saya biasanya awet dipakai 2 tahun. Bantu balas dong",
+  "gel": "11b"
+ },
+ {
+  "skill": "tangani-keberatan-pelanggan",
+  "sisi": "sesudah",
+  "topic": 967,
+  "text": "@KTclaude1_bot Kak tolong bantu. Calon pembeli di WA bilang 'kemahalan kak, di toko sebelah 150rb' padahal hoodie saya 185rb sudah termasuk ongkir se-Jawa, bahannya fleece 330gsm lebih tebal. Toko sebelah setahu saya belum termasuk ongkir, biasanya ongkirnya 20rb. Hoodie saya biasanya awet dipakai 2 tahun. Bantu balas dong",
+  "gel": "11b"
+ },
+ {
+  "skill": "kelayakan-investasi-usaha",
+  "sisi": "sebelum",
+  "topic": 968,
+  "text": "@KTclaude1_bot Saya mau beli mesin kopi Rp45 juta buat kedai. Perkiraan tambahan omzet Rp6 juta/bulan, biaya bahan & listrik tambahan Rp2,5 juta/bulan, umur mesin 5 tahun, nanti bisa dijual lagi Rp5 juta. Layak nggak? Berapa lama balik modal?",
+  "gel": "11b"
+ },
+ {
+  "skill": "kelayakan-investasi-usaha",
+  "sisi": "sesudah",
+  "topic": 969,
+  "text": "@KTclaude1_bot Saya mau beli mesin kopi Rp45 juta buat kedai. Perkiraan tambahan omzet Rp6 juta/bulan, biaya bahan & listrik tambahan Rp2,5 juta/bulan, umur mesin 5 tahun, nanti bisa dijual lagi Rp5 juta. Layak nggak? Berapa lama balik modal?",
+  "gel": "11b"
+ }
+]
