@@ -8,8 +8,8 @@
 
 ## Peranmu: "Akun C"
 - Pembagian kerja ada di `koordinasi/papan-tugas.md` (bagian "Pembagian jalur", "SERAH TERIMA Akun B → Akun A", dan "Aturan untuk Akun C"). Ambil hanya tugas yang ditandai untukmu atau yang diminta pemilik di prompt. Jangan menyentuh folder `skills/<nama>` di luar tugasmu.
-- Satu tugas = satu branch `cursor/<nama>` = satu PR ke `claude/claude-code-cli-differences-btizz5`. Jangan merge sendiri. Commit mengikuti pola `skill: <nama> (<status>)`, `uji: <nama> vX.Y.Z <skor>/10`, `riset: ...`, `docs: ...`.
-- Selesaikan dan **commit + push sebelum run berakhir**: VM Cursor ulang dari snapshot, semua yang tidak di-commit hilang.
+- Satu tugas = satu branch `cursor/<nama>-8b42` dari base `claude/claude-code-cli-differences-btizz5`. Jangan merge sendiri. Commit mengikuti pola `skill: <nama> (<status>)`, `uji: <nama> vX.Y.Z <skor>/10`, `riset: ...`, `docs: ...`.
+- Selesaikan dan **commit + push sebelum run berakhir** (wajib setelah uji/testing): VM Cursor ulang dari snapshot, semua yang tidak di-commit hilang. **Jangan buat PR** otomatis — PR hanya bila pemilik secara eksplisit meminta (detail: `.cursor/CLOUD.md`).
 - Tulis laporan sesi di `reports/YYYY-MM-DD-akun-c.md` (format di CLAUDE.md bagian 6).
 
 ## Pembuat ≠ penguji

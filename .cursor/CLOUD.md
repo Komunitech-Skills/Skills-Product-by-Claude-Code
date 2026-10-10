@@ -23,11 +23,12 @@
 
 | Aturan | Nilai |
 |--------|--------|
-| Base branch PR | `claude/claude-code-cli-differences-btizz5` |
-| Branch kerja | `cursor/<nama-tugas>-8b42` (satu tugas = satu branch = satu PR) |
+| Base branch | `claude/claude-code-cli-differences-btizz5` |
+| Branch kerja | `cursor/<nama-tugas>-8b42` (satu tugas = satu branch) |
 | Sebelum commit | `python3 scripts/validate.py` harus lolos |
 | Pola commit | `skill: …`, `uji: …`, `riset: …`, `docs: …` |
-| Akhir run | **commit + push** wajib — VM ulang dari snapshot; kerja tidak di-commit hilang |
+| Akhir run (uji/testing atau sesi kerja) | **commit + push** wajib — VM ulang dari snapshot; kerja tidak di-commit hilang |
+| Pull request | **Jangan buat PR** otomatis setelah uji/testing atau akhir run. Buat PR **hanya** bila pemilik **secara eksplisit** meminta. |
 | Merge | Jangan merge PR sendiri |
 
 ---
