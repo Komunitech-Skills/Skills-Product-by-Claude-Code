@@ -4,7 +4,7 @@
 # Rahasia HANYA dari environment variable (Cursor: Settings → Cloud Agents → environment secrets):
 #   bot_token       = token bot penguji Telegram (opsional; tanpa ini gateway tidak dijalankan)
 #   Ninerouter_key  = kunci router model (wajib untuk uji sebelum/sesudah)
-#   TAVILY_API_KEY  = kunci Tavily (web_search provider tavily; opsional bila DDG jalan)
+#   TAVILY_API_KEY atau tavily = kunci Tavily (web_search provider tavily; opsional bila DDG jalan)
 # Skrip ini tidak pernah mencetak nilai keduanya.
 set -euo pipefail
 
@@ -48,7 +48,7 @@ cat > "$R/oc.sh" <<EOF
 exec env -i HOME=$R/home PATH=$NODE_DIR/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 TZ=Asia/Jakarta \\
   HTTPS_PROXY="\${HTTPS_PROXY:-}" HTTP_PROXY="\${HTTP_PROXY:-}" NO_PROXY="\${NO_PROXY:-}" \\
   NODE_EXTRA_CA_CERTS="\${NODE_EXTRA_CA_CERTS:-}" SSL_CERT_FILE="\${SSL_CERT_FILE:-}" \\
-  NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" TAVILY_API_KEY="\${TAVILY_API_KEY:-}" \\
+  NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" TAVILY_API_KEY="\${TAVILY_API_KEY:-\${tavily:-}}" \\
   $BASE/openclaw-prod/node_modules/.bin/openclaw "\$@"
 EOF
 cat > "$R/oc-tg.sh" <<EOF
@@ -57,13 +57,13 @@ cat > "$R/oc-tg.sh" <<EOF
 exec env -i HOME=$R/home PATH=$NODE_DIR/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 TZ=Asia/Jakarta \\
   HTTPS_PROXY="\${HTTPS_PROXY:-}" HTTP_PROXY="\${HTTP_PROXY:-}" NO_PROXY="\${NO_PROXY:-}" \\
   NODE_EXTRA_CA_CERTS="\${NODE_EXTRA_CA_CERTS:-}" SSL_CERT_FILE="\${SSL_CERT_FILE:-}" \\
-  TELEGRAM_BOT_TOKEN="\${bot_token:-}" NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" TAVILY_API_KEY="\${TAVILY_API_KEY:-}" \\
+  TELEGRAM_BOT_TOKEN="\${bot_token:-}" NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" TAVILY_API_KEY="\${TAVILY_API_KEY:-\${tavily:-}}" \\
   $BASE/openclaw-prod/node_modules/.bin/openclaw "\$@"
 EOF
 chmod +x "$R/oc.sh" "$R/oc-tg.sh"
 
 # 5. Salin alat uji lalu tulis ulang path absolut lama → path baru
-for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh; do
+for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh run-uji.sh run-uji-tg.sh; do
   sed -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g" \
       -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-prod#$BASE/openclaw-prod#g" \
       -e "s#/home/user/Skills#$REPO#g" \
