@@ -22,4 +22,4 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Hasil singkat | TG 242 |
 |---|---|---|---|---|---|
-| 2026-10-10 16:45 | cursor/uji-persiapan-jual-tg-8b42 | (setelah push) | C3 pracek TG `persiapan-jual` v1.0.1 S1 | 8074 char utuh, LULUS pracek | ya |
+| 2026-10-10 16:45 | cursor/uji-persiapan-jual-tg-8b42 | ace0344f | C3 konfirmasi TG `persiapan-jual` v1.0.1 S1 | 8074 char utuh (sebelumnya 10.254), LULUS pracek | ya |
