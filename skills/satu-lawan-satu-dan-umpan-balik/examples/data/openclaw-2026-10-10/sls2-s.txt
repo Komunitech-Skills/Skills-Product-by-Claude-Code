@@ -1,0 +1,38 @@
+Siap, ini rencana onboarding 30 hari buat Bagas (admin gudang), mulai Senin 12 Okt, didampingi Bu Wati.
+
+**Tujuan akhir bulan:** Bagas bisa catat stok masuk/keluar, bikin laporan stok harian, dan ikut stock opname sendiri tanpa dicek terus sama Bu Wati.
+
+## Hari pertama (Senin, 12 Okt)
+- Sambut Bagas di toko, kenalkan ke 5 anggota tim lain (nama + tugas masing-masing) — biar dia tahu siapa minta bahan ke siapa.
+- Siapkan sebelum dia datang: meja/loker di gudang, akses yang dia butuh (kunci gudang, akun pencatatan stok/kasir kalau ada, nomor WA grup tim), seragam kalau ada.
+- Jelaskan: jam kerja, jam istirahat, cara izin/sakit, aturan grup WA tim.
+- Tunjukkan tata letak gudang: mana bahan kering, mana yang perlu rotasi cepat (misal pewarna, cokelat, tepung — barang yang gampang kadaluarsa), sistem FIFO (barang lama keluar duluan).
+- Satu tugas kecil yang selesai hari itu: minta Bagas hitung dan catat ulang stok 1 rak bareng Bu Wati, supaya pulang dengan rasa sudah berguna.
+- Makan siang bareng tim.
+
+## Minggu 1 - Mengamati
+Bagas ikut Bu Wati terus: lihat cara terima barang dari supplier, cara catat stok masuk, cara layani permintaan bahan dari bagian produksi/kasir, cara cek barang hampir kadaluarsa.
+Cek hari ke-7 (15 menit, Bu Wati + Bagas): "Apa yang masih bikin bingung? Istilah atau sistem apa yang belum jelas?"
+
+## Minggu 2 - Mencoba didampingi
+Bagas mulai catat stok masuk/keluar sendiri, Bu Wati mengoreksi langsung di tempat kalau ada salah catat. Mulai dilibatkan proses serah-terima barang dari supplier (cek jumlah vs nota).
+Cek hari ke-14 (15 menit): lihat progres, benerin kebiasaan yang salah sebelum keburu jadi rutin.
+
+## Minggu 3 - Mandiri sebagian
+Pencatatan harian dikerjakan sendiri, Bagas tanya Bu Wati hanya kalau ragu (misal barang rusak, selisih stok, atau ada pesanan mendadak). Umpan balik tertulis singkat dari Bu Wati soal kerapian catatan.
+
+## Minggu 4 - Mandiri & evaluasi
+Bagas pegang gudang sendiri di jam-jam tertentu, ikut stock opname penuh satu kali dengan Bu Wati mendampingi dari jauh.
+Cek hari ke-30 (30 menit, idealnya Senin 9 Nov karena 30 Okt pas hari kerja juga — bisa langsung di tanggal itu): apa yang udah lancar, apa yang masih sulit, harapan dua arah (apa yang Bagas butuh dari toko, apa yang toko harap dari Bagas), rencana bulan berikutnya.
+
+## Pesan WA sambutan (kirim Minggu, 11 Okt)
+"Halo Bagas, besok kita ketemu di toko jam [isian: jam masuk, misal 08.00]. Nanti Bu Wati yang dampingi kamu belajar urusan gudang. Santai ya, hari pertama kita kenalan dulu sama tim. Sampai besok!"
+
+---
+
+**Asumsi yang saya pakai:** tim 6 orang (termasuk Bagas) jadi masuk kategori "tim kecil", cek rutin tetap 2 mingguan ke depannya setelah onboarding; toko sudah punya sistem pencatatan stok (buku/aplikasi) yang tinggal diajarkan, bukan bikin baru; jam masuk & tanggal cek saya isi perkiraan.
+
+Tiga hal yang perlu kamu lengkapi:
+1. Jam masuk kerja Bagas hari pertama, biar pesan WA-nya pas?
+2. Pencatatan stok di toko pakai buku manual atau aplikasi/Excel tertentu?
+3. Ada 1 tugas kecil spesifik yang mau kamu kasih di hari pertama, atau pakai saran "hitung ulang 1 rak" di atas?

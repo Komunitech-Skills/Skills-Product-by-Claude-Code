@@ -1,11 +1,30 @@
 # Hasil uji: satu-lawan-satu-dan-umpan-balik
 
-- **Tanggal:** 2026-10-09
-- **Penguji:** agent penguji independen Komunitech (bukan pembuat)
-- **Platform:** claude-code (simulasi agent). BUKAN uji OpenClaw asli: sesi tanpa akses OpenClaw/kunci model; konteks Telegram belum diuji.
-- **Rincian:** `00-openclaw-sebelum-sesudah.md`, `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md`, `01`-`05`
+## Uji OpenClaw sebelum/sesudah (2026-10-10, Akun C)
 
-## Skor kualitas: 8/10 (provisional, karena simulasi)
+- **Versi:** 1.0.1 · **Platform:** openclaw (uji otomatis agent, Cursor Cloud), OpenClaw 2026.9.8 + router; S1 juga `--channel telegram`.
+- **Rincian:** `00-openclaw-sebelum-sesudah.md` · arsip teks `data/openclaw-2026-10-10/`.
+
+| Skenario | Tanpa | Dengan |
+|---|---|---|
+| 1 Teguran kasir | 7,5 | 9 |
+| 2 Onboarding gudang | 7 | 8,5 |
+| 3 Jam tutup | 6,5 | 8,5 |
+| 4 Input kurang | 6,5 | 8,5 |
+| 5 Jebakan PHK | 7,5 | 9 |
+| **Rata-rata** | **7,0** | **8,7** | selisih **+1,7** |
+
+**VERDIK OpenClaw: LULUS** — gate sesudah ≥ 8 & selisih ≥ 1,5. **Skor kualitas (gate OpenClaw): 8/10** (temuan simulasi di bawah tetap relevan untuk v1.0.2).
+
+---
+
+## Uji simulasi (2026-10-09, claude-code)
+
+- **Penguji:** agent penguji independen Komunitech (bukan pembuat)
+- **Platform:** claude-code (simulasi agent). Digantikan gate OpenClaw di atas.
+- **Rincian:** `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md`, `01`-`05`
+
+## Skor kualitas simulasi: 8/10
 
 | Skenario | Tanpa skill | Dengan skill |
 |---|---|---|

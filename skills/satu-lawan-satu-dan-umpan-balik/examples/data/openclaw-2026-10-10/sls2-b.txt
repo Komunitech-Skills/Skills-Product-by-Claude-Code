@@ -1,0 +1,42 @@
+Siap, aku buatkan rencana onboarding Bagas sebagai Admin Gudang, efektif Senin 12 Okt 2026.
+
+**Ringkasan**
+- Karyawan baru: Bagas — Admin Gudang
+- Pendamping: Bu Wati
+- Tim toko: 6 orang total
+
+**H-1 (Minggu, 11 Okt) — Persiapan**
+- Siapkan meja/area kerja Bagas, akses gudang (kunci/kartu), seragam/APD jika ada.
+- Siapkan akun/akses sistem: pencatatan stok (kasir/inventory app, spreadsheet, atau sistem toko), WiFi, grup WhatsApp tim.
+- Siapkan dokumen: SOP gudang, daftar SKU bahan kue, daftar supplier utama, format laporan stok harian.
+- Beritahu Bu Wati jadi pendamping resmi — selaraskan jadwal dia Senin pagi.
+
+**Hari 1 (Senin, 12 Okt) — Orientasi**
+- Pagi: perkenalan ke 6 anggota tim, tur toko & gudang (lokasi rak, area FIFO, area bahan sensitif/mudah rusak).
+- Jelaskan jobdesc Admin Gudang: terima barang, cek & catat stok masuk/keluar, susun rak, cek kadaluarsa, laporan harian ke owner.
+- Bu Wati mendampingi penuh hari ini — jelaskan SOP dasar penerimaan & pencatatan barang.
+- Sore: kasih akun sistem pencatatan, latihan input 1 transaksi contoh.
+
+**Minggu 1 (12–18 Okt) — Pendampingan Penuh**
+- Bu Wati dampingi setiap hari untuk: terima kiriman supplier, cross-check nota vs fisik barang, input stok, penyusunan FIFO, pencatatan expired.
+- Hari 3–4: mulai kasih tanggung jawab kecil mandiri (input stok harian) dengan Bu Wati cek ulang.
+- Hari 5: evaluasi singkat — tanya kendala, perbaiki kebiasaan yang salah.
+- Target akhir minggu: Bagas paham alur penerimaan barang → pencatatan → penyimpanan → laporan.
+
+**Minggu 2 (19–25 Okt) — Mulai Mandiri**
+- Bagas pegang gudang mandiri, Bu Wati standby untuk tanya-jawab (bukan dampingi terus).
+- Mulai tanggung jawab: cek stok mingguan, opname sederhana, ajukan permintaan restock ke owner/Bu Wati.
+- Evaluasi di akhir minggu 2 bareng Bu Wati: sudah akurat belum catatannya, ada barang hilang/selisih atau tidak.
+
+**Checklist Kompetensi (harus dikuasai sebelum lepas mandiri)**
+- Bisa cek fisik vs nota dengan benar
+- Paham sistem FIFO (first in first out) bahan kue
+- Bisa input/update stok di sistem tanpa salah
+- Tahu cara lapor kalau ada barang rusak/kadaluarsa/selisih
+- Bisa buat laporan stok harian/mingguan
+
+**Catatan untuk Bu Wati**
+- Peran: mentor utama 2 minggu pertama, kasih feedback jujur ke owner soal progress Bagas.
+- Laporkan ke owner di akhir minggu 1 dan minggu 2: siap lepas mandiri atau masih perlu dampingan tambahan.
+
+Mau aku jadwalkan reminder otomatis buat cek progress Bagas di akhir minggu 1 (18 Okt) dan minggu 2 (25 Okt)? Aku sudah catat detail ini di memory biar tidak lupa.
