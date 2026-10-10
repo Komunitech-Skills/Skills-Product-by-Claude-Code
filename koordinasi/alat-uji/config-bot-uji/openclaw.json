@@ -319,9 +319,7 @@
       "tavily": {
         "enabled": true,
         "config": {
-          "webSearch": {
-            "apiKey": "${TAVILY_API_KEY}"
-          }
+          "webSearch": {}
         }
       }
     }
