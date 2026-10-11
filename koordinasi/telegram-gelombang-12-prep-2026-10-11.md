@@ -19,7 +19,7 @@ Teks pesan: `koordinasi/alat-uji/pilot/msgs-g12.json` (field `topic` diisi setel
 ## Checklist sebelum kirim (setelah persetujuan pemilik)
 
 1. Backup skill bot + `openclaw.json` (pola G11b).
-2. Buat **topik baru** grup uji (nama mis. `G12 …`); catat ID di `pilot/topik-g12.json`.
+2. Buat **topik baru** grup uji (nama mis. `G12 …`): `cd koordinasi/alat-uji/pilot && python3 mktopics-g12.py` → `topik-g12.json`; patch `topic` di `msgs-g12.json`.
 3. Patch config: topik TANPA → `skills: []`, topik DENGAN → hanya skill itu (satu skill per pasangan topik).
 4. **Restart gateway** (`gw-cek.sh`) setelah ubah `channels.*`.
 5. Mock/lokal bila perlu: Fider `127.0.0.1:3000`, Open Notebook `127.0.0.1:5055`, CSV fiktif `laporan/masuk/` untuk laporan-otomatis.

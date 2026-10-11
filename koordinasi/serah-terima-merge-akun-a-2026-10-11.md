@@ -15,4 +15,6 @@ Akun C menyelesaikan tugas C1–C5 (keputusan 23–25). **Branch kanonik otomasi
 
 **Akun A:** gabung ke `claude/claude-code-cli-differences-btizz5`, update `catalog.csv` (`cari-prospek-web` status/platform, skor uji terbaru), promosi `sebelum-sesudah.jsonl` bila layak.
 
+**Gelombang 12 (S5, belum kirim):** pra-cek TG **5/5**; `msgs-g12.json`, `telegram-gelombang-12-prep-2026-10-11.md`, `mktopics-g12.py` siap. Tunggu jawaban pemilik **no. 26** (pilot G11b, 4 pesan) dan **no. 27** (`usulan-gelombang-12-promo-2026-10-11.md`).
+
 **Keputusan pemilik:** no. 24 — arsip cari-prospek **tidak** berlaku setelah web_search LULUS; no. 25 harga bundle tetap.
