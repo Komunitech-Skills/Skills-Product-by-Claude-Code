@@ -1,21 +1,35 @@
-# Progress otomatis — Akun C (Cursor Cloud)
+# Log otomasi Akun C (Cursor Cloud, cron)
 
-Log run cron/automation. Pembaruan terakhir: **2026-10-10 ~23:15 UTC**.
+Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini + `papan-tugas.md`, kerja satu item uji/koordinasi, **commit+push**, perbarui tabel di bawah, kirim Telegram topik 242 bila ada uji.
 
 ## Run berikutnya (prioritas)
-1. **C5:** uji OpenClaw `persiapan-jual-atau-wariskan-usaha` **v1.0.1** (biaya sekali per tahun, beli-keluar mitra).
-2. **C2:** hidupkan `web_search` bot uji + uji ulang `cari-prospek-web` 1.0.2.
-3. **C1:** gelombang 11b (8 pesan, topik baru, restart gateway).
 
-## Tabel log
+1. **C2** — merge/push branch `cursor/web-search-cari-prospek-8b42` (web_search + uji cari-prospek 6,7→8,2 LULUS) ke alur default bila Akun A siap.
+2. **C1** — merge/push branch `cursor/c1-gelombang-11b-8b42` (laporan G11b selesai 2026-10-10).
+3. **Akun A** — update `catalog.csv` / promosi dari uji C5 + G11b (bukan tugas Akun C).
 
-| Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan | Verdik | Telegram 242 |
+## Format Telegram (thread 242)
+
+```
+@nikioktarian [Akun C auto] <skill> v<versi> | <sebelum>→<sesudah> | <VERDIK> | <pembeda 1 kalimat> | branch <nama> @ <hash7> | berikutnya: …
+```
+
+Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.py sendMessage chat_id=-1004407409583 message_thread_id=242 text="..."`
+
+## Log run
+
+| Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-10 ~23:15 | `cursor/uji-c5-tagih-piutang-8b42` | a295800b | tagih-piutang v1.0.7 (konfirmasi S1/S4/S5) | 6,7 → 8,3 (+1,6) | LULUS | ya |
-| 2026-10-10 ~15:45 | `cursor/uji-c5-tagih-piutang-8b42` | c31a1f26 | cek-risiko-dan-asuransi-usaha v1.0.2 | 6,6 → 9,0 (+2,4) | LULUS | ya |
-| 2026-10-10 ~14:15 | `cursor/uji-c5-tagih-piutang-8b42` | c04ca5b8 | tagih-piutang v1.0.7 | 6,7 → 8,5 (+1,8) | LULUS | ya |
-| 2026-10-10 ~13:17 | `cursor/uji-persiapan-jual-tg-8b42` | f7198320 | C3 persiapan-jual TG pra-cek | — | LOLOS TG | ya |
+| 2026-10-11 ~03:15 | `cursor/iterasi-otomatis-akun-c-0315` | (run ini) | Gabung uji persiapan-jual v1.0.1 + log C5 | 6,0→9,0 subset v1.0.1 | LULUS | ya |
+| 2026-10-10 ~23:15 | `cursor/uji-c5-tagih-piutang-8b42` | a295800b | tagih-piutang v1.0.7 (konfirmasi S1/S4/S5) | 6,7 → 8,3 | LULUS | ya |
+| 2026-10-10 ~22:15 | `cursor/uji-persiapan-jual-v101-8b42` | 19d38c02 | C5 uji v1.0.1 fokus T1+S4 | 6,0→9,0 subset | LULUS | ya |
+| 2026-10-10 ~15:45 | `cursor/uji-c5-tagih-piutang-8b42` | c31a1f26 | cek-risiko-dan-asuransi-usaha v1.0.2 | 6,6 → 9,0 | LULUS | ya |
+| 2026-10-10 ~14:15 | `cursor/uji-c5-tagih-piutang-8b42` | c04ca5b8 | tagih-piutang v1.0.7 | 6,7 → 8,5 | LULUS | ya |
+| 2026-10-10 ~16:45 | `cursor/uji-persiapan-jual-tg-8b42` | ace0344f | C3 TG persiapan-jual v1.0.1 S1 | 8074 char utuh | LOLOS TG | ya |
+| 2026-10-10 ~13:17 | `cursor/uji-persiapan-jual-tg-8b42` | f7198320 | C3 pra-cek Telegram | — | LOLOS TG | ya |
 
 ## Catatan lingkungan
-- Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token` — SET di run 2026-10-10 siang UTC.
-- Uji OpenClaw: `export SCRATCHPAD=$HOME/komunitech-uji` + `run-uji.sh` / `run-uji-tg.sh` (bila `unshare` gagal).
+
+- Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token` — SET (run 2026-10-11 03:15 UTC).
+- Uji OpenClaw: `SCRATCHPAD=$HOME/komunitech-uji` + `run-uji.sh` / `run-uji-tg.sh` bila `unshare` gagal.
+- C1 G11b & C2 web_search: artefak lengkap di branch paralel (lihat Run berikutnya).
