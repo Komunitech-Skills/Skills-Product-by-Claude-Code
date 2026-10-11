@@ -8,6 +8,46 @@ Log ringkas **antar-run** untuk jadwal **Cursor Automations**. Setiap run = VM b
 
 ---
 
+## Dashboard antrean Akun C
+
+Jalankan sebelum kirim Telegram (rollup run atau setelah commit `uji:`):
+
+```bash
+bash koordinasi/alat-uji/progress-akun-c.sh
+```
+
+| Metrik | Nilai (contoh — jalankan script untuk angka live) |
+|--------|-----------------------------------------------------|
+| **Antrean** | **12/17 (71%)** ← `selesai/total` dari papan |
+| Selesai | 12 |
+| Sedang | 0 |
+| Tersisa | 5 |
+| **Skala TG** | **71/100** ← `persen` selesai (bukan 100 item) |
+
+### Apa yang dihitung (sumber: `koordinasi/papan-tugas.md`)
+
+1. **Tabel `## Tugas Akun C`** — baris `C1`…`Cn`; status kolom terakhir (`selesai` / `sedang` / `belum`…).
+2. **`## Antrean uji Akun C`** — baris `- [x]` selesai, `- [~]` sedang, `- [ ]` tersisa.
+3. **`## Permintaan antar-akun — progress Akun C`** — checkbox yang sama.
+
+**Bukan** seluruh papan (Akun A/B, U1–U22, S1–S9) — hanya antrean yang ditugaskan ke Akun C.
+
+### Cara memperbarui hitungan
+
+| Aksi | Di mana |
+|------|---------|
+| Uji skill selesai | Centang `- [x]` di **Antrean uji** atau tulis `selesai` di baris `Cn` |
+| Sedang dikerjakan run ini | `- [~]` atau status `dikerjakan (Akun C, …)` |
+| Item manual / luar papan | Tambah baris di tabel **Override manual** di bawah (opsional) |
+
+### Override manual (opsional)
+
+| id | status |
+|----|--------|
+| _(contoh: gelombang-tg-12)_ | tersisa |
+
+---
+
 ## Cara agent memperbarui
 
 1. Setelah `python3 scripts/validate.py` lolos dan **commit** (terutama `uji: <nama> vX.Y.Z <skor>/10`):
@@ -24,9 +64,10 @@ Log ringkas **antar-run** untuk jadwal **Cursor Automations**. Setiap run = VM b
    - Gunakan **newline sungguhan** (`\n` / heredoc), bukan literal `\n` di dalam satu baris panjang.
    - Skor pakai koma desimal Indonesia (`8,5`), panah `→` untuk tanpa → dengan.
 
-4. Bila commit **`uji:`**: pakai template **Hasil uji** di bawah (skor tanpa → dengan, verdik LULUS/BELUM/GAGAL, satu kalimat pembeda — sama `CLAUDE.md` 2026-10-03).
-5. Bila run **hanya docs/koordinasi** (tanpa commit `uji:`): pakai template **Docs/koordinasi**; kirim **sekali** di akhir run setelah push.
-6. Jangan kirim duplikat: bandingkan hash commit terakhir di tabel dengan commit yang baru di-push.
+4. **Sebelum** kirim Telegram: `bash koordinasi/alat-uji/progress-akun-c.sh` — salin baris **Antrian** ke blok **Progress** (template di bawah).
+5. Bila commit **`uji:`**: pakai template **Hasil uji** di bawah (skor tanpa → dengan, verdik LULUS/BELUM/GAGAL, satu kalimat pembeda — sama `CLAUDE.md` 2026-10-03).
+6. Bila run **hanya docs/koordinasi** (tanpa commit `uji:`): pakai template **Docs/koordinasi** atau **Ringkasan run**; kirim **sekali** di akhir run setelah push.
+7. Jangan kirim duplikat: bandingkan hash commit terakhir di tabel dengan commit yang baru di-push.
 
 ### Template Telegram — commit `uji:` (salin struktur, ganti placeholder)
 
@@ -37,6 +78,11 @@ Log ringkas **antar-run** untuk jadwal **Cursor Automations**. Setiap run = VM b
 Waktu (UTC): YYYY-MM-DDTHH:MMZ
 Branch: cursor/<nama>-8b42
 Commit: <hash 7 char>
+
+Progress
+Antrian: <selesai>/<total> (<persen>%)
+Selesai: <n> | Sedang: <n> | Tersisa: <n>
+Skala: <persen>/100
 
 Hasil uji
 Skill: <nama-skill> vX.Y.Z
@@ -58,12 +104,39 @@ Waktu (UTC): YYYY-MM-DDTHH:MMZ
 Branch: cursor/<nama>-8b42
 Commit: <hash 7 char>
 
+Progress
+Antrian: <selesai>/<total> (<persen>%)
+Selesai: <n> | Sedang: <n> | Tersisa: <n>
+Skala: <persen>/100
+
 Docs/koordinasi
 Ringkasan: <1–2 kalimat apa yang diubah>
 File utama: <path relatif, mis. koordinasi/…>
 
 Berikutnya
 - <1–3 bullet prioritas run berikutnya>
+```
+
+### Template Telegram — ringkasan akhir run (rollup, tanpa commit uji)
+
+```
+@nikioktarian
+[Akun C auto]
+
+Waktu (UTC): YYYY-MM-DDTHH:MMZ
+Branch: cursor/<nama>-8b42
+Commit: <hash 7 char>
+
+Progress
+Antrian: <selesai>/<total> (<persen>%)
+Selesai: <n> | Sedang: <n> | Tersisa: <n>
+Skala: <persen>/100
+
+Ringkasan run
+<1–3 kalimat: branch, commit, uji/docs, push>
+
+Berikutnya
+- <1–3 bullet dari papan-tugas.md>
 ```
 
 ### Contoh kirim (multiline — disarankan)
@@ -80,6 +153,11 @@ MSG="$(cat <<'EOF'
 Waktu (UTC): 2026-10-11T06:30Z
 Branch: cursor/cloud-md-8b42
 Commit: abc1234
+
+Progress
+Antrian: 12/17 (71%)
+Selesai: 12 | Sedang: 0 | Tersisa: 5
+Skala: 71/100
 
 Hasil uji
 Skill: contoh-skill v1.0.0
@@ -117,6 +195,7 @@ _(Agent: sisipkan baris baru di bawah header tabel; run terbaru paling atas.)_
 
 | UTC (approx) | Branch | Commit | Ringkasan | Telegram 242 |
 |--------------|--------|--------|-----------|--------------|
+| 2026-10-11 | `cursor/cloud-md-8b42` | _(commit berikut)_ | Progress dashboard: `progress-akun-c.sh`, blok Progress di template TG | ya (setelah push) |
 | 2026-10-11 | `cursor/cloud-md-8b42` | `c6859ed4` | Template Telegram multiline (section, bukan pipe satu baris) + Agent Instructions | ya (setelah push) |
 | 2026-10-10 | `cursor/cloud-md-8b42` | `bcd67a55` | Playbook: push per commit uji, Telegram 242, cron 30 menit | manual run docs (no TG) |
 
@@ -126,6 +205,6 @@ _(Agent: sisipkan baris baru di bawah header tabel; run terbaru paling atas.)_
 
 _(Agent: timpa baris ini setiap akhir run — 1–3 bullet prioritas dari `papan-tugas.md`.)_
 
-- Pemilik: tempel ulang blok **Agent Instructions** dari `rutin-cursor-cloud.md` ke dashboard Automation (versi template Telegram multiline).
-- Baca `koordinasi/papan-tugas.md` (Akun C, SERAH TERIMA, Permintaan antar-akun).
-- Lanjut branch `cursor/*` aktif atau buat baru dari `claude/claude-code-cli-differences-btizz5`.
+- Uji ulang `cari-prospek-web` v1.0.2 (antrean `- [ ]`, keputusan 24 tahap 2).
+- Pemilik: tempel ulang **Agent Instructions** (blok Progress + `progress-akun-c.sh`).
+- Backlog `siap diuji` berikutnya yang ditugaskan ke Akun C di papan/catalog.
