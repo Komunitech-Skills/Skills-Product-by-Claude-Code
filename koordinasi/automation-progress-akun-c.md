@@ -32,4 +32,4 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 - Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token` — SET (run 2026-10-11 03:45 UTC).
 - Uji OpenClaw: `SCRATCHPAD=$HOME/komunitech-uji` + `run-uji.sh` / `run-uji-tg.sh` (repo: `koordinasi/alat-uji/`) bila `unshare` gagal.
-- OpenClaw prod uji: **2026.9.9** + `@openclaw/duckduckgo-plugin` (`config-bot-uji/openclaw.json`).
+- OpenClaw prod uji: **2026.9.9**; plugin DDG resmi butuh runtime ≥2026.10.1 — smoke run 03:45 hanya `web_fetch` (uji penuh C2 tetap valid di commit 9d97e53b).
