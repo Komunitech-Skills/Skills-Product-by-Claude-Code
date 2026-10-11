@@ -42,7 +42,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-11 ~07:48 | `cursor/iterasi-otomatis-akun-c-8b42` | _(push run ini)_ | Sync default + usulan G12 (no. 27); antrian C1–C5 100% | — | koordinasi | ya |
+| 2026-10-11 ~07:48 | `cursor/iterasi-otomatis-akun-c-8b42` | 39b1ce1b | Sync default + usulan G12 (no. 27); antrian C1–C5 100% | — | koordinasi | ya |
 | 2026-10-10-11 ~07:22 | `cursor/iterasi-otomatis-akun-c-7bf3` | bdd8fc26 | persiapan-jual v1.0.1 OC skenario 4–5 (6 skenario total) | 5,92→8,83 | LULUS | ya |
 | 2026-10-11 ~06:16 | `cursor/iterasi-otomatis-akun-c-0615` | e30c1a15 | persiapan-jual v1.0.1 OC skenario 2–3 (+4 skenario total) | 6,0→8,875 | LULUS | ya |
 | 2026-10-11 ~05:45 | `cursor/iterasi-otomatis-akun-c-0545` | 19f26848 | Sinkron branch gabungan 0515→0545; validate + regresi persiapan-jual/tagih-piutang | — | koordinasi | ya |
