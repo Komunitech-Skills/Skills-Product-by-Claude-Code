@@ -13,21 +13,89 @@ Log ringkas **antar-run** untuk jadwal **Cursor Automations**. Setiap run = VM b
 1. Setelah `python3 scripts/validate.py` lolos dan **commit** (terutama `uji: <nama> vX.Y.Z <skor>/10`):
    - **`git push -u origin HEAD` segera** — jangan menunggu akhir run.
 2. Tambah baris di tabel **Log run** di bawah (run terbaru di atas).
-3. Kirim **satu pesan** ke Telegram topik 242 lewat `koordinasi/alat-uji/pilot/tg.py` (butuh secret `tester_bot_token`), awali `@nikioktarian`:
+3. Kirim **satu pesan multiline** ke Telegram topik 242 lewat `koordinasi/alat-uji/pilot/tg.py` (butuh secret `tester_bot_token`).
 
-   ```
-   [Akun C auto] <UTC ISO8601 singkat> branch=<cursor/…> commit=<hash pendek> | <1 kalimat: uji selesai skor X/10 verdik … ATAU docs/koordinasi …> | berikutnya: <item papan tugas>
-   ```
+   **Aturan format (wajib — supaya tidak berantakan di Telegram):**
 
-4. Bila commit uji: sertakan **skor tanpa → dengan**, **verdik** (LULUS/BELUM), **satu kalimat pembeda** (sama format laporan uji `CLAUDE.md` 2026-10-03).
-5. Jangan kirim duplikat: bandingkan hash commit terakhir di tabel dengan commit yang baru di-push.
+   - **Dilarang** format satu baris dengan pemisah `|` (pipe), `;`, atau koma runtut untuk menggantikan baris baru.
+   - **Wajib** baris pertama: `@nikioktarian` (tanpa teks lain di baris itu).
+   - **Wajib** baris kedua: `[Akun C auto]` saja.
+   - **Wajib** baris kosong setelah tag, lalu **blok metadata** (satu field per baris), lalu **blok isi** dengan judul section di baris sendiri, lalu **blok Berikutnya**.
+   - Gunakan **newline sungguhan** (`\n` / heredoc), bukan literal `\n` di dalam satu baris panjang.
+   - Skor pakai koma desimal Indonesia (`8,5`), panah `→` untuk tanpa → dengan.
 
-Contoh kirim (dari `$HOME/komunitech-uji/openclaw-real/pilot/` atau path repo `koordinasi/alat-uji/pilot/`):
+4. Bila commit **`uji:`**: pakai template **Hasil uji** di bawah (skor tanpa → dengan, verdik LULUS/BELUM/GAGAL, satu kalimat pembeda — sama `CLAUDE.md` 2026-10-03).
+5. Bila run **hanya docs/koordinasi** (tanpa commit `uji:`): pakai template **Docs/koordinasi**; kirim **sekali** di akhir run setelah push.
+6. Jangan kirim duplikat: bandingkan hash commit terakhir di tabel dengan commit yang baru di-push.
+
+### Template Telegram — commit `uji:` (salin struktur, ganti placeholder)
+
+```
+@nikioktarian
+[Akun C auto]
+
+Waktu (UTC): YYYY-MM-DDTHH:MMZ
+Branch: cursor/<nama>-8b42
+Commit: <hash 7 char>
+
+Hasil uji
+Skill: <nama-skill> vX.Y.Z
+Skor: tanpa <n,n>/10 → dengan <n,n>/10
+Verdik: LULUS | BELUM | GAGAL
+Pembeda: <satu kalimat konkret beda tanpa vs dengan skill>
+
+Berikutnya
+- <1–3 bullet dari papan-tugas.md>
+```
+
+### Template Telegram — docs/koordinasi (satu pesan di akhir run)
+
+```
+@nikioktarian
+[Akun C auto]
+
+Waktu (UTC): YYYY-MM-DDTHH:MMZ
+Branch: cursor/<nama>-8b42
+Commit: <hash 7 char>
+
+Docs/koordinasi
+Ringkasan: <1–2 kalimat apa yang diubah>
+File utama: <path relatif, mis. koordinasi/…>
+
+Berikutnya
+- <1–3 bullet prioritas run berikutnya>
+```
+
+### Contoh kirim (multiline — disarankan)
+
+Dari `$HOME/komunitech-uji/openclaw-real/pilot/` atau `koordinasi/alat-uji/pilot/`:
 
 ```bash
 cd "$HOME/komunitech-uji/openclaw-real/pilot" 2>/dev/null || cd koordinasi/alat-uji/pilot
-python3 tg.py sendMessage chat_id=-1004407409583 message_thread_id=242 text='@nikioktarian [Akun C auto] …'
+
+MSG="$(cat <<'EOF'
+@nikioktarian
+[Akun C auto]
+
+Waktu (UTC): 2026-10-11T06:30Z
+Branch: cursor/cloud-md-8b42
+Commit: abc1234
+
+Hasil uji
+Skill: contoh-skill v1.0.0
+Skor: tanpa 6,2/10 → dengan 8,5/10
+Verdik: LULUS
+Pembeda: Dengan skill, output punya tabel Rupiah dan langkah terurut; tanpa skill hanya paragraf umum.
+
+Berikutnya
+- Uji skill berikutnya di papan (status siap diuji)
+EOF
+)"
+
+python3 tg.py sendMessage chat_id=-1004407409583 message_thread_id=242 "text=${MSG}"
 ```
+
+**Jangan** memakai `text='@nikioktarian [Akun C auto] branch=… | …'` — itu format lama yang membuat pesan sulit dibaca di HP.
 
 ---
 
@@ -49,6 +117,7 @@ _(Agent: sisipkan baris baru di bawah header tabel; run terbaru paling atas.)_
 
 | UTC (approx) | Branch | Commit | Ringkasan | Telegram 242 |
 |--------------|--------|--------|-----------|--------------|
+| 2026-10-11 | `cursor/cloud-md-8b42` | _(commit docs)_ | Template Telegram multiline (section, bukan pipe satu baris) + Agent Instructions | ya (setelah push) |
 | 2026-10-10 | `cursor/cloud-md-8b42` | `bcd67a55` | Playbook: push per commit uji, Telegram 242, cron 30 menit | manual run docs (no TG) |
 
 ---
@@ -57,5 +126,6 @@ _(Agent: sisipkan baris baru di bawah header tabel; run terbaru paling atas.)_
 
 _(Agent: timpa baris ini setiap akhir run — 1–3 bullet prioritas dari `papan-tugas.md`.)_
 
+- Pemilik: tempel ulang blok **Agent Instructions** dari `rutin-cursor-cloud.md` ke dashboard Automation (versi template Telegram multiline).
 - Baca `koordinasi/papan-tugas.md` (Akun C, SERAH TERIMA, Permintaan antar-akun).
 - Lanjut branch `cursor/*` aktif atau buat baru dari `claude/claude-code-cli-differences-btizz5`.

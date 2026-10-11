@@ -103,9 +103,9 @@ GATEWAY (hanya uji OpenClaw/Telegram): gw-cek.sh; jangan cetak secret; restart g
 
 PEMBUAT ≠ PENGUJI per skill: (A) SKILL/script/README/catalog ATAU (B) examples/ + HASIL-UJI + skor — tidak keduanya skill sama dalam satu run.
 
-UJI: brief tester-umum.md; uji.sh / run-uji.sh; uji-tg.sh bila perlu. Sebelum commit uji: validate.py + regresi. Commit: uji: <nama> vX.Y.Z <skor>/10. SETELAH COMMIT UJI (wajib): git push -u origin HEAD segera → perbarui koordinasi/automation-progress-akun-c.md (tabel log) → kirim Telegram thread 242 via pilot/tg.py (tester_bot_token), awali @nikioktarian, format [Akun C auto] + skor tanpa→dengan + verdik + branch + hash pendek + berikutnya (lihat automation-progress-akun-c.md). Jangan catalog.csv. Bukan gelombang tampilan tanpa persetujuan pemilik.
+UJI: brief tester-umum.md; uji.sh / run-uji.sh; uji-tg.sh bila perlu. Sebelum commit uji: validate.py + regresi. Commit: uji: <nama> vX.Y.Z <skor>/10. SETELAH COMMIT UJI (wajib): git push -u origin HEAD segera → perbarui koordinasi/automation-progress-akun-c.md (tabel log) → kirim SATU pesan Telegram thread 242 via pilot/tg.py (tester_bot_token). TELEGRAM WAJIB MULTILINE (section + newline): baris1 @nikioktarian, baris2 [Akun C auto], baris kosong, metadata (Waktu UTC / Branch / Commit), blok "Hasil uji" (Skill, Skor tanpa→dengan, Verdik, Pembeda), blok "Berikutnya" (bullet). DILARANG satu baris dengan pemisah | atau ; — salin struktur template persis dari automation-progress-akun-c.md (heredoc/cat, bukan string pipa). Jangan catalog.csv. Bukan gelombang tampilan tanpa persetujuan pemilik.
 
-Run hanya docs/koordinasi: satu commit+push di akhir + satu pesan Telegram 242 + automation-progress.
+Run hanya docs/koordinasi: satu commit+push di akhir + SATU pesan Telegram 242 multiline (template "Docs/koordinasi" di automation-progress-akun-c.md) + automation-progress.
 
 Jangan commit dist/, secret, data pribadi, identitas model. rm -rf hanya "${VAR:?}". Jangan PR/merge kecuali pemilik minta eksplisit.
 
@@ -163,7 +163,7 @@ Langkah umum (label menu bisa sedikit berbeda per versi Cursor):
 2. **Tugas baru** (skill/docs terpisah): `git checkout -b cursor/<nama-singkat>-8b42` dari `origin/claude/claude-code-cli-differences-btizz5`.
 3. **Lanjut tugas yang sama** (uji belum selesai, PR belum di-merge): checkout branch `cursor/*` yang sudah dipakai run sebelumnya (cek `papan-tugas.md`, laporan terakhir, atau `git branch -r 'origin/cursor/*'`).
 4. **Sync base:** bila default branch maju, `git merge origin/claude/claude-code-cli-differences-btizz5` (merge commit, bukan rebase) sebelum kerja besar; selesaikan konflik di luar `skills/` milik akun lain bila memungkinkan.
-5. **Setiap commit `uji:`:** `python3 scripts/validate.py` → commit → **`git push -u origin HEAD` segera** → perbarui [`automation-progress-akun-c.md`](automation-progress-akun-c.md) → satu pesan Telegram 242 (format di file itu).
+5. **Setiap commit `uji:`:** `python3 scripts/validate.py` → commit → **`git push -u origin HEAD` segera** → perbarui [`automation-progress-akun-c.md`](automation-progress-akun-c.md) → satu pesan Telegram 242 **multiline** (template Hasil uji — bukan satu baris pipa).
 6. **Akhir run:** push commit lain yang belum ter-push; VM hilang setelah run; tanpa push pekerjaan hilang.
 7. **PR:** jangan dibuat agent kecuali pemilik minta di chat/run prompt.
 
@@ -194,8 +194,8 @@ Acuan lulus uji OpenClaw: sesudah ≥ **8** dan selisih ≥ **1,5** (`koordinasi
 
 1. **LANGKAH NOL:** baca `automation-progress-akun-c.md` + `papan-tugas.md` + `git fetch`.
 2. **Selalu ambil pekerjaan berikutnya** — uji backlog `siap diuji`, draf skill bila ditugaskan, docs/koordinasi kecil.
-3. **Setelah setiap commit `uji:`:** validate → commit → **push segera** → baris log + **Telegram 242** (lihat automation-progress-akun-c.md). Jangan menunggu akhir run untuk push uji.
-4. **Run hanya docs:** satu push + satu pesan Telegram di akhir run.
+3. **Setelah setiap commit `uji:`:** validate → commit → **push segera** → baris log + **Telegram 242 multiline** (template di automation-progress-akun-c.md). Jangan menunggu akhir run untuk push uji.
+4. **Run hanya docs:** satu push + satu pesan Telegram **multiline** (template Docs/koordinasi) di akhir run.
 5. **Satu run = satu fokus batch** — pembuat≠penguji per skill.
 6. **PR / gelombang:** tidak otomatis; gelombang hanya setelah persetujuan pemilik.
 
