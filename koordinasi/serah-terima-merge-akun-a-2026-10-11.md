@@ -4,6 +4,7 @@ Akun C menyelesaikan tugas C1–C5 (keputusan 23–25). Artefak uji ada di branc
 
 | Branch | Isi utama | Verdik / catatan |
 |---|---|---|
+| `cursor/iterasi-otomatis-akun-c-0445` | lanjutan 0345 + smoke OC 2026.10.1 + `setup-cursor.sh` bump | koordinasi |
 | `cursor/iterasi-otomatis-akun-c-0345` | `automation-progress-akun-c.md`, `rutin-cursor-cloud.md`, papan C1–C5 selesai, C2 examples + `run-uji.sh`, config-bot-uji | koordinasi |
 | `cursor/c1-gelombang-11b-8b42` | `telegram-gelombang-11b-2026-10-10.md`, pilot G11b | 2 skill LULUS tampilan, 2 BELUM selisih |
 | `cursor/web-search-cari-prospek-8b42` | (sebagian sudah di iterasi-0345) uji penuh C2 | cari-prospek 6,7→8,2 LULUS |

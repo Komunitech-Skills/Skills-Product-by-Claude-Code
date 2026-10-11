@@ -4,8 +4,8 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun A/B** — gabung ke default: `cursor/iterasi-otomatis-akun-c-0345` (koordinasi + C2 examples), `cursor/c1-gelombang-11b-8b42`, `cursor/uji-c5-tagih-piutang-8b42`, `cursor/uji-persiapan-jual-v101-8b42`, `cursor/uji-persiapan-jual-tg-8b42`; update `catalog.csv` / promosi (cari-prospek LULUS 6,7→8,2; keputusan 24 arsip tidak berlaku).
-2. **Akun C** — smoke `web_search` tiap run VM baru bila C2 sudah digabung; gelombang tampilan G11b hanya setelah persetujuan pemilik.
+1. **Akun A/B** — gabung ke default: `cursor/iterasi-otomatis-akun-c-0445` (koordinasi + smoke OC 2026.10.1), plus branch uji paralel di `serah-terima-merge-akun-a-2026-10-11.md`; update `catalog.csv` / promosi (cari-prospek LULUS 6,7→8,2; keputusan 24 arsip tidak berlaku).
+2. **Akun C** — tunggu persetujuan pemilik untuk gelombang tampilan G11b; opsional: uji ulang `cari-prospek-web` satu giliran post-2026.10.1 bila Akun A minta konfirmasi lingkungan.
 
 ## Format Telegram (thread 242)
 
@@ -19,6 +19,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-11 ~04:45 | `cursor/iterasi-otomatis-akun-c-0445` | (setelah push) | Smoke web_search OC 2026.10.1 + DDG plugin; bump setup-cursor | web_search hidup | LOLOS smoke | ya |
 | 2026-10-11 ~03:45 | `cursor/iterasi-otomatis-akun-c-0345` | 56738186 | Gabung C2 examples + serah terima Akun A; smoke web_search plugin gagal API | web_fetch saja | catatan | ya |
 | 2026-10-11 ~03:15 | `cursor/iterasi-otomatis-akun-c-0315` | 6a5447d4 | Gabung uji persiapan-jual v1.0.1 + papan C1/C2/C5 | 6,0→9,0 subset v1.0.1 | LULUS | ya |
 | 2026-10-10 ~23:45 | `cursor/web-search-cari-prospek-8b42` | 9d97e53b | cari-prospek-web v1.0.2 + C2 web_search | 6,7 → 8,2 | LULUS | ya |
@@ -32,4 +33,4 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 - Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token` — SET (run 2026-10-11 03:45 UTC).
 - Uji OpenClaw: `SCRATCHPAD=$HOME/komunitech-uji` + `run-uji.sh` / `run-uji-tg.sh` (repo: `koordinasi/alat-uji/`) bila `unshare` gagal.
-- OpenClaw prod uji: **2026.9.9**; plugin DDG resmi butuh runtime ≥2026.10.1 — smoke run 03:45 hanya `web_fetch` (uji penuh C2 tetap valid di commit 9d97e53b).
+- OpenClaw prod uji: **2026.10.1** (default `setup-cursor.sh` sejak run 04:45); plugin `@openclaw/duckduckgo-plugin` — smoke `web_search` LOLOS (detail: `koordinasi/smoke-websearch-2026-10-11-0445.md`).
