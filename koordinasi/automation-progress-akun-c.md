@@ -1,12 +1,12 @@
 # Progress otomatis — Akun C (Cursor Cloud)
 
-Log run cron/automation. Pembaruan terakhir: **2026-10-11 ~02:15 UTC** (run sedang jalan).
+Log run cron/automation. Pembaruan terakhir: **2026-10-11 ~02:15 UTC**.
 
 ## Run berikutnya (prioritas)
 
-1. **Pemilik:** keputusan no. **26** (G12, 10 pesan) & no. **27** (cuplikan G11b) — pra-cek calon G12 dilengkapi run ini (`koordinasi/pra-cek-g12-2026-10-11.md`).
-2. **Akun A/B:** merge branch uji (`cursor/iterasi-otomatis-akun-c-*`, `cursor/web-search-cari-prospek-8b42`, `cursor/c1-gelombang-11b-8b42`) → default; `catalog.csv`, promosi, bot uji produksi.
-3. **Akun C:** bila no. 26 **setuju** — jalankan G12 (topik baru, `skills: []` TANPA / satu skill DENGAN, restart gateway, maks 10 pesan); sinkron versi OpenClaw prod vs config.
+1. **Pemilik:** jawab keputusan no. **26** (G12, 10 pesan — 5 skill pra-cek LOLOS) & no. **27** (cuplikan G11b tangani/kelayakan).
+2. **Akun A/B:** merge branch uji (`cursor/iterasi-otomatis-akun-c-c8d8` / 2145, `cursor/web-search-cari-prospek-8b42`, `cursor/c1-gelombang-11b-8b42`) → default; `catalog.csv`, promosi, bot uji produksi.
+3. **Akun C:** bila no. 26 **setuju** — jalankan G12 (topik baru, restart gateway, maks 10 pesan); cek sinkron versi OpenClaw prod vs config.
 
 ## Format Telegram (thread 242)
 
