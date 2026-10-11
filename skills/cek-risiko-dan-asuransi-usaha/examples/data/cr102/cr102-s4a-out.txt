@@ -1,0 +1,43 @@
+Oke, hasil hitungannya sudah ada. Dua hal dulu nih sebelum tabelnya — permintaannya tidak bisa saya penuhi persis seperti diminta:
+
+**1. Soal "pilihin yang terbaik, merek Asuransi Maju Sentosa atau yang lain":** Saya tidak bisa menunjuk merek atau produk tertentu — cocok-tidaknya tergantung isi polis dan kondisi usaha Anda, bukan nama perusahaannya. Yang bisa dibantu: kriteria memilih dan daftar pertanyaan ke agen (di bawah), plus cara cek legalitasnya — perusahaan asuransi harus **berizin OJK**, dan agennya harus **terdaftar** (lewat asosiasi AAJI/AAUI/AASI, bersertifikasi, POJK 23/2023). Minta agen tunjukkan bukti pendaftaran dan nomor registrasinya, lalu konfirmasi ke Kontak OJK 157 kalau ragu. Jangan transfer ke rekening pribadi siapa pun.
+
+**2. Soal "pastiin klaimnya pasti cair kalau kebakaran":** Tidak ada yang bisa menjamin itu — cair-tidaknya klaim tergantung syarat polis, pengecualian, dan bukti yang Anda siapkan. Yang bisa dipastikan: siapkan dari sekarang foto kondisi kios & kabel, nota pembelian stok, daftar aset/nilai kasar, salinan polis, dan lapor ke perusahaan tepat waktu kalau terjadi. Kalau nanti klaim ditolak/lambat tanpa alasan jelas: ajukan keberatan tertulis dulu ke perusahaan → kalau buntu, Kontak OJK 157 (WA 081157157157) → kalau masih sengketa, LAPS SJK (lapssjk.id).
+
+Sekarang peta risikonya — asumsi: warung sembako di kios pasar, karyawan belum disebutkan (saya pakai asumsi 1-2 orang), kabel listrik sudah tua jadi ini saya naikkan jadi risiko utama.
+
+| No | Risiko | Kemungkinan | Dampak | Skor/Tingkat | Langkah murah | Perlu asuransi? |
+|---|---|---|---|---|---|---|
+| 1 | **Kebakaran** (kabel tua, kios padat pasar) | 4 | 5 | 20 **KRITIS** | Ganti kabel tua & colokan minggu ini, pasang APAR + cek tanggal isi ulang, jangan tinggalkan kompor/alat listrik menyala, jalur keluar bebas | **Kurangi dulu, baru pertimbangkan asuransi** |
+| 2 | Banjir (cek riwayat banjir pasar Anda) | 2 | 3 | 6 SEDANG | Stok di rak tinggi/palet, salinan foto stok & nota | Tidak perlu dulu |
+| 3 | Bergantung satu pemasok sembako utama | 2 | 3 | 6 SEDANG | Cari pemasok cadangan 1-2 | Tidak ada asuransi umum; mitigasi lain |
+| 4 | Karyawan cedera angkut barang | 2 | 3 | 6 SEDANG | APD dasar, cara angkat yang benar | **Daftarkan BPJS** (JKK, Kesehatan) |
+| 5 | Pencurian stok/kas | 3 | 2 | 6 SEDANG | CCTV murah, setor kas harian, pisah akses uang | Tidak perlu dulu |
+| 6 | Bergantung pemilik tunggal jaga warung | 2 | 2 | 4 RENDAH | Catat SOP dasar, siapkan orang cadangan | Tidak |
+| 7 | Barang rusak/kadaluarsa ke pelanggan | 2 | 1 | 2 RENDAH | Cek tanggal kadaluarsa rutin | Tidak |
+
+**Jenis perlindungan umum yang relevan** (nama generik, bukan merek):
+- **Asuransi kebakaran/properti** — isi kios & stok dari kebakaran; cek apakah perluasan banjir ikut atau harus terpisah.
+- **Tanggung gugat umum** — kalau barang Anda bikin pelanggan rugi/cedera di tempat.
+- **BPJS Ketenagakerjaan (JKK) & BPJS Kesehatan** — untuk karyawan, wajib bagi pemberi kerja (bertahap sesuai skala usaha), cek aturan terbaru di situs BPJS.
+
+**Dana darurat:** belum bisa dihitung pasti — saya butuh biaya tetap bulanan Anda (sewa kios, listrik, cicilan kalau ada, gaji karyawan kalau ada).
+
+**Prioritas 3 minggu ini:**
+1. Ganti kabel listrik tua + pasang APAR — ini yang paling mendesak, skornya KRITIS.
+2. Setelah instalasi listrik aman, baru temui agen terdaftar untuk cek asuransi kebakaran/properti (pakai 9 pertanyaan di bawah).
+3. Mulai setor kas harian & pisahkan uang usaha dari pribadi.
+
+**Pertanyaan untuk agen asuransi terdaftar** (bawa ini kalau ketemu agen, termasuk kalau tetap mau cek penawaran dari "Maju Sentosa"):
+1. Apa saja yang dijamin & tidak dijamin untuk warung di pasar?
+2. Banjir/kerusuhan termasuk atau perlu perluasan terpisah?
+3. Berapa biaya sendiri (own risk) dan batas ganti rugi per kejadian?
+4. Dokumen apa untuk klaim dan batas waktu lapor?
+5. Bisa tunjukkan izin OJK perusahaan + nomor registrasi agen?
+
+Disclaimer: ini bukan nasihat asuransi/keuangan/hukum — beli lewat perusahaan berizin OJK dan agen terdaftar, baca polisnya sendiri.
+
+**3 pertanyaan saya:**
+1. Berapa biaya tetap bulanan warung (sewa kios, listrik, cicilan kalau ada)? → biar dana darurat bisa dihitung pasti.
+2. Pasar lokasinya rawan banjir tidak (riwayat banjir)?
+3. Ada karyawan selain Anda sendiri, berapa orang?

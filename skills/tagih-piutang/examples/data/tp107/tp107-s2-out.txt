@@ -1,0 +1,95 @@
+Udah aku hitung ketiganya pakai rumus denda & aturan tahap penagihan yang sesuai kontrak/riwayat. Urutan prioritas dan pesan siap kirim di bawah.
+
+## Urutan duluan mana
+
+1. **Pak Brian (Kopitiam Digital)** — paling mendesak. Sudah 51 hari lewat, sudah 3x diingatkan, dan janji bayar 5 Oktober dilanggar. Ini sudah di tahap surat teguran resmi (somasi).
+2. **PT Cahaya Digital** — kedua. 25 hari lewat, 2x diingatkan tanpa respons, nilai tertagih paling besar (Rp8.687.000 termasuk denda kontrak). Perlu pemberitahuan resmi sekarang sebelum naik ke somasi.
+3. **Kak Mira (Toko Kue Mira)** — paling santai. Baru 7 hari lewat, belum pernah ditagih, orangnya baik — cukup pesan ramah tegas minta tanggal pasti, jangan diformat resmi dulu.
+
+---
+
+## 1. Pak Brian — Kopitiam Digital (INV-2026-011)
+
+**Ringkasan:** Tagihan Rp6.000.000, sudah dibayar Rp2.000.000, sisa Rp4.000.000. Jatuh tempo 20 Agustus 2026, terlambat 51 hari. Tidak ada dasar denda tertulis yang kamu sebutkan, jadi tidak aku tagihkan denda. Total tetap Rp4.000.000.
+
+**Surat Teguran (Tahap 6) · kirim 10 Oktober 2026**
+
+```
+[KOP KOPITIAM DIGITAL ATAU NAMA USAHAMU]
+Nomor   : 001/SP/X/2026
+Perihal : Surat Teguran – Pembayaran Invoice INV-2026-011
+
+Jakarta, 10 Oktober 2026
+
+Kepada Yth.
+Bapak Brian
+Kopitiam Digital
+
+Dengan hormat,
+1. Berdasarkan kesepakatan kerja sama, kami telah menyelesaikan pekerjaan dan menerbitkan Invoice No. INV-2026-011 senilai Rp6.000.000 dengan jatuh tempo 20 Agustus 2026.
+2. Pengingat pembayaran telah kami sampaikan sebanyak 3 kali. Pada kesempatan terakhir, Bapak Brian menyampaikan akan membayar pada 5 Oktober 2026, namun hingga surat ini dibuat pembayaran tersebut belum kami terima.
+3. Pembayaran yang telah diterima: Rp2.000.000. Sisa kewajiban yang harus diselesaikan: Rp4.000.000.
+
+Dengan surat ini kami meminta Bapak Brian menyelesaikan sisa kewajiban tersebut paling lambat 17 Oktober 2026 ke rekening [Bank – No. Rek – a.n. Namamu], atau menghubungi kami sebelum tanggal tersebut untuk menyepakati jadwal pembayaran secara tertulis.
+
+Apabila hingga batas waktu tersebut tidak ada pembayaran maupun tanggapan, dengan menyesal kami akan menempuh langkah penyelesaian sesuai peraturan perundang-undangan yang berlaku.
+
+Hormat kami,
+[Namamu] – Kopitiam Digital Project
+```
+
+**WA pengantar (kirim bareng/sebelum surat):**
+"Selamat siang, Pak Brian. Saya kirimkan surat teguran resmi terkait invoice INV-2026-011 (sisa Rp4.000.000) karena pembayaran yang dijanjikan 5 Oktober belum masuk. Mohon konfirmasinya ya, Pak. Terima kasih 🙏"
+
+**Tahap berikutnya:** Tenggat di surat ini 17 Oktober 2026. Kalau sampai tanggal itu tidak ada pembayaran atau kabar, pada 18 Oktober konsultasikan ke advokat (misalnya opsi gugatan sederhana) — jangan kirim ancaman lain sendiri.
+
+**Saran:** Kirim lewat email + simpan bukti kirim (WA/email). Kalau Pak Brian minta dicicil, tawarkan jadwal tertulis dengan materai Rp10.000 di surat kesepakatannya.
+
+---
+
+## 2. PT Cahaya Digital (INV-2026-014)
+
+**Ringkasan:** Tagihan Rp8.500.000, belum dibayar sama sekali. Jatuh tempo 15 September 2026, terlambat 25 hari. Denda sesuai Pasal 6 kontrak (0,1%/hari setelah tenggang 3 hari, maksimal 5% = maksimal Rp425.000): saat ini Rp187.000 (22 hari kena denda). **Total: Rp8.687.000.**
+
+**Pemberitahuan Resmi (Tahap 5) · email/PDF · kirim 10 Oktober 2026**
+
+```
+Perihal: Pemberitahuan Tagihan Lewat Jatuh Tempo – Invoice INV-2026-014
+
+Dengan hormat,
+Bersama ini kami sampaikan bahwa Invoice No. INV-2026-014 (jasa desain logo dan brand guide) senilai Rp8.500.000 telah jatuh tempo pada 15 September 2026 dan hingga 10 Oktober 2026 masih belum ada pembayaran (25 hari keterlambatan). Kami telah mengirimkan pengingat pada 22 September 2026 dan 1 Oktober 2026 melalui WhatsApp, namun belum mendapat tanggapan.
+
+Sesuai Pasal 6 Kontrak mengenai denda keterlambatan (0,1% per hari setelah masa tenggang 3 hari, maksimal 5% dari nilai invoice atau maksimal Rp425.000), denda per 10 Oktober 2026 adalah Rp187.000, sehingga total yang perlu diselesaikan adalah Rp8.687.000.
+
+Kami mohon pembayaran dapat diselesaikan paling lambat 17 Oktober 2026 ke rekening [Bank – No. Rek – a.n. Namamu]. Apabila terdapat kendala, kami terbuka untuk membahas jadwal pembayaran secara tertulis sebelum tanggal tersebut.
+
+Atas perhatian dan kerja samanya, kami ucapkan terima kasih.
+```
+
+**WA pengantar:**
+"Selamat siang, Bapak/Ibu PT Cahaya Digital. Kami kirimkan surat pemberitahuan resmi terkait invoice INV-2026-014 (sisa Rp8.687.000 termasuk denda sesuai Pasal 6 kontrak) karena belum ada tanggapan sejak dua pengingat kami sebelumnya. Mohon konfirmasinya ya. Terima kasih 🙏"
+
+**Tahap berikutnya:** Tenggat di pesan ini 17 Oktober 2026. Kalau sampai tanggal itu belum ada pembayaran/kabar, pada 18 Oktober 2026 kirim tahap 6 (surat teguran/somasi).
+
+**Saran:** Ini sudah dua kali tidak dibalas — kirim lewat email resmi (bukan WA saja) supaya ada jejak pengiriman. Simpan bukti kirim untuk bahan somasi kalau 7 hari ke depan masih sunyi.
+
+---
+
+## 3. Kak Mira — Toko Kue Mira (INV-2026-017)
+
+**Ringkasan:** Tagihan Rp2.400.000, belum dibayar. Jatuh tempo 3 Oktober 2026, terlambat 7 hari, belum pernah ditagih. Tidak ada denda (tidak disebutkan ada kesepakatan tertulis).
+
+**WA · kirim 10 Oktober 2026**
+
+"Halo Kak Mira 🙏 Mau ingetin soal invoice INV-2026-017 sebesar Rp2.400.000 yang jatuh temponya 3 Oktober kemarin ya. Mungkin ke-skip aja — boleh tau kira-kira kapan bisa ditransfer? Transfer bisa ke [Bank – No. Rek – a.n. Namamu]. Makasih banyak Kak 😊"
+
+**Tahap berikutnya:** Tenggat di pesan ini 24 Oktober 2026 (pakai jeda 2 minggu karena hubungan dekat). Kalau sampai tanggal itu belum ada kabar, pada 25 Oktober ajak ngobrol langsung dulu — belum perlu naik ke pesan resmi.
+
+**Saran:** Karena orangnya baik dan ini baru 7 hari, cukup WA santai ini dulu. Jangan buru-buru ke nada tegas.
+
+---
+
+### Catatan hukum
+Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi) dan ketentuan denda keterlambatan di Pasal 6 kontrak PT Cahaya Digital; bila menyarankan kesepakatan cicilan tertulis, perhatikan UU Bea Meterai — per 10 Oktober 2026. Untuk sengketa atau sampai ke gugatan, konsultasikan ke advokat.
+
+Satu hal: di invoice PT Cahaya Digital dan Pak Brian aku belum tahu nomor rekening dan nama kontak PIC-nya — isi dulu bagian `[Bank – No. Rek – a.n. ...]` sebelum dikirim.

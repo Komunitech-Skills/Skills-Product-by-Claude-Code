@@ -1,0 +1,39 @@
+Belum ada data pelanggan/tagihan tersimpan di workspace, jadi aku bikin templatenya dulu—tinggal isi bagian yang di-bracket sesuai pelanggan kamu:
+
+---
+
+**Versi sopan (WhatsApp/pesan singkat):**
+
+Halo [Nama Pelanggan] 🙏
+
+Mohon maaf mengingatkan, kami cek invoice/tagihan atas nama [Nama Pelanggan] sebesar **Rp[Jumlah]** untuk [nama produk/jasa/No. invoice] yang jatuh tempo pada [tanggal jatuh tempo] masih belum kami terima pembayarannya.
+
+Mohon bantuannya untuk segera diselesaikan ya, bisa transfer ke:
+[Nama Bank] - [No. Rekening] a.n. [Nama Pemilik/Usaha]
+
+Kalau sudah transfer, boleh kirim bukti transfernya ke chat ini. Kalau ada kendala, kabarin kami ya, biar bisa dicarikan solusinya bareng-bareng.
+
+Terima kasih atas pengertiannya 🙏
+[Nama Usaha]
+
+---
+
+**Versi lebih tegas (kalau sudah lama/sudah di-reminder sebelumnya):**
+
+Yth. [Nama Pelanggan]
+
+Ini adalah pengingat kedua terkait tagihan sebesar **Rp[Jumlah]** (No. invoice: [nomor]) yang sudah jatuh tempo sejak [tanggal], atau sudah [jumlah hari] hari lewat dari batas waktu pembayaran.
+
+Kami mohon pembayaran dapat diselesaikan paling lambat **[tanggal baru]**, agar tidak mengganggu proses layanan berikutnya.
+
+Transfer ke:
+[Nama Bank] - [No. Rekening] a.n. [Nama Pemilik/Usaha]
+
+Jika pembayaran sudah dilakukan, mohon abaikan pesan ini dan kirim bukti transfer. Terima kasih atas perhatiannya.
+
+Hormat kami,
+[Nama Usaha]
+
+---
+
+Biar aku sesuaikan persis (nama pelanggan, nominal, nomor rekening, sudah berapa kali ditagih), kasih tahu aku detailnya ya — atau mau aku simpan dulu data pelanggan & tagihan ini supaya next time gampang diingat?

@@ -4,12 +4,13 @@
 # Rahasia HANYA dari environment variable (Cursor: Settings → Cloud Agents → environment secrets):
 #   bot_token       = token bot penguji Telegram (opsional; tanpa ini gateway tidak dijalankan)
 #   Ninerouter_key  = kunci router model (wajib untuk uji sebelum/sesudah)
+#   TAVILY_API_KEY atau tavily = kunci Tavily (web_search provider tavily; opsional bila DDG jalan)
 # Skrip ini tidak pernah mencetak nilai keduanya.
 set -euo pipefail
 
 REPO="${REPO:-$(cd "$(dirname "$0")/../.." && pwd)}"
 BASE="${BASE:-$HOME/komunitech-uji}"          # tempat instalasi; di Cursor VM: /workspace/../komunitech-uji atau $HOME
-OC_VERSI="${OC_VERSI:-2026.9.8}"
+OC_VERSI="${OC_VERSI:-2026.9.9}"
 NODE_VERSI="${NODE_VERSI:-v24.21.0}"
 ALAT="$REPO/koordinasi/alat-uji"
 
@@ -47,7 +48,7 @@ cat > "$R/oc.sh" <<EOF
 exec env -i HOME=$R/home PATH=$NODE_DIR/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 TZ=Asia/Jakarta \\
   HTTPS_PROXY="\${HTTPS_PROXY:-}" HTTP_PROXY="\${HTTP_PROXY:-}" NO_PROXY="\${NO_PROXY:-}" \\
   NODE_EXTRA_CA_CERTS="\${NODE_EXTRA_CA_CERTS:-}" SSL_CERT_FILE="\${SSL_CERT_FILE:-}" \\
-  NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" \\
+  NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" TAVILY_API_KEY="\${TAVILY_API_KEY:-\${tavily:-}}" \\
   $BASE/openclaw-prod/node_modules/.bin/openclaw "\$@"
 EOF
 cat > "$R/oc-tg.sh" <<EOF
@@ -56,13 +57,13 @@ cat > "$R/oc-tg.sh" <<EOF
 exec env -i HOME=$R/home PATH=$NODE_DIR/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 TZ=Asia/Jakarta \\
   HTTPS_PROXY="\${HTTPS_PROXY:-}" HTTP_PROXY="\${HTTP_PROXY:-}" NO_PROXY="\${NO_PROXY:-}" \\
   NODE_EXTRA_CA_CERTS="\${NODE_EXTRA_CA_CERTS:-}" SSL_CERT_FILE="\${SSL_CERT_FILE:-}" \\
-  TELEGRAM_BOT_TOKEN="\${bot_token:-}" NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" \\
+  TELEGRAM_BOT_TOKEN="\${bot_token:-}" NINEROUTER_UJI_KEY="\${Ninerouter_key:-}" TAVILY_API_KEY="\${TAVILY_API_KEY:-\${tavily:-}}" \\
   $BASE/openclaw-prod/node_modules/.bin/openclaw "\$@"
 EOF
 chmod +x "$R/oc.sh" "$R/oc-tg.sh"
 
 # 5. Salin alat uji lalu tulis ulang path absolut lama → path baru
-for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh; do
+for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh run-uji.sh run-uji-tg.sh; do
   sed -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g" \
       -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-prod#$BASE/openclaw-prod#g" \
       -e "s#/home/user/Skills#$REPO#g" \
@@ -75,8 +76,32 @@ for f in "$ALAT"/pilot/*; do
   sed -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g" "$f" > "$R/pilot/$(basename "$f")"
 done
 
+# 5b. Plugin pencarian web tanpa kunci (keputusan pemilik 2026-10-10 / C2)
+if [ -d "$H/extensions/duckduckgo" ] || HOME="$R/home" "$BASE/openclaw-prod/node_modules/.bin/openclaw" plugins list 2>/dev/null | grep -q duckduckgo; then
+  echo "[setup] duckduckgo plugin: sudah ada"
+else
+  echo "[setup] pasang @openclaw/duckduckgo-plugin (butuh openclaw@$OC_VERSI)"
+  HOME="$R/home" "$BASE/openclaw-prod/node_modules/.bin/openclaw" plugins install @openclaw/duckduckgo-plugin >/dev/null 2>&1 || echo "[setup] peringatan: plugin duckduckgo gagal — set tools.web.search.provider manual atau secret BRAVE/TAVILY"
+fi
+python3 - "$H/openclaw.json" <<'PY' 2>/dev/null || true
+import json, sys
+p = sys.argv[1]
+with open(p) as f:
+    c = json.load(f)
+c.setdefault("tools", {}).setdefault("web", {}).setdefault("search", {})
+c["tools"]["web"]["search"]["enabled"] = True
+if not c["tools"]["web"]["search"].get("provider"):
+    c["tools"]["web"]["search"]["provider"] = "duckduckgo"
+c.setdefault("plugins", {}).setdefault("entries", {})
+c["plugins"]["entries"].setdefault("duckduckgo", {})["enabled"] = True
+with open(p, "w") as f:
+    json.dump(c, f, indent=2)
+    f.write("\n")
+PY
+
 # 6. Cek
 "$R/oc.sh" --version >/dev/null && echo "[setup] openclaw OK: $("$R/oc.sh" --version 2>/dev/null | head -1)"
 [ -n "${Ninerouter_key:-}" ] && echo "[setup] Ninerouter_key: ADA" || echo "[setup] Ninerouter_key: KOSONG (uji sebelum/sesudah tidak bisa jalan)"
+[ -n "${TAVILY_API_KEY:-}" ] && echo "[setup] TAVILY_API_KEY: ADA" || echo "[setup] TAVILY_API_KEY: KOSONG (web_search tavily butuh secret Cloud)"
 [ -n "${bot_token:-}" ] && echo "[setup] bot_token: ADA (gateway: bash $R/gw-cek.sh)" || echo "[setup] bot_token: KOSONG (gateway tidak dijalankan)"
 echo "[setup] selesai. Alat uji: $R  (mk-home.sh, uji.sh, uji-tg.sh, gw-cek.sh, pilot/)"

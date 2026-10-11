@@ -1,0 +1,84 @@
+# Persiapan Jual Usaha — Laundry Surabaya
+
+**(1) Ringkasan situasi & asumsi**
+Info yang saya punya baru: usaha laundry, lokasi Surabaya, tujuan jual. Umur usaha, laba, aset, dan utang `[isian: belum ada]`. Saya asumsikan: jual usaha **utuh (100%)**, kerangka waktu **12 bulan**, dan utang (bila ada) **dilunasi pemilik** dari hasil jual — sebut kalau beda.
+
+**(2) Daftar periksa kesiapan** (semua status "Belum diketahui" — isi sambil jalan, bukan tebakan saya)
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan 2-3 tahun, cocok dengan mutasi rekening | Belum diketahui | Kumpulkan rekap kas/laba-rugi tahun berjalan |
+| Pemisahan uang pribadi-usaha | Belum diketahui | Cek rekening terpisah atau tidak |
+| SOP kerja inti (cuci, setrika, antar-jemput, kasir) | Belum diketahui | Tulis alur kerja tertulis |
+| Ketergantungan pada pemilik (siapa pegang pelanggan/supplier deterjen, siapa pegang kunci/kasir) | Belum diketahui | Tanya: kalau Anda absen 1 bulan, laundry tetap jalan? |
+| Aset (mesin cuci/pengering, kendaraan antar-jemput, tempat sewa/milik) | Belum diketahui | Buat daftar + bukti milik |
+| Utang/cicilan mesin atau modal | Belum diketahui | Catat sisa dan pemberi pinjaman |
+| Kontrak sewa tempat, kontrak pelanggan besar (laundry kiloan langganan, kos-kosan, hotel) | Belum diketahui | Cek sisa masa sewa & bisa dialihkan atau tidak |
+| NIB/izin usaha | Belum diketahui | Cek masih berlaku, atas nama siapa |
+| Pelanggan/pemasok kunci | Belum diketahui | Daftar 5 pelanggan & 5 pemasok terbesar |
+| Karyawan | Belum diketahui | Daftar + masa kerja + hak tertunda |
+| Merek, akun medsos/marketplace, nomor WA usaha | Belum diketahui | Cek atas nama siapa |
+
+**3-5 prioritas pembenahan (umum untuk laundry yang mau dijual):**
+1. Rapikan pembukuan 2-3 tahun terakhir dan pisahkan dari rekening pribadi.
+2. Tulis SOP operasional inti supaya tidak bergantung pada pemilik.
+3. Daftar lengkap aset (mesin, kendaraan) + utang/cicilan yang masih jalan.
+4. Pastikan NIB/izin dan kontrak sewa tempat atas nama yang jelas dan bisa dialihkan.
+
+**(3) Perkiraan rentang nilai**
+Belum bisa dihitung — butuh data laba bersih 1-3 tahun terakhir (dan kalau ada: nilai aset, utang, kelipatan laba yang lazim dipakai untuk laundry sejenis). Lihat pertanyaan di bagian (8).
+
+**(4) Pilihan struktur** (belum memutuskan, tanyakan ke notaris/konsultan pajak)
+- Jual usaha seluruhnya vs jual aset-aset saja (mesin, kendaraan) tanpa badan usaha.
+- Jual seluruhnya vs sebagian (kalau ada rencana ambil mitra/investor).
+- Bayar sekaligus vs bertahap/cicilan.
+- Masa pendampingan Anda ke pembeli baru (berapa bulan, dibayar atau tidak).
+
+**(5) Rencana transisi — 12 bulan**
+
+| Bulan | Fokus | Tugas konkret |
+|---|---|---|
+| 1 | Foto kondisi | Isi daftar periksa; kumpulkan laporan keuangan; tetapkan batas harga terendah yang Anda terima |
+| 2-3 | Rapikan | Pisahkan uang pribadi-usaha; lengkapi pembukuan; daftar aset & utang; cek izin & kontrak sewa |
+| 3-5 | Kurangi ketergantungan | Tulis SOP cuci/setrika/antar-jemput/kasir; delegasikan ke karyawan senior |
+| 4-6 | Konsultasi profesional | Bawa daftar pertanyaan ke notaris & konsultan pajak |
+| 6-9 | Cari pembeli | Kenalkan calon pembeli ke pelanggan langganan/mitra (hotel, kos); bagikan dokumen hanya setelah ada kerahasiaan |
+| 9-12 | Serah terima | Masa pendampingan; ubah nama izin/rekening/akun; umumkan ke karyawan & pelanggan |
+
+Rencana darurat: tentukan sekarang siapa pegang kunci toko, kontak supplier deterjen, dan akses rekening kalau Anda tiba-tiba tidak bisa hadir.
+
+**(6) Dokumen yang disiapkan untuk calon pembeli**
+- [ ] Rekap kas/laporan keuangan 2-3 tahun + mutasi rekening
+- [ ] Daftar aset (mesin cuci/pengering, kendaraan, kondisi, bukti milik)
+- [ ] Daftar utang/cicilan (pemberi, sisa, jatuh tempo)
+- [ ] Kontrak sewa tempat, kontrak pelanggan besar (hotel/kos/langganan kiloan)
+- [ ] NIB & izin usaha, bukti pajak yang dilaporkan
+- [ ] Daftar karyawan + kewajiban tertunda
+- [ ] SOP operasional
+- [ ] Bukti kepemilikan merek/nama usaha, akun medsos, nomor WA usaha
+- [ ] Perjanjian kerahasiaan sebelum data sensitif dibagikan (disiapkan notaris)
+
+**(7) Pertanyaan untuk notaris & konsultan pajak**
+*Notaris:*
+- Usaha laundry ini bentuknya perorangan, CV, atau PT? Apa yang harus diubah saat pindah tangan?
+- Kalau perorangan: apakah pembeli perlu NIB sendiri, dan apa yang terjadi dengan NIB saya saat ini?
+- Dokumen apa yang jadi bukti peralihan mesin/kendaraan/merek laundry?
+- **Pasangan:** apakah usaha ini termasuk harta bersama dan perlu persetujuan tertulis suami/istri untuk dijual?
+- Bagaimana kontrak sewa tempat & kontrak pelanggan besar dialihkan ke pembeli baru?
+
+*Karyawan:*
+- Apakah karyawan otomatis ikut ke pemilik baru, hak apa (masa kerja, upah) yang beralih?
+
+*Konsultan pajak:*
+- Apa kewajiban pajak saat jual usaha/aset (PPh keuntungan, dan kalau ada tanah/bangunan: PPh final)?
+- Kalau saya Pengusaha Kena Pajak (PKP): apakah penjualan mesin/aset dikenai PPN?
+- Bagaimana laporan pajak tahun-tahun lalu perlu dirapikan dulu sebelum dijual?
+
+*Penilai/perantara usaha:*
+- Kelipatan laba apa yang lazim dipakai untuk laundry sejenis di Surabaya?
+
+**(8) Catatan penutup**
+Nilainya belum bisa saya hitung tanpa angka laba — dan saya tidak akan karang kelipatan pasar; itu harus dari Anda atau perantara/penilai. Tiga hal yang saya butuhkan:
+1. Berapa **laba bersih** usaha laundry per tahun (2023-2025, yang ada saja)? Kalau Anda juga ambil gaji dari usaha, sebutkan berapa, dan kira-kira berapa gaji pengganti kalau nanti bayar orang untuk posisi Anda.
+2. Ada **aset** (mesin cuci/pengering, kendaraan, tempat milik sendiri) dan **utang/cicilan** yang masih berjalan? Berapa nilainya?
+3. Ada **kelipatan laba** yang pernah ditawarkan perantara/calon pembeli laundry sejenis di Surabaya? Kalau tidak ada, saya bisa hitung ilustrasi dengan kelipatan contoh (jelas ditandai bukan angka pasar) — mau?

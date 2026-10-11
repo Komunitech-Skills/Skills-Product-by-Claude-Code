@@ -1,0 +1,98 @@
+# Persiapan Wariskan Usaha Bengkel Cat Mobil Pak Rudi
+
+## 1. Ringkasan situasi dan asumsi
+- Usaha: bengkel cat mobil, Tangerang, berjalan 12 tahun, bentuk usaha perorangan (asumsi, karena order lewat WA pribadi — sebut jika sudah CV/PT).
+- Jalur: **diwariskan** ke anak sulung, target tahun depan → saya pakai kerangka waktu **12 bulan**.
+- Laba bersih: 2024 Rp80.000.000; 2025 Rp95.000.000 (baru 2 tahun data, bukan 3 — rentang nilai di bawah jadi kurang kuat).
+- Gaji Pak Rudi Rp6.000.000/bulan **masih dicampur dari kas usaha** — artinya belum jelas apakah angka laba bersih di atas sudah memperhitungkan gaji ini sebagai biaya atau belum. Saya hitung rentang nilai **tanpa penyesuaian gaji** dulu (asumsi konservatif); saya tanyakan kepastiannya di bagian 8.
+- Belum ada SOP tertulis; **semua order lewat WA pribadi Pak Rudi** — ini titik ketergantungan paling besar untuk diwariskan.
+- Data lain (aset, utang, sewa tempat, izin, karyawan, ahli waris lain) belum disebutkan → ditandai "Belum diketahui" di bawah, bukan ditebak.
+
+## 2. Daftar periksa kesiapan
+
+| Area | Status | Catatan |
+|---|---|---|
+| Pembukuan 2-3 tahun | Setengah | Ada angka laba 2 tahun, tapi belum jelas tercatat rapi/terpisah dari kas pribadi |
+| Pemisahan uang pribadi-usaha | **Belum** | Gaji Pak Rudi masih dicampur dari kas usaha |
+| SOP | **Belum** | Tidak ada SOP tertulis untuk alur order→pengerjaan→serah terima→tagihan |
+| Ketergantungan pemilik | **Belum** | Semua order masuk lewat WA pribadi Pak Rudi — bila nomor/pemilik tidak bisa diakses, order berhenti |
+| Aset (alat, kompresor, oven cat, kendaraan servis, tempat) | Belum diketahui | [isian] |
+| Utang/cicilan | Belum diketahui | [isian] |
+| Kontrak sewa tempat, pemasok cat/sparepart, pelanggan besar (bengkel rekanan asuransi?) | Belum diketahui | [isian] |
+| Izin (NIB, izin usaha bengkel/lingkungan bila ada limbah cat) | Belum diketahui | [isian] |
+| Pelanggan/pemasok kunci | Belum diketahui, tapi berisiko tinggi karena melekat ke WA pribadi pemilik | |
+| Karyawan | Belum diketahui | [isian] |
+| Aset tak berwujud (nama bengkel, nomor WA usaha, akun medsos/marketplace) | **Belum** | Nomor WA order = nomor pribadi, bukan nomor usaha terpisah |
+| Penerus | Setengah | Anak sulung sudah ditentukan, belum jelas apakah sudah dikenalkan ke pelanggan/pemasok |
+
+**3-5 prioritas pembenahan (12 bulan ke depan):**
+1. Pisahkan nomor WA order ke WA Bisnis/nomor khusus usaha yang bisa dialihkan ke anak sulung — ini risiko terbesar.
+2. Pisahkan gaji Pak Rudi dari kas usaha; buka rekening usaha terpisah dari rekening pribadi.
+3. Tulis SOP alur kerja inti (terima order, pengerjaan cat, QC, serah terima, penagihan) agar tidak bergantung pada ingatan/WA Pak Rudi.
+4. Rapikan pembukuan 2024-2025 (tambah data tahun sebelumnya bila ada) terpisah dari transaksi pribadi.
+5. Kumpulkan data aset, utang, status sewa tempat, dan izin (NIB) — atas nama siapa saat ini.
+
+## 3. Perkiraan rentang nilai
+*Dihitung sebagai bahan diskusi dengan notaris/keluarga, bukan untuk dijual — tetap berguna untuk menimbang kompensasi ke ahli waris lain nanti.*
+
+| Metode | Rentang | Rumus |
+|---|---|---|
+| Kelipatan laba normalisasi (ilustrasi) | Rp131.250.000 s/d Rp306.250.000 | basis laba Rp87.500.000 x kelipatan ilustrasi [1,5-3,5] |
+
+- Laba dipakai: 2024 Rp80.000.000; 2025 Rp95.000.000 → rata-rata Rp87.500.000 (basis, karena tahun terakhir lebih tinggi dari rata-rata).
+- **PERINGATAN: kelipatan 1,5–3,5 hanyalah contoh ilustrasi, bukan angka pasar.** Kelipatan wajar untuk bengkel cat mobil di Tangerang harus ditanyakan ke penilai/perantara usaha sejenis.
+- **PERINGATAN: baru 2 tahun data laba** (bukan 3) — rentang ini lebih lemah; sebaiknya tambahkan angka 2023 bila ada.
+- Belum dihitung dengan metode aset (alat, kendaraan servis, tempat) karena nilainya belum diberikan.
+- Aset, utang, pajak, BPHTB belum masuk ke angka ini.
+
+## 4. Pilihan struktur (tanpa memutuskan)
+- **Hibah vs wasiat**: Pak Rudi bisa menghibahkan usaha ke anak sulung sekarang (sambil masih hidup, bisa sambil mendampingi), atau mewasiatkan agar berlaku setelah meninggal. Konsekuensi hukum dan pajaknya berbeda → tanyakan notaris & konsultan pajak.
+- **Seluruhnya vs sebagian**: apakah seluruh usaha (termasuk tempat, bila milik sendiri) diwariskan, atau hanya operasionalnya sementara aset tertentu tetap atas nama Pak Rudi.
+- **Masa pendampingan**: Pak Rudi tetap terlibat sementara (6-12 bulan) sebelum sepenuhnya lepas tangan — disarankan karena ketergantungan WA masih tinggi.
+- Setiap pilihan: **tanyakan ke notaris/konsultan pajak** sebelum diputuskan, terutama soal hak ahli waris lain (lihat bagian 7).
+
+## 5. Rencana transisi 12 bulan
+
+| Bulan | Fokus | Tugas konkret |
+|---|---|---|
+| 1 | Foto kondisi | Isi daftar periksa di atas; kumpulkan laporan laba 2024-2025 (dan 2023 bila ada); pastikan dulu siapa saja ahli waris lain (anak-anak lain Pak Rudi) |
+| 2-3 | Rapikan | Buka rekening usaha terpisah dari pribadi; catat gaji Pak Rudi sebagai biaya resmi, bukan "dicampur"; daftar aset (kompresor, oven cat, alat semprot, kendaraan servis) dan utang; cek status sewa tempat dan NIB |
+| 3-5 | Kurangi ketergantungan | Migrasi order dari WA pribadi ke WA Bisnis usaha; tulis SOP alur order-pengerjaan-serah terima-tagihan; anak sulung mulai ikut pegang WA usaha didampingi Pak Rudi |
+| 4-6 | Konsultasi profesional | Bawa daftar pertanyaan (bagian 7) ke notaris (hibah vs wasiat, bagian ahli waris lain) dan konsultan pajak (pajak hibah/waris, SKB bila ada tanah/bangunan usaha) |
+| 6-9 | Penerus | Kenalkan anak sulung secara resmi ke pelanggan tetap dan pemasok cat/sparepart; mulai delegasikan pembelian bahan dan penagihan ke anak sulung |
+| 9-12 | Serah terima | Eksekusi jalur hukum yang dipilih bersama notaris; ubah nama di izin/rekening/akun bila diputuskan; umumkan ke karyawan (bila ada); siapkan rencana darurat |
+
+**Rencana darurat**: siapa pegang kunci bengkel, kontak pemasok cat/sparepart, dan rekening usaha bila Pak Rudi mendadak tidak bisa — catat dan simpan di tempat yang anak sulung tahu, jangan hanya di kepala Pak Rudi.
+
+## 6. Dokumen yang disiapkan
+- [ ] Rekap laba-rugi/kas 2024-2025 (idealnya tambah 2023) + mutasi rekening pendukung
+- [ ] Daftar aset bengkel (alat semprot, kompresor, oven cat, kendaraan servis) dengan bukti milik
+- [ ] Daftar utang/cicilan bila ada
+- [ ] Kontrak sewa tempat (bila sewa), kontrak pemasok cat/sparepart, kontrak pelanggan besar (mis. rekanan asuransi/dealer)
+- [ ] NIB dan izin usaha lain, status pajak yang sudah dilaporkan
+- [ ] Daftar karyawan (bila ada) dan hak yang tertunda
+- [ ] SOP alur kerja inti bengkel
+- [ ] Bukti kepemilikan nama bengkel, nomor WA usaha, akun medsos/marketplace (bila ada)
+
+## 7. Pertanyaan untuk notaris & konsultan pajak
+
+**Notaris**
+- Usaha perorangan ini: dokumen apa yang jadi bukti peralihan ke anak sulung (alat, kendaraan, nama bengkel)? Apakah penerus perlu NIB sendiri, dan apa yang terjadi dengan NIB Pak Rudi? [12]
+- **Hukum waris mana yang berlaku bagi keluarga ini** (KUH Perdata, Kompilasi Hukum Islam, atau adat)? Hibah atau wasiat yang lebih tepat?
+- **Bila Pak Rudi punya anak lain selain anak sulung**: bagaimana bagian mutlak/hak ahli waris lain (legitieme portie di KUH Perdata; batas hibah 1/3 dan hibah orang tua-ke-anak yang bisa diperhitungkan sebagai warisan di KHI)? Perlu persetujuan atau kompensasi ke mereka? [7][8]
+- **Pasangan (harta bersama)**: apakah bengkel/asetnya termasuk harta bersama, perlu persetujuan tertulis istri Pak Rudi? [6]
+- Bagaimana kontrak sewa tempat/pemasok dialihkan ke anak sulung?
+- Bila ada karyawan: apakah mereka otomatis ikut ke pemilik baru dan hak apa yang beralih? [9]
+
+**Konsultan pajak**
+- Apa konsekuensi pajak bila usaha berpindah lewat **hibah** dibanding **waris**?
+- Bila ada tanah/bangunan bengkel yang diwariskan: bagaimana mengurus **SKB waris** dan berapa **BPHTB** menurut perda Tangerang? [2][3]
+- Bagaimana laporan pajak tahun-tahun lalu perlu dirapikan sebelum peralihan resmi?
+- Apakah pajak sebaiknya ikut dipertimbangkan saat menilai "adil" untuk ahli waris lain?
+
+## 8. Catatan penutup
+Ini bukan nasihat hukum/pajak/penilaian resmi — pakai sebagai bahan diskusi dengan notaris dan konsultan pajak. Tiga hal yang saya butuhkan untuk menajamkan rencana ini:
+
+1. Apakah laba bersih Rp80 juta (2024) dan Rp95 juta (2025) **sudah dikurangi** gaji Pak Rudi Rp6 juta/bulan, atau belum? Ini menentukan angka laba "sebenarnya" dan berapa gaji pengganti yang perlu disisihkan kelak untuk anak sulung.
+2. Apakah Pak Rudi punya anak lain selain anak sulung? Kalau ya, bagian mereka perlu dipikirkan bersama notaris sebelum serah terima tahun depan.
+3. Tempat bengkel: milik sendiri atau sewa? Dan ada utang/cicilan alat-kendaraan yang belum lunas?

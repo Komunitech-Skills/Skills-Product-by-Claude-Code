@@ -1,0 +1,72 @@
+# Valuasi 30% Saham Bengkel Las
+
+## 1. Normalisasi laba (SDE-style)
+
+Laba akuntansi perlu disesuaikan dulu karena gaji yang Anda ambil (5 jt/bln) lebih rendah dari gaji pengganti pasar (6 jt/bln) — jadi ada beban tersembunyi 1 jt/bln = **12 jt/tahun** yang harus dikurangkan.
+
+| Tahun | Laba | Penyesuaian gaji | Laba disesuaikan |
+|---|---|---|---|
+| 2024 | 42 jt | −12 jt | 30 jt |
+| 2025 | 48 jt | −12 jt | 36 jt |
+| **Rata-rata** | | | **33 jt/tahun** |
+
+## 2. Nilai usaha 100% (sebelum diskon)
+
+- Kelipatan 2x → 33 jt × 2 = **66 jt**
+- Kelipatan 2,5x → 33 jt × 2,5 = **82,5 jt**
+
+## 3. Diskon 20% (risiko order masih via Anda)
+
+| | Rendah (2x) | Tinggi (2,5x) |
+|---|---|---|
+| Sebelum diskon | 66 jt | 82,5 jt |
+| Setelah diskon 20% | **52,8 jt** | **66 jt** |
+
+→ **Nilai 100% bengkel: Rp 52,8 jt – Rp 66 jt**
+
+## 4. Nilai 30% saham
+
+| | Rendah | Tinggi |
+|---|---|---|
+| 30% dari nilai usaha | 15,84 jt | 19,8 jt |
+| Setelah biaya transaksi 3% (ditanggung penjual, dipotong dari hasil) | **15,36 jt** | **19,21 jt** |
+| Jika 3% dibebankan ke pembeli (ditambah di atas harga) | 16,32 jt | 20,39 jt |
+
+### 🎯 Hasil akhir
+**30% saham bengkel las bernilai ± Rp 15,4 juta – Rp 19,2 juta** (net, biaya transaksi ditanggung Anda), atau sedikit lebih tinggi kalau biaya ditanggung mitra.
+
+> Catatan asumsi: angka ini sangat sensitif terhadap diskon key-person 20% — kalau transisi 6 bulan berhasil memindahkan sebagian relasi pelanggan ke mitra, diskon ini bisa dinegosiasikan turun (nilai naik) pada pembayaran tahap akhir.
+
+---
+
+# ✅ Checklist Transisi 6 Bulan
+
+**Bulan 1–2: Due diligence & legal dasar**
+- [ ] Review laporan keuangan 2024–2025 (laba, piutang, utang, kas)
+- [ ] Cek izin usaha (NIB), sertifikat/kontrak sewa lokasi bengkel
+- [ ] Daftar aset tetap (mesin las, alat, kendaraan) + kondisi & nilai bukunya
+- [ ] Daftar kontrak dengan pelanggan/supplier besar — identifikasi mana yang "lewat Anda"
+- [ ] NDA antara Anda dan mitra sebelum buka data detail
+
+**Bulan 2–3: Kesepakatan & dokumen hukum**
+- [ ] Perjanjian Jual Beli Saham (PPJB) — harga, jadwal pembayaran, syarat batal
+- [ ] Perubahan akta notaris & susunan pengurus/pemegang saham
+- [ ] Update di AHU (jika PT) atau akta CV
+- [ ] Klausul governance: hak suara 30%, hak veto, pembagian dividen, exit/right of first refusal
+- [ ] Klausul earn-out/penyesuaian harga jika target laba tidak tercapai saat transisi
+
+**Bulan 3–5: Transisi operasional**
+- [ ] Mulai perkenalkan mitra ke pelanggan kunci (kurangi ketergantungan order ke Anda)
+- [ ] Training mitra/staf untuk ambil alih sebagian proses order & produksi
+- [ ] Tentukan peran & kompensasi Anda ke depan (masih gaji 5 jt atau naik ke rate pengganti 6 jt?)
+- [ ] Pisahkan/rapikan sistem keuangan (rekening, pembukuan bersama, akses laporan untuk mitra)
+- [ ] Review SOP bengkel agar tidak bergantung pada satu orang
+
+**Bulan 5–6: Serah terima & evaluasi**
+- [ ] Audit keuangan pasca-transisi — cek apakah laba & order tetap stabil tanpa Anda 100%
+- [ ] Finalisasi pembayaran 30% saham sesuai termin PPJB
+- [ ] Urus pajak atas pengalihan saham (PPh final/bea materai) & biaya notaris
+- [ ] Evaluasi bersama: apakah diskon 20% masih relevan atau bisa direvisi untuk transaksi/putaran berikutnya
+- [ ] Dokumentasi akhir — update akta, NPWP/NIB jika ada perubahan kepemilikan
+
+Mau saya buatkan juga versi spreadsheet (skenario 2x/2,5x + sensitivitas diskon) biar gampang dipakai negosiasi dengan mitra?

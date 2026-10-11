@@ -1,7 +1,11 @@
 # Kirim pesan satu per satu; tunggu sesi topik selesai sebelum kirim berikutnya. Maks pesan = argumen.
-import os,json,sys,time,datetime,subprocess,sqlite3
+import json, os, sys, time, datetime, subprocess, sqlite3
 from tg import call
-H=os.environ["SCRATCHPAD"]+"/openclaw-real/home/.openclaw/agents/main/agent/openclaw-agent.sqlite"
+
+_default_db = os.path.expanduser(
+    "~/komunitech-uji/openclaw-real/home/.openclaw/agents/main/agent/openclaw-agent.sqlite"
+)
+H = os.environ.get("OPENCLAW_AGENT_DB", _default_db)
 def st(t):
     c=sqlite3.connect(f"file:{H}?mode=ro",uri=True)
     r=c.execute("select status,updated_at from session_nodes where session_key like ?",(f"%topic:{t}",)).fetchone(); c.close(); return r

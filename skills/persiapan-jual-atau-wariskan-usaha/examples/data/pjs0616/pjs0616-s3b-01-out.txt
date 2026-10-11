@@ -1,0 +1,32 @@
+Belum ada catatan soal usaha laundry ini di memory saya, jadi saya butuh beberapa data dulu biar estimasi nilainya nggak ngasal. Nilai usaha laundry biasanya dihitung pakai kombinasi beberapa pendekatan ini:
+
+**1. Aset (asset-based)**
+- Mesin cuci/pengering (merk, kapasitas, tahun, jumlah unit, kondisi)
+- Peralatan pendukung (setrika uap, rak, meja lipat, timbangan, dll)
+- Inventaris/stok (deterjen, plastik packing, dll)
+- Kendaraan antar-jemput kalau ada
+- Sewa tempat: milik sendiri atau sewa? Sisa masa sewa berapa lama?
+
+**2. Earnings multiple (paling umum dipakai buat usaha kecil-menengah)**
+- Omzet bulanan rata-rata (3-6 bulan terakhir)
+- Laba bersih bulanan setelah semua biaya (sewa, listrik, gaji, deterjen, maintenance)
+- Biasanya usaha laundry dijual di kisaran **1,5x - 3x laba bersih tahunan**, tergantung:
+  - Sudah berapa lama beroperasi & stabil
+  - Punya pelanggan langganan/kontrak (hotel, kos, apartemen) atau cuma walk-in
+  - Lokasi strategis dan daya saing di sekitar
+  - Legalitas lengkap atau tidak (NIB, izin usaha)
+
+**3. Goodwill/brand**
+- Nama sudah dikenal di area Surabaya mana? Ada review Google/rating?
+- Jumlah pelanggan tetap/berlangganan
+
+Supaya saya bisa kasih angka estimasi yang masuk akal, tolong share:
+1. Lokasi persis di Surabaya (daerah mana)
+2. Sudah berjalan berapa tahun
+3. Omzet & laba bersih rata-rata per bulan
+4. Jumlah dan kondisi mesin (cuci + dryer)
+5. Status tempat (sewa/milik sendiri)
+6. Jumlah karyawan
+7. Tipe pelanggan (eceran/kiloan harian vs kontrak hotel-kos)
+
+Kalau datanya lengkap, saya bisa bantu hitung estimasi range harga jualnya.

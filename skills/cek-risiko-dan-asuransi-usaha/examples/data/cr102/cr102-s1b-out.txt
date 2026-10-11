@@ -1,0 +1,34 @@
+Oke, saya breakdown risiko-risiko yang ada di bengkel situ dulu, baru rekomendasi asuransinya — biar nggak asal beli produk yang nggak relevan.
+
+**Risiko yang kelihatan dari cerita situ:**
+1. Isi kios (alat + sparepart) — potensi rugi 120jt kalau kebakaran
+2. Motor pelanggan yang nginep 3-5 unit — ini aset milik ORANG LAIN yang dititipkan ke situ
+3. 4 orang kerja fisik dengan alat (mekanik) — risiko kecelakaan kerja
+4. Kompresor masih dicicil — ada kewajiban ke pihak finance
+5. Kas 12jt di tempat — risiko pencurian
+6. Kalau kebakaran, bengkel tutup → gaji 3 mekanik (7,5jt) + sewa (2jt) + listrik (800rb) tetap jalan tanpa ada pemasukan
+
+**Prioritas asuransi:**
+
+**1. Asuransi Kebakaran / Property All Risk — untuk ISI kios, bukan bangunan**
+Karena nyewa, bangunan biasanya tanggung jawab pemilik kios (cek kontrak sewa, kadang ada klausul siapa yang asuransi apa). Yang situ asuransikan: alat, sparepart, stok, kompresor. Nilai pertanggungan minimal 120jt sesuai estimasi rugi situ sendiri. Ini yang paling wajib ada.
+
+**2. Bailee's Liability / Garage Keepers Liability (Tanggung Gugat Bengkel) — INI YANG SERING KELUPAAN**
+Motor pelanggan yang nginep itu bukan aset situ — tapi kalau kebakaran/kecurian/rusak saat di tangan situ, situ yang nanggung ke pelanggan. Polis kebakaran biasa TIDAK otomatis cover motor titipan orang lain. Cari produk "asuransi bengkel" / "motor trade package" / tanggung gugat pihak ketiga ke asuransi umum (Sinarmas, Astra, ABDA, Jasindo biasa punya produk ini). Ini risiko reputasi + finansial paling bahaya buat bengkel yang nerima titipan kendaraan.
+
+**3. BPJS Ketenagakerjaan (minimal JKK - Jaminan Kecelakaan Kerja)**
+Wajib secara hukum kalau punya karyawan, dan kerja mekanik termasuk risiko tinggi (luka bakar, kena alat berat, dll). Murah (sekitar 1% dari upah), dan kalau belum didaftarkan, ini PR pertama yang harus dibereskan — bukan cuma soal proteksi tapi juga kewajiban legal.
+
+**4. Asuransi untuk kompresor yang dicicil**
+Cek ke pihak leasing/finance — biasanya alat yang masih dicicil WAJIB diasuransikan all risk selama masa cicilan (kadang sudah include di cicilan, kadang terpisah). Kalau belum, tanyakan ke mereka langsung, karena ini bisa jadi klausul kontrak yang sudah mengikat.
+
+**5. (Opsional tapi disarankan) Business Interruption / Loss of Profit**
+Kalau kebakaran bikin bengkel tutup 2-3 bulan buat perbaikan, biaya tetap (gaji + sewa + listrik ≈ 10,3jt/bln) tetap jalan sementara nggak ada pemasukan. Kas 12jt situ bakal abis dalam sebulan lebih. Produk ini nutup biaya operasional selama masa pemulihan.
+
+**Yang nggak terlalu perlu:**
+- Asuransi kas 12jt — nominalnya kecil, biasanya bisa cuma jadi rider murah di polis property (cash in safe), nggak perlu polis terpisah.
+- Asuransi bangunan kios — itu tanggung jawab pemilik kios, kecuali kontrak sewa bilang lain.
+
+**Urutan kalau budget terbatas:** BPJS Ketenagakerjaan dulu (wajib & murah) → Bailee's Liability (risiko terbesar yang belum ke-cover) → Property All Risk isi kios → baru Business Interruption kalau ada sisa budget.
+
+Mau saya bantu carikan kontak/perbandingan produk asuransi umum yang ada paket "bengkel/garage insurance" di area Bandung/Padalarang?

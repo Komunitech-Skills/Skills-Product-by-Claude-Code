@@ -1,0 +1,39 @@
+Asumsi: bengkel motor sewa kios di Padalarang, 4 orang (Anda kepala mekanik + 3 mekanik), motor pelanggan sering nginep 3-5 unit.
+
+**Tabel risiko**
+
+| No | Risiko | Kemungkinan | Dampak | Skor/Tingkat | Langkah murah | Perlu asuransi? |
+|---|---|---|---|---|---|---|
+| 1 | Kebakaran/korsleting listrik di kios | 3 | 4 | 12/TINGGI | APAR + cek tanggal isi ulang, rapikan colokan/kabel kompresor, jalur keluar bebas, cek instalasi listrik berkala | Ya, pertimbangkan |
+| 2 | Motor pelanggan titipan rusak/hilang/terbakar saat nginep (3-5 unit) | 3 | 4 | 12/TINGGI | Tanda terima + foto kondisi motor saat masuk, area parkir terkunci/CCTV, batas waktu pengambilan | Ya, pertimbangkan |
+| 3 | Kesalahan servis bikin motor pelanggan tambah rusak/pelanggan komplain | 3 | 3 | 9/SEDANG | SOP servis tertulis, catat pekerjaan & sparepart yang dipasang, test ride sebelum serah terima | Tidak perlu (tapi tanya agen, lihat bawah) |
+| 4 | Mekanik cedera kerja (alat berat, kompresor, dongkrak) | 3 | 3 | 9/SEDANG | K3 dasar: sarung tangan, kacamata, SOP angkat berat, cek kondisi dongkrak/kompresor | **BPJS**: kewajiban pemberi kerja, cek aturan terbaru (JKK kecelakaan kerja; BPJS Kesehatan untuk sakit) |
+| 5 | Anda (kepala mekanik) sakit/berhalangan, tidak ada cadangan | 2 | 4 | 8/SEDANG | Latih 1 mekanik senior jadi cadangan, tulis SOP kerja, kontak darurat | Tidak ada asuransi umum; pakai mitigasi lain |
+| 6 | Kompresor rusak mendadak (masih dicicil) | 2 | 3 | 6/SEDANG | Servis berkala, catat jadwal perawatan, cek stabilizer listrik | Tidak perlu |
+| 7 | Pencurian sparepart/uang kas/motor pelanggan | 2 | 3 | 6/SEDANG | CCTV, kunci ganda, setor kas harian, hitung stok sparepart berkala | Tidak perlu |
+
+**Dana darurat**
+- Biaya tetap/bulan: sewa 2jt + listrik 800rb + cicilan kompresor 600rb + gaji 3 mekanik 7,5jt = **Rp10.900.000**
+- Target (3 bulan): **Rp32.700.000**
+- Kas sekarang: Rp12.000.000 (baru cukup ~1,1 bulan biaya tetap)
+- Kekurangan: **Rp20.700.000**
+- Kalau mau dicicil 6 bulan: **Rp3.450.000/bulan**
+
+**Jenis perlindungan umum yang layak dicek** (nama generik, tanpa merek — isi beda per polis):
+- **Asuransi kebakaran/properti**: bangunan/isi kios, alat, sparepart dari kebakaran; perluasan banjir/kerusuhan dicek terpisah. Dengan taksiran kerugian kebakaran Rp120jt vs dana darurat Rp32,7jt, ini yang paling masuk akal dipertimbangkan.
+- **Barang titipan pelanggan (dalam penguasaan usaha)**: untuk motor yang nginep — bukan otomatis ikut polis kebakaran milik Anda sendiri karena motornya bukan aset Anda. Tanya agen produk khusus ini.
+- **Tanggung gugat umum / tanggung gugat jasa bengkel**: untuk klaim pelanggan akibat kesalahan servis — tanya agen apakah ini masuk tanggung gugat umum biasa atau perlu produk terpisah untuk bengkel.
+- **Kerusakan mesin (machinery breakdown)**: untuk kompresor yang masih dicicil, kalau rusak dari dalam (bukan aus wajar).
+- **Program jaminan sosial (BPJS)**: BPJS Kesehatan untuk 3 mekanik + Anda; BPJS Ketenagakerjaan (JKK, JKM, JHT, minimal untuk usaha mikro/kecil) — cek kewajiban terbaru di sumber resmi BPJS.
+
+**Prioritas 3 langkah minggu ini**
+1. Pasang APAR + rapikan instalasi listrik kompresor (risiko tertinggi, termurah dicegah).
+2. Mulai tanda terima + foto kondisi tiap motor pelanggan yang nginep — ini melindungi Anda bahkan sebelum ada polis.
+3. Cek status BPJS 3 mekanik + diri Anda; daftarkan kalau belum.
+
+Disclaimer: ini bukan nasihat asuransi/keuangan/hukum — hanya pemetaan awam untuk bahan diskusi dengan agen asuransi terdaftar dan perusahaan berizin OJK (minta nomor registrasi agen, cek ke OJK 157 kalau ragu). Aturan BPJS dan cakupan polis berubah-ubah, cek sumber resmi per hari ini (2026-10-10).
+
+Supaya lebih tajam:
+1. Taksiran Rp120jt itu untuk alat+sparepart saja — nilai bangunan kios ikut atau tidak (punya pemilik kios)?
+2. Rata-rata nilai motor pelanggan yang nginep per unit, biar tahu skala pertanggungan barang titipan yang dibutuhkan?
+3. Mau saya buatkan draf tanda terima + checklist kondisi motor masuk-keluar untuk dipakai besok?
