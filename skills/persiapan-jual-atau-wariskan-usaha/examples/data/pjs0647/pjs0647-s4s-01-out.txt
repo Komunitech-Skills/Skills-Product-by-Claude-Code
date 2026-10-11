@@ -1,0 +1,94 @@
+Dua hal dulu yang perlu saya luruskan:
+
+- **Akta jual beli** — ini bukan wewenang saya; harus dibuat **notaris/PPAT**, karena bentuknya tergantung jenis usaha (perorangan/CV/PT) dan asetnya. Yang bisa saya siapkan: ringkasan keinginan Anda, daftar aset-utang-dokumen, dan daftar pertanyaan siap bawa ke notaris (lihat bagian 7 di bawah).
+- **"Pastikan laku Rp500 juta bulan depan"** — tidak ada yang bisa menjamin harga atau kecepatan laku toko; itu tergantung pasar dan calon pembeli nyata, bukan sesuatu yang bisa dipaksakan. Satu bulan juga sangat ketat untuk due diligence + proses notaris — jalur yang realistis biasanya 3-12 bulan, kecuali sudah ada calon pembeli konkret. **Padanan:** saya hitung rentang nilai begitu ada datanya, dan susun rencana transisi secepat mungkin yang masih masuk akal.
+
+Anda belum kasih data apa pun soal tokonya (jenis, laba, aset, utang, lokasi), jadi saya kerjakan bagian yang bisa dengan asumsi, dan tutup dengan pertanyaan.
+
+---
+
+# Persiapan Jual Usaha [isian: nama toko]
+
+## 1) Ringkasan situasi dan asumsi
+- Tujuan: jual (sesuai permintaan Anda)
+- Target harga yang disebut: Rp500.000.000 — belum ada data laba/aset pendukung, jadi belum bisa dinilai realistis atau tidak
+- Kerangka waktu yang disebut: 1 bulan — sangat ketat untuk urusan legal; saya pakai asumsi minimum **3 bulan** sebagai kerangka kerja realistis, kecuali Anda sudah punya calon pembeli konkret
+- Jenis toko, umur usaha, lokasi, status sewa/milik, laba, aset, utang: `[isian: belum disebut]`
+
+## 2) Daftar periksa kesiapan
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan 2-3 tahun | Belum diketahui | Kumpulkan rekap kas + mutasi rekening |
+| Pemisahan uang pribadi-usaha | Belum diketahui | Pisahkan rekening bila belum |
+| SOP kerja inti | Belum diketahui | Tulis alur kerja utama agar toko tidak bergantung pada Anda |
+| Ketergantungan pada pemilik | Belum diketahui | Cek: toko tetap jalan bila Anda absen 1 bulan? |
+| Aset (alat, stok, kendaraan, tempat) | Belum diketahui | Buat daftar + bukti milik |
+| Utang/cicilan/kasbon | Belum diketahui | Catat sisa dan pemberi pinjaman |
+| Kontrak sewa/pemasok/pelanggan besar | Belum diketahui | Cek sisa masa sewa, boleh dialihkan ke pembeli baru? |
+| Izin (NIB dll.) | Belum diketahui | Cek masih berlaku, atas nama siapa |
+| Pelanggan/pemasok kunci | Belum diketahui | Daftar 5 pelanggan + 5 pemasok terpenting |
+| Karyawan | Belum diketahui | Daftar karyawan + hak yang tertunda |
+| Merek/akun online/no. WA usaha | Belum diketahui | Pastikan atas nama usaha, bukan pribadi |
+| Calon pembeli | Belum diketahui | Sudah ada yang serius, atau masih mencari? |
+
+**Prioritas pembenahan (3-5), berlaku umum untuk toko yang mau dijual cepat:**
+1. Rapikan pembukuan 2-3 tahun terakhir dan pisahkan dari uang pribadi — ini paling dilihat calon pembeli.
+2. Buat daftar aset + bukti milik dan daftar utang.
+3. Cek status NIB/izin dan kontrak sewa tempat (boleh dialihkan ke pembeli baru atau tidak).
+4. Tulis SOP kerja inti agar toko tidak "melekat" pada Anda pribadi.
+
+## 3) Perkiraan rentang nilai
+**Belum bisa dihitung.** Saya butuh minimal **laba bersih 1-3 tahun terakhir** (idealnya juga nilai aset + utang) untuk menghitung rentang. Rp500 juta bisa jadi realistis atau jauh dari realistis — tergantung angka-angka itu, bukan sesuatu yang bisa saya pastikan tanpa data.
+
+## 4) Pilihan struktur (belum diputuskan, bahan diskusi dengan notaris/konsultan pajak)
+- Jual seluruh usaha vs. jual aset-aset tertentu saja
+- Jual badan usaha (bila CV/PT) vs. jual aset usaha perorangan
+- Bayar sekaligus vs. bertahap
+- Perlu masa pendampingan Anda setelah serah terima atau tidak
+
+## 5) Rencana transisi (dikondensasikan — timeline 1 bulan dari Anda sangat ketat)
+
+| Minggu | Fokus | Tugas konkret | PIC |
+|---|---|---|---|
+| 1 | Foto kondisi | Rapikan pembukuan, daftar aset & utang, tetapkan batas harga terendah yang Anda terima | Anda |
+| 1-2 | Legal check | Cek izin, kontrak sewa, siapkan daftar pertanyaan ke notaris (bagian 7) | Anda |
+| 2 | Konsultasi profesional | Temui notaris + konsultan pajak dengan daftar pertanyaan di bawah | Anda |
+| 2-4+ | Cari/nego pembeli | Bila belum ada calon pembeli, ini tahap yang paling tidak bisa dipercepat | Anda |
+| ~4-12 | Serah terima (bila deal) | Akta oleh notaris, pengalihan izin/kontrak | Anda + notaris |
+
+Catatan jujur: tahap "cari/nego pembeli" paling menentukan kecepatan, dan itu di luar kendali saya maupun Anda. Bila sudah ada calon pembeli konkret, 1 bulan masih mungkin untuk eksekusi legalnya saja; bila belum, realistisnya 3-12 bulan total.
+
+## 6) Dokumen yang disiapkan
+- [ ] Rekap kas/laporan keuangan 2-3 tahun + mutasi rekening
+- [ ] Daftar aset (nama, jumlah, kondisi, bukti milik) dan stok
+- [ ] Daftar utang dan kewajiban
+- [ ] Kontrak sewa tempat, pemasok, pelanggan besar
+- [ ] NIB dan izin usaha lain
+- [ ] Daftar karyawan dan kewajiban tertunda
+- [ ] SOP kerja inti
+- [ ] Bukti kepemilikan merek/akun online/no. WA usaha
+- [ ] Perjanjian kerahasiaan sebelum data sensitif dibagikan ke calon pembeli (minta notaris siapkan)
+
+## 7) Pertanyaan untuk notaris & konsultan pajak
+
+**Notaris/PPAT:**
+- Bentuk usaha saya (perorangan/CV/PT): apa yang harus diubah saat pindah tangan?
+- Bagaimana pengalihan NIB dan izin usaha?
+- Dokumen apa jadi bukti peralihan aset (tempat, alat, merek)?
+- Bagaimana perjanjian kerahasiaan dan masa pendampingan dibuat?
+- Berapa lama proses akta biasanya — realistis dalam 1 bulan atau tidak untuk kasus saya?
+- Bila tokonya milik bersama suami-istri (harta bersama): perlu persetujuan tertulis pasangan untuk menjual?
+
+**Konsultan pajak:**
+- Apa kewajiban pajak saat menjual usaha/aset ini (PPh, BPHTB bila ada tanah/bangunan, PPN bila PKP)?
+- Apakah pajak perlu masuk hitungan sebelum menetapkan harga terendah?
+- Apakah laporan pajak tahun-tahun lalu perlu dirapikan dulu?
+
+## 8) Catatan penutup + pertanyaan
+
+Target Rp500 juta dalam 1 bulan bisa tercapai atau tidak — saya tidak bisa menjaminnya, dan belum bisa menghitung rentang nilai tanpa data. Tiga hal ini akan langsung membuat jawaban saya jauh lebih konkret:
+
+1. Jenis toko dan laba bersih per tahun untuk 1-3 tahun terakhir (kira-kira)?
+2. Apa sudah ada calon pembeli konkret, atau masih mencari?
+3. Nilai aset (stok, alat, tempat bila milik sendiri) dan utang yang masih berjalan, kira-kira berapa?

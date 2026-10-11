@@ -1,0 +1,42 @@
+Beberapa hal yang langsung kelihatan jadi titik rawan: semua order nempel di WA pribadi Bapak (single point of failure — kalau nomor hilang/Bapak sakit, order mandek semua), gaji masih campur kas usaha (jadi gak jelas berapa sebenarnya biaya operasional vs profit riil), dan belum ada SOP (anak sulung bakal pegang bisnis tanpa pegangan proses yang jelas). Laba naik dari 80jt → 95jt itu bagus, tapi kalau dasarnya gak rapi, kenaikan itu rawan "menguap" pas transisi.
+
+Berikut roadmap 12 bulan, saya bagi per kuartal supaya realistis dikerjakan sambil jalan:
+
+## Q1 (Bulan 1–3): Rapikan Fondasi Keuangan & Legalitas
+
+**Pisahkan keuangan pribadi dan usaha** — ini prioritas nomor satu.
+- Buka rekening bank khusus usaha (kalau belum ada), semua transaksi masuk-keluar lewat sini.
+- Tetapkan gaji Bapak (dan Anda kalau Anda karyawan) sebagai angka tetap bulanan, dicatat sebagai beban usaha — bukan "ambil dari kas pas butuh".
+- Mulai pembukuan sederhana: pakai BukuWarung/Buku Kas Kasir/Excel, catat omzet, biaya bahan (cat, dempul, thinner), gaji, sewa, listrik. Target: ada laporan laba-rugi bulanan yang bisa dibaca orang lain (termasuk anak sulung), bukan cuma di kepala Bapak.
+
+**Cek legalitas usaha.**
+- Status sekarang usaha perorangan (UD) atau belum berbadan hukum sama sekali? Kalau mau diwariskan dengan rapi, pertimbangkan naik ke CV atau PT — ini juga ngaruh ke cara "pewarisan"-nya: hibah saham/kepemilikan CV jauh lebih bersih secara hukum dibanding warisan usaha perorangan yang campur sama harta pribadi.
+- Pastikan NIB (OSS) sudah ada dan nama usahanya jelas.
+- Bengkel cat biasanya ada limbah B3 (sisa cat, thinner) — cek izin lingkungan (UKL-UPL) kalau belum punya, ini sering jadi masalah pas due diligence atau renewal izin.
+
+## Q2 (Bulan 4–6): Bangun SOP & Mulai Lepas dari WA Pribadi
+
+- **Bikin nomor WhatsApp Business khusus usaha**, pisah dari nomor pribadi Bapak. Pakai fitur multi-device/multi-admin biar anak sulung (dan Anda) bisa akses dan balas order tanpa HP Bapak jadi bottleneck.
+- Dokumentasikan SOP minimal untuk: terima order → estimasi harga → proses pengerjaan (tahapan cat per jenis kerusakan) → QC sebelum serah terima → komplain/garansi. Gak perlu rumit, cukup 1-2 halaman per proses, yang penting tertulis dan bisa diikuti orang baru.
+- Buat daftar harga standar (per jenis pekerjaan: spot repair, full body, dll) biar gak nego personal tiap kali — ini juga bikin margin lebih kelihatan.
+- Daftar supplier (toko cat, bahan) beserta kontak dan histori harga — biar gak cuma Bapak yang tahu "beli di mana, harga berapa".
+
+## Q3 (Bulan 7–9): Libatkan Anak Sulung di Operasional Riil
+
+- Anak sulung mulai pegang bagian tertentu secara nyata — bukan cuma "nanti pas warisan baru belajar". Misalnya pegang pricing & customer service dulu, baru masuk ke pengelolaan tukang dan keuangan.
+- Mulai delegasikan keputusan kecil (approve harga, jadwal kerja) ke anak sulung, Bapak di belakang sebagai supervisi.
+- **Siapkan konsultasi ke notaris + konsultan pajak** soal skema pengalihan terbaik: hibah langsung (ada ketentuan PPh final yang bisa dibebaskan untuk hibah garis keturunan lurus, dengan syarat tertentu), atau skema CV/PT dengan pengalihan saham. Ini penting dilakukan jauh-jauh hari, bukan mepet tahun depan.
+- Kalau ada anak lain selain anak sulung, ini saatnya bicarakan terbuka di keluarga soal kenapa bengkel ke anak sulung — buat kesepakatan tertulis sederhana biar gak jadi sengketa warisan di kemudian hari (terutama kalau ada aset tanah/bangunan bengkel yang ikut-ikutan dalam skema waris).
+
+## Q4 (Bulan 10–12): Trial Handover & Serah Terima Resmi
+
+- 2-3 bulan terakhir, anak sulung pegang kendali penuh operasional harian (order, tukang, kas) sementara Bapak jadi penasihat — supaya ketahuan gap-nya sebelum resmi serah terima, bukan setelah.
+- Finalisasi dokumen legal: akta hibah/pengalihan di notaris, update NIB dan izin usaha ke nama/struktur baru.
+- Umumkan ke pelanggan tetap dan supplier soal transisi kepemimpinan — supaya kepercayaan tetap terjaga, bukan tiba-tiba ganti orang yang balas WA.
+- Review ulang laporan keuangan setahun terakhir bareng anak sulung sebagai "serah terima resmi" — biar dia paham betul kondisi usaha yang dia pegang, bukan cuma warisan di atas kertas.
+
+---
+
+Yang paling mendesak buat dimulai minggu ini: **pisahkan rekening dan mulai catat keuangan**, dan **mulai pakai nomor WA bisnis terpisah**. Dua ini fondasi semua langkah lain — kalau ditunda, 12 bulan bakal kerasa mepet pas bagian legal/pajak di Q3.
+
+Kalau mau, saya bisa bantu susun template SOP order & pembukuan sederhana yang bisa langsung dipakai minggu ini — mau saya buatkan?

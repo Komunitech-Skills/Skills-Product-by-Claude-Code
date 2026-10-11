@@ -10,7 +10,7 @@ set -euo pipefail
 
 REPO="${REPO:-$(cd "$(dirname "$0")/../.." && pwd)}"
 BASE="${BASE:-$HOME/komunitech-uji}"          # tempat instalasi; di Cursor VM: /workspace/../komunitech-uji atau $HOME
-OC_VERSI="${OC_VERSI:-2026.10.1}"
+OC_VERSI="${OC_VERSI:-2026.9.9}"
 NODE_VERSI="${NODE_VERSI:-v24.21.0}"
 ALAT="$REPO/koordinasi/alat-uji"
 

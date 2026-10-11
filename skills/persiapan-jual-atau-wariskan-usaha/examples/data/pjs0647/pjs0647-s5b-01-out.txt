@@ -1,0 +1,82 @@
+# Estimasi Nilai 30% Saham Bengkel Las
+
+## Asumsi yang saya pakai
+- "Laba 2024/2025" = laba bersih usaha (belum termasuk normalisasi gaji pemilik)
+- Normalisasi earnings: profit + gaji yang Anda ambil sekarang − gaji pengganti (market rate), karena setelah transaksi usaha perlu bayar pengganti Anda sesuai harga pasar
+- Diskon 20% untuk risiko ketergantungan order ke Anda (key-person risk)
+- Biaya transaksi 3% dikurangkan dari nilai yang diterima penjual
+- Kelipatan diterapkan ke laba yang sudah dinormalisasi, bukan laba kotor
+
+## Langkah Perhitungan
+
+| Langkah | 2024 | 2025 |
+|---|---|---|
+| Laba bersih | 42 jt | 48 jt |
+| + Gaji yang diambil (5 jt×12) | +60 jt | +60 jt |
+| − Gaji pengganti (6 jt×12) | −72 jt | −72 jt |
+| **Laba normalisasi** | **30 jt** | **36 jt** |
+
+Rata-rata laba normalisasi 2 tahun = **(30+36)/2 = 33 juta/tahun**
+
+**Nilai usaha 100% (sebelum diskon):**
+- Low (×2): 33 × 2 = **66 juta**
+- High (×2,5): 33 × 2,5 = **82,5 juta**
+
+**Setelah diskon key-person 20%:**
+- Low: 66 × 0,8 = **52,8 juta**
+- High: 82,5 × 0,8 = **66 juta**
+
+→ **Nilai usaha 100% (final): Rp 52,8 jt – Rp 66 jt**
+
+**Nilai 30% saham (sebelum biaya transaksi):**
+- Low: 52,8 × 30% = 15,84 jt
+- High: 66 × 30% = 19,8 jt
+
+**Setelah biaya transaksi 3%:**
+- Low: 15,84 × 0,97 ≈ **Rp 15,36 juta**
+- High: 19,8 × 0,97 ≈ **Rp 19,21 juta**
+
+## 🎯 Hasil: 30% saham ≈ **Rp 15,4 juta – Rp 19,2 juta**
+
+**Sensitivitas** — kalau pakai laba 2025 saja (bukan rata-rata, karena tren naik & transisi hanya 6 bulan ke depan):
+- Laba normalisasi 2025 = 36 jt → nilai usaha 100%: 57,6–72 jt → 30% saham setelah biaya transaksi: **Rp 16,8 jt – Rp 21,0 jt**
+
+**Range praktis yang masuk akal untuk negosiasi: Rp 15 juta – Rp 21 juta** (titik tengah ~Rp 17-18 juta), tergantung dasar laba mana yang disepakati dan hasil due diligence.
+
+---
+
+## Checklist Transaksi
+
+**1. Legalitas**
+- [ ] Cek bentuk badan usaha (CV/PT), akta pendirian, NIB/SIUP, izin lingkungan/K3
+- [ ] Siapkan/perbarui Perjanjian Jual Beli Saham (SPA)
+- [ ] Buat Perjanjian Pemegang Saham (SHA): hak suara, dividen, exit clause, hak minoritas 30%
+- [ ] Due diligence legal: sengketa, kontrak kerja karyawan, sewa tempat, kepemilikan aset/mesin
+
+**2. Keuangan & Pajak**
+- [ ] Siapkan laporan keuangan 2024–2025 (idealnya direview akuntan)
+- [ ] Cek kepatuhan pajak: SPT tahunan, PPN, PPh
+- [ ] Daftar aset tetap (mesin las, alat, kendaraan) + nilai buku vs pasar
+- [ ] Cek piutang/utang usaha dan backlog order berjalan
+- [ ] Hitung PPh atas capital gain penjualan saham, siapa yang menanggung
+
+**3. Struktur Deal**
+- [ ] Sepakati skema pembayaran: lump sum vs bertahap (dikaitkan milestone transisi)
+- [ ] Pertimbangkan escrow/holdback 10-20% dicairkan setelah transisi 6 bulan sukses
+- [ ] Klausul penyesuaian harga (price adjustment) jika order turun signifikan pasca-transisi
+- [ ] Tentukan siapa menanggung biaya transaksi 3% (notaris, meterai, due diligence, dll)
+
+**4. Transisi 6 Bulan**
+- [ ] Buat SOP operasional tertulis (proses order, produksi, QC, pengiriman)
+- [ ] Rencana transfer relasi klien & supplier bertahap (bulan 1-2: perkenalan, bulan 3-4: handover, bulan 5-6: supervisi)
+- [ ] Training pengganti/mitra untuk ambil alih akuisisi order
+- [ ] Tetapkan KPI transisi (target order intake tidak turun >X% dari baseline)
+- [ ] Klausul noncompete & masa advisory Anda pasca-transisi (apakah tetap jadi penasihat berbayar)
+
+**5. Governance Pasca-Investasi**
+- [ ] Komposisi direksi/pengurus baru
+- [ ] Hak informasi & akses laporan keuangan untuk mitra 30%
+- [ ] Kebijakan dividen & reinvestasi laba
+- [ ] Mekanisme jika salah satu pihak mau exit/jual saham lagi (right of first refusal)
+
+Mau saya bantu susun draft term sheet singkat berdasarkan angka ini, atau fokus dulu ke salah satu bagian checklist?
