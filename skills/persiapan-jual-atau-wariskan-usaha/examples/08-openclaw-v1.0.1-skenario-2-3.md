@@ -44,4 +44,4 @@ Melengkapi subset T1+S4 di `00-openclaw-v1.0.1-sebelum-sesudah.md`.
 
 Acuan LULUS: sesudah ≥ 8 dan selisih ≥ 1,5 — **terpenuhi** (rata-rata sesudah 8,875; selisih +2,875).
 
-Skenario 04 (jebakan akta) & 05 (30% saham) tetap mengacu uji v1.0.0 (`00-openclaw-sebelum-sesudah.md`); belum diulang OpenClaw pada v1.0.1 di run ini.
+Skenario 04–05 diulang OpenClaw v1.0.1 di run 2026-10-11 — lihat `09-openclaw-v1.0.1-skenario-4-5.md`.

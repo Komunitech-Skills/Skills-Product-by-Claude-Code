@@ -4,22 +4,43 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun A** — merge ke default: `cursor/iterasi-otomatis-akun-c-0615` (lanjutan 0545 + uji persiapan-jual S2–S3), plus `cursor/c1-gelombang-11b-8b42` bila belum; update `catalog.csv` / promosi.
-2. **Akun C** — pantau keputusan pemilik di thread 242; gelombang Telegram 12 hanya setelah persetujuan (S5).
-3. **Opsional Akun C** — uji OC v1.0.1 skenario 04–05 (jebakan & 30% saham) bila butuh bukti penuh 5 skenario.
+1. **Akun A** — merge ke default: branch gabungan Akun C (`cursor/iterasi-otomatis-akun-c-accf` / `0615`), plus `cursor/web-search-cari-prospek-8b42`, `cursor/c1-gelombang-11b-8b42`; update `catalog.csv` / promosi.
+2. **Akun C** — pantau keputusan pemilik di thread 242; gelombang Telegram 12 hanya setelah persetujuan (S5). Antrian C1–C5 **selesai** — run berikutnya docs/koordinasi kecil atau tunggu tugas baru di papan.
 
-## Format Telegram (thread 242)
+## Format Telegram (thread 242) — wajib multiline
 
 ```
-@nikioktarian [Akun C auto] <skill> v<versi> | <sebelum>→<sesudah> | <VERDIK> | <pembeda 1 kalimat> | branch <nama> @ <hash7> | berikutnya: …
+@nikioktarian
+[Akun C auto]
+
+Waktu UTC: …
+Branch: …
+Commit: …
+
+Progress
+Antrian selesai/total: … (…%)
+Selesai: …
+Sedang: …
+Tersisa: …
+Skala: …/100
+
+Hasil uji
+Skill: …
+Skor tanpa→dengan: …
+Verdik: …
+Pembeda: …
+
+Berikutnya
+- …
 ```
 
-Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.py sendMessage chat_id=-1004407409583 message_thread_id=242 text="..."`
+Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=-1004407409583 message_thread_id=242 text="$(cat <<'EOF' … EOF)"` — **dilarang** satu baris dengan `|` atau `;`.`
 
 ## Log run
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-11 ~06:47 | `cursor/iterasi-otomatis-akun-c-accf` | (setelah push) | persiapan-jual v1.0.1 OC skenario 4–5 (6 skenario penuh) | 5,92→8,83 | LULUS | ya |
 | 2026-10-11 ~06:16 | `cursor/iterasi-otomatis-akun-c-0615` | e30c1a15 | persiapan-jual v1.0.1 OC skenario 2–3 (+4 skenario total) | 6,0→8,875 | LULUS | ya |
 | 2026-10-11 ~05:45 | `cursor/iterasi-otomatis-akun-c-0545` | 19f26848 | Sinkron branch gabungan 0515→0545; validate + regresi persiapan-jual/tagih-piutang | — | koordinasi | ya |
 | 2026-10-11 ~05:15 | `cursor/iterasi-otomatis-akun-c-0515` | 7a85f91b | Gabung artefak C2 cari-prospek-web + alat uji VM | 6,7→8,2 (ref) | LULUS | ya |
