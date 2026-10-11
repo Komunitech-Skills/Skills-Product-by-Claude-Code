@@ -6,7 +6,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 1. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default; tutup branch timestamp lama; update `catalog.csv` / promosi persiapan-jual v1.0.1 & cari-prospek 1.0.2.
 2. **Pemilik** — jawab keputusan **no. 26** (pilot G11b 4 pesan) dan **no. 27** (`koordinasi/usulan-gelombang-12-promo-2026-10-11.md`).
-3. **Akun C** — setelah persetujuan: pra-cek `uji-tg.sh` kandidat G12; jangan kirim gelombang tanpa setuju.
+3. **Akun C** — lanjut pra-cek TG G12 (4 skill tersisa); jangan kirim gelombang tanpa setuju no. 26/27.
 4. **Opsional** — uji platform asli C5; tidak iterasi OC skill C5 lagi.
 
 ## Format Telegram (thread 242) — wajib multiline
@@ -42,6 +42,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-11 ~08:18 | `cursor/iterasi-otomatis-akun-c-8b42` | c4b39b28 | Pra-cek TG G12 `cek-privasi-openclaw` | 6637 char | LOLOS TG | ya |
 | 2026-10-11 ~07:48 | `cursor/iterasi-otomatis-akun-c-8b42` | 39b1ce1b | Sync default + usulan G12 (no. 27); antrian C1–C5 100% | — | koordinasi | ya |
 | 2026-10-10-11 ~07:22 | `cursor/iterasi-otomatis-akun-c-7bf3` | bdd8fc26 | persiapan-jual v1.0.1 OC skenario 4–5 (6 skenario total) | 5,92→8,83 | LULUS | ya |
 | 2026-10-11 ~06:16 | `cursor/iterasi-otomatis-akun-c-0615` | e30c1a15 | persiapan-jual v1.0.1 OC skenario 2–3 (+4 skenario total) | 6,0→8,875 | LULUS | ya |
