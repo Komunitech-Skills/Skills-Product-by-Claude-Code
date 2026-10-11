@@ -14,6 +14,7 @@ Semua berkas di sini disalin dari scratchpad sesi Akun B (`/tmp/claude-0/.../scr
 | `uji.sh` | Jalankan satu pesan di HOME tertentu secara lokal (`openclaw agent --local`), hasil ke berkas |
 | `uji-tg.sh` | Sama, tetapi dengan konteks kanal Telegram (`--channel telegram` tanpa `--deliver`) — pra-cek wajib calon gelombang |
 | `pilot/tg.py` | `tg.call('sendMessage', chat_id=-1004407409583, message_thread_id=242, text=...)` untuk laporan/keputusan ke topik "Ringkasan uji" |
+| `progress-akun-c.sh` | Hitung antrean Akun C dari `papan-tugas.md` (C1–Cn, checkbox antrean/permintaan); output untuk blok **Progress** di Telegram automation |
 | `pilot/mktopics-g11.py`, `kirim-urut2.py`, `poll-g2.py`, `kumpul-g11.py`, `cek-status.py` | Gelombang Telegram: buat topik baru, kirim pesan berurutan dengan jeda, ambil balasan, kumpulkan transkrip. Ganti nomor gelombang & daftar pesan |
 | `brief/maker-umum.md`, `brief/tester-umum.md` | Brief standar untuk sub-agent pembuat dan penguji (pola wajib, acuan LULUS) |
 

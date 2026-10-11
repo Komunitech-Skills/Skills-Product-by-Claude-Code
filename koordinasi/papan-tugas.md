@@ -132,8 +132,8 @@ Akun B berhenti (routine `trig_019wFDQCQf3Ly9XJwD5KFsdg` dijeda). Semua pekerjaa
 |---|---|---|---|
 | S1 | **Jalankan keputusan pemilik yang sudah dijawab** di Telegram topik "Ringkasan uji" (thread 242): cek `getUpdates` bot penguji (hanya baca, jangan `offset=-1`) | Menunggu jawaban: **no. 23** kirim ulang G11b (8 pesan di TOPIK BARU: aktifkan-kembali-pelanggan & triase-keluhan-pelanggan wajib; tangani-keberatan-pelanggan & kelayakan-investasi-usaha disarankan; config `skills: []` untuk topik TANPA, lalu restart gateway sebelum kirim; pesan & topik lama di `koordinasi/telegram-gelombang-11-2026-10-06.md`); **no. 24** `cari-prospek-web` → `arsip` (rekomendasi a) atau tetap `uji`; **no. 25** `simulasi-cicilan-pinjaman` masuk `paket-admin-keuangan` (rekomendasi a). Usulan bundle lama belum dijawab: `checklist-keamanan-pangan-usaha` → `paket-kafe-warung`, `proses-pesanan-wa` → `paket-toko-online` | tinggi |
 | S2 | **Uji manusia asisten akuntansi** (`docs/uji-manusia-akuntansi.md`, disetujui 2026-10-09) dilakukan pemilik/tim, bukan agent. Tugas Akun A: tagih hasilnya, proses `examples/UJI-PLATFORM.md` → `platform_teruji` di catalog, perbaiki temuan ❌ (kembalikan ke `uji` bila U1/U2/D1/skenario tolak gagal) | tinggi (setelah hasil masuk) |
-| S3 | `tagih-piutang` 1.0.6 (`beta`) satu-satunya produk jalur 2 yang **belum** punya uji sebelum/sesudah OpenClaw | sedang |
-| S4 | **Status 2026-10-10:** `satu-lawan-satu-dan-umpan-balik` 1.0.1 **lulus 8/10** (Akun A); `cek-risiko-dan-asuransi-usaha` 1.0.1 `uji` (revisi 3 cacat berat, **butuh uji ulang independen**); `persiapan-jual-atau-wariskan-usaha` 1.0.0 `draft` (**butuh uji penuh**). Penguji Akun A terhenti limit (commit dac6b07). → **Uji ulang/uji penuh keduanya dikerjakan Akun C (Cursor Cloud) sebagai penguji independen**; Akun A/B memproses hasilnya (catalog, promo). Prompt pembuatan untuk Akun C sebelumnya dibatalkan. Skill baru kandidat berikut (sumber kuat, riset sudah ada di `research/sources/kurasi-bsd-cc-2026-10-05.md`): `satu-lawan-satu-dan-umpan-balik` (managers-playbook, CC BY 4.0, ATM + atribusi), `cek-risiko-dan-asuransi-usaha` dan `persiapan-jual-atau-wariskan-usaha` (FDIC Money Smart, domain publik → **tulis ulang bersih**: agent 1 daftar ide di `research/sources/`, agent 2 menulis tanpa membaca sumber, pola seperti `research/sources/fda-food-code-2026-10-06.md`). Pembuat ≠ penguji; brief di `koordinasi/alat-uji/brief/` | sedang |
+| S3 | `tagih-piutang` 1.0.6 (`beta`) uji sebelum/sesudah OpenClaw | selesai (Akun C, 2026-10-10): LULUS 6,9→8,6 (+1,8), skor 9/10 — `examples/00-openclaw-sebelum-sesudah.md`; Akun A: tambah `platform_teruji` |
+| S4 | **Status 2026-10-10:** `satu-lawan-satu-dan-umpan-balik` 1.0.1 **lulus 8/10** (Akun A); `cek-risiko-dan-asuransi-usaha` 1.0.1 **lulus 9/10** (6,5 → 8,6) dan `persiapan-jual-atau-wariskan-usaha` 1.0.0 **lulus 9/10** (6,1 → 8,7) — uji OpenClaw oleh Akun C (Cursor Cloud) 2026-10-10, diproses Akun B ke catalog/promo (artifact v26). Sisa: uji konteks Telegram persiapan-jual (jawaban S1 panjang) → selesai Akun C (C3). Prompt pembuatan untuk Akun C sebelumnya dibatalkan. Skill baru kandidat berikut (sumber kuat, riset sudah ada di `research/sources/kurasi-bsd-cc-2026-10-05.md`): `satu-lawan-satu-dan-umpan-balik` (managers-playbook, CC BY 4.0, ATM + atribusi), `cek-risiko-dan-asuransi-usaha` dan `persiapan-jual-atau-wariskan-usaha` (FDIC Money Smart, domain publik → **tulis ulang bersih**: agent 1 daftar ide di `research/sources/`, agent 2 menulis tanpa membaca sumber, pola seperti `research/sources/fda-food-code-2026-10-06.md`). Pembuat ≠ penguji; brief di `koordinasi/alat-uji/brief/` | sedang |
 | S5 | Gelombang Telegram 12: kandidat dari `promosi/SEBELUM-SESUDAH.md` yang LULUS, belum pernah tampil (cek `koordinasi/telegram-*.md`), urut selisih terbesar; pra-cek `uji-tg.sh` wajib; usulkan ke pemilik dulu (maks 10 pesan) | sedang |
 | S6 | `rapikan-data-berantakan` di bot asli hanya 7 → 7,5 (gelombang 11); `aktifkan-kembali-pelanggan` & `triase-keluhan-pelanggan` belum ternilai (bot hanya merujuk jawaban lama). Tindak lanjut tergantung keputusan 23 | rendah |
 | S7 | Alat internal Komunitech setup berat (Discourse/Moodle/Grafana, keputusan 2026-10-05 butir 2) **ditunda** karena disk scratchpad ±3 GB; riset di `research/sources/kurasi-copyleft-2026-10-05.md` & `kurasi-apache-2026-10-05.md` | rendah |
@@ -148,3 +148,36 @@ Catatan pembatas yang tetap berlaku (ringkas, lengkapnya di CLAUDE.md): maks 10 
 3. Satu skill = satu branch `cursor/<nama-skill>` = satu PR ke `claude/claude-code-cli-differences-btizz5`. Jangan merge sendiri; Akun A/B yang review, merge, dan menguji.
 4. Wajib lolos `python3 scripts/validate.py` dan tes regresi skill sebelum PR. Tidak ada token/API key/data pribadi, tidak commit `dist/`, tidak ada identitas model di commit/PR.
 5. Tulis ulang bersih (sumber domain publik/proprietary): satu sesi agent hanya menulis daftar ide ke `research/sources/`, sesi agent **lain** (yang tidak membaca sumber) yang menulis skill-nya.
+
+## Tugas Akun C (Cursor Cloud) — 2026-10-10, dari keputusan pemilik 23/24/25
+
+_(Baris di bawah = **antrean progress** untuk `koordinasi/alat-uji/progress-akun-c.sh` — kolom Status terakhir.)_
+
+| # | Tugas | Rincian | Status |
+|---|---|---|---|
+| C1 | **Gelombang 11b** (keputusan 23) | Kirim ulang 8 pesan G11b; config topik TANPA `skills: []`; restart gateway; laporkan 242 | selesai (Akun C, 2026-10-10): `koordinasi/telegram-gelombang-11b-2026-10-10.md` |
+| C2 | **Hidupkan pencarian web + uji ulang `cari-prospek-web`** (keputusan 24) | Tavily/DDG di bot uji; satu putaran uji 1.0.2; simpan config tanpa kunci ke `config-bot-uji/openclaw.json` | selesai (Akun C, 2026-10-10): pencarian jalan; uji **BELUM** 7,7/10 — rekomendasi tetap `uji` |
+| C3 | Uji konteks Telegram `persiapan-jual-atau-wariskan-usaha` | `uji-tg.sh` skenario 1 (jawaban S1 panjang) | selesai (Akun C, 2026-10-10): `examples/06-uji-konteks-telegram.md` |
+| C4 | Keputusan 25 (`simulasi-cicilan-pinjaman` → paket admin keuangan) | Bundle + harga | selesai (Akun B, 2026-10-10) |
+
+## Antrean uji Akun C (siap diuji / ditugaskan)
+
+_(Centang `- [x]` saat selesai; `- [~]` = sedang dikerjakan run ini. Diparse oleh `progress-akun-c.sh`.)_
+
+- [x] `tagih-piutang` v1.0.6 — uji sebelum/sesudah OpenClaw (S3)
+- [x] `cek-risiko-dan-asuransi-usaha` v1.0.1 — uji ulang independen OpenClaw (S4)
+- [x] `persiapan-jual-atau-wariskan-usaha` v1.0.0 — uji penuh OpenClaw (S4)
+- [x] `persiapan-jual-atau-wariskan-usaha` — pra-cek konteks Telegram (`uji-tg.sh`, C3)
+- [ ] `cari-prospek-web` v1.0.2 — uji ulang setelah web search (C2, skor 7,7 BELUM — putaran berikutnya atau arsip)
+- [ ] Backlog uji `siap diuji` berikutnya dari papan / catalog (Ambil hanya yang ditugaskan ke Akun C)
+
+## Permintaan antar-akun — progress Akun C
+
+_(Hanya baris checkbox di bawah ini yang masuk hitungan progress automation.)_
+
+- [x] Playbook automation: push per commit uji + Telegram 242 multiline (`rutin-cursor-cloud.md`, `automation-progress-akun-c.md`)
+- [x] Keputusan 23 — gelombang G11b (C1)
+- [x] Keputusan 24 tahap 1 — hidupkan pencarian web di bot uji (C2)
+- [ ] Keputusan 24 tahap 2 — putuskan `cari-prospek-web` lulus vs arsip setelah uji ulang
+- [ ] Pemilik: aktifkan Automation UI + tempel Agent Instructions terbaru
+- [x] Dashboard progress X/Y di laporan Telegram (script `progress-akun-c.sh`)
