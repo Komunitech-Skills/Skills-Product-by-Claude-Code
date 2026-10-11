@@ -19,7 +19,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-11 ~04:45 | `cursor/iterasi-otomatis-akun-c-0445` | (setelah push) | Smoke web_search OC 2026.10.1 + DDG plugin; bump setup-cursor | web_search hidup | LOLOS smoke | ya |
+| 2026-10-11 ~04:45 | `cursor/iterasi-otomatis-akun-c-0445` | 670590ab | Smoke web_search OC 2026.10.1 + DDG plugin; bump setup-cursor | web_search hidup | LOLOS smoke | ya |
 | 2026-10-11 ~03:45 | `cursor/iterasi-otomatis-akun-c-0345` | 56738186 | Gabung C2 examples + serah terima Akun A; smoke web_search plugin gagal API | web_fetch saja | catatan | ya |
 | 2026-10-11 ~03:15 | `cursor/iterasi-otomatis-akun-c-0315` | 6a5447d4 | Gabung uji persiapan-jual v1.0.1 + papan C1/C2/C5 | 6,0→9,0 subset v1.0.1 | LULUS | ya |
 | 2026-10-10 ~23:45 | `cursor/web-search-cari-prospek-8b42` | 9d97e53b | cari-prospek-web v1.0.2 + C2 web_search | 6,7 → 8,2 | LULUS | ya |
