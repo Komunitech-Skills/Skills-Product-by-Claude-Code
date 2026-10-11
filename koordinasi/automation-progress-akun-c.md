@@ -31,6 +31,6 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 ## Catatan lingkungan
 
-- Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token` — SET (run 2026-10-11 03:15 UTC).
+- Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token` — SET (run 2026-10-11 05:15 UTC).
 - Uji OpenClaw: `SCRATCHPAD=$HOME/komunitech-uji` + `run-uji.sh` / `run-uji-tg.sh` bila `unshare` gagal.
 - C1 G11b & C2 web_search: artefak lengkap di branch paralel (lihat Run berikutnya).
