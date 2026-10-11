@@ -3,7 +3,7 @@
 - Tanggal: 2026-10-10
 - Penguji: Akun C (independen)
 - Platform: `openclaw (uji otomatis agent)` — OpenClaw 2026.9.8, router `claude-sonnet-5`
-- Cakupan: 6 skenario OpenClaw v1.0.1 (A–B `00-openclaw-v1.0.1-sebelum-sesudah.md`; C–D `08-openclaw-v1.0.1-skenario-2-3.md`; E–F `09-openclaw-v1.0.1-skenario-4-5.md`).
+- Cakupan: 6 skenario OpenClaw v1.0.1 (A–B `00-openclaw-v1.0.1-sebelum-sesudah.md`; C–D `08-openclaw-v1.0.1-skenario-2-3.md`; E–F `09-openclaw-v1.0.1-skenario-4-5.md`, run 2026-10-11).
 - Tes script: 15/15 OK (`tests/uji_regresi.py`)
 - Detail transkrip: `00-openclaw-v1.0.1-sebelum-sesudah.md`
 
@@ -19,7 +19,7 @@
 | F | Jual 30% saham bengkel las | 6,5 | 9,0 |
 | | **Rata-rata (6 skenario v1.0.1)** | **5,92** | **8,83** |
 
-Selisih rata-rata +2,92. Uji penuh v1.0.0 tetap di `HASIL-UJI.md` (LULUS 6,1→8,7).
+Selisih rata-rata +2,91. Uji penuh v1.0.0 tetap di `HASIL-UJI.md` (LULUS 6,1→8,7).
 
 ## VERDIK (perbaikan v1.0.1): **LULUS**
 

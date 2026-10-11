@@ -1,0 +1,89 @@
+Dua hal yang Anda minta di luar yang bisa saya kerjakan, tapi saya tetap siapkan jalan keluarnya:
+
+- **"Buatkan akta jual beli"** — Tidak bisa saya buatkan. Akta jual beli usaha/aset dibuat oleh **notaris/PPAT**, bukan oleh AI. Padanannya: saya susunkan ringkasan keinginan Anda, daftar aset-utang-dokumen, dan daftar pertanyaan siap bawa ke notaris (ada di bawah).
+- **"Pastikan laku Rp500 juta bulan depan"** — Tidak ada yang bisa menjamin ini: bukan harga, bukan waktunya. Yang bisa saya bantu: rentang perkiraan nilai (kalau datanya ada), apa yang menaikkan daya tarik toko dalam waktu singkat, dan Anda tentukan sendiri **batas harga terendah** yang mau diterima.
+
+Catatan jujur soal waktu: target "laku bulan depan" itu sangat mepet untuk proses yang rapi (cek legalitas, negosiasi, akta notaris). Dikejar terlalu cepat justru sering membuat harga ditawar rendah atau jatuh ke pembeli yang kurang serius. Saya buatkan jalur cepat, tapi realistis.
+
+---
+
+# Persiapan Jual Usaha — Toko Anda
+
+## 1. Ringkasan situasi dan asumsi
+- Jenis usaha: toko [isian: jenis barang/jasa apa]
+- Tujuan: jual (asumsi, sesuai permintaan)
+- Kerangka waktu: Anda minta 1 bulan — saya pakai ini sebagai jalur "cepat", tapi tandai realistis-tidaknya tergantung kelengkapan dokumen (lihat bawah)
+- Belum ada data laba, aset, atau utang → nilai usaha belum bisa dihitung (lihat bagian 3)
+
+## 2. Daftar periksa kesiapan (awal, semua "Belum diketahui" — isi lewat jawaban Anda)
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan 2-3 tahun | Belum diketahui | Siapkan rekap kas/laba-rugi, cocokkan ke mutasi rekening |
+| Pemisahan uang pribadi-usaha | Belum diketahui | Pastikan terpisah; pembeli akan cek ini |
+| SOP kerja inti | Belum diketahui | Tulis alur kerja agar bisa diteruskan pembeli |
+| Ketergantungan pada Anda | Belum diketahui | Apa yang berhenti kalau Anda tidak masuk 1 bulan? |
+| Aset (alat, stok, kendaraan, tempat) | Belum diketahui | Buat daftar + bukti milik |
+| Utang/cicilan/kasbon | Belum diketahui | Catat semua, sisa & pemberi pinjaman |
+| Sewa tempat/kontrak pemasok-pelanggan | Belum diketahui | Cek sisa masa sewa, boleh dialihkan? |
+| Izin (NIB dll) | Belum diketahui | Cek atas nama siapa, masih berlaku? |
+| Karyawan | Belum diketahui | Daftar + hak yang tertunda |
+| Merek/akun online/no. WA usaha | Belum diketahui | Pastikan atas nama usaha, bukan pribadi |
+
+**Prioritas untuk mengejar "bulan depan":**
+1. Siapkan pembukuan & daftar aset-utang minggu ini juga — pembeli serius pasti minta ini duluan.
+2. Pastikan izin (NIB) dan status sewa tempat jelas dan bisa dialihkan.
+3. Tentukan batas harga terendah yang Anda terima, sebelum bicara ke calon pembeli manapun.
+
+## 3. Perkiraan rentang nilai
+**Belum bisa dihitung.** Saya butuh minimal:
+- Laba bersih 1-3 tahun terakhir, atau
+- Nilai aset toko (kalau jual aset, bukan laba yang jadi patokan)
+
+Begitu ada salah satu, saya hitung rentangnya (dengan kelipatan dari Anda, atau contoh ilustratif berlabel jelas "bukan angka pasar").
+
+## 4. Pilihan struktur (tanyakan ke notaris/konsultan pajak)
+- Jual toko utuh (termasuk badan usaha bila ada) vs jual aset-asetnya saja
+- Bayar sekaligus vs bertahap
+- Masa pendampingan singkat Anda ke pembeli baru (membantu serah terima lebih mulus & bisa menaikkan kepercayaan pembeli)
+
+## 5. Rencana transisi — jalur cepat (disesuaikan, bukan 12 bulan standar)
+
+| Minggu | Fokus | Tugas |
+|---|---|---|
+| 1 | Foto kondisi | Rapikan pembukuan, daftar aset-utang, tetapkan batas harga terendah |
+| 1-2 | Legalitas | Cek izin, sewa, kontrak bisa dialihkan atau tidak |
+| 2 | Cari pembeli | Hubungi kenalan/jaringan dulu (lebih cepat & aman daripada pasar terbuka) |
+| 3 | Negosiasi | Sepakati harga & struktur, siapkan dokumen untuk calon pembeli serius |
+| 4 | Ke notaris | Bawa semua dokumen + daftar pertanyaan di bawah; notaris buat akta |
+
+Realistisnya: minggu 4 "akta jadi" tergantung seberapa cepat dokumen di minggu 1-2 beres dan ada pembeli serius di minggu 2. Kalau belum ada calon pembeli sama sekali, 1 bulan sangat ketat.
+
+## 6. Dokumen yang perlu disiapkan untuk calon pembeli
+- Rekap kas/laba-rugi 2-3 tahun + mutasi rekening pendukung
+- Daftar aset (nama, jumlah, kondisi, bukti milik) dan stok
+- Daftar utang (pemberi, sisa, jatuh tempo)
+- Kontrak sewa tempat, kontrak pemasok/pelanggan besar
+- NIB dan izin usaha lain
+- Daftar karyawan, masa kerja, hak tertunda
+- Bukti kepemilikan merek, akun online, nomor WA usaha
+- Perjanjian kerahasiaan sebelum data sensitif dibagi ke calon pembeli (minta notaris siapkan)
+
+## 7. Pertanyaan untuk notaris & konsultan pajak
+**Notaris/PPAT:**
+- Bentuk usaha saya (perorangan/CV/PT): apa saja yang harus diubah saat pindah tangan?
+- Dokumen apa bukti peralihan aset (tempat/tanah-bangunan, peralatan, merek)?
+- Apakah pembeli perlu NIB sendiri, dan apa yang terjadi dengan NIB saya?
+- Bagaimana akta dibuat dengan proses tercepat yang aman, dan dokumen apa yang harus siap sebelum datang?
+- Kalau saya menikah: apakah toko ini termasuk harta bersama, perlu persetujuan tertulis pasangan?
+
+**Konsultan pajak:**
+- Kewajiban pajak atas penjualan usaha/aset (PPh, PPN bila saya PKP, BPHTB kalau ada tanah/bangunan)
+- Apakah pajak perlu diperhitungkan dalam menetapkan harga terendah
+
+## 8. Pertanyaan saya untuk Anda (biar bisa dihitung & dilanjutkan)
+1. Jenis toko apa, dan laba bersih tahun ini/tahun lalu kira-kira berapa?
+2. Toko milik sendiri atau sewa — kalau sewa, sisa masa sewanya berapa lama?
+3. Sudah ada calon pembeli, atau masih cari dari nol?
+
+Jawab salah satu/semua, saya lanjutkan hitung rentang nilainya dan pertajam rencana 1 bulan ini.

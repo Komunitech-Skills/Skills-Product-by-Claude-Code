@@ -1,0 +1,114 @@
+# Persiapan Jual Sebagian Usaha – Bengkel Las (Mitra Beli 30%)
+
+## 1. Ringkasan situasi & asumsi
+
+- Jalur: **beli/lepas bagian mitra** — mitra membeli 30% saham/porsi bengkel las Anda.
+- Laba bersih: 2024 Rp42.000.000; 2025 Rp48.000.000 (hanya 2 tahun data).
+- Gaji yang Anda ambil: Rp5.000.000/bln (Rp60.000.000/thn); gaji pengganti setara: Rp6.000.000/bln (Rp72.000.000/thn).
+- Kelipatan laba: 2–2,5x (dari Anda/mitra sendiri).
+- Potongan ketergantungan pemilik: 20% (karena order masih lewat Anda).
+- Biaya transaksi: 3%.
+- Porsi yang berpindah: 30%.
+- **Asumsi yang saya ambil** (belum Anda sebutkan, tolong koreksi): tidak ada utang usaha yang disebut → dianggap Rp0 untuk sekarang; karena ini jual sebagian (bukan usaha utuh), utang usaha (bila ada) **tetap di badan usaha**, bukan dilunasi dari hasil jual 30% ini. Rencana transisi 6 bulan.
+
+## 2. Daftar periksa kesiapan
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan 2-3 tahun | Setengah | Ada laba 2 tahun; lengkapi laporan 2023 kalau ada, dan cocokkan dengan mutasi rekening |
+| Pemisahan uang pribadi-usaha | Belum diketahui | Pastikan gaji Rp5 jt/bln Anda tercatat rapi sebagai biaya, bukan campur kas |
+| SOP pekerjaan inti | Belum diketahui | Tulis SOP pengelasan, penerimaan order, penetapan harga — ini kunci karena order masih lewat Anda |
+| Ketergantungan pemilik | Belum (disebutkan eksplisit) | Order masih lewat Anda → ini sumber diskon 20%; mulai delegasikan penerimaan order ke mitra/staf |
+| Aset (mesin las, kendaraan, tempat) | Belum diketahui | Buat daftar aset bengkel + bukti milik |
+| Utang | Belum diketahui | **Wajib diisi sebelum sepakat harga** — utang mengubah hasil bersih Anda |
+| Kontrak sewa/pemasok/pelanggan besar | Belum diketahui | Cek sewa tempat bengkel, kontrak pemasok besi/kawat las |
+| Izin (NIB, izin usaha las) | Belum diketahui | Cek NIB atas nama siapa, dan apakah masuknya mitra perlu perubahan izin |
+| Bentuk usaha (perorangan/CV/PT) | Belum diketahui | Menentukan dokumen peralihan 30% — lihat pertanyaan notaris di bawah |
+| Karyawan | Belum diketahui | Daftar karyawan + hak yang tertunda |
+| Pelanggan/pemasok kunci | Belum diketahui | Siapa 5 pelanggan & pemasok terbesar, berapa porsinya |
+
+### Prioritas pembenahan (3-5)
+1. **Lunasi ketergantungan pemilik** — tulis SOP penerimaan order & penetapan harga, mulai libatkan mitra/staf menerima order langsung. Ini langsung menaikkan nilai (mengurangi/menghapus diskon 20%).
+2. **Rapikan daftar utang** — belum ada di angka Anda; ini wajib sebelum harga final disepakati.
+3. **Pastikan bentuk usaha jelas** (perorangan/CV/PT) — menentukan dokumen peralihan 30% apa yang sah.
+4. Daftar aset bengkel (mesin las, kendaraan, tempat) dengan bukti milik.
+
+## 3. Perkiraan rentang nilai (bahan diskusi, bukan harga pasti)
+
+| Langkah | Perhitungan |
+|---|---|
+| Laba normalisasi 2024 | 42.000.000 + 60.000.000 (gaji diambil) − 72.000.000 (gaji pengganti) = **Rp30.000.000** |
+| Laba normalisasi 2025 | 48.000.000 + 60.000.000 − 72.000.000 = **Rp36.000.000** |
+| Basis (rata-rata 2 tahun, karena lebih rendah dari tahun terakhir) | **Rp33.000.000** |
+| Nilai usaha 100% (sebelum utang) | basis x kelipatan [2–2,5] x (100−20)/100 = **Rp52.800.000 s/d Rp66.000.000** |
+| Harga untuk porsi 30% (utang tetap di badan usaha) | **Rp15.840.000 s/d Rp19.800.000** |
+| Setelah biaya transaksi 3% | **Rp15.364.800 s/d Rp19.206.000** |
+| **Hasil bersih ke Anda** (asumsi tanpa utang yang Anda lunasi pribadi) | **Rp15.364.800 s/d Rp19.206.000** |
+
+**Peringatan:**
+- Laba hanya 2 tahun → rentang ini kurang kuat dan lebih sulit meyakinkan mitra dibanding kalau ada 3 tahun data.
+- Angka ini **sebelum pajak**, dan belum memasukkan utang usaha apa pun (karena Anda belum sebutkan — lihat pertanyaan di bagian 8).
+- Kelipatan 2–2,5 dan diskon 20% adalah **asumsi Anda sendiri**, bukan angka pasar yang terverifikasi.
+- Rp15-19 juta untuk 30% bengkel las terdengar kecil karena basis laba masih rendah setelah dikurangi gaji pengganti — ini wajar terjadi pada usaha kecil yang labanya "tertutup" oleh gaji pemilik; perhatikan juga nilai aset (mesin las, tempat) yang belum dihitung di sini karena belum ada datanya.
+
+## 4. Pilihan struktur (tanpa memutuskan)
+
+- **Jual aset vs jual porsi badan usaha**: karena ini "mitra beli 30%", kemungkinan besar ini jual porsi (saham/sekutu), bukan jual aset — tanyakan ke notaris mana yang berlaku untuk bentuk usaha Anda.
+- **Bayar sekaligus atau bertahap**: dengan nilai ~Rp15-19 juta, sekaligus mungkin lebih sederhana, tapi bisa juga dicicil dari laba ke depan — tanyakan konsekuensi pajak dan dokumennya ke notaris/konsultan pajak.
+- **Masa pendampingan**: karena order masih lewat Anda, pertimbangkan periode pendampingan formal (bukan cuma transisi informal) sampai mitra benar-benar bisa pegang order sendiri.
+
+### Catatan khusus beli/lepas bagian mitra
+- Utang usaha (bila ada) **tetap di badan usaha** setelah mitra masuk, bukan dilunasi dari hasil jual 30% ini — tegaskan ini tertulis.
+- Tentukan siapa menanggung biaya notaris/pajak transaksi ini.
+- Bila Anda pernah memberi jaminan pribadi untuk utang bengkel, tanyakan ke notaris bagaimana posisi jaminan itu setelah mitra memegang 30%.
+- Porsi minoritas (30%) kadang dihargai beda dari porsi mayoritas — kelipatannya tetap harus dari kesepakatan/penilai, bukan dikarang.
+- Dokumennya: akta perubahan CV/firma, atau akta pemindahan saham bila PT — notaris yang menyiapkan.
+
+## 5. Rencana transisi (6 bulan)
+
+| Bulan | Fokus | Tugas konkret | Penanggung jawab |
+|---|---|---|---|
+| 1 | Foto kondisi | Lengkapi laba 2023 bila ada; daftar aset & utang bengkel; sepakati batas harga terendah yang Anda terima | Anda |
+| 2 | Rapikan | Pisahkan uang pribadi-usaha; cek izin (NIB) dan status sewa tempat bengkel | Anda |
+| 3 | Kurangi ketergantungan | Tulis SOP penerimaan order & penetapan harga las; mulai delegasikan 1 pelanggan rutin ke mitra | Anda + mitra |
+| 4 | Konsultasi profesional | Bawa daftar pertanyaan (bagian 7) ke notaris & konsultan pajak; pastikan bentuk usaha & dokumen peralihan | Anda |
+| 5 | Serah sebagian wewenang | Mitra mulai pegang order & interaksi pelanggan utama secara mandiri; siapkan draf akta/kesepakatan | Anda + mitra |
+| 6 | Serah terima | Tanda tangan akta di notaris; umumkan ke karyawan/pelanggan kunci; mulai masa pendampingan ringan | Anda + mitra + notaris |
+
+**Rencana darurat:** pastikan mitra tahu siapa pemasok besi/kawat las utama, kontak pelanggan rutin, dan di mana catatan kas disimpan — bila Anda mendadak tidak bisa hadir.
+
+## 6. Dokumen yang disiapkan
+
+- [ ] Laporan laba 2024-2025 (dan 2023 bila ada) + mutasi rekening pendukung
+- [ ] Daftar aset bengkel (mesin las, alat, kendaraan, tempat) + bukti milik
+- [ ] Daftar utang/kewajiban usaha (pemberi, sisa, jatuh tempo) — **belum ada, prioritas**
+- [ ] Kontrak sewa tempat, kontrak pemasok besi/kawat las, kontrak pelanggan besar (bila ada)
+- [ ] NIB dan izin usaha las, status pajak yang sudah dilaporkan
+- [ ] Daftar karyawan, masa kerja, kewajiban tertunda
+- [ ] SOP penerimaan order & proses pengelasan inti
+- [ ] Bukti kepemilikan merek/nama bengkel, akun WA/sosmed usaha
+- [ ] Kesepakatan kerahasiaan sebelum data sensitif dibagi ke mitra (bila belum ada hubungan dekat, tetap siapkan tertulis)
+
+## 7. Pertanyaan untuk notaris & konsultan pajak
+
+**Notaris:**
+- Bentuk usaha bengkel ini (perorangan/CV/firma/PT) — dokumen apa yang sah untuk memindahkan 30%?
+- Untuk sekutu CV/firma: apa yang diatur akta pendirian soal sekutu baru masuk, dan bagaimana akta perubahannya?
+- Untuk saham PT: apakah anggaran dasar mewajibkan saham ditawarkan dulu ke pemegang saham lain?
+- Bagaimana melepaskan/membagi jaminan pribadi saya atas utang usaha (bila ada) setelah mitra masuk 30%?
+- Bagaimana perjanjian pendampingan masa transisi dan kerahasiaan dibuat?
+- Bila Anda berpasangan (menikah): apakah 30% porsi ini termasuk harta bersama dan perlu persetujuan tertulis pasangan?
+
+**Konsultan pajak:**
+- Apa kewajiban pajak atas penjualan 30% porsi usaha ini (PPh atas keuntungan)?
+- Bila bengkel ber-PKP: apakah penjualan porsi/aset usaha kena PPN Pasal 16D?
+- Bagaimana laporan pajak 2024-2025 perlu dirapikan sebelum transaksi?
+- Apakah biaya transaksi 3% itu sudah termasuk atau belum termasuk pajak terkait?
+
+## 8. Catatan penutup
+
+Nilai rentang di atas (Rp15,36 juta – Rp19,2 juta untuk 30%) dihitung dari laba setelah disesuaikan gaji, dikali kelipatan dan potongan yang Anda tentukan sendiri — ini **bahan diskusi**, bukan harga pasti, dan belum termasuk pajak. Tiga hal yang paling menentukan akurasi rentang ini:
+
+1. **Berapa total utang/kewajiban bengkel saat ini**, dan siapa yang menanggungnya setelah mitra masuk? (saat ini saya asumsikan Rp0 — bila ada utang, harga bisa berubah)
+2. **Apa bentuk usaha bengkel ini** (perorangan/CV/firma/PT)? Ini menentukan dokumen peralihan yang sah.
+3. Apakah kelipatan 2–2,5x itu sudah Anda & mitra sepakati bersama, atau masih perlu dibandingkan dengan rujukan luar (perantara/penilai usaha sejenis)?
