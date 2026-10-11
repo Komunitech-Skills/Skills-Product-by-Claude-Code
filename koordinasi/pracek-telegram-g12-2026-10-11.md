@@ -42,9 +42,22 @@ Metode: `run-uji-tg.sh` (`--channel telegram`, tanpa kirim), HOME hanya skill ya
 
 **Catatan gelombang:** Run tanpa CSV (1053 char) hanya menanyakan file; run dengan `kasir-minggu-38.csv` fiktif (21 baris) dipakai untuk bukti tampilan.
 
+## `fider-masukan-pelanggan` — LOLOS pra-cek
+
+| Item | Nilai |
+|---|---|
+| Pesan uji | Impor 4 catatan WA + ringkasan mingguan top 5 (semua di chat; tanpa `--ya`) |
+| Karakter balasan | 1795 |
+| Alat agent | read, ls, exec |
+| Durasi | ~45 s (mock Fider v0.38 tiruan + kunci uji di `~/.komunitech/`) |
+| Keluaran | `$HOME/komunitech-uji/openclaw-real/hasil/g12-fmp-out3.txt` (tidak di-commit) |
+
+**Isi:** Pratinjau impor (QRIS ditahan karena duplikat #1 14 suara; 3 butir BUAT; HP Pak Hendra disamarkan), ringkasan mingguan 9 pos / 51 suara + top 5 utuh di chat; menunggu "ya" sebelum tulis — tidak mengarah ke file saja.
+
+**Catatan gelombang:** Di VM uji, Fider asli tidak terpasang; pra-cek memakai server tiruan `127.0.0.1:3000` (data awal sama uji OpenClaw v1.0.5). Run pertama tanpa kunci (992 char) hanya instruksi `simpan-kunci` — **bukan** acuan gelombang.
+
 ## Belum di-run
 
 | Skill | Alasan tunda |
 |---|---|
-| `fider-masukan-pelanggan` | Run berikutnya |
-| `notebook-riset-lokal` | idem |
+| `notebook-riset-lokal` | Run berikutnya |

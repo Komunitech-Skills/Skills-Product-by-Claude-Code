@@ -6,7 +6,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 1. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default; tutup branch timestamp lama; update `catalog.csv` / promosi persiapan-jual v1.0.1 & cari-prospek 1.0.2.
 2. **Pemilik** — jawab keputusan **no. 26** (pilot G11b 4 pesan) dan **no. 27** (`koordinasi/usulan-gelombang-12-promo-2026-10-11.md`).
-3. **Akun C** — pra-cek TG G12: `fider-masukan-pelanggan`, `notebook-riset-lokal` (2 tersisa); jangan kirim gelombang tanpa setuju no. 26/27.
+3. **Akun C** — pra-cek TG G12: `notebook-riset-lokal` (1 tersisa); jangan kirim gelombang tanpa setuju no. 26/27.
 4. **Opsional** — uji platform asli C5; tidak iterasi OC skill C5 lagi.
 
 ## Format Telegram (thread 242) — wajib multiline
