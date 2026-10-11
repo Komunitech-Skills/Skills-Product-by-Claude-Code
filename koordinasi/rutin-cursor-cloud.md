@@ -13,7 +13,7 @@ Playbook untuk pemilik membuat **Automation** di dashboard Cursor yang menjalank
 | Penjadwal | `create_trigger` / `update_trigger` di sesi Claude | **Cursor Automations** (UI dashboard pemilik) |
 | Sesi | Satu sesi panjang; routine memicu giliran di sesi yang sama | **Setiap jadwal = run Cloud Agent baru** (VM/snapshot baru; bukan lanjutan chat sebelumnya) |
 | Peran | Akun A / Akun B (semua jalur) | **Akun C** — penguji independen, draf skill bila ditugaskan (`AGENTS.md`, `papan-tugas.md`) |
-| Branch | `claude/determined-gates-rh7l38`, `claude/dreamy-archimedes-suxhgj`, dll. | `cursor/<nama-tugas>-8b42` (atau lanjut branch `cursor/*` yang sudah ada untuk tugas yang sama) |
+| Branch | `claude/determined-gates-rh7l38`, `claude/dreamy-archimedes-suxhgj`, dll. | **Automation jadwal:** `cursor/iterasi-otomatis-akun-c-8b42` (kanonik). Tugas panjang one-off: `cursor/<nama-tugas>-8b42` hanya bila papan-tugas menulis eksplisit. Branch `cursor/iterasi-otomatis-akun-c-HHMM` **deprecated** — lihat [`catatan-branch-legacy-automation-akun-c.md`](catatan-branch-legacy-automation-akun-c.md). |
 | Base | default branch | `claude/claude-code-cli-differences-btizz5` |
 | PR | Akun A/B merge PR default branch berkala | **Jangan buat PR otomatis** — hanya bila pemilik minta eksplisit |
 | Context limit | `get_session`, token > 300k / 600k | Tidak ada sesi panjang; tiap run mulai dari snapshot + git |
@@ -40,11 +40,12 @@ _(Alternatif panjang: `Komunitech Skills — Akun C (automation, tiap 30 menit)`
 | Field | Nilai |
 |--------|--------|
 | **Repository** | `Komunitech-Skills/Skills-Product-by-Claude-Code` |
-| **Base / checkout branch** | `claude/claude-code-cli-differences-btizz5` |
+| **Base branch** | `claude/claude-code-cli-differences-btizz5` |
+| **Branch checkout (opsional di UI, disarankan)** | **`cursor/iterasi-otomatis-akun-c-8b42`** — sama dengan branch kanonik agent; mengurangi checkout salah sebelum LANGKAH NOL |
 | **Environment** | Environment repo yang menjalankan `koordinasi/alat-uji/setup-cursor.sh` (`.cursor/environment.json`) |
 | **Secrets** | `Ninerouter_key` (wajib uji OpenClaw); `tester_bot_token` (wajib laporan/progres Telegram 242); `bot_token` (opsional, gateway OpenClaw / uji-tg) |
 
-Branch awal run: **kosongkan** (biar agent pilih `cursor/*` dari prompt), kecuali satu tugas panjang — isi mis. `cursor/uji-risiko-suksesi-8b42`.
+Run **automation/jadwal** selalu commit ke **`cursor/iterasi-otomatis-akun-c-8b42`**. Jangan kosongkan field branch lalu biarkan agent membuat `cursor/iterasi-otomatis-akun-c-HHMM`. Pengecualian: run manual pemilik dengan instruksi branch lain; atau tugas uji panjang dengan baris eksplisit di `papan-tugas.md` (mis. `cursor/uji-risiko-suksesi-8b42`) — kembali ke branch kanonik run automation berikutnya.
 
 ### Triggers (jadwal)
 
@@ -97,7 +98,7 @@ Tempel isi **hanya** teks di dalam code fence di bawah ke field **Agent Instruct
 
 WAJIB BEKERJA setiap run — jangan "No response requested" atau berhenti tanpa commit+push bila ada pekerjaan di papan. Setiap run = VM baru — andalkan git, automation-progress-akun-c.md, papan-tugas.md, reports/YYYY-MM-DD-akun-c.md.
 
-LANGKAH NOL: git fetch origin. Baca papan-tugas (Akun C, SERAH TERIMA, Permintaan antar-akun) + automation-progress-akun-c.md. Branch: lanjut cursor/* aktif atau cursor/<tugas>-8b42 dari default; merge origin/claude/claude-code-cli-differences-btizz5 bila perlu.
+LANGKAH NOL — branch kanonik (wajib run automation/jadwal): git fetch origin. Baca papan-tugas (Akun C, SERAH TERIMA, Permintaan antar-akun) + automation-progress-akun-c.md. Checkout SELALU cursor/iterasi-otomatis-akun-c-8b42: jika ada di origin → git checkout -B cursor/iterasi-otomatis-akun-c-8b42 origin/cursor/iterasi-otomatis-akun-c-8b42; jika belum ada di origin → git checkout -B cursor/iterasi-otomatis-akun-c-8b42 origin/claude/claude-code-cli-differences-btizz5. Lalu git merge origin/claude/claude-code-cli-differences-btizz5 bila HEAD di belakang default (merge commit, bukan rebase). DILARANG branch baru cursor/iterasi-otomatis-akun-c-HHMM atau suffix acak per run jadwal. Pengecualian: pemilik minta eksplisit di chat; atau papan-tugas menulis branch tugas panjang terpisah (mis. cursor/uji-risiko-suksesi-8b42) — selesaikan, lalu run automation berikutnya kembali ke cursor/iterasi-otomatis-akun-c-8b42.
 
 GATEWAY (hanya uji OpenClaw/Telegram): gw-cek.sh; jangan cetak secret; restart gateway setelah ubah channels.*; uji_openclaw.sh hanya /tmp/uji-openclaw; bot produksi tidak dipakai.
 
@@ -149,7 +150,7 @@ Langkah umum (label menu bisa sedikit berbeda per versi Cursor):
 4. **Environment:** pilih environment yang memuat `.cursor/environment.json` (install `koordinasi/alat-uji/setup-cursor.sh`) dan secrets (`Ninerouter_key`, `bot_token` bila perlu).
 5. **Schedule:** Custom cron → default **`*/30 * * * *`** (UTC); bila overlap run → **`0 * * * *`** atau **`15 */2 * * *`**. Aktifkan timezone UTC di UI bila ada opsi.
 6. **Prompt / Instructions:** salin **seluruh** blok di bagian [Prompt Automation Akun C](#prompt-automation-akun-c) di bawah (tanpa pembungkus markdown code fence di UI — hanya teks prompt).
-7. **Branch (opsional):** kosongkan agar agent memilih branch dari prompt; atau isi branch kerja tetap hanya bila satu skill panjang (mis. `cursor/uji-risiko-suksesi-8b42`).
+7. **Branch (opsional, disarankan isi):** **`cursor/iterasi-otomatis-akun-c-8b42`** — selaras LANGKAH NOL agent. Kosongkan hanya bila UI tidak mendukung; agent tetap wajib checkout branch kanonik. Tugas panjang one-off: ikuti papan-tugas, bukan branch HHMM.
 8. Simpan, **Enable** automation. Uji sekali dengan **Run now** / manual trigger.
 9. Verifikasi: run muncul di daftar Cloud Agents; ada commit push di branch `cursor/*`; laporan `reports/YYYY-MM-DD-akun-c.md` terbarui.
 
@@ -161,11 +162,26 @@ Langkah umum (label menu bisa sedikit berbeda per versi Cursor):
 
 ## Strategi branch (setiap run)
 
-1. **`git fetch origin`** — selalu di awal giliran.
-2. **Tugas baru** (skill/docs terpisah): `git checkout -b cursor/<nama-singkat>-8b42` dari `origin/claude/claude-code-cli-differences-btizz5`.
-3. **Lanjut tugas yang sama** (uji belum selesai, PR belum di-merge): checkout branch `cursor/*` yang sudah dipakai run sebelumnya (cek `papan-tugas.md`, laporan terakhir, atau `git branch -r 'origin/cursor/*'`).
-4. **Sync base:** bila default branch maju, `git merge origin/claude/claude-code-cli-differences-btizz5` (merge commit, bukan rebase) sebelum kerja besar; selesaikan konflik di luar `skills/` milik akun lain bila memungkinkan.
-5. **Setiap commit `uji:`:** `python3 scripts/validate.py` → commit → **`git push -u origin HEAD` segera** → perbarui [`automation-progress-akun-c.md`](automation-progress-akun-c.md) → satu pesan Telegram 242 **multiline** (template Hasil uji — bukan satu baris pipa).
+### Branch kanonik automation (2026-10-11)
+
+| Konteks | Branch |
+|---------|--------|
+| **Run Cursor Automations (cron 30 menit)** | **`cursor/iterasi-otomatis-akun-c-8b42`** — satu branch persisten; semua commit uji/docs automation di sini |
+| **UI Automation — field branch opsional** | Isi **`cursor/iterasi-otomatis-akun-c-8b42`** (selaras LANGKAH NOL) |
+| **Deprecated** | `cursor/iterasi-otomatis-akun-c-HHMM`, suffix acak (`-b3d3`, `-ea49`, …) per run — jangan buat lagi; legacy di origin → [`catatan-branch-legacy-automation-akun-c.md`](catatan-branch-legacy-automation-akun-c.md) |
+| **Tugas panjang one-off** | `cursor/<nama-tugas>-8b42` **hanya** bila `papan-tugas.md` / chat pemilik menulis eksplisit; setelah selesai, automation kembali ke kanonik |
+| **Emergency parallel** | Branch kedua hanya bila pemilik setuju di Telegram/chat; jangan default |
+
+### LANGKAH NOL git (run jadwal)
+
+1. **`git fetch origin`**
+2. **`git checkout -B cursor/iterasi-otomatis-akun-c-8b42 origin/cursor/iterasi-otomatis-akun-c-8b42`** — bila branch remote belum ada, ganti ref akhir dengan **`origin/claude/claude-code-cli-differences-btizz5`**
+3. **`git merge origin/claude/claude-code-cli-differences-btizz5`** bila default maju (merge commit, bukan rebase)
+4. Baca `papan-tugas.md` + `automation-progress-akun-c.md`
+
+### Setelah checkout
+
+5. **Setiap commit `uji:`:** `python3 scripts/validate.py` → commit → **`git push -u origin HEAD` segera** → perbarui [`automation-progress-akun-c.md`](automation-progress-akun-c.md) → satu pesan Telegram 242 **multiline** (template Hasil uji — field **Branch** = `cursor/iterasi-otomatis-akun-c-8b42` kecuali pengecualian di atas).
 6. **Akhir run:** push commit lain yang belum ter-push; VM hilang setelah run; tanpa push pekerjaan hilang.
 7. **PR:** jangan dibuat agent kecuali pemilik minta di chat/run prompt.
 
@@ -194,7 +210,7 @@ Acuan lulus uji OpenClaw: sesudah ≥ **8** dan selisih ≥ **1,5** (`koordinasi
 
 **Perilaku setiap run (wajib):**
 
-1. **LANGKAH NOL:** baca `automation-progress-akun-c.md` + `papan-tugas.md` + `git fetch`.
+1. **LANGKAH NOL:** `git fetch` → checkout **`cursor/iterasi-otomatis-akun-c-8b42`** (lihat [Strategi branch](#strategi-branch-setiap-run)) → merge default bila perlu → baca `automation-progress-akun-c.md` + `papan-tugas.md`.
 2. **Selalu ambil pekerjaan berikutnya** — uji backlog `siap diuji`, draf skill bila ditugaskan, docs/koordinasi kecil.
 3. **Setelah setiap commit `uji:`:** validate → commit → **push segera** → baris log → **`bash koordinasi/alat-uji/progress-akun-c.sh`** → **Telegram 242 multiline** (template di automation-progress-akun-c.md, wajib blok Progress). Jangan menunggu akhir run untuk push uji.
 4. **Run hanya docs / rollup akhir run:** satu push → progress-akun-c.sh → satu pesan Telegram **multiline** (Docs/koordinasi atau Ringkasan run + Progress).
@@ -207,14 +223,14 @@ Acuan lulus uji OpenClaw: sesudah ≥ **8** dan selisih ≥ **1,5** (`koordinasi
 
 ## Prompt Automation Akun C
 
-Salin teks di bawah ke field prompt Automation (versi **2026-10-10**, cron **30 menit**). Isi identik dengan [Agent Instructions](#agent-instructions-salin-seluruh-blok) di atas.
+Salin teks di bawah ke field prompt Automation (versi **2026-10-11**, cron **30 menit**, branch kanonik **`cursor/iterasi-otomatis-akun-c-8b42`**). Isi identik dengan [Agent Instructions](#agent-instructions-salin-seluruh-blok) di atas.
 
 ---
 
 ## Checklist pemilik setelah run pertama
 
 - [ ] Run selesai tanpa error setup (`setup-cursor.sh` di log environment).
-- [ ] Ada push ke `origin/cursor/...`.
+- [ ] Ada push ke **`origin/cursor/iterasi-otomatis-akun-c-8b42`** (bukan branch HHMM baru).
 - [ ] `python3 scripts/validate.py` lulus di commit terakhir run.
 - [ ] Laporan `reports/YYYY-MM-DD-akun-c.md` terupdate.
 - [ ] Bila uji OpenClaw: file di `skills/<nama>/examples/` + **push segera** + pesan topik 242 + baris di `automation-progress-akun-c.md`.

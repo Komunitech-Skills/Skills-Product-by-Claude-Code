@@ -24,7 +24,8 @@
 | Aturan | Nilai |
 |--------|--------|
 | Base branch | `claude/claude-code-cli-differences-btizz5` |
-| Branch kerja | `cursor/<nama-tugas>-8b42` (satu tugas = satu branch) |
+| Branch automation (cron) | **`cursor/iterasi-otomatis-akun-c-8b42`** — kanonik; LANGKAH NOL: `git checkout -B …` + merge default bila perlu (`koordinasi/rutin-cursor-cloud.md`) |
+| Branch kerja manual / one-off | `cursor/<nama-tugas>-8b42` hanya bila pemilik atau `papan-tugas.md` menulis eksplisit; **jangan** buat `cursor/iterasi-otomatis-akun-c-HHMM` per run |
 | Sebelum commit | `python3 scripts/validate.py` harus lolos |
 | Pola commit | `skill: …`, `uji: …`, `riset: …`, `docs: …` |
 | Push | **Setelah setiap commit `uji:`** → `git push -u origin HEAD` segera (jangan menumpuk uji tanpa push). Commit lain: push minimal **sekali** sebelum run berakhir |
@@ -120,7 +121,8 @@ Setiap **pemicu automation** = run Cloud Agent baru (`source: automations`); has
 | Playbook lengkap | [`koordinasi/rutin-cursor-cloud.md`](../koordinasi/rutin-cursor-cloud.md) — prompt, cron 30 menit, push per commit uji |
 | Progres antar-run | [`koordinasi/automation-progress-akun-c.md`](../koordinasi/automation-progress-akun-c.md) — agent wajib perbarui + Telegram setelah push |
 | vs Claude | [`koordinasi/rutin.md`](../koordinasi/rutin.md) memakai `create_trigger` di sesi yang sama; Cloud = **run baru tiap jadwal**, VM dari snapshot |
-| Buat automation | Cursor → **Automations** → repo Skills → environment + secrets (`Ninerouter_key`, `tester_bot_token`, `bot_token` opsional) → cron **`*/30 * * * *`** → prompt dari rutin-cursor-cloud.md → **Open Pull Request OFF** → Enable → **Run now** |
+| Buat automation | Cursor → **Automations** → repo Skills → environment + secrets → cron **`*/30 * * * *`** → branch opsional UI = **`cursor/iterasi-otomatis-akun-c-8b42`** → prompt dari rutin-cursor-cloud.md → **Open Pull Request OFF** → Enable → **Run now** |
+| Branch legacy | `cursor/iterasi-otomatis-akun-c-*` lama di origin — [`koordinasi/catatan-branch-legacy-automation-akun-c.md`](../koordinasi/catatan-branch-legacy-automation-akun-c.md) |
 | API agent | Tidak ada tool buat automation dari run; lookup id: MCP `cursor-cloud` → `get-automation` |
 | Push | **Segera setiap commit `uji:`** + push akhir run untuk commit lain; tanpa push pekerjaan hilang saat VM recycle |
 | Telegram 242 | Satu pesan ringkas setelah push uji (skor, verdik, branch, commit); format di automation-progress-akun-c.md |

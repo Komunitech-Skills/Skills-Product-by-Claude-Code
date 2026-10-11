@@ -6,6 +6,8 @@ Log ringkas **antar-run** untuk jadwal **Cursor Automations**. Setiap run = VM b
 
 **Agent (Akun C):** baca file ini di **LANGKAH NOL**; perbarui setelah **setiap push** (khususnya commit `uji:`).
 
+**Branch kanonik (run automation/jadwal):** `cursor/iterasi-otomatis-akun-c-8b42` — tulis branch ini di metadata Telegram dan kolom Branch tabel log kecuali papan-tugas/chat pemilik menetapkan branch one-off. Jangan buat branch `cursor/iterasi-otomatis-akun-c-HHMM` per run.
+
 ---
 
 ## Dashboard antrean Akun C
@@ -76,7 +78,7 @@ bash koordinasi/alat-uji/progress-akun-c.sh
 [Akun C auto]
 
 Waktu (UTC): YYYY-MM-DDTHH:MMZ
-Branch: cursor/<nama>-8b42
+Branch: cursor/iterasi-otomatis-akun-c-8b42
 Commit: <hash 7 char>
 
 Progress
@@ -101,7 +103,7 @@ Berikutnya
 [Akun C auto]
 
 Waktu (UTC): YYYY-MM-DDTHH:MMZ
-Branch: cursor/<nama>-8b42
+Branch: cursor/iterasi-otomatis-akun-c-8b42
 Commit: <hash 7 char>
 
 Progress
@@ -124,7 +126,7 @@ Berikutnya
 [Akun C auto]
 
 Waktu (UTC): YYYY-MM-DDTHH:MMZ
-Branch: cursor/<nama>-8b42
+Branch: cursor/iterasi-otomatis-akun-c-8b42
 Commit: <hash 7 char>
 
 Progress
@@ -151,7 +153,7 @@ MSG="$(cat <<'EOF'
 [Akun C auto]
 
 Waktu (UTC): 2026-10-11T06:30Z
-Branch: cursor/cloud-md-8b42
+Branch: cursor/iterasi-otomatis-akun-c-8b42
 Commit: abc1234
 
 Progress
@@ -186,6 +188,7 @@ python3 tg.py sendMessage chat_id=-1004407409583 message_thread_id=242 "text=${M
 | Overlap run | Bila Run History masih **Running** saat jadwal berikutnya → **`0 * * * *`** (tiap jam) atau **`15 */2 * * *`** |
 | Automation UUID | _(isi pemilik dari URL dashboard)_ |
 | Playbook | `koordinasi/rutin-cursor-cloud.md` |
+| Branch kanonik | **`cursor/iterasi-otomatis-akun-c-8b42`** (field branch opsional di UI Automation) |
 
 ---
 
@@ -206,5 +209,5 @@ _(Agent: sisipkan baris baru di bawah header tabel; run terbaru paling atas.)_
 _(Agent: timpa baris ini setiap akhir run — 1–3 bullet prioritas dari `papan-tugas.md`.)_
 
 - Uji ulang `cari-prospek-web` v1.0.2 (antrean `- [ ]`, keputusan 24 tahap 2).
-- Pemilik: tempel ulang **Agent Instructions** (blok Progress + `progress-akun-c.sh`).
+- Pemilik: tempel ulang **Agent Instructions** (branch kanonik + LANGKAH NOL checkout `-B`); set field branch UI = `cursor/iterasi-otomatis-akun-c-8b42`.
 - Backlog `siap diuji` berikutnya yang ditugaskan ke Akun C di papan/catalog.
