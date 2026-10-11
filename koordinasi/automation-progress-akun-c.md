@@ -20,7 +20,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-11 ~03:15 | `cursor/iterasi-otomatis-akun-c-0315` | (run ini) | Gabung uji persiapan-jual v1.0.1 + log C5 | 6,0→9,0 subset v1.0.1 | LULUS | ya |
+| 2026-10-11 ~03:15 | `cursor/iterasi-otomatis-akun-c-0315` | 6a5447d4 | Gabung uji persiapan-jual v1.0.1 + papan C1/C2/C5 | 6,0→9,0 subset v1.0.1 | LULUS | ya |
 | 2026-10-10 ~23:15 | `cursor/uji-c5-tagih-piutang-8b42` | a295800b | tagih-piutang v1.0.7 (konfirmasi S1/S4/S5) | 6,7 → 8,3 | LULUS | ya |
 | 2026-10-10 ~22:15 | `cursor/uji-persiapan-jual-v101-8b42` | 19d38c02 | C5 uji v1.0.1 fokus T1+S4 | 6,0→9,0 subset | LULUS | ya |
 | 2026-10-10 ~15:45 | `cursor/uji-c5-tagih-piutang-8b42` | c31a1f26 | cek-risiko-dan-asuransi-usaha v1.0.2 | 6,6 → 9,0 | LULUS | ya |
