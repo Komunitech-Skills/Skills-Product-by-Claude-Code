@@ -4,9 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default; tutup branch timestamp lama; update `catalog.csv` / promosi persiapan-jual v1.0.1 & cari-prospek 1.0.2.
-2. **Pemilik** — jawab keputusan **no. 26** (pilot G11b 4 pesan) dan **no. 27** (`koordinasi/usulan-gelombang-12-promo-2026-10-11.md`).
-3. **Akun C** — pra-cek TG G12: `notebook-riset-lokal` (1 tersisa); jangan kirim gelombang tanpa setuju no. 26/27.
+1. **Pemilik** — jawab keputusan **no. 26** (pilot G11b 4 pesan) dan **no. 27** (G12 = 5 skill, pra-cek **5/5 LOLOS** — `pracek-telegram-g12-2026-10-11.md`).
+2. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default; tutup branch timestamp lama; update `catalog.csv` / promosi.
+3. **Akun C** — bila pemilik setuju no. 27: siapkan gelombang 12 (topik baru, restart gateway, **jangan kirim** tanpa persetujuan eksplisit di 242).
 4. **Opsional** — uji platform asli C5; tidak iterasi OC skill C5 lagi.
 
 ## Format Telegram (thread 242) — wajib multiline
@@ -42,6 +42,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-11 ~10:15 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | Pra-cek TG G12 `notebook-riset-lokal` | 785 char | LOLOS TG | ya |
 | 2026-10-11 ~09:46 | `cursor/iterasi-otomatis-akun-c-8b42` | 80582f11 | Pra-cek TG G12 `fider-masukan-pelanggan` | 1795 char | LOLOS TG | ya |
 | 2026-10-11 ~09:17 | `cursor/iterasi-otomatis-akun-c-8b42` | 9205e132 | Pra-cek TG G12 `laporan-otomatis-terjadwal` | 1877 char | LOLOS TG | ya |
 | 2026-10-11 ~08:47 | `cursor/iterasi-otomatis-akun-c-8b42` | cb3d6cc7 | Pra-cek TG G12 `rangkaian-pesan-pelanggan` | 3638 char | LOLOS TG | ya |

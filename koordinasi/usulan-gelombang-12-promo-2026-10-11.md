@@ -19,7 +19,7 @@ Urut selisih terbesar, **hanya skill yang realistis di bot Telegram** (tanpa ser
 | 13 | `rangkaian-pesan-pelanggan` | 3 → 8,25 | +5,25 | **LOLOS pra-cek** 3638 char — `pracek-telegram-g12-2026-10-11.md` |
 | 14 | `laporan-otomatis-terjadwal` | 3,5 → 8,6 | +5,1 | **LOLOS pra-cek** 1877 char — `pracek-telegram-g12-2026-10-11.md` |
 | 20 | `fider-masukan-pelanggan` | 5 → 9 | +4 | **LOLOS pra-cek** 1795 char (mock Fider) — `pracek-telegram-g12-2026-10-11.md` |
-| 29 | `notebook-riset-lokal` | 4,5 → 8,25 | +3,75 | Teks; hindari klaim file lokal di TG |
+| 29 | `notebook-riset-lokal` | 4,5 → 8,25 | +3,75 | **LOLOS pra-cek** 785 char (mock ON di 5055) — `pracek-telegram-g12-2026-10-11.md` |
 
 **Cadangan** (selisih tinggi tapi butuh sistem luar / risiko demo): `siyuan-sop`, `odoo-usaha`, `inventree-gudang`, `kanboard-papan-kerja` — tunda ke gelombang khusus "software pengganti SaaS" setelah uji manusia platform.
 

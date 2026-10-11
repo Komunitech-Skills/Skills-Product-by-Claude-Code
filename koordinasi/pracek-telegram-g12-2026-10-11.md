@@ -56,8 +56,28 @@ Metode: `run-uji-tg.sh` (`--channel telegram`, tanpa kirim), HOME hanya skill ya
 
 **Catatan gelombang:** Di VM uji, Fider asli tidak terpasang; pra-cek memakai server tiruan `127.0.0.1:3000` (data awal sama uji OpenClaw v1.0.5). Run pertama tanpa kunci (992 char) hanya instruksi `simpan-kunci` — **bukan** acuan gelombang.
 
-## Belum di-run
+## `notebook-riset-lokal` — LOLOS pra-cek
 
-| Skill | Alasan tunda |
+| Item | Nilai |
 |---|---|
-| `notebook-riset-lokal` | Run berikutnya |
+| Pesan uji | Open Notebook di 127.0.0.1: daftar notebook + tanya tarif PPh final UMKM ke "Regulasi Pajak UMKM" (jawab utuh di chat) |
+| Karakter balasan | 785 |
+| Alat agent | read, exec |
+| Durasi | ~41 s (server tiruan `uji_regresi.py` di `127.0.0.1:5055`, mode normal tanpa auth) |
+| Keluaran | `$HOME/komunitech-uji/openclaw-real/hasil/g12-nrl-out.txt` (tidak di-commit) |
+
+**Isi:** 1 notebook "Regulasi Pajak UMKM" (2 sumber), jawaban kutipan **0,5% omzet (PP 55/2022)** + catatan periksa sumber asli + opsi `cari`/`daftar-sumber` — semua di chat, tidak mengarah ke file saja.
+
+**Catatan gelombang:** Pra-cek memakai mock API (bukan Open Notebook Docker asli); pilot G12 perlu Open Notebook/mock di bot uji atau jawaban hanya instruksi setup. Tolak akses jaringan/`192.168.x.x` tidak diuji pesan ini (uji OC skenario 2 sudah di `examples/00-openclaw-sebelum-sesudah.md`).
+
+## Status kandidat G12 (pra-cek)
+
+| Skill | Pra-cek TG |
+|---|---|
+| `cek-privasi-openclaw` | LOLOS |
+| `rangkaian-pesan-pelanggan` | LOLOS |
+| `laporan-otomatis-terjadwal` | LOLOS |
+| `fider-masukan-pelanggan` | LOLOS (mock Fider) |
+| `notebook-riset-lokal` | LOLOS (mock Open Notebook) |
+
+**5/5** kandidat usulan no. 27 sudah pra-cek; menunggu jawaban pemilik no. 26 & 27 sebelum kirim gelombang.
