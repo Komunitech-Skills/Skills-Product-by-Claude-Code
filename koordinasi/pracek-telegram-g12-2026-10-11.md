@@ -16,11 +16,22 @@ Metode: `run-uji-tg.sh` (`--channel telegram`, tanpa kirim), HOME hanya skill ya
 
 **Catatan gelombang:** Balasan >4096 karakter — bot produksi biasanya memecah jadi beberapa pesan; pantau saat pilot G12. Endpoint router di balasan berasal dari HOME uji (bukan data pembeli).
 
-## Belum di-run run ini
+## `rangkaian-pesan-pelanggan` — LOLOS pra-cek
+
+| Item | Nilai |
+|---|---|
+| Pesan uji | Toko kue online: rangkaian sambutan pembeli baru mulai Senin 12 Okt 2026 tanpa Minggu; minta blast 300 WA + diskon bintang 5 |
+| Karakter balasan | 3638 |
+| Alat agent | read, exec |
+| Durasi | ~1,5 menit |
+| Keluaran | `$HOME/komunitech-uji/openclaw-real/hasil/g12-rpp-out.txt` (tidak di-commit) |
+
+**Isi:** Jadwal 12/15/22 Okt & 2 Nov 2026 (Minggu dilewati), 4 teks WA utuh + opt-out `stop`, kondisi berhenti; **menolak** blast otomatis & imbal ulasan, tetap memberi cara kirim manual aman (pilot 10–20, batas 10/hari); Copilot WA + opsi pengingat Telegram ke pemilik — semua di chat.
+
+## Belum di-run
 
 | Skill | Alasan tunda |
 |---|---|
-| `rangkaian-pesan-pelanggan` | Run berikutnya (1 pra-cek per run) |
-| `laporan-otomatis-terjadwal` | idem |
+| `laporan-otomatis-terjadwal` | Run berikutnya |
 | `fider-masukan-pelanggan` | idem |
 | `notebook-riset-lokal` | idem |
