@@ -9,12 +9,27 @@ berkas.json: [{"nama": "Kebakaran", "kemungkinan": 2, "dampak": 5, "kerugian_rp"
 kemungkinan dan dampak: bilangan bulat 1-5. kerugian_rp opsional.
 bisa_diasuransikan: opsional (default true); false untuk risiko tanpa asuransi umum
 (mis. akun marketplace dibekukan, orang kunci keluar).
+kategori: opsional. "bpjs" = risiko karyawan cedera/sakit/kecelakaan kerja; kolom asuransi diisi
+label BPJS otomatis. Tanpa field ini, nama risiko yang jelas soal karyawan cedera/sakit/kecelakaan
+kerja dikenali otomatis. "umum" = matikan pengenalan otomatis.
 Angka: tulis 3000000 atau 3.000.000 (titik = ribuan); desimal ditolak.
 """
 import argparse
 import json
 import re
 import sys
+
+LABEL_BPJS = ("BPJS: kewajiban pemberi kerja, cek aturan terbaru "
+              "(JKK untuk kecelakaan kerja; BPJS Kesehatan untuk sakit)")
+RESPONS_BPJS = "Kurangi (K3, perlengkapan kerja) + daftarkan BPJS karyawan"
+KATEGORI_SAH = ("umum", "bpjs")
+_PEKERJA = r"(karyawan|pegawai|pekerja|buruh|staf|staff|kasir|koki|barista|mekanik|teknisi|kurir|pelayan|asisten)"
+_KERJA = r"cedera kerja|kecelakaan kerja|\bk3\b"
+_KONDISI = r"cedera|kecelakaan|sakit|luka|tertusuk|terpeleset|terjepit"
+_POLA_BPJS = re.compile(_KERJA + "|" + _PEKERJA + r"\b[^|]{0,40}(" + _KONDISI + ")", re.IGNORECASE)
+# bukan risiko BPJS: korban pelanggan/pihak luar, pemilik, atau orang kunci yang keluar
+_POLA_BUKAN = re.compile(r"pelanggan|pembeli|tamu|pengunjung|konsumen|pemilik|owner|pemasok|supplier|"
+                         r"keluar|pindah|resign|mundur", re.IGNORECASE)
 
 PERINGKAT = [(15, "KRITIS"), (10, "TINGGI"), (5, "SEDANG"), (1, "RENDAH")]
 
@@ -30,8 +45,17 @@ def tingkat(skor):
     return "RENDAH"
 
 
-def respons(k, d, skor, kerugian=None, dana=None, asuransi_ada=True):
+def jenis_bpjs(nama, kategori=None):
+    """True bila risiko ini soal karyawan cedera/sakit/kecelakaan kerja (label BPJS)."""
+    if kategori is not None:
+        return kategori == "bpjs"
+    return bool(_POLA_BPJS.search(nama)) and not _POLA_BUKAN.search(nama)
+
+
+def respons(k, d, skor, kerugian=None, dana=None, asuransi_ada=True, bpjs=False):
     """Kembalikan (respons, perlu_asuransi). Aturan eksplisit, lihat SKILL.md."""
+    if bpjs:
+        return RESPONS_BPJS, LABEL_BPJS
     besar = d >= 4 or (kerugian is not None and dana is not None and kerugian > dana)
     if skor <= 4 and not besar:
         return "Terima (cukup dana cadangan)", "Tidak"
@@ -70,10 +94,15 @@ def hitung_risiko(daftar, dana=None):
         ada = r.get("bisa_diasuransikan", True)
         if not isinstance(ada, bool):
             raise ValueError(f"{r['nama']}: bisa_diasuransikan harus true atau false")
-        resp, asuransi = respons(k, d, skor, kr, dana, ada)
-        hasil.append({"nama": str(r["nama"]).strip(), "kemungkinan": k, "dampak": d,
+        kat = r.get("kategori")
+        if kat is not None and kat not in KATEGORI_SAH:
+            raise ValueError(f"{r['nama']}: kategori harus salah satu dari {', '.join(KATEGORI_SAH)}")
+        nama = " ".join(str(r["nama"]).replace("|", "/").split())
+        bpjs = jenis_bpjs(nama, kat)
+        resp, asuransi = respons(k, d, skor, kr, dana, ada, bpjs)
+        hasil.append({"nama": nama, "kemungkinan": k, "dampak": d,
                       "skor": skor, "tingkat": tingkat(skor), "respons": resp,
-                      "perlu_asuransi": asuransi, "kerugian_rp": kr})
+                      "perlu_asuransi": asuransi, "kerugian_rp": kr, "bpjs": bpjs})
     hasil.sort(key=lambda x: (-x["skor"], -x["dampak"], x["nama"]))
     return hasil
 
@@ -95,7 +124,8 @@ def hitung_dana(biaya, bulan, kas=None, cicil=None):
             raise ValueError("kas harus bilangan bulat >= 0")
         out["kas"] = kas
         out["kekurangan"] = max(0, target - kas)
-        out["tercukupi_bulan"] = round(kas / total, 1) if total else None
+        # bulat setengah-ke-atas ke 1 desimal, murni bilangan bulat (tanpa float)
+        out["tercukupi_bulan"] = ((kas * 20 + total) // (2 * total)) / 10 if total else None
         if cicil is not None:
             if isinstance(cicil, bool) or not isinstance(cicil, int) or not 1 <= cicil <= 120:
                 raise ValueError("jumlah bulan cicilan harus bilangan bulat 1-120")
@@ -124,10 +154,15 @@ def parse_biaya(teks):
     for bagian in teks.split(","):
         if not bagian.strip():
             continue
+        if re.fullmatch(r"\s*\d+\s*", bagian):
+            raise ValueError(f"'{bagian.strip()}' berdiri sendiri. Koma memisahkan antar biaya, jadi "
+                             "jangan pakai koma/desimal di angka: tulis 3000000 atau 3.000.000")
         if "=" not in bagian:
             raise ValueError(f"format biaya salah: '{bagian.strip()}' (pakai Nama=Angka)")
         n, v = bagian.rsplit("=", 1)
         n = n.strip()
+        if not n:
+            raise ValueError(f"nama biaya kosong di '{bagian.strip()}'. Tulis Nama=Angka, mis. Sewa=3000000")
         if n.lower() in {k.lower() for k in biaya}:
             raise ValueError(f"nama biaya '{n}' dobel. Jumlahkan dulu jadi satu angka "
                              "atau beri nama berbeda (mis. Gaji kasir, Gaji koki)")
@@ -156,7 +191,7 @@ def main(argv=None):
     try:
         if args.cmd == "risiko":
             try:
-                with open(args.berkas, encoding="utf-8") as f:
+                with open(args.berkas, encoding="utf-8-sig") as f:
                     data = json.load(f)
             except (OSError, json.JSONDecodeError) as e:
                 raise ValueError(f"berkas tidak bisa dibaca: {e}")
@@ -176,7 +211,9 @@ def main(argv=None):
             if "kas" in o:
                 print(f"Kas cadangan saat ini: {rp(o['kas'])} {kata_cukup(o)}")
                 print(f"Kekurangan: {rp(o['kekurangan'])}")
-                if "cicilan" in o:
+                if o.get("cicil_bulan") and o["kekurangan"] == 0:
+                    print("Kas sudah mencukupi target; tidak perlu cicilan menabung.")
+                elif "cicilan" in o:
                     print(f"Cicilan menabung: {rp(o['cicilan'])} per bulan selama {o['cicil_bulan']} bulan")
     except ValueError as e:
         print(f"Input tidak valid: {e}", file=sys.stderr)

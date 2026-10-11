@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+# Folder scratchpad sesi (wajib): export SCRATCHPAD=/path/ke/scratchpad
+SP=${SCRATCHPAD:?isi SCRATCHPAD dengan folder scratchpad sesi}
 # uji-tg.sh HOME SESI KELUAR "pesan" -> seperti uji.sh tetapi dengan --channel telegram (tanpa --deliver): konteks kanal Telegram tanpa mengirim apa pun
 # Terisolasi (mount namespace): repo, scratchpad, home uji lain, dan transkrip Claude disembunyikan dari agent.
-R=/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real
+R=$SP/openclaw-real
 HN=$1; S=$2; O=$3; shift 3
 H=$R/homes/$HN
 mkdir -p $R/hasil

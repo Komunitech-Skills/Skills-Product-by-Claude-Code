@@ -7,7 +7,10 @@
 | Gempa bumi | Wilayah rawan gempa (cek peta resmi BMKG/BNPB) | Pengikat rak tinggi ke dinding, barang berat di bawah, titik kumpul |
 | Kehilangan/pencurian | Stok, uang tunai, pencurian internal | CCTV, kunci ganda, setor kas harian, hitung stok berkala, pisahkan akses uang |
 | Tanggung jawab ke pelanggan | Makanan bikin sakit, barang cacat, pelanggan terpeleset | Standar kebersihan, catat bahan, lantai antislip, kebijakan retur tertulis |
-| Kesehatan/kecelakaan kerja | Karyawan sakit atau cedera | Daftarkan BPJS Kesehatan dan BPJS Ketenagakerjaan (cek kewajiban terbaru), perlengkapan K3 dasar |
+| Kesehatan/kecelakaan kerja | Karyawan sakit atau cedera | Daftarkan BPJS Kesehatan dan BPJS Ketenagakerjaan (JKK, JKM, JHT, JP, JKP; cek kewajiban terbaru), perlengkapan K3 dasar |
+| Kesalahan layanan (usaha jasa/profesi: klinik, bengkel, salon, konsultan) | Layanan keliru, kelalaian, pelanggan menuntut | Prosedur tertulis dan persetujuan pelanggan, catatan layanan, izin praktik dan sertifikasi berlaku, tanya agen soal tanggung gugat profesi |
+| Kerusakan mesin/alat kunci | Alat mati mendadak (dental unit, mesin espresso, kompresor, freezer) | Servis berkala, UPS/stabilizer, nomor teknisi, alat cadangan; tanya agen soal jaminan kerusakan mesin |
+| Barang titipan pelanggan rusak/hilang | Kendaraan di bengkel, barang servis, laundry | Tanda terima dan foto kondisi saat diterima, tempat simpan terkunci, batas waktu pengambilan; tanya agen soal barang titipan |
 | Bergantung satu orang | Pemilik/koki/teknisi tunggal sakit atau keluar | Tulis resep/SOP, latih satu cadangan, kontak darurat |
 | Bergantung satu pemasok/platform/pelanggan | Pemasok berhenti, akun marketplace dibekukan, pelanggan besar pergi | Pemasok kedua, kanal penjualan lain, daftar pelanggan sendiri |
 | Listrik padam, gangguan alat | Mesin kunci mati | Genset/UPS untuk alat kunci, nomor teknisi |

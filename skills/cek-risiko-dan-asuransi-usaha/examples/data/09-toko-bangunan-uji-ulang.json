@@ -1,0 +1,7 @@
+[{"nama":"Kebakaran (cat, thinner, kabel)","kemungkinan":2,"dampak":5},
+{"nama":"Piutang tukang/kontraktor macet","kemungkinan":4,"dampak":3,"bisa_diasuransikan":false},
+{"nama":"Karyawan cedera angkat semen/besi","kemungkinan":3,"dampak":3},
+{"nama":"Pencurian stok/uang","kemungkinan":3,"dampak":3},
+{"nama":"Pick-up antar kecelakaan","kemungkinan":2,"dampak":4},
+{"nama":"Barang jatuh menimpa pelanggan","kemungkinan":2,"dampak":4},
+{"nama":"Banjir merusak semen/gypsum","kemungkinan":2,"dampak":3}]
