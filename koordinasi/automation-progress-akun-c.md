@@ -1,12 +1,12 @@
 # Progress otomatis — Akun C (Cursor Cloud)
 
-Log run cron/automation. Pembaruan terakhir: **2026-10-10 ~21:50 UTC**.
+Log run cron/automation. Pembaruan terakhir: **2026-10-11 ~01:50 UTC**. Automation id: `dec048a2-c487-11f1-ac31-5e2d0494121f`.
 
 ## Run berikutnya (prioritas)
 
-1. **Pemilik:** jawab keputusan **no. 26** (gelombang 12 — 8 pesan); pra-cek G12 **lengkap** (`koordinasi/pracek-telegram-g12-2026-10-10.md`, termasuk cari-prospek-web).
-2. **Akun A/B:** merge branch `cursor/iterasi-otomatis-akun-c-2145` (uji C5 + cari-prospek) → default; `catalog.csv` / promosi.
-3. **Akun C:** bila no. 26 **setuju** — jalankan G12 (topik baru, `skills: []` TANPA / satu skill DENGAN, restart gateway, maks 8 pesan).
+1. **Pemilik:** jawab keputusan **no. 26** (`koordinasi/usulan-keputusan-26-gelombang-12-2026-10-11.md` — 4 skill, 8 pesan).
+2. **Akun A/B:** merge branch iterasi terbaru (`cursor/iterasi-otomatis-akun-c-0145` atau `2145`) → default; `catalog.csv` / promosi untuk uji C5 + cari-prospek v1.0.2.
+3. **Akun C:** bila no. 26 **setuju** — jalankan G12; bila belum — lanjut merge/sync uji branch yang belum masuk default (`cursor/uji-c5-tagih-piutang-8b42` opsional).
 
 ## Format Telegram (thread 242)
 
@@ -20,6 +20,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan | Verdik | Telegram 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-11 ~01:50 | `cursor/iterasi-otomatis-akun-c-0145` | _(commit run)_ | sync 2145 + usulan keputusan 26 G12 | — | docs | ya |
 | 2026-10-10 ~21:50 | `cursor/iterasi-otomatis-akun-c-2145` | bccde4d8 | C5 gabung uji + pra-cek cari-prospek TG | — | LOLOS TG | ya |
 | 2026-10-10 ~20:15 | `cursor/iterasi-otomatis-akun-c-1945` | be03f32e | G12 pra-cek TG iterasi + cek-risiko | — | LOLOS TG | ya |
 | 2026-10-10 ~18:50 | `cursor/iterasi-otomatis-akun-c-ea49` | 15e3770b | S5 usulan G12 + pra-cek TG 2 skill | — | usulan | ya |
