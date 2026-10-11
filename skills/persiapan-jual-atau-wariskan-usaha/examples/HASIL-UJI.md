@@ -25,7 +25,7 @@ Tanpa skill laba warung Bu Sri dihitung mentah (±Rp187–281 jt bersih); dengan
 
 ## Cacat per keparahan
 **Sedang**
-- S1: output sangat panjang (~9,5 rb karakter) — di Telegram mungkin perlu ringkasan dulu (uji konteks Telegram belum dijalankan).
+- ~~S1: output sangat panjang (~9,5 rb karakter) — di Telegram mungkin perlu ringkasan dulu (uji konteks Telegram belum dijalankan).~~ **Ditutup 2026-10-10:** pra-cek TG skenario 1 → 10.254 karakter utuh di chat (`07-uji-konteks-telegram.md`).
 
 **Ringan**
 - S2: gaji pemilik "dicampur" belum dihitung ulang ke angka pasti (skill minta data di akhir).

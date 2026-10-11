@@ -1,12 +1,11 @@
-# Progress otomatis — Akun C (Cursor Cloud)
+# Log otomasi Akun C (Cursor Cloud, cron)
 
-Log run cron/automation. Pembaruan terakhir: **2026-10-11 ~04:15 UTC**.
+Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini + `papan-tugas.md`, kerja satu item uji/koordinasi, **commit+push**, perbarui tabel di bawah, kirim Telegram topik 242 bila ada uji.
 
 ## Run berikutnya (prioritas)
 
-1. **Pemilik:** jawab **keputusan no. 26** (gelombang tampilan 4 pesan tangani + kelayakan) — `koordinasi/keputusan-usulan-gelombang-g11b-promo-2026-10-11.md`.
-2. **Akun A/B:** gabung PR branch uji Akun C ke default + `catalog.csv` / promosi.
-3. **Akun C (jika no. 26 disetujui):** gelombang pilot 4 pesan, topik baru, pra-cek `uji-tg.sh`, restart gateway.
+1. **Akun A/B** — gabung ke default: `cursor/iterasi-otomatis-akun-c-0445` (koordinasi + smoke OC 2026.10.1), plus branch uji paralel di `serah-terima-merge-akun-a-2026-10-11.md`; update `catalog.csv` / promosi (cari-prospek LULUS 6,7→8,2; keputusan 24 arsip tidak berlaku).
+2. **Akun C** — tunggu persetujuan pemilik untuk gelombang tampilan G11b; opsional: uji ulang `cari-prospek-web` satu giliran post-2026.10.1 bila Akun A minta konfirmasi lingkungan.
 
 ## Format Telegram (thread 242)
 
@@ -16,21 +15,22 @@ Log run cron/automation. Pembaruan terakhir: **2026-10-11 ~04:15 UTC**.
 
 Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.py sendMessage chat_id=-1004407409583 message_thread_id=242 text="..."`
 
-## Tabel log
+## Log run
 
-| Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan | Verdik | Telegram 242 |
+| Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-11 ~04:15 | `cursor/c1-gelombang-11b-8b42` | 9998f4d3 | merge default + papan C1–C5 + usulan keputusan 26 | — | koordinasi | ya |
-| 2026-10-10 ~18:20 | `cursor/c1-gelombang-11b-8b42` | 884a23c1 | koordinasi log otomasi + G11b msgs | — | selesai | ya |
-| 2026-10-10 ~18:10 | `cursor/web-search-cari-prospek-8b42` | 9d97e53b | cari-prospek-web v1.0.2 + C2 web_search | 6,7 → 8,2 (+1,5) | LULUS | ya |
-| 2026-10-10 ~17:00 | `cursor/c1-c3-20261010-8b42` | c42adfe5 | C1 gelombang 11b Telegram | lihat G11b doc | 2 LULUS / 2 BELUM | ya |
-| 2026-10-10 ~16:45 | `cursor/uji-c5-persiapan-jual-8b42` | 91ccead9 | persiapan-jual v1.0.1 OpenClaw | 6,0 → 8,6 (+2,6) | LULUS | ya |
-| 2026-10-10 ~15:45 | `cursor/uji-c5-tagih-piutang-8b42` | c31a1f26 | cek-risiko v1.0.2 | 6,6 → 9,0 (+2,4) | LULUS | ya |
-| 2026-10-10 ~14:15 | `cursor/uji-c5-tagih-piutang-8b42` | c04ca5b8 | tagih-piutang v1.0.7 | 6,7 → 8,5 (+1,8) | LULUS | ya |
-| 2026-10-10 ~13:17 | `cursor/uji-persiapan-jual-tg-8b42` | f7198320 | C3 persiapan-jual TG pra-cek | — | LOLOS TG | ya |
+| 2026-10-11 ~04:45 | `cursor/iterasi-otomatis-akun-c-0445` | 670590ab | Smoke web_search OC 2026.10.1 + DDG plugin; bump setup-cursor | web_search hidup | LOLOS smoke | ya |
+| 2026-10-11 ~03:45 | `cursor/iterasi-otomatis-akun-c-0345` | 56738186 | Gabung C2 examples + serah terima Akun A; smoke web_search plugin gagal API | web_fetch saja | catatan | ya |
+| 2026-10-11 ~03:15 | `cursor/iterasi-otomatis-akun-c-0315` | 6a5447d4 | Gabung uji persiapan-jual v1.0.1 + papan C1/C2/C5 | 6,0→9,0 subset v1.0.1 | LULUS | ya |
+| 2026-10-10 ~23:45 | `cursor/web-search-cari-prospek-8b42` | 9d97e53b | cari-prospek-web v1.0.2 + C2 web_search | 6,7 → 8,2 | LULUS | ya |
+| 2026-10-10 ~23:15 | `cursor/uji-c5-tagih-piutang-8b42` | a295800b | tagih-piutang v1.0.7 (konfirmasi S1/S4/S5) | 6,7 → 8,3 | LULUS | ya |
+| 2026-10-10 ~22:15 | `cursor/uji-persiapan-jual-v101-8b42` | 19d38c02 | C5 uji v1.0.1 fokus T1+S4 | 6,0→9,0 subset | LULUS | ya |
+| 2026-10-10 ~15:45 | `cursor/uji-c5-tagih-piutang-8b42` | c31a1f26 | cek-risiko-dan-asuransi-usaha v1.0.2 | 6,6 → 9,0 | LULUS | ya |
+| 2026-10-10 ~14:15 | `cursor/uji-c5-tagih-piutang-8b42` | c04ca5b8 | tagih-piutang v1.0.7 | 6,7 → 8,5 | LULUS | ya |
+| 2026-10-10 ~16:45 | `cursor/uji-persiapan-jual-tg-8b42` | ace0344f | C3 TG persiapan-jual v1.0.1 S1 | 8074 char utuh | LOLOS TG | ya |
 
 ## Catatan lingkungan
 
-- Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token`, `tavily` — SET di run 2026-10-10 sore UTC.
-- Uji OpenClaw: `export SCRATCHPAD=$HOME/komunitech-uji` + `run-uji.sh` / `run-uji-tg.sh` (bila `unshare` gagal).
-- OpenClaw prod bot uji: selaraskan versi binary vs config (2026.9.8 vs 2026.9.9) sebelum gelombang berikutnya — lihat `koordinasi/c2-web-search-status-2026-10-10.md`.
+- Secrets: `Ninerouter_key`, `bot_token`, `tester_bot_token` — SET (run 2026-10-11 03:45 UTC).
+- Uji OpenClaw: `SCRATCHPAD=$HOME/komunitech-uji` + `run-uji.sh` / `run-uji-tg.sh` (repo: `koordinasi/alat-uji/`) bila `unshare` gagal.
+- OpenClaw prod uji: **2026.10.1** (default `setup-cursor.sh` sejak run 04:45); plugin `@openclaw/duckduckgo-plugin` — smoke `web_search` LOLOS (detail: `koordinasi/smoke-websearch-2026-10-11-0445.md`).

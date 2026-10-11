@@ -302,25 +302,15 @@
   "tools": {
     "web": {
       "search": {
-        "provider": "tavily"
+        "enabled": true,
+        "provider": "duckduckgo"
       }
     }
   },
   "plugins": {
     "entries": {
       "duckduckgo": {
-        "enabled": false,
-        "config": {
-          "webSearch": {
-            "region": "id-id"
-          }
-        }
-      },
-      "tavily": {
-        "enabled": true,
-        "config": {
-          "webSearch": {}
-        }
+        "enabled": true
       }
     }
   }

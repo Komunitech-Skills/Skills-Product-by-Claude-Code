@@ -1,0 +1,123 @@
+# Persiapan Jual/Wariskan Usaha "Dapur Bu Sri"
+
+## 1) Ringkasan situasi dan asumsi
+- Warung makan, 9 tahun, Semarang, tempat **sewa** (bukan milik).
+- Tujuan: pensiun, usaha dioper ke orang lain, target tahun depan (saya pakai kerangka waktu 12 bulan).
+- Laba bersih (sudah dipotong gaji Bu Sri Rp4 juta/bulan): 2023 Rp96.000.000, 2024 Rp118.000.000, 2025 Rp134.000.000.
+- Asumsi yang dipakai untuk hitung nilai (semua dari Bu Sri):
+  - Gaji pemilik yang diambil: Rp4 juta/bulan → Rp48 juta/tahun (ditambahkan kembali ke laba, karena pembeli belum tentu menggaji dirinya sendiri segitu).
+  - Gaji manajer pengganti: Rp5 juta/bulan → Rp60 juta/tahun (dikurangkan, karena biaya nyata setelah serah terima).
+  - Kelipatan laba 2-3x, dari perantara yang pernah menawar — ini **perkiraan perantara tersebut**, bukan angka pasar yang pasti berlaku untuk warung Bu Sri.
+  - Potongan ketergantungan pemilik 15% (karena resep ada di kepala Bu Sri, belum tertulis).
+  - Aset Rp210.000.000, disusutkan 30% karena sudah tua.
+  - Utang KUR sisa Rp45.000.000, diasumsikan **dilunasi Bu Sri dari hasil jual** (default bila usaha dijual utuh bebas utang — beri tahu kalau maksudnya lain).
+  - Biaya notaris/perantara 5% dari harga.
+  - Kebutuhan hidup Rp8 juta/bulan x 24 bulan = Rp192.000.000.
+- Pajak atas transaksi **belum dihitung** di sini (lihat bagian 7).
+
+## 2) Daftar periksa kesiapan
+
+| Area | Status | Langkah berikut |
+|---|---|---|
+| Pembukuan 2-3 tahun | Setengah — laba bersih per tahun ada, tapi belum jelas apakah tercatat rapi dan cocok dengan mutasi rekening | Rapikan rekap kas 2023-2025 agar bisa ditunjukkan ke calon pembeli |
+| Pemisahan uang pribadi-usaha | Belum diketahui | Pastikan rekening usaha terpisah dari pribadi |
+| SOP pekerjaan inti | Belum — resep hanya di kepala Bu Sri | **Prioritas utama:** tuliskan resep, takaran, alur dapur |
+| Ketergantungan pada pemilik | Belum — sudah dipotong 15% justru karena ini | Latih calon penerus/karyawan senior memasak resep inti |
+| Aset (alat masak, freezer, etalase, motor) | Setengah — nilai disebut, kondisi "sudah tua" | Buat daftar aset dengan bukti milik (nota beli, BPKB motor) |
+| Utang (KUR) | Setengah — sisa Rp45 juta disebut | Cek ke bank: boleh dilunasi di muka? Ada denda pelunasan dipercepat? |
+| Kontrak sewa tempat | Belum diketahui | Cek sisa masa sewa dan apakah boleh dialihkan ke pemilik baru |
+| Izin (NIB dll.) | Belum diketahui | Cek NIB atas nama siapa, masih berlaku atau tidak |
+| Pelanggan/pemasok kunci | Belum diketahui | Catat pemasok bahan baku utama dan pelanggan tetap/langganan katering bila ada |
+| Karyawan | Belum diketahui | Daftar karyawan, masa kerja, hak yang tertunda (THR, pesangon bila berhenti) |
+| Aset tak berwujud (nama "Dapur Bu Sri", akun medsos/GoFood/GrabFood, nomor WA) | Belum diketahui | Catat siapa pemegang akun-akun ini |
+| Calon penerus | Belum diketahui — "orang lain" belum spesifik | Tentukan siapa, mulai dikenalkan bertahap |
+
+**3-5 prioritas pembenahan:**
+1. Tulis resep dan SOP dapur — ini risiko terbesar, karena nilai warung sangat bergantung pada hal ini.
+2. Rapikan pembukuan 2023-2025 dan pisahkan dari rekening pribadi.
+3. Cek status sewa tempat: bisa dialihkan ke pemilik baru atau tidak.
+4. Tentukan calon penerus/pembeli dan mulai perkenalkan ke pemasok.
+5. Cek ke bank soal pelunasan KUR lebih awal.
+
+## 3) Ketergantungan pada pemilik
+Bila Bu Sri tidak masuk 1 bulan: siapa yang bisa masak resep inti? Siapa yang pegang kunci, atur belanja bahan, dan hubungan ke pemasok? Ini sekarang jadi titik lemah terbesar (makanya sudah dipotong 15% dari nilai). Untuk membenahinya bisa pakai skill `sop-onboarding` (serah terima ke penerus/karyawan) dan `kas-umkm` (rapikan pembukuan).
+
+## 4) Perkiraan rentang nilai
+
+| Metode | Rentang | Rumus/catatan |
+|---|---|---|
+| Kelipatan laba normalisasi (nilai usaha berjalan, sebelum utang) | Rp176.800.000 s/d Rp265.200.000 | basis laba Rp104.000.000 x kelipatan 2-3 x (100-15)/100 |
+| Nilai aset setelah penyesuaian (batas bawah bila hanya aset dijual) | Rp147.000.000 | aset Rp210.000.000 x (100-30)/100 |
+
+Laba setelah penyesuaian per tahun: 2023 Rp84.000.000; 2024 Rp106.000.000; 2025 Rp122.000.000. Rata-rata Rp104.000.000; tahun terakhir Rp122.000.000 (lebih tinggi dari rata-rata, jadi dipakai rata-rata sebagai basis — lebih hati-hati).
+
+- **Nilai usaha 100% (sebelum utang): Rp176.800.000 s/d Rp265.200.000**
+- Utang KUR Rp45.000.000: diasumsikan dilunasi Bu Sri dari hasil jual (harga tidak berubah, tapi hasil bersih berkurang).
+- **Harga yang dibayar penerus: Rp176.800.000 s/d Rp265.200.000**
+- Setelah biaya notaris/perantara 5%: Rp167.960.000 s/d Rp251.940.000
+- **Hasil bersih ke Bu Sri (setelah biaya dan pelunasan KUR): Rp122.960.000 s/d Rp206.940.000**
+- Gambaran bila warung ditutup saja dan aset dijual lepas (bukan dijual sebagai usaha berjalan): aset dikurangi utang = Rp102.000.000 — jauh di bawah menjual sebagai usaha berjalan, jadi menjual sebagai usaha utuh lebih menguntungkan.
+- Kebutuhan hidup 24 bulan x Rp8 juta = Rp192.000.000. **Selisih hasil bersih vs kebutuhan: -Rp69.040.000 (batas bawah) s/d +Rp14.940.000 (batas atas).**
+
+**PERINGATAN:**
+- Kelipatan 2-3x adalah asumsi dari seorang perantara, bukan angka pasar yang pasti; sebaiknya dicek ke 1-2 perantara/penilai lain di Semarang sebelum dipakai sebagai patokan serius.
+- Di batas bawah rentang, hasil bersih **tidak cukup** menutupi kebutuhan hidup 2 tahun — ada selisih kurang ~Rp69 juta. Hanya di batas atas (kelipatan 3x) hasilnya cukup, dengan sisa tipis ~Rp15 juta.
+- Pajak, BPHTB (bila ada peralihan tanah/bangunan — di sini tempat sewa jadi kemungkinan tidak relevan), dan biaya lain belum dihitung; ini akan mengurangi hasil bersih lebih jauh.
+- Angka ini bahan diskusi, bukan harga pasti/jaminan laku.
+
+## 5) Pilihan struktur (tanpa memutuskan)
+- **Jual aset + nama usaha + hak sewa (bila boleh dialihkan) sekaligus**, atau jual aset saja tanpa nama usaha → tanyakan ke notaris mana yang lebih sesuai untuk usaha perorangan.
+- **Bayar sekaligus** atau **bertahap** (mis. DP + cicilan dari laba usaha ke depan) → bila bertahap, perlu perjanjian tertulis dan skema bila penerus gagal bayar — tanyakan ke notaris.
+- **Masa pendampingan Bu Sri** setelah serah terima (mis. 1-3 bulan mengajarkan resep & memperkenalkan pemasok) → bisa dimasukkan sebagai syarat dalam perjanjian, nilainya bisa dinegosiasikan terpisah dari harga jual.
+
+## 6) Rencana transisi (12 bulan)
+
+| Bulan | Fokus | Tugas konkret |
+|---|---|---|
+| 1 | Foto kondisi | Rapikan rekap laba 2023-2025; tentukan batas harga terendah yang diterima (misal tidak di bawah Rp150 juta hasil bersih) |
+| 2-3 | Rapikan | Pisahkan uang pribadi-usaha; daftar aset & bukti milik; cek sisa masa sewa dan boleh/tidak dialihkan; cek NIB |
+| 3-5 | Kurangi ketergantungan | **Tulis resep dan SOP dapur** (prioritas #1); mulai latih 1 orang (karyawan senior atau calon penerus) memasak menu inti |
+| 4-6 | Konsultasi profesional | Bawa daftar pertanyaan di bagian 7 ke notaris dan konsultan pajak |
+| 6-9 | Cari/kenalkan penerus | Kenalkan calon penerus ke pemasok bahan baku utama; mulai berbagi dokumen setelah ada perjanjian kerahasiaan |
+| 9-12 | Serah terima | Masa pendampingan; urus pengalihan NIB/izin bila perlu; umumkan ke karyawan dan pelanggan tetap |
+
+**Rencana darurat:** siapkan catatan tertulis (disimpan di tempat aman, mis. diketahui 1 orang kepercayaan) berisi: resep inti, kontak pemasok utama, lokasi kunci cadangan, dan akun GoFood/GrabFood/medsos — untuk jaga-jaga bila Bu Sri mendadak tidak bisa hadir sebelum serah terima selesai.
+
+## 7) Dokumen yang disiapkan untuk calon penerus
+- Rekap laba/kas 2023-2025 + mutasi rekening pendukung
+- Daftar aset (alat masak, freezer, etalase, motor) dengan kondisi dan bukti milik
+- Sisa utang KUR: jumlah, jatuh tempo, syarat pelunasan dipercepat
+- Kontrak sewa tempat (sisa masa, apakah boleh dialihkan)
+- NIB dan izin usaha lain
+- Daftar karyawan (bila ada) dan hak yang tertunda
+- SOP dan **resep/alur kerja inti** (bagian paling penting di sini)
+- Daftar pemasok bahan baku utama
+- Bukti kepemilikan nama "Dapur Bu Sri", akun medsos/GoFood/GrabFood, nomor WA usaha
+- Perjanjian kerahasiaan sebelum data di atas dibagikan ke calon serius (minta notaris siapkan)
+
+## 8) Pertanyaan untuk notaris & konsultan pajak
+**Notaris:**
+- Usaha perorangan seperti ini: dokumen apa yang jadi bukti peralihan (aset, nama usaha)?
+- Apakah penerus perlu NIB/izin sendiri, dan apa yang terjadi dengan NIB Bu Sri?
+- Bagaimana cara mengalihkan kontrak sewa tempat ke pemilik baru — perlu persetujuan pemilik tempat?
+- Bila suami/anak terlibat: apakah usaha ini termasuk harta bersama yang perlu persetujuan tertulis pasangan untuk dijual?
+- Bagaimana perjanjian kerahasiaan dan perjanjian masa pendampingan dibuat?
+- Bagaimana melepaskan tanggung jawab pribadi Bu Sri atas KUR setelah dilunasi — perlu surat keterangan lunas dari bank?
+
+**Konsultan pajak:**
+- Apa kewajiban pajak atas keuntungan penjualan usaha/aset ini (PPh)?
+- Apakah ada kewajiban PPN atas penjualan aset (alat masak, freezer, motor) bila Bu Sri PKP?
+- Bagaimana laporan pajak tahun-tahun lalu perlu dirapikan sebelum dijual?
+- Apakah pajak sebaiknya ikut dipertimbangkan dalam menetapkan harga terendah yang diterima?
+
+**Penilai/perantara:**
+- Kelipatan laba berapa yang wajar untuk warung makan sejenis di Semarang saat ini (konfirmasi ulang angka 2-3x)?
+- Berapa biaya jasa dan berapa lama proses biasanya?
+
+## Catatan penutup
+Dengan asumsi di atas, **perkiraan hasil bersih ke Bu Sri: Rp122.960.000 s/d Rp206.940.000** (belum dipotong pajak). Di batas bawah ini belum cukup menutupi kebutuhan hidup Rp192 juta selama 2 tahun; di batas atas baru cukup dengan sisa tipis. Titik paling menentukan adalah **SOP/resep tertulis** — karena justru itu yang membuat potongan 15% diterapkan; kalau dibereskan dalam beberapa bulan ke depan, Bu Sri bisa minta potongan ketergantungan diturunkan saat nego harga.
+
+Tiga hal yang perlu saya ketahui untuk melengkapi ini:
+1. Apakah sudah ada calon penerus tertentu, atau masih mencari?
+2. Apakah sisa KUR Rp45 juta punya jaminan pribadi (BPKB/sertifikat) yang perlu dilepas saat lunas?
+3. Apakah kontrak sewa tempat punya sisa masa yang jelas, dan boleh dialihkan ke pemilik baru?

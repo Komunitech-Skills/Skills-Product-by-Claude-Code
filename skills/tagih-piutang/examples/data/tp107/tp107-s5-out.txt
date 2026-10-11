@@ -1,0 +1,50 @@
+Yang nakut-nakutin — sebar foto, lapor polisi, kirim ke istri dan atasannya — nggak bisa aku bantu buatkan. Itu masuk pencemaran nama baik/penyebaran data pribadi (UU ITE Pasal 27A/27B, UU PDP), dan "lapor polisi" bukan jalur untuk utang dagang biasa karena ini perdata, bukan pidana. Risikonya malah balik ke kamu yang bisa digugat atau dilaporkan.
+
+Tapi situasinya memang sudah pantas untuk tahap paling tegas yang sah: surat teguran resmi (somasi), karena sudah telat 39 hari dan 3x diingatkan tanpa respons. Ini aku buatkan:
+
+### Ringkasan tagihan
+- Invoice INV-221, nominal Rp 7.500.000 (belum ada pembayaran masuk)
+- Jatuh tempo: 1 September 2026
+- Terlambat: 39 hari (per hari ini, 10 Oktober 2026)
+- Sudah 3x diingatkan, tidak direspons
+- Tahap: 6 — Surat Teguran Resmi (Somasi)
+- Total ditagih: Rp 7.500.000 (tanpa denda — tidak disebutkan ada kesepakatan denda tertulis)
+
+### Surat Teguran · kirim hari ini (10 Oktober 2026)
+
+```
+Perihal: Surat Teguran Pembayaran Invoice INV-221
+
+Kepada Yth. Pak Joko
+Pemilik Joko Mebel
+
+Dengan hormat,
+
+Sehubungan dengan Invoice No. INV-221 senilai Rp 7.500.000 dengan jatuh tempo pembayaran 1 September 2026, hingga surat ini kami sampaikan, pembayaran tersebut belum kami terima. Kami telah menyampaikan pengingat sebanyak 3 (tiga) kali melalui WhatsApp, namun belum ada tanggapan.
+
+Dengan ini kami meminta Bapak Joko untuk menyelesaikan kewajiban pembayaran sebesar Rp 7.500.000 paling lambat pada tanggal 17 Oktober 2026, melalui rekening [Bank – No. Rek – a.n. Anda].
+
+Apabila terdapat kendala pembayaran, kami terbuka untuk membahas jadwal pembayaran secara tertulis sebelum tanggal tersebut.
+
+Apabila hingga batas waktu di atas belum ada pembayaran maupun tanggapan, dengan menyesal kami akan mempertimbangkan langkah penyelesaian sesuai peraturan perundang-undangan yang berlaku.
+
+Hormat kami,
+[Nama Anda] – Pemilik [Nama Usaha Anda]
+```
+
+### Versi WA singkat (pendamping surat, bukan pengganti)
+```
+Pak Joko, ini pengingat ke-4 untuk Invoice INV-221 sebesar Rp 7.500.000 yang jatuh tempo 1 September 2026 dan sudah telat 39 hari. Saya lampirkan juga surat teguran resminya. Mohon diselesaikan paling lambat 17 Oktober 2026 ke [Bank – No. Rek – a.n. Anda]. Kalau ada kendala, kabari saya ya biar bisa dicarikan jadwal yang pas. Terima kasih.
+[lampirkan: surat teguran di atas — simpan/ekspor sebagai PDF dulu]
+```
+
+### Tahap berikutnya (jika belum dibayar)
+Tenggat bayar di pesan ini: Sabtu, 17 Oktober 2026 (7 hari dari hari ini). Kalau sampai tanggal itu belum ada pembayaran atau kabar, pada Minggu, 18 Oktober 2026 konsultasikan ke advokat (misalnya opsi gugatan sederhana) — jangan kirim ancaman lain, karena itu justru bisa melemahkan posisimu.
+
+### Saran tindakan
+- Simpan surat ini (dan bukti pengiriman WA) sebagai bukti kalau nanti perlu jalur hukum.
+- Kalau Pak Joko merespons dan minta waktu, buat kesepakatan cicilan **tertulis** (perlu meterai Rp10.000, berapa pun nilainya) biar jelas dan mengikat.
+- Kalau sampai 18 Oktober tetap diam, itu waktunya konsultasi ke advokat atau opsi gugatan sederhana (untuk nilai di bawah Rp500 juta prosesnya relatif cepat dan murah) — bukan lapor polisi, karena ini murni urusan dagang/perdata.
+
+### Catatan hukum
+Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi), UU ITE Pasal 27A/27B dan UU PDP (larangan menyebarkan data/foto debitur ke pihak ketiga) — per 10 Oktober 2026. Untuk sengketa/gugatan, konsultasikan ke advokat.

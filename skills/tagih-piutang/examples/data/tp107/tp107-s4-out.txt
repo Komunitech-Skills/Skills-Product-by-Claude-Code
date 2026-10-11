@@ -1,0 +1,13 @@
+Oke, karena "udah lama belum bayar" tapi saya belum tahu rincian pastinya, ini dua versi pesan yang bisa langsung dipakai — satu ramah, satu lebih tegas karena sudah lama nunggak:
+
+**Versi 1 — masih sopan, anggap mungkin terlewat (biasanya dipakai kalau baru telat beberapa hari):**
+"Selamat pagi, [Nama]. Kami belum menerima pembayaran invoice [No. Invoice] sebesar [Nominal] yang jatuh tempo [Tanggal jatuh tempo]. Mungkin terlewat ya, Bapak/Ibu. Jika sudah dibayar, mohon kirim bukti transfer; jika belum, boleh kami tahu perkiraan tanggal pembayarannya? Transfer bisa ke [Bank – No. Rek – a.n.]."
+
+**Versi 2 — lebih tegas, karena sudah lama (minta tanggal pasti):**
+"Selamat siang, [Nama]. Invoice [No. Invoice] sebesar [Nominal] sudah melewati jatuh tempo [Tanggal jatuh tempo] cukup lama. Mohon konfirmasi tanggal pembayaran paling lambat 2 hari kerja dari sekarang. Jika ada kendala, kami terbuka membicarakan jadwal pembayarannya. Pembayaran ke [Bank – No. Rek – a.n.]. Terima kasih."
+
+Dua-duanya sudah bisa langsung dipakai, tinggal isi kurung sikunya. Tapi kalau mau saya hitungkan persis berapa hari telat, sisa tagihan, dan pesan yang pas tahapannya, tolong jawab ini (boleh sebagian saja):
+
+1. Nama pelanggan (dan nomor invoice kalau ada) + nominal tagihannya?
+2. Tanggal jatuh temponya kapan?
+3. Sudah berapa kali diingatkan sebelumnya?

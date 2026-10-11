@@ -1,0 +1,51 @@
+Sudah saya hitung dari daftar Anda. Satu catatan dulu: **UD Maju Jaya (NT-0399) sudah lunas**, jadi tidak saya masukkan ke tagihan.
+
+### Total yang sudah telat
+- **9 nota belum lunas, total Rp 157.540.000**
+- **Yang sudah lewat jatuh tempo: 7 nota, total Rp 142.540.000**
+- Paling lama telat: Pak Haji Umar, 101 hari
+
+### Urutan yang harus ditagih duluan
+Saya urutkan berdasarkan tingkat urgensi (lama telat + riwayat pengingat), bukan sekadar besar nominal:
+
+| Urutan | Pelanggan | Sisa tagihan | Telat | Status |
+|---|---|---|---|---|
+| 1 | Pak Haji Umar | Rp 17.800.000 | 101 hari | Sudah diingatkan 3x, saatnya surat teguran resmi |
+| 2 | Pak Slamet (ruko Sudirman) | Rp 13.750.000 | 59 hari | Sudah diingatkan 2x, janji bayar tidak ditepati |
+| 3 | Bu Wati (tetangga) | Rp 640.000 | 51 hari | Belum pernah ditagih — tetangga, sebaiknya bicara langsung dulu |
+| 4 | CV Karya Mandiri | Rp 42.300.000 | 35 hari | Belum pernah ditagih — nilai besar, mulai pemberitahuan resmi |
+| 5 | Pak Anton | Rp 4.200.000 | 22 hari | Sudah diingatkan 1x |
+| 6 | Bu Ratna | Rp 2.350.000 | 12 hari | Belum pernah ditagih |
+| 7 | PT Bangun Persada | Rp 61.500.000 | 1 hari | Baru lewat sehari, cukup konfirmasi ramah |
+| - | CV Sinar Baja | Rp 14.000.000 | belum jatuh tempo (13 Okt) | Kirim pengingat H-3 nanti |
+| - | Pak Dedi | Rp 1.000.000 | belum jatuh tempo (15 Okt) | Kirim pengingat H-3 nanti |
+
+Catatan: CV Karya Mandiri sebenarnya sudah 35 hari (biasanya langsung level tegas), tapi karena belum pernah saya tagih sebelumnya, saya mulai dari level pemberitahuan resmi dulu — naik ke level somasi kalau 7 hari tidak ada respons.
+
+### Pesan WA untuk 3 nota dengan nominal terbesar
+
+**1. PT Bangun Persada — Rp 61.500.000 (telat 1 hari)**
+```
+Selamat pagi, Bapak/Ibu dari PT Bangun Persada 🙏 Kami belum menerima pembayaran untuk nota NT-0460 (termin 2 proyek gudang) sebesar Rp61.500.000 yang jatuh tempo 9 Oktober 2026. Mungkin masih dalam proses ya. Jika sudah ditransfer, mohon kirim bukti transfernya; jika belum, boleh kami tahu perkiraan tanggal pembayarannya? Transfer ke [Bank – No. Rek – a.n. Toko Anda]. Terima kasih.
+```
+
+**2. CV Karya Mandiri — Rp 42.300.000 (telat 35 hari, belum pernah ditagih)**
+```
+Selamat siang, Bapak/Ibu dari CV Karya Mandiri. Kami sampaikan bahwa nota NT-0431 senilai Rp42.300.000 telah jatuh tempo sejak 5 September 2026 dan hingga hari ini (10 Oktober 2026) belum ada pembayaran. Mohon pelunasan dapat diselesaikan paling lambat 17 Oktober 2026 ke [Bank – No. Rek – a.n. Toko Anda]. Apabila ada kendala, kami terbuka membahas jadwal pembayaran secara tertulis sebelum tanggal tersebut. Terima kasih atas perhatiannya.
+```
+Untuk nilai sebesar ini, sebaiknya Anda juga mengirim surat pemberitahuan resmi lewat email (bukan WA saja) — simpan sebagai PDF lalu lampirkan sendiri. Bisa saya buatkan teksnya kalau mau.
+
+**3. Pak Haji Umar — sisa Rp 17.800.000 dari Rp 27.800.000 (telat 101 hari, sudah diingatkan 3x)**
+```
+Selamat siang, Pak Haji Umar. Sehubungan dengan nota NT-0388 senilai Rp27.800.000 (sudah dibayar Rp10.000.000, sisa Rp17.800.000) yang jatuh tempo sejak 1 Juli 2026, kami sudah mengingatkan sebanyak 3 kali namun belum ada pelunasan. Mohon sisa tagihan ini diselesaikan paling lambat 17 Oktober 2026 ke [Bank – No. Rek – a.n. Toko Anda]. Jika hingga tanggal tersebut belum ada pembayaran atau kabar, dengan berat hati kami akan mempertimbangkan langkah penyelesaian sesuai peraturan yang berlaku. Mohon konfirmasinya, Pak. Terima kasih.
+```
+Ini sudah masuk kategori yang semestinya pakai surat teguran resmi (sudah 101 hari & 3x diingatkan tanpa hasil). Kalau sampai 17 Oktober tidak ada tanggapan, sebaiknya Anda kirim surat teguran tertulis dan pertimbangkan konsultasi ke advokat — bisa saya bantu buatkan suratnya.
+
+### Saran tindakan
+- Isi dulu nomor rekening Anda sebelum mengirim pesan-pesan di atas (sengaja saya kosongkan).
+- Pak Slamet & Bu Wati juga sudah masuk kategori lama telat — kalau mau, saya bisa buatkan pesannya juga.
+- Bu Wati itu tetangga sebelah toko — sebaiknya ngobrol langsung dulu sebelum kirim pesan tertulis yang lebih tegas.
+- Simpan setiap bukti transfer/kabar balasan supaya rekap ini tetap akurat.
+
+### Catatan hukum
+Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi) — per 10 Oktober 2026. Untuk sengketa atau langkah gugatan, konsultasikan ke advokat.

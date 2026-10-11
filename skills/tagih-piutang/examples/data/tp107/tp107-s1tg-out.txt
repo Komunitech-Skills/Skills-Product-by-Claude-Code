@@ -1,0 +1,47 @@
+Sudah saya cek daftarnya. Ringkasannya:
+
+### Urutan prioritas penagihan (dari yang paling mendesak)
+1. **Pak Haji Umar** (NT-0388) – telat 101 hari, sisa Rp17.800.000, sudah diingatkan 3x → saatnya surat teguran resmi
+2. **Pak Slamet, proyek ruko Sudirman** (NT-0412) – telat 59 hari, sisa Rp13.750.000, sudah diingatkan 2x (janji bayar 30 Sep tidak ditepati) → surat teguran resmi
+3. **Bu Wati, tetangga** (NT-0422) – telat 51 hari, sisa Rp640.000, belum pernah ditagih → pemberitahuan resmi
+4. **CV Karya Mandiri** (NT-0431) – telat 35 hari, sisa Rp42.300.000, belum pernah ditagih → pemberitahuan resmi
+5. **Pak Anton** (NT-0441) – telat 22 hari, sisa Rp4.200.000, sudah diingatkan 1x → pemberitahuan resmi
+6. **Bu Ratna** (NT-0450) – telat 12 hari, sisa Rp2.350.000 → pengingat tegas, minta tanggal pasti
+7. **PT Bangun Persada** (NT-0460) – telat 1 hari, sisa Rp61.500.000 → konfirmasi ramah dulu
+
+Belum jatuh tempo (tinggal diingatkan halus H-3): CV Sinar Baja (jatuh tempo 13 Okt, Rp14.000.000) dan Pak Dedi (jatuh tempo 15 Okt, sisa Rp1.000.000).
+
+Khusus **UD Maju Jaya**, sudah lunas — tidak perlu ditagih lagi.
+
+*Catatan: jumlah "sudah diingatkan" di atas saya baca dari kolom keterangan Anda — kalau ada yang keliru, kasih tahu saya ya.*
+
+### Total yang sudah telat
+**Rp142.540.000** dari 7 nota yang sudah lewat jatuh tempo (dari total piutang keseluruhan Rp157.540.000 untuk 9 nota yang belum lunas).
+
+### Pesan WA untuk 3 yang nilainya paling besar
+
+**1. PT Bangun Persada — Rp61.500.000 (baru telat 1 hari)**
+```
+Selamat pagi, Bapak/Ibu dari PT Bangun Persada. Kami belum menerima pembayaran invoice NT-0460 sebesar Rp61.500.000 yang jatuh tempo 9 Oktober 2026. Mungkin terlewat ya. Jika sudah ditransfer, mohon kirim bukti transfernya; jika belum, boleh kami tahu perkiraan tanggal pembayarannya? Pembayaran bisa ditransfer ke [Bank – No. Rek – a.n. toko Anda]. Terima kasih.
+```
+
+**2. CV Karya Mandiri — Rp42.300.000 (telat 35 hari, belum pernah ditagih)**
+```
+Selamat siang, Bapak/Ibu dari CV Karya Mandiri. Kami sampaikan bahwa invoice NT-0431 sebesar Rp42.300.000 sudah jatuh tempo sejak 5 September 2026 (terlambat 35 hari) dan belum ada pembayaran yang kami terima. Kami mohon pelunasan paling lambat 17 Oktober 2026 ke [Bank – No. Rek – a.n. toko Anda]. Jika ada kendala, kami terbuka membahas jadwal pembayaran secara tertulis. Terima kasih atas perhatiannya.
+```
+*(Ini tahap pemberitahuan resmi — idealnya versi lengkapnya dikirim lewat surat/email berkop, lalu WA di atas sebagai pengantar singkat.)*
+
+**3. Pak Haji Umar — Rp17.800.000 (telat 101 hari, sudah 3x diingatkan)**
+```
+Selamat siang, Bapak Haji Umar. Sehubungan dengan invoice NT-0388 senilai Rp27.800.000 yang sudah dibayar Rp10.000.000, saat ini masih ada sisa Rp17.800.000 yang telah melewati jatuh tempo 1 Juli 2026 selama 101 hari. Kami sudah mengingatkan 3 kali sebelumnya namun belum ada penyelesaian. Kami mohon pelunasan paling lambat 17 Oktober 2026 ke [Bank – No. Rek – a.n. toko Anda], atau segera hubungi kami untuk menyepakati jadwal pembayaran tertulis. Jika tidak ada tanggapan, kami akan mengirimkan surat teguran resmi. Terima kasih.
+```
+*(Ini sudah masuk tahap somasi — sebaiknya disusul surat teguran resmi tertulis yang Anda simpan sebagai PDF dan kirim/lampirkan sendiri.)*
+
+Jangan lupa isi bagian `[Bank – No. Rek – a.n. toko Anda]` sebelum dikirim.
+
+### Saran tindakan
+- Kalau Pak Haji Umar dan Pak Slamet tidak merespons dalam 7 hari, lanjutkan ke surat teguran resmi (somasi) tertulis.
+- Kalau ada yang minta dicicil, buatkan kesepakatan tertulis bermeterai Rp10.000 agar jelas secara hukum.
+- Simpan semua bukti pengingat (tanggal kirim WA) untuk jaga-jaga kalau sampai perlu jalur hukum.
+
+**Catatan:** Ini bukan nasihat hukum. Kalau sampai ke sengketa atau gugatan, sebaiknya konsultasi ke advokat.
