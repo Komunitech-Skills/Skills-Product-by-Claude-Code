@@ -12,6 +12,7 @@ Semua berkas di sini disalin dari scratchpad sesi Akun B (`/tmp/claude-0/.../scr
 | `gw-cek.sh` | Cek/nyalakan ulang gateway bot uji (dipanggil tiap giliran routine). **Perbaiki sebelum dipakai:** ganti `pkill -TERM -f openclaw-gateway` dengan kill PID persis (`pgrep -f "^openclaw-gateway$"`), karena `pkill -f` bisa mengenai proses penguji |
 | `mk-home.sh` | Buat HOME OpenClaw terpisah berisi hanya skill yang disebut (tanpa skill = sisi "sebelum"). Tambahkan guard `"${VAR:?}"` pada `rm -rf` |
 | `uji.sh` | Jalankan satu pesan di HOME tertentu secara lokal (`openclaw agent --local`), hasil ke berkas |
+| `run-uji.sh` / `run-uji-tg.sh` | Sama intent, **tanpa `unshare`** — pakai di VM Cursor Cloud bila `uji.sh` gagal "Operation not permitted" |
 | `uji-tg.sh` | Sama, tetapi dengan konteks kanal Telegram (`--channel telegram` tanpa `--deliver`) — pra-cek wajib calon gelombang |
 | `pilot/tg.py` | `tg.call('sendMessage', chat_id=-1004407409583, message_thread_id=242, text=...)` untuk laporan/keputusan ke topik "Ringkasan uji" |
 | `pilot/mktopics-g11.py`, `kirim-urut2.py`, `poll-g2.py`, `kumpul-g11.py`, `cek-status.py` | Gelombang Telegram: buat topik baru, kirim pesan berurutan dengan jeda, ambil balasan, kumpulkan transkrip. Ganti nomor gelombang & daftar pesan |

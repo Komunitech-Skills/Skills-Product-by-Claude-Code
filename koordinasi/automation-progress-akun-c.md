@@ -4,9 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **C2** — merge/push branch `cursor/web-search-cari-prospek-8b42` (web_search + uji cari-prospek 6,7→8,2 LULUS) ke alur default bila Akun A siap.
-2. **C1** — merge/push branch `cursor/c1-gelombang-11b-8b42` (laporan G11b selesai 2026-10-10).
-3. **Akun A** — update `catalog.csv` / promosi dari uji C5 + G11b (bukan tugas Akun C).
+1. **Akun A** — merge ke default: `cursor/iterasi-otomatis-akun-c-0515` (C5 examples + C2 cari-prospek + koordinasi), `cursor/c1-gelombang-11b-8b42` (G11b); update `catalog.csv` / promosi.
+2. **Akun C** — pantau keputusan pemilik di thread 242; gelombang Telegram 12 hanya setelah persetujuan (S5).
+3. **Opsional Akun C** — uji penuh 5 skenario `persiapan-jual` v1.0.1 (saat ini subset T1+S4 sudah LULUS).
 
 ## Format Telegram (thread 242)
 
@@ -20,6 +20,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-11 ~05:15 | `cursor/iterasi-otomatis-akun-c-0515` | _(setelah push)_ | Gabung artefak C2 cari-prospek-web + alat uji VM | 6,7→8,2 (ref) | LULUS | ya |
 | 2026-10-11 ~03:15 | `cursor/iterasi-otomatis-akun-c-0315` | 6a5447d4 | Gabung uji persiapan-jual v1.0.1 + papan C1/C2/C5 | 6,0→9,0 subset v1.0.1 | LULUS | ya |
 | 2026-10-10 ~23:15 | `cursor/uji-c5-tagih-piutang-8b42` | a295800b | tagih-piutang v1.0.7 (konfirmasi S1/S4/S5) | 6,7 → 8,3 | LULUS | ya |
 | 2026-10-10 ~22:15 | `cursor/uji-persiapan-jual-v101-8b42` | 19d38c02 | C5 uji v1.0.1 fokus T1+S4 | 6,0→9,0 subset | LULUS | ya |

@@ -298,5 +298,20 @@
     "lastRunVersion": "2026.9.7",
     "lastRunCommand": "doctor",
     "lastRunMode": "local"
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "duckduckgo"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "duckduckgo": {
+        "enabled": true
+      }
+    }
   }
 }
