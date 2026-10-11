@@ -20,7 +20,7 @@ Pakai `tester_bot_token` + `python3 $HOME/komunitech-uji/openclaw-real/pilot/tg.
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-11 ~07:22 | `cursor/iterasi-otomatis-akun-c-7bf3` | (push) | persiapan-jual v1.0.1 OC skenario 4–5 (6 skenario total) | 5,92→8,83 | LULUS | ya |
+| 2026-10-10-11 ~07:22 | `cursor/iterasi-otomatis-akun-c-7bf3` | bdd8fc26 | persiapan-jual v1.0.1 OC skenario 4–5 (6 skenario total) | 5,92→8,83 | LULUS | ya |
 | 2026-10-11 ~06:16 | `cursor/iterasi-otomatis-akun-c-0615` | e30c1a15 | persiapan-jual v1.0.1 OC skenario 2–3 (+4 skenario total) | 6,0→8,875 | LULUS | ya |
 | 2026-10-11 ~05:45 | `cursor/iterasi-otomatis-akun-c-0545` | 19f26848 | Sinkron branch gabungan 0515→0545; validate + regresi persiapan-jual/tagih-piutang | — | koordinasi | ya |
 | 2026-10-11 ~05:15 | `cursor/iterasi-otomatis-akun-c-0515` | 7a85f91b | Gabung artefak C2 cari-prospek-web + alat uji VM | 6,7→8,2 (ref) | LULUS | ya |
