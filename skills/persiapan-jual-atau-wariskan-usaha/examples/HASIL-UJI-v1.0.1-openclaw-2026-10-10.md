@@ -3,7 +3,7 @@
 - Tanggal: 2026-10-10
 - Penguji: Akun C (independen)
 - Platform: `openclaw (uji otomatis agent)` — OpenClaw 2026.9.8, router `claude-sonnet-5`
-- Cakupan: 2 skenario normal (warung bakso + buyout sekutu CV), bukan ulang penuh 5 skenario v1.0.0
+- Cakupan: 4 skenario OpenClaw v1.0.1 (A–B di `00-openclaw-v1.0.1-sebelum-sesudah.md`; C–D di `08-openclaw-v1.0.1-skenario-2-3.md`). Skenario jebakan & 30% saham masih acuan v1.0.0.
 - Tes script: 15/15 OK (`tests/uji_regresi.py`)
 - Detail transkrip: `00-openclaw-v1.0.1-sebelum-sesudah.md`
 
@@ -13,9 +13,11 @@
 |---|---|---|---|
 | A | Warung bakso, renovasi 2024 (T1) | 6,5 | 9,0 |
 | B | Beli bagian sekutu 40% (S4) | 5,5 | 9,0 |
-| | **Rata-rata (subset)** | **6,0** | **9,0** |
+| C | Wariskan bengkel cat | 6,5 | 9,0 |
+| D | Laundry tanpa angka | 5,5 | 8,5 |
+| | **Rata-rata (4 skenario v1.0.1)** | **6,0** | **8,875** |
 
-Selisih subset +3,0. Uji penuh v1.0.0 tetap di `HASIL-UJI.md` (LULUS 6,1→8,7).
+Selisih rata-rata +2,875. Uji penuh v1.0.0 tetap di `HASIL-UJI.md` (LULUS 6,1→8,7).
 
 ## VERDIK (perbaikan v1.0.1): **LULUS**
 

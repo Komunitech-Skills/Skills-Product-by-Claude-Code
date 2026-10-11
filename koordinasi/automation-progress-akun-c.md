@@ -4,9 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun A** — merge ke default: `cursor/iterasi-otomatis-akun-c-0545` (satu branch gabungan C1–C5 + C2 + koordinasi), plus `cursor/c1-gelombang-11b-8b42` bila belum; update `catalog.csv` / promosi (`cari-prospek-web` platform_teruji).
+1. **Akun A** — merge ke default: `cursor/iterasi-otomatis-akun-c-0615` (lanjutan 0545 + uji persiapan-jual S2–S3), plus `cursor/c1-gelombang-11b-8b42` bila belum; update `catalog.csv` / promosi.
 2. **Akun C** — pantau keputusan pemilik di thread 242; gelombang Telegram 12 hanya setelah persetujuan (S5).
-3. **Opsional Akun C** — uji penuh 5 skenario `persiapan-jual` v1.0.1 (subset T1+S4 sudah LULUS 6,0→9,0).
+3. **Opsional Akun C** — uji OC v1.0.1 skenario 04–05 (jebakan & 30% saham) bila butuh bukti penuh 5 skenario.
 
 ## Format Telegram (thread 242)
 
