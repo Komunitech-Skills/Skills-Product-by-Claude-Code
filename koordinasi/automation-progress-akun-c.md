@@ -195,7 +195,7 @@ _(Agent: sisipkan baris baru di bawah header tabel; run terbaru paling atas.)_
 
 | UTC (approx) | Branch | Commit | Ringkasan | Telegram 242 |
 |--------------|--------|--------|-----------|--------------|
-| 2026-10-11 | `cursor/cloud-md-8b42` | _(commit berikut)_ | Progress dashboard: `progress-akun-c.sh`, blok Progress di template TG | ya (setelah push) |
+| 2026-10-11 | `cursor/cloud-md-8b42` | `d7ed8425` | Progress dashboard: `progress-akun-c.sh`, blok Progress di template TG | ya (setelah push) |
 | 2026-10-11 | `cursor/cloud-md-8b42` | `c6859ed4` | Template Telegram multiline (section, bukan pipe satu baris) + Agent Instructions | ya (setelah push) |
 | 2026-10-10 | `cursor/cloud-md-8b42` | `bcd67a55` | Playbook: push per commit uji, Telegram 242, cron 30 menit | manual run docs (no TG) |
 
