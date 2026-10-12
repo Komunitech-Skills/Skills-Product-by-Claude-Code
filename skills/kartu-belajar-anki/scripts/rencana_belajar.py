@@ -22,18 +22,24 @@ def main() -> int:
     if args.kartu < 1:
         print(json.dumps({"ok": False, "error": "kartu minimal 1"}))
         return 1
+    warnings: list[str] = []
+    if args.menit <= 0:
+        warnings.append(
+            "Menit belajar 0 — rencana hanya perkiraan; set minimal 10–20 menit per hari agar realistis"
+        )
+    menit_efektif = max(1, args.menit)
     baru = max(1, min(args.baru_per_hari, args.kartu))
-    kapasitas = max(1, int(args.menit / args.menit_per_kartu_baru))
+    kapasitas = max(1, int(menit_efektif / args.menit_per_kartu_baru))
     if kapasitas < baru:
         baru = kapasitas
     hari_baru = int(math.ceil(args.kartu / baru))
-    sisa_review = max(0, args.kartu - baru)
     out = {
         "ok": True,
         "jumlah_kartu": args.kartu,
         "kartu_baru_per_hari": baru,
         "hari_selesai_kartu_baru": hari_baru,
         "menit_per_hari_disarankan": args.menit,
+        "peringatan": warnings,
         "catatan": (
             f"Hari 1–{hari_baru}: pelajari {baru} kartu baru per hari; "
             f"setelah hari 1, sisihkan ±5–10 menit review kartu kemarin (Anki otomatis bila dipakai). "
