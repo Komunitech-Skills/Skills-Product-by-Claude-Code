@@ -135,3 +135,4 @@ simulasi-cicilan-pinjaman,Keuangan & Akuntansi,kurasi,https://github.com/numpy/n
 satu-lawan-satu-dan-umpan-balik,HR,kurasi,https://github.com/ksindi/managers-playbook,CC BY 4.0 (diadaptasi),8,ecer,59000,,,1.0.1,claude-code (simulasi agent),lulus,2026-10-09
 cek-risiko-dan-asuransi-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,69000,ecer,69000,1.0.2,openclaw (uji otomatis agent),lulus,2026-10-10
 persiapan-jual-atau-wariskan-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,69000,ecer,69000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-10
+pantau-cron-openclaw,Produktivitas,orisinal,https://github.com/healthchecks/healthchecks,Proprietary Komunitech,,vip,0,,,1.0.0,,uji,2026-10-12

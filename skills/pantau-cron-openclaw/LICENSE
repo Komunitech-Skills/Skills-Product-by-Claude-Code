@@ -1,0 +1,10 @@
+Proprietary Komunitech -- (c) Komunitech (komunitech.com). Seluruh hak dilindungi.
+
+Skill ini bukan turunan kode pihak ketiga. Hak pakai pembeli diatur oleh LISENSI.txt
+yang disertakan dalam paket pembelian (watermark pembeli + kode lisensi). Dilarang
+menjual ulang atau membagikan ulang di luar ketentuan itu.
+
+Catatan: konsep umum "dead man's switch" (ping dari job + alarm bila ping tidak datang)
+terinspirasi proyek Healthchecks (BSD-3-Clause, https://github.com/healthchecks/healthchecks);
+tidak ada kode atau teks proyek itu yang disalin, sehingga tidak ada kewajiban lisensi
+BSD-3-Clause yang diwariskan. Lihat ATTRIBUTION.md.
