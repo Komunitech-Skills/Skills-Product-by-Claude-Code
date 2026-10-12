@@ -1,0 +1,14 @@
+{
+  "hari": ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"],
+  "jam_per_hari": 6,
+  "jumat_kurangi_slot": 1,
+  "durasi_menit": 40,
+  "kegiatan": [
+    {"guru": "Bu Siti", "kelas": "7A", "mapel": "Matematika", "jp": 4},
+    {"guru": "Pak Rudi", "kelas": "7A", "mapel": "Bahasa Indonesia", "jp": 3},
+    {"guru": "Bu Siti", "kelas": "7B", "mapel": "Matematika", "jp": 4},
+    {"guru": "Pak Rudi", "kelas": "7B", "mapel": "Bahasa Indonesia", "jp": 3},
+    {"guru": "Pak Agus", "kelas": "7A", "mapel": "IPA", "jp": 3},
+    {"guru": "Pak Agus", "kelas": "7B", "mapel": "IPA", "jp": 3}
+  ]
+}
