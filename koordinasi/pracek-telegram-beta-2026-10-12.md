@@ -17,8 +17,13 @@
 
 | 6 | rencana-pelajaran-guru | 1.0.11 | 8 | S1 — modul ajar IPA kelas 7 ekosistem 2 pertemuan (sama `examples/01-modul-ajar-ipa-kelas7-ekosistem.md`) | 5.617 | **LOLOS** | Modul ringkas 2 pertemuan (80 menit/JP COCOK) + LKPD 6 soal + rubrik + kunci jawaban guru **utuh di chat**; asumsi 2 JP/pertemuan; penutup baku “balas kirim file”; tidak ada path file / “isi di workspace”. |
 
-**Run berikutnya (C9):** `presentasi-data-ke-atasan`, `surat-resmi`, `cv-lamaran-ats` (output panjang); **C11** `cari-prospek-web` bot asli masih antre.
+| 7 | presentasi-data-ke-atasan | 1.0.4 | 9 | S1 — omzet Agustus–September + biaya iklan, lapor owner minta turunkan budget (sama `examples/01-omzet-turun-bulan-puasa.md`) | 4.222 | **LOLOS** | Ringkasan WA + email formal + satu halaman eksekutif + skrip bicara **utuh di chat**; omzet -23,4%, iklan +40%, rasio 12,5%→22,9% cocok skrip; tidak mengandalkan path file saja. |
 
+| 8 | surat-resmi | 1.0.3 | 8 | S1 — surat kuasa ambil BPKB CV Sinar Laras Abadi (sama `examples/01-surat-kuasa-ambil-bpkb.md`) | 2.287 | **LOLOS** | Surat kuasa lengkap (kop, nomor `018/KSA/CV-SLA/X/2026`, blok KHUSUS BPKB Avanza, tanda tangan + meterai) **utuh di chat**; NIK tidak dikarang; catatan meterai & dokumen bawa; tidak mengandalkan path file saja. |
+
+**Run berikutnya (C9):** `cv-lamaran-ats`, `proposal-kerjasama` (2 skill lagi menuju C8); **C11** `cari-prospek-web` bot asli masih antre.
+
+Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sr-tg-01-out.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
 
 ## slip-gaji-bpjs 1.0.7 — pra-cek ulang Akun B (2026-10-12)
