@@ -1,0 +1,34 @@
+# Usulan keputusan pemilik — gelombang tampilan 12 (S5, 2026-10-11)
+
+**No. 27** (lanjut no. 26 G11b pilot). Dikirim ke Telegram topik "Ringkasan uji" (242) oleh Akun C otomasi.
+
+## Konteks
+
+- Antrian **C1–C5** Akun C: **5/5 selesai** (100%).
+- Branch konsolidasi uji: **`cursor/iterasi-otomatis-akun-c-8b42`** (sinkron default 2026-10-11).
+- Gelombang 4–11 sudah menampilkan 44 skill (cek `koordinasi/telegram-gelombang-*.md`).
+- No. 26 masih menunggu jawaban pemilik (pilot 4 pesan: tangani-keberatan + kelayakan-investasi).
+
+## Kandidat G12 (belum pernah tampil, `lolos_promosi`, selisih ≥ 1,5, sesudah ≥ 8)
+
+Urut selisih terbesar, **hanya skill yang realistis di bot Telegram** (tanpa server SiYuan/Odoo/InvenTree di VM uji):
+
+| Peringkat promo | Skill | Tanpa → Dengan | Selisih | Catatan pra-cek |
+|---|---|---|---|---|
+| 4 | `cek-privasi-openclaw` | 3 → 9 | +6 | **LOLOS pra-cek** 6637 char — `pracek-telegram-g12-2026-10-11.md` |
+| 13 | `rangkaian-pesan-pelanggan` | 3 → 8,25 | +5,25 | **LOLOS pra-cek** 3638 char — `pracek-telegram-g12-2026-10-11.md` |
+| 14 | `laporan-otomatis-terjadwal` | 3,5 → 8,6 | +5,1 | **LOLOS pra-cek** 1877 char — `pracek-telegram-g12-2026-10-11.md` |
+| 20 | `fider-masukan-pelanggan` | 5 → 9 | +4 | **LOLOS pra-cek** 1795 char (mock Fider) — `pracek-telegram-g12-2026-10-11.md` |
+| 29 | `notebook-riset-lokal` | 4,5 → 8,25 | +3,75 | **LOLOS pra-cek** 785 char (mock ON di 5055) — `pracek-telegram-g12-2026-10-11.md` |
+
+**Cadangan** (selisih tinggi tapi butuh sistem luar / risiko demo): `siyuan-sop`, `odoo-usaha`, `inventree-gudang`, `kanboard-papan-kerja` — tunda ke gelombang khusus "software pengganti SaaS" setelah uji manusia platform.
+
+## Usulan no. 27 (minta jawaban pemilik)
+
+**a)** Setuju **gelombang 12 = 10 pesan** (5 skill × TANPA/DENGAN) dari tabel kandidat di atas, **topik baru** `G12 …`, pra-cek `uji-tg.sh` per skill, restart gateway, **setelah** no. 26 dijawab?
+
+**b)** G12 diganti isi: sebutkan skill (maks 5).
+
+**c)** Tunda G12 sampai merge branch `cursor/iterasi-otomatis-akun-c-8b42` ke default selesai.
+
+**Rekomendasi Akun C:** **c)** dulu bila merge belum; lalu **a)** dengan 5 skill teks di atas — selisih besar dan belum pernah tampil.
