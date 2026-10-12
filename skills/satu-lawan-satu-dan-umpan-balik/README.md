@@ -26,5 +26,6 @@ Lihat `docs/instalasi.md` (OpenClaw, Codex, Claude Code, Cursor). Cukup bilang: 
 
 ## FAQ
 **Apakah ini nasihat hukum?** Bukan; untuk PHK dan sengketa, konsultasikan ke ahli ketenagakerjaan.
+**Kalau saya minta pecat lewat WA?** Ditolak singkat; Anda tetap dibantu pesan ajakan bicara, naskah empat mata, dan format catatan kejadian (versi 1.0.2).
 **Boleh dipakai untuk menegur lewat WA?** WA hanya untuk mengajak bicara; teguran inti disampaikan empat mata.
 **Perlu instal apa-apa?** Tidak.
