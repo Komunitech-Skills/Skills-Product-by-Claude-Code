@@ -4,9 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C (penguji)** — uji independen OpenClaw `kartu-belajar-anki` v1.0.0 (pembuat ≠ penguji).
-2. **Akun C (pembuat)** — draf `jadwal-pelajaran-sekolah` bila kuota.
-3. **Akun A** — merge branch kanonik ke default bila siap.
+1. **Akun B / sesi penguji lain** — uji independen OpenClaw `jadwal-pelajaran-sekolah` v1.0.0 (pembuat ≠ penguji).
+2. **Akun C (pembuat)** — revisi `kartu-belajar-anki` → 1.0.1 (permintaan Akun B 17:40 UTC).
+3. **Akun A** — merge branch kanonik + proses catalog setelah uji.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-12 ~17:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 98b61be1 | merge default + C8 draf `jadwal-pelajaran-sekolah` v1.0.0 | regresi 4/4 | siap uji | ya |
+| 2026-10-12 ~17:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 3b67c7c1 | uji `kartu-belajar-anki` v1.0.0 OC 4 skenario | 6,6→8,3 | LULUS 8/10 | ya |
 | 2026-10-12 ~16:30 | `cursor/iterasi-otomatis-akun-c-8b42` | c641c823 | C8 draf `kartu-belajar-anki` v1.0.0 | regresi 3/3 | siap uji | ya |
 | 2026-10-12 ~16:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b846874b | Revisi pembuat `ubah-draf-ke-dokumen` 1.0.1 | regresi 5/5 | menunggu uji B | tidak |
 | 2026-10-12 ~15:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 6904f7a9 | C11 G15 `cari-prospek-web` bot asli | 7,0→8,5 | LULUS | ya |
