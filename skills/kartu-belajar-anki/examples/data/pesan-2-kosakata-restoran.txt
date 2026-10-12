@@ -1,0 +1,17 @@
+Aku pelayan baru di restoran seafood, mau hafalin kosakata Inggris buat melayani turis. Tolong bikin kartu Anki, kalau bisa ada yang model cloze (isi bagian kosong) juga. Daftarnya:
+- menu = daftar makanan
+- bill / check = tagihan
+- allergy = alergi
+- spicy = pedas
+- grilled = dibakar
+- fried = digoreng
+- steamed = dikukus
+- "Are you ready to order?" = Sudah siap memesan?
+- "Would you like something to drink?" = Mau minum apa?
+- "Please wait a moment" = Mohon tunggu sebentar
+- "Enjoy your meal" = Selamat menikmati
+- "Do you have any food allergies?" = Apakah Anda punya alergi makanan?
+- tip = uang tip/uang terima kasih
+- reservation = reservasi
+- takeaway = bawa pulang
+- refill = tambah isi ulang (minuman)
