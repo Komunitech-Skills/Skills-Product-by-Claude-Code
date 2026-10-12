@@ -167,8 +167,8 @@ Catatan pembatas yang tetap berlaku (ringkas, lengkapnya di CLAUDE.md): maks 10 
 ## Tugas Akun C (Cursor) — 2026-10-12, keputusan 26/27 disetujui + pemakaian kuota 3 hari
 | # | Tugas | Rincian | Status |
 |---|---|---|---|
-| C6 | **Pilot G11b 4 pesan** (keputusan 26, disetujui 2026-10-12) | `tangani-keberatan-pelanggan` + `kelayakan-investasi-usaha`, masing-masing TANPA/DENGAN, **topik baru**, pesan dari `pilot/msgs-g11b.json`; config `skills` per topik; restart gateway; nilai; tulis `koordinasi/telegram-gelombang-11b-pilot-<tanggal>.md`; lapor topik 242 | belum dimulai |
-| C7 | **Gelombang 12, 10 pesan** (keputusan 27, disetujui) | Sesuai `telegram-gelombang-12-prep-2026-10-11.md` (5 skill, topik baru, mock Fider/Open Notebook/CSV), dikirim **setelah C6 selesai**; nilai tanpa→dengan; `koordinasi/telegram-gelombang-12-<tanggal>.md`; lapor topik 242 | belum dimulai |
+| C6 | **Pilot G11b 4 pesan** (keputusan 26, disetujui 2026-10-12) | `tangani-keberatan-pelanggan` + `kelayakan-investasi-usaha`, masing-masing TANPA/DENGAN, **topik baru**, pesan dari `pilot/msgs-g11b-pilot.json`; config `skills` per topik; restart gateway; nilai; tulis `koordinasi/telegram-gelombang-11b-pilot-<tanggal>.md`; lapor topik 242 | **selesai 2026-10-12 (Akun C):** topik 1084–1087, 4/4 balasan utuh — `telegram-gelombang-11b-pilot-2026-10-12.md` |
+| C7 | **Gelombang 12, 10 pesan** (keputusan 27, disetujui) | Sesuai `telegram-gelombang-12-prep-2026-10-11.md` (5 skill, topik baru, mock Fider/Open Notebook/CSV), dikirim **setelah C6 selesai**; nilai tanpa→dengan; `koordinasi/telegram-gelombang-12-<tanggal>.md`; lapor topik 242 | **berikutnya** (run otomasi berikutnya) |
 | C8 | **Draf skill baru (peran PEMBUAT)**, maks 1 skill per run, setelah C6–C7 | Pilih dari `research/backlog.md` dan `research/sources/kurasi-*-2026-10-05.md` yang **belum punya folder** di `skills/`, urut skor; kandidat awal: `ubah-draf-ke-dokumen`, `kartu-belajar-anki`, `jadwal-pelajaran-sekolah` (**`pantau-cron-openclaw` diambil Akun B 2026-10-12 sebagai pembuat — jangan dikerjakan Akun C; pengujinya Akun C bila bot Akun B belum siap**). Ikuti CLAUDE.md Tahap 2–5 & 8 + `koordinasi/alat-uji/brief/maker-umum.md`; status `uji`, `examples/` kosong, baris catalog ditambah (skor kosong), tes regresi + validate.py. **Jangan menguji sendiri** — penguji: Akun B (bot `bot_testing2`) atau run Akun C lain minimal 1 run kemudian dengan HOME berbeda, dan hasilnya dicatat sebagai uji lintas-run | belum dimulai |
 | C9 | Setelah C8 ada hasil uji LULUS dari Akun B: tidak ada tindakan (Akun B yang memproses catalog/promo) | — | — |
 
@@ -176,5 +176,5 @@ Catatan pembagian bot: `bot_token` (@KTclaude1_bot) = Cursor; `bot_testing2` = A
 
 ## Catatan Akun B 2026-10-12
 - Secret bot kedua ternyata bernama `bot_token2` (bukan `bot_testing2`); nilainya ditolak Telegram (Unauthorized) → token sudah di-regenerate setelah disimpan. Menunggu pemilik mengisi ulang secret. Sampai itu, Akun B menguji lokal saja.
-- Automation Cursor tidak ada run sejak 2026-10-11 11:16 UTC (C6/C7 belum dimulai).
+- C6 pilot G11b selesai 2026-10-12; C7 gelombang 12 siap dikirim (pra-cek 5/5).
 - Akun B membuat draf `pantau-cron-openclaw` (ide Healthchecks, BSD-3, tanpa menyalin kode; tanpa server wajib) → status `uji`, penguji sesi lain.
