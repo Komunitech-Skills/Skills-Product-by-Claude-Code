@@ -1,0 +1,7 @@
+#separator:tab
+#notetype:Cloze
+Are you ready to {{c1::order}}?	Tanya ke pelanggan: sudah siap memesan?
+Would you like something to {{c1::drink}}?	Tawarkan minuman ke pelanggan
+Please wait a {{c1::moment}}	Minta pelanggan menunggu sebentar
+Enjoy your {{c1::meal}}	Ucapan sebelum pelanggan mulai makan
+Do you have any food {{c1::allergies}}?	Tanya alergi makanan sebelum memesan
