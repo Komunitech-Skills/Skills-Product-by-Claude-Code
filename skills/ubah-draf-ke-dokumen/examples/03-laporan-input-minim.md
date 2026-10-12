@@ -1,6 +1,6 @@
-# Skenario 3: input tidak lengkap (satu kalimat jadi laporan)
+# Skenario 3: input tidak lengkap (satu kalimat jadi laporan resmi)
 
-- **Tanggal uji:** 2026-10-12 (OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
+- **Tanggal uji:** 2026-10-12 (versi 1.0.1; OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
 - **Data pesan:** `data/pesan-3-laporan-minim.txt`
 
 ## Input (pesan pengguna)
@@ -9,44 +9,40 @@
 Tolong jadikan ini laporan resmi buat atasan saya: bulan ini penjualan lumayan, ada kendala pengiriman, tim kerja bagus.
 ```
 
-## Output SESUDAH (skill aktif)
+## Output SESUDAH (skill aktif) - biasa
 
-> # LAPORAN BULANAN PENJUALAN DAN OPERASIONAL
->
-> [isi kop usaha — nama usaha, alamat, kontak]
->
-> **Kepada Yth.:** [isi: nama/jabatan atasan]
-> **Dari:** [isi: nama/jabatan pelapor]
-> **Periode:** Oktober 2026
-> **Tanggal:** 12 Oktober 2026
+> Laporan Oktober 2026 ini saya susun jadi dokumen resmi siap salin. Karena belum ada data detail (angka penjualan, jenis kendala pengiriman, dll.), saya pakai placeholder `[isi: ...]` di bagian yang perlu dilengkapi — tidak saya karang.
 >
 > ---
 >
-> ## I. Ringkasan Eksekutif
+> **[isi kop usaha: Nama Usaha, Alamat, Kontak]**
+> ────────────────────────────────────────
 >
-> Secara umum, kinerja bulan ini menunjukkan hasil yang cukup baik. Penjualan tercatat lumayan meningkat dibandingkan periode sebelumnya, meskipun terdapat kendala pada proses pengiriman yang perlu mendapat perhatian. Di sisi lain, kinerja tim kerja berjalan dengan baik dan menjadi faktor pendukung utama pencapaian bulan ini.
+> **LAPORAN BULANAN**
+> **Bulan: Oktober 2026**
 >
-> ## II. Penjualan
+> Kepada Yth.
+> [isi: Nama/Jabatan Atasan]
+> di tempat
 >
-> Penjualan bulan ini berada pada level yang cukup baik dan menunjukkan tren positif. [isi: angka/persentase penjualan jika tersedia, misal nilai omzet atau perbandingan dengan bulan sebelumnya].
+> Dari: [isi: Nama Pelapor/Jabatan]
+> Perihal: Laporan Kinerja Bulan Oktober 2026
 >
-> ## III. Kendala Pengiriman
+> Dengan hormat,
 >
-> Terdapat kendala pada proses pengiriman yang berdampak pada [isi: dampak kendala — misal keterlambatan, komplain pelanggan, biaya tambahan]. Kendala ini perlu ditindaklanjuti agar tidak berulang pada periode berikutnya.
+> Bersama ini kami sampaikan laporan perkembangan usaha untuk bulan Oktober 2026 sebagai berikut:
 >
-> **Tindak lanjut yang diusulkan:**
-> - [isi: langkah perbaikan, misal evaluasi mitra ekspedisi]
-> - [isi: langkah perbaikan tambahan]
+> **1. Penjualan**
+> Penjualan bulan ini berjalan cukup baik dengan tren yang positif. [isi: rincian angka penjualan/omzet bila ingin dicantumkan, mis. Rp___ atau jumlah unit terjual]
 >
-> ## IV. Kinerja Tim
+> **2. Kendala Operasional**
+> Terdapat kendala pada proses pengiriman barang kepada pelanggan. [isi: detail kendala, misalnya keterlambatan ekspedisi, kapasitas armada, atau wilayah yang terdampak] Hal ini menjadi perhatian untuk ditindaklanjuti agar tidak berulang pada bulan berikutnya.
 >
-> Tim kerja menunjukkan performa yang baik sepanjang bulan ini, dengan koordinasi dan tanggung jawab yang terjaga dalam menjalankan operasional sehari-hari.
+> **3. Kinerja Tim**
+> Tim kerja menunjukkan performa yang baik sepanjang bulan ini, dengan koordinasi dan dedikasi yang mendukung kelancaran operasional usaha.
 >
-> ## V. Kesimpulan dan Rekomendasi
->
-> Secara keseluruhan, bulan ini mencatatkan hasil yang positif dari sisi penjualan dan kinerja tim, dengan satu area yang perlu perbaikan yaitu proses pengiriman. Direkomendasikan agar kendala pengiriman segera dievaluasi agar tidak mempengaruhi kepuasan pelanggan pada periode berikutnya.
->
-> Demikian laporan ini disampaikan untuk menjadi bahan evaluasi dan tindak lanjut.
+> **4. Penutup**
+> Demikian laporan ini kami sampaikan sebagai bahan evaluasi dan tindak lanjut. Kami terbuka terhadap arahan lebih lanjut, khususnya terkait penyelesaian kendala pengiriman di atas.
 >
 > Hormat kami,
 >
@@ -54,20 +50,21 @@ Tolong jadikan ini laporan resmi buat atasan saya: bulan ini penjualan lumayan, 
 >
 > ---
 >
-> **Perubahan yang dilakukan:**
-> - Mengubah poin singkat menjadi laporan formal berstruktur (judul, periode, ringkasan eksekutif, isi per bab, kesimpulan)
-> - Menambahkan bagian "Tindak Lanjut" untuk kendala pengiriman agar laporan lebih actionable
-> - Menambahkan placeholder `[isi: ...]` untuk data yang belum ada di draf (angka penjualan, detail kendala, nama/jabatan)
-> - Menyusun format kop, penerima, dan tanda tangan sesuai standar laporan resmi
+> Daftar perubahan yang saya rapikan:
+> - Mengubah 3 poin singkat jadi struktur laporan resmi (kop, judul, perihal, isi bernomor, penutup, tanda tangan).
+> - Memisahkan isi jadi 3 bagian: Penjualan, Kendala Operasional, Kinerja Tim.
+> - Menambahkan placeholder `[isi: ...]` untuk data yang belum ada (nama atasan/pelapor, angka penjualan, detail kendala pengiriman) — tidak saya karang angkanya.
+> - Menambahkan kalimat penutup formal yang mengarah ke tindak lanjut kendala pengiriman.
 >
-> **Asumsi & pertanyaan (maks. 3):**
-> 1. Siapa nama/jabatan atasan penerima laporan, dan nama/jabatan Anda sebagai pelapor?
-> 2. Ada angka konkret untuk penjualan (nominal/persentase kenaikan) dan detail kendala pengiriman (apa penyebabnya) yang ingin dicantumkan?
-> 3. Perlu kop usaha (nama, alamat, kontak) resmi, atau biarkan sebagai placeholder?
+> Asumsi & pertanyaan (maks. 3):
+> 1. Siapa nama/jabatan atasan yang dituju, dan nama/jabatan Anda sebagai pelapor?
+> 2. Apakah ada angka penjualan (Rp atau unit) yang ingin dicantumkan, atau tetap kualitatif seperti draf?
+> 3. Mau saya tambahkan kop usaha asli (nama, alamat, kontak)?
 >
 > Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan.
 
-## Catatan
+## Catatan penguji
+- Skor: SEBELUM 5,0 -> SESUDAH 7,0.
+- Kerja dulu, placeholder `[isi: ...]`, 3 pertanyaan di akhir: baik.
+- Karangan kecil yang tersisa: "tren yang positif", "koordinasi dan dedikasi yang mendukung kelancaran operasional", "menjadi perhatian untuk ditindaklanjuti agar tidak berulang". Bertentangan dengan aturan "dilarang menambah klaim kualitatif".
 
-- Skor SEBELUM 5,5 -> SESUDAH 7,5. Bekerja dulu dengan `[isi: ...]` untuk angka/dampak/nama dan tepat 3 pertanyaan di akhir.
-- Cacat: "meningkat dibandingkan periode sebelumnya" dan "tren positif" bukan dari draf; periode Oktober 2026 diasumsikan.

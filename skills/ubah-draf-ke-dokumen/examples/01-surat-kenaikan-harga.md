@@ -1,6 +1,6 @@
-# Skenario 1: draf WA/ChatGPT jadi surat kenaikan harga (normal utama, juga konteks Telegram)
+# Skenario 1: draf WA/ChatGPT jadi surat kenaikan harga (normal utama; juga konteks Telegram)
 
-- **Tanggal uji:** 2026-10-12 (OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
+- **Tanggal uji:** 2026-10-12 (versi 1.0.1; OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
 - **Data pesan:** `data/pesan-1-surat-kenaikan-harga.txt`
 
 ## Input (pesan pengguna)
@@ -20,29 +20,28 @@ makasih banyak ya kak 🙏
 -bayu pemilik
 ```
 
-## Output SESUDAH (skill aktif)
+## Output SESUDAH (skill aktif) - biasa
 
-> Berikut surat resmi yang sudah dirapikan dengan kop usaha Anda — tinggal salin dan kirim:
+> **Dokumen lengkap:**
 >
-> ---
->
-> **KOPI SEDUH NUSANTARA**
+> ```
+> KOPI SEDUH NUSANTARA
 > Jl. Dago Asri No. 12, Bandung 40135
-> Telp. 0812-3456-7890 · Email: halo@kopiseduh-nusantara.example
-> ────────────────────────────────────────
+> Telp 0812-3456-7890 · Email halo@kopiseduh-nusantara.example
+> ────────────────────────────────────────────────
 >
 > Bandung, 12 Oktober 2026
 >
 > Perihal: Pemberitahuan Penyesuaian Harga Biji Kopi
 >
 > Yth. Pelanggan Setia Kopi Seduh Nusantara
-> di Tempat
+> di tempat
 >
 > Dengan hormat,
 >
-> Bersama surat ini, kami sampaikan bahwa mulai **1 November 2026**, Kopi Seduh Nusantara akan melakukan penyesuaian harga pada beberapa produk biji kopi kami. Penyesuaian ini kami lakukan menyusul kenaikan harga bahan baku.
+> Bersama surat ini kami sampaikan bahwa mulai tanggal **1 November 2026**, Kopi Seduh Nusantara akan menyesuaikan harga sejumlah produk biji kopi. Penyesuaian ini dilakukan karena adanya kenaikan harga bahan baku.
 >
-> Rincian harga baru adalah sebagai berikut:
+> Rincian penyesuaian harga adalah sebagai berikut:
 >
 > | Produk | Harga Lama | Harga Baru |
 > |---|---|---|
@@ -50,36 +49,85 @@ makasih banyak ya kak 🙏
 > | Robusta Lampung 250 gr | Rp45.000 | Rp49.000 |
 > | House Blend 500 gr | Rp120.000 | Rp129.000 |
 >
-> Bagi Bapak/Ibu yang melakukan pemesanan **sebelum tanggal 31 Oktober 2026**, harga yang berlaku masih mengikuti harga lama.
+> Untuk pesanan yang masuk **sebelum tanggal 31 Oktober 2026**, harga lama masih berlaku sepenuhnya.
 >
-> Apabila terdapat pertanyaan lebih lanjut, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
+> Apabila Bapak/Ibu memiliki pertanyaan, silakan menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
 >
-> Kami mengucapkan terima kasih atas kepercayaan dan dukungan Bapak/Ibu selama ini kepada Kopi Seduh Nusantara.
+> Kami mengucapkan terima kasih atas kepercayaan dan dukungan Bapak/Ibu selama ini.
+>
+> Hormat kami,
+>
+>
+> Bayu
+> Pemilik, Kopi Seduh Nusantara
+> ```
+>
+> **Perubahan yang dirapikan:**
+> - Dibuang basa-basi AI ("Tentu! Berikut ini draf suratnya ya kak 😊") dan emoji.
+> - Ditambah kop usaha sesuai yang Anda berikan.
+> - Ditambah tanggal surat, perihal, dan struktur pembuka-isi-penutup surat resmi.
+> - Daftar harga diubah jadi tabel dengan format Rupiah baku (Rp68.000, bukan "68000"/"45rb"/"120.000").
+> - Nada disesuaikan jadi formal-sopan ("kak" → "Bapak/Ibu"), tanpa mengubah angka atau fakta dari draf asli.
+> - Tanda tangan dirapikan: nama, jabatan, nama usaha.
+>
+> **Asumsi & pertanyaan:**
+> - Tidak memakai nomor surat (mis. 001/KSN/X/2026) karena draf tidak menyebutkannya — beri tahu jika Anda ingin ditambahkan.
+> - Nama lengkap "Bayu" dipakai apa adanya dari draf; sebutkan jika perlu nama lengkap/gelar untuk tanda tangan.
+> - Surat ini ditujukan umum ke "Pelanggan Setia" — beri tahu jika perlu versi dengan nama pelanggan personal.
+>
+> Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan.
+
+## Output SESUDAH (skill aktif) - konteks Telegram
+
+> **KOPI SEDUH NUSANTARA**
+> Jl. Dago Asri No. 12, Bandung 40135 · Telp 0812-3456-7890 · Email halo@kopiseduh-nusantara.example
+> ────────────────────────────────────────
+>
+> Bandung, 12 Oktober 2026
+>
+> Perihal: Pemberitahuan Penyesuaian Harga Biji Kopi
+>
+> Yth. Pelanggan Setia Kami
+> di Tempat
+>
+> Dengan hormat,
+>
+> Sehubungan dengan kenaikan harga bahan baku, kami informasikan bahwa mulai **1 November 2026** akan berlaku penyesuaian harga untuk produk biji kopi kami sebagai berikut:
+>
+> - Arabika Gayo 250 gr: dari Rp68.000 menjadi Rp75.000
+> - Robusta Lampung 250 gr: dari Rp45.000 menjadi Rp49.000
+> - House Blend 500 gr: dari Rp120.000 menjadi Rp129.000
+>
+> Pesanan yang masuk sebelum tanggal 31 Oktober 2026 masih akan dikenakan harga lama.
+>
+> Apabila ada pertanyaan, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
+>
+> Kami mengucapkan terima kasih atas kepercayaan dan dukungan Bapak/Ibu selama ini.
 >
 > Hormat kami,
 >
 > Bayu
-> Pemilik — Kopi Seduh Nusantara
+> Pemilik, Kopi Seduh Nusantara
 >
 > ---
 >
-> **Perubahan yang dirapikan:**
-> - Dihapus basa-basi chat ("Tentu!", emoji, sapaan "kak") dan diganti sapaan surat formal.
-> - Ditambahkan kop usaha, tanggal, dan perihal surat.
-> - Daftar harga diubah jadi tabel dengan format Rupiah standar (Rp68.000, dst).
-> - Kalimat disusun jadi paragraf resmi tapi tetap ramah, ditutup dengan tanda tangan "Bayu, Pemilik".
-> - Tanggal ditulis lengkap format Indonesia (1 November 2026, 31 Oktober 2026).
+> Perubahan yang dirapikan:
+> - Diberi kop usaha, tanggal surat, dan perihal (sebelumnya langsung masuk isi).
+> - Sapaan dan penutup dirapikan jadi format surat resmi ("Yth.", "Dengan hormat,", "Hormat kami,").
+> - Daftar harga diformat rapi dengan format Rupiah konsisten (Rp68.000 dst, bukan "68000"/"45rb").
+> - Emoji dan gaya chat ("Tentu! ... ya kak 😊", "🙏") dihapus, bahasa dibuat formal-sopan.
+> - Tanda tangan diberi nama lengkap jabatan "Pemilik, Kopi Seduh Nusantara" dari "-bayu pemilik".
 >
-> **Asumsi/pertanyaan:**
-> 1. Tanggal surat saya isi hari ini (12 Oktober 2026) — kalau mau tanggal lain, beri tahu saya.
-> 2. Nama penanda tangan saya tulis "Bayu, Pemilik" — kalau nama lengkap/jabatan beda, beri tahu.
-> 3. Tidak saya beri nomor surat resmi (misal 001/KSN/X/2026) — kalau perlu, saya tambahkan.
+> Asumsi: tanggal surat saya pakai tanggal hari ini (12 Oktober 2026) — ganti kalau mau tanggal lain. Kalau nama "Bayu" perlu nama lengkap, kasih tahu saya.
 >
-> Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan.
+> Isi lengkap sudah ada di atas. Kalau perlu file Word, balas "kirim file" — saya coba lampirkan.
 
-## Catatan
+## Output SESUDAH (skill aktif) - balasan "kirim file" (Telegram)
 
-- Skor SEBELUM 6,5 -> SESUDAH 8,8. Semua harga (Rp68.000->75.000, Rp45.000->49.000, Rp120.000->129.000), tanggal 1 November 2026 dan batas 31 Oktober 2026 benar.
-- Konteks Telegram: surat utuh tampil di chat, ada daftar perubahan, asumsi, 3 pertanyaan, dan kalimat baku "balas 'kirim file'" (path tidak disebut), sesuai keputusan pemilik.
-- Tanpa skill di mode biasa, agent hanya menulis ke file workspace dan isi surat tidak muncul di chat.
-- Balasan "kirim file" membuat .docx valid (`data/hasil-kirim-file-skenario1.docx`) tetapi agent menulis "File Word terlampir." padahal tidak ada alat kirim file: klaim keliru.
+> File Word-nya sudah jadi, saya lampirkan.
+
+## Catatan penguji
+- Skor: SEBELUM 7,0 -> SESUDAH 8,8.
+- Angka dan tanggal benar; tanpa nomor surat/karangan (SEBELUM mode biasa menambah nomor surat `001/KSN/X/2026`).
+- Telegram: isi utuh, tanpa path, tidak menulis "terlampir" pada giliran penawaran, tawaran "balas 'kirim file'" ada. Setelah "kirim file", file dibuat dan dilampirkan lewat payload media, **tetapi file .docx tidak valid XML** (`xmlns:r` hilang): `data/hasil-kirim-file-skenario1-v1.0.1.docx`.
+
