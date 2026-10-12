@@ -1,102 +1,70 @@
-# Contoh 2: kosakata Inggris pelayan, basic + cloze
+# Skenario 2: kosakata restoran, Basic + Cloze
 
-> Hasil uji OpenClaw 2026-10-12 oleh penguji independen (sisi SESUDAH, skill aktif). Perbandingan lengkap dengan sisi SEBELUM: `00-openclaw-sebelum-sesudah.md`.
+**Input:** `data/pesan-2-kosakata-restoran.txt`.
 
-## Masukan pengguna
+## Output SESUDAH (skill aktif, kartu-belajar-anki 1.0.1)
 
-> Aku pelayan baru di restoran seafood, mau hafalin kosakata Inggris buat melayani turis. Tolong bikin kartu Anki, kalau bisa ada yang model cloze (isi bagian kosong) juga. Daftarnya:
-> - menu = daftar makanan
-> - bill / check = tagihan
-> - allergy = alergi
-> - spicy = pedas
-> - grilled = dibakar
-> - fried = digoreng
-> - steamed = dikukus
-> - "Are you ready to order?" = Sudah siap memesan?
-> - "Would you like something to drink?" = Mau minum apa?
-> - "Please wait a moment" = Mohon tunggu sebentar
-> - "Enjoy your meal" = Selamat menikmati
-> - "Do you have any food allergies?" = Apakah Anda punya alergi makanan?
-> - tip = uang tip/uang terima kasih
-> - reservation = reservasi
-> - takeaway = bawa pulang
-> - refill = tambah isi ulang (minuman)
-
-## Keluaran di chat (SESUDAH)
-
-> Semua valid. Berikut kartunya:
+> **Ringkasan:** 21 kartu total — 16 kartu Basic (kosakata & frasa restoran) + 5 kartu Cloze (isi bagian kosong, dari kalimat-kalimat yang kamu kasih). Tag: `inggris-restoran`, `inggris-restoran-frasa`. Asumsi: "bill" dan "check" digabung jadi satu kartu (keduanya berarti tagihan, check = gaya Amerika).
 >
-> **Ringkasan:** 32 kartu — 16 Basic (kata & frasa layanan) + 16 Cloze (isi kosong, kalimat & arti). Tag: `inggris-kata`, `inggris-frasa`, `inggris-cloze`.
+> **Pratinjau (contoh):**
 >
-> **Pratinjau contoh:**
+> | Depan | Belakang |
+> |---|---|
+> | Bahasa Inggrisnya: daftar makanan? | Menu |
+> | Bahasa Inggrisnya: "Sudah siap memesan?" | Are you ready to order? |
+> | Are you ready to {{c1::order}}? | Tanya ke pelanggan: sudah siap memesan? |
+> | Please wait a {{c1::moment}} | Minta pelanggan menunggu sebentar |
 >
-> | Depan | Belakang | Jenis |
-> |---|---|---|
-> | spicy | pedas | basic |
-> | "Enjoy your meal" | Selamat menikmati | basic |
-> | Please {{c1::wait}} a moment. | Artinya: "Mohon tunggu sebentar" | cloze |
-> | The crab is {{c1::steamed}} with ginger. | Kepitingnya dikukus dengan jahe | cloze |
-> | Would you like a {{c1::refill}} on your iced tea? | Mau tambah isi ulang es teh Anda? | cloze |
+> **Rencana belajar:** 15 kartu baru/hari, 20 menit/hari → selesai kartu baru dalam **2 hari**. Hari 1: 15 kartu baru. Hari 2: 6 kartu baru sisa + mulai review kartu hari 1 (±5-10 menit). Setelah itu Anki otomatis mengatur jadwal review (spaced repetition) — tinggal buka app tiap hari dan jawab kartu yang muncul.
 >
-> **Rencana belajar** (dari script):
-> - 32 kartu, 15 kartu baru/hari → **selesai kartu baru dalam 3 hari**
-> - 20 menit/hari; hari 1–3 fokus kartu baru, setelahnya sisihkan ±5–10 menit review kartu kemarin (Anki otomatis mengatur jadwal review ini)
->
-> **Berkas TSV lengkap** (sudah tersimpan di `kartu-pelayan-seafood.tsv`):
->
+> **Blok 1 — Basic (kosakata & frasa):**
 > ```
 > #separator:tab
-> menu	daftar makanan	inggris-kata
-> bill / check	tagihan	inggris-kata
-> allergy	alergi	inggris-kata
-> spicy	pedas	inggris-kata
-> grilled	dibakar	inggris-kata
-> fried	digoreng	inggris-kata
-> steamed	dikukus	inggris-kata
-> tip	uang tip / uang terima kasih	inggris-kata
-> reservation	reservasi	inggris-kata
-> takeaway	bawa pulang	inggris-kata
-> refill	tambah isi ulang (minuman)	inggris-kata
-> "Are you ready to order?"	Sudah siap memesan?	inggris-frasa
-> "Would you like something to drink?"	Mau minum apa?	inggris-frasa
-> "Please wait a moment"	Mohon tunggu sebentar	inggris-frasa
-> "Enjoy your meal"	Selamat menikmati	inggris-frasa
-> "Do you have any food allergies?"	Apakah Anda punya alergi makanan?	inggris-frasa
-> {{c1::Are}} you ready to order?	Artinya: "Sudah siap memesan?"	inggris-cloze
-> Would you like something to {{c1::drink}}?	Artinya: "Mau minum apa?"	inggris-cloze
-> Please {{c1::wait}} a moment.	Artinya: "Mohon tunggu sebentar"	inggris-cloze
-> {{c1::Enjoy}} your meal.	Artinya: "Selamat menikmati"	inggris-cloze
-> Do you have any food {{c1::allergies}}?	Artinya: "Apakah Anda punya alergi makanan?"	inggris-cloze
-> Can I see the {{c1::menu}}, please?	Bisakah saya lihat daftar makanannya? (menu = daftar makanan)	inggris-cloze
-> Could we have the {{c1::bill}}, please?	Bolehkah kami minta tagihannya? (bill = tagihan)	inggris-cloze
-> I have a seafood {{c1::allergy}}.	Saya punya alergi makanan laut. (allergy = alergi)	inggris-cloze
-> This curry is too {{c1::spicy}} for me.	Kari ini terlalu pedas untuk saya. (spicy = pedas)	inggris-cloze
-> The salmon is {{c1::grilled}} to perfection.	Salmon ini dibakar dengan sempurna. (grilled = dibakar)	inggris-cloze
-> We serve {{c1::fried}} shrimp as an appetizer.	Kami menyajikan udang goreng sebagai pembuka. (fried = digoreng)	inggris-cloze
-> The crab is {{c1::steamed}} with ginger.	Kepitingnya dikukus dengan jahe. (steamed = dikukus)	inggris-cloze
-> Should I include the {{c1::tip}} in the bill?	Haruskah saya masukkan uang tip ke dalam tagihan? (tip = uang tip)	inggris-cloze
-> Do you have a table {{c1::reservation}} tonight?	Apakah Anda punya reservasi meja malam ini? (reservation = reservasi)	inggris-cloze
-> Would you like that for {{c1::takeaway}}?	Apakah Anda mau itu untuk dibawa pulang? (takeaway = bawa pulang)	inggris-cloze
-> Would you like a {{c1::refill}} on your iced tea?	Apakah Anda mau tambah isi ulang es teh Anda? (refill = tambah isi ulang minuman)	inggris-cloze
+> #notetype:Basic
+> Bahasa Inggrisnya: daftar makanan (yang dipegang pelanggan)?	Menu	inggris-restoran
+> Bahasa Inggrisnya: tagihan yang diminta pelanggan di akhir makan?	Bill / Check (Check = gaya Amerika)	inggris-restoran
+> Bahasa Inggrisnya: alergi (reaksi terhadap makanan tertentu)?	Allergy	inggris-restoran
+> Bahasa Inggrisnya: pedas (rasa makanan)?	Spicy	inggris-restoran
+> Bahasa Inggrisnya: dibakar (cara masak, mis. ikan bakar)?	Grilled	inggris-restoran
+> Bahasa Inggrisnya: digoreng (cara masak)?	Fried	inggris-restoran
+> Bahasa Inggrisnya: dikukus (cara masak)?	Steamed	inggris-restoran
+> Bahasa Inggrisnya: "Sudah siap memesan?"	Are you ready to order?	inggris-restoran-frasa
+> Bahasa Inggrisnya: "Mau minum apa?"	Would you like something to drink?	inggris-restoran-frasa
+> Bahasa Inggrisnya: "Mohon tunggu sebentar"	Please wait a moment	inggris-restoran-frasa
+> Bahasa Inggrisnya: "Selamat menikmati"	Enjoy your meal	inggris-restoran-frasa
+> Bahasa Inggrisnya: "Apakah Anda punya alergi makanan?"	Do you have any food allergies?	inggris-restoran-frasa
+> Bahasa Inggrisnya: uang tip / uang terima kasih untuk pelayan?	Tip	inggris-restoran
+> Bahasa Inggrisnya: reservasi (pesan meja lebih dulu)?	Reservation	inggris-restoran
+> Bahasa Inggrisnya: bawa pulang (makanan tidak dimakan di tempat)?	Takeaway	inggris-restoran
+> Bahasa Inggrisnya: tambah isi ulang minuman?	Refill	inggris-restoran
+> ```
+>
+> **Blok 2 — Cloze (isi bagian kosong, dari 5 kalimat yang paling sering dipakai):**
+> ```
+> #separator:tab
+> #notetype:Cloze
+> Are you ready to {{c1::order}}?	Tanya ke pelanggan: sudah siap memesan?
+> Would you like something to {{c1::drink}}?	Tawarkan minuman ke pelanggan
+> Please wait a {{c1::moment}}	Minta pelanggan menunggu sebentar
+> Enjoy your {{c1::meal}}	Ucapan sebelum pelanggan mulai makan
+> Do you have any food {{c1::allergies}}?	Tanya alergi makanan sebelum memesan
 > ```
 >
 > **Cara impor ke Anki:**
-> 1. Buka Anki → File → Import.
-> 2. Pilih file `kartu-pelayan-seafood.tsv`.
-> 3. Pastikan pemisah/separator = Tab.
-> 4. Untuk 16 baris pertama (kata & frasa): pilih tipe catatan **Basic**, kolom 1 = Front, kolom 2 = Back, kolom 3 = Tags.
-> 5. Untuk 16 baris cloze (yang ada `{{c1::...}}`): impor terpisah atau ganti tipe catatan ke **Cloze** sebelum impor — kolom 1 jadi Text (kalimat cloze), kolom 2 jadi Back Extra (penjelasan arti).
+> 1. Buka Anki → **File → Import**.
+> 2. Pilih file dari blok di atas (simpan masing-masing sebagai `.txt` atau `.tsv`, satu per blok).
+> 3. Pastikan pemisah **Tab**.
+> 4. Untuk blok Basic: pilih tipe catatan **Basic**, kolom 1 = Front, kolom 2 = Back, kolom 3 = Tags.
+> 5. Untuk blok Cloze: ganti tipe catatan jadi **Cloze** sebelum impor (Anki akan deteksi `{{c1::...}}` otomatis).
 >
-> **Asumsi:**
-> - "bill / check" aku gabung jadi satu kartu karena keduanya sinonim.
-> - Kartu cloze kata kerja/benda inti (menu, bill, allergy, dst.) dibuat dari kalimat contoh biar lebih kena konteks restoran, bukan cuma terjemahan literal frasa yang sudah ada basic-nya.
->
-> Pertanyaan:
-> 1. Mau kartu cloze dan basic dipisah jadi 2 file TSV (biar gampang pilih tipe catatan Cloze/Basic saat impor), atau cukup satu file seperti ini?
-> 2. Mau ditambah kosakata lain, misalnya nama-nama menu seafood (udang, cumi, kerang, dll.) atau frasa komplain tamu?
+> **Pertanyaan:**
+> 1. Mau ditambah kosakata lain, misal nama-nama seafood (udang, kepiting, cumi, dll.) atau frasa soal pembayaran (cash/card/split bill)?
+> 2. 15 kartu baru/hari sudah pas, atau mau lebih santai (misal 10/hari jadi 3 hari)?
 
 ## Catatan penguji
 
-- TSV diekstrak ke `data/hasil-sesudah-2-kosakata.tsv`; validasi ok, 32 kartu; rencana 3 hari benar.
-- Cacat: Basic dan Cloze dalam satu berkas sehingga harus diimpor dua kali dengan tipe catatan berbeda; 16 kalimat cloze dikarang sendiri (tidak ada di daftar pengguna); menyebut nama berkas.
-- Pembanding: sisi SEBELUM menghasilkan .apkg yang langsung bisa dibuka, tetapi isinya tidak tampil di chat dan jawabannya memuat path internal.
+- Basic (16) dan Cloze (5) di dua blok terpisah, masing-masing dengan `#notetype:`; masing-masing lolos validasi (`data/v101-sesudah-2-basic.tsv`, `data/v101-sesudah-2-cloze.tsv`).
+- Kelima kalimat cloze berasal dari frasa pengguna; tidak ada kalimat cloze karangan.
+- Nilai: SESUDAH 9,0 (SEBELUM 6,0).
+
+Rincian dua sisi: `00-openclaw-sebelum-sesudah.md`.
