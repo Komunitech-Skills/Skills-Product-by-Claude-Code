@@ -11,7 +11,9 @@
 
 | 3 | hitung-thr | 1.0.9 | 9 | S1 — THR Lebaran 4 karyawan CV Contoh Maju Jaya (sama `examples/01-thr-lebaran-4-karyawan.md`, CSV `karyawan.csv` di workspace) | 3.757 | **LOLOS** | Tabel rekap 4 orang + total THR Rp 16.908.333 / THR diterima Rp 16.241.833 + draf pengumuman grup (tanpa nominal pribadi) **utuh di chat**; angka cocok skrip `thr.py`. Catatan: ada path file rekap di akhir, tapi isi utama tidak mengandalkan lampiran. |
 
-**Run berikutnya (C9):** `kontrak-kerja-pkwt`, `presentasi-instan`, `rencana-pelajaran-guru` (skor 9, output panjang); **C11** `cari-prospek-web` bot asli masih antre.
+| 4 | kontrak-kerja-pkwt | 1.0.8 | 9 | S1 — toko roti Bandung, 2 pekerja produksi PKWT 1 tahun (sama `examples/01-susun-toko-roti-bandung.md`) | 10.094 | **LOLOS** | Blok hitung kompensasi (Rp 4.150.000/orang, total Rp 8.300.000) + draf PKWT Pasal 1–12 **utuh di chat**; angka kompensasi cocok `hitung_pkwt.py`; peringatan jam kerja/UMK; tidak mengandalkan path file saja. |
+
+**Run berikutnya (C9):** `presentasi-instan`, `rencana-pelajaran-guru`, `surat-resmi-dinas` (skor 9, output panjang); **C11** `cari-prospek-web` bot asli masih antre.
 
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
 
@@ -32,3 +34,4 @@ Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tid
 
 Output mentah: `scratchpad/openclaw-real/hasil/sgb7-1-out.txt`, `sgb7-2-out.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/pph21-tg-01.txt` (tidak di-commit).
+Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/pkwt-tg-01-out.txt` (tidak di-commit).
