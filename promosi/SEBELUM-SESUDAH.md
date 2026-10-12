@@ -390,7 +390,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Daftar job + langkah 'lapor selesai' + satu pengawas yang hanya mengabari Telegram bila TERLAMBAT/HILANG; backup-data HILANG (2 Minggu terlewat) dan laporan harian terlambat 40 menit ketahuan dengan hitungan tepat; bila pengatur jadwal tak bisa diakses, berhenti setelah satu kegagalan dan beri rencana siap salin 'Lanjut? ya/tidak'; permintaan memantau karyawan diam-diam ditolak dengan kalimat baku lalu tetap menyiapkan pemantauan job milik sendiri.
 - **Angka kunci:** backup-data HILANG (2 jadwal terlewat) & laporan harian terlambat 40 menit terdeteksi; skrip cocok dengan pembanding independen 1.000 + 200 kasus acak, 0 selisih.
 - **Keterangan:** VIP
-- **Catatan jujur:** Uji lokal tanpa Gateway: pemasangan nyata sampai pesan Telegram masuk belum teruji otomatis. Kata 'token' masih bocor di sebagian jawaban. 1.0.0 BELUM 5,25→6,75; 1.0.1 BELUM 4,75→7,5; 1.0.2 LULUS tipis 8,19. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12): tanpa skill tidak menjawab 20 menit, dengan skill 8, LULUS.
+- **Catatan jujur:** Uji lokal tanpa Gateway: pemasangan nyata sampai pesan Telegram masuk belum teruji otomatis. Kata 'token' masih bocor di sebagian jawaban. 1.0.0 BELUM 5,25→6,75; 1.0.1 BELUM 4,75→7,5; 1.0.2 LULUS tipis 8,19. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12): tanpa skill 4 (menjawab setelah 14 menit, klaim terpasang tidak diverifikasi), dengan skill 8, LULUS.
 
 ### Frappe Books Usaha: Pembukuan Gratis, Laporan Tinggal Tanya — 5,5 → 9
 `frappe-books-usaha` · Keuangan & Akuntansi · versi 1.0.8 · diuji 2026-10-02
