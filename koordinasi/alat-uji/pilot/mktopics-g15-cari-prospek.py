@@ -1,0 +1,41 @@
+"""Buat 2 topik forum untuk G15 cari-prospek-web (bot pertama @KTclaude1_bot)."""
+import json
+import os
+import subprocess
+import time
+
+tok = os.environ["bot_token"]
+C = "-1004407409583"
+sk = ["cari-prospek-web"]
+m = {}
+for n in sk:
+    for sisi, lab in (("sebelum", "TANPA skill"), ("sesudah", "DENGAN skill")):
+        for _ in range(4):
+            r = subprocess.run(
+                [
+                    "curl",
+                    "-s",
+                    "-X",
+                    "POST",
+                    f"https://api.telegram.org/bot{tok}/createForumTopic",
+                    "--data-urlencode",
+                    f"chat_id={C}",
+                    "--data-urlencode",
+                    f"name=G15 {n} — {lab}",
+                ],
+                capture_output=True,
+                text=True,
+            )
+            if r.stdout.strip():
+                break
+            time.sleep(3)
+        d = json.loads(r.stdout) if r.stdout.strip() else {}
+        if d.get("ok"):
+            m[f"{n}|{sisi}"] = d["result"]["message_thread_id"]
+        else:
+            print("FAIL", n, sisi, d.get("description"))
+            raise SystemExit(1)
+        time.sleep(1.5)
+out = os.path.join(os.path.dirname(__file__), "topik-g15-cari-prospek.json")
+json.dump(m, open(out, "w"), indent=1)
+print(json.dumps(m, ensure_ascii=False))
