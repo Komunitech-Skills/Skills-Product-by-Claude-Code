@@ -1,0 +1,6 @@
+#separator:tab
+Apa kepanjangan FIFO?	First In First Out — barang masuk pertama keluar dulu	sop-gudang
+Kapan FEFO wajib dipakai?	First Expired First Out — untuk barang punya tanggal kedaluwarsa	sop-gudang
+Apa tujuan stock opname bulanan?	Mencocokkan stok fisik dengan sistem dan menemukan selisih	sop-gudang
+{{c1::SKU}} adalah kode unik per varian barang di gudang.		sop-gudang
+Siapa yang menandatangani berita acara selisih opname?	Kepala gudang dan supervisor shift (fiktif contoh)	sop-gudang
