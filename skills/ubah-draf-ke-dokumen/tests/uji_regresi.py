@@ -50,5 +50,20 @@ class Docx(unittest.TestCase):
             self.assertIn("tblGrid", xml)
 
 
+class UjiDocxXml(unittest.TestCase):
+    def test_docx_xml_valid(self):
+        import zipfile, tempfile, os, subprocess, sys, xml.etree.ElementTree as ET
+        d = tempfile.mkdtemp()
+        md = os.path.join(d, "a.md"); out = os.path.join(d, "a.docx")
+        open(md, "w", encoding="utf-8").write("# Judul\n\nIsi.\n\n| A | B |\n|---|---|\n| 1 | 2 |\n")
+        skrip = os.path.join(os.path.dirname(__file__), "..", "scripts", "buat_docx.py")
+        r = subprocess.run([sys.executable, skrip, md, out], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        with zipfile.ZipFile(out) as z:
+            for n in z.namelist():
+                if n.endswith(".xml") or n.endswith(".rels"):
+                    ET.fromstring(z.read(n))  # harus XML valid (termasuk r:id di footerReference)
+
+
 if __name__ == "__main__":
     unittest.main()

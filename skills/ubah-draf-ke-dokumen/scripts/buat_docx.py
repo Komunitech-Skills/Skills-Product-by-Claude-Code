@@ -9,7 +9,7 @@ import zipfile
 from xml.sax.saxutils import escape
 
 PAGE_BREAK = "<<HALAMAN BARU>>"
-NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
+NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
 _TOKEN = re.compile(r"(\*\*.+?\*\*|(?<![*\w])\*(?!\s)[^*]+?(?<!\s)\*(?![*\w]))")
 _KOP_SEP = re.compile(r"^[-─_*]{3,}\s*$")
 

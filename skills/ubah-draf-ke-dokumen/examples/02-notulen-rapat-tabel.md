@@ -1,6 +1,6 @@
 # Skenario 2: notulen rapat dengan tabel tindak lanjut (normal kedua)
 
-- **Tanggal uji:** 2026-10-12 (OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
+- **Tanggal uji:** 2026-10-12 (versi 1.0.1; OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
 - **Data pesan:** `data/pesan-2-notulen.txt`
 
 ## Input (pesan pengguna)
@@ -19,85 +19,91 @@ keputusan: promo disetujui, anggaran iklan Rp5.000.000
 rapat berikutnya awal November, tanggal belum fix
 ```
 
-## Output SESUDAH (skill aktif)
+## Output SESUDAH (skill aktif) - biasa
 
-> # NOTULEN RAPAT EVALUASI BULANAN
->
-> **CV MAJU SENTOSA**
-> [isi: alamat lengkap] · [isi: nomor telepon] · [isi: email]
-> ────────────────────────────────────────
->
-> ## I. Keterangan Umum
->
-> | Keterangan | Detail |
-> |---|---|
-> | Agenda | Rapat Evaluasi Bulanan |
-> | Hari/Tanggal | Jumat, 2 Oktober 2026 |
-> | Waktu | 14.00 – 15.30 WIB |
-> | Tempat | Ruang Meeting Lantai 2, CV Maju Sentosa |
-> | Pemimpin Rapat | Bapak Hendra (Direktur) |
-> | Notulis | Wulan |
->
-> ## II. Peserta yang Hadir
->
-> 1. Bapak Hendra — Direktur (Pemimpin Rapat)
-> 2. Ibu Ratna — Bagian Keuangan
-> 3. Dimas — Bagian Gudang
-> 4. Sinta — Bagian Marketing
->
-> ## III. Pembahasan
->
-> **1. Evaluasi Penjualan Bulan September**
-> Penjualan bulan September 2026 tercatat sebesar Rp186.400.000, naik 8% dibandingkan bulan Agustus. Kontribusi terbesar berasal dari penjualan melalui toko online.
->
-> **2. Kondisi Stok Gudang**
-> Stok kardus kemasan di gudang menipis dan diperkirakan hanya cukup untuk sekitar 2 minggu ke depan. Diperlukan pemesanan ulang segera kepada supplier. Dimas ditugaskan untuk mengurus pemesanan tersebut, paling lambat tanggal 8 Oktober 2026.
->
-> **3. Rencana Promo Harbolnas 11.11**
-> Sinta mengusulkan rencana promo dalam rangka Harbolnas (11.11). Materi iklan ditargetkan selesai pada tanggal 24 Oktober 2026.
->
-> **4. Piutang Pelanggan**
-> Ibu Ratna melaporkan bahwa piutang dari 3 pelanggan belum lunas, dengan total Rp27.500.000. Penagihan direncanakan dilakukan minggu depan, namun penanggung jawab penagihan belum ditentukan dalam rapat ini.
->
-> ## IV. Keputusan Rapat
->
-> 1. Rencana promo Harbolnas 11.11 **disetujui**.
-> 2. Anggaran untuk iklan promo ditetapkan sebesar **Rp5.000.000**.
->
-> ## V. Tindak Lanjut
->
-> | No | Tindak Lanjut | Penanggung Jawab | Tenggat Waktu | Keterangan |
-> |---|---|---|---|---|
-> | 1 | Memesan ulang kardus kemasan ke supplier | Dimas | Paling lambat 8 Oktober 2026 | Stok menipis, sisa ±2 minggu |
-> | 2 | Menyelesaikan materi iklan promo Harbolnas 11.11 | Sinta | 24 Oktober 2026 | Anggaran Rp5.000.000 telah disetujui |
-> | 3 | Menagih piutang 3 pelanggan (total Rp27.500.000) | [isi: belum ditentukan] | Minggu depan | PIC penagihan perlu ditentukan |
-> | 4 | Menjadwalkan rapat evaluasi bulan November | [isi: belum ditentukan] | [isi: tanggal belum fix] | Rapat berikutnya awal November |
->
-> ## VI. Penutup
->
-> Rapat ditutup pukul 15.30 WIB. Demikian notulen ini dibuat untuk digunakan sebagaimana mestinya.
->
-> Mengetahui,
->
-> [Hendra, Direktur]					[Wulan, Notulis]
+> Berikut notulen rapat yang sudah dirapikan — tinggal salin ke Word:
 >
 > ---
 >
-> **Perubahan yang dirapikan:**
-> - Disusun dalam format notulen resmi dengan kop, bagian keterangan umum, peserta, pembahasan bernomor, keputusan, dan tabel tindak lanjut.
-> - Tabel tindak lanjut dibuat dengan kolom PIC, tenggat, dan keterangan agar mudah dipantau.
-> - Bagian yang belum jelas dari draf (PIC penagihan piutang, tanggal rapat berikutnya, alamat/kontak perusahaan) ditandai `[isi: ...]`, bukan dikarang.
-> - Format tanggal dan Rupiah dirapikan sesuai EYD (contoh: "Rp186.400.000", "2 Oktober 2026").
+> **CV MAJU SENTOSA**
+> [isi: alamat lengkap] · [isi: kota, kode pos]
+> Tel. [isi: nomor] · [isi: email] · [isi: website opsional]
+> ────────────────────────────────────────
+>
+> # NOTULEN RAPAT EVALUASI BULANAN
+>
+> **Hari/Tanggal:** Jumat, 2 Oktober 2026
+> **Waktu:** 14.00 – 15.30 WIB
+> **Tempat:** Ruang Meeting Lantai 2, CV Maju Sentosa
+> **Pimpinan Rapat:** Bapak Hendra (Direktur)
+> **Notulis:** Wulan
+>
+> **Peserta yang hadir:**
+> 1. Bapak Hendra — Direktur (memimpin rapat)
+> 2. Ibu Ratna — Keuangan
+> 3. Dimas — Gudang
+> 4. Sinta — Marketing
+> 5. Wulan — Notulis
+>
+> ## 1. Agenda
+> 1. Evaluasi penjualan bulan September 2026
+> 2. Kondisi stok gudang
+> 3. Persiapan promo Harbolnas 11.11
+> 4. Status piutang pelanggan
+>
+> ## 2. Pembahasan
+>
+> ### 2.1 Evaluasi Penjualan September
+> Penjualan bulan September 2026 tercatat sebesar Rp186.400.000, naik 8% dibandingkan bulan Agustus. Kontribusi terbesar berasal dari penjualan melalui toko online.
+>
+> ### 2.2 Stok Gudang
+> Dimas melaporkan bahwa stok kardus kemasan menipis dan diperkirakan hanya cukup untuk sekitar 2 minggu ke depan. Diperlukan pemesanan ulang ke supplier sesegera mungkin.
+>
+> ### 2.3 Promo Harbolnas 11.11
+> Sinta mengusulkan rencana promo untuk Harbolnas (11.11). Materi iklan ditargetkan selesai pada tanggal 24 Oktober 2026.
+>
+> ### 2.4 Piutang Pelanggan
+> Ibu Ratna melaporkan terdapat piutang dari 3 pelanggan dengan total Rp27.500.000 yang belum lunas. Penagihan direncanakan dilakukan minggu depan; penanggung jawab penagihan belum ditentukan dalam rapat.
+>
+> ## 3. Keputusan
+> 1. Promo Harbolnas 11.11 disetujui untuk dijalankan.
+> 2. Anggaran iklan promo ditetapkan sebesar Rp5.000.000.
+>
+> ## 4. Tindak Lanjut
+>
+> | No | Tindakan | PIC | Tenggat |
+> |---|---|---|---|
+> | 1 | Memesan ulang stok kardus kemasan ke supplier | Dimas | Paling lambat 8 Oktober 2026 |
+> | 2 | Menyelesaikan materi iklan promo Harbolnas 11.11 | Sinta | 24 Oktober 2026 |
+> | 3 | Menagih piutang 3 pelanggan (total Rp27.500.000) | [isi: belum ditentukan] | Minggu depan |
+>
+> ## 5. Penutup
+> Rapat ditutup pukul 15.30 WIB. Rapat evaluasi berikutnya dijadwalkan pada awal November 2026, tanggal pasti [isi: belum ditentukan].
+>
+> Ruang Meeting Lt. 2, 2 Oktober 2026
+> Notulis,
+>
+> Wulan
+>
+> ---
+>
+> **Perubahan yang dilakukan:**
+> - Ditambahkan kop usaha CV Maju Sentosa (alamat/kontak masih placeholder)
+> - Pembahasan dipecah per topik dengan sub-heading (2.1–2.4)
+> - Tabel tindak lanjut dibuat dengan PIC dan tenggat
+> - Tanggal ditulis format Indonesia, Rupiah diformat konsisten
+> - Poin piutang yang belum ada PIC ditandai `[isi: belum ditentukan]`, bukan dikarang
 >
 > **Asumsi & pertanyaan:**
-> 1. Alamat/telepon/email CV Maju Sentosa untuk kop belum saya isi — boleh dikirim datanya?
-> 2. Siapa yang akan menagih piutang 3 pelanggan tersebut?
-> 3. Apakah tanggal pasti rapat bulan November sudah ada, atau tetap dibiarkan "belum fix" di dokumen?
+> 1. Alamat/telepon/email CV Maju Sentosa untuk kop — mau saya isi apa?
+> 2. Siapa PIC penagihan piutang 3 pelanggan itu?
+> 3. Tanggal pasti rapat berikutnya awal November — sudah ada atau tetap `[isi: belum ditentukan]`?
 >
 > Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan.
 
-## Catatan
+## Catatan penguji
+- Skor: SEBELUM 5,0 -> SESUDAH 8,5.
+- Angka/tanggal benar; PIC dan tanggal yang belum diputuskan = `[isi: belum ditentukan]`; tabel 3 baris tanpa butir karangan.
+- Karangan kecil: "Dimas melaporkan bahwa ..." (draf tidak menyebut siapa yang melapor stok), "sesegera mungkin".
+- SEBELUM hanya menulis file di workspace; isi tidak ada di chat.
 
-- Skor SEBELUM 5 -> SESUDAH 8,5. Semua angka (Rp186.400.000, 8%, Rp27.500.000, Rp5.000.000), nama, tanggal (2 Oktober, 8 Oktober, 24 Oktober 2026) benar.
-- Hal yang belum diputuskan (PIC penagihan, tanggal rapat November) ditandai `[isi: ...]`, tidak dikarang. Tanpa skill: PIC dan tenggat ditebak, dan dokumen hanya di file (2 dari 2 run).
-- Cacat kecil: butir tindak lanjut ke-4 ditambah sendiri.
