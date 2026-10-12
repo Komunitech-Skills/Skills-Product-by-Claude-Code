@@ -88,6 +88,13 @@ Salin folder `kalkulator-klinis-nakes` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 8, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/790/813 — skor 6
+- Dengan skill: https://t.me/c/4407409583/791/816 — skor 8,5
+Verdik gelombang: LULUS — DENGAN menghitung MAP 100,0 dan mengklasifikasi pasien BERISIKO PREEKLAMPSIA (2 faktor sedang: usia ≥35 + MAP ≥90 → rujukan terencana sesuai Buku KIA); TANPA tidak menghitung MAP sehingga hanya menemukan 1 faktor dan menyimpulkan "pantau", padahal menurut Buku KIA pasien memenuhi kriteria rujukan terencana. Belum direview tenaga medis.
+
 ## FAQ
 **Apakah hasilnya bisa langsung jadi dasar rujukan?**
 Hasil adalah alat bantu. Kategori risiko mengikuti pedoman yang dikutip, tetapi keputusan

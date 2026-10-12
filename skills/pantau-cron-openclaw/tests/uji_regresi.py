@@ -167,6 +167,49 @@ class StatusDanToleransi(Dasar):
         self.assertIn("Semua 1 job aman.", o)
         self.assertTrue(o.isascii())
 
+    def test_laporan_pisah_bermasalah_dan_ok(self):
+        self.tambah("laporan-harian", "0 21 * * *")
+        self.tambah("tagih-piutang", "45 7 * * 1-5")
+        self.tambah("backup-data", "0 2 * * 0")
+        self.ping("laporan-harian", "2026-10-11T21:03+07:00")
+        self.ping("tagih-piutang", "2026-10-12T07:46+07:00")
+        c, o, e = jalan(self.f, "cek", "--tanpa-catat", "--sekarang", "2026-10-12T21:40+07:00")
+        self.assertIn("BERMASALAH (2 dari 3):", o)
+        self.assertIn("OK (1):", o)
+        self.assertNotIn("job bermasalah", o)
+        baris = o.splitlines()
+        i_masalah = baris.index("BERMASALAH (2 dari 3):")
+        i_ok = baris.index("OK (1):")
+        self.assertLess(i_masalah, i_ok)
+        antara = baris[i_masalah + 1:i_ok]
+        self.assertEqual(len(antara), 2)
+        self.assertTrue(any(b.startswith("- HILANG backup-data") for b in antara))
+        self.assertTrue(any(b.startswith("- TERLAMBAT laporan-harian") for b in antara))
+        sesudah_ok = baris[i_ok + 1:]
+        self.assertEqual(len(sesudah_ok), 1)
+        self.assertTrue(sesudah_ok[0].startswith("- tagih-piutang:"))
+        # tidak ada job OK di blok bermasalah, tidak ada job bermasalah di blok OK
+        self.assertFalse(any("tagih-piutang" in b for b in antara))
+        self.assertTrue(o.isascii())
+
+    def test_laporan_hanya_masalah_pisah_blok_ok(self):
+        self.tambah("harian", "0 21 * * *")
+        self.tambah("pagi", "45 7 * * *")
+        self.ping("harian", "2026-10-11T21:03+07:00")
+        self.ping("pagi", "2026-10-12T07:46+07:00")
+        c, o, e = jalan(self.f, "cek", "--hanya-masalah", "--tanpa-catat", "--sekarang", "2026-10-12T21:40+07:00")
+        baris = o.splitlines()
+        self.assertEqual(baris[1], "BERMASALAH (1 dari 2):")
+        self.assertTrue(baris[2].startswith("- TERLAMBAT harian"))
+        self.assertEqual(baris[3], "OK (1): pagi")
+
+    def test_laporan_semua_aman_tetap_ada_blok_ok(self):
+        self.tambah("harian", "0 21 * * *")
+        self.ping("harian", "2026-10-12T21:01+07:00")
+        c, o, e = jalan(self.f, "cek", "--sekarang", "2026-10-12T22:00+07:00")
+        self.assertNotIn("BERMASALAH", o)
+        self.assertIn("OK (1):", o)
+
 
 class ZonaWaktu(Dasar):
     def test_wita_dan_wit_memakai_jam_setempat(self):

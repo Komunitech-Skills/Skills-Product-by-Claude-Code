@@ -56,6 +56,13 @@ Salin folder `laporan-status-kantor` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/869/884 — skor 4,5
+- Dengan skill: https://t.me/c/4407409583/870/887 — skor 5
+Verdik gelombang: BELUM — Kedua sisi menolak nominal THR per orang di grup dengan benar, tetapi keduanya tidak memberi teks pengumuman; DENGAN malah menanyakan tanggal cuti bersama yang sudah ada di rujukan skill.
+
 ## FAQ
 **Apakah skill ini menghitung nominal THR atau gaji?**
 Tidak. Skill ini hanya menyusun teks pengumuman/laporan. Untuk menghitung nominal, gunakan

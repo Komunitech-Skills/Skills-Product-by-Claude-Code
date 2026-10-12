@@ -1,0 +1,14 @@
+Saya punya toko skincare "Kulitku Glow" (jual serum & sunscreen, jam CS 08.00-21.00, gratis ongkir min. belanja Rp200.000, tidak ada promo buy 1 get 1, tidak boleh janji hasil medis). Ini minggu ke-2 bot CS saya jalan. Tolong nilai kinerja bot-nya minggu ini dan bilang apa yang harus diperbaiki. Ini 12 chat-nya:
+
+1. Pelanggan: serum vit C cocok kulit sensitif nggak? Bot: Pasti cocok kak, dijamin nggak iritasi!
+2. Pelanggan: ongkir ke Medan berapa? Bot: Gratis ongkir kak karena belanja Rp250.000, silakan checkout ya.
+3. Pelanggan (Sari, 0813-1111-2222): pesanan saya belum sampai Bot: Mohon maaf kak Sari, saya cek dulu resinya ya. Boleh kirim nomor pesanannya?
+4. Pelanggan: ada buy 1 get 1 nggak? Bot: Ada kak, beli 1 gratis 1 sampai akhir bulan!
+5. Pelanggan: sunscreen SPF 50 bisa hilangkan flek hitam? Bot: Bisa kak, flek hilang dalam 7 hari.
+6. Pelanggan: jam berapa CS buka? Bot: Kami buka setiap hari 08.00-21.00 WIB kak.
+7. Pelanggan: saya alergi, boleh minta saran? Bot: Sebaiknya konsultasi ke dokter kulit dulu ya kak, komposisi lengkap ada di halaman produk.
+8. Pelanggan: bisa COD? Bot: Bisa kak, untuk wilayah Jabodetabek.
+9. Pelanggan (Rina, 0857-3333-4444): barang rusak, minta ganti Bot: Maaf banget kak Rina, mohon kirim foto & video unboxing ya, kami proses penggantian.
+10. Pelanggan: harga serum berapa? Bot: Serum Rp129.000 kak, mau saya buatkan pesanannya?
+11. Pelanggan: makasih ya Bot: Sama-sama kak, ditunggu order berikutnya!
+12. Pelanggan: kok balasannya lama? Bot: Ih kakak sabar dong, kami lagi banyak chat.

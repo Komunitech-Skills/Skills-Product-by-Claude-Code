@@ -38,6 +38,13 @@ Salin folder `naskah-live-jualan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 9, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/831/849 — skor 5,5
+- Dengan skill: https://t.me/c/4407409583/832/851 — skor 8
+Verdik gelombang: LULUS — DENGAN memberi rundown 30 menit bertanggal jam, tabel promo yang benar (hemat Rp7.000/20%, paket Rp26.000/pcs, hemat Rp18.000/25%), stok sebagai `[stok nyata]`, dan bank jawaban tanpa klaim karangan; TANPA mengarang klaim produk ("tanpa pengawet", "tahan lama", "paling nagih") dan menyarankan "stok terbatas" serta "tersisa X botol … buat efek urgensi".
+
 ## FAQ
 **Kenapa tidak boleh bilang "stok tinggal sedikit" untuk memancing pembeli?**
 Boleh, asalkan benar. Skill menaruh `[stok nyata]` agar host membaca angka dari layar. Stok atau hitung mundur palsu termasuk informasi menyesatkan dan bisa merugikan tokomu.

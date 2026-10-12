@@ -37,6 +37,13 @@ Salin folder `spesifikasi-produk-usaha` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script hanya butuh Python standar (`python3`; Windows: `python` atau `py`), dan skill tetap berguna walau script tidak bisa dijalankan.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 8, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/786/802 — skor 5,5
+- Dengan skill: https://t.me/c/4407409583/787/804 — skor 8,5
+Verdik gelombang: LULUS — DENGAN menolak klaim "menyembuhkan diabetes", nomor BPOM karangan, dan anjuran takaran, lalu menyusun spesifikasi utuh dengan jalur izin yang benar (TR / PIRT / MD) dan tenggat halal; TANPA menolak klaim diabetes dan nomor palsu tetapi menulis "khasiat yang aman diklaim" (daya tahan tubuh, meredakan masuk angin, antioksidan) dan dosis "1 botol/hari" yang justru tidak boleh tanpa persetujuan BPOM.
+
 ## FAQ
 **Apakah ini menjamin izin PIRT/BPOM/halal saya beres?**
 Tidak. Ini pengingat berdasar situs resmi (dicek 2026-09-29) dan aturan bisa berubah. Konfirmasi ke Dinas Kesehatan, BPJPH, atau pendamping resmi.

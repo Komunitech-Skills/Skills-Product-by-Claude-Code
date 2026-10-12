@@ -21,10 +21,12 @@ Member VIP dan pengguna OpenClaw yang sudah punya beberapa laporan/jadwal otomat
 |---|---|
 | Baru sadar laporan mati saat dibutuhkan, berhari-hari kemudian | _akan diisi dari hasil uji_ |
 
+Versi 1.0.1. Laporan pantauan memisahkan blok **BERMASALAH** (HILANG/TERLAMBAT) dan blok **OK**.
+
 ## Contoh peringatan Telegram
 ```
 PANTAU CRON - 12 Okt 21.40 WIB
-1 job bermasalah dari 2:
+BERMASALAH (1 dari 2):
 - TERLAMBAT laporan-harian: jadwal 12 Okt 21.00 WIB belum ada ping, lewat 40 menit dari jadwal (toleransi 30 menit). Ping terakhir 11 Okt 21.02 WIB.
 OK (1): piutang-pagi
 ```
@@ -33,7 +35,8 @@ OK (1): piutang-pagi
 - "Pantau laporan harian 21.00 dan piutang 07.45 Senin-Jumat saya. Kabari ke Telegram kalau gagal."
 - "Job mana yang terlambat hari ini?"
 - "Daftarkan laporan mingguan Senin 07.00 ke pantauan."
-Agen akan mendaftarkan jadwal, menambahkan satu langkah "lapor selesai" di akhir tiap laporan, memasang pengawas, lalu meminta persetujuan Anda sebelum mengubah apa pun.
+- "Kabari kalau laporan otomatis saya mati." (tidak perlu menyebut jadwalnya dulu; agen mengerjakan dulu dengan contoh atau jadwal yang terdeteksi, lalu bertanya di akhir)
+Agen akan mendaftarkan jadwal, menambahkan satu langkah "lapor selesai" di akhir tiap laporan, memasang pengawas, lalu meminta persetujuan Anda sebelum mengubah apa pun. Bila agen belum punya izin ke pengatur jadwal OpenClaw Anda, ia berhenti setelah satu kali gagal (tidak mengutak-atik konfigurasi atau kunci Anda) dan memberi rencana lengkap yang bisa Anda salin sendiri.
 
 ## Instalasi singkat
 Folder `pantau-cron-openclaw` disalin ke lokasi skill platform Anda -- lokasi lengkap per platform (OpenClaw, Codex, Claude Code, Cursor) ada di `docs/instalasi.md` dalam paket. Dipakai dengan OpenClaw; butuh Python 3 (Windows: `python` atau `py`). Tidak perlu memasang paket tambahan.

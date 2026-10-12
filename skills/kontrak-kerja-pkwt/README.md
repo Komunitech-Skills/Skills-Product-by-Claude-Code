@@ -42,6 +42,13 @@ Salin folder `kontrak-kerja-pkwt` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03.
+- Tanpa skill: https://t.me/c/4407409583/580/594 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/581/597 — skor: lihat catatan gelombang
+Verdik gelombang: — — TANPA melewatkan uang kompensasi PKWT; DENGAN menghitung kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = Rp21.115.591 (selisih Rp3,5 juta).
+
 ## FAQ
 **Apakah kontrak dari skill ini pasti sah dan aman?**
 Draf disusun mengikuti UU 13/2003 sebagaimana diubah UU 6/2023, PP 35/2021, dan Putusan MK 168/PUU-XXI/2023 (dicek 26 September 2026). Hasilnya tetap draf, bukan nasihat hukum. Keabsahan juga bergantung pada fakta di lapangan, misalnya apakah pekerjaannya memang bersifat sementara. Untuk kasus penting, mintalah Disnaker atau konsultan hukum ketenagakerjaan meninjaunya.
