@@ -42,7 +42,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-12 ~11:05 | `cursor/iterasi-otomatis-akun-c-8b42` | (run) | C9 pra-cek TG beta `kontrak-kerja-pkwt` | 10094 char, draf PKWT utuh | LOLOS TG | ya |
+| 2026-10-12 ~11:05 | `cursor/iterasi-otomatis-akun-c-8b42` | f908314e | C9 pra-cek TG beta `kontrak-kerja-pkwt` | 10094 char, draf PKWT utuh | LOLOS TG | ya |
 | 2026-10-12 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 1ee53f22 | C9 pra-cek TG beta `hitung-thr` | 3757 char, tabel THR utuh | LOLOS TG | ya |
 | 2026-10-12 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek TG beta `pph21-ter` | 1596 char, tabel utuh | LOLOS TG | ya |
 | 2026-10-12 ~09:35 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek TG beta `slip-gaji-bpjs` | 1773 char, rekap saja | GAGAL TG | ya |
