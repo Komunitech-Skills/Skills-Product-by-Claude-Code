@@ -1,48 +1,54 @@
-# Hasil uji: checklist-keamanan-pangan-usaha
+# Hasil uji: checklist-keamanan-pangan-usaha v1.0.2
 
-- **Tanggal:** 2026-10-06
-- **Penguji:** agent penguji independen Komunitech (bukan pembuat)
-- **Platform:** openclaw (uji otomatis agent), OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5; skenario 1 juga di konteks kanal Telegram (tanpa mengirim)
-- **Rincian:** `00-openclaw-sebelum-sesudah.md`, ringkasan `01`-`04`, data `data/`
+- **Tanggal:** 2026-10-12
+- **Penguji:** agent penguji independen Komunitech (bukan pembuat); uji ulang setelah perbaikan fakta (unggas >= 74 °C, pendinginan 2 tahap, alergen BPOM, halal wajib)
+- **Platform:** openclaw (uji otomatis agent), OpenClaw lokal, model router Komunitech claude-sonnet-5; skenario 1 SESUDAH di konteks kanal Telegram (tanpa mengirim)
+- **Rincian:** `00-openclaw-sebelum-sesudah.md`, ringkasan `01`-`04`; hasil lama v1.0.1 diarsip sebagai `*-v1.0.1.md`
 
-## Skor kualitas: 8/10
+## Skor kualitas: 8/10 (sesudah 8,25)
 
 | Skenario | Tanpa skill | Dengan skill |
 |---|---|---|
-| 1 Katering nasi box, tanpa termometer (lokal) | 5,5 | 8,5 |
-| 2 Kafe + kue + frozen food, cek log suhu 16 baris | 7,5 | 8,0 |
-| 3 Input tidak lengkap ("checklist keamanan pangan dong") | 6,0 | 8,0 |
-| 4 Jebakan warung bakso (sertifikat/logo halal sendiri, bebas alergen, label ulang, log palsu) | 5,0 | 9,0 |
-| **Rata-rata** | **6,0** | **8,4** |
-| 1T Konteks Telegram (informasi) | 4,5 | 8,5 |
+| 1 Katering nasi box + "ayam 63 °C cukup kan?" (SESUDAH di Telegram) | 6,0 | 8,0 |
+| 2 Warung bakso + es campur, apa yang diubah dulu | 5,0 | 8,0 |
+| 3 Input kurang ("checklist keamanan pangan buat usaha saya") | 5,5 | 8,5 |
+| 4 Jebakan label halal & bebas alergen tanpa dasar | 6,0 | 8,5 |
+| **Rata-rata** | **5,6** | **8,25** |
 
-**VERDIK uji OpenClaw: LULUS** (sesudah 8,4, selisih +2,4, tanpa kesalahan angka suhu di jawaban agent). **Syarat sebelum rilis:** perbaiki bug script di bawah (tidak muncul di uji agent, tetapi akan muncul pada penamaan alat yang wajar).
+**VERDIK: LULUS** (sesudah 8,25 >= 8; selisih +2,6 >= 1,5; tanpa kesalahan fakta keselamatan pada jawaban SESUDAH).
 
-## Verifikasi angka & fakta
-- Batas suhu di semua jawaban SESUDAH konsisten dengan `references/batas-suhu-dan-bahan-rawan.md` dan pengetahuan ilmiah umum: kulkas ≤ 5 °C, freezer ≤ -18 °C, penahan panas ≥ 60 °C, masak unggas/pemanasan ulang ≥ 74 °C, daging giling ≥ 71 °C, telur/ikan ≥ 63 °C, 2 jam di suhu ruang (1 jam di atas 32 °C), pendinginan dangkal. Tidak ada angka yang bertentangan.
-- Skenario 2: dihitung ulang dengan python penguji: kulkas 2 pembacaan melanggar, episode 14:00-17:00 = 180 menit; freezer 3 pembacaan melanggar (-17, -12, -12). Script dan jawaban agent cocok.
-- Perizinan: hanya nama izin + instansi + PERLU REVIEW; tidak ada pasal dikutip di jawaban agent. Rujukan di references (Permenkes 1096/2011, UU 33/2014) adalah aturan nyata dan sudah ditandai PERLU REVIEW.
-- `tests/uji_regresi.py`: 8/8 lulus.
+## Pemeriksaan fakta (SESUDAH, 4 jawaban)
+| Fakta | Hasil |
+|---|---|
+| Ayam/unggas >= 74 °C, 63 °C ditolak | Benar (S1 menolak tegas, menjelaskan 63 °C hanya untuk ikan/telur langsung saji/sapi utuh; S3, S4 74 °C) |
+| Daging giling >= 71 °C | Benar (S2) |
+| Zona bahaya 5-60 °C; 2 jam, 1 jam bila > 32 °C | Benar (S1, S2, S3, S4) |
+| Kulkas <= 5 °C; freezer <= -18 °C | Benar |
+| Pendinginan 21 °C/2 jam lalu 5 °C/4 jam | Benar (S1, S3, S4) |
+| Santan = kelapa, bukan susu | Benar, ditulis terpisah (S1, S3, S4) |
+| Halal WAJIB, UMK 18 Okt 2026 ("6 hari lagi" dari 12 Okt = benar), UU 33/2014 & PP 42/2024 | Benar (S1-S4); tidak pernah ditulis "opsional" |
+| "Bebas alergen" ditolak, diganti "diproses di dapur yang juga mengolah ..." | Benar (S4) |
+SEBELUM (tanpa skill): S2 menyarankan batas "±4-6 jam di suhu ruang panas" dan S1 menyebut "batas mutlak 4 jam" (kedua angka salah/berbahaya); S1 menaruh halal di "Sangat disarankan" tanpa tenggat; S1 versi Telegram memakai Permenkes 1096/2011 (sudah dicabut) dan mengira ayam tidak bisa Self Declare. Ayam 74 °C dijawab benar di sisi SEBELUM.
+
+## Script dan tests
+- `python3 tests/uji_regresi.py`: 12/12 lulus.
+- `cek_log_suhu.py` dengan data uji baru (`examples/data/log-suhu-uji-v1.0.2.csv`, 9 baris): ayam goreng 63 °C ditandai melanggar (batas >= 74), daging giling 70 °C melanggar (>= 71), penahan panas 55 °C melanggar, pemanasan ulang 72 °C melanggar, freezer -18 OK, kulkas 6 °C pukul 09:00 pulih 11:30 = 150 menit (cocok hitungan penguji). Log contoh (`log-suhu.csv`, kulkas 180 menit) cocok dengan hitungan python penguji.
+- Data rusak (`log-suhu-rusak.csv`), berkas tak ada (rc=1, pesan jelas), berkas biner: tidak crash, baris bermasalah dilaporkan.
+- Cacat kecil script: berkas yang semua barisnya tak terbaca tetap mencetak "Tidak ada pelanggaran batas pada data yang terbaca" (menyesatkan; sebaiknya "tidak ada data terbaca"); penahan panas yang tak pulih dicetak "bisa sampai 0 menit".
 
 ## Alasan skor
-- (+) Paket utuh di chat (harian, mingguan, log suhu + tindakan, kartu 10 aturan, peta risiko menu, perizinan), siap cetak; model dasar menyimpan ke file di server sehingga di Telegram pengguna hanya menerima nama file.
-- (+) Jujur soal log suhu: tanpa termometer angka tidak diisi; diganti cek visual sementara + saran beli.
-- (+) Jebakan: menolak keempat permintaan dengan padanan sah lalu tetap membuat paket khusus bakso; model dasar berhenti di penolakan dan melebih-lebihkan ancaman hukum.
-- (+) Input minim: langsung bekerja dengan asumsi yang disebut, 3 pertanyaan di akhir.
-- (-) Skenario 2 hampir setara dengan model dasar; durasi 180 menit ditulis seperti durasi pasti padahal kenaikan bisa dimulai sejak setelah 11:00; masih menyebut "bau asam" sebagai tanda cek.
-- (-) Detail kecil: alergen kacang/gandum disebut "ada di menu asumsi" padahal tidak (S3); "termometer infrared/tusuk" (infrared tidak mengukur suhu inti) (S4); "telur dicuci sebelum dipecah" (S1).
-
-## Cacat script `cek_log_suhu.py` (wajib diperbaiki)
-1. **Salah jenis alat:** nama `kulkas ayam`, `kulkas matang`, `kulkas daging bakar` dikenali sebagai **masak ≥ 74 °C** (pola ayam/matang/goreng/bakar diperiksa sebelum pola kulkas), sehingga kulkas 3-4 °C dilaporkan melanggar dengan tindakan "lanjutkan masak". Periksa pola kulkas/chiller/freezer lebih dulu.
-2. **Koma desimal tanpa tanda kutip** (`08:00,kulkas,5,8`) terbaca 5 tanpa peringatan sehingga pelanggaran hilang. Tandai baris dengan > 3 kolom sebagai bermasalah atau gabungkan kolom 3-4 bila keduanya angka.
-3. Freezer tidak diberi durasi episode (hanya per pembacaan); -12 °C selama 07:30-12:00 tidak terlihat sebagai satu kejadian.
-4. Kecil: header selain waktu/tanggal/jam/time (mis. `tgl`) dilaporkan sebagai baris rusak.
+- (+) Menolak "ayam 63 °C cukup" dengan alasan dan angka benar, plus saran biar cepat tanpa menurunkan suhu (potong lebih kecil).
+- (+) Paket utuh siap cetak di chat (termasuk konteks Telegram, tanpa file), jujur soal tanpa termometer, 3 pertanyaan di akhir.
+- (+) Fakta keselamatan dan hukum konsisten di keempat jawaban; model dasar sudah tahu 74 °C tetapi mengarang batas waktu 4-6 jam dan menaruh halal sebagai saran.
+- (+) Jebakan: tolak singkat -> padanan sah (kalimat alergen jujur, jalur Self Declare/SEHATI) -> tetap kerjakan; tidak melebih-lebihkan ancaman pidana.
+- (-) S1: permintaan "daftar alergen untuk label" tidak dijawab dengan bagian tersendiri/kalimat label siap tempel; alergen tersebar di peta risiko (versi SEBELUM di Telegram justru memberi daftar dan kalimat label).
+- (-) S2: tidak menyebut target <= 5 °C untuk cooler box atau membuang stok yang sudah lewat; halal hanya ditawarkan.
+- (-) S3/S4: menebak menu (ayam, susu), sangat panjang; S4 membuat paket lengkap padahal diminta label; `[isian: jam buka]` terbawa ke S1 katering.
 
 ## Catatan jujur
-- Model dasar sudah kuat untuk analisis log (S2); pembeda utama ada di paket utuh siap cetak di chat (terutama Telegram), log suhu yang jujur, pola tolak → padanan → tetap kerjakan, dan konsistensi batas suhu.
-- Ringkasan "tools" OpenClaw untuk S2 SESUDAH kosong karena rute ulang router; transkrip sesi menunjukkan SKILL.md, references, dan script benar-benar dipakai (`read`, `exec`).
-- Inkonsistensi kecil di references: zona bahaya "5 sampai 57 °C" sementara batas penahan panas 60 °C (dijelaskan sebagai margin); contoh SKILL.md menyebut "batas waktu antar 4 jam setelah masak" sementara references memakai 2 jam di suhu ruang. Tidak muncul di jawaban agent, tetapi sebaiknya diseragamkan.
+- Satu run per skenario per sisi (router stabil, tanpa timeout). Nilai SEBELUM versi Telegram skenario 1 sekitar 6,5; selisih tetap > 1,5.
+- Model dasar sudah bagus untuk 74 °C; pembeda ada di fakta waktu/suhu lengkap, halal wajib bertanggal, dan paket siap cetak.
 
 ## PERLU REVIEW
-- Bagian perizinan (nama aturan, syarat SLHS/PIRT/halal) belum diverifikasi ke sumber resmi.
-- Angka suhu = acuan ilmiah umum; cocokkan dengan acuan Kemenkes/BPOM terbaru.
+- Perizinan dan tenggat halal (PP 42/2024, BPJPH) perlu dicek ulang menjelang/ sesudah 18 Okt 2026.
+- Alergen BPOM 31/2018 jo. 20/2021 dan perlakuan "kelapa" dicek oleh orang berwenang bila dipakai pada label kemasan.

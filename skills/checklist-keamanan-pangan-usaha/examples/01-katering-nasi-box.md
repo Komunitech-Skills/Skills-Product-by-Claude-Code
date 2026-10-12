@@ -1,151 +1,127 @@
-# Skenario 1: katering rumahan nasi box (normal, juga konteks Telegram)
+# Skenario 1: Normal utama: katering nasi box, tanpa termometer, jebakan 63 °C untuk ayam (SESUDAH dijalankan di konteks Telegram `uji-tg.sh`)
 
-**Input:** "Saya punya katering rumahan nasi box, menunya ayam goreng & ayam bakar, telur balado, sambal, sama sayur santan. Staf 3 orang, cuma ada kulkas 1 pintu, belum punya termometer. bikinin checklist keamanan pangan harian & aturan buat staf, sekalian log suhu"
+- Tanggal: 2026-10-12 | skill v1.0.2 | OpenClaw, model claude-sonnet-5
+- Nilai: SEBELUM 6.0 -> SESUDAH 8.0
+
+## Input
+
+Katering rumahan nasi box (ayam goreng potong utuh, telur balado, sayur santan), 3 staf, kulkas tanpa termometer, antar pakai motor 1 jam: bikinkan checklist keamanan pangan harian, daftar alergen untuk label, dan izin apa saja yang perlu. Ayam 63 °C cukup kan biar cepat?
+
+## Output SESUDAH (dengan skill)
+
+> **Ayam 63 °C: tidak, jangan.** Ayam/unggas — digoreng utuh, potong, berapa pun bentuknya — wajib matang inti **≥ 74 °C** di bagian paling tebal. Salmonella dan Campylobacter di bagian dalam ayam baru mati di suhu itu; 63 °C hanya berlaku untuk ikan/seafood, telur langsung saji, atau daging sapi/kambing utuh — bukan ayam. Kalau mau lebih cepat: potong lebih kecil/pipih biar matang merata, bukan turunkan suhu. Termometer tusuk (bukan infrared) wajib untuk cek ini — infrared cuma baca permukaan.
+>
+> Berikut paket lengkapnya, disesuaikan dengan kateringmu.
+>
+> **Paket Keamanan Pangan — Katering Rumahan Nasi Box**
+>
+> **Asumsi** (koreksi kalau meleset):
+> - Menu: nasi, ayam goreng potong utuh, telur balado, sayur santan
+> - 3 staf, 1 bertindak penanggung jawab harian
+> - Ada kulkas, belum ada freezer terpisah, belum ada termometer
+> - Pengantaran motor ±1 jam dari matang/kemas sampai ke pelanggan
+> - Jam masak/kemas: [isian: jam buka]
+>
+> **1. Checklist Harian**
+>
+> Saat datang:
+> - [ ] Cuci tangan sabun 20 detik; rambut tertutup, kuku pendek
+> - [ ] Staf sakit (muntah/diare/demam/mata kuning)? Jangan pegang makanan, lapor dulu
+> - [ ] Cek tanda hama, sampah semalam sudah keluar
+> - [ ] Lihat kondisi kulkas (dingin terasa, tidak ada bau busuk) — catat di log
+>
+> Sebelum masak:
+> - [ ] Permukaan kerja dibersihkan + disanitasi
+> - [ ] Talenan/pisau terpisah: mentah (ayam) vs matang/sayur
+> - [ ] Bahan lama dipakai dulu (FIFO); buang yang lewat tanggal
+> - [ ] Ayam disimpan terpisah, tidak menetes ke bahan lain
+>
+> Saat masak & kemas (titik paling kritis untuk kalian):
+> - [ ] Ayam goreng: ukur inti bagian paling tebal, wajib ≥ 74 °C sebelum diangkat
+> - [ ] Telur balado: masak sampai inti ≥ 71 °C (ini hidangan matang yang ditahan, bukan telur langsung saji)
+> - [ ] Sayur santan: didihkan sampai benar-benar mendidih, jangan campur santan baru dengan sisa lama
+> - [ ] Catat jam makanan selesai matang/mulai dikemas — ini jam mulai hitungan suhu ruang
+> - [ ] Nasi box dikemas secepat mungkin, jangan dibiarkan terbuka lama di meja
+>
+> Saat antar (motor, ±1 jam):
+> - [ ] Total waktu dari matang sampai dimakan maksimal **2 jam** di suhu ruang biasa, **1 jam saja** kalau cuaca/boks panas (>32 °C, misal siang terik atau boks kena matahari langsung)
+> - [ ] 1 jam perjalanan + waktu kemas + waktu nunggu pelanggan makan = cek totalnya, jangan cuma hitung waktu jalan
+> - [ ] Pakai boks tertutup rapat, kalau bisa boks berinsulasi, supaya panas bertahan lebih lama
+> - [ ] Rute jauh/macet: prioritaskan antar dulu yang dimasak paling awal
+>
+> Saat tutup:
+> - [ ] Sisa matang yang tidak terjual: dinginkan cepat (wadah dangkal) ke 21 °C dalam 2 jam, lalu ≤5 °C dalam 4 jam berikutnya — atau buang kalau tidak sempat
+> - [ ] Semua bahan diberi label nama + tanggal
+> - [ ] Alat, talenan, area masak dibersihkan
+> - [ ] Tanda tangan penanggung jawab: ____
+>
+> **2. Mingguan/Bulanan**
+> - [ ] Cek hama: celah, sampah, jebakan tikus/kecoa
+> - [ ] Bersih dalam kulkas total, buang bahan kadaluarsa
+> - [ ] Stok sabun cuci tangan dan sanitizer cukup
+> - [ ] Setelah beli termometer: uji kalibrasi pakai air es, harus baca ±0 °C
+>
+> **3. Log Suhu — catatan penting**
+>
+> Tanpa termometer, log suhu **tidak bisa diisi jujur** — jangan ditulis asal bagus, itu cuma bikin kalian merasa aman padahal tidak tahu kondisi sebenarnya. Belinya murah (termometer pangan tusuk, bukan infrared, biasanya mulai Rp30-50 ribuan di marketplace). Sementara ini pakai cara visual:
+> - [ ] Kulkas terasa dingin solid, tidak ada bahan "hangat" di dalamnya
+> - [ ] Catat jam ayam/telur selesai dimasak setiap batch, bukan suhunya
+> - [ ] Catat jam berangkat antar dan estimasi jam sampai
+>
+> Begitu ada termometer, format log:
+> Tanggal | Jam | Alat/masakan | Suhu °C | OK? | Tindakan | Paraf
+> Batas: kulkas ≤5 °C, ayam masak ≥74 °C, telur ≥71 °C, santan mendidih.
+>
+> **4. Kartu Staf (tempel di dapur)**
+> 1. Cuci tangan sabun 20 detik: sebelum kerja, habis toilet, habis pegang ayam mentah, HP, uang
+> 2. Sakit perut/muntah/diare/demam: jangan pegang makanan, lapor dulu
+> 3. Ayam mentah dan matang dipisah: talenan, pisau, wadah beda
+> 4. Ayam goreng matang WAJIB sampai dalam, ≥74 °C — ukur, jangan kira-kira dari warna/garing luar
+> 5. Telur balado matang sampai inti, ≥71 °C
+> 6. Santan dimasak sampai mendidih penuh, tidak dicampur sisa santan lama
+> 7. Catat jam makanan matang/dikemas — ini penentu batas waktu antar
+> 8. Nasi box diantar maksimal 2 jam dari matang (1 jam kalau cuaca panas)
+> 9. Bahan berlabel nama + tanggal; yang lama dipakai dulu; lewat tanggal dibuang
+> 10. Ragu soal aman? Jangan dikirim — tanya penanggung jawab dulu
+>
+> **5. Peta Risiko Menu**
+>
+> Ayam goreng (potong utuh)
+> - Risiko: Salmonella/Campylobacter, kontaminasi silang dari ayam mentah
+> - Aman: talenan terpisah, matang inti ≥74 °C di bagian paling tebal, cuci tangan setelah pegang ayam mentah
+> - Alergen: kalau dilumuri tepung terigu sebelum goreng → gluten (serealia bergluten); kalau tepung bebas gluten, tidak perlu dicantumkan
+>
+> Telur balado
+> - Risiko: Salmonella pada telur mentah/setengah matang
+> - Aman: masak sampai inti ≥71 °C karena ini hidangan yang ditahan di boks, bukan langsung disajikan panas
+> - Alergen: telur; cek juga kecap/saus balado — kalau pakai kecap, tambahkan kedelai
+>
+> Sayur santan
+> - Risiko: cepat basi di suhu ruang, bukan susu jadi beda penanganan dari produk susu
+> - Aman: didihkan tuntas, dinginkan cepat kalau sisa, jangan campur santan baru-lama
+> - Alergen: kelapa (santan) — sebutkan terpisah untuk pelanggan yang alergi kelapa, bukan ditulis "susu/santan"
+>
+> Nasi
+> - Risiko: Bacillus cereus kalau didiamkan lama di suhu ruang hangat
+> - Aman: masak cukup, jangan dibiarkan di rice cooker hangat berjam-jam tanpa putar stok, segera kemas setelah matang
+>
+> Kontaminasi silang spesifik dapur kalian: talenan ayam mentah jangan dipakai untuk sayur/lalapan sama sekali, meski sudah "dicuci sekilas" — pakai talenan warna berbeda kalau bisa.
+>
+> **6. Perizinan (PERLU REVIEW ke Dinkes/DPMPTSP/BPOM/BPJPH setempat, bukan nasihat hukum final)**
+> - NIB — dasar legalitas usaha, urus lewat OSS, juga syarat daftar halal
+> - SLHS (Sertifikat Laik Higiene Sanitasi) + pelatihan penjamah makanan — relevan untuk jasa boga/katering, lewat Dinkes kab/kota
+> - PIRT — hanya kalau ada produk kemasan yang dijual terpisah (bukan nasi box harian biasa), lewat Dinkes kab/kota
+> - **Sertifikasi Halal: WAJIB, bukan opsional.** Untuk usaha mikro/kecil wajib mulai **18 Oktober 2026 — itu 6 hari lagi dari sekarang.** Daftar di BPJPH (ptsp.halal.go.id), jalur Self Declare/SEHATI biasanya gratis untuk UMK. Ini paling mendesak di antara semua izin — sarankan daftar minggu ini juga.
+>
+> Pengingat: ini kebiasaan kerja aman, bukan pengganti pelatihan penjamah makanan resmi atau pemeriksaan Dinkes/BPOM — cocokkan angka dan syarat izin dengan instansi setempat.
+>
+> Tiga hal biar lebih pas:
+> 1. Freezer ada atau cuma kulkas tunggal?
+> 2. Rata-rata berapa porsi/hari dan jarak antar terjauh (selain yang 1 jam ini)?
+> 3. Ada produk dijual terpisah dalam kemasan (misal sambal/kerupuk kemasan) selain nasi box?
 
 ## Catatan
-Output di bawah adalah versi konteks Telegram (versi lokal setara, nilai 8,5; lihat 00-openclaw-sebelum-sesudah.md).
 
-Catatan penguji: batas suhu konsisten dengan references (kulkas ≤ 5 °C, ayam ≥ 74 °C, telur ≥ 63 °C, 2 jam/1 jam di atas 32 °C). Tegas tidak mengarang angka log tanpa termometer. Perizinan hanya petunjuk + PERLU REVIEW, tanpa pasal. Model dasar menulis isi ke file di server, sehingga di Telegram pengguna hanya menerima nama file. Nilai: sebelum 4,5 (Telegram) / 5,5 (lokal), sesudah 8,5.
+SEBELUM 6,0 (lokal; versi Telegram 6,5): menolak 63 °C dengan benar (74 °C), daftar alergen terpisah ada (versi Telegram malah lebih rapi dari SESUDAH), tetapi: "batas mutlak 4 jam" di zona bahaya (angka karangan, standar 2 jam/1 jam >32 °C), halal ditaruh di "Sangat disarankan" tanpa tanggal (seharusnya WAJIB, UMK 18 Okt 2026), versi Telegram menyebut Permenkes 1096/2011 (sudah dicabut Permenkes 2/2023) dan mengira ayam tidak bisa Self Declare. SESUDAH 8,0: 74 °C ditegaskan dengan alasan, 63 °C dijelaskan hanya untuk ikan/telur langsung saji/sapi utuh; 2 jam/1 jam >32 °C, pendinginan 21 °C/2 jam lalu 5 °C/4 jam, telur balado 71 °C, santan = kelapa bukan susu (ditulis terpisah), halal WAJIB dengan tenggat 18 Okt 2026 "6 hari lagi" (benar: 12 Okt -> 18 Okt), SLHS/PIRT/NIB, tanpa termometer ditulis jujur lalu cek visual; paket utuh di chat (tanpa file). Kekurangan: tidak ada bagian "daftar alergen untuk label" tersendiri dan tidak ada kalimat label siap tempel (alergen hanya di peta risiko, tanpa daftar BPOM utuh/kacang/kedelai kecuali kecap); jam buka diisi placeholder yang tidak relevan untuk katering.
 
-## Output SESUDAH (skill aktif)
-
-# Paket Keamanan Pangan - Katering Rumahan Nasi Box
-
-**Asumsi** (karena belum disebutkan, saya isi dan boleh dikoreksi):
-- 3 staf dapur, 1 penanggung jawab merangkap salah satu staf
-- 1 kulkas pintu tunggal, tidak ada freezer terpisah
-- Belum ada termometer pangan
-- Menu: ayam goreng, ayam bakar, telur balado, sambal, sayur santan, disajikan dalam nasi box
-- Jam antar box: `[isian: jam antar]` — nanti saya sebut batas waktu umumnya
-- Penafian: ini kebiasaan kerja aman, bukan pengganti pelatihan penjamah makanan resmi atau pemeriksaan Dinkes.
-
----
-
-## 1. Daftar Periksa Harian
-
-**Saat datang**
-☐ Cuci tangan sabun 20 detik, rambut tertutup, kuku pendek
-☐ Staf sakit (muntah/diare/demam/kuning)? Tidak pegang makanan, lapor dulu
-☐ Cek tanda hama & sampah semalam sudah dibuang
-☐ Baca kondisi kulkas (dingin terasa normal / pintu rapat), catat di log suhu
-
-**Sebelum mulai masak**
-☐ Meja & alat dibersihkan lalu disanitasi
-☐ Talenan dipisah: 1 khusus ayam mentah, 1 khusus telur/sayur/matang
-☐ Bahan lama di depan (FIFO); cek tanggal ayam, telur, santan — buang yang sudah lewat
-☐ Santan baru tidak dicampur sisa santan kemarin
-
-**Saat masak & kemas nasi box**
-☐ Ayam goreng & ayam bakar matang sampai bagian paling tebal (bukan kira-kira, nanti diukur — lihat bagian log suhu)
-☐ Telur balado dimasak matang penuh, tidak setengah matang
-☐ Sayur santan dimasak sampai mendidih penuh, tidak dipanaskan setengah-setengah
-☐ Nasi, lauk, sambal yang sudah matang jangan dibiarkan di suhu ruang lebih dari **2 jam** sebelum dikemas/diantar
-☐ Tulis jam selesai masak di dekat wadah, supaya tahu batas 2 jam
-☐ Tangan dicuci lagi setiap pindah dari pegang ayam mentah ke pegang telur/sambal/nasi matang
-
-**Sebelum antar / saat tutup**
-☐ Box ditutup rapat, tidak menumpuk kena udara luar terlalu lama
-☐ Sisa lauk yang tidak jadi dikirim: dinginkan cepat (wadah dangkal, tidak ditutup rapat saat masih panas) lalu masuk kulkas, atau dibuang bila sudah lewat batas waktu
-☐ Semua bahan sisa diberi label nama + tanggal
-☐ Alat, talenan, meja, lantai dibersihkan; sampah dibuang
-☐ Baca & catat kondisi kulkas terakhir; paraf: ____
-
----
-
-## 2. Mingguan / Bulanan
-
-☐ Cek celah/lubang masuk hama, bersihkan sampah tersembunyi (belakang kulkas, bawah meja)
-☐ Bersihkan dalam kulkas total — rak, karet pintu, tumpahan — buang yang kadaluarsa
-☐ Cek saluran air dapur tidak tersumbat/bau
-☐ Stok sabun cuci tangan & sanitizer cukup untuk minggu depan
-☐ Review tanggal semua bahan kering (bumbu, minyak) — FIFO
-☐ Kalau sudah beli termometer: uji kalibrasi pakai air es (harus baca sekitar 0 °C)
-
----
-
-## 3. Log Suhu
-
-**Catatan penting — belum ada termometer:**
-Log suhu **tidak bisa diisi dengan angka yang benar** tanpa alat ukur. Mengisi angka kira-kira sama saja membohongi diri sendiri — kalau ada kejadian (ayam kurang matang, pelanggan sakit), log itu tidak ada gunanya untuk membuktikan apa pun.
-
-**Saran:** beli termometer pangan tusuk (probe thermometer) — tersedia online/toko alat masak, kisaran murah, cukup satu untuk cek ayam/telur dan kulkas. Ini investasi kecil yang paling penting untuk usaha ayam & telur.
-
-**Sementara belum ada termometer, pakai checklist visual + waktu (bukan pengganti, hanya jaga-jaga):**
-☐ Ayam goreng/bakar: potong bagian paling tebal, pastikan tidak ada bagian merah muda/berdarah, uap/air yang keluar bening
-☐ Telur balado: kuning telur sudah padat, tidak basah/meleleh
-☐ Sayur santan: sudah mendidih penuh, bukan sekadar hangat
-☐ Kulkas: isi tidak terlalu padat (udara dingin perlu sirkulasi), pintu rapat, tidak ada bau tidak wajar atau bahan yang terasa hangat di bagian dalam
-☐ Catat **jam mulai** makanan matang berada di suhu ruang — batas aman 2 jam (1 jam bila dapur sangat panas, di atas 32°C)
-
-**Begitu termometer sudah ada, batas yang harus dipakai:**
-- Kulkas: ≤ 5°C
-- Ayam/unggas matang (bagian paling tebal): ≥ 74°C
-- Telur matang: ≥ 63°C (lebih baik matang penuh untuk katering)
-- Sayur santan setelah mendidih: tidak perlu diukur rutin, cukup mendidih penuh lalu segera disajikan/didinginkan
-- **Jika melebihi batas:** bahan berisiko tinggi (ayam, telur, santan) yang sudah di suhu ruang/suhu tidak aman total lebih dari 2 jam → **buang**, jangan dipakai lagi. Jangan dicium dulu untuk menilai aman atau tidak.
-
-Format catatan harian (isi manual di kertas/HP sampai ada termometer):
-`Tanggal | Jam mulai matang | Menu | Jam dikemas/antar | OK (ya/tidak) | Paraf`
-
----
-
-## 4. Kartu Aturan Staf (10 Poin — tempel di dapur)
-
-1. Cuci tangan sabun 20 detik: sebelum kerja, habis toilet, habis pegang ayam mentah, sampah, HP, uang.
-2. Sakit perut, muntah, diare, demam, mata kuning: jangan pegang makanan, lapor dulu, pulang dulu.
-3. Talenan ayam mentah **terpisah** dari talenan telur/sayur/sambal. Jangan ditukar meski sudah dicuci sekilas.
-4. Ayam & telur matang sampai dalam — potong, lihat warnanya, jangan kira-kira karena terburu-buru.
-5. Sayur santan dimasak sampai mendidih penuh, tidak dihangatkan setengah-setengah.
-6. Nasi box yang sudah jadi: jangan dibiarkan di meja lebih dari 2 jam sebelum diantar. Catat jam selesai masak.
-7. Sisa lauk dinginkan cepat (wadah dangkal, jangan ditutup rapat saat masih panas), baru masuk kulkas.
-8. Semua bahan diberi label nama + tanggal. Yang lama dipakai dulu. Lewat tanggal: **buang**, jangan diganti label/tanggal.
-9. Bersihkan dulu, baru sanitasi. Kain lap kotor diganti, jangan dipakai lap ayam lalu lap meja makan.
-10. Ragu apakah ayam/telur sudah matang atau bahan masih aman? Buang, tanya penanggung jawab. Jangan ambil risiko demi hemat.
-
----
-
-## 5. Peta Risiko Menu
-
-**Ayam goreng & ayam bakar**
-- Risiko: Salmonella/Campylobacter, kontaminasi silang ke bahan lain
-- Cara aman: talenan terpisah, matang sampai dalam (tidak merah muda), cuci tangan setelah pegang mentah
-
-**Telur balado**
-- Risiko: Salmonella bila kurang matang
-- Cara aman: masak sampai kuning telur padat, simpan telur mentah di kulkas, cuci tangan setelah pegang cangkang mentah
-
-**Sambal**
-- Risiko relatif lebih kecil (cabai dimasak, umumnya asam/panas membantu), tapi tetap rawan kalau cabai mentah/bawang dipotong di talenan yang baru dipakai untuk ayam mentah
-- Cara aman: talenan bumbu terpisah dari talenan ayam mentah, cuci tangan sebelum pegang bumbu
-
-**Sayur santan**
-- Risiko: cepat basi, bisa jadi media bakteri kalau dibiarkan hangat lama
-- Cara aman: masak matang penuh, jangan dicampur santan baru+lama, habiskan di hari yang sama, jangan dibiarkan di suhu ruang lama
-
-**Nasi (dalam nasi box)**
-- Risiko: Bacillus cereus (spora tahan panas masak, bisa muncul lagi kalau nasi dibiarkan hangat lama)
-- Cara aman: setelah matang, jangan dibiarkan di suhu ruang berjam-jam sebelum dikemas; kalau tidak langsung diantar, dinginkan cepat atau tahan panas (≥60°C)
-
-**Kontaminasi silang spesifik dapur Anda:** talenan ayam mentah vs talenan telur/sayur/sambal — ini titik paling rawan dengan menu Anda. Pisahkan fisik (warna beda kalau bisa), dan jangan letakkan ayam mentah di rak kulkas di atas telur/sayur matang.
-
-**Alergen:** telur (ada di telur balado, bisa juga di gorengan ayam kalau ada campuran telur di adonan tepung). Kalau ada pelanggan yang tanya alergi, jawab: "diproses di dapur yang juga mengolah telur" — jangan bilang "aman" tanpa itu.
-
----
-
-## 6. Perizinan (PERLU REVIEW — cek ke Dinkes/OSS setempat, ini ringkasan umum per 2026-10-06, bukan nasihat hukum mengikat)
-
-- **NIB (OSS)** — dasar legal semua usaha, daftar online lewat OSS.
-- **SLHS (Sertifikat Laik Higiene Sanitasi) + pelatihan penjamah makanan** — relevan untuk katering/jasa boga, lewat Dinkes kabupaten/kota.
-- **PIRT/SPP-IRT** — relevan **kalau** suatu saat Anda jual produk kemasan terpisah (misalnya sambal botolan dijual lepas, bukan hanya di nasi box harian) — lewat Dinkes.
-- **Sertifikasi halal** — relevan untuk makanan yang diperdagangkan; usaha mikro-kecil bisa lewat jalur Self Declare di BPJPH.
-
-Langkah awal paling praktis: hubungi Dinkes kabupaten/kota tempat usaha untuk tanya syarat SLHS jasa boga, sambil urus NIB lewat OSS.
-
----
-
-**Pertanyaan untuk saya sesuaikan lebih lanjut:**
-1. Berapa porsi nasi box per hari, dan berapa lama jarak dari jam ayam/telur matang sampai box diantar ke pelanggan?
-2. Kulkas 1 pintu itu ada kompartemen freezer kecil, atau murni untuk dingin (chiller) saja?
-3. Nasi box ini dijual harian langsung saja, atau ada rencana jual produk terpisah (misalnya sambal kemasan) yang butuh PIRT?
-
-Pengingat: angka suhu di atas acuan ilmiah umum — cocokkan lagi dengan Dinkes setempat, dan checklist ini bukan pengganti pelatihan penjamah makanan resmi.
+Perbandingan lengkap dengan hasil SEBELUM: `00-openclaw-sebelum-sesudah.md`.

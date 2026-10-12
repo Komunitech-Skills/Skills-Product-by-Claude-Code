@@ -181,6 +181,8 @@ def teks(h):
                     ket += ". Tindakan: " + TINDAKAN["freezer"]
                 o.append("- %s %s: terburuk %.1f C (batas %s%.0f C), %s" % (
                     p["waktu"], p["alat"], p["suhu"], "<= " if p["arah"] == "maks" else ">= ", p["batas"], ket))
+    elif h.get("baris_ok", 0) == 0:
+        o.append("TIDAK ADA BARIS DATA YANG TERBACA: periksa format berkas (kolom waktu, alat, suhu). Belum bisa menyimpulkan ada/tidaknya pelanggaran.")
     else:
         o.append("Tidak ada pelanggaran batas pada data yang terbaca.")
     if h.get("peringatan"):
