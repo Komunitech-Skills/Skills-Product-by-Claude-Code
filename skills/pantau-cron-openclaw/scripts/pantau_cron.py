@@ -265,10 +265,10 @@ def _baca_json(path, bawaan):
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except (ValueError, OSError):
-        raise GalatPantau("Berkas %s rusak atau tidak terbaca. Salin dulu berkasnya (mis. jadi .cadangan), "
-                          "lalu hapus yang rusak agar bisa dibuat ulang. Tidak ada yang saya timpa." % path)
+        raise GalatPantau("Berkas pantauan (%s) rusak atau tidak terbaca. Salin dulu berkasnya (mis. jadi .cadangan), "
+                          "lalu hapus yang rusak agar bisa dibuat ulang. Tidak ada yang ditimpa." % os.path.basename(path))
     if not isinstance(data, dict):
-        raise GalatPantau("Isi %s tidak sesuai format (harus objek JSON)." % path)
+        raise GalatPantau("Isi berkas %s tidak sesuai format (harus objek JSON)." % os.path.basename(path))
     return data
 
 
@@ -376,13 +376,13 @@ def evaluasi(nama, j, pings, sekarang):
 def kalimat_masalah(h):
     jml = ("%d+" if h["terlewat_minimal"] else "%d") % h["terlewat"]
     if h["status"] == "TERLAMBAT":
-        return ("%s %s: jadwal %s belum ada ping, lewat %s dari jadwal (toleransi %d menit). Ping terakhir %s."
+        return ("%s %s: jadwal %s belum ada kabar \"selesai\", lewat %s dari jadwal (toleransi %d menit). Terakhir lapor selesai %s."
                 % (h["status"], h["nama"], h["jadwal_jatuh_tempo_lokal"], fmt_durasi(h["lewat_menit"]),
                    h["toleransi_menit"], h["ping_terakhir_lokal"]))
     if h["ping_terakhir"] is None:
-        return ("HILANG %s: belum pernah ada ping sejak didaftarkan (%s jadwal terlewat, terakhir %s). "
-                "Cek apakah baris ping sudah ditambahkan di akhir job." % (h["nama"], jml, h["jadwal_jatuh_tempo_lokal"]))
-    return ("HILANG %s: tidak ada ping sejak %s (%s jadwal terlewat, terakhir %s)."
+        return ("HILANG %s: belum pernah lapor selesai sejak didaftarkan (%s jadwal terlewat, terakhir %s). "
+                "Cek apakah langkah \"lapor selesai\" sudah ditambahkan di akhir jadwal otomatis itu." % (h["nama"], jml, h["jadwal_jatuh_tempo_lokal"]))
+    return ("HILANG %s: tidak ada lapor selesai sejak %s (%s jadwal terlewat, terakhir %s)."
             % (h["nama"], h["ping_terakhir_lokal"], jml, h["jadwal_jatuh_tempo_lokal"]))
 
 
@@ -407,7 +407,7 @@ def susun_laporan(hasil, sekarang, hanya_masalah=False, pulih=None, tersembunyi=
     elif not hanya_masalah:
         baris.append("Semua %d job aman." % len(hasil))
     for n in pulih:
-        baris.append("PULIH %s: sudah ada ping lagi." % n)
+        baris.append("PULIH %s: sudah lapor selesai lagi." % n)
     if not hanya_masalah:
         if ok:
             baris.append("OK (%d):" % len(ok))
@@ -415,7 +415,7 @@ def susun_laporan(hasil, sekarang, hanya_masalah=False, pulih=None, tersembunyi=
             if h["menunggu_jadwal_pertama"]:
                 baris.append("- %s: baru didaftarkan, menunggu jadwal pertama %s." % (h["nama"], h["jadwal_berikutnya_lokal"]))
             else:
-                baris.append("- %s: ping terakhir %s; berikutnya %s." % (h["nama"], h["ping_terakhir_lokal"], h["jadwal_berikutnya_lokal"]))
+                baris.append("- %s: terakhir lapor selesai %s; berikutnya %s." % (h["nama"], h["ping_terakhir_lokal"], h["jadwal_berikutnya_lokal"]))
     elif ok:
         baris.append("OK (%d): %s" % (len(ok), ", ".join(h["nama"] for h in ok)))
     return "\n".join(baris), True
@@ -457,7 +457,7 @@ def cmd_tambah(a):
     if tol >= jarak:
         print("Peringatan: toleransi (%d menit) >= jarak antar jadwal (%d menit); kecilkan toleransi agar keterlambatan terdeteksi."
               % (tol, jarak))
-    print("Baris ping untuk akhir job: python3 scripts/pantau_cron.py ping %s" % nama)
+    print("Berikutnya: tambahkan langkah \"lapor selesai\" di akhir job %s agar pantauan tahu job ini sukses." % nama)
 
 
 def cmd_hapus(a):
@@ -471,7 +471,7 @@ def cmd_hapus(a):
     p = _path_log(folder, nama)
     if a.hapus_riwayat and os.path.exists(p):
         os.remove(p)
-    print("Job '%s' dihapus dari pantauan%s." % (nama, " (riwayat ping ikut dihapus)" if a.hapus_riwayat else "; riwayat ping dibiarkan"))
+    print("Job '%s' dihapus dari pantauan%s." % (nama, " (riwayat lapor selesai ikut dihapus)" if a.hapus_riwayat else "; riwayat lapor selesai dibiarkan"))
 
 
 def _url_luar(folder, nama):
@@ -490,19 +490,19 @@ def cmd_ping(a):
     nama = slug(a.nama)
     data = muat_job(folder)
     if nama not in data["jobs"]:
-        raise GalatPantau("Job '%s' belum terdaftar, ping tidak dicatat. Daftarkan dulu: pantau_cron.py tambah %s --jadwal \"...\""
-                          % (nama, nama))
+        raise GalatPantau("Job '%s' belum terdaftar, lapor selesai tidak dicatat. Daftarkan dulu dengan perintah tambah (nama, jadwal, zona)."
+                          % nama)
     w = sekarang_utc(a.sekarang)
     catat_ping(folder, nama, w, a.catatan)
     zona = normal_zona(data["jobs"][nama].get("zona"))
-    print("Ping dicatat: %s pada %s" % (nama, fmt_waktu(ke_lokal(w, zona), zona)))
+    print("Lapor selesai dicatat: %s pada %s" % (nama, fmt_waktu(ke_lokal(w, zona), zona)))
     url = None if a.tanpa_luar else _url_luar(folder, nama)
     if url:
         try:
             urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "pantau-cron"}), timeout=8).read(64)
-            print("Ping ke layanan luar milik Anda: terkirim.")
+            print("Kabar ke layanan luar milik Anda: terkirim.")
         except Exception:   # jaringan mati tidak boleh membuat job utama gagal
-            print("Peringatan: ping ke layanan luar gagal (jaringan/alamat). Ping lokal tetap tercatat.", file=sys.stderr)
+            print("Peringatan: kabar ke layanan luar gagal (jaringan/alamat). Catatan di komputer Anda tetap tersimpan.", file=sys.stderr)
 
 
 def _hitung_semua(folder, sekarang):
@@ -521,12 +521,12 @@ def cmd_daftar(a):
     if a.json:
         print(json.dumps({"folder": folder, "jobs": hasil}, ensure_ascii=False, indent=2))
         return
-    print("Folder data: %s" % folder)
+    print("Folder data Anda: %s" % ("(folder pilihan Anda)" if a.folder or os.environ.get("PANTAU_CRON_DIR") else "(folder bawaan di komputer Anda)"))
     if not hasil:
-        print("Belum ada job terdaftar. Tambahkan: pantau_cron.py tambah <nama> --jadwal \"0 21 * * *\"")
+        print("Belum ada job terdaftar. Tambahkan dengan perintah tambah (nama + jadwal, mis. tiap hari 21.00).")
         return
     for h in hasil:
-        print("- %s | \"%s\" %s | toleransi %d mnt | ping terakhir: %s | berikutnya %s%s"
+        print("- %s | \"%s\" %s | toleransi %d mnt | terakhir lapor selesai: %s | berikutnya %s%s"
               % (h["nama"], h["jadwal"], h["zona"], h["toleransi_menit"], h["ping_terakhir_lokal"] or "belum ada",
                  h["jadwal_berikutnya_lokal"], " | layanan luar: ya" if h["layanan_luar"] else ""))
 
@@ -592,9 +592,9 @@ def cmd_riwayat(a):
         print(json.dumps({"nama": nama, "riwayat": baris}, ensure_ascii=False, indent=2))
         return
     if not baris:
-        print("Job '%s' belum punya ping." % nama)
+        print("Job '%s' belum pernah lapor selesai." % nama)
         return
-    print("Riwayat ping %s (terbaru dulu):" % nama)
+    print("Riwayat lapor selesai %s (terbaru dulu):" % nama)
     for b in baris:
         ket = ("sesuai jadwal (+%d mnt)" % b["selisih_menit"]) if b["dalam_toleransi"] else (
             "di luar toleransi (+%s dari jadwal %s)" % (fmt_durasi(b["selisih_menit"]), b["jadwal_terdekat"][11:].replace(":", ".")))

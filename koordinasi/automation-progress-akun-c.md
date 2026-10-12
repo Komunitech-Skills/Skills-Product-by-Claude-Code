@@ -4,10 +4,10 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Pemilik** — jawab keputusan **no. 26** (pilot G11b 4 pesan) dan **no. 27** (G12 = 10 pesan; pra-cek 5/5 + `msgs-g12.json` + `telegram-gelombang-12-prep-2026-10-11.md`).
-2. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default; tutup branch timestamp lama; update `catalog.csv` / promosi.
-3. **Akun C** — bila pemilik setuju no. 27: buat topik G12, patch config, restart gateway, kirim gelombang (maks 10 pesan).
-4. **Opsional** — uji platform asli C5; tidak iterasi OC skill C5 lagi.
+1. **Akun C** — lanjut **C9** pra-cek TG beta (1/run, 1/10 selesai); berikutnya `pph21-ter` / `hitung-thr`.
+2. **Akun A/B** — perbaiki `slip-gaji-bpjs` tampilan Telegram (permintaan antar-akun).
+3. **Akun B** — gelombang 13 (bot kedua).
+4. **Akun A** — merge branch kanonik; promosi `cek-privasi-openclaw` pasca G12.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -42,6 +42,9 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-12 ~09:35 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek TG beta `slip-gaji-bpjs` | 1773 char, rekap saja | GAGAL TG | ya |
+| 2026-10-12 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | ca879194 | C7 gelombang G12 (10 pesan) | cpo 7,5→9; rpp 7,5→8,75; lot/fmp/nrl lihat laporan | 1 LULUS promosi | ya |
+| 2026-10-12 ~08:15 | `cursor/iterasi-otomatis-akun-c-8b42` | b411e35a | C6 pilot G11b 4 pesan | tangani 6,5→8,5; kelayakan 6,5→9 | LULUS tampilan | ya |
 | 2026-10-11 ~11:15 | `cursor/iterasi-otomatis-akun-c-8b42` | dd4c362d | S5: `mktopics-g12.py` + serah terima G12 | pra-cek 5/5 | koordinasi | ya |
 | 2026-10-11 ~10:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 0fb9d877 | Paket G12: `msgs-g12.json` + prep doc | pra-cek 5/5 | koordinasi | ya |
 | 2026-10-11 ~10:15 | `cursor/iterasi-otomatis-akun-c-8b42` | 94e1fffc | Pra-cek TG G12 `notebook-riset-lokal` | 785 char | LOLOS TG | ya |

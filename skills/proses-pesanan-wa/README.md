@@ -40,6 +40,13 @@ Salin folder `proses-pesanan-wa` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python (bawaan Mac/Linux) membuat hitungan otomatis; tanpa Python hitungan tetap ditunjukkan rinci per baris.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1095/1151 — skor 7,5
+- Dengan skill: https://t.me/c/4407409583/1096/1158 — skor 8,5
+Verdik gelombang: BELUM — Tanpa skill sudah menolak aksi berisiko (mutasi bank, kirim WA otomatis, bagikan alamat) dengan angka nota benar; dengan skill ditambah nomor pesanan, nota, label, rekap tanpa HP/alamat yang aman untuk grup reseller, dan CSV, tetapi selisihnya belum mencapai acuan 1,5.
+
 ## FAQ
 **Bisakah langsung mengirim konfirmasi ke semua pelanggan dari WhatsApp saya?**
 Tidak. Mengirim otomatis dari WhatsApp pribadi berisiko nomor diblokir dan salah kirim. Anda mendapat draf per pelanggan yang tinggal disalin dan dikirim.

@@ -42,7 +42,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 > **Lokasi script:** semua script skill ini ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill). Jalankan dari sana; jangan mencari script atau file pengguna ke seluruh disk (mis. `find /`) — itu lambat dan menyentuh data pribadi di luar folder kerja.
 1. Susun data karyawan menjadi CSV (pemisah `;` atau `,`) dengan kolom seperti `templates/karyawan-contoh.csv`. Kolom wajib: `nama`, `ptkp`, `gaji_pokok`. Kolom opsional: `jabatan`, `nik`, `tunjangan_tetap`, `tunjangan_tidak_tetap`, `lembur_hari_kerja` (jam per hari dipisah `+`, mis. `2+3+1`), `lembur_hari_libur` (mis. `8+5`; pola 6 hari: akhiran `p` bila libur resmi jatuh di hari kerja terpendek, mis. `5p`), `lembur_rp` (nominal lembur jadi, bila tidak pakai jam), `bonus`/`thr`, `potongan_lain`, `zakat`, `jkk_persen`, `ikut_jp`/`ikut_bpjs_tk`/`ikut_bpjs_kesehatan` (ya/tidak), `dtp` (ya/tidak; hanya masa 2026, sektor/KLU sudah dikonfirmasi, dan `bruto_tetap_januari` ≤ Rp 10 jt — bila tidak memenuhi, script otomatis memotong PPh normal dan memberi ⚠️), `bruto_tetap_januari`, `dasar_bpjs_kesehatan`, dan untuk Desember/berhenti: `berhenti`, `bruto_sd_bulan_lalu`, `pph21_sd_bulan_lalu`, `iuran_sd_bulan_lalu`, serta **wajib** `jumlah_bulan_kerja` atau `bulan_mulai` (1 bila sejak Januari).
-   **Data gaji = data pribadi sensitif:** tulis CSV input dan folder `--out` di **folder kerja yang disepakati dengan pengguna** (mis. folder kerja OpenClaw/agent atau folder yang ia sebut), **bukan `/tmp`** atau folder sementara lain; sebutkan path lengkapnya.
+   **Data gaji = data pribadi sensitif:** tulis CSV input dan folder `--out` di **folder kerja yang disepakati dengan pengguna** (mis. folder kerja OpenClaw/agent atau folder yang ia sebut), **bukan `/tmp`** atau folder sementara lain; sebutkan path lengkapnya (di aplikasi chat seperti Telegram/WhatsApp: cukup "disimpan di folder kerja asisten", **tanpa path**).
 2. Jalankan (path relatif terhadap folder SKILL.md ini; Windows: `python` atau `py`):
    ```bash
    python3 <folder-skill-ini>/scripts/payroll.py --data karyawan.csv --periode 2026-09 --perusahaan "CV Maju Jaya" --umk "5.396.761" --jkk 0,54 --out payroll-2026-09
@@ -50,8 +50,39 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    Satu karyawan tanpa CSV: `--nama Budi --ptkp K/1 --gaji-pokok 6jt --tunjangan-tetap 500rb --lembur-hari-kerja 2+3`.
    Opsi lain: `--hari-kerja 6`, `--batas-jp <nilai>` (wajib bila periode di luar Maret 2025–Februari 2027), `--pemisah-csv ,`, `--format json`.
 3. Script membuat 3 file di folder `--out`: `slip-gaji-YYYY-MM.md` (tempel ke chat/dokumen), `slip-gaji-YYYY-MM.html` (buka di browser → Cetak/Save as PDF; satu slip per halaman), `rekap-payroll-YYYY-MM.csv` (buka di Excel). Bila ada satu saja data karyawan yang salah, **tidak ada file dibuat** dan script menampilkan daftar kesalahannya.
-4. Sampaikan ke pengguna: tabel rekap dari script, **baris "Total biaya gaji perusahaan = … " disalin persis dari keluaran script** (jangan menjumlah ulang total apa pun di kepala; bila butuh total lain, jalankan script dengan `--format json`), lokasi file, setiap ⚠️ peringatan (UMK, lembur > 4 jam, JKK tidak standar, dsb.), asumsi yang dipakai, dan disclaimer. Bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah slip jadi (hapus hanya bila pengguna setuju).
+4. Sampaikan ke pengguna (di aplikasi chat ikuti juga bagian **Penyajian di aplikasi chat** di bawah): rekap dari script, **baris "Total biaya gaji perusahaan = … " disalin persis dari keluaran script** (jangan menjumlah ulang total apa pun di kepala; bila butuh total lain, jalankan script dengan `--format json`), lokasi file (hanya di terminal/IDE; di aplikasi chat tidak), setiap ⚠️ peringatan (UMK, lembur > 4 jam, JKK tidak standar, dsb.), asumsi yang dipakai, dan disclaimer. Bila CSV input dibuat oleh agent dari data chat, **tawarkan untuk menghapusnya** setelah slip jadi (hapus hanya bila pengguna setuju).
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah, tulis langkahnya, tabel TER ada di `references/tabel-ter.md`, dan beri tahu pengguna bahwa hasil dihitung manual (slip HTML/CSV tidak dibuat).
+
+## Penyajian di aplikasi chat (Telegram/WhatsApp) — WAJIB
+Bila percakapan lewat aplikasi chat (Telegram, WhatsApp, dsb.) atau tidak jelas apakah tabel akan tampil rapi, pembeli harus **melihat slipnya langsung di chat**, bukan hanya diberi file:
+1. **Baca isi `slip-gaji-YYYY-MM.md`** yang dibuat script (atau pakai `--format json`), lalu tulis ulang sebagai **teks rata** (pola di bawah). Angka **disalin persis**, tidak dihitung ulang. **Tanpa tabel Markdown** (Telegram tidak merender tabel) dan tanpa blok kode; maks. ±40 baris per slip.
+2. **1–3 karyawan:** tampilkan semua slip utuh. **Lebih dari 3:** tampilkan 3 slip pertama utuh + rekap satu baris per karyawan (nama — take home pay — biaya perusahaan) + total dari script; slip lainnya ada di file.
+3. Setelah slip: total biaya gaji perusahaan (salin baris script), setoran BPJS Kesehatan / BPJS Ketenagakerjaan / PPh 21, ⚠️ peringatan, asumsi, pembulatan, disclaimer singkat.
+4. **File:** lampirkan slip HTML (siap cetak/PDF) dan rekap CSV bila kanal/alat bisa mengirim file. Bila tidak bisa, **jangan sebut nama file atau path** (buang baris `File:` dari keluaran script) dan tutup dengan: *Balas "kirim file" bila ingin slip lengkap siap cetak (PDF) dan rekap Excel.* Bila pengguna membalas "kirim file" tetapi lampiran tetap tidak bisa, jelaskan dengan bahasa sederhana bahwa file tersimpan di komputer tempat asisten berjalan, dan tawarkan menampilkan slip karyawan lain satu per satu di chat.
+
+Pola satu slip (teks rata):
+```
+SLIP GAJI — <Perusahaan>
+Periode: <Bulan Tahun>
+Nama: <nama> (<jabatan>) · PTKP <status>
+
+PENDAPATAN
+- Gaji pokok: Rp …
+- Tunjangan tetap / tidak tetap / Lembur / Bonus: Rp … (satu baris per pos yang tidak nol)
+Total pendapatan: Rp …
+
+POTONGAN
+- BPJS Kesehatan 1%: Rp …
+- BPJS TK JHT 2%: Rp … · JP 1%: Rp …
+- PPh 21: Rp … (TER <kategori> <tarif>)
+- Kasbon/potongan lain: Rp …
+Total potongan: Rp …
+
+TAKE HOME PAY: Rp …
+
+Ditanggung perusahaan (tidak memotong gaji): BPJS Kes 4% Rp …; JHT 3,7% Rp …; JKK Rp …; JKM Rp …; JP 2% Rp …
+```
+Baris pos yang nilainya Rp 0 boleh dihilangkan; bila DTP, tampilkan "PPh 21 dipotong", "PPh 21 DTP dibayar tunai" (nilai sama), dan "setoran ke negara Rp 0" seperti di slip MD.
 
 ## Rumus (untuk hitung manual)
 Dasar & sumber: `references/regulasi.md` (berlaku per 2026-09-23).
@@ -70,8 +101,9 @@ Dasar & sumber: `references/regulasi.md` (berlaku per 2026-09-23).
 ```
 **Rekap payroll <Bulan Tahun> — <Perusahaan>** (<n> karyawan)
 | Nama | Total pendapatan | Potongan | PPh 21 | Take home pay | Biaya perusahaan |
+(aplikasi chat: tanpa tabel — slip utuh teks rata dulu, lalu rekap satu baris per karyawan)
 - Setor BPJS Kesehatan / BPJS Ketenagakerjaan / PPh 21
-File: slip (MD, HTML siap cetak), rekap CSV
+File: slip (MD, HTML siap cetak), rekap CSV — terminal/IDE: sebut lokasinya; aplikasi chat: lampirkan atau tawarkan "balas 'kirim file'" (tanpa path)
 ⚠️ Peringatan · Asumsi · Pembulatan
 _Disclaimer + dasar aturan + tanggal berlaku_
 ```
@@ -91,6 +123,7 @@ Satu slip (isi file MD/HTML): identitas & periode → tabel Pendapatan → tabel
 - [ ] Bila DTP: slip menampilkan PPh 21 dipotong, DTP dibayar tunai (nilai sama), setoran ke negara Rp 0, dan take home pay dari script (tidak pernah "gaji + DTP").
 - [ ] Desember/berhenti: jumlah bulan kerja (atau bulan mulai) diisi sesuai fakta, bukan ditebak.
 - [ ] Asumsi (JKK, pola kerja), pembulatan, dan disclaimer tercantum.
+- [ ] Aplikasi chat: minimal 1 slip utuh (maks. 3) tampil langsung di chat sebagai teks rata tanpa tabel; tidak ada path file; file dilampirkan atau ditawarkan "balas 'kirim file'".
 
 ## Batasan & penanganan error
 - Kode keluar 2 + pesan `ERROR:` untuk PTKP salah (mis. K/4), angka rusak, periode salah, jam lembur hari libur melebihi aturan, kolom Desember kosong, atau batas JP periode belum diketahui. Sampaikan dengan bahasa sederhana dan minta data yang benar.

@@ -22,6 +22,13 @@ Kasus warung makan Bu Sri (laba 2023-2025 Rp96 juta/Rp118 juta/Rp134 juta, sisa 
 ## Instalasi singkat
 Salin folder ini ke folder skill platform Anda; lokasi per platform ada di `docs/instalasi.md`. Lalu cukup ketik, misalnya: "Saya mau oper kafe saya tahun depan, bantu siapkan."
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1099/1171 — skor 7
+- Dengan skill: https://t.me/c/4407409583/1100/1176 — skor 7,5
+Verdik gelombang: BELUM — Tanpa skill ringkas dan tegas bahwa Rp500 juta di atas kisaran wajar; dengan skill lebih lengkap (daftar periksa, rencana 12 bulan, dokumen untuk pembeli, pertanyaan ke notaris) tetapi panjang dan ada kalimat koreksi diri, sehingga selisih belum mencapai acuan 1,5.
+
 ## FAQ
 **Apakah ini menggantikan notaris?** Tidak. Skill menyiapkan bahan dan pertanyaan; akta dan keputusan hukum tetap lewat notaris.
 **Angka nilai usaha dari mana?** Dari laba, aset, dan kelipatan yang Anda berikan. Tanpa kelipatan dari Anda, hasil diberi label contoh hitungan, bukan angka pasar.

@@ -40,6 +40,13 @@ Salin folder `rapor-mingguan-ai` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python tidak wajib; hanya membantu bila percakapan sangat banyak.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1093/1139 — skor 6,5
+- Dengan skill: https://t.me/c/4407409583/1094/1144 — skor 8,5
+Verdik gelombang: LULUS — Tanpa skill hanya daftar masalah dan saran umum (filter kata terlarang); dengan skill nilai per kriteria (fakta benar 9/12, tanpa janji berlebihan 9/12), 3 kesalahan teratas, dan teks perbaikan siap tempel ke catatan bot beserta cara mengecek minggu depan.
+
 ## FAQ
 **Apakah skill ini membaca semua chat bot saya otomatis?**
 Tidak. Anda yang menempelkan contoh percakapan. Skill ini tidak membuka database, log, atau kunci OpenClaw, demi keamanan data pelanggan Anda.
