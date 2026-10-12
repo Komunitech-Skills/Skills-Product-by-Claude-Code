@@ -13,7 +13,13 @@
 Pemilik/atasan UMKM dengan tim 3-20 orang. Bukan untuk memecat atau menghitung pesangon (lihat `surat-peringatan-karyawan` dan konsultan hukum ketenagakerjaan). Melengkapi `kpi-tim`, `sop-onboarding` (dokumen), sementara skill ini untuk percakapan.
 
 ## Contoh sebelum & sesudah
-Akan diisi dari hasil uji.
+**Permintaan:** "Si Rina kasir saya sering telat (09.40, 09.35, 09.50; toko buka 09.00). Dedi jadi sendirian, ada pelanggan pergi. Anaknya baik, kabarnya lagi ada masalah rumah. Saya nggak enak negur."
+
+| Tanpa skill | Dengan skill |
+|---|---|
+| Saran umum "awali dengan empati, lalu tegas", membuka dengan pujian pembungkus, ikut menyinggung masalah rumah tangga, mengarang konsekuensi potongan gaji, lalu menawarkan "mau dibuatkan pesan WA?" | Langsung jadi: pesan WA ajakan bicara (terpisah dari teguran), naskah empat mata urut konteks → fakta tanggal & jam → dampak → tanya → sepakat (tiba 08.45, cek ulang Jumat), pujian dipisah, kalimat halus-tapi-jelas, tindak lanjut 3 baris. Hal pribadi tidak diangkat; yang belum diketahui ditandai `[isian]`, 3 pertanyaan di akhir. |
+
+Skor uji penguji independen (5 skenario): rata-rata 6,2 tanpa skill → 8,5 dengan skill (uji simulasi agent 2026-10-09; konfirmasi di bot OpenClaw asli menyusul).
 
 ## Instalasi
 Lihat `docs/instalasi.md` (OpenClaw, Codex, Claude Code, Cursor). Cukup bilang: "Saya nggak enak negur kasir yang sering telat."
