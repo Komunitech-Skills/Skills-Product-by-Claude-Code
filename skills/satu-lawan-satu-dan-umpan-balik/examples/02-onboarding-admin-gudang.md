@@ -1,57 +1,72 @@
 # Contoh 2: Normal kedua: onboarding admin gudang 30 hari
 
-> Hasil uji OpenClaw asli (2026-10-12, model claude-sonnet-5, uji otomatis agent). Perbandingan lengkap sebelum/sesudah: `00-openclaw-sebelum-sesudah.md`.
+> Hasil uji OpenClaw asli versi 1.0.2 (2026-10-12, model claude-sonnet-5, uji otomatis agent). Perbandingan lengkap sebelum/sesudah: `00-openclaw-sebelum-sesudah.md`.
 
 ## Masukan pengguna
-"Senin depan 12 Okt ada anak baru masuk, Bagas, jadi admin gudang di toko bahan kue saya. Timnya 6 orang. Pendampingnya Bu Wati. Bikinin rencananya ya."
+"Senin depan 19 Okt ada anak baru masuk, Bagas, jadi admin gudang di toko bahan kue saya. Timnya 6 orang. Pendampingnya Bu Wati. Bikinin rencananya ya."
 
 ## Keluaran di chat (dengan skill)
 
 > # Rencana Onboarding 30 Hari — Bagas (Admin Gudang)
 >
-> **Mulai:** Senin, 12 Oktober 2026
-> **Pendamping:** Bu Wati
-> **Tim:** 6 orang
-> **Tujuan akhir bulan:** Bagas bisa jalankan tugas admin gudang (stok masuk-keluar, pencatatan, pengecekan bahan kue) sendiri tanpa dicek terus oleh Bu Wati.
+> Mulai Senin, 19 Oktober 2026. Pendamping: Bu Wati. Tim: 6 orang.
 >
-> ## Hari pertama (Senin, 12 Okt)
-> - Siapkan sebelum dia datang: meja/area kerja gudang, akses yang dibutuhkan [isian: akses sistem pencatatan stok/kunci gudang], seragam kalau ada, nomor WA grup tim.
-> - Sambut di pintu, kenalkan ke semua 6 orang tim (nama + tugas masing-masing).
-> - Jelaskan: jam kerja, jam istirahat, cara izin/sakit, aturan grup WA tim.
-> - Bu Wati jelaskan alur kerja gudang secara garis besar: alur bahan masuk, cara simpan, cara catat.
-> - Satu tugas kecil yang selesai hari itu juga: [isian, misalnya — catat ulang stok 1 rak bahan bersama Bu Wati], supaya Bagas pulang dengan rasa sudah berguna.
-> - Makan siang bersama tim kalau memungkinkan.
+> ## Hari Pertama — Senin, 19 Oktober
+> - Sambutan singkat dari Anda ke seluruh tim (6 orang), perkenalkan Bagas dan perannya sebagai admin gudang.
+> - Bu Wati mengajak keliling gudang: lokasi penyimpanan per kategori bahan (tepung, gula, mentega, cokelat, dll), alur barang masuk dari supplier, cara pencatatan stok yang dipakai toko.
+> - Satu tugas kecil selesai hari itu juga (ditemani Bu Wati): menghitung dan mencatat stok satu rak/kategori kecil, supaya Bagas langsung merasa berkontribusi.
+> - Bu Wati mendampingi penuh sepanjang shift hari ini.
 >
-> ## Minggu 1 (12–18 Okt) — Mengamati
-> Bagas ikut Bu Wati, mengamati alur kerja gudang: terima barang, cek kesesuaian nota, simpan sesuai tempat, catat di buku/sistem.
-> **Cek hari ke-7 — Senin, 19 Okt (15 menit):** Bu Wati tanya ke Bagas: "Apa yang masih membingungkan?"
+> ## Minggu 1 — Senin 19 s.d. Minggu 25 Oktober
+> Tujuan: kenal gudang dan bahan baku, paham cara pencatatan stok, paham prinsip barang lama dipakai/dijual dulu sebelum barang baru.
+> - Ikut proses terima barang dari minimal satu supplier bersama Bu Wati.
+> - Belajar kartu stok / sistem pencatatan yang dipakai (sebut nama alat/bukunya: [isian]).
+> - Paham lokasi penyimpanan tiap kategori bahan.
+> - Pendampingan: penuh, Bu Wati di sisi Bagas setiap shift.
 >
-> ## Minggu 2 (19–25 Okt) — Mencoba didampingi
-> Bagas mulai pegang tugas sendiri (misal: input stok harian, cek kadaluarsa bahan), Bu Wati mengoreksi langsung di tempat kalau ada yang kurang pas.
-> **Cek hari ke-14 — Senin, 26 Okt (15 menit).**
+> **Cek hari ke-7:** jatuh Minggu 25 Oktober, digeser dari Minggu 25 Oktober ke **Senin, 26 Oktober**. Ngobrol singkat 10-15 menit: apa yang sudah dipahami, apa yang masih bingung.
 >
-> ## Minggu 3 (26 Okt – 1 Nov) — Mandiri sebagian
-> Tugas rutin (input stok, laporan harian, cek fisik bahan) dikerjakan mandiri, tanya Bu Wati hanya kalau ragu-ragu. Bu Wati kasih umpan balik tertulis singkat seminggu sekali.
+> ## Minggu 2 — Senin 26 Oktober s.d. Minggu 1 November
+> Tujuan: mulai mencatat stok masuk/keluar sendiri, ikut opname kecil, mulai peka pada barang yang hampir habis atau mendekati kedaluwarsa.
+> - Bagas mencatat sendiri, Bu Wati mengecek hasilnya tiap hari.
+> - Dilatih lapor ke Bu Wati kalau ada selisih stok.
+> - Pendampingan: aktif tapi mulai dikurangi — Bu Wati cek hasil kerja, bukan mendampingi tiap langkah.
 >
-> ## Minggu 4 (2–8 Nov) — Mandiri & evaluasi
-> Bagas pegang gudang sepenuhnya dengan pengawasan ringan.
-> **Cek hari ke-30 — Rabu, 11 Nov (30 menit):** bahas apa yang sudah lancar, apa yang masih sulit, harapan dua arah (Bagas ke toko, toko ke Bagas), rencana bulan berikutnya.
+> **Cek hari ke-14:** jatuh Minggu 1 November, digeser dari Minggu 1 November ke **Senin, 2 November**. Evaluasi ketelitian dan kecepatan pencatatan; sepakati perbaikan kalau perlu.
 >
-> ## Pesan WA sambutan (kirim H-1, Minggu 11 Okt malam)
-> "Halo Bagas, besok kita ketemu di toko jam [isian: jam masuk]. Bawa [isian: dokumen yang diperlukan]. Nanti Bu Wati yang dampingi kamu di gudang. Santai ya, hari pertama kita kenalan dulu. Sampai besok!"
+> ## Minggu 3 — Senin 2 s.d. Minggu 8 November
+> Tujuan: pegang alur gudang dari awal sampai akhir (terima - catat - simpan - keluar) dengan pengawasan jarak jauh.
+> - Mulai komunikasi langsung dengan supplier untuk konfirmasi pengiriman.
+> - Bu Wati hanya memantau, tidak lagi mendampingi langsung kecuali diminta.
 >
-> ## Naskah pengenalan ke tim (lisan, Senin pagi)
-> "Teman-teman, mulai hari ini kita kedatangan anggota baru, Bagas, yang akan bantu di bagian admin gudang. Bu Wati yang akan dampingi dia beberapa minggu ke depan. Tolong dibantu kalau Bagas masih belum hafal alur kerja kita ya."
+> ## Minggu 4 — Senin 9 s.d. Selasa 17 November
+> Tujuan: kerja mandiri penuh, Bu Wati jadi tempat bertanya saja.
+> - Bagas pegang tanggung jawab penuh pencatatan stok harian.
+> - Siap dievaluasi di hari ke-30.
+>
+> **Cek hari ke-30:** **Selasa, 17 November** (tidak digeser). Evaluasi bersama Anda dan Bu Wati: apa yang sudah dikuasai, apa yang masih perlu didampingi, keputusan lanjut (lepas mandiri atau perpanjang pendampingan).
 >
 > ---
 >
-> **Asumsi yang dipakai:**
-> - Tanggal mulai saya pakai persis sesuai pesan Anda (Senin, 12 Oktober 2026) — meski ini bertepatan dengan hari ini. Kalau maksudnya Senin *minggu depan* (19 Oktober), tinggal geser semua tanggal cek +1 minggu.
-> - Tugas hari pertama dan akses yang dibutuhkan saya kosongkan `[isian]` karena belum tahu detail sistem pencatatan gudang Anda.
+> ## Pesan WA Sambutan untuk Bagas
+> "Halo Bagas, selamat ya sudah gabung jadi admin gudang di toko. Senin tanggal 19 Oktober ditunggu jam [isian: jam masuk]. Bu Wati yang akan mendampingi kamu minggu-minggu pertama, jadi langsung cari beliau begitu sampai. Sampai ketemu Senin!"
 >
-> **Pertanyaan (jawab kalau mau saya lengkapi):**
-> 1. Bagas pakai sistem pencatatan stok manual (buku) atau aplikasi/Excel?
-> 2. Jam masuk kerja dan dokumen yang perlu dia bawa hari pertama apa saja?
+> ## Pesan WA untuk Bu Wati
+> "Bu Wati, terima kasih sudah bersedia mendampingi Bagas, admin gudang baru yang mulai Senin 19 Oktober. Minggu pertama tolong didampingi penuh, minggu kedua mulai dilepas bertahap sambil dicek hasil pencatatannya. Kita ngobrol bareng lagi di hari ke-7 (Senin 26 Okt), hari ke-14 (Senin 2 Nov), dan evaluasi 30 hari (Selasa 17 Nov)."
+>
+> ---
+>
+> ## Asumsi
+> - Toko tutup/libur hari Minggu, sehingga titik cek yang jatuh di hari Minggu digeser ke Senin berikutnya.
+> - Jam masuk, nama alat pencatatan stok, dan tugas kecil hari pertama belum disebutkan, saya tandai `[isian]`.
+>
+> ## Pertanyaan
+> 1. Apakah toko memang libur/tutup hari Minggu, atau tetap buka 7 hari?
+> 2. Pencatatan stok pakai buku manual atau aplikasi/sistem kasir tertentu?
+> 3. Jam kerja standar Bagas mulai pukul berapa, supaya pesan sambutan bisa diisi pasti?
 
 ## Catatan penguji
-Skor sebelum 4.0 / sesudah 8.5. SESUDAH (8,5): rencana utuh hari pertama + minggu 1-4, pendamping Bu Wati, cek hari ke-7 = Senin 19 Okt (hari ke-7 jatuh Minggu 18 Okt, digeser; benar), hari ke-14 = Senin 26 Okt (Minggu 25 Okt digeser; benar), pesan WA sambutan, naskah perkenalan ke tim, `[isian]` untuk jam/dokumen/akses, asumsi tanggal disebut, 2 pertanyaan. Kurang: cek "hari ke-30 = Rabu 11 Nov" padahal hari ke-30 (hari pertama = hari ke-1) adalah Selasa 10 Nov (11 Nov = 30 hari setelah mulai); tidak ada pesan untuk Bu Wati.
+
+**Nilai: SEBELUM 5,5 | SESUDAH 9,0**
+- SEBELUM: rencana hanya sekitar 2 minggu (bukan 30 hari), tanpa tanggal cek (hanya "Hari 1 - Senin 19 Okt" benar), tanpa pesan WA sambutan/pendamping; menulis ke memori agent (efek samping) dan menyebut "Dicatat juga di memori"; menutup dengan menu penawaran.
+- SESUDAH: rencana per minggu dengan hari/tanggal benar dan terverifikasi python: hari ke-7 = Minggu 25 Okt digeser ke Senin 26 Okt, hari ke-14 = Minggu 1 Nov digeser ke Senin 2 Nov, hari ke-30 = Selasa 17 Nov (aturan hari pertama = hari ke-1 diterapkan benar; di 1.0.1 salah hitung). Ada tugas kecil selesai di hari pertama, pesan WA sambutan untuk Bagas dan pesan WA untuk pendamping Bu Wati, hal tidak diketahui `[isian]`, asumsi + 3 pertanyaan. Kekurangan kecil: asumsi "toko libur hari Minggu" dikarang (tapi dinyatakan sebagai asumsi dan ditanyakan); kalimat "digeser dari Minggu 25 Oktober ke Senin" agak canggung.
