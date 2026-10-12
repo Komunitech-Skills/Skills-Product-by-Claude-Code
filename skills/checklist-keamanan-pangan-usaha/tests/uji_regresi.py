@@ -59,7 +59,7 @@ class Uji(unittest.TestCase):
         h = c.analisis(tulis("waktu,alat,suhu\nkemarin,kulkas,4\n2026-10-06 08:00,kulkas,abc\n2026-10-06 08:00,,4\nx\n2026-10-06 08:00,kulkas,nan\n2026-10-06 08:00,kulkas,9999\n\n"), D)
         self.assertEqual(h["baris_ok"], 0)
         self.assertEqual(len(h["baris_rusak"]), 6)
-        self.assertIn("Tidak ada pelanggaran", c.teks(h))
+        self.assertIn("TIDAK ADA BARIS DATA YANG TERBACA", c.teks(h))  # berkas rusak total tidak boleh dilaporkan aman
 
     def test_alat_tak_dikenal_dan_jam_saja(self):
         h = c.analisis(tulis("08:00,mesin es,3\n09:00,kulkas,7\n"), D)

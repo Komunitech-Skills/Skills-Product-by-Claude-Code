@@ -24,6 +24,13 @@ Skor uji penguji independen (5 skenario): rata-rata 6,2 tanpa skill → 8,5 deng
 ## Instalasi
 Lihat `docs/instalasi.md` (OpenClaw, Codex, Claude Code, Cursor). Cukup bilang: "Saya nggak enak negur kasir yang sering telat."
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1252/1272 — skor 6
+- Dengan skill: https://t.me/c/4407409583/1253/1275 — skor 8,5
+Verdik gelombang: LULUS — Tanpa skill saran umum yang malah menyuruh membahas kabar masalah rumah; dengan skill ada pesan ajakan, naskah empat mata berisi tanggal dan jam kejadian yang benar, serta tanggal cek ulang.
+
 ## FAQ
 **Apakah ini nasihat hukum?** Bukan; untuk PHK dan sengketa, konsultasikan ke ahli ketenagakerjaan.
 **Kalau saya minta pecat lewat WA?** Ditolak singkat; Anda tetap dibantu pesan ajakan bicara, naskah empat mata, dan format catatan kejadian (versi 1.0.2).

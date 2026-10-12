@@ -49,6 +49,13 @@ Folder `pantau-cron-openclaw` disalin ke lokasi skill platform Anda -- lokasi le
 - Skill tahu **apakah job melapor**, bukan apakah isinya benar.
 - Ini untuk memantau job dan sistem **milik sendiri** (atau tim dengan pemberitahuan tertulis). Skill menolak memantau komputer/aktivitas orang lain diam-diam.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1250/1265 — skor 2
+- Dengan skill: https://t.me/c/4407409583/1251/1268 — skor 8
+Verdik gelombang: LULUS — Tanpa skill bot tidak menghasilkan jawaban dalam 20 menit; dengan skill ada daftar 3 jadwal, langkah lapor selesai, dua pengawas siap salin, dan konfirmasi "Lanjut? (ya/tidak)" sebelum apa pun dipasang.
+
 ## FAQ
 **1. Apakah ini memata-matai komputer saya atau karyawan?**
 Tidak. Skill hanya mencatat "job X melapor selesai pukul sekian" di komputer Anda. Ia tidak membaca layar, pesan, atau file, dan menolak dipakai untuk mengawasi orang lain diam-diam.

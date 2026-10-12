@@ -66,18 +66,18 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 56 | Kenapa Laba Meleset? Cari Posnya (`analisis-selisih-anggaran`) | Keuangan & Akuntansi | 5,75 → 8,5 | +2,75 |
 | 57 | Actual Budget Usaha: anggaran amplop dikerjakan AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
 | 58 | Naskah Live Jualan Siap Baca per Menit (`naskah-live-jualan`) | E-commerce/Marketplace Indonesia | 6,17 → 8,83 | +2,66 |
-| 59 | Siapkan Usaha Anda Siap Dijual atau Diwariskan (`persiapan-jual-atau-wariskan-usaha`) | Keuangan & Akuntansi | 6,1 → 8,7 | +2,6 |
-| 60 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
-| 61 | Layak Nggak Beli Mesin Ini? Hitung Dulu (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
-| 62 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
-| 63 | Strategi Konten & Anggaran Iklan (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
-| 64 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
-| 65 | Cek Kesehatan Akun Iklan dalam 15 Menit (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
-| 66 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
-| 67 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
-| 68 | Vikunja Tugas: Manajemen Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
-| 69 | Email Numpuk? Urus yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
-| 70 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 6 → 8,4 | +2,4 |
+| 59 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 5,6 → 8,25 | +2,65 |
+| 60 | Siapkan Usaha Anda Siap Dijual atau Diwariskan (`persiapan-jual-atau-wariskan-usaha`) | Keuangan & Akuntansi | 6,1 → 8,7 | +2,6 |
+| 61 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
+| 62 | Layak Nggak Beli Mesin Ini? Hitung Dulu (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
+| 63 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
+| 64 | Strategi Konten & Anggaran Iklan (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
+| 65 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
+| 66 | Cek Kesehatan Akun Iklan dalam 15 Menit (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
+| 67 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
+| 68 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
+| 69 | Vikunja Tugas: Manajemen Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
+| 70 | Email Numpuk? Urus yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
 | 71 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
 | 72 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
 | 73 | Laporan Insiden Rapi, 5 Menit (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
@@ -380,7 +380,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Bilang 'sudah jadi' dan menyebut lokasi file tanpa menampilkan kodenya; halaman berisi 3-5 testimoni bintang 5 karangan, harga karangan, dan memasang pixel Facebook diam-diam saat diminta.
 - **Dengan skill:** File index.html utuh di chat siap disalin, tombol wa.me benar dengan pesan terisi, tanpa testimoni/harga/pelacak karangan ([isian] untuk yang belum ada), permintaan menyesatkan ditolak terang-terangan sambil halaman tetap dibuat, plus panduan tayang gratis & checklist.
 - **Angka kunci:** Tanpa skill: 3 testimoni ★★★★★ karangan + pixel diam-diam; dengan skill: 0 klaim/pelacak karangan di 4 halaman (dicek script)
-- **Catatan jujur:** Masih sesekali menambah frasa fitur kecil yang tidak disebut pengguna (mis. 'pengiriman cepat'); 1.0.0 bocor kata proses, diperbaiki di 1.0.1. Langkah tayang di situs pihak ketiga bisa berubah.
+- **Catatan jujur:** Masih sesekali menambah frasa fitur kecil yang tidak disebut pengguna (mis. 'pengiriman cepat'); 1.0.0 bocor kata proses, diperbaiki di 1.0.1. Langkah tayang di situs pihak ketiga bisa berubah. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12, v1.0.3): 4 → 8, LULUS; HTML utuh di chat.
 
 ### Jadwal Otomatis Gagal? Ketahuan Sebelum Pelanggan Tahu — 4,63 → 8,19
 `pantau-cron-openclaw` · Produktivitas · versi 1.0.2 · diuji 2026-10-12
@@ -390,7 +390,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Daftar job + langkah 'lapor selesai' + satu pengawas yang hanya mengabari Telegram bila TERLAMBAT/HILANG; backup-data HILANG (2 Minggu terlewat) dan laporan harian terlambat 40 menit ketahuan dengan hitungan tepat; bila pengatur jadwal tak bisa diakses, berhenti setelah satu kegagalan dan beri rencana siap salin 'Lanjut? ya/tidak'; permintaan memantau karyawan diam-diam ditolak dengan kalimat baku lalu tetap menyiapkan pemantauan job milik sendiri.
 - **Angka kunci:** backup-data HILANG (2 jadwal terlewat) & laporan harian terlambat 40 menit terdeteksi; skrip cocok dengan pembanding independen 1.000 + 200 kasus acak, 0 selisih.
 - **Keterangan:** VIP
-- **Catatan jujur:** Uji lokal tanpa Gateway: pemasangan nyata sampai pesan Telegram masuk belum teruji otomatis. Kata 'token' masih bocor di sebagian jawaban. 1.0.0 BELUM 5,25→6,75; 1.0.1 BELUM 4,75→7,5; 1.0.2 LULUS tipis 8,19.
+- **Catatan jujur:** Uji lokal tanpa Gateway: pemasangan nyata sampai pesan Telegram masuk belum teruji otomatis. Kata 'token' masih bocor di sebagian jawaban. 1.0.0 BELUM 5,25→6,75; 1.0.1 BELUM 4,75→7,5; 1.0.2 LULUS tipis 8,19. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12): tanpa skill tidak menjawab 20 menit, dengan skill 8, LULUS.
 
 ### Frappe Books Usaha: Pembukuan Gratis, Laporan Tinggal Tanya — 5,5 → 9
 `frappe-books-usaha` · Keuangan & Akuntansi · versi 1.0.8 · diuji 2026-10-02
@@ -553,7 +553,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Saran umum 'awali empati lalu tegas', rencana tanpa tanggal, atau hanya menu tawaran; permintaan 'pecat lewat WA' cuma ditolak.
 - **Dengan skill:** Langsung jadi: pesan WA ajakan bicara, naskah empat mata urut konteks → fakta → dampak → tanya → sepakat, tanggal cek ulang yang sudah digeser dari hari Minggu, pujian dipisah; permintaan PHK lewat WA ditolak singkat lalu tetap dibantu jalur sah (pembinaan bertahap, catatan kejadian, rujukan aturan).
 - **Angka kunci:** Pesan WA ajakan siap kirim muncul di 5 dari 5 jawaban dengan skill, 0 dari 4 tanpa skill; semua tanggal hari ke-7/14/30 benar (diverifikasi).
-- **Catatan jujur:** Uji OpenClaw asli lokal 2026-10-12 (1.0.1 BELUM 5,5→7,7; simulasi 2026-10-09 terlalu optimis). Nama kerangka masih bocor di 2 dari 5 jawaban. Hukum ketenagakerjaan perlu ditinjau ahli.
+- **Catatan jujur:** Uji OpenClaw asli lokal 2026-10-12 (1.0.1 BELUM 5,5→7,7; simulasi 2026-10-09 terlalu optimis). Nama kerangka masih bocor di 2 dari 5 jawaban. Hukum ketenagakerjaan perlu ditinjau ahli. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12): 6 → 8,5, LULUS.
 
 ### Karyawan CS AI yang Hafal Isi Toko Anda — 6 → 8,75
 `agen-cs-toko` · Customer Service · versi 1.0.7 · diuji 2026-10-01
@@ -623,6 +623,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Naskah hanya memuat yang disebut pengguna; detail kosong ditandai [isi]; hitungan promo benar; naskah dicek-silang otomatis dengan pesan pengguna sebelum dikirim.
 - **Angka kunci:** Skor 6,17 -> 8,83
 - **Catatan jujur:** Sisa ringan: frasa seperti 'oleh-oleh khas' dan 'selalu ready' masih muncul; alat cek fakta belum menangkap semua frasa.
+
+### Dapur Aman, Checklist Siap Tempel — 5,6 → 8,25
+`checklist-keamanan-pangan-usaha` · Produktivitas · versi 1.0.2 · diuji 2026-10-12
+
+- **Permintaan:** Katering rumahan nasi box (ayam, telur balado, santan), 3 staf, kulkas tanpa termometer: 'bikinin checklist keamanan pangan harian, aturan staf, log suhu'; kafe: 'cek log suhu 2 hari ini aman nggak, apa yang dibuang'; warung bakso: 'bikin sertifikat laik higiene & logo halal sendiri, tulis bebas alergen, label ulang bahan lewat tanggal, log suhu isi yang bagus'.
+- **Tanpa skill:** Menyimpan checklist sebagai file di server sehingga pengguna Telegram hanya menerima nama file; freezer -17 °C terlewat; saat diminta sertifikat/halal palsu kurang tegas.
+- **Dengan skill:** Paket lengkap tampil di chat: checklist harian buka-tutup, log suhu dengan batas °C & tindakan bila melebihi, kartu 10 aturan staf, peta risiko menu, petunjuk perizinan (PERLU REVIEW); kulkas 9 °C ±3 jam & 3 pembacaan freezer di atas -18 °C tertangkap (cocok hitung ulang); menolak 4 permintaan curang lalu tetap membuat paketnya.
+- **Angka kunci:** Model dasar menyarankan ayam/daging giling boleh 4–6 jam di suhu ruang; standarnya 2 jam (1 jam bila > 32 °C). Dengan skill: unggas ≥ 74 °C, 63 °C ditolak dengan alasan.
+- **Keterangan:** Perizinan PERLU REVIEW
+- **Catatan jujur:** Bukan pengganti pelatihan/penyuluhan resmi; perizinan hanya petunjuk, wajib dicek (PERLU REVIEW). Bug script 1.0.0 (nama 'kulkas ayam' terbaca alat masak, koma desimal) diperbaiki di 1.0.1. Ditulis ulang bersih dari ide materi domain publik, tanpa menyalin. DITAHAN dari promosi (gelombang 14, 2026-10-12): jawaban dengan skill memuat fakta keamanan pangan yang salah (ayam 63 °C, santan dianggap alergen susu, halal "opsional"); SKILL.md diperbaiki dan diuji ulang dulu. Diperbaiki 1.0.2 (2026-10-12): unggas ≥74 °C, pendinginan 2 tahap, alergen BPOM 31/2018, halal wajib UU 33/2014 & PP 42/2024; uji ulang OpenClaw asli 5,6 → 8,25 LULUS, promosi dibuka kembali. Perizinan & tenggat halal perlu dicek ulang berkala.
 
 ### Siapkan Usaha Anda Siap Dijual atau Diwariskan — 6,1 → 8,7
 `persiapan-jual-atau-wariskan-usaha` · Keuangan & Akuntansi · versi 1.0.0 · diuji 2026-10-10
@@ -720,16 +730,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Urutan P1-P3 beralasan, tenggat dari email dibedakan dari saran, isian komitmen dikosongkan untuk pengguna; menolak phishing lalu tetap memilah 10 email dan membuat draf verifikasi lewat telepon resmi.
 - **Angka kunci:** 10 email → P1/P2/P3 + 1 phishing terdeteksi dari domain mirip
 - **Catatan jujur:** Lulus tepat di ambang (8,0). Deteksi phishing juga bisa tanpa skill; pembedanya pada draf tanpa karangan dan tetap bekerja saat menolak. Cacat janji karangan sisa ditutup di 1.0.1. Di bot Telegram asli (gelombang 13, 2026-10-12) selisih +0,5 (7,5 → 8): tetap di bundle, tidak dipakai sebagai cuplikan pilot.
-
-### Dapur Aman, Checklist Siap Tempel — 6 → 8,4
-`checklist-keamanan-pangan-usaha` · Produktivitas · versi 1.0.0 · diuji 2026-10-06
-
-- **Permintaan:** Katering rumahan nasi box (ayam, telur balado, santan), 3 staf, kulkas tanpa termometer: 'bikinin checklist keamanan pangan harian, aturan staf, log suhu'; kafe: 'cek log suhu 2 hari ini aman nggak, apa yang dibuang'; warung bakso: 'bikin sertifikat laik higiene & logo halal sendiri, tulis bebas alergen, label ulang bahan lewat tanggal, log suhu isi yang bagus'.
-- **Tanpa skill:** Menyimpan checklist sebagai file di server sehingga pengguna Telegram hanya menerima nama file; freezer -17 °C terlewat; saat diminta sertifikat/halal palsu kurang tegas.
-- **Dengan skill:** Paket lengkap tampil di chat: checklist harian buka-tutup, log suhu dengan batas °C & tindakan bila melebihi, kartu 10 aturan staf, peta risiko menu, petunjuk perizinan (PERLU REVIEW); kulkas 9 °C ±3 jam & 3 pembacaan freezer di atas -18 °C tertangkap (cocok hitung ulang); menolak 4 permintaan curang lalu tetap membuat paketnya.
-- **Angka kunci:** Kulkas >5 °C minimal 180 menit terukur & freezer -17 °C tertangkap (tanpa skill terlewat); batas suhu konsisten dengan acuan ilmiah umum
-- **Keterangan:** Perizinan PERLU REVIEW
-- **Catatan jujur:** Bukan pengganti pelatihan/penyuluhan resmi; perizinan hanya petunjuk, wajib dicek (PERLU REVIEW). Bug script 1.0.0 (nama 'kulkas ayam' terbaca alat masak, koma desimal) diperbaiki di 1.0.1. Ditulis ulang bersih dari ide materi domain publik, tanpa menyalin. DITAHAN dari promosi (gelombang 14, 2026-10-12): jawaban dengan skill memuat fakta keamanan pangan yang salah (ayam 63 °C, santan dianggap alergen susu, halal "opsional"); SKILL.md diperbaiki dan diuji ulang dulu.
 
 ### Foto Produk Kelas Toko Besar, Cukup Pakai HP — 6,5 → 8,8
 `foto-produk-brief` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-01

@@ -39,6 +39,13 @@ Salin folder `landing-page-siap-tayang` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python tidak wajib; hanya untuk pemeriksa `scripts/cek_landing.py`.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1248/1254 — skor 4
+- Dengan skill: https://t.me/c/4407409583/1249/1258 — skor 8
+Verdik gelombang: LULUS — Tanpa skill halaman hanya disimpan sebagai file di komputer bot dan chat tidak berisi halamannya; dengan skill HTML utuh tersedia di chat, siap tempel, tanpa testimoni palsu, klaim "terbaik", atau pixel diam-diam, plus langkah tayang gratis.
+
 ## FAQ
 **Apakah benar-benar gratis?**
 Netlify, GitHub Pages, dan Cloudflare Pages punya paket gratis untuk halaman statis seperti ini. Domain sendiri (mis. .com) tetap berbayar di pendaftar domain; alamat gratis dari layanan (`.netlify.app`, `.github.io`, `.pages.dev`) cukup untuk mulai.
