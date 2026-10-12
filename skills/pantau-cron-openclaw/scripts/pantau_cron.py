@@ -402,18 +402,20 @@ def susun_laporan(hasil, sekarang, hanya_masalah=False, pulih=None, tersembunyi=
     judul = "PANTAU CRON - %s" % fmt_waktu(now0, zona0, None)
     baris = [judul]
     if tampil:
-        baris.append("%d job bermasalah dari %d:" % (len(masalah), len(hasil)))
+        baris.append("BERMASALAH (%d dari %d):" % (len(masalah), len(hasil)))
         baris += ["- " + kalimat_masalah(h) for h in tampil]
     elif not hanya_masalah:
         baris.append("Semua %d job aman." % len(hasil))
     for n in pulih:
         baris.append("PULIH %s: sudah ada ping lagi." % n)
     if not hanya_masalah:
+        if ok:
+            baris.append("OK (%d):" % len(ok))
         for h in ok:
             if h["menunggu_jadwal_pertama"]:
-                baris.append("- OK %s: baru didaftarkan, menunggu jadwal pertama %s." % (h["nama"], h["jadwal_berikutnya_lokal"]))
+                baris.append("- %s: baru didaftarkan, menunggu jadwal pertama %s." % (h["nama"], h["jadwal_berikutnya_lokal"]))
             else:
-                baris.append("- OK %s: ping terakhir %s; berikutnya %s." % (h["nama"], h["ping_terakhir_lokal"], h["jadwal_berikutnya_lokal"]))
+                baris.append("- %s: ping terakhir %s; berikutnya %s." % (h["nama"], h["ping_terakhir_lokal"], h["jadwal_berikutnya_lokal"]))
     elif ok:
         baris.append("OK (%d): %s" % (len(ok), ", ".join(h["nama"] for h in ok)))
     return "\n".join(baris), True

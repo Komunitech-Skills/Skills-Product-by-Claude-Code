@@ -1,6 +1,14 @@
 # Perintah OpenClaw untuk Pantau Cron (siap salin)
 
-> **Kredensial & aksi (wajib):** jangan membaca token/kunci dari environment, `openclaw.json`, `.env`, database atau log OpenClaw. Cek kanal hanya dengan `openclaw channels status --channel telegram`. Jangan membuat/mengubah jadwal atau mengirim pesan uji sebelum pengguna membalas "ya" atas ringkasan rencana. Kanal belum siap atau perintah ditolak -> berhenti dan beri panduan singkat.
+> **Kredensial & aksi (wajib):** jangan membaca token/kunci dari environment, `openclaw.json`, `.env`, database atau log OpenClaw. Cek kanal hanya dengan `openclaw channels status --channel telegram`. Jangan membuat/mengubah jadwal atau mengirim pesan uji sebelum pengguna membalas "ya" atas ringkasan rencana.
+> **Aturan berhenti:** bila SATU perintah `openclaw automations ...`/`cron ...` gagal (ditolak, token/kredensial, Gateway tidak bisa dihubungi), berhenti memakai alat `openclaw`. DILARANG: membaca/mengubah `openclaw.json`, memeriksa/menulis token, menjalankan `openclaw doctor` (termasuk `--fix`), merestart Gateway, atau meminta alat lain mengubah konfigurasi Gateway. Lanjut ke bagian 0 (rencana siap salin).
+
+## 0. Rencana siap salin saat terblokir
+Tampilkan seluruh bagian ini dengan nilai terisi (jadwal job, nama, folder skill), tutup "Lanjut? (ya/tidak)":
+1. Tabel job (nama, jadwal dalam kata-kata, toleransi, jadwal berikutnya dari keluaran `daftar`).
+2. Per job, perintah edit prompt (bagian 2) dengan `<id-job>` diisi dari `openclaw automations list --all` bila ada, bila tidak `[isian: id job]`.
+3. Dua perintah pengawas (bagian 3), tujuan `[isian: ID chat Telegram Anda]`.
+4. Satu kalimat awam: agen belum punya izin ke pengatur jadwal OpenClaw; salin perintah ke terminal sendiri atau minta pemilik/penyedia OpenClaw memberi izin.
 
 Pola dan status verifikasi (meniru `laporan-otomatis-terjadwal/references/openclaw.md` dan `bot-trading-kripto/references/openclaw-jadwal.md`):
 - Semua flag di bawah (`--cron`, `--tz`, `--name`, `--session`, `--command-argv`, `--announce`, `--channel`, `--to`, `--message`, `--exact`, `edit`, `list --all`, `runs`, `disable`) **dicek lewat `--help` OpenClaw 2026.9.8 dan 2026.10.2** (statusnya "dicek --help").
