@@ -21,7 +21,9 @@
 
 | 8 | surat-resmi | 1.0.3 | 8 | S1 — surat kuasa ambil BPKB CV Sinar Laras Abadi (sama `examples/01-surat-kuasa-ambil-bpkb.md`) | 2.287 | **LOLOS** | Surat kuasa lengkap (kop, nomor `018/KSA/CV-SLA/X/2026`, blok KHUSUS BPKB Avanza, tanda tangan + meterai) **utuh di chat**; NIK tidak dikarang; catatan meterai & dokumen bawa; tidak mengandalkan path file saja. |
 
-**Run berikutnya (C9):** `cv-lamaran-ats`, `proposal-kerjasama` (2 skill lagi menuju C8); **C11** `cari-prospek-web` bot asli masih antre.
+| 9 | cv-lamaran-ats | 1.1.3 | 9 | S1 — Staff Admin Gudang PT Sumber Makmur Logistik, Siti Rahma (sama `examples/01-admin-gudang.md`) | 5.443 | **LOLOS** | Evaluasi kecocokan (skor 79/100), skor kata kunci ATS, CV versi ATS, surat lamaran formal, email singkat, dan checklist **utuh di chat**; tidak mengandalkan path file saja (hanya saran nama file PDF). Catatan kecil: kalimat pembuka menyebut “skill” — tidak mengurangi keterbacaan isi untuk pembeli awam. |
+
+**Run berikutnya (C9):** `proposal-kerjasama` (1 skill lagi menuju C8); **C11** `cari-prospek-web` bot asli masih antre.
 
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sr-tg-01-out.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
