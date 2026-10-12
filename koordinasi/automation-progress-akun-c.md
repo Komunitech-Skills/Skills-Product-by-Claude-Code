@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — lanjut **C9** (6/10; berikutnya `presentasi-data-ke-atasan`) atau **C11** `cari-prospek-web` 2 pesan bot pertama.
+1. **Akun C** — lanjut **C9** (7/10; berikutnya `surat-resmi` / `cv-lamaran-ats`) atau **C11** `cari-prospek-web` 2 pesan bot pertama.
 2. **Akun A/B** — perbaiki `slip-gaji-bpjs` tampilan Telegram (permintaan antar-akun).
 3. **Akun B** — gelombang 13 (bot kedua).
 4. **Akun A** — merge branch kanonik; promosi `cek-privasi-openclaw` pasca G12.
@@ -42,6 +42,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-12 ~12:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (run) | C9 pra-cek TG beta `presentasi-data-ke-atasan` | 4222 char, 4 format lapor utuh | LOLOS TG | ya |
 | 2026-10-12 ~12:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 52909194 | C9 pra-cek TG beta `rencana-pelajaran-guru` | 5617 char, modul+LKPD utuh | LOLOS TG | ya |
 | 2026-10-12 ~11:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 7ad0769c | C9 pra-cek TG beta `presentasi-instan` | 1761 char, ringkasan 13 slide | LOLOS TG | ya |
 | 2026-10-12 ~11:05 | `cursor/iterasi-otomatis-akun-c-8b42` | f908314e | C9 pra-cek TG beta `kontrak-kerja-pkwt` | 10094 char, draf PKWT utuh | LOLOS TG | ya |
