@@ -42,7 +42,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-12 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | (run ini) | C7 gelombang G12 (10 pesan) | cpo 7,5→9; rpp 7,5→8,75; lot/fmp/nrl lihat laporan | 1 LULUS promosi | ya |
+| 2026-10-12 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | ca879194 | C7 gelombang G12 (10 pesan) | cpo 7,5→9; rpp 7,5→8,75; lot/fmp/nrl lihat laporan | 1 LULUS promosi | ya |
 | 2026-10-12 ~08:15 | `cursor/iterasi-otomatis-akun-c-8b42` | b411e35a | C6 pilot G11b 4 pesan | tangani 6,5→8,5; kelayakan 6,5→9 | LULUS tampilan | ya |
 | 2026-10-11 ~11:15 | `cursor/iterasi-otomatis-akun-c-8b42` | dd4c362d | S5: `mktopics-g12.py` + serah terima G12 | pra-cek 5/5 | koordinasi | ya |
 | 2026-10-11 ~10:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 0fb9d877 | Paket G12: `msgs-g12.json` + prep doc | pra-cek 5/5 | koordinasi | ya |
