@@ -40,6 +40,13 @@ Salin folder `triase-email-masuk` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python tidak wajib; hanya dipakai bila Anda menyerahkan folder atau CSV berisi banyak email.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1101/1186 — skor 7,5
+- Dengan skill: https://t.me/c/4407409583/1102/1188 — skor 8
+Verdik gelombang: BELUM — Tanpa skill sudah menandai email penipuan dan memberi 5 draf (namun menjanjikan ganti rugi tanpa tanya pemilik); dengan skill memakai isian untuk keputusan pemilik dan 3 pertanyaan di akhir, tetapi selisihnya belum mencapai acuan 1,5.
+
 ## FAQ
 **Apakah skill ini membaca atau membalas email saya sendiri?**
 Tidak. Anda yang menempelkan email, dan Anda yang mengirim balasannya. Tidak ada koneksi ke akun email.
