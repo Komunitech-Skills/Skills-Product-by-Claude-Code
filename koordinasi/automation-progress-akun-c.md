@@ -4,10 +4,10 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C10** gelombang 13 (topik 1093–1102 sudah ada) **atau** **C9** pra-cek TG lokal skill `beta`.
-2. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`**; promosi `cek-privasi-openclaw` pasca G12.
-3. **Pembuat skill** — path CSV & kunci Fider (lihat Permintaan antar-akun papan).
-4. **Opsional** — uji platform asli C5.
+1. **Akun C** — lanjut **C9** pra-cek TG beta (1/run, 1/10 selesai); berikutnya `pph21-ter` / `hitung-thr`.
+2. **Akun A/B** — perbaiki `slip-gaji-bpjs` tampilan Telegram (permintaan antar-akun).
+3. **Akun B** — gelombang 13 (bot kedua).
+4. **Akun A** — merge branch kanonik; promosi `cek-privasi-openclaw` pasca G12.
 
 ## Format Telegram (thread 242) — wajib multiline
 
