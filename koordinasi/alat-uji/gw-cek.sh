@@ -13,7 +13,8 @@ LOG=gw-$(date +%Y%m%d-%H%M).log
 nohup ./oc-tg.sh gateway run --ambient-channels --bind loopback > "$LOG" 2>&1 &
 for i in $(seq 1 40); do
   sleep 3
-  if grep -q "Sessions remain unavailable" "$LOG"; then
+  # OpenClaw >= 2026.10 memulihkan database agent di latar belakang; tunggu 60 detik dan hanya perbaiki bila tidak pulih
+  if [ "$i" -gt 20 ] && grep -q "Sessions remain unavailable" "$LOG" && ! grep -q "recovered after background inspection" "$LOG"; then
     # matikan HANYA gateway (PID persis), jangan pkill -f yang bisa mengenai proses penguji
     for p in $(pgrep -f "^openclaw-gateway$"); do kill -TERM "$p"; done; sleep 3
     cp -r home/.openclaw/agents/main/agent "home/.openclaw/agents/main/agent.bak-$(date +%Y%m%d%H%M)"
