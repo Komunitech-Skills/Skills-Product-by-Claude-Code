@@ -1,0 +1,11 @@
+Bikinin kartu belajar Anki dari SOP kasir toko kami buat karyawan baru ya. Ini SOP-nya (fiktif, dari Toko Sumber Rejeki):
+
+SOP KASIR TOKO SUMBER REJEKI
+1. Buka kasir: kasir datang 15 menit sebelum toko buka (toko buka jam 08.00, jadi kasir datang 07.45). Hitung uang modal awal di laci, harus Rp500.000 pas. Kalau selisih, lapor ke supervisor sebelum transaksi pertama.
+2. Setiap transaksi: sapa pelanggan dalam 5 detik, scan barang satu per satu, sebutkan total belanja dengan jelas, tanya metode bayar (tunai, QRIS, atau kartu debit).
+3. Pembayaran tunai: ucapkan jumlah uang yang diterima, taruh uang pelanggan di atas laci dulu, baru ambil kembalian, baru uang pelanggan dimasukkan ke laci. Tujuannya biar tidak ada salah paham soal nominal.
+4. QRIS: cek notifikasi masuk di HP kasir toko sebelum menyerahkan barang. Jangan percaya screenshot bukti bayar dari pelanggan.
+5. Retur: barang boleh diretur maksimal 3 hari setelah beli, wajib bawa struk dan barang belum dibuka. Retur di atas Rp200.000 harus disetujui supervisor. Retur tidak dikembalikan tunai kalau bayar QRIS, tapi lewat QRIS lagi.
+6. Void (batal item): wajib dengan PIN supervisor. Kasir tidak boleh void sendiri.
+7. Tutup kasir: hitung uang akhir, cocokkan dengan laporan sistem, selisih lebih dari Rp10.000 wajib ditulis di berita acara. Setor uang ke brankas, modal awal Rp500.000 ditinggal di laci untuk besok.
+8. Larangan: kasir tidak boleh pinjam uang laci, tidak boleh memakai HP pribadi saat melayani, dan tidak boleh memberi diskon tanpa kode dari supervisor.

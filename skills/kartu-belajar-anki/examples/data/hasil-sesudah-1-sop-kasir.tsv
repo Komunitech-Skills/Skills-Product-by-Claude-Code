@@ -1,0 +1,26 @@
+Jam berapa kasir Toko Sumber Rejeki harus datang, kalau toko buka jam 08.00?	15 menit sebelum buka, yaitu jam 07.45	sop-kasir-buka
+Berapa nominal modal awal yang harus dihitung kasir di laci saat buka kasir?	Rp500.000 pas	sop-kasir-buka
+Apa yang harus dilakukan kasir kalau modal awal di laci selisih dari Rp500.000?	Lapor ke supervisor sebelum transaksi pertama	sop-kasir-buka
+Dalam berapa detik kasir harus menyapa pelanggan saat mulai transaksi?	Dalam 5 detik	sop-transaksi
+Bagaimana cara kasir memindai barang belanjaan pelanggan?	Scan barang satu per satu	sop-transaksi
+Apa yang wajib disebutkan kasir dengan jelas setelah selesai scan semua barang?	Total belanja pelanggan	sop-transaksi
+Apa 3 metode bayar yang boleh ditawarkan kasir ke pelanggan?	Tunai, QRIS, atau kartu debit	sop-transaksi
+Pada pembayaran tunai, apa yang pertama kali diucapkan kasir ke pelanggan?	Jumlah uang yang diterima dari pelanggan	sop-tunai
+Setelah pelanggan menyerahkan uang tunai, di mana kasir menaruhnya lebih dulu?	Di atas laci dulu, belum dimasukkan ke laci	sop-tunai
+Setelah uang pelanggan ditaruh di atas laci, apa langkah kasir berikutnya sebelum uang itu dimasukkan ke laci?	Ambil dan berikan kembalian dulu, baru uang pelanggan dimasukkan ke laci	sop-tunai
+Apa tujuan aturan "uang pelanggan ditaruh di atas laci dulu, baru ambil kembalian" pada pembayaran tunai?	Supaya tidak ada salah paham soal nominal uang yang diberikan pelanggan	sop-tunai
+Apa yang wajib dicek kasir sebelum menyerahkan barang pada pembayaran QRIS?	Notifikasi pembayaran masuk di HP kasir toko	sop-qris
+Bolehkah kasir menyerahkan barang hanya berdasarkan screenshot bukti bayar QRIS dari pelanggan?	Tidak boleh, kasir wajib cek notifikasi masuk di HP kasir toko sendiri	sop-qris
+Berapa lama batas waktu maksimal pelanggan boleh mengajukan retur barang?	Maksimal 3 hari setelah pembelian	sop-retur
+Apa 2 syarat wajib agar retur barang bisa diproses?	Bawa struk dan barang belum dibuka	sop-retur
+Retur dengan nilai berapa yang wajib disetujui supervisor dulu?	Retur di atas Rp200.000	sop-retur
+Kalau pelanggan bayar pakai QRIS lalu melakukan retur, uangnya dikembalikan dalam bentuk apa?	Lewat QRIS lagi, bukan tunai	sop-retur
+Apa yang wajib dimiliki kasir untuk bisa melakukan void (batal item)?	PIN supervisor	sop-void
+Bolehkah kasir melakukan void (batal item) sendiri tanpa supervisor?	Tidak boleh	sop-void
+Saat tutup kasir, uang akhir di laci dicocokkan dengan apa?	Laporan sistem	sop-tutup
+Selisih uang sebesar apa saat tutup kasir yang wajib ditulis di berita acara?	Selisih lebih dari Rp10.000	sop-tutup
+Setelah tutup kasir, uang hasil penjualan disetor ke mana?	Ke brankas	sop-tutup
+Berapa uang yang ditinggal di laci saat tutup kasir untuk modal besok?	Rp500.000	sop-tutup
+Bolehkah kasir meminjam uang dari laci kasir untuk keperluan pribadi?	Tidak boleh	sop-larangan
+Bolehkah kasir memakai HP pribadi saat sedang melayani pelanggan?	Tidak boleh	sop-larangan
+Bolehkah kasir memberi diskon ke pelanggan tanpa kode dari supervisor?	Tidak boleh	sop-larangan
