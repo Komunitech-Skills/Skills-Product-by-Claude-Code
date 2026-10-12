@@ -25,7 +25,11 @@
 
 | 10 | proposal-kerjasama | 1.0.10 | 8 | S1 — titip jual sambal Bu Tatik Fiktif ke toko Pusaka Fiktif Batu (sama `examples/01-titip-jual-sambal-ke-toko-oleh-oleh.md`) | 5.197 | **LOLOS** | Proposal 1 halaman + tabel simulasi pendapatan toko (Rp 262.500 / 525.000 / 1.050.000) + pesan WA + email **utuh di chat**; blok **Catatan untuk Anda** terpisah dengan laba Rp 8.250/botol dan titik impas porsi ~48,6% (modal Rp 18.000 tidak bocor ke proposal mitra); placeholder `[isi: …]` untuk stok/jadwal/kontak; tidak mengandalkan path file saja. |
 
-**C9 selesai (10/10).** Run berikutnya: **C8** draf skill (`ubah-draf-ke-dokumen` atau urut backlog) atau **C11** `cari-prospek-web` bot asli.
+**C9 batch awal selesai (10/10).** Run berikutnya: **C8** draf skill (`ubah-draf-ke-dokumen` atau urut backlog) atau **C11** `cari-prospek-web` bot asli.
+
+| 11 | slip-gaji-bpjs | 1.0.7 | 9 | S1 ulang — 3 karyawan CV Contoh Maju Jaya (sama `examples/01`, chat awam) | 2.892 | **LOLOS** | **Akun C 2026-10-12 ~22:33 UTC:** tiga slip utuh (Budi/Siti/Dewi) + rekap setoran BPJS/PPh + peringatan UMK + disclaimer; THP 6.521.091 / 5.264.239 / 10.521.618 cocok pola uji; tidak ada path `payroll/...` wajib dibuka; tawaran hapus CSV di akhir (kosmetik). Memperbaiki baris #1 (1.0.6 GAGAL). |
+
+Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-107-out.txt` (tidak di-commit).
 
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sr-tg-01-out.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
