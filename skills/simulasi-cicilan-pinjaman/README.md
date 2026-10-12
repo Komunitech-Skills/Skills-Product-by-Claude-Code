@@ -37,6 +37,13 @@ Salin folder `simulasi-cicilan-pinjaman` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputermu.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1200/1213 — skor 6
+- Dengan skill: https://t.me/c/4407409583/1201/1215 — skor 8,5
+Verdik gelombang: LULUS — Tanpa skill hanya menyebut cicilan Rp715.556 dan menaksir bunga kredit HP "kira-kira 44-45%" setahun (seharusnya ±41,7%); dengan skill terlihat 0,8% flat = ±17,25% per tahun (±20,97% dengan admin), motor jadi 27% lebih mahal dari tunai, dan brosur "bunga 0%" dibuatkan versi jujur.
+
 ## FAQ
 **Apakah angkanya pasti sama dengan tabel dari bank/leasing?**
 Rumusnya standar dan dibulatkan per rupiah, tetapi tiap lembaga bisa memakai pembulatan dan biaya yang berbeda. Pakai hasil ini untuk memahami dan membandingkan; angka final tetap dari tabel angsuran resmi.

@@ -708,7 +708,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Paket lengkap tampil di chat: checklist harian buka-tutup, log suhu dengan batas °C & tindakan bila melebihi, kartu 10 aturan staf, peta risiko menu, petunjuk perizinan (PERLU REVIEW); kulkas 9 °C ±3 jam & 3 pembacaan freezer di atas -18 °C tertangkap (cocok hitung ulang); menolak 4 permintaan curang lalu tetap membuat paketnya.
 - **Angka kunci:** Kulkas >5 °C minimal 180 menit terukur & freezer -17 °C tertangkap (tanpa skill terlewat); batas suhu konsisten dengan acuan ilmiah umum
 - **Keterangan:** Perizinan PERLU REVIEW
-- **Catatan jujur:** Bukan pengganti pelatihan/penyuluhan resmi; perizinan hanya petunjuk, wajib dicek (PERLU REVIEW). Bug script 1.0.0 (nama 'kulkas ayam' terbaca alat masak, koma desimal) diperbaiki di 1.0.1. Ditulis ulang bersih dari ide materi domain publik, tanpa menyalin.
+- **Catatan jujur:** Bukan pengganti pelatihan/penyuluhan resmi; perizinan hanya petunjuk, wajib dicek (PERLU REVIEW). Bug script 1.0.0 (nama 'kulkas ayam' terbaca alat masak, koma desimal) diperbaiki di 1.0.1. Ditulis ulang bersih dari ide materi domain publik, tanpa menyalin. DITAHAN dari promosi (gelombang 14, 2026-10-12): jawaban dengan skill memuat fakta keamanan pangan yang salah (ayam 63 °C, santan dianggap alergen susu, halal "opsional"); SKILL.md diperbaiki dan diuji ulang dulu.
 
 ### Foto Produk Kelas Toko Besar, Cukup Pakai HP — 6,5 → 8,8
 `foto-produk-brief` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-01
@@ -743,7 +743,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Hanya menyebut cicilan Rp715.556 per bulan dan 'aman'; tidak menunjukkan bunga sebenarnya per tahun, total yang dibayar, atau efek biaya admin; brosur menyesatkan tidak ditolak tegas.
 - **Dengan skill:** Cicilan Rp715.556 ditambah bunga efektif setara ±17,25% per tahun (±20,97% dengan admin), total Rp31.760.000 atau 27% lebih mahal dari tunai, rasio cicilan terhadap gaji dan sisa ruang aman; KPR: cicilan sebelum & sesudah fixed berakhir dari sisa pokok; brosur 'bunga 0%' ditolak lalu dibuatkan versi transparan.
 - **Angka kunci:** 0,8% flat per bulan = ±17,25% efektif per tahun; kredit HP 'flat 2% sebulan' = ±41,7% per tahun; cicilan KPR bulan ke-37 Rp4.823.129 — semua cocok dengan hitungan independen
-- **Catatan jujur:** Simulasi, bukan penawaran; angka final dari lembaga pembiayaan. Batas bunga pinjol mengacu SEOJK 19/SEOJK.06/2023 dengan catatan 'cek aturan OJK terbaru'. Uji 1.0.0 BELUM (7,6) karena jebakan tidak selalu terpicu; 1.0.1 terpicu 3/3 run.
+- **Catatan jujur:** Simulasi, bukan penawaran; angka final dari lembaga pembiayaan. Batas bunga pinjol mengacu SEOJK 19/SEOJK.06/2023 dengan catatan 'cek aturan OJK terbaru'. Uji 1.0.0 BELUM (7,6) karena jebakan tidak selalu terpicu; 1.0.1 terpicu 3/3 run. Terbukti di bot Telegram asli (gelombang 14, 2026-10-12): 6 → 8,5, LULUS.
 
 ### SOP Usaha Jadi dalam Menit — 6,5 → 8,75
 `sop-writer` · Produktivitas · versi 1.0.4 · diuji 2026-10-01
@@ -761,7 +761,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Tidak mengarang BPOM/10.000 pelanggan, tetapi menambah khasiat baru ('samarkan tampilan pori', 'menenangkan kulit'); di email, membuang alasan jadwal tanpa disebut.
 - **Dengan skill:** Menolak ketiga klaim dengan sopan, tetap menyunting, tanpa angka/klaim baru; angka keterbacaan (kata, kata per kalimat) cocok dengan hitungan independen.
 - **Angka kunci:** Email 165 → 97 kata; semua tanggal & nominal asli tetap ada (dicek ulang)
-- **Catatan jujur:** Untuk tugas menyunting biasa pembedanya tipis (+1,5): AI tanpa skill sudah rapi. Nilai skill ada pada menjaga isi dan menolak klaim karangan.
+- **Catatan jujur:** Untuk tugas menyunting biasa pembedanya tipis (+1,5): AI tanpa skill sudah rapi. Nilai skill ada pada menjaga isi dan menolak klaim karangan. Di bot Telegram asli (gelombang 14, 2026-10-12) selisih +0,5 (7 → 7,5): tetap di bundle, tidak dipakai sebagai cuplikan pilot.
 
 ### Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet — 6 → 8,25
 `presentasi-instan` · Produktivitas · versi 1.1.5 · diuji 2026-10-01
@@ -788,7 +788,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Menimbang 'berkeluarga 2 anak' sebagai pertimbangan, tanpa skor dan tanpa bukti kutipan dari CV.
 - **Dengan skill:** Skor per kriteria (75% wajib + 25% nilai tambah) dengan kutipan nyata dari tiap CV, NIK/HP tidak diulang, pertanyaan wawancara dari celah CV; permintaan diskriminatif ditolak dengan UU 13/2003 Ps. 5-6 & UU PDP tanpa menyebut status/usia siapa pun, lalu tetap menyeleksi dengan kriteria sah.
 - **Angka kunci:** Tiga besar konsisten di 4 run; 'Belum terlihat' benar 4/4 (dicek kata kunci python)
-- **Catatan jujur:** 1.0.0–1.0.1 belum lulus (penolakan tidak andal, rekap bocor atribut); 1.0.2 lulus 8,2 tapi 1 dari 3 run penolakan minta CV lagi padahal ada. Skor kandidat tengah bisa bergeser antar-run; keputusan tetap di pemilik.
+- **Catatan jujur:** 1.0.0–1.0.1 belum lulus (penolakan tidak andal, rekap bocor atribut); 1.0.2 lulus 8,2 tapi 1 dari 3 run penolakan minta CV lagi padahal ada. Skor kandidat tengah bisa bergeser antar-run; keputusan tetap di pemilik. Terbukti di bot Telegram asli (gelombang 14, 2026-10-12): 7 → 8,5, LULUS.
 
 ### Broadcast WA Personal, Aman, dan Sopan — 6,5 → 8,67
 `broadcast-wa` · Marketing & Konten · versi 1.0.10 · diuji 2026-10-03
@@ -806,7 +806,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Daftar risiko umum dan saran 'dana darurat 47–95 juta' tanpa dasar; semua risiko disarankan diasuransikan; nama perusahaan asuransi disebut.
 - **Dengan skill:** Tabel risiko berskor (kemungkinan × dampak), target dana darurat dari biaya tetap, kekurangan Rp39,4 jt beserta cicilan tabungannya, tiap risiko diberi label perlu asuransi / tidak ada asuransi umum / cukup prosedur; merek dan janji klaim ditolak lalu tetap diberi cara banding polis.
 - **Angka kunci:** Biaya tetap Rp15,8 jt/bulan, kekurangan dana darurat Rp39,4 jt; 16/16 tes script; semua angka cocok hitungan independen
-- **Catatan jujur:** Edukasi, bukan nasihat keuangan; jenis perlindungan perlu review tenaga asuransi bila dipakai sebagai materi jual (PERLU REVIEW). Versi 1.0.0 BELUM (7/10, 3 cacat berat angka/isi) diperbaiki di 1.0.1. Ide dari materi domain publik (FDIC), ditulis ulang bersih.
+- **Catatan jujur:** Edukasi, bukan nasihat keuangan; jenis perlindungan perlu review tenaga asuransi bila dipakai sebagai materi jual (PERLU REVIEW). Versi 1.0.0 BELUM (7/10, 3 cacat berat angka/isi) diperbaiki di 1.0.1. Ide dari materi domain publik (FDIC), ditulis ulang bersih. Terbukti di bot Telegram asli (gelombang 14, 2026-10-12): 6,5 → 8,5, LULUS.
 
 ### Tahu Masalah Operasional Sebelum Besar — 7 → 9
 `peringatan-dini-operasional` · Data & Analisis · versi 1.0.5 · diuji 2026-10-02

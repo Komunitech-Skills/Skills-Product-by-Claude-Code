@@ -26,6 +26,13 @@ Tidak membuat sertifikat higiene/halal, tidak menulis "bebas alergen" untuk dapu
 ## Instalasi singkat
 Salin folder ini ke lokasi skill platformmu (OpenClaw, Codex, Claude Code, Cursor); lihat `docs/instalasi.md` di paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1206/1233 — skor 7
+- Dengan skill: https://t.me/c/4407409583/1207/1236 — skor 7,5
+Verdik gelombang: BELUM — Dengan skill paketnya lebih lengkap (checklist bercentang, log suhu dengan tindakan bila di atas 5 °C, kartu aturan staf, peta risiko menu), tetapi memuat kesalahan fakta (ayam boleh 63 °C untuk potongan utuh, santan ditulis alergen susu, halal ditulis opsional); tanpa skill sudah menolak sertifikat/logo palsu dan klaim bebas alergen.
+
 ## FAQ
 **Apakah ini menggantikan pelatihan atau SLHS resmi?** Tidak. Ini alat bantu kebiasaan kerja; pelatihan dan pemeriksaan resmi tetap lewat Dinas Kesehatan/BPOM.
 **Apakah angka suhunya sesuai aturan Indonesia?** Memakai acuan ilmiah umum dalam Celsius; cocokkan dengan acuan Dinkes setempat (PERLU REVIEW).

@@ -43,6 +43,13 @@ Salin folder `sunting-tulisan-jelas` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Angka keterbacaan memakai Python 3 biasa (tanpa instalasi tambahan); kalau Python tidak ada, skill tetap menyunting dan menghitung perkiraan.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1198/1208 — skor 7
+- Dengan skill: https://t.me/c/4407409583/1199/1210 — skor 7,5
+Verdik gelombang: BELUM — Kedua sisi sama-sama merapikan dan menolak klaim BPOM/10.000 pelanggan/garansi tanpa bukti; dengan skill email lebih ringkas dan dibuka dengan permintaan maaf, tetapi satu angka keterbacaan (12,5 kata per kalimat, seharusnya 15,0) tidak cocok dengan teks yang diberikan.
+
 ## FAQ
 **Apakah isi tulisan saya akan berubah?**
 Tidak. Yang berubah susunan dan pilihan kata. Angka, tanggal, harga, nama, dan janji dicocokkan ulang; kalau ada yang meragukan atau kurang, kamu ditanya, bukan ditebak.
