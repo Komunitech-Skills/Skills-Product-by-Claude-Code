@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-12 ~17:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | merge default + C8 draf `jadwal-pelajaran-sekolah` v1.0.0 | regresi 4/4 | siap uji | ya |
+| 2026-10-12 ~17:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 98b61be1 | merge default + C8 draf `jadwal-pelajaran-sekolah` v1.0.0 | regresi 4/4 | siap uji | ya |
 | 2026-10-12 ~17:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 3b67c7c1 | uji `kartu-belajar-anki` v1.0.0 OC 4 skenario | 6,6→8,3 | LULUS 8/10 | ya |
 | 2026-10-12 ~16:30 | `cursor/iterasi-otomatis-akun-c-8b42` | c641c823 | C8 draf `kartu-belajar-anki` v1.0.0 | regresi 3/3 | siap uji | ya |
 | 2026-10-12 ~16:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b846874b | Revisi pembuat `ubah-draf-ke-dokumen` 1.0.1 | regresi 5/5 | menunggu uji B | tidak |
