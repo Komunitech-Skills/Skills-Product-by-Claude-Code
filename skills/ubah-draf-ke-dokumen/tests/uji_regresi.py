@@ -20,6 +20,12 @@ class Rapikan(unittest.TestCase):
         self.assertNotIn("Tentu", out)
         self.assertIn("poin satu", out)
 
+    def test_pertahankan_berikut_rincian_angka(self):
+        t = "Berikut rincian biaya proyek: Rp5.000.000 untuk tahap satu.\n- item"
+        out = rd.bersihkan(t)
+        self.assertIn("Rp5.000.000", out)
+        self.assertIn("item", out)
+
     def test_deteksi_notulen(self):
         self.assertEqual(rd.deteksi_jenis("Agenda rapat dan tindak lanjut"), "notulen")
 
@@ -35,10 +41,13 @@ class Docx(unittest.TestCase):
             buat_docx.buat_docx(md, path)
             self.assertTrue(os.path.isfile(path))
             with zipfile.ZipFile(path) as z:
-                self.assertIn("word/document.xml", z.namelist())
+                names = z.namelist()
+                self.assertIn("word/document.xml", names)
+                self.assertIn("word/footer1.xml", names)
                 xml = z.read("word/document.xml").decode("utf-8")
             self.assertIn("Judul", xml)
             self.assertIn("Paragraf", xml)
+            self.assertIn("tblGrid", xml)
 
 
 if __name__ == "__main__":

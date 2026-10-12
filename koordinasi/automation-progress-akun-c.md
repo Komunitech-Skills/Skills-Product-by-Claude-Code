@@ -4,10 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C11** `cari-prospek-web` 2 pesan bot pertama atau C8 lanjut `kartu-belajar-anki`; penguji independen untuk `ubah-draf-ke-dokumen` v1.0.0.
-2. **Akun A/B** — perbaiki `slip-gaji-bpjs` tampilan Telegram (permintaan antar-akun).
-3. **Akun B** — gelombang 13 (bot kedua).
-4. **Akun A** — merge branch kanonik; promosi `cek-privasi-openclaw` pasca G12.
+1. **Akun B** — uji independen OpenClaw `ubah-draf-ke-dokumen` v1.0.1 (revisi pembuat selesai 2026-10-12).
+2. **Akun C** — C8 draf `kartu-belajar-anki` (pembuat; penguji sesi lain).
+3. **Akun A** — merge branch kanonik ke default bila siap.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -42,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-12 ~16:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b846874b | Revisi pembuat `ubah-draf-ke-dokumen` 1.0.1 | regresi 5/5 | menunggu uji B | tidak |
+| 2026-10-12 ~15:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 6904f7a9 | C11 G15 `cari-prospek-web` bot asli | 7,0→8,5 | LULUS | ya |
 | 2026-10-12 ~14:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 5ad59eef | C8 draf `ubah-draf-ke-dokumen` v1.0.0 | pembuat, regresi 4/4 | siap uji | ya |
 | 2026-10-12 ~14:00 | `cursor/iterasi-otomatis-akun-c-8b42` | f185be9c | C9 pra-cek TG beta `proposal-kerjasama` | 5197 char, proposal+WA+email utuh | LOLOS TG (C9 10/10) | ya |
 | 2026-10-12 ~13:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 87044a51 | C9 pra-cek TG beta `cv-lamaran-ats` | 5443 char, CV+surat utuh | LOLOS TG | ya |

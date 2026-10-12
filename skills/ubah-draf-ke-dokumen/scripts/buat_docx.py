@@ -11,6 +11,7 @@ from xml.sax.saxutils import escape
 PAGE_BREAK = "<<HALAMAN BARU>>"
 NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
 _TOKEN = re.compile(r"(\*\*.+?\*\*|(?<![*\w])\*(?!\s)[^*]+?(?<!\s)\*(?![*\w]))")
+_KOP_SEP = re.compile(r"^[-─_*]{3,}\s*$")
 
 
 def _runs(text: str, bold_all: bool = False, italic_all: bool = False) -> str:
@@ -29,16 +30,26 @@ def _runs(text: str, bold_all: bool = False, italic_all: bool = False) -> str:
     return "".join(out)
 
 
-def _para(text: str, style: str | None = None, bold: bool = False, indent: bool = False,
-          quote: bool = False) -> str:
+def _para(
+    text: str,
+    style: str | None = None,
+    bold: bool = False,
+    indent: bool = False,
+    quote: bool = False,
+    center: bool = False,
+) -> str:
     ppr = ""
     if style:
         ppr += f'<w:pStyle w:val="{style}"/>'
+    if center:
+        ppr += '<w:jc w:val="center"/>'
     if indent:
         ppr += '<w:ind w:left="360" w:hanging="240"/>'
     if quote:
-        ppr += ('<w:pBdr><w:left w:val="single" w:sz="12" w:space="6" w:color="808080"/></w:pBdr>'
-                '<w:ind w:left="567"/>')
+        ppr += (
+            '<w:pBdr><w:left w:val="single" w:sz="12" w:space="6" w:color="808080"/></w:pBdr>'
+            '<w:ind w:left="567"/>'
+        )
     ppr = f"<w:pPr>{ppr}</w:pPr>" if ppr else ""
     return f"<w:p>{ppr}{_runs(text, bold, quote)}</w:p>"
 
@@ -48,7 +59,13 @@ def _table(rows: list[list[str]]) -> str:
         f'<w:{s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>'
         for s in ("top", "left", "bottom", "right", "insideH", "insideV")
     )
-    xml = [f'<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>{border}</w:tblBorders></w:tblPr>']
+    ncols = max(len(r) for r in rows) if rows else 1
+    col_w = max(2000, 9000 // ncols)
+    grid = "".join(f'<w:gridCol w:w="{col_w}"/>' for _ in range(ncols))
+    xml = [
+        f'<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders>{border}</w:tblBorders></w:tblPr>'
+        f"<w:tblGrid>{grid}</w:tblGrid>"
+    ]
     for ri, row in enumerate(rows):
         xml.append("<w:tr>")
         for cell in row:
@@ -62,6 +79,7 @@ def markdown_ke_body(md: str) -> str:
     body: list[str] = []
     table: list[list[str]] = []
     prev_blank = False
+    kop_mode = True
 
     def flush():
         nonlocal table
@@ -73,6 +91,7 @@ def markdown_ke_body(md: str) -> str:
         line = raw.rstrip()
         s = line.strip()
         if s.startswith("|") and s.endswith("|") and len(s) > 1:
+            kop_mode = False
             cells = [c.strip() for c in s.strip("|").split("|")]
             if all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
                 continue
@@ -86,63 +105,109 @@ def markdown_ke_body(md: str) -> str:
             continue
         prev_blank = False
         if s == PAGE_BREAK:
+            kop_mode = False
             body.append('<w:p><w:r><w:br w:type="page"/></w:r></w:p>')
+        elif _KOP_SEP.match(s):
+            kop_mode = False
+            continue
         elif re.fullmatch(r"[-─_*]{3,}", s):
+            kop_mode = False
             continue
         elif (m := re.match(r"(#{1,4})\s+(.*)", s)):
+            kop_mode = False
             body.append(_para(m.group(2), f"Heading{len(m.group(1))}"))
         elif (m := re.match(r">\s?(.*)", s)):
+            kop_mode = False
             body.append(_para(m.group(1), quote=True))
         elif (m := re.match(r"[-*•]\s+(.*)", s)):
+            kop_mode = False
             body.append(_para("• " + m.group(1), indent=True))
         elif (m := re.match(r"(\d+[.)])\s+(.*)", s)):
+            kop_mode = False
             body.append(_para(f"{m.group(1)} {m.group(2)}", indent=True))
         else:
-            body.append(_para(s))
+            body.append(_para(s, center=kop_mode))
+            if kop_mode and len(s) > 60:
+                kop_mode = False
     flush()
     return "".join(body)
 
 
 def _styles() -> str:
     def h(n, size):
-        return (f'<w:style w:type="paragraph" w:styleId="Heading{n}"><w:name w:val="heading {n}"/>'
-                f'<w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>'
-                f'<w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="{n-1}"/></w:pPr>'
-                f'<w:rPr><w:b/><w:sz w:val="{size}"/></w:rPr></w:style>')
-    return (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles {NS}>'
-            '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>'
-            '<w:sz w:val="22"/></w:rPr></w:rPrDefault></w:docDefaults>'
-            '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/>'
-            '<w:qFormat/><w:pPr><w:spacing w:after="80"/></w:pPr></w:style>'
-            + h(1, 32) + h(2, 28) + h(3, 24) + h(4, 22) + '</w:styles>')
+        return (
+            f'<w:style w:type="paragraph" w:styleId="Heading{n}"><w:name w:val="heading {n}"/>'
+            f'<w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>'
+            f'<w:pPr><w:keepNext/><w:spacing w:before="240" w:after="80"/><w:outlineLvl w:val="{n-1}"/></w:pPr>'
+            f'<w:rPr><w:b/><w:sz w:val="{size}"/></w:rPr></w:style>'
+        )
+
+    return (
+        f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles {NS}>'
+        '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>'
+        '<w:sz w:val="22"/></w:rPr></w:rPrDefault></w:docDefaults>'
+        '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/>'
+        '<w:qFormat/><w:pPr><w:spacing w:after="80"/></w:pPr></w:style>'
+        + h(1, 32)
+        + h(2, 28)
+        + h(3, 24)
+        + h(4, 22)
+        + "</w:styles>"
+    )
+
+
+def _footer_xml() -> str:
+    return (
+        f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr {NS}>'
+        "<w:p><w:pPr><w:jc w:val=\"center\"/></w:pPr>"
+        '<w:r><w:fldChar w:fldCharType="begin"/></w:r>'
+        '<w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+        '<w:r><w:fldChar w:fldCharType="separate"/></w:r>'
+        '<w:r><w:t>1</w:t></w:r>'
+        '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
+        "</w:p></w:ftr>"
+    )
 
 
 def buat_docx(md: str, path: str) -> None:
-    document = (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document {NS}><w:body>'
-                + markdown_ke_body(md) +
-                '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>'
-                '<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/>'
-                '</w:sectPr></w:body></w:document>')
-    ct = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-          '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
-          '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
-          '<Default Extension="xml" ContentType="application/xml"/>'
-          '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
-          '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'
-          '</Types>')
-    rels = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-            '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'
-            '</Relationships>')
-    drels = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-             '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
-             '</Relationships>')
+    body = markdown_ke_body(md)
+    document = (
+        f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document {NS}><w:body>'
+        + body
+        + '<w:sectPr><w:footerReference w:type="default" r:id="rId2"/>'
+        '<w:pgSz w:w="11906" w:h="16838"/>'
+        '<w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/>'
+        "</w:sectPr></w:body></w:document>"
+    )
+    ct = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+        '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'
+        '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>'
+        "</Types>"
+    )
+    rels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'
+        "</Relationships>"
+    )
+    drels = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+        '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>'
+        "</Relationships>"
+    )
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("[Content_Types].xml", ct)
         z.writestr("_rels/.rels", rels)
         z.writestr("word/document.xml", document)
         z.writestr("word/styles.xml", _styles())
+        z.writestr("word/footer1.xml", _footer_xml())
         z.writestr("word/_rels/document.xml.rels", drels)
 
 

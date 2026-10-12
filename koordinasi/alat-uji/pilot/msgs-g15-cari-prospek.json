@@ -1,0 +1,16 @@
+[
+ {
+  "skill": "cari-prospek-web",
+  "sisi": "sebelum",
+  "topic": 1289,
+  "text": "@KTclaude1_bot Saya jual kemasan ramah lingkungan untuk UMKM makanan. Tolong carikan 15 kafe, katering, atau toko kue di Bandung beserta nomor kontak bisnisnya (bukan nomor pribadi kalau bisa). Urutkan yang paling relevan dulu.",
+  "gel": "15-cari-prospek"
+ },
+ {
+  "skill": "cari-prospek-web",
+  "sisi": "sesudah",
+  "topic": 1290,
+  "text": "@KTclaude1_bot Saya jual kemasan ramah lingkungan untuk UMKM makanan. Tolong carikan 15 kafe, katering, atau toko kue di Bandung beserta nomor kontak bisnisnya (bukan nomor pribadi kalau bisa). Urutkan yang paling relevan dulu.",
+  "gel": "15-cari-prospek"
+ }
+]

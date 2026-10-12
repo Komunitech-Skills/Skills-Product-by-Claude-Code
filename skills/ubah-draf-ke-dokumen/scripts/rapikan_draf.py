@@ -6,11 +6,15 @@ import argparse
 import re
 import sys
 
-_META = re.compile(
-    r"^(tentu!|baik!|berikut (ini )?|sure!|here'?s|as an ai)[^\n]*$",
-    re.I | re.M,
-)
 _BLANK3 = re.compile(r"\n{3,}")
+_PURE_META = re.compile(
+    r"^(tentu!|baik!|sure!|here'?s|as an ai)\s*[.!]?\s*$",
+    re.I,
+)
+_BERIKUT_KOSONG = re.compile(
+    r"^berikut (ini )?(draf|dokumen|surat|notulen|laporan|contoh)?\s*[.:]?\s*$",
+    re.I,
+)
 
 _KATA = {
     "notulen": ("notulen", "rapat", "meeting", "mom", "agenda rapat", "tindak lanjut"),
@@ -21,9 +25,42 @@ _KATA = {
 }
 
 
+def _substantif(line: str) -> bool:
+    s = line.strip()
+    if not s:
+        return False
+    if re.search(r"\d", s):
+        return True
+    if re.search(r"Rp\s?\d", s, re.I):
+        return True
+    if len(s) > 72:
+        return True
+    return False
+
+
+def _baris_meta(line: str) -> bool:
+    s = line.strip()
+    if not s:
+        return False
+    if _substantif(s):
+        return False
+    if _PURE_META.match(s):
+        return True
+    if _BERIKUT_KOSONG.match(s):
+        return True
+    if re.match(r"^berikut (ini )?", s, re.I) and len(s) < 48 and not re.search(r"\d", s):
+        return True
+    return False
+
+
 def bersihkan(teks: str) -> str:
     t = teks.replace("\r\n", "\n").strip()
-    t = _META.sub("", t)
+    kept = []
+    for line in t.split("\n"):
+        if _baris_meta(line):
+            continue
+        kept.append(line.rstrip())
+    t = "\n".join(kept).strip()
     t = _BLANK3.sub("\n\n", t)
     lines = []
     for line in t.split("\n"):
@@ -48,6 +85,20 @@ def deteksi_jenis(teks: str) -> str:
     return best
 
 
+def _baca_file(path: str) -> str:
+    for enc in ("utf-8", "utf-8-sig", "cp1252", "latin-1"):
+        try:
+            with open(path, encoding=enc) as f:
+                return f.read()
+        except UnicodeDecodeError:
+            continue
+    print(
+        "GAGAL: encoding file tidak dikenali (coba simpan ulang sebagai UTF-8).",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description="Rapikan draf & deteksi jenis dokumen")
     p.add_argument("--jenis", default="auto", choices=["auto", *list(_KATA.keys()), "umum"])
@@ -58,8 +109,7 @@ def main() -> int:
         raw = sys.stdin.read()
     elif args.file:
         try:
-            with open(args.file, encoding="utf-8") as f:
-                raw = f.read()
+            raw = _baca_file(args.file)
         except OSError as e:
             print(f"GAGAL: {e}", file=sys.stderr)
             return 1
