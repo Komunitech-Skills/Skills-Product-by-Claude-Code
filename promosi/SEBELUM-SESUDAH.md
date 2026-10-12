@@ -380,7 +380,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Bilang 'sudah jadi' dan menyebut lokasi file tanpa menampilkan kodenya; halaman berisi 3-5 testimoni bintang 5 karangan, harga karangan, dan memasang pixel Facebook diam-diam saat diminta.
 - **Dengan skill:** File index.html utuh di chat siap disalin, tombol wa.me benar dengan pesan terisi, tanpa testimoni/harga/pelacak karangan ([isian] untuk yang belum ada), permintaan menyesatkan ditolak terang-terangan sambil halaman tetap dibuat, plus panduan tayang gratis & checklist.
 - **Angka kunci:** Tanpa skill: 3 testimoni ★★★★★ karangan + pixel diam-diam; dengan skill: 0 klaim/pelacak karangan di 4 halaman (dicek script)
-- **Catatan jujur:** Masih sesekali menambah frasa fitur kecil yang tidak disebut pengguna (mis. 'pengiriman cepat'); 1.0.0 bocor kata proses, diperbaiki di 1.0.1. Langkah tayang di situs pihak ketiga bisa berubah.
+- **Catatan jujur:** Masih sesekali menambah frasa fitur kecil yang tidak disebut pengguna (mis. 'pengiriman cepat'); 1.0.0 bocor kata proses, diperbaiki di 1.0.1. Langkah tayang di situs pihak ketiga bisa berubah. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12, v1.0.3): 4 → 8, LULUS; HTML utuh di chat.
 
 ### Jadwal Otomatis Gagal? Ketahuan Sebelum Pelanggan Tahu — 4,63 → 8,19
 `pantau-cron-openclaw` · Produktivitas · versi 1.0.2 · diuji 2026-10-12
@@ -390,7 +390,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Daftar job + langkah 'lapor selesai' + satu pengawas yang hanya mengabari Telegram bila TERLAMBAT/HILANG; backup-data HILANG (2 Minggu terlewat) dan laporan harian terlambat 40 menit ketahuan dengan hitungan tepat; bila pengatur jadwal tak bisa diakses, berhenti setelah satu kegagalan dan beri rencana siap salin 'Lanjut? ya/tidak'; permintaan memantau karyawan diam-diam ditolak dengan kalimat baku lalu tetap menyiapkan pemantauan job milik sendiri.
 - **Angka kunci:** backup-data HILANG (2 jadwal terlewat) & laporan harian terlambat 40 menit terdeteksi; skrip cocok dengan pembanding independen 1.000 + 200 kasus acak, 0 selisih.
 - **Keterangan:** VIP
-- **Catatan jujur:** Uji lokal tanpa Gateway: pemasangan nyata sampai pesan Telegram masuk belum teruji otomatis. Kata 'token' masih bocor di sebagian jawaban. 1.0.0 BELUM 5,25→6,75; 1.0.1 BELUM 4,75→7,5; 1.0.2 LULUS tipis 8,19.
+- **Catatan jujur:** Uji lokal tanpa Gateway: pemasangan nyata sampai pesan Telegram masuk belum teruji otomatis. Kata 'token' masih bocor di sebagian jawaban. 1.0.0 BELUM 5,25→6,75; 1.0.1 BELUM 4,75→7,5; 1.0.2 LULUS tipis 8,19. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12): tanpa skill tidak menjawab 20 menit, dengan skill 8, LULUS.
 
 ### Frappe Books Usaha: Pembukuan Gratis, Laporan Tinggal Tanya — 5,5 → 9
 `frappe-books-usaha` · Keuangan & Akuntansi · versi 1.0.8 · diuji 2026-10-02
@@ -553,7 +553,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Saran umum 'awali empati lalu tegas', rencana tanpa tanggal, atau hanya menu tawaran; permintaan 'pecat lewat WA' cuma ditolak.
 - **Dengan skill:** Langsung jadi: pesan WA ajakan bicara, naskah empat mata urut konteks → fakta → dampak → tanya → sepakat, tanggal cek ulang yang sudah digeser dari hari Minggu, pujian dipisah; permintaan PHK lewat WA ditolak singkat lalu tetap dibantu jalur sah (pembinaan bertahap, catatan kejadian, rujukan aturan).
 - **Angka kunci:** Pesan WA ajakan siap kirim muncul di 5 dari 5 jawaban dengan skill, 0 dari 4 tanpa skill; semua tanggal hari ke-7/14/30 benar (diverifikasi).
-- **Catatan jujur:** Uji OpenClaw asli lokal 2026-10-12 (1.0.1 BELUM 5,5→7,7; simulasi 2026-10-09 terlalu optimis). Nama kerangka masih bocor di 2 dari 5 jawaban. Hukum ketenagakerjaan perlu ditinjau ahli.
+- **Catatan jujur:** Uji OpenClaw asli lokal 2026-10-12 (1.0.1 BELUM 5,5→7,7; simulasi 2026-10-09 terlalu optimis). Nama kerangka masih bocor di 2 dari 5 jawaban. Hukum ketenagakerjaan perlu ditinjau ahli. Terbukti di bot Telegram asli (gelombang 15, 2026-10-12): 6 → 8,5, LULUS.
 
 ### Karyawan CS AI yang Hafal Isi Toko Anda — 6 → 8,75
 `agen-cs-toko` · Customer Service · versi 1.0.7 · diuji 2026-10-01
