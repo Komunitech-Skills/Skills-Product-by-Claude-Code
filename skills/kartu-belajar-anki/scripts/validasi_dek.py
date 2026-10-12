@@ -24,6 +24,9 @@ def validate_line(line: str, lineno: int) -> list[str]:
         return err
     if not line.strip():
         return err
+    if line.strip() == "\t" or (line.count("\t") >= 1 and not line.replace("\t", "").strip()):
+        err.append(f"Baris {lineno}: baris hanya tab/spasi — hapus atau isi kartu")
+        return err
     if "\t" not in line:
         err.append(f"Baris {lineno}: pemisah harus tab (\\t), bukan koma saja")
         return err
@@ -38,7 +41,7 @@ def validate_line(line: str, lineno: int) -> list[str]:
         if "\r" in field:
             err.append(f"Baris {lineno}: kolom {i + 1} mengandung carriage return")
     if "{{c" in front and not CLOZE_RE.search(front):
-        err.append(f"Baris {lineno}: cloze tidak lengkap (harus {{c1::teks}})")
+        err.append(f"Baris {lineno}: cloze tidak lengkap (harus {{{{c1::teks}}}})")
     if not front.strip():
         err.append(f"Baris {lineno}: kolom depan kosong")
     is_cloze = "{{c" in front
@@ -51,19 +54,76 @@ def validate_line(line: str, lineno: int) -> list[str]:
     return err
 
 
+def read_lines(path: Path) -> tuple[list[str], list[str]]:
+    """Baca berkas; kembalikan (baris, errors baca)."""
+    read_err: list[str] = []
+    try:
+        raw = path.read_bytes()
+    except OSError as e:
+        return [], [f"Tidak bisa membaca berkas: {e}"]
+    if not raw.strip():
+        return [], ["berkas kosong — tidak ada kartu"]
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        text = raw.decode("utf-8", errors="replace")
+        read_err.append(
+            "Encoding bukan UTF-8 murni; dibaca dengan pengganti karakter (simpan ulang UTF-8 sebelum impor)"
+        )
+    return text.splitlines(), read_err
+
+
+def detect_mixed_types(lines: list[str]) -> list[str]:
+    """Basic dan Cloze tidak boleh dicampur tanpa pemisah #notetype."""
+    err: list[str] = []
+    block_has_basic = False
+    block_has_cloze = False
+
+    def flush_block() -> None:
+        nonlocal block_has_basic, block_has_cloze
+        if block_has_basic and block_has_cloze:
+            err.append(
+                "Campuran kartu Basic dan Cloze dalam satu blok — pisah jadi dua blok TSV "
+                "(header #notetype:Basic lalu #notetype:Cloze)"
+            )
+        block_has_basic = False
+        block_has_cloze = False
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            low = stripped.lower()
+            if low.startswith("#notetype:"):
+                flush_block()
+            continue
+        if "\t" not in line:
+            continue
+        front = line.split("\t", 1)[0]
+        if "{{c" in front:
+            block_has_cloze = True
+        else:
+            block_has_basic = True
+    flush_block()
+    return err
+
+
 def main() -> int:
     args = parse_args()
     path = Path(args.input)
     if not path.is_file():
         print(json.dumps({"ok": False, "error": "berkas tidak ditemukan"}))
         return 1
-    errors: list[str] = []
+    lines, read_err = read_lines(path)
+    errors: list[str] = list(read_err)
     count = 0
-    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+    for lineno, line in enumerate(lines, start=1):
         if line.startswith("#") or not line.strip():
             continue
         errors.extend(validate_line(line, lineno))
         count += 1
+    if count == 0 and not any("kosong" in e for e in errors):
+        errors.append("berkas kosong — tidak ada kartu")
+    errors.extend(detect_mixed_types(lines))
     out = {"ok": not errors, "jumlah_kartu": count, "errors": errors}
     print(json.dumps(out, ensure_ascii=False, indent=2))
     return 0 if out["ok"] else 1
