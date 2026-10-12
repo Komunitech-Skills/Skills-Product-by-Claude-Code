@@ -1,0 +1,33 @@
+#separator:tab
+menu	daftar makanan	inggris-kata
+bill / check	tagihan	inggris-kata
+allergy	alergi	inggris-kata
+spicy	pedas	inggris-kata
+grilled	dibakar	inggris-kata
+fried	digoreng	inggris-kata
+steamed	dikukus	inggris-kata
+tip	uang tip / uang terima kasih	inggris-kata
+reservation	reservasi	inggris-kata
+takeaway	bawa pulang	inggris-kata
+refill	tambah isi ulang (minuman)	inggris-kata
+"Are you ready to order?"	Sudah siap memesan?	inggris-frasa
+"Would you like something to drink?"	Mau minum apa?	inggris-frasa
+"Please wait a moment"	Mohon tunggu sebentar	inggris-frasa
+"Enjoy your meal"	Selamat menikmati	inggris-frasa
+"Do you have any food allergies?"	Apakah Anda punya alergi makanan?	inggris-frasa
+{{c1::Are}} you ready to order?	Artinya: "Sudah siap memesan?"	inggris-cloze
+Would you like something to {{c1::drink}}?	Artinya: "Mau minum apa?"	inggris-cloze
+Please {{c1::wait}} a moment.	Artinya: "Mohon tunggu sebentar"	inggris-cloze
+{{c1::Enjoy}} your meal.	Artinya: "Selamat menikmati"	inggris-cloze
+Do you have any food {{c1::allergies}}?	Artinya: "Apakah Anda punya alergi makanan?"	inggris-cloze
+Can I see the {{c1::menu}}, please?	Bisakah saya lihat daftar makanannya? (menu = daftar makanan)	inggris-cloze
+Could we have the {{c1::bill}}, please?	Bolehkah kami minta tagihannya? (bill = tagihan)	inggris-cloze
+I have a seafood {{c1::allergy}}.	Saya punya alergi makanan laut. (allergy = alergi)	inggris-cloze
+This curry is too {{c1::spicy}} for me.	Kari ini terlalu pedas untuk saya. (spicy = pedas)	inggris-cloze
+The salmon is {{c1::grilled}} to perfection.	Salmon ini dibakar dengan sempurna. (grilled = dibakar)	inggris-cloze
+We serve {{c1::fried}} shrimp as an appetizer.	Kami menyajikan udang goreng sebagai pembuka. (fried = digoreng)	inggris-cloze
+The crab is {{c1::steamed}} with ginger.	Kepitingnya dikukus dengan jahe. (steamed = dikukus)	inggris-cloze
+Should I include the {{c1::tip}} in the bill?	Haruskah saya masukkan uang tip ke dalam tagihan? (tip = uang tip)	inggris-cloze
+Do you have a table {{c1::reservation}} tonight?	Apakah Anda punya reservasi meja malam ini? (reservation = reservasi)	inggris-cloze
+Would you like that for {{c1::takeaway}}?	Apakah Anda mau itu untuk dibawa pulang? (takeaway = bawa pulang)	inggris-cloze
+Would you like a {{c1::refill}} on your iced tea?	Apakah Anda mau tambah isi ulang es teh Anda? (refill = tambah isi ulang minuman)	inggris-cloze

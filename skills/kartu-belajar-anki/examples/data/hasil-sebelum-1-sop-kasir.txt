@@ -1,0 +1,28 @@
+#separator:tab
+#html:false
+#notetype column:1
+#deck column:2
+Basic	SOP Kasir - Toko Sumber Rejeki	Jam berapa toko buka?	08.00
+Basic	SOP Kasir - Toko Sumber Rejeki	Jam berapa kasir harus sudah datang sebelum toko buka?	07.45 (15 menit sebelum jam buka 08.00)
+Basic	SOP Kasir - Toko Sumber Rejeki	Berapa uang modal awal yang harus ada di laci saat buka kasir?	Rp500.000 pas
+Basic	SOP Kasir - Toko Sumber Rejeki	Kalau uang modal awal di laci selisih (tidak pas Rp500.000), apa yang harus dilakukan kasir?	Lapor ke supervisor SEBELUM transaksi pertama dimulai
+Basic	SOP Kasir - Toko Sumber Rejeki	Dalam berapa detik kasir harus menyapa pelanggan yang datang?	5 detik
+Basic	SOP Kasir - Toko Sumber Rejeki	Setelah menyapa pelanggan, apa urutan langkah transaksi yang benar?	1) Scan barang satu per satu, 2) sebutkan total belanja dengan jelas, 3) tanya metode pembayaran
+Basic	SOP Kasir - Toko Sumber Rejeki	Apa saja 3 metode pembayaran yang tersedia di toko?	Tunai, QRIS, dan kartu debit
+Basic	SOP Kasir - Toko Sumber Rejeki	Saat pembayaran tunai, apa yang pertama kali diucapkan kasir?	Jumlah uang yang diterima dari pelanggan
+Basic	SOP Kasir - Toko Sumber Rejeki	Saat pembayaran tunai, uang dari pelanggan ditaruh di mana dulu sebelum kasir ambil kembalian?	Ditaruh di atas laci dulu (belum dimasukkan ke dalam laci)
+Basic	SOP Kasir - Toko Sumber Rejeki	Urutkan 4 langkah pembayaran tunai yang benar sesuai SOP.	1) Ucapkan jumlah uang diterima, 2) taruh uang pelanggan di atas laci, 3) ambil kembalian, 4) baru uang pelanggan dimasukkan ke laci
+Basic	SOP Kasir - Toko Sumber Rejeki	Kenapa uang pelanggan tidak langsung dimasukkan ke laci saat bayar tunai?	Supaya tidak ada salah paham soal nominal uang yang diberikan pelanggan
+Basic	SOP Kasir - Toko Sumber Rejeki	Untuk pembayaran QRIS, apa yang WAJIB dicek kasir sebelum menyerahkan barang ke pelanggan?	Cek notifikasi pembayaran masuk di HP kasir toko
+Basic	SOP Kasir - Toko Sumber Rejeki	Bolehkah kasir menerima screenshot bukti bayar QRIS dari HP pelanggan sebagai bukti sah?	Tidak boleh, jangan percaya screenshot pelanggan - wajib cek notifikasi di HP kasir toko sendiri
+Basic	SOP Kasir - Toko Sumber Rejeki	Berapa lama batas waktu maksimal untuk retur barang?	Maksimal 3 hari setelah tanggal pembelian
+Basic	SOP Kasir - Toko Sumber Rejeki	Apa 2 syarat wajib agar barang bisa diretur?	Wajib bawa struk dan barang belum dibuka
+Basic	SOP Kasir - Toko Sumber Rejeki	Retur dengan nilai di atas berapa harus disetujui supervisor dulu?	Di atas Rp200.000
+Basic	SOP Kasir - Toko Sumber Rejeki	Kalau pelanggan bayar awal pakai QRIS lalu mau retur, uangnya dikembalikan dengan cara apa?	Dikembalikan lewat QRIS lagi, BUKAN tunai
+Basic	SOP Kasir - Toko Sumber Rejeki	Apa syarat wajib untuk melakukan void (batal item) di kasir?	Wajib pakai PIN supervisor - kasir tidak boleh void sendiri
+Basic	SOP Kasir - Toko Sumber Rejeki	Saat tutup kasir, uang akhir di laci dicocokkan dengan apa?	Dicocokkan dengan laporan sistem
+Basic	SOP Kasir - Toko Sumber Rejeki	Selisih uang berapa saat tutup kasir yang wajib ditulis di berita acara?	Selisih lebih dari Rp10.000
+Basic	SOP Kasir - Toko Sumber Rejeki	Saat tutup kasir, berapa uang yang harus ditinggal di laci untuk modal awal besok?	Rp500.000 (ditinggal di laci, sisanya disetor ke brankas)
+Basic	SOP Kasir - Toko Sumber Rejeki	Sebutkan 3 larangan utama untuk kasir sesuai SOP!	1) Tidak boleh pinjam uang laci, 2) tidak boleh pakai HP pribadi saat melayani pelanggan, 3) tidak boleh kasih diskon tanpa kode dari supervisor
+Basic	SOP Kasir - Toko Sumber Rejeki	Bolehkah kasir memberi diskon ke pelanggan atas inisiatif sendiri?	Tidak boleh, diskon harus pakai kode dari supervisor
+Basic	SOP Kasir - Toko Sumber Rejeki	Bolehkah kasir pinjam uang dari laci untuk keperluan pribadi, meskipun berniat mengembalikan?	Tidak boleh sama sekali, dalam kondisi apapun
