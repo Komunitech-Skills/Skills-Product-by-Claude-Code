@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — lanjut **C9** pra-cek TG beta (1/run, 2/10 selesai); berikutnya `hitung-thr`.
+1. **Akun C** — **C11** `cari-prospek-web` 2 pesan bot pertama (antre sebelum C9 berikutnya) atau lanjut **C9** (3/10; berikutnya `kontrak-kerja-pkwt`).
 2. **Akun A/B** — perbaiki `slip-gaji-bpjs` tampilan Telegram (permintaan antar-akun).
 3. **Akun B** — gelombang 13 (bot kedua).
 4. **Akun A** — merge branch kanonik; promosi `cek-privasi-openclaw` pasca G12.
@@ -42,6 +42,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-12 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 1ee53f22 | C9 pra-cek TG beta `hitung-thr` | 3757 char, tabel THR utuh | LOLOS TG | ya |
 | 2026-10-12 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek TG beta `pph21-ter` | 1596 char, tabel utuh | LOLOS TG | ya |
 | 2026-10-12 ~09:35 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek TG beta `slip-gaji-bpjs` | 1773 char, rekap saja | GAGAL TG | ya |
 | 2026-10-12 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | ca879194 | C7 gelombang G12 (10 pesan) | cpo 7,5→9; rpp 7,5→8,75; lot/fmp/nrl lihat laporan | 1 LULUS promosi | ya |

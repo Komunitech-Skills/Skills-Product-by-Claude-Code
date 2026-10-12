@@ -9,7 +9,9 @@
 | 1 | slip-gaji-bpjs | 1.0.6 | 9 | S1 — slip 3 karyawan CV Contoh Maju Jaya (sama `examples/01-slip-gaji-3-karyawan.md`) | 1.773 | **GAGAL** | Rekap tabel + setoran BPJS/PPh ada di chat dan angka THP total cocok pola uji lokal; **isi slip per karyawan tidak ditampilkan** (hanya path `payroll/.../slip-gaji-2026-09.md|.html`). Di Telegram pembeli awam bisa mengira jawaban “kosong” bila lampiran file tidak terkirim. Saran pembuat: tampilkan minimal 1 slip contoh utuh di chat + tawarkan “balas kirim file” bila panjang. |
 | 2 | pph21-ter | 1.0.5 | 9 | S1 — K/1, gaji 12 jt/bulan, THR 12 jt Maret, iuran JHT+JP 360 rb/bulan (sama `examples/01-setahun-dengan-thr.md`) | 1.596 | **LOLOS** | Tabel 12 bulan + blok hitung ulang Desember + ringkasan setahun **utuh di chat**; total PPh Rp 6.402.000 dan Desember Rp 642.000 cocok uji lokal; tidak mengandalkan path file saja. |
 
-**Run berikutnya (C9):** `hitung-thr`, `kontrak-kerja-pkwt`, `presentasi-instan`, `rencana-pelajaran-guru` (skor 9, output panjang).
+| 3 | hitung-thr | 1.0.9 | 9 | S1 — THR Lebaran 4 karyawan CV Contoh Maju Jaya (sama `examples/01-thr-lebaran-4-karyawan.md`, CSV `karyawan.csv` di workspace) | 3.757 | **LOLOS** | Tabel rekap 4 orang + total THR Rp 16.908.333 / THR diterima Rp 16.241.833 + draf pengumuman grup (tanpa nominal pribadi) **utuh di chat**; angka cocok skrip `thr.py`. Catatan: ada path file rekap di akhir, tapi isi utama tidak mengandalkan lampiran. |
+
+**Run berikutnya (C9):** `kontrak-kerja-pkwt`, `presentasi-instan`, `rencana-pelajaran-guru` (skor 9, output panjang); **C11** `cari-prospek-web` bot asli masih antre.
 
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
 
