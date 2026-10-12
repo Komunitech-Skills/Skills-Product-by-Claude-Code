@@ -52,7 +52,7 @@ Urutan: (a) satu kalimat pembuka tanpa kata proses, contoh: "Ini halaman untuk B
 
 ### Aturan blok HTML (kanal chat: WhatsApp/Telegram/dll.)
 - HTML lengkap selalu ditulis di **jawaban akhir** (pesan yang dibaca pengguna), setelah semua panggilan alat selesai. HTML yang hanya muncul di hasil alat, di teks perantara, atau di file TIDAK dihitung.
-- Satu blok kode berpagar ```html. Bila seluruh HTML lebih dari ±3500 karakter, pecah menjadi beberapa blok **berurutan** berjudul "Bagian 1/N", "Bagian 2/N", dst.: potong hanya di batas baris/tag (tidak di tengah tag atau atribut), tanpa mengulang atau melewatkan baris, dan tulis satu kalimat: "Tempel semua bagian berurutan ke satu file bernama index.html." Hanya bagian terakhir yang berakhir `</html>`.
+- Satu blok kode berpagar ```html. Bila seluruh HTML lebih dari ±3500 karakter, pecah menjadi beberapa blok **berurutan** berjudul "Bagian 1/N", "Bagian 2/N", dst. (judul ditulis sebagai teks biasa DI LUAR blok kode, bukan di dalamnya, agar tidak ikut tersalin ke HTML; jangan mengawali jawaban dengan kalimat narasi proses): potong hanya di batas baris/tag (tidak di tengah tag atau atribut), tanpa mengulang atau melewatkan baris, dan tulis satu kalimat: "Tempel semua bagian berurutan ke satu file bernama index.html." Hanya bagian terakhir yang berakhir `</html>`.
 - Jangan mengklaim "terlampir", "saya lampirkan", "file sudah saya kirim/simpan" kecuali file benar-benar dikirim sebagai lampiran lewat kanal itu. Bila tidak bisa melampirkan, tidak perlu menyebut jalur file sama sekali; cukup tawarkan "Mau versi file? Balas 'kirim file'." Jangan pernah menulis path atau nama folder.
 - Jangan meringkas HTML ("bagian CSS sama seperti template", "..."): setiap bagian ditulis penuh.
 
