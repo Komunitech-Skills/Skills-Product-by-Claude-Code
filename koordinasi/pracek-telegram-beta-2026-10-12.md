@@ -13,7 +13,9 @@
 
 | 4 | kontrak-kerja-pkwt | 1.0.8 | 9 | S1 — toko roti Bandung, 2 pekerja produksi PKWT 1 tahun (sama `examples/01-susun-toko-roti-bandung.md`) | 10.094 | **LOLOS** | Blok hitung kompensasi (Rp 4.150.000/orang, total Rp 8.300.000) + draf PKWT Pasal 1–12 **utuh di chat**; angka kompensasi cocok `hitung_pkwt.py`; peringatan jam kerja/UMK; tidak mengandalkan path file saja. |
 
-**Run berikutnya (C9):** `presentasi-instan`, `rencana-pelajaran-guru`, `surat-resmi-dinas` (skor 9, output panjang); **C11** `cari-prospek-web` bot asli masih antre.
+| 5 | presentasi-instan | 1.1.5 | 8 | S1 — pitch deck Bersih Kilat laundry (sama `examples/01-pitch-investor-laundry.md`) | 1.761 | **LOLOS** | Cara pakai (browser/PDF/edit) + daftar 13 slide dengan angka traksi & dana (Rp 38 jt, 620 pelanggan, Rp 450 jt / 15% / valuasi Rp 3 m) + asumsi & checklist **di chat**; tidak mengandalkan path file saja; HTML dibuat di workspace tapi ringkasan siap baca untuk pembeli awam di Telegram. |
+
+**Run berikutnya (C9):** `rencana-pelajaran-guru`, `presentasi-data-ke-atasan`, `surat-resmi` (skor 9, output panjang); **C11** `cari-prospek-web` bot asli masih antre.
 
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
 
@@ -35,3 +37,4 @@ Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tid
 Output mentah: `scratchpad/openclaw-real/hasil/sgb7-1-out.txt`, `sgb7-2-out.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/pph21-tg-01.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/pkwt-tg-01-out.txt` (tidak di-commit).
+Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/pins-tg-01-out.txt` (tidak di-commit).
