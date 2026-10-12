@@ -39,6 +39,13 @@ Salin folder `pph21-ter` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/736/754 — skor 8
+- Dengan skill: https://t.me/c/4407409583/737/757 — skor 6
+Verdik gelombang: BELUM — DENGAN lebih rapi (TER A 0,75% = Rp45.000, minta konfirmasi KLU, syarat bruto Januari 2026) tetapi **salah di jawaban inti**: "uang diterima Rp6.045.000" (gaji + DTP, PPh "dipotong Rp0"). Menurut teks PMK 105/2025, PPh 21 tetap dipotong lalu nilai DTP dibayar tunai, sehingga pegawai menerima Rp6.000.000. Nominal ini sama dengan jawaban TANPA.
+
 ## FAQ
 **Kenapa potongan Desember berbeda dari bulan lain?**
 Aturannya memang begitu: Januari–November memakai tarif TER dari tabel, sedangkan Desember (atau bulan karyawan berhenti) dihitung ulang dengan tarif pajak tahunan lalu dikurangi potongan sebelumnya. Skill ini menampilkan rincian hitungannya supaya mudah dijelaskan ke karyawan.

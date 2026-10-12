@@ -68,6 +68,13 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - **Data pribadi pelanggan.** Nomor HP tersimpan hanya di komputer Anda. Jika pengingat dikirim ke Telegram, isinya (nama, nomor, tautan) tersimpan di chat Telegram Anda; ada pilihan versi disamarkan. Pelanggan minta datanya dihapus? Cukup bilang "hapus data Bu Rina".
 - Pengingat terjadwal hanya berjalan saat komputer/Gateway OpenClaw menyala.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02.
+- Tanpa skill: https://t.me/c/4407409583/516/565 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/238/568 — skor: lihat catatan gelombang
+Verdik gelombang: — — DENGAN mendeteksi nama ganda dan mencatat status Deal + DP; TANPA mencatat ke CSV buatan sendiri. Catatan jujur: giliran 3 DENGAN sempat tercampur data uji lama usaha lain, lalu skill direvisi (cek identitas usaha sebelum mencatat).
+
 ## FAQ
 **Apakah data pelanggan saya dikirim ke internet?**
 Tidak. Script CRM tidak memakai internet sama sekali; semuanya ada di satu file di komputer Anda. Yang keluar hanya teks yang Anda minta dikirim ke Telegram Anda sendiri (lewat OpenClaw), dan pesan yang Anda kirim sendiri lewat WhatsApp.

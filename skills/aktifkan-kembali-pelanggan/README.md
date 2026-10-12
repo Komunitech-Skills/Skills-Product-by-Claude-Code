@@ -43,6 +43,13 @@ Salin folder `aktifkan-kembali-pelanggan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
+- Tanpa skill: https://t.me/c/4407409583/902/938 — skor 7
+- Dengan skill: https://t.me/c/4407409583/903/940 — skor: lihat catatan gelombang
+Verdik gelombang: BELUM DAPAT DINILAI — Tanpa skill sudah memberi segmen, hari senyap yang benar & 3 template WA (tanpa opsi "stop"/opt-in, tanpa jadwal); jawaban lengkap dengan skill tidak terekam di transkrip. Kirim ulang gelombang 11b (10 Okt 2026, topik berbeda, tautan tidak tercatat di log ini): 7 menjadi 8, BELUM.
+
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan pasif?**
 Tidak, dan itu disengaja. WhatsApp bisa memblokir nomor yang mengirim pesan massal, dan pelanggan lebih merespons pesan personal. AI menyiapkan draf, jadwal harian, dan daftar siapa yang dikirim hari ini, Anda yang menekan kirim.

@@ -44,6 +44,13 @@ Salin folder `konten-mingguan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/680/706 — skor 5,5
+- Dengan skill: https://t.me/c/4407409583/681/708 — skor 6
+Verdik gelombang: BELUM — DENGAN benar menolak testimoni, before-after (walau ada izin), **dan** diskon tindakan medis, tetapi **tidak menyerahkan satu post pun** (hanya bertanya "boleh saya lanjutkan?"); TANPA memberi rencana 5 post tetapi tetap mempromosikan diskon 20% dan menawarkan testimoni asli "dengan izin pasien".
+
 ## FAQ
 **Apakah skill ini bisa langsung posting ke Instagram/TikTok saya?**
 Tidak. Skill ini menyiapkan paket konten siap tempel; kamu yang menjadwalkan/memposting sendiri lewat

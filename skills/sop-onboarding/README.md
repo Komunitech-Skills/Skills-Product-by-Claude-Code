@@ -45,6 +45,13 @@ Salin folder `sop-onboarding` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/865/871 — skor 6,5
+- Dengan skill: https://t.me/c/4407409583/866/874 — skor 8
+Verdik gelombang: LULUS — DENGAN memberi paket utuh dengan jadwal yang tepat (checkpoint, batas masa percobaan 11 Jan 2027, evaluasi keputusan 6 Jan 2027), SOP kasir 7 langkah, checklist BPJS, dan cek UMK; TANPA menulis evaluasi "paling lambat 12 Jan 2027" yang melewati batas 11 Jan buatannya sendiri.
+
 ## FAQ
 **Skill ini bikin kontrak kerja juga?**
 Tidak. Untuk kontrak kerja karyawan kontrak (PKWT), pakai skill `kontrak-kerja-pkwt` — skill onboarding ini hanya mengingatkan kelengkapannya di checklist, termasuk aturan bahwa PKWT dilarang punya masa percobaan.

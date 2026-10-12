@@ -63,6 +63,13 @@ harus menyala pada jam tersebut (lihat `references/openclaw-jadwal.md`). Di Clau
 atau Cursor, skill ini tetap berfungsi sebagai buku jadwal manual — staf cukup mengetik "daftar
 pengingat hari ini" setiap pagi.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02.
+- Tanpa skill: https://t.me/c/4407409583/515/571 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/241/574 — skor: lihat catatan gelombang
+Verdik gelombang: — — TANPA memasang pengingat otomatis ke grup (melanggar aturan draf dikirim staf) dan tetap memproses pasien tanpa izin; DENGAN menghitung tanggal benar, mencatat izin, menyaring pasien tanpa izin, dan menyiapkan draf untuk disalin staf.
+
 ## FAQ
 **Apakah skill ini menyimpan rekam medis atau diagnosis pasien?**
 Tidak. Yang disimpan hanya nama panggilan, nomor WA, jenis kunjungan umum (kontrol, vaksin, cabut

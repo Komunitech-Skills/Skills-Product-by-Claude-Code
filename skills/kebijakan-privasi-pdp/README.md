@@ -52,6 +52,13 @@ Salin folder `kebijakan-privasi-pdp` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows) ada di `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 5, 2026-10-03.
+- Tanpa skill: https://t.me/c/4407409583/629/643 — skor 5,5
+- Dengan skill: https://t.me/c/4407409583/630/645 — skor 8,5
+Verdik gelombang: LULUS — DENGAN memuat dasar pemrosesan per tujuan, masa simpan, transfer luar negeri (Ps. 56), kebocoran 3×24 jam (Ps. 46), hak Ps. 5–13, plus Shopify/WhatsApp sebagai penerima; TANPA langsung jadi tetapi menyebut data Meta Pixel "bukan data pribadi" dan melewatkan transfer luar negeri, kebocoran, dan masa simpan.
+
 ## FAQ
 **Apakah usaha kecil juga wajib punya kebijakan privasi?**
 UU PDP berlaku untuk siapa pun yang memproses data pribadi orang lain untuk usaha, termasuk UMKM yang mencatat nomor WA dan alamat pelanggan. Undang-undang ini mewajibkan kamu memberi tahu pelanggan data apa yang dikumpulkan, untuk apa, berapa lama disimpan, dan apa saja hak mereka (Pasal 21). Kebijakan privasi adalah cara paling praktis untuk memenuhinya.

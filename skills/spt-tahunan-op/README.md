@@ -39,6 +39,13 @@ Salin folder `spt-tahunan-op` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python standar (tanpa instal apa pun); bila Python tidak ada, agent menghitung manual dengan rumus yang sama.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03.
+- Tanpa skill: https://t.me/c/4407409583/586/612 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/587/614 — skor: lihat catatan gelombang
+Verdik gelombang: — — TANPA tidak memberi jawaban; DENGAN meluruskan skema pajak (pekerjaan bebas, bukan PPh final 0,5%) dan setelah giliran lanjutan menghitung kurang bayar Rp14.400.000.
+
 ## FAQ
 **1. Apakah skill ini melaporkan SPT saya ke DJP?**
 Tidak. Skill hanya menghitung dan menyiapkan checklist. Pelaporan tetap kamu lakukan sendiri di Coretax (atau lewat konsultan). Jangan pernah membagikan password atau kode otorisasi Coretax ke siapa pun, termasuk AI.

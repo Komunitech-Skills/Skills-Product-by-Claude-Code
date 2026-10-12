@@ -47,6 +47,13 @@ Salin folder `atur-keuangan-pribadi` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02.
+- Tanpa skill: https://t.me/c/4407409583/517/525 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/313/542 — skor: lihat catatan gelombang
+Verdik gelombang: — — DENGAN menyusun anggaran zero-based dari script; TANPA hanya anggaran dan dana darurat 6–9x pengeluaran tanpa script. Catatan jujur: THR sempat dihitung ganda, diperbaiki di versi 1.0.7.
+
 ## FAQ
 **Apakah skill ini menyarankan investasi tertentu?**
 Tidak. Skill ini tidak pernah merekomendasikan beli/jual saham, kripto, reksa dana, emas, atau produk bank/fintech tertentu. Imbal hasil hanya dipakai sebagai asumsi yang kamu tentukan sendiri.

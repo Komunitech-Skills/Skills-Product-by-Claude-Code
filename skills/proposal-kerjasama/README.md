@@ -39,6 +39,13 @@ Salin folder `proposal-kerjasama` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 9, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/827/835 — skor 6,5
+- Dengan skill: https://t.me/c/4407409583/828/837 — skor 8,5
+Verdik gelombang: LULUS — DENGAN kini memberi peringatan rugi lengkap (laba per botol = Rp9.750 − HPP − kirim, contoh Rp3.750 / impas / rugi Rp1.250) plus proposal, pesan WA, dan email yang ditulis utuh tanpa kata proses; TANPA menolak klaim palsu dengan tepat tetapi tidak menghitung untung/rugi, tidak memberi pesan WA/email, dan mengarang komitmen (kirim rutin, tarik barang kedaluwarsa).
+
 ## FAQ
 **Apakah modal dan keuntungan saya ikut tertulis di proposal?**
 Tidak. Hitungan modal dan laba hanya ditunjukkan ke kamu. Proposal hanya berisi angka yang penting bagi mitra.

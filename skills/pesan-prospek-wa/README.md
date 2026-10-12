@@ -42,6 +42,13 @@ Salin folder `pesan-prospek-wa` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/738/760 — skor 6
+- Dengan skill: https://t.me/c/4407409583/739/762 — skor 8,5
+Verdik gelombang: LULUS — DENGAN langsung memberi 3 draf berisi asal kontak + opsi keluar, mengoreksi jam (19.30 WIB = 20.30 WITA, digeser ke 18.00 WIB = 19.00 WITA), memakai sapaan netral, dan menutup dengan checklist anti-blokir; TANPA memberi 2 draf "Selamat malam" tanpa opsi keluar yang jelas dan tetap mengirim 20.30 WITA.
+
 ## FAQ
 **Bisa dipakai untuk kirim ke banyak kontak sekaligus?**
 Tidak. Skill ini khusus pesan pertama yang dikirim **satu per satu oleh manusia** ke satu calon pelanggan setiap kali. Untuk promo ke banyak kontak sekaligus (dengan persetujuan & opt-out yang diatur ketat), pakai skill `broadcast-wa`.

@@ -41,6 +41,13 @@ Salin folder `surat-peringatan-karyawan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03.
+- Tanpa skill: https://t.me/c/4407409583/584/606 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/585/609 — skor: lihat catatan gelombang
+Verdik gelombang: — — TANPA langsung membuat SP2; DENGAN menahan karena SP1 sudah berakhir masa berlakunya dan menyarankan SP1 baru kecuali peraturan perusahaan mengatur lain (beda paling jelas).
+
 ## FAQ
 **Apakah SP selalu berlaku 6 bulan?**
 Menurut PP 35/2021, masing-masing SP berlaku paling lama 6 bulan kecuali Perjanjian Kerja/Peraturan Perusahaan/PKB mengatur lain. Jika aturan perusahaanmu berbeda, sebutkan saja, nanti masa berlakunya menyesuaikan.

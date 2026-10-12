@@ -40,6 +40,13 @@ Salin folder `kelayakan-investasi-usaha` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputermu.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
+- Tanpa skill: https://t.me/c/4407409583/908/950 — skor 6,5
+- Dengan skill: https://t.me/c/4407409583/909/952 — skor 9
+Verdik gelombang: LULUS — Keduanya benar soal payback ±1 th 1 bln, tetapi hanya dengan skill ada NPV/IRR/payback terdiskonto, uji meleset −10%/−20%/+10%, batas aman, asumsi diskonto & disclaimer, semuanya cocok dengan hitungan ulang.
+
 ## FAQ
 **Apakah hasilnya menjamin usaha saya untung?**
 Tidak. Hasil tergantung perkiraan omzet dan biaya yang kamu masukkan. Karena itu skill selalu menunjukkan skenario "kalau meleset" dan batas aman. Ini alat bantu, bukan nasihat keuangan.

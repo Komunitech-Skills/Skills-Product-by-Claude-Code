@@ -61,6 +61,13 @@ Salin folder `rapikan-data-berantakan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
+- Tanpa skill: https://t.me/c/4407409583/900/934 — skor 7
+- Dengan skill: https://t.me/c/4407409583/901/936 — skor 7,5 (kirim ulang: 8)
+Verdik gelombang: BELUM — Dengan skill tidak ada data yang digabung diam-diam dan ada pengingat opt-in, tetapi tanpa skill bot sudah memberi CSV 18 pelanggan bersih dengan angka benar langsung di chat, sedangkan dengan skill data bersih baru dikirim setelah "kirim file" dan contoh percobaan 1 salah satu digit.
+
 ## FAQ
 **Apakah data pelanggan saya dikirim ke internet?**
 Alat perapi berjalan di komputermu sendiri dan tidak mengakses internet. Isi data tetap dibaca oleh AI agent yang kamu pakai, jadi pilih agent yang sesuai kebijakan privasi usahamu. Nama dan nomor pelanggan adalah data pribadi (UU PDP No. 27/2022): jangan dibagikan ke grup atau pihak lain tanpa perlu, dan nomor yang sudah rapi bukan izin untuk mengirim promo.

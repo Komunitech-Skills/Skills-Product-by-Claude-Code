@@ -60,6 +60,13 @@ Rekap otomatis tiap pagi hanya tersedia di **OpenClaw**, dan komputer yang menja
 pada jam tersebut. Di Claude Code, Codex, atau Cursor, skill ini berfungsi sebagai daftar pantauan manual:
 ketik "rekap pengingat" setiap pagi.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03.
+- Tanpa skill: https://t.me/c/4407409583/582/600 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/583/603 — skor: lihat catatan gelombang
+Verdik gelombang: — — Angka dan draf kedua sisi benar; beda di keamanan dan pencatatan: TANPA menawarkan kirim langsung dan berjanji mengingatkan tanpa jadwal nyata, DENGAN mencatat terstruktur dan draf dikirim sendiri oleh pengguna.
+
 ## FAQ
 **Apakah bot akan menagih pelanggan saya secara otomatis?**
 Tidak. Rekap dan draf hanya dikirim ke **Anda** (Telegram, atau WhatsApp nomor terpisah milik Anda). Anda

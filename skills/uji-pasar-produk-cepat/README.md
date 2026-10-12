@@ -39,6 +39,13 @@ Salin folder `uji-pasar-produk-cepat` ke folder skills agent kamu:
 
 Panduan lengkap: lihat `docs/instalasi.md` di dalam paket pembelian.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/734/748 — skor 7
+- Dengan skill: https://t.me/c/4407409583/735/751 — skor 8,5
+Verdik gelombang: LULUS — DENGAN memisahkan minat lisan 41,7% dari konversi nyata 0/12 dengan rentang Wilson 0–24%, lalu memberi keputusan tegas plus langkah DP berbatas waktu yang bisa di-refund dan target 30 kontak baru; TANPA memberi saran praktis yang benar (minta DP, batch kecil) tetapi tanpa angka konversi atau rentang ketidakpastian.
+
 ## FAQ
 **1. Bedanya dengan Tes Ide Sebelum Modal Habis (`validasi-ide-produk-baru`)?**
 Itu untuk mengubah ide jadi hipotesis dan menjalankan satu uji 7 hari pertama. Ini untuk eksekusi lanjutan: beberapa asumsi, membandingkan dua varian, catatan eksperimen, dan keputusan berbasis rentang wajar.
