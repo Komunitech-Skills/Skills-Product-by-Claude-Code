@@ -15,7 +15,9 @@
 
 | 5 | presentasi-instan | 1.1.5 | 8 | S1 — pitch deck Bersih Kilat laundry (sama `examples/01-pitch-investor-laundry.md`) | 1.761 | **LOLOS** | Cara pakai (browser/PDF/edit) + daftar 13 slide dengan angka traksi & dana (Rp 38 jt, 620 pelanggan, Rp 450 jt / 15% / valuasi Rp 3 m) + asumsi & checklist **di chat**; tidak mengandalkan path file saja; HTML dibuat di workspace tapi ringkasan siap baca untuk pembeli awam di Telegram. |
 
-**Run berikutnya (C9):** `rencana-pelajaran-guru`, `presentasi-data-ke-atasan`, `surat-resmi` (skor 9, output panjang); **C11** `cari-prospek-web` bot asli masih antre.
+| 6 | rencana-pelajaran-guru | 1.0.11 | 8 | S1 — modul ajar IPA kelas 7 ekosistem 2 pertemuan (sama `examples/01-modul-ajar-ipa-kelas7-ekosistem.md`) | 5.617 | **LOLOS** | Modul ringkas 2 pertemuan (80 menit/JP COCOK) + LKPD 6 soal + rubrik + kunci jawaban guru **utuh di chat**; asumsi 2 JP/pertemuan; penutup baku “balas kirim file”; tidak ada path file / “isi di workspace”. |
+
+**Run berikutnya (C9):** `presentasi-data-ke-atasan`, `surat-resmi`, `cv-lamaran-ats` (output panjang); **C11** `cari-prospek-web` bot asli masih antre.
 
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
 
