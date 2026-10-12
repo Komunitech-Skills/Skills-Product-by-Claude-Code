@@ -50,6 +50,7 @@ Tidak. Pesanan masuk lewat tombol WhatsApp. Untuk keranjang dan pembayaran onlin
 Situs-situs itu sering memperbarui tampilan. Ikuti tombol dengan istilah paling mirip; bagian itu ditandai PERLU REVIEW di panduan.
 
 ## Catatan versi
+- **1.0.3 (2026-10-12):** di chat, halaman HTML selalu ditulis utuh (dibagi beberapa bagian bila panjang); tawaran "balas 'kirim file'" untuk versi file.
 - **1.0.0 (2026-10-06):** rilis awal.
 
 ## Catatan
