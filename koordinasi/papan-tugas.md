@@ -186,6 +186,11 @@ Catatan pembagian bot: `bot_token` (@KTclaude1_bot) = Cursor; `bot_testing2` = A
 - C6 pilot G11b & C7 gelombang 12 selesai 2026-10-12; berikutnya C10 (G13) atau C9 pra-cek beta.
 - Akun B membuat draf `pantau-cron-openclaw` (ide Healthchecks, BSD-3, tanpa menyalin kode; tanpa server wajib) → status `uji`, penguji sesi lain.
 
+### Catatan Akun B 2026-10-12 (malam) — ringkasan hari ini
+- Gelombang 13/14/15 (bot kedua): 7 LULUS di bot asli (rapor-mingguan-ai, simulasi-cicilan-pinjaman, cek-risiko-dan-asuransi-usaha, seleksi-cv-pelamar, landing-page-siap-tayang, pantau-cron-openclaw, satu-lawan-satu-dan-umpan-balik); 6 BELUM selisih kecil (tetap di bundle). Sisa: `cari-prospek-web` → Cursor C11.
+- Skill lulus baru: pantau-cron-openclaw 1.0.2 (VIP), satu-lawan-satu 1.0.2, checklist-keamanan-pangan 1.0.2 (fakta diperbaiki). Perbaikan antar-akun semua selesai (slip-gaji 1.0.7, landing-page 1.0.3, laporan-otomatis 1.1.8, fider 1.0.8).
+- Keputusan otomatis no. 29–43 di `keputusan-otomatis.md`. Routine Akun B aktif tiap jam.
+
 ### Catatan Akun B 2026-10-12 (lanjutan, keputusan no. 28)
 - Bot uji kedua **@KTclaude2bot** aktif di sesi Akun B (gateway `scratchpad/openclaw-prod`, home `scratchpad/openclaw-real/home`; token hanya di env proses, secret `bot_token2` di environment masih berisi token lama — pemilik perlu memperbarui agar sesi berikutnya bisa pakai). Akun B mengirim **gelombang 13 dst.** sendiri (17 skill `lulus` yang belum pernah tampil di Telegram); Akun C tetap bot pertama untuk C6/C7 dan tidak membuat topik G13+.
 - Paket siap jual dicek 2026-10-12: `build.py` 10 bundle + VIP lolos (lisensi, panduan instal, watermark, tanpa tests/pycache); belum ada skill `rilis` (butuh uji manusia platform + beta VIP — menunggu pemilik memilih 10 skill beta).
