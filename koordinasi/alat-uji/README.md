@@ -41,3 +41,6 @@ Rahasia dipasang pemilik sebagai **environment secrets** di Cursor (Settings →
 **Aturan satu gateway per token:** Telegram hanya mengizinkan satu proses polling per token bot. Bila `bot_token` diberikan ke Cursor, gateway di sesi Akun B/A harus dimatikan dulu, atau pakai token bot penguji **kedua** (bot baru dari @BotFather, dimasukkan ke grup uji) — itu yang disarankan. Tanpa `bot_token`, Cursor tetap bisa menjalankan uji sebelum/sesudah lokal dan konteks Telegram (`uji-tg.sh`, tanpa `--deliver`), hanya gelombang Telegram yang tidak bisa.
 
 VM Cursor ulang dari snapshot tiap run: riwayat sesi bot, topik, dan hasil uji di `$BASE` hilang. Semua hasil harus di-commit ke repo (`examples/`, `koordinasi/telegram-*.md`) sebelum run berakhir.
+
+## Bot uji kedua untuk Akun B (2026-10-12)
+Pemilik menambah secret `bot_testing2` (token bot OpenClaw uji kedua). Di sesi Akun B: jalankan gateway dengan `bot_token="$bot_testing2" bash gw-cek.sh` (gw-cek/oc-tg membaca `bot_token`), HOME terpisah dari bot Cursor, grup uji sama. Bot ini harus menjadi **admin grup dengan hak kelola topik** agar `mktopics-*.py` bisa membuat topik. Mention di pesan gelombang memakai username bot kedua. Jangan pernah mencetak nilai token.
