@@ -1,4 +1,4 @@
-# Contoh 2: 4 kelas, guru paruh waktu, Lab IPA satu ruang (uji OpenClaw 2026-10-12)
+# Contoh 2: 4 kelas, guru paruh waktu, Lab IPA satu ruang (uji ulang v1.0.1, 2026-10-12)
 
 > Data fiktif (`data/kebutuhan-b.csv`, `data/info-b.txt`). Rincian utuh di `00-openclaw-sebelum-sesudah.md`.
 
@@ -6,11 +6,10 @@
 "Ini kebutuhan jadwal semester depan SMP Cahaya Nusantara, datanya di kebutuhan-b.csv dan info-b.txt. Tolong susunkan jadwal per kelas dan per guru. Perhatikan Pak Budi cuma bisa hadir Selasa dan Kamis, dan Lab IPA cuma satu ruang."
 
 ## Keluaran dengan skill (ringkas)
-88/88 JP; 4 grid kelas utuh; ringkasan guru; CSV 88 baris utuh dengan kolom Ruang; langkah cetak/kirim manual; asumsi dan 3 pertanyaan.
+Ringkasan 88/88 JP; grid 4 kelas; tabel 7 guru dengan total JP; CSV 88 baris dengan kolom Ruang; asumsi dan 3 pertanyaan; penutup "Balas kirim file ...".
 
 ## Verifikasi independen (python)
-Bentrok guru 0, bentrok kelas 0, Lab IPA tidak pernah ganda, Pak Budi hanya Selasa/Kamis, jumlah per kegiatan cocok semua.
+88/88 tepat, bentrok guru/kelas 0, Lab IPA tidak ganda, Pak Budi hanya Selasa dan Kamis (fitur skrip 1.0.1 terbukti). **Satu sel grid salah**: 8A Senin jam 2 tertulis "IPS" padahal CSV "Bahasa Inggris". Klaim "3 slot kosong" salah (sisa 28 slot).
 
 ## Catatan
-- Skrip skill tidak mendukung ruang/ketersediaan guru (diuji terpisah: Pak Budi jatuh ke Senin/Jumat bila memakai skrip apa adanya); agent menambahkan sendiri dan hasilnya benar, tetapi tidak dijamin oleh skrip.
-- Jumat kosong di semua kelas; blok 3-4 jam pelajaran sama berturut-turut; tabel ringkas guru berantakan.
+Skor SESUDAH 7,0 vs SEBELUM 5,0 (agent tanpa skill: jadwal benar tetapi hanya di berkas .md, chat berisi nama berkas dan jargon). Jumat kosong total di 3 dari 4 kelas.
