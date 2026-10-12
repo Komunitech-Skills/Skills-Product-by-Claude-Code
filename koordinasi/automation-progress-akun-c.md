@@ -4,9 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun A** — merge branch kanonik; `kartu-belajar-anki` 1.0.1 → `lulus` bila setuju.
-2. **Akun C** — revisi pembuat `jadwal-pelajaran-sekolah` 1.0.1 (masukan Akun B).
-3. **Akun B** — uji `ubah-draf-ke-dokumen` 1.0.1.
+1. **Akun B** — uji independen `jadwal-pelajaran-sekolah` v1.0.1 + `ubah-draf-ke-dokumen` v1.0.1 (pembuat ≠ penguji).
+2. **Akun A** — merge branch kanonik; `kartu-belajar-anki` 1.0.1 → `lulus` bila setuju.
+3. **Akun C** — tunggu antrean uji (jangan uji skill buatan sendiri); koordinasi / uji skill `uji` buatan Akun B bila ada.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-12 ~20:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 9af64e22 | merge default (konflik catalog/papan); getUpdates 242 kosong | C6–C11 selesai | koordinasi | tidak |
 | 2026-10-12 ~19:30 | `cursor/iterasi-otomatis-akun-c-8b42` | d5af5fdc | merge default + revisi `jadwal-pelajaran-sekolah` v1.0.1 | regresi 8/8 | siap uji B | ya |
 | 2026-10-12 ~19:05 | `cursor/iterasi-otomatis-akun-c-8b42` | 5a107c86 | uji OC `kartu-belajar-anki` v1.0.1 (+ TG S1) | 6,0→8,56 | LULUS | ya |
 | 2026-10-12 ~19:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 549b6882 | merge sync default (konflik jadwal → versi uji Akun B) | — | koordinasi | tidak |
