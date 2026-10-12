@@ -8,7 +8,7 @@ import re
 import sys
 from datetime import datetime, date, time
 
-SUMBER_BATAS = "acuan ilmiah umum; PERLU REVIEW terhadap acuan Kemenkes/BPOM"
+SUMBER_BATAS = "WHO 5 Kunci, FDA Food Code 2022, USDA FSIS (dicek 2026-10-12); cocokkan dengan Dinkes setempat"
 MAKS_ZONA_MENIT = 120
 TINDAKAN = {
     "freezer": "cek pintu dan colokan, jangan sering dibuka; bahan yang sudah lunak jangan dibekukan ulang, masak segera atau buang.",
@@ -27,11 +27,15 @@ def jenis_alat(nama):
         return "pemanasan ulang", "min", 74.0
     if re.search(r"penahan|warmer|bain|hot ?hold|pemanas", n):
         return "penahan panas", "min", 60.0
-    if re.search(r"masak|matang|ayam|unggas|goreng|bakar", n):
-        if re.search(r"giling", n):
-            return "masak (giling)", "min", 71.0
-        if re.search(r"ikan|telur|utuh|steak", n):
-            return "masak (ikan/telur/utuh)", "min", 63.0
+    if re.search(r"masak|matang|ayam|unggas|bebek|goreng|bakar", n):
+        # unggas SELALU >= 74 °C (utuh, potong, giling); "telur ayam" = telur, bukan unggas
+        m = re.sub(r"telur\s+(ayam|bebek|itik|puyuh)", "telur", n)
+        if re.search(r"ayam|unggas|bebek|itik|puyuh|kalkun|chicken|duck", m):
+            return "masak", "min", 74.0
+        if re.search(r"giling|bakso|burger|hidangan telur|telur tahan", n):
+            return "masak (giling/hidangan telur)", "min", 71.0
+        if re.search(r"ikan|seafood|udang|cumi|kerang|telur|utuh|steak", n):
+            return "masak (ikan/telur/daging utuh non-unggas)", "min", 63.0
         return "masak", "min", 74.0
     return None, None, None
 

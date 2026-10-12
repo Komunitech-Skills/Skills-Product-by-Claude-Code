@@ -35,7 +35,9 @@ Verdik gelombang: BELUM — Dengan skill paketnya lebih lengkap (checklist berce
 
 ## FAQ
 **Apakah ini menggantikan pelatihan atau SLHS resmi?** Tidak. Ini alat bantu kebiasaan kerja; pelatihan dan pemeriksaan resmi tetap lewat Dinas Kesehatan/BPOM.
-**Apakah angka suhunya sesuai aturan Indonesia?** Memakai acuan ilmiah umum dalam Celsius; cocokkan dengan acuan Dinkes setempat (PERLU REVIEW).
+**Apakah angka suhunya sesuai aturan Indonesia?** Angka suhu dari WHO, FDA Food Code 2022, dan USDA (dicek 2026-10-12; ayam selalu matang inti 74 °C), daftar alergen mengikuti label BPOM, dan halal ditulis wajib sesuai UU 33/2014 & PP 42/2024. Tetap cocokkan dengan Dinkes setempat (PERLU REVIEW).
 **Perlu instal apa-apa?** Tidak. Skill tetap berguna tanpa script; script hanya butuh Python standar.
 
-> PERLU REVIEW: bagian perizinan (nama aturan dan syarat) belum diverifikasi ulang ke sumber resmi. Bukan nasihat hukum.
+> PERLU REVIEW: bagian perizinan (selain halal dan alergen yang dicek 2026-10-12) belum diverifikasi ulang ke sumber resmi. Bukan nasihat hukum.
+
+Versi 1.0.2 (2026-10-12): perbaikan fakta suhu ayam, alergen santan, dan kewajiban halal setelah uji Telegram gelombang 14.

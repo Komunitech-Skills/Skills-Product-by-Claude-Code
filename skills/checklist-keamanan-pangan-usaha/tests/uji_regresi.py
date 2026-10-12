@@ -41,6 +41,16 @@ class Uji(unittest.TestCase):
         self.assertIn(("masak ayam", 72.0), alat)
         self.assertNotIn(("masak ikan", 64.0), alat)
 
+    def test_unggas_selalu_74(self):
+        for nama in ("masak ayam utuh", "ayam goreng potong utuh", "masak steak ayam", "bebek bakar utuh",
+                     "masak ayam giling", "masak bakso ayam"):
+            self.assertEqual(c.jenis_alat(nama)[2], 74.0, nama)
+        self.assertEqual(c.jenis_alat("masak telur ayam")[2], 63.0)
+        self.assertEqual(c.jenis_alat("masak daging sapi utuh")[2], 63.0)
+        self.assertEqual(c.jenis_alat("masak bakso sapi")[2], 71.0)
+        h = c.analisis(tulis("2026-10-06 09:00,masak ayam utuh,65\n"), D)
+        self.assertEqual(len(h["pelanggaran"]), 1)
+
     def test_koma_desimal_dan_derajat(self):
         h = c.analisis(tulis('2026-10-06 08:00,kulkas,"4,5 C"\n2026-10-06 09:00,kulkas,6.2°\n'), D)
         self.assertEqual(h["alat"]["kulkas"]["pembacaan_melanggar"], 1)
