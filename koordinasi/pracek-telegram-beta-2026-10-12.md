@@ -19,8 +19,11 @@
 
 | 7 | presentasi-data-ke-atasan | 1.0.4 | 9 | S1 — omzet Agustus–September + biaya iklan, lapor owner minta turunkan budget (sama `examples/01-omzet-turun-bulan-puasa.md`) | 4.222 | **LOLOS** | Ringkasan WA + email formal + satu halaman eksekutif + skrip bicara **utuh di chat**; omzet -23,4%, iklan +40%, rasio 12,5%→22,9% cocok skrip; tidak mengandalkan path file saja. |
 
-**Run berikutnya (C9):** `surat-resmi`, `cv-lamaran-ats`, `proposal-kerjasama` (output panjang); **C11** `cari-prospek-web` bot asli masih antre.
+| 8 | surat-resmi | 1.0.3 | 8 | S1 — surat kuasa ambil BPKB CV Sinar Laras Abadi (sama `examples/01-surat-kuasa-ambil-bpkb.md`) | 2.287 | **LOLOS** | Surat kuasa lengkap (kop, nomor `018/KSA/CV-SLA/X/2026`, blok KHUSUS BPKB Avanza, tanda tangan + meterai) **utuh di chat**; NIK tidak dikarang; catatan meterai & dokumen bawa; tidak mengandalkan path file saja. |
 
+**Run berikutnya (C9):** `cv-lamaran-ats`, `proposal-kerjasama` (2 skill lagi menuju C8); **C11** `cari-prospek-web` bot asli masih antre.
+
+Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sr-tg-01-out.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
 
 ## slip-gaji-bpjs 1.0.7 — pra-cek ulang Akun B (2026-10-12)
