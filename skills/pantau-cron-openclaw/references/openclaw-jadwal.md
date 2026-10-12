@@ -1,14 +1,15 @@
 # Perintah OpenClaw untuk Pantau Cron (siap salin)
 
+> **Bahasa ke pengguna:** ikuti BAHASA KE PENGGUNA di SKILL.md (tanpa "skill", "script", "cron job", "kredensial", "token", "agen", path).
 > **Kredensial & aksi (wajib):** jangan membaca token/kunci dari environment, `openclaw.json`, `.env`, database atau log OpenClaw. Cek kanal hanya dengan `openclaw channels status --channel telegram`. Jangan membuat/mengubah jadwal atau mengirim pesan uji sebelum pengguna membalas "ya" atas ringkasan rencana.
 > **Aturan berhenti:** bila SATU perintah `openclaw automations ...`/`cron ...` gagal (ditolak, token/kredensial, Gateway tidak bisa dihubungi), berhenti memakai alat `openclaw`. DILARANG: membaca/mengubah `openclaw.json`, memeriksa/menulis token, menjalankan `openclaw doctor` (termasuk `--fix`), merestart Gateway, atau meminta alat lain mengubah konfigurasi Gateway. Lanjut ke bagian 0 (rencana siap salin).
 
 ## 0. Rencana siap salin saat terblokir
-Tampilkan seluruh bagian ini dengan nilai terisi (jadwal job, nama, folder skill), tutup "Lanjut? (ya/tidak)":
+Tampilkan seluruh bagian ini dengan nilai terisi (jadwal job, nama; folder ditulis `[isian: folder pantauan Anda]`), tutup "Lanjut? (ya/tidak)":
 1. Tabel job (nama, jadwal dalam kata-kata, toleransi, jadwal berikutnya dari keluaran `daftar`).
 2. Per job, perintah edit prompt (bagian 2) dengan `<id-job>` diisi dari `openclaw automations list --all` bila ada, bila tidak `[isian: id job]`.
 3. Dua perintah pengawas (bagian 3), tujuan `[isian: ID chat Telegram Anda]`.
-4. Satu kalimat awam: agen belum punya izin ke pengatur jadwal OpenClaw; salin perintah ke terminal sendiri atau minta pemilik/penyedia OpenClaw memberi izin.
+4. Satu kalimat awam: belum ada izin ke pengatur jadwal OpenClaw; salin perintah ke terminal sendiri atau minta pemilik/penyedia OpenClaw memberi izin.
 
 Pola dan status verifikasi (meniru `laporan-otomatis-terjadwal/references/openclaw.md` dan `bot-trading-kripto/references/openclaw-jadwal.md`):
 - Semua flag di bawah (`--cron`, `--tz`, `--name`, `--session`, `--command-argv`, `--announce`, `--channel`, `--to`, `--message`, `--exact`, `edit`, `list --all`, `runs`, `disable`) **dicek lewat `--help` OpenClaw 2026.9.8 dan 2026.10.2** (statusnya "dicek --help").
@@ -16,7 +17,7 @@ Pola dan status verifikasi (meniru `laporan-otomatis-terjadwal/references/opencl
 - Versi OpenClaw pengguna bisa berbeda: bila flag gagal, jalankan `openclaw automations add --help` dan sesuaikan.
 - Fallback: bila perintah komputer tidak diizinkan (atau platform bukan OpenClaw), tampilkan perintah sebagai teks untuk dijalankan pengguna sendiri di terminal, atau lewat Control UI (`Settings -> Automations`).
 
-`<folder-skill-absolut>` = alamat lengkap folder skill ini di komputer pengguna (mis. `~/.openclaw/skills/pantau-cron-openclaw`). Windows: ganti `python3` dengan `python`, dan tulis alamat dengan garis miring biasa `/`.
+`[isian: folder pantauan Anda]` = alamat lengkap folder panduan pantauan ini di komputer pengguna. Di teks untuk pengguna tetap tulis isian itu (jangan menyebut alamat nyata); isi alamat sebenarnya hanya saat memasang setelah "ya". Windows: ganti `python3` dengan `python`, dan tulis alamat dengan garis miring biasa `/`.
 
 ## 1. Daftarkan job ke pantauan (lokal, boleh langsung)
 ```bash
@@ -30,7 +31,7 @@ Zona: `WIB`, `WITA`, `WIT`, `UTC` (atau `Asia/Jakarta`, `Asia/Makassar`, `Asia/J
 **Job berupa pesan ke agent** -- ubah prompt (butuh "ya"; tampilkan prompt lama dan baru):
 ```bash
 openclaw automations list --all          # catat id job
-openclaw automations edit <id-job> --message "<prompt lama utuh> Langkah terakhir, hanya bila semua langkah di atas berhasil dan pesan sudah terkirim: jalankan perintah python3 <folder-skill-absolut>/scripts/pantau_cron.py ping laporan-harian . Jangan dijalankan bila ada langkah yang gagal."
+openclaw automations edit <id-job> --message "<prompt lama utuh> Langkah terakhir, hanya bila semua langkah di atas berhasil dan pesan sudah terkirim: jalankan perintah python3 [isian: folder pantauan Anda]/scripts/pantau_cron.py ping laporan-harian . Jangan dijalankan bila ada langkah yang gagal."
 ```
 Job harus boleh menjalankan perintah (tool `exec`). Bila job dibuat dengan `--tools`, pastikan `exec` ada di daftarnya.
 
@@ -41,7 +42,7 @@ Tiap jam, hanya bicara bila ada masalah:
 ```bash
 openclaw automations add --cron "5 * * * *" --tz "Asia/Jakarta" \
   --name "Pengawas jadwal (tiap jam)" --session isolated \
-  --command-argv '["python3", "<folder-skill-absolut>/scripts/pantau_cron.py", "cek", "--openclaw"]' \
+  --command-argv '["python3", "[isian: folder pantauan Anda]/scripts/pantau_cron.py", "cek", "--openclaw"]' \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
 Keluaran `NO_REPLY` (tenang) tidak dikirim. Bila ada masalah, pesan berawalan `PANTAU CRON` dikirim; masalah yang sama tidak diulang dalam 6 jam (`--ulang-jam` bisa diubah di argv), dan satu pesan PULIH dikirim saat job kembali melapor.
@@ -50,7 +51,7 @@ Ringkasan harian sekali (semua job + ping terakhir):
 ```bash
 openclaw automations add --cron "0 8 * * *" --tz "Asia/Jakarta" \
   --name "Ringkasan pantauan jadwal (harian)" --session isolated \
-  --command-argv '["python3", "<folder-skill-absolut>/scripts/pantau_cron.py", "cek", "--tanpa-catat"]' \
+  --command-argv '["python3", "[isian: folder pantauan Anda]/scripts/pantau_cron.py", "cek", "--tanpa-catat"]' \
   --announce --channel telegram --to "<ID chat Telegram pemilik>"
 ```
 Folder data lain dari bawaan: tambahkan `"--folder", "<alamat>"` di argv semua perintah (atau atur `PANTAU_CRON_DIR`).
@@ -64,7 +65,7 @@ Folder data lain dari bawaan: tambahkan `"--folder", "<alamat>"` di argv semua p
 ## 5. Opsi lanjutan: Healthchecks milik sendiri (tanpa wajib, tidak berafiliasi)
 Kelemahan pengawas lokal: bila komputer/gateway mati total, pengawas ikut diam. Layanan Healthchecks (open-source; bisa dipasang sendiri atau memakai versi hosted milik pengguna) memantau dari luar: ia yang mengabari bila ping berhenti datang. Komunitech tidak berafiliasi dengan proyek atau layanannya; kebijakan harga dan batas layanan hosted mengikuti penyedianya.
 
-Langkah untuk pengguna (agent hanya memandu, tidak menyentuh alamatnya):
+Langkah untuk pengguna (asisten hanya memandu, tidak menyentuh alamatnya):
 1. Buat akun/instalasi Healthchecks sendiri, buat satu *check* per job, atur jadwal (cron + zona) dan masa tenggang sama dengan toleransi. Atur notifikasinya di sana (mis. Telegram atau email).
 2. Salin alamat ping tiap check. **Jangan tempel di chat.** Alamat itu rahasia siapa pun yang punya bisa mengirim ping palsu.
 3. Buka berkas `healthchecks.json` di folder data pantauan dengan editor teks, isi:
