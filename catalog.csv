@@ -137,3 +137,4 @@ cek-risiko-dan-asuransi-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunit
 persiapan-jual-atau-wariskan-usaha,Keuangan & Akuntansi,orisinal,,Proprietary Komunitech,9,ecer,69000,ecer,69000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-10
 pantau-cron-openclaw,Produktivitas,orisinal,https://github.com/healthchecks/healthchecks,Proprietary Komunitech,8,vip,149000,vip,149000,1.0.2,openclaw (uji otomatis agent),lulus,2026-10-12
 ubah-draf-ke-dokumen,Legal & Dokumen,orisinal,https://github.com/jgm/pandoc (ide konversi; kode skill orisinal),Proprietary Komunitech,8,ecer,99000,ecer,99000,1.0.1,openclaw (uji otomatis agent),lulus,2026-10-12
+kartu-belajar-anki,Pendidikan,orisinal,https://github.com/ankitects/anki (format impor; skill orisinal),Proprietary Komunitech,,ecer,99000,,,1.0.0,,uji,2026-10-12
