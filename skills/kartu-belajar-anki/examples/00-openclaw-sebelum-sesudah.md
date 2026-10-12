@@ -1,8 +1,8 @@
 # Uji OpenClaw sebelum/sesudah: kartu-belajar-anki
 
-- **Tanggal:** 2026-10-12
-- **Penguji:** agent penguji independen Komunitech (bukan pembuat skill; pembuat: Akun C / Cursor)
-- **Cara uji:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5` (sama dengan bot member). SEBELUM = home tanpa skill; SESUDAH = home berisi hanya `kartu-belajar-anki`. Home dibuat ulang bersih per skenario. Pesan identik di kedua sisi, data fiktif ditempel di pesan. Skenario 1 juga dijalankan di konteks kanal Telegram (`--channel telegram`, tanpa mengirim) untuk kedua sisi.
+- **Tanggal:** 2026-10-12 (uji ulang v1.0.1, ~19:00 UTC)
+- **Penguji:** Akun C (Cursor Cloud, penguji independen — bukan pembuat revisi 1.0.1)
+- **Cara uji:** OpenClaw 2026.9.8 lokal (`run-uji.sh` / `run-uji-tg.sh` di `$HOME/komunitech-uji/openclaw-real`) (`openclaw agent --local`), model router Komunitech `claude-sonnet-5` (sama dengan bot member). SEBELUM = home tanpa skill; SESUDAH = home berisi hanya `kartu-belajar-anki`. Home dibuat ulang bersih per skenario. Pesan identik di kedua sisi, data fiktif ditempel di pesan. Skenario 1 juga dijalankan di konteks kanal Telegram (`--channel telegram`, tanpa mengirim) untuk kedua sisi.
 - **Tes skill:** `python3 -I tests/uji_regresi.py` lolos (3 tes). `validasi_dek.py` dan `rencana_belajar.py` dijalankan ulang oleh penguji pada TSV hasil agent (26, 22, 32 kartu: semua `ok`, jumlah kartu cocok dengan hitungan manual) dan pada data rusak (lihat HASIL-UJI).
 - **Alat yang dipanggil agent:** SEBELUM menulis berkas sendiri (`write`, kadang `exec` + pustaka genanki). SESUDAH membaca SKILL.md lalu `exec` (script validasi + rencana).
 
