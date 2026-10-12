@@ -9,7 +9,7 @@
 ## Halus tapi jelas (budaya sungkan)
 | Samar (hindari) | Halus dan jelas |
 |---|---|
-| "Mungkin bisa lebih rajin ya" | "Minggu ini 3 kali masuk lewat jam 09.30. Mulai besok tolong tiba 08.55." |
+| "Mungkin bisa lebih rajin ya" | "Minggu ini 3 kali masuk lewat jam 09.30. Mulai besok tolong tiba 08.45 [isian: jam standar toko]." |
 | "Hasilnya kurang pas, tapi nggak apa-apa" | "Desain ini belum sesuai brief di dua hal: warna dan ukuran. Tolong revisi sampai Kamis." |
 | Menyindir di grup WA | Ajak bicara empat mata, sebut hal spesifik |
 | "Kita lihat nanti" | "Kita cek lagi Jumat tanggal [isian]" |

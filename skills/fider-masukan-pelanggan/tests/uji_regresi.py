@@ -4,6 +4,7 @@
 Jalankan:  python3 tests/uji_regresi.py   (Windows: python / py). Tanpa paket tambahan.
 """
 import contextlib
+import datetime as dt
 import http.server
 import io
 import json
@@ -79,7 +80,7 @@ class Tiruan(http.server.BaseHTTPRequestHandler):
                 return self._kirim(200, {"id": 1})
             if sisa == "/votes" and m == "GET":
                 return self._kirim(403, {}) if D.get("collab") else self._kirim(
-                    200, [{"createdAt": "2026-09-28T08:00:00Z"}] * ps["votesCount"])
+                    200, [{"createdAt": (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")}] * ps["votesCount"])  # selalu "minggu ini"
             if sisa == "/votes" and m == "DELETE":
                 ps["votesCount"] -= 1
                 return self._kirim(200, {})

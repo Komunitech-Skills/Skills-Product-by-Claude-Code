@@ -25,6 +25,13 @@ Uji A/B (skenario toko kelontong di Semarang Utara yang sering kena rob; satu pe
 ## Instalasi
 Lihat `docs/instalasi.md` untuk OpenClaw, Codex, Claude Code, dan Cursor. Script opsional memakai Python standar (`python3`; Windows `python`/`py`).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1204/1225 — skor 6,5
+- Dengan skill: https://t.me/c/4407409583/1205/1228 — skor 8,5
+Verdik gelombang: LULUS — Tanpa skill menyarankan dana darurat Rp94,8 juta tanpa hitung kekurangan dan keliru menyebut kas Rp8 juta "kurang dari separuh" biaya sebulan; dengan skill peta risiko berskor, target Rp47,4 juta, kekurangan Rp39,4 juta (±Rp6,57 juta per bulan selama 6 bulan), tanda mana yang perlu asuransi, dan jalur aduan OJK 157 bila klaim ditolak.
+
 ## FAQ
 1. **Apakah ini nasihat asuransi?** Bukan. Ini alat bantu awam; polis dibeli lewat perusahaan asuransi berizin OJK dan agen yang terdaftar.
 2. **Bisakah memilihkan merek asuransi terbaik?** Tidak. Skill memberi kriteria dan pertanyaan, bukan merek.

@@ -5,7 +5,7 @@ description: Menyiapkan laporan rutin (harian/mingguan/bulanan) di OpenClaw yang
 
 # Laporan Otomatis Terjadwal
 
-> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, file yang disebut di langkah kerja, dan folder laporan yang boleh dicari pada Langkah 2 (hanya melihat nama & tanggal file CSV); jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
 > **Aturan aksi (wajib, berlaku sepanjang alur):**
 > 1. **Tidak ada aksi kirim/ubah sebelum "ya".** Mengirim pesan apa pun (termasuk "test koneksi"/uji kirim, `message send`), membuat/menjalankan jadwal (`automations add/run`, `cron add`, tool `cron.add`), atau mengubah kanal (`channels add/login`) **hanya** setelah pengguna membalas "ya" atas ringkasan rencana (Langkah 5b). Sebelum itu semua langkah hanya baca/hitung.
@@ -49,7 +49,7 @@ yang sudah jelas -- tanyakan sisanya saja.
 | # | Pertanyaan | Wajib? | Default jika tidak dijawab |
 |---|---|---|---|
 | 1 | Laporan apa? (penjualan harian, kas mingguan, stok menipis, piutang jatuh tempo, ringkasan bulanan, atau lainnya) | Ya | Tanyakan ulang sekali; kalau tetap tidak jelas, minta contoh angka yang ingin dilihat |
-| 2 | Sumber datanya di mana? Folder berisi file CSV (ekspor kasir/marketplace/bank/aplikasi stok), atau file yang akan dikirim manual ke chat setiap kali? | Ya | Sarankan folder `Dokumen/Laporan-AI/masuk/` (atau `laporan/masuk/` di workspace) |
+| 2 | Sumber datanya di mana? Folder berisi file CSV (ekspor kasir/marketplace/bank/aplikasi stok), atau file yang akan dikirim manual ke chat setiap kali? | Ya | Cari otomatis (Langkah 2); bila tidak ketemu, sarankan folder `Dokumen/Laporan-AI/masuk/` |
 | 3 | Jadwalnya kapan, dan komputer/laptop biasanya menyala jam segitu? (zona waktu default **Asia/Jakarta**) | Ya | Harian 07:00; mingguan Senin 07:00; bulanan tanggal 1 pukul 07:00 -- **semua WIB (Asia/Jakarta)** |
 | 4 | Mau dikirim ke Telegram atau WhatsApp? | Tidak | **Telegram** (lebih aman -- lihat Langkah 4) |
 | 5 | Dikirim ke siapa? (harus pemilik/admin sendiri, bukan grup/pelanggan) | Ya | Tanyakan ID chat Telegram atau nomor WA pemilik; tanpa ini jadwal tidak bisa dibuat |
@@ -81,7 +81,13 @@ Salin resep yang dipilih ke workspace pengguna sebagai `laporan/RESEP-<nama-lapo
 bagian yang bertanda `<isi>` dengan jawaban wawancara (folder sumber, kolom, jadwal, tujuan).
 Ini jadi dokumentasi tetap: kalau pengguna lupa jadwalnya menghitung apa, tinggal buka file ini.
 
-### 2. Cek kesiapan sumber data (SEBELUM menjanjikan jadwal)
+### 2. Cari & cek kesiapan sumber data (SEBELUM menjanjikan jadwal)
+**Cari foldernya sendiri, jangan langsung bilang "tidak ada".** Coba berurutan, berhenti di folder pertama yang berisi file `*.csv` cocok (lihat nama/tanggal saja; sub-folder satu tingkat, mis. `penjualan/`; jangan `find /`):
+1. folder yang disebut pengguna (juga jalur seperti `~/laporan/masuk/penjualan`);
+2. `laporan/masuk/` di folder kerja agent;
+3. folder pribadi pengguna (HOME; di Windows `C:\Users\<nama>`): `~/laporan/masuk/`, `~/Dokumen/Laporan-AI/masuk/`, lalu `~/Documents` dan `~/Downloads` (nama setara di Windows/macOS/Linux; di Indonesia kadang `Dokumen`/`Unduhan`).
+Ketemu di lebih dari satu tempat → pakai yang file-nya terbaru dan sebutkan, atau tanya bila ragu. Sebut ke pengguna folder mana yang dipakai ("Saya menemukan file di folder laporan Anda"), tanpa istilah teknis. **Tidak ketemu di mana pun:** jangan menolak. Tampilkan **contoh laporan** dari data contoh (ambil bentuknya dari `references/contoh-pesan.md`, beri label jelas "CONTOH - bukan data Anda"), lalu ajukan **SATU** pertanyaan: "Di folder mana Anda menyimpan file ekspornya (mis. Dokumen atau Unduhan)?" dan berhenti di situ; jangan membuat jadwal.
+
 Untuk resep **stok menipis dengan `buku-stok`**, langkah ini diganti oleh `stok.py info --json`
 (lihat `templates/RESEP-stok-menipis.md`) -- lewati ke Langkah 3. Untuk resep berbasis CSV
 (penjualan, kas, piutang, ringkasan bulanan, atau stok tanpa `buku-stok`):
@@ -234,8 +240,7 @@ openclaw automations enable <id>          # aktifkan lagi (WAJIB id)
 openclaw automations edit <id> --cron "..." --to "..."   # ubah jadwal/tujuan (WAJIB id)
 openclaw automations rm <id>              # hapus permanen (WAJIB id)
 ```
-Ingatkan pengguna: kalau lupa id, jalankan `openclaw automations list --all` dulu untuk
-mencarinya lewat nama jadwal.
+Lupa id? Jalankan `openclaw automations list --all` dan cari lewat nama jadwal.
 
 ### 8. Ingatkan syarat "komputer harus menyala"
 Jelaskan **sebelum** jadwal dianggap selesai (lihat `references/mesin-24-jam.md` untuk teks
@@ -253,35 +258,14 @@ tahu mana info biasa dan mana yang perlu diwaspadai. Contoh lengkap tiap resep a
 `references/contoh-pesan.md`.
 
 ## Contoh
-**Input pengguna:** "Buatkan laporan penjualan otomatis tiap Senin jam 7 pagi, kirim ke
-Telegram saya."
-
-**Alur:** tanyakan sumber data & tujuan (ID chat Telegram) → cek folder sumber siap (umur data <
-6 hari untuk mingguan) → hitung lewat `rekap-penjualan-csv` → cek periode hasil mencakup Senin-
-Minggu lalu → rakit & tunjukkan contoh pesan → buat jadwal
-`openclaw automations add "0 7 * * 1" ... --tz Asia/Jakarta --announce --channel telegram --to "<chat-id>"`
-→ catat `id` dari hasilnya → uji dengan `openclaw automations run <id> --wait` → tunjukkan cara
-lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
+**Pengguna:** "Buatkan laporan penjualan otomatis tiap Senin jam 7 pagi, kirim ke Telegram saya." **Alur:** tanya sumber data & ID chat → cari & cek folder (umur < 6 hari) → hitung lewat `rekap-penjualan-csv` → cek periode → tunjukkan contoh pesan → ringkasan rencana, tunggu "ya" → `openclaw automations add "0 7 * * 1" ... --tz Asia/Jakarta --announce --channel telegram --to "<chat-id>"` → catat `id` → `automations run <id> --wait` → cara kelola jadwal → ingatkan komputer harus menyala.
 
 ## Checklist sebelum jadwal dianggap aktif
-- [ ] Sumber data sudah dicek (`cek_sumber_data.py` atau `stok.py info` untuk buku-stok) dan
-      berstatus siap (atau pengguna sudah diberi tahu apa yang kurang, dan proses berhenti di
-      situ). `--maks-umur-hari` sesuai irama jadwal (harian 1 / mingguan 6 / bulanan 27).
-- [ ] Periode hasil hitung sudah dicek mencakup penuh periode yang diminta (Langkah 3.2) --
-      bukan cuma 1 hari untuk laporan mingguan, dsb.
-- [ ] Contoh laporan pertama sudah ditunjukkan ke pengguna sebelum jadwal dibuat.
-- [ ] `susun_pesan.py` tidak keluar dengan exit code 3 (indikasi data pribadi) untuk contoh ini,
-      atau sudah ditinjau ulang bersama pengguna sampai aman.
-- [ ] Penerima adalah pemilik/admin sendiri, bukan grup/pelanggan.
-- [ ] Kalau kanal WhatsApp: nomor terpisah + persetujuan risiko tertulis sudah didapat.
-- [ ] Kanal tujuan sudah dicek tersedia (`openclaw channels status`), ringkasan jadwal sudah
-      ditampilkan, dan pengguna menjawab "ya" **sebelum** jadwal dibuat (CLI maupun `cron.add`).
-- [ ] Label hitungan tepat: "<N> nota / <Q> pcs" (atau "<N> baris penjualan"), tidak "<N> item".
-- [ ] `id` jadwal (dari hasil `automations add`) sudah dicatat.
-- [ ] Jadwal sudah diuji sekali (`automations run <id> --wait`) dan hasilnya sesuai sebelum
-      dianggap aktif.
-- [ ] Pengguna sudah diberi tahu cara melihat/menjeda/mengubah/menghapus jadwal (dengan `id`).
-- [ ] Pengguna sudah diberi tahu jadwal butuh komputer menyala terus + opsi-opsinya.
+- [ ] Sumber data ditemukan & siap (`--maks-umur-hari` sesuai irama: harian 1 / mingguan 6 / bulanan 27); periode hasil mencakup penuh periode yang diminta; contoh laporan sudah ditunjukkan.
+- [ ] `susun_pesan.py` tidak exit 3 (data pribadi) atau sudah ditinjau; label hitungan tepat ("<N> nota / <Q> pcs").
+- [ ] Penerima pemilik/admin sendiri; WhatsApp hanya dengan nomor terpisah + persetujuan risiko tertulis.
+- [ ] Kanal dicek (`openclaw channels status`), ringkasan rencana ditampilkan, pengguna menjawab "ya" sebelum jadwal dibuat.
+- [ ] `id` jadwal dicatat; sudah diuji sekali (`automations run <id> --wait`); pengguna tahu cara melihat/menjeda/mengubah/menghapus jadwal dan syarat komputer menyala.
 
 ## Batasan & penanganan error
 - **Kredensial, kanal & aksi (wajib):** ikuti Aturan aksi di atas: tanpa membaca token/secrets/`openclaw.json`/`.env`/database/log OpenClaw atau environment (`env`, `printenv`); cek kanal hanya `openclaw channels status` atau tanya pemilik; tidak ada kirim pesan (termasuk uji) dan tidak ada jadwal sebelum "ya" atas ringkasan rencana; kanal belum siap/perintah ditolak → panduan singkat, berhenti, jangan dicoba-coba.
@@ -291,11 +275,7 @@ lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
   saat jadwal berjalan sendiri nanti (lihat Langkah 5).
 - **Tidak ada broadcast/kirim massal.** Tujuan pengiriman selalu satu penerima (pemilik/admin),
   tidak pernah grup atau banyak pelanggan sekaligus.
-- **Data basi/tidak lengkap tidak pernah dikirim seolah data terbaru.** `--maks-umur-hari` diatur
-  lebih ketat dari irama jadwal (Langkah 2), dan periode hasil hitung selalu dicek terhadap
-  periode yang diminta (Langkah 3.2) sebelum dikirim. Folder dengan banyak file per periode
-  (mis. ekspor harian untuk laporan mingguan) memakai `--daftar-semua` + penggabungan file,
-  bukan hanya file terbaru.
+- **Data basi/tidak lengkap tidak pernah dikirim seolah data terbaru.** `--maks-umur-hari` lebih ketat dari irama jadwal (Langkah 2); periode hasil dicek terhadap periode diminta (Langkah 3.2); banyak file per periode → `--daftar-semua` + penggabungan.
 - **Tanpa data pribadi pelanggan.** `susun_pesan.py` mendeteksi (bukan memblokir) pola NIK/KTP/
   nomor HP/email dengan batas kata (tidak salah kena kata seperti "unik"/"Klinik") dan keluar
   dengan **exit code 3** bila ada -- penjelasannya hanya di stderr, **tidak** ditambahkan ke isi
@@ -307,18 +287,9 @@ lihat/jeda/hapus jadwal (pakai `id`) → ingatkan syarat komputer menyala.
 - **Gateway harus menyala** saat jam jadwal -- kalau tidak, run tidak pernah terjadi (bukan
   gagal dengan pesan error, tapi memang tidak berjalan). Ini bukan bug skill; jelaskan ke
   pengguna dan arahkan ke `references/mesin-24-jam.md`.
-- **Buat jadwal lewat chat WhatsApp:** menurut riset OpenClaw ini masih perlu diuji langsung
-  (`docs.openclaw.ai` menyebut mendukung, tapi kombinasi persisnya belum dicoba tim kami saat
-  skill ini ditulis). Jika perintah `openclaw automations add` gagal atau berperilaku aneh saat
-  dipicu dari chat WA, jelaskan itu ke pengguna dan tawarkan menjalankan perintah yang sama dari
-  Control UI atau terminal.
+- **Buat jadwal lewat chat WhatsApp:** belum diuji langsung. Bila `openclaw automations add` gagal dari chat WA, jelaskan dan tawarkan menjalankannya dari Control UI atau terminal.
 - **Setiap run memakai token model** (biaya ditanggung pengguna). Sarankan `--session isolated`
   (sudah dipakai di contoh) supaya jadwal tidak mencampuri sesi chat utama, dan model yang lebih
   hemat untuk laporan rutin bila tersedia (`--model`).
-- **Python tidak bisa dijalankan:** hitung manual mengikuti langkah script sumber (lihat
-  `SKILL.md` skill itu masing-masing) dan beri tahu pengguna bahwa hasil belum diverifikasi
-  script; untuk `cek_sumber_data.py`, cukup periksa manual apakah folder ada isinya dan file
-  tidak 0 byte sebelum melanjutkan.
-- **Jangan mengirim isi file pengguna ke layanan eksternal.** Semua perhitungan berjalan lokal;
-  yang keluar dari komputer hanya teks yang dikirim ke penyedia model AI (sama seperti percakapan
-  biasa) dan pesan hasil ke Telegram/WhatsApp yang dipilih pengguna sendiri.
+- **Python tidak bisa dijalankan:** hitung manual mengikuti langkah script sumber, beri tahu bahwa hasil belum diverifikasi script; untuk `cek_sumber_data.py` cukup periksa manual folder berisi file tidak 0 byte.
+- **Jangan mengirim isi file pengguna ke layanan eksternal.** Perhitungan berjalan lokal; yang keluar hanya teks percakapan ke penyedia model AI dan pesan hasil ke kanal pilihan pengguna.

@@ -40,6 +40,13 @@ Salin folder `seleksi-cv-pelamar` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Python tidak wajib; hanya membantu pra-saring bila CV berupa folder atau CSV teks dalam jumlah besar (perintah: `python3 scripts/nilai_cv.py`, Windows: `python` atau `py`).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
+- Tanpa skill: https://t.me/c/4407409583/1202/1218 — skor 7
+- Dengan skill: https://t.me/c/4407409583/1203/1220 — skor 8,5
+Verdik gelombang: LULUS — Tanpa skill memilih 3 kandidat dengan satu pertanyaan masing-masing dan mengulang usia serta status pelamar; dengan skill skor per kriteria dengan kutipan bukti dari CV (88, 75, 69), 4 pertanyaan wawancara per kandidat, draf pesan ke pelamar, dan permintaan diskriminatif ditolak tanpa menyebut status siapa pun.
+
 ## FAQ
 **Apakah skill ini yang memutuskan siapa diterima?**
 Tidak. Skor dan ranking adalah alat bantu untuk memilih siapa yang dipanggil wawancara. Keputusan akhir tetap di Anda setelah bertemu pelamar.
