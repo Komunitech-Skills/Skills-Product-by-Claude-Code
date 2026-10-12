@@ -102,3 +102,39 @@ Metode sama: `uji-tg.sh`, HOME bersih terpisah (`lp3-1`, `lp3-2`, hanya skill in
 **Catatan (tidak menggagalkan):** (1) kedua run diawali satu kalimat narasi proses sebelum jawaban ("Semua beres kecuali ... Sekarang saya tulis jawaban akhir ke pengguna" / "Baik, saya sudah punya seluruh isi file. Sekarang saya susun jawaban final ..."); tidak menyebut path, tapi sebaiknya dibuang bila ada waktu. (2) Run 2: teks "Bagian 1/2" dan "Bagian 2/2" ada DI DALAM blok kode (baris pertama), sehingga bila disalin mentah ikut masuk ke HTML. (3) Balasan >4096 char dipecah Telegram (~3 pesan); pantau blok kode terbelah. (4) Run 1 menyebut file `index.html` sebagai nama berkas yang harus dibuat pengguna (wajar, bukan path/lampiran).
 
 **Usulan:** boleh masuk gelombang. Perbaikan opsional: label "Bagian i/N" diletakkan di luar blok kode, dan larang kalimat narasi proses di awal balasan.
+
+## laporan-otomatis-terjadwal 1.1.8 — pra-cek ulang (2026-10-12)
+
+HOME `lot8-1` (hanya skill ini). CSV fiktif kasir (10 baris, total Rp2.159.000, 118 pcs) diletakkan di HOME pengguna `laporan/masuk/penjualan/kasir-minggu-41.csv`, bukan di workspace. Percobaan 1 timeout router (rc=124, ±15 menit, tanpa balasan; dihitung 1 dari maks. 2 ulang), percobaan 2 selesai.
+
+**LOLOS (dengan catatan)**
+
+| Item | Nilai |
+|---|---|
+| Pesan uji | "Buatkan laporan penjualan otomatis tiap Senin jam 7 pagi ke Telegram. File ekspor kasir ada di folder laporan/masuk/penjualan di komputer saya." |
+| Karakter balasan | 1679 |
+| Alat agent | tool_search, skills_read, tool_call, exec, ls, read, skills_search, plugins, write, conversations_list |
+| Durasi | ~6,3 menit (376 s) pada percobaan 2 |
+| Keluaran | `pc-lot8-1b.txt` (percobaan 1 `pc-lot8-1` kosong, timeout) |
+
+**Isi:** Agent menemukan `kasir-minggu-41.csv` di HOME (10 baris), tidak menolak karena path, lalu menampilkan contoh laporan mingguan Senin 5 - Minggu 11 Okt 2026: omzet Rp2.159.000, 10 transaksi / 118 pcs, rata-rata Rp308.429/hari, hari terbaik Selasa 6 Okt Rp470.000, terendah Rabu 7 Okt Rp120.000, produk terlaris Kopi Susu Gula Aren 47 pcs Rp846.000, Nasi Goreng Spesial 32 pcs Rp800.000, Teh Tarik 24 pcs Rp288.000. Semua angka cocok dengan hitungan python independen. Jadwal belum dibuat karena kanal Telegram "belum terdaftar" di home uji (home uji memang tanpa `channels`; di bot asli kanal ada, jadi ini artefak uji), lalu meminta token bot dan ID chat dan menjanjikan ringkasan rencana + konfirmasi "ya" sebelum membuat jadwal.
+
+**Catatan:** (1) bahasa awam kecuali kata "Gateway", perintah `openclaw channels add ...` dan path `laporan/RESEP-penjualan-mingguan.md` yang disimpan sendiri oleh agent; (2) tabel tidak dipakai (teks bertanda `*...*`/`**...**`, perlu dipantau di Telegram); (3) di bot asli yang kanalnya sudah ada, balasan kemungkinan langsung ke konfirmasi jadwal.
+
+## fider-masukan-pelanggan 1.0.8 — pra-cek ulang (2026-10-12)
+
+HOME `fdr8-1` (hanya skill ini), tanpa kunci dan tanpa server Fider. Percobaan pertama langsung selesai (tanpa timeout router).
+
+**LOLOS (dengan catatan kecil)**
+
+| Item | Nilai |
+|---|---|
+| Pesan uji | "Cek papan Fider saya di http://127.0.0.1:3000, lalu ringkas usulan teratas dan buat pratinjau impor catatan WA ini: 1) Bu Sari minta bisa bayar QRIS; 2) Pak Dedi minta laporan bulanan PDF; 3) Mbak Rina minta pengingat jatuh tempo; 4) Bu Sari lagi: QRIS tolong segera." |
+| Karakter balasan | 1444 |
+| Alat agent | read, exec |
+| Durasi | ~2,1 menit (125 s) |
+| Keluaran | `pc-fdr8-1.txt` |
+
+**Isi:** Menjelaskan dalam satu kalimat bahwa papan tidak terjangkau (connection refused) dan belum bisa menarik usulan teratas; tidak berhenti di instruksi kunci. Memberi pratinjau impor dari catatan yang ditempel: 3 usulan (QRIS 2 catatan digabung jadi 1 usulan, laporan bulanan PDF, pengingat jatuh tempo), nama pelanggan diganti "seorang pelanggan", ditandai "PRATINJAU - BELUM ADA YANG DITULIS". Penutup: bila Fider sudah menyala dan setuju, balas "ya" untuk impor sungguhan. Tidak ada pertanyaan tentang kunci; kunci hanya disebut sebagai syarat nanti.
+
+**Catatan:** bocor sedikit istilah internal/teknis: "servis Docker-nya juga tidak jalan", nama perintah `impor` dan `simpan-kunci` di kalimat penutup. Bukan path internal; tidak menggagalkan.
