@@ -23,7 +23,9 @@
 
 | 9 | cv-lamaran-ats | 1.1.3 | 9 | S1 — Staff Admin Gudang PT Sumber Makmur Logistik, Siti Rahma (sama `examples/01-admin-gudang.md`) | 5.443 | **LOLOS** | Evaluasi kecocokan (skor 79/100), skor kata kunci ATS, CV versi ATS, surat lamaran formal, email singkat, dan checklist **utuh di chat**; tidak mengandalkan path file saja (hanya saran nama file PDF). Catatan kecil: kalimat pembuka menyebut “skill” — tidak mengurangi keterbacaan isi untuk pembeli awam. |
 
-**Run berikutnya (C9):** `proposal-kerjasama` (1 skill lagi menuju C8); **C11** `cari-prospek-web` bot asli masih antre.
+| 10 | proposal-kerjasama | 1.0.10 | 8 | S1 — titip jual sambal Bu Tatik Fiktif ke toko Pusaka Fiktif Batu (sama `examples/01-titip-jual-sambal-ke-toko-oleh-oleh.md`) | 5.197 | **LOLOS** | Proposal 1 halaman + tabel simulasi pendapatan toko (Rp 262.500 / 525.000 / 1.050.000) + pesan WA + email **utuh di chat**; blok **Catatan untuk Anda** terpisah dengan laba Rp 8.250/botol dan titik impas porsi ~48,6% (modal Rp 18.000 tidak bocor ke proposal mitra); placeholder `[isi: …]` untuk stok/jadwal/kontak; tidak mengandalkan path file saja. |
+
+**C9 selesai (10/10).** Run berikutnya: **C8** draf skill (`ubah-draf-ke-dokumen` atau urut backlog) atau **C11** `cari-prospek-web` bot asli.
 
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sr-tg-01-out.txt` (tidak di-commit).
 Output mentah: `$HOME/komunitech-uji/openclaw-real/hasil/sgb-tg-01-out.txt` (tidak di-commit).
