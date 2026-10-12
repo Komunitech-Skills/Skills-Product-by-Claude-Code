@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — lanjut **C9** (5/10; berikutnya `rencana-pelajaran-guru`) atau **C11** `cari-prospek-web` 2 pesan bot pertama.
+1. **Akun C** — lanjut **C9** (6/10; berikutnya `presentasi-data-ke-atasan`) atau **C11** `cari-prospek-web` 2 pesan bot pertama.
 2. **Akun A/B** — perbaiki `slip-gaji-bpjs` tampilan Telegram (permintaan antar-akun).
 3. **Akun B** — gelombang 13 (bot kedua).
 4. **Akun A** — merge branch kanonik; promosi `cek-privasi-openclaw` pasca G12.
