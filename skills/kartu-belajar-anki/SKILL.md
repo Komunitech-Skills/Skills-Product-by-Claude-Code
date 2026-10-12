@@ -35,6 +35,8 @@ Menghemat waktu menyusun kartu hafalan berkualitas dari materi yang sudah dimili
 
 **Kerjakan dulu, tanya di akhir.** Bila materi sudah ada, langsung buat kartu + rencana; tutup dengan maksimal 3 pertanyaan.
 
+**Bila materi belum ditempel** (mis. "bikinin kartu belajar" saja): beri **contoh isian siap balas** (3 baris) + buat deck **contoh fiktif** 8–12 kartu dengan asumsi jelas, lalu tanya maksimal 3 hal (materi, tujuan, basic/cloze).
+
 ## Langkah kerja
 1. **Cek permintaan terlarang:** soal **bocoran** ujian resmi, meminta **menyalin integral** teks buku/paid course tanpa materi sendiri, menginstal Anki, atau mem-bypass hak cipta. Tolak singkat → tawarkan membuat kartu hanya dari **cuplikan/ringkasan yang pengguna tempel** → **tetap lanjut** bila ada materi sah.
 2. **Pilah materi** jadi unit hafalan: istilah↔definisi, konsep↔contoh, langkah SOP↔tujuan, rumus↔kapan dipakai. Satu kartu = satu ide (jangan gabung 5 definisi).
@@ -42,9 +44,11 @@ Menghemat waktu menyusun kartu hafalan berkualitas dari materi yang sudah dimili
    - **Basic:** kolom 1 = pertanyaan/prompt; kolom 2 = jawaban singkat; kolom 3 = tag (opsional).
    - **Cloze:** satu kalimat dengan `{{c1::...}}` di kolom 1; kolom 2 kosong atau petunjuk; dipakai bila pengguna minta "cloze" atau materi berupa kalimat panjang.
    - **Basic + reversed:** duplikasi baris dengan kolom 1↔2 ditukar (hanya bila diminta "bolak-balik").
+   - **Jangan campur Basic dan Cloze dalam satu blok TSV.** Bila keduanya diminta, tulis **dua blok** berurutan di chat, masing-masing diawali baris `#separator:tab`, `#notetype:Basic` atau `#notetype:Cloze`, lalu baris kartu.
+   - **Cloze hanya dari materi pengguna:** kalimat cloze diambil dari frase/kalimat yang ditempel; **jangan mengarang** kalimat tambahan di luar daftar. Bila butuh lebih banyak cloze dari materi, buat kartu basic saja atau tandai `[isi: kalimat cloze]` — jangan isi sendiri 10+ kalimat fiktif.
 4. **Tulis kartu** dengan bahasa awam, jawaban maksimal ~2 baris (kecuali SOP langkah: boleh bullet pendek di kolom belakang). Hindari kartu "ya/tidak" ambigu; ubah jadi "Apa ...?" / "Kapan ...?".
 5. **Tag:** lowercase, tanpa spasi (pakai `-`), contoh `cpns-twk`, `sop-kasir`, `inggris-bisnis`. Maksimal 3 tag per kartu.
-6. **Pratinjau di chat:** tabel 5–8 kartu contoh + jumlah total, lalu **blok TSV utuh** (semua kartu) dalam fence agar bisa disalin.
+6. **Pratinjau di chat:** tabel 5–8 kartu contoh + jumlah total, lalu **blok TSV utuh** (semua kartu) dalam fence agar bisa disalin. Di **kanal chat** (Telegram/WhatsApp): isi kartu **wajib utuh di chat**; bila lampiran berkas tidak bisa, akhiri dengan: *"Balas **kirim file** bila ingin saya siapkan berkas TSV terpisah."* — jangan menyebut nama berkas di disk pengguna.
 7. **Validasi (wajib bila Python ada):** simpan TSV sementara, jalankan:
    ```bash
    python3 scripts/validasi_dek.py --input /path/berkas.tsv
@@ -78,7 +82,8 @@ Contoh cloze:
 ```
 
 ## Larangan isi hasil
-- Jangan menulis path file di komputer pengguna, nama skill, atau "saya jalankan script".
+- Jangan menulis path file di komputer pengguna, nama berkas (.tsv/.csv), nama skill, atau "saya jalankan script".
+- Jangan menulis kata proses: "divalidasi", "validasi otomatis", "deck validasi sukses", "script", "LULUS/GAGAL", nama folder repo.
 - Jangan mengarang fakta ujian (tanggal CPNS, bobot resmi) bila tidak diberikan; pakai `[isian: ...]`.
 - Jangan menempel teks hak cipta panjang dari buku; ringkas dengan gaya sendiri.
 
