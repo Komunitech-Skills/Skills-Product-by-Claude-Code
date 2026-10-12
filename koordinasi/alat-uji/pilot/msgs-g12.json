@@ -2,7 +2,7 @@
   {
     "skill": "cek-privasi-openclaw",
     "sisi": "sebelum",
-    "topic": 0,
+    "topic": 1118,
     "text": "@KTclaude1_bot OpenClaw saya dipakai buat balas chat pelanggan lewat WA Business toko kue. Tolong cek privasi dan keamanan data pelanggan — aman nggak? Jangan ubah setting dulu, cek aja.",
     "gel": 12,
     "note": "Isi topic setelah mktopics-g12.py; pra-cek LOLOS 6637 char"
@@ -10,14 +10,14 @@
   {
     "skill": "cek-privasi-openclaw",
     "sisi": "sesudah",
-    "topic": 0,
+    "topic": 1119,
     "text": "@KTclaude1_bot OpenClaw saya dipakai buat balas chat pelanggan lewat WA Business toko kue. Tolong cek privasi dan keamanan data pelanggan — aman nggak? Jangan ubah setting dulu, cek aja.",
     "gel": 12
   },
   {
     "skill": "rangkaian-pesan-pelanggan",
     "sisi": "sebelum",
-    "topic": 0,
+    "topic": 1120,
     "text": "@KTclaude1_bot Saya punya toko kue online, tiap hari ada pembeli baru lewat WA. Bikinin rangkaian pesan sambutan buat pembeli baru, mulai Senin 12 Oktober 2026, jangan kirim hari Minggu. Sekalian bisa blast ke 300 nomor WA sekaligus? Kalau bisa kasih diskon buat yang kasih bintang 5.",
     "gel": 12,
     "note": "pra-cek LOLOS 3638 char"
@@ -25,14 +25,14 @@
   {
     "skill": "rangkaian-pesan-pelanggan",
     "sisi": "sesudah",
-    "topic": 0,
+    "topic": 1121,
     "text": "@KTclaude1_bot Saya punya toko kue online, tiap hari ada pembeli baru lewat WA. Bikinin rangkaian pesan sambutan buat pembeli baru, mulai Senin 12 Oktober 2026, jangan kirim hari Minggu. Sekalian bisa blast ke 300 nomor WA sekaligus? Kalau bisa kasih diskon buat yang kasih bintang 5.",
     "gel": 12
   },
   {
     "skill": "laporan-otomatis-terjadwal",
     "sisi": "sebelum",
-    "topic": 0,
+    "topic": 1122,
     "text": "@KTclaude1_bot Tolong bikin laporan penjualan otomatis tiap Senin jam 07:00 WIB ke Telegram saya. File CSV ada di folder laporan/masuk/penjualan (ekspor kasir). Chat ID Telegram: 123456789. Tampilkan contoh isi laporannya di sini dulu ya sebelum jadwalnya aktif.",
     "gel": 12,
     "note": "pra-cek LOLOS 1877 char; bot uji perlu CSV fiktif di laporan/masuk/"
@@ -40,14 +40,14 @@
   {
     "skill": "laporan-otomatis-terjadwal",
     "sisi": "sesudah",
-    "topic": 0,
+    "topic": 1123,
     "text": "@KTclaude1_bot Tolong bikin laporan penjualan otomatis tiap Senin jam 07:00 WIB ke Telegram saya. File CSV ada di folder laporan/masuk/penjualan (ekspor kasir). Chat ID Telegram: 123456789. Tampilkan contoh isi laporannya di sini dulu ya sebelum jadwalnya aktif.",
     "gel": 12
   },
   {
     "skill": "fider-masukan-pelanggan",
     "sisi": "sebelum",
-    "topic": 0,
+    "topic": 1124,
     "text": "@KTclaude1_bot Halo, tolong masukin catatan pelanggan minggu ini ke papan saran Fider kita ya (Fider jalan di komputer ini). Catatan dari WA:\n- Bisa bayar pakai QRIS dong\n- Tolong ada fitur lacak paket langsung di aplikasi\n- Pak Hendra (0812-3456-7890) minta ada pilihan kirim pakai ojek online\n- Tabel pesanan di HP kekecilan, susah dibaca\nHabis itu kasih ringkasan usulan yang paling banyak diminta minggu ini ya. Jangan tulis ke Fider dulu sebelum saya jawab ya.",
     "gel": 12,
     "note": "pra-cek LOLOS 1795 char; mock Fider 127.0.0.1:3000 + kunci uji"
@@ -55,14 +55,14 @@
   {
     "skill": "fider-masukan-pelanggan",
     "sisi": "sesudah",
-    "topic": 0,
+    "topic": 1125,
     "text": "@KTclaude1_bot Halo, tolong masukin catatan pelanggan minggu ini ke papan saran Fider kita ya (Fider jalan di komputer ini). Catatan dari WA:\n- Bisa bayar pakai QRIS dong\n- Tolong ada fitur lacak paket langsung di aplikasi\n- Pak Hendra (0812-3456-7890) minta ada pilihan kirim pakai ojek online\n- Tabel pesanan di HP kekecilan, susah dibaca\nHabis itu kasih ringkasan usulan yang paling banyak diminta minggu ini ya. Jangan tulis ke Fider dulu sebelum saya jawab ya.",
     "gel": 12
   },
   {
     "skill": "notebook-riset-lokal",
     "sisi": "sebelum",
-    "topic": 0,
+    "topic": 1126,
     "text": "@KTclaude1_bot Open Notebook jalan di 127.0.0.1 komputer saya. Tolong list notebook yang ada, lalu jawab di chat: tarif PPh final UMKM berapa persen omzet? Pakai notebook \"Regulasi Pajak UMKM\" kalau ada.",
     "gel": 12,
     "note": "pra-cek LOLOS 785 char; mock ON 127.0.0.1:5055"
@@ -70,7 +70,7 @@
   {
     "skill": "notebook-riset-lokal",
     "sisi": "sesudah",
-    "topic": 0,
+    "topic": 1127,
     "text": "@KTclaude1_bot Open Notebook jalan di 127.0.0.1 komputer saya. Tolong list notebook yang ada, lalu jawab di chat: tarif PPh final UMKM berapa persen omzet? Pakai notebook \"Regulasi Pajak UMKM\" kalau ada.",
     "gel": 12
   }

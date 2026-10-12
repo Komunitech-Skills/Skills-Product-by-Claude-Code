@@ -1,6 +1,6 @@
 # Gelombang Telegram 12 — persiapan (BELUM dikirim)
 
-**Status:** menunggu jawaban pemilik **no. 26** (pilot G11b, 4 pesan) dan **no. 27** (`usulan-gelombang-12-promo-2026-10-11.md`).
+**Status:** **terkirim 2026-10-12** — lihat `telegram-gelombang-12-2026-10-12.md` (topik 1118–1127).
 
 Pra-cek `uji-tg.sh`: **5/5 LOLOS** — rincian `pracek-telegram-g12-2026-10-11.md`.
 

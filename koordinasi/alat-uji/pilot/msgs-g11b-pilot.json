@@ -1,0 +1,30 @@
+[
+ {
+  "skill": "tangani-keberatan-pelanggan",
+  "sisi": "sebelum",
+  "topic": 1084,
+  "text": "@KTclaude1_bot Kak tolong bantu. Calon pembeli di WA bilang 'kemahalan kak, di toko sebelah 150rb' padahal hoodie saya 185rb sudah termasuk ongkir se-Jawa, bahannya fleece 330gsm lebih tebal. Toko sebelah setahu saya belum termasuk ongkir, biasanya ongkirnya 20rb. Hoodie saya biasanya awet dipakai 2 tahun. Bantu balas dong",
+  "gel": "11b-pilot"
+ },
+ {
+  "skill": "tangani-keberatan-pelanggan",
+  "sisi": "sesudah",
+  "topic": 1085,
+  "text": "@KTclaude1_bot Kak tolong bantu. Calon pembeli di WA bilang 'kemahalan kak, di toko sebelah 150rb' padahal hoodie saya 185rb sudah termasuk ongkir se-Jawa, bahannya fleece 330gsm lebih tebal. Toko sebelah setahu saya belum termasuk ongkir, biasanya ongkirnya 20rb. Hoodie saya biasanya awet dipakai 2 tahun. Bantu balas dong",
+  "gel": "11b-pilot"
+ },
+ {
+  "skill": "kelayakan-investasi-usaha",
+  "sisi": "sebelum",
+  "topic": 1086,
+  "text": "@KTclaude1_bot Saya mau beli mesin kopi Rp45 juta buat kedai. Perkiraan tambahan omzet Rp6 juta/bulan, biaya bahan & listrik tambahan Rp2,5 juta/bulan, umur mesin 5 tahun, nanti bisa dijual lagi Rp5 juta. Layak nggak? Berapa lama balik modal?",
+  "gel": "11b-pilot"
+ },
+ {
+  "skill": "kelayakan-investasi-usaha",
+  "sisi": "sesudah",
+  "topic": 1087,
+  "text": "@KTclaude1_bot Saya mau beli mesin kopi Rp45 juta buat kedai. Perkiraan tambahan omzet Rp6 juta/bulan, biaya bahan & listrik tambahan Rp2,5 juta/bulan, umur mesin 5 tahun, nanti bisa dijual lagi Rp5 juta. Layak nggak? Berapa lama balik modal?",
+  "gel": "11b-pilot"
+ }
+]
