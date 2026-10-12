@@ -1,0 +1,23 @@
+{
+  "versi": 1,
+  "jobs": {
+    "laporan-harian": {
+      "jadwal": "0 21 * * *",
+      "zona": "WIB",
+      "toleransi_menit": 30,
+      "dibuat": "2026-10-01T00:00:00Z"
+    },
+    "tagih-piutang": {
+      "jadwal": "45 7 * * 1-5",
+      "zona": "WIB",
+      "toleransi_menit": 30,
+      "dibuat": "2026-10-01T00:00:00Z"
+    },
+    "backup-data": {
+      "jadwal": "0 2 * * 0",
+      "zona": "WIB",
+      "toleransi_menit": 30,
+      "dibuat": "2026-10-01T00:00:00Z"
+    }
+  }
+}

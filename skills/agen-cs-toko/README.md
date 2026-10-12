@@ -50,6 +50,13 @@ Salin folder `agen-cs-toko` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 9, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/829/842 — skor 4,5
+- Dengan skill: https://t.me/c/4407409583/830/846 — skor 8,5
+Verdik gelombang: LULUS — DENGAN menolak auto-balas WA dengan alasan yang benar (WhatsApp Web tidak resmi, nomor bisa diblokir), langsung menawarkan mode Copilot, dan menyerahkan 7 template balasan + aturan nada + alur admin; TANPA hanya bertanya, tidak memberi satu template pun, dan menawarkan memandu pairing WA, plus pesan sistem/gateway bocor ke chat.
+
 ## FAQ
 **Apakah bot ini otomatis membalas pelanggan di WhatsApp?**
 Tidak. Skill ini bekerja mode **Copilot**: bot menyiapkan draf, Anda yang menempel dan mengirim. Ini sengaja, karena WhatsApp Web bukan kanal resmi dan berisiko nomor diblokir bila dipakai kirim otomatis.

@@ -42,6 +42,13 @@ Salin folder `karyawan-ai-mulai` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/674/685 — skor 6,5
+- Dengan skill: https://t.me/c/4407409583/675/688 — skor 8,5
+Verdik gelombang: LULUS — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv, balas-chat-cs mode draf, promo-kalender), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan.
+
 ## FAQ
 **Apakah AI langsung memasang skill lain tanpa izin saya?**
 Tidak. Setiap pemasangan skill baru selalu ditawarkan dulu dan menunggu jawaban "ya" dari Anda.

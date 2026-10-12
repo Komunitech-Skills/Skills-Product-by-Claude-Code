@@ -38,6 +38,13 @@ Salin folder `slip-gaji-bpjs` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03.
+- Tanpa skill: https://t.me/c/4407409583/578/588 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/579/590 — skor: lihat catatan gelombang
+Verdik gelombang: — — PPh 21 Desember TANPA Rp165.000 (premi BPJS yang dibayar perusahaan tidak masuk bruto pajak) vs DENGAN Rp321.595, plus biaya perusahaan dan file slip (selisih Rp156.595).
+
 ## FAQ
 **Apakah UMK daerah saya sudah ada di dalam skill?**
 Tidak, karena UMK berbeda tiap kota dan berubah tiap tahun. Kamu cukup menyebutkan angka UMK dari SK Gubernur/Disnaker, lalu skill memberi peringatan bila ada gaji di bawahnya.

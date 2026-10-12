@@ -45,6 +45,13 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket (`docs
 ## Skill pelengkap
 `positioning-persona-usaha` (target & tagline), `luncurkan-produk-baru`, `hitung-hpp`, `harga-jual-marketplace`, `caption-sosmed-umkm`, `copy-landing-page`, `promo-kalender`.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 8, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/788/809 — skor 6
+- Dengan skill: https://t.me/c/4407409583/789/811 — skor 8
+Verdik gelombang: LULUS — DENGAN membuang "STOK TINGGAL 5" dari teks siap tempel (hanya bila stok nyata), memberi 3 caption dan menghitung margin 48,6% → 35,7% (turun Rp7.000, 41%); TANPA menaruh "Stok tinggal 5, buruan" di teks siap tempel lalu baru bertanya apakah stoknya benar.
+
 ## FAQ
 **Apakah nama pilihan skill ini pasti tidak dipakai orang lain?**
 Tidak. Skill hanya membandingkan dengan merek yang kamu sebutkan dan memberi langkah cek. Hasil akhir ada di pencarian domain, handle, dan PDKI yang kamu lakukan.

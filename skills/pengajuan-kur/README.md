@@ -43,6 +43,13 @@ Salin folder `pengajuan-kur` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/732/742 — skor 6
+- Dengan skill: https://t.me/c/4407409583/733/745 — skor 8,5
+Verdik gelombang: LULUS — DENGAN menghitung cicilan anuitas 6% efektif (Rp2.281.645, 35,1% dari laba), plafon aman 30% (±Rp64,1 jt), memperingatkan bahwa "flat 6%" setara ±11% efektif, dan menyebut hak tanpa agunan tambahan (Pasal 20); TANPA keliru menyebut KUR "flat 6%" sehingga cicilan dibesarkan Rp176.688 per bulan (Rp2,46 jt, 38%).
+
 ## FAQ
 **Apakah skill ini menjamin KUR saya disetujui?**
 Tidak. Keputusan sepenuhnya ada di bank. Skill ini membantu kamu datang lebih siap dan tahu kemampuan bayar sendiri.

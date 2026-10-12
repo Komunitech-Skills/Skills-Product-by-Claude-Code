@@ -54,6 +54,13 @@ Salin folder `rencana-pelajaran-guru` ke folder skills AI agent kamu:
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket, atau
 `docs/instalasi.md` di repo Komunitech.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/678/697 — skor 6
+- Dengan skill: https://t.me/c/4407409583/819/820 — skor 5 (uji ulang versi 1.0.6; versi sebelumnya 7,5)
+Verdik gelombang: BELUM — Versi 1.0.6 menangani capaian pembelajaran dengan jujur tetapi hanya mengirim ringkasan modul dan menyebut isi lengkap ada di file yang tidak bisa dibuka dari Telegram; TANPA mengirim modul utuh dan DOCX meski CP-nya keliru.
+
 ## FAQ
 
 **Apakah CP (Capaian Pembelajaran) yang dihasilkan pasti sesuai dokumen resmi?**

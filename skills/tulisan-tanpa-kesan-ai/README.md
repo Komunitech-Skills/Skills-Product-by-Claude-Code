@@ -54,6 +54,13 @@ Salin folder `tulisan-tanpa-kesan-ai` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
+- Tanpa skill: https://t.me/c/4407409583/740/765 — skor 5
+- Dengan skill: https://t.me/c/4407409583/741/767 — skor 7,5
+Verdik gelombang: BELUM — DENGAN membuang klaim superlatif dan klise tanpa mengarang fakta, sementara harga, ukuran, dan hashtag tetap utuh, tetapi hasilnya masih generik ("cocok menemani momen santai Anda"); TANPA terdengar paling alami tetapi **mengarang 5 fakta produk** (roasting sendiri, digiling saat dikirim, earthy/fruity, kurang asam, stok terbatas).
+
 ## FAQ
 **Apakah ini bisa membuktikan tulisan saya "lolos" pendeteksi AI seperti GPTZero/Turnitin?**
 Tidak, dan skill ini sengaja tidak mengklaim itu. AI-detector menebak-nebak dan sering salah. Skill

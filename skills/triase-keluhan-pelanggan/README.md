@@ -41,6 +41,13 @@ Salin folder `triase-keluhan-pelanggan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Python tidak wajib; hanya dipakai bila Anda menyerahkan berkas CSV berisi banyak keluhan.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
+- Tanpa skill: https://t.me/c/4407409583/904/942 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/905/944 — skor 8,5
+Verdik gelombang: BELUM DAPAT DINILAI — Dengan skill: 3 P1/4 P2/1 bukan keluhan, baris "Batas waktu" platform sesuai referensi terverifikasi, nomor HP disamarkan, kompensasi ditandai [KEPUTUSAN PEMILIK]; pembanding tanpa skill hilang. Kirim ulang gelombang 11b (10 Okt 2026, topik berbeda, tautan tidak tercatat di log ini): 7,5 menjadi 8,5, BELUM.
+
 ## FAQ
 **Apakah skill ini yang membalas pelanggan?**
 Tidak. Skill ini menyiapkan urutan kerja dan draf. Anda yang mengirim, satu per satu, lewat aplikasi tempat keluhan masuk.

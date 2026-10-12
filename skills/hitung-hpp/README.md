@@ -38,6 +38,13 @@ Salin folder `hitung-hpp` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02.
+- Tanpa skill: https://t.me/c/4407409583/518/520 — skor: lihat catatan gelombang
+- Dengan skill: https://t.me/c/4407409583/235/533 — skor: lihat catatan gelombang
+Verdik gelombang: — — Usaha-offline: DENGAN HPP Rp6.950, harga Rp11.000 (margin 36,82%), titik impas 114 bungkus/bln; TANPA HPP benar tetapi memberi dua pilihan harga (Rp10.700 / Rp9.400) dan bertanya definisi margin.
+
 ## FAQ
 **Apa bedanya margin dan markup?**
 Margin dihitung dari harga jual, markup dari modal. Modal Rp70.000 dijual Rp100.000: margin 30%, markup 42,86%. Skill menampilkan keduanya supaya tidak tertukar.
