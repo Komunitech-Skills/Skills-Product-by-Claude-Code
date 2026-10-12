@@ -1,0 +1,25 @@
+#separator:tab
+#html:false
+#tags column:3
+Jam berapa kasir harus datang ke toko, dan kenapa?	07.45, yaitu 15 menit sebelum toko buka jam 08.00	SOP_Kasir::Buka_Kasir
+Berapa modal awal yang harus ada di laci saat buka kasir?	Rp500.000 pas	SOP_Kasir::Buka_Kasir
+Apa yang harus dilakukan kasir jika uang modal awal di laci ternyata selisih (tidak pas)?	Lapor ke supervisor sebelum transaksi pertama dilakukan	SOP_Kasir::Buka_Kasir
+Dalam berapa detik kasir harus menyapa pelanggan yang datang?	Dalam 5 detik	SOP_Kasir::Transaksi
+Apa 4 langkah dasar saat melayani transaksi pelanggan?	1) Sapa pelanggan, 2) scan barang satu per satu, 3) sebutkan total belanja dengan jelas, 4) tanya metode bayar	SOP_Kasir::Transaksi
+Ada berapa dan apa saja metode pembayaran yang diterima toko?	3 metode: tunai, QRIS, dan kartu debit	SOP_Kasir::Transaksi
+Saat pelanggan bayar tunai, apa yang pertama kali harus diucapkan kasir?	Jumlah uang yang diterima dari pelanggan	SOP_Kasir::Pembayaran_Tunai
+Urutkan langkah yang benar menangani uang tunai dari pelanggan (3 langkah)!	1) Taruh uang pelanggan di atas laci dulu, 2) ambil kembalian, 3) baru masukkan uang pelanggan ke laci	SOP_Kasir::Pembayaran_Tunai
+Kenapa uang pelanggan tidak boleh langsung dimasukkan ke laci saat bayar tunai?	Supaya tidak ada salah paham soal nominal uang yang diberikan pelanggan	SOP_Kasir::Pembayaran_Tunai
+Apa yang wajib dicek kasir sebelum menyerahkan barang pada pembayaran QRIS?	Notifikasi pembayaran masuk di HP kasir toko	SOP_Kasir::QRIS
+Bolehkah kasir percaya screenshot bukti bayar QRIS yang ditunjukkan pelanggan?	Tidak boleh, kasir wajib cek notifikasi masuk di HP kasir toko sendiri	SOP_Kasir::QRIS
+Berapa lama batas waktu maksimal barang boleh diretur setelah pembelian?	Maksimal 3 hari setelah beli	SOP_Kasir::Retur
+Apa 2 syarat wajib agar barang bisa diretur?	Wajib bawa struk pembelian dan barang belum dibuka	SOP_Kasir::Retur
+Retur dengan nominal di atas berapa yang wajib disetujui supervisor?	Di atas Rp200.000	SOP_Kasir::Retur
+Jika pembayaran awal menggunakan QRIS, bagaimana cara pengembalian dana saat retur?	Tidak dikembalikan tunai, melainkan dikembalikan lewat QRIS lagi	SOP_Kasir::Retur
+Apa syarat wajib untuk melakukan void (batal item)?	Wajib menggunakan PIN supervisor	SOP_Kasir::Void
+Bolehkah kasir melakukan void sendiri tanpa supervisor?	Tidak boleh sama sekali	SOP_Kasir::Void
+Apa dua hal yang harus dilakukan saat tutup kasir?	Hitung uang akhir di laci, lalu cocokkan dengan laporan sistem	SOP_Kasir::Tutup_Kasir
+Selisih uang berapa saat tutup kasir yang wajib ditulis di berita acara?	Selisih lebih dari Rp10.000	SOP_Kasir::Tutup_Kasir
+Saat tutup kasir, uang disetor ke mana dan berapa yang ditinggal di laci untuk besok?	Uang disetor ke brankas, modal awal Rp500.000 ditinggal di laci untuk besok	SOP_Kasir::Tutup_Kasir
+Sebutkan 3 hal yang dilarang dilakukan kasir!	1) Pinjam uang laci, 2) pakai HP pribadi saat melayani pelanggan, 3) memberi diskon tanpa kode dari supervisor	SOP_Kasir::Larangan
+Siapa satu-satunya pihak yang berwenang memberi kode diskon atau approval void/retur besar?	Supervisor	SOP_Kasir::Larangan
