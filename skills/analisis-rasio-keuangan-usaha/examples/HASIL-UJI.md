@@ -281,3 +281,10 @@ TOTAL: 107/107 cocok
 | **SKOR AKHIR** | **9** | Naik dari 8. Keempat temuan sedang v1.0.0 tertutup; dua temuan sedang baru bersifat tepi dan tercakup langkah bertanya di SKILL.md |
 
 **Status: LULUS** (≥ 7). Rekomendasi untuk kurator (katalog tidak diubah penguji): `skor_kualitas` 9, status `lulus`, `platform_teruji` tetap `claude-code (simulasi agent)`. Perbaiki temuan baru #1–#2 sebelum `beta` bila memungkinkan.
+
+---
+## Uji ulang v1.0.5 (2026-10-13, penguji independen, OpenClaw sebelum/sesudah)
+- OpenClaw 2026.10.2 lokal dengan skenario rapat komisaris yang sama (neraca + laba rugi 2025, pesan identik). SEBELUM tanpa skill, SESUDAH hanya skill ini. Rincian ada di `00-openclaw-sebelum-sesudah.md`.
+- Skor tanpa skill **7** → dengan skill **9** (selisih +2,0), jadi **LULUS** acuan (sesudah ≥ 8 dan selisih ≥ 1,5).
+- Angka di kedua sisi cocok dengan hitung ulang Python (Decimal) penguji. Pembeda: hanya sisi dengan skill yang membandingkan kas Rp420 jt dengan utang bank jatuh tempo Rp900 jt (risiko likuiditas SEDANG).
+- Perbaikan v1.0.5 terbukti: jenis dan skala usaha ditulis dengan label "Asumsi:". Sisa temuan ringan: ambang piutang di ringkasan (≤30–45 hari) berbeda dari tabel (≤30 hari), dan disclaimer menyebut "referensi internal".

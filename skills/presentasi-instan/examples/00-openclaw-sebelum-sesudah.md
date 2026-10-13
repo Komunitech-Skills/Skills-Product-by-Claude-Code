@@ -1,5 +1,46 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — presentasi-instan
 
+## Uji ulang v1.1.5 (2026-10-13, penguji independen)
+
+**Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech yang sama dengan bot member (`ninerouter/komunitech`). Home bersih per sisi, sesi baru, satu giliran, terisolasi (repo dan folder lain tidak terlihat). SEBELUM = tanpa skill; SESUDAH = hanya skill ini (v1.1.5, tanpa folder `examples/` dan `tests/`). Penguji memeriksa berkas hasil kedua sisi: teks tiap slide diekstrak, validator skill dijalankan, angka dihitung ulang dengan Python.
+
+**Skenario (pesan identik, satu giliran, data fiktif):** skenario normal pertama uji 2026-10-01, yaitu pitch deck investor laundry kiloan "Bersih Kilat" di Depok (2 outlet, omzet Rp 48.000.000/bulan, laba bersih Rp 9.500.000/bulan, 600 pelanggan, butuh Rp 250.000.000 untuk 3 outlet baru di Cinere, Sawangan, Beji; 8 slide; bisa dibuka di HP). Tidak ada pertanyaan balik dari kedua sisi.
+
+**Verifikasi independen:**
+- Angka dari pengguna benar di kedua deck. Margin 9,5 / 48 = 19,8%. SESUDAH: Rp 250.000.000 / 3 = Rp 83.333.333 (berlabel "dibagi rata"), proyeksi 5 x Rp 24.000.000 = Rp 120.000.000 dan 5 x Rp 4.750.000 = Rp 23.750.000 (asumsinya tertulis di slide).
+- SEBELUM mengarang rincian dana (sewa Rp 90 jt, mesin Rp 60 jt, renovasi Rp 45 jt, modal kerja Rp 30 jt, marketing Rp 15 jt, cadangan Rp 10 jt; jumlahnya pas Rp 250 jt) tanpa label contoh, sehingga tampak seperti rencana nyata. Klaim yang tidak pernah diberikan pengguna juga masuk slide: "Profitable", "model bisnis ini terbukti", "belum jenuh pemain besar", layanan express/antar-jemput/cuci satuan, "6-12 bln" menuju performa matang. Di chat, SEBELUM hanya mengakui proyeksi sebagai asumsi.
+- SESUDAH: rincian dana, tarif per kg, nama presenter, tanggal, kontak, dan waktu performa stabil ditulis `[isi ...]` (8 tempat), tanpa klaim kinerja/kecepatan/tren karangan. Perbaikan v1.1.5 terbukti: "selesai 1-2 hari" dan "repeat order rutin tiap minggu" dari uji 1 Okt tidak muncul lagi. Sisa kecil: tagline "terpercaya" dan satu kalimat umum di slide 2 ("warga Depok yang sibuk ... butuh layanan laundry yang praktis").
+- Validator skill (dijalankan penguji): SESUDAH LULUS tanpa peringatan (8 slide, 15,8 KB). SEBELUM GAGAL (tanpa `@media print` dan `@page`), tetapi SEBELUM menutupinya dengan membuat PDF 8 halaman sendiri (bonus nyata yang tidak ada di SESUDAH).
+- Isi di chat: jawaban SESUDAH tidak memuat teks tiap slide; yang ada urutan 8 judul slide, angka kunci proyeksi, asumsi, daftar yang harus dilengkapi, dan cara buka/edit/cetak. Isi utuh hanya di berkas HTML. SEBELUM juga hanya meringkas tiap slide di chat, tetapi menyerahkan dua berkas (HTML dan PDF).
+
+| Kriteria | SEBELUM | SESUDAH |
+|---|---|---|
+| Ketepatan (tanpa karangan) | 4,5 | 9 |
+| Siap pakai | 8 | 7,5 |
+| Konteks Indonesia | 6,5 | 8 |
+| Keamanan/kejujuran | 4 | 9,5 |
+| Kejelasan | 7 | 8,5 |
+| **Total (rata-rata)** | **6,0** | **8,5** |
+
+SEBELUM: deck rapi dan langsung ada PDF, tetapi rincian dana dan beberapa klaim kinerja dikarang dan tampil sebagai fakta. SESUDAH: hanya fakta pengguna dan hitungan yang tertulis asumsinya, tetapi banyak kolom `[isi]` yang harus dilengkapi pengguna dan tidak ada PDF.
+
+**Selisih +2,5. Verdik: LULUS** (sesudah 8,5 >= 8 dan selisih 2,5 >= 1,5).
+
+**Pembeda (hanya muncul saat skill aktif):** data yang tidak diberikan pengguna (rincian dana, tarif, kontak, waktu stabil) ditandai `[isi ...]` dan proyeksi memakai rumus yang ditulis di slide; tanpa skill, AI mengisi rincian dana Rp 250 juta dan klaim "terbukti/profitable" seolah fakta.
+
+Proses: SESUDAH membaca SKILL.md, kerangka HTML, dan template pitch-investor, lalu menjalankan validator (±3,7 menit; tanpa `find /` dan tanpa memasang paket). SEBELUM ±8,9 menit: mencari Chrome di seluruh disk dan menjalankan `pip install pdf2image` (masuk ke home uji sendiri) untuk membuat PDF.
+
+Cuplikan jawaban:
+> **SEBELUM** (slide 7): "Sewa tempat (3 lokasi, 2 thn) Rp 90 Jt / Mesin cuci & pengering Rp 60 Jt / Renovasi & interior outlet Rp 45 Jt / Modal kerja (deterjen, listrik, gaji 3 bln) Rp 30 Jt / Marketing & promo pembukaan Rp 15 Jt / Dana cadangan Rp 10 Jt"
+> **SEBELUM** (slide 4-5): "Sudah 2 Tahun Berjalan & Profitable" ... "model bisnis ini terbukti bisa direplikasi langsung ke outlet baru tanpa perlu uji coba konsep dari nol."
+> **SESUDAH** (slide 6): "Rp 83.333.333 - Estimasi per outlet baru (dibagi rata 3 outlet) ... Rincian penggunaan per kategori ...: [isi rincian alokasi dana]"
+> **SESUDAH** (slide 7): "Asumsi: omzet Rp 24.000.000 dan laba Rp 4.750.000 per outlet/bulan (rata-rata 2 outlet berjalan saat ini) ... Waktu pencapaian: [isi perkiraan bulan ke berapa]"
+> **SESUDAH** (chat): "Perlu kakak lengkapi (ditandai kuning di slide): Nama & jabatan presenter ... Rincian alokasi dana per kategori ... Nomor WA & email kontak"
+
+Riwayat uji 2026-10-01 (sebelum revisi 1.1.5) dipertahankan di bawah ini.
+
+---
+
 ## Cara uji
 - **Tanggal:** 2026-10-01. Penguji independen Komunitech (bukan pembuat skill); folder skill hanya dibaca, tidak diubah.
 - **Agent:** OpenClaw **2026.9.6** lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech **claude-sonnet-5** (sama dengan bot member), TZ Asia/Jakarta, terisolasi (mount + PID namespace).

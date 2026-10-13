@@ -64,3 +64,10 @@ Skill ini mencegah kesalahan paling berbahaya dalam notulen, yaitu menulis usula
 - **R3 – Format rupiah berbeda antar-skill**: notulen `Rp 150.000` (SKILL.md Checklist), surat-resmi `Rp1.500.000,00` (EYD V). *Saran:* tetapkan satu gaya di pedoman library (mis. EYD `Rp150.000` untuk dokumen formal, `Rp 150.000` untuk chat/WA), lalu sebut alasannya di SKILL.md.
 - **R4 – Asumsi yang masuk ke pesan WA siap kirim.** SKILL.md tidak melarang pesan WA memuat tafsiran yang masih ⚠️ (mis. periode iuran, tanggal ambigu). *Saran:* tambahkan ke Checklist: "Pesan WA hanya memuat hal yang pasti. Tanggal ambigu ditulis dengan tanda tanya atau dua pilihan."
 - **R5 – README merujuk `CARA-INSTAL.md`** dan ATTRIBUTION merujuk `LISENSI.txt`, dan keduanya tidak ada di folder skill. Pastikan keduanya ikut dalam paket rilis.
+
+---
+## Uji ulang v1.0.4 (2026-10-13, penguji independen, OpenClaw sebelum/sesudah)
+- OpenClaw 2026.10.2 lokal dengan skenario catatan rapat mingguan 1/10 yang sama (pesan identik). SEBELUM tanpa skill, SESUDAH hanya skill ini. Rincian ada di `00-openclaw-sebelum-sesudah.md`.
+- Skor tanpa skill **6** → dengan skill **9** (selisih +3,0), jadi **LULUS** acuan (sesudah ≥ 8 dan selisih ≥ 1,5). Nama hari dan tanggal sisi SESUDAH cocok dengan kalender yang dicek penguji dengan Python.
+- Perbaikan v1.0.4 terbukti: tidak ada lagi tugas tambahan untuk Hendra (sewa forklift hanya dicatat sebagai keputusan). Pembeda: tanggal relatif dikonversi lewat script dan "Jumat depan" ditandai ambigu (2/9 Okt), sedangkan tanpa skill "2,1M" menjadi Rp2,1 juta dan forklift nomor 2 dibaca sebagai 2 unit.
+- Sisa temuan ringan: pemimpin rapat diisi "Pak Budi (disimpulkan dari jabatan)" dan ditandai untuk dikonfirmasi, padahal SKILL.md meminta `[isi]`.

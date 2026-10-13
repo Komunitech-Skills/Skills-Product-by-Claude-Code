@@ -2,7 +2,7 @@
 
 **Sebutkan barang dan harganya, dapat surat penawaran resmi plus teks WhatsApp-nya, dengan hitungan dari kalkulator bawaan, bukan dikira-kira.**
 
-Diuji AI penguji independen di OpenClaw (satu skenario, di dalam paket 25 skill): 7 → 8 dari 10 (selisih kecil karena angka sudah benar di kedua sisi; pembedanya, tanpa skill AI menulis "harga belum termasuk PPN" untuk usaha non-PKP dan memasang paket PDF tanpa izin, sedangkan dengan skill suratnya lengkap dengan keterangan PPN yang tidak menyesatkan, terbilang, daftar asumsi, dan teks WhatsApp siap kirim).
+Diuji AI penguji independen di OpenClaw: 6 → 8,5 dari 10 pada uji ulang v1.0.5 (13 Okt 2026, skenario sama dengan uji pertama; uji pertama di dalam paket 25 skill 7 → 8). Pembedanya: surat lengkap dan teks WA langsung tampil di chat, kalimat untuk usaha bukan PKP benar ("tidak memungut PPN"), dan kota tidak ditebak (`[isi: kota]`); tanpa skill surat hanya berupa file, kota "Jakarta" dikarang, dan tertulis "belum termasuk PPN".
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -62,9 +62,11 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji perbandingan oleh penguji independen (simulasi agent; skor kualitas 8/10):** 400 surat acak (diskon baris dan total, ongkir, non-PKP/PKP, harga termasuk PPN) dicocokkan dengan hitungan independen: 0 selisih. Pada uji A/B untuk percetakan non-PKP, surat tanpa skill menulis "belum termasuk pajak" (menyesatkan), masa berlaku tanpa tanggal, nomor surat tanpa kode usaha, dan tanpa teks WhatsApp; dengan skill: "Harga tidak dikenakan PPN", berlaku sampai tanggal pasti, nomor baku `045/SPH/PSJ/IX/2026`, plus teks WA siap kirim. Rincian: `examples/HASIL-UJI.md` dan `examples/00-pembanding-tanpa-skill.md`.
-- **Uji OpenClaw, 1 Okt 2026** (uji otomatis agent, satu skenario surat, skill diuji di dalam paket 25 skill; angka dari `examples/00-openclaw-sebelum-sesudah.md`): 7 → 8 (8 pada uji ulang terakhir; selisih kecil, jadi bukan kemenangan telak). Temuannya diperbaiki di versi 1.0.3 sampai 1.0.5 (rincian di `CHANGELOG.md`). Uji ulang terakhir memakai v1.0.4; perbaikan v1.0.5 belum diuji ulang di OpenClaw.
+- **Uji OpenClaw, 1 Okt 2026** (uji otomatis agent, satu skenario surat, skill diuji di dalam paket 25 skill; angka dari `examples/00-openclaw-sebelum-sesudah.md`): 7 → 8 (8 pada uji ulang terakhir; selisih kecil, jadi bukan kemenangan telak). Temuannya diperbaiki di versi 1.0.3 sampai 1.0.5 (rincian di `CHANGELOG.md`). Uji ulang pada 13 Okt 2026 memakai v1.0.5 (hasilnya di baris berikutnya).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
+- **Uji ulang v1.0.5, 13 Okt 2026** (OpenClaw 2026.10.2, penguji independen, satu skill saja, pesan identik dua giliran, angka dicek ulang dengan Python): tanpa skill **6** → dengan skill **8,5** (LULUS). Angka benar di kedua sisi (total Rp8.370.000, PPN Rp0 karena bukan PKP); bedanya di kelengkapan surat di chat, kalimat bukan-PKP, terbilang, dan kota yang tidak dikarang.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, terakhir 13 Okt 2026 pada v1.0.5) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Usaha saya belum PKP, apakah tetap bisa?**

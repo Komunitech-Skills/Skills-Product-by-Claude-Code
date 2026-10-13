@@ -2,7 +2,7 @@
 
 **Tempel chat pelanggan, dapat balasan siap kirim yang menenangkan dan menyelesaikan masalah.**
 
-*Diuji AI penguji independen di OpenClaw: 6,5 → 8,25 dari 10 (pembedanya: tanpa skill AI mengarang voucher dan diskon yang tidak pernah Anda tawarkan dan mengabaikan kata "mau balikin"; dengan skill balasan hanya memakai kebijakan toko yang Anda berikan dan permintaan refund pembeli ditanggapi).*
+*Diuji AI penguji independen di OpenClaw: 6,4 → 8,8 dari 10 pada uji ulang v1.0.5 (13 Okt 2026; uji pertama 6,5 → 8,25; skenario klinik gigi 5,9 → 9,0) (pembedanya: tanpa skill AI mengarang voucher dan diskon yang tidak pernah Anda tawarkan dan mengabaikan kata "mau balikin"; dengan skill balasan hanya memakai kebijakan toko yang Anda berikan dan permintaan refund pembeli ditanggapi).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -55,6 +55,8 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 **Hasil uji (angka nyata):**
 - **Uji OpenClaw, uji ulang v1.0.3, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario): rata-rata nilai 6,5 tanpa skill menjadi 8,25 dengan skill (skala 10). Tanpa skill, AI mengarang voucher toko, gratis ongkir, dan diskon yang tidak pernah Anda tawarkan; dengan skill, balasan hanya memakai kebijakan toko yang Anda berikan, menanggapi permintaan refund pembeli, dan menandai bagian yang perlu Anda konfirmasi.
 - Uji pertama (sebelum perbaikan) belum lulus: 6,75 menjadi 7,75, karena masih ada janji karangan atas nama toko. Pada uji ulang masih ada satu kalimat atas nama toko yang tidak Anda berikan ("harga di etalase sudah harga pas"), jadi baca draf sebelum mengirim. Aturan chat pasien klinik (ditambahkan setelah uji ini) tidak termasuk dalam angka di atas.
+
+- **Uji ulang v1.0.5, 13 Okt 2026** (OpenClaw 2026.10.2, penguji independen, pesan identik dengan uji pertama): toko online tanpa skill **6,4** → dengan skill **8,8**; klinik gigi tanpa skill **5,9** → dengan skill **9,0** (LULUS). Dengan skill hanya kebijakan toko yang dipakai, keputusan refund ditandai [KEPUTUSAN PEMILIK], balasan klinik tanpa diagnosis dan tanpa dosis obat serta menyebut IGD/119; tanpa skill ada janji "tanpa biaya tambahan", kata "mau balikin" diabaikan, dan untuk klinik AI menebak abses dan menyarankan paracetamol. Catatan: tanda [KEPUTUSAN PEMILIK] baru muncul di catatan admin, belum di draf balasan.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 

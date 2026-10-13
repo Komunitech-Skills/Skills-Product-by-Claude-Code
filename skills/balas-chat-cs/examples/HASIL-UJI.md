@@ -43,3 +43,10 @@ Uji A/B: skill jelas lebih baik (versi tanpa skill menjanjikan "pasti sampai seb
 3. `references/alur-komplain.md` bagian "Dasar" tanpa tanggal cek ("per 2026-09-23"), padahal pedoman kurasi Komunitech tahap 4.5 memintanya. **Saran:** tambahkan.
 4. Dari banding pesaing (ide): deteksi register dari gaya chat pelanggan ("dong/sih" → santai), katalog frasa kaku vs natural, dan aturan "jangan minta pelanggan mengulang info yang sudah diberikan" sebagai butir checklist.
 5. Tidak ada kalimat cadangan bila `balas-ulasan-pelanggan`/`tagih-piutang`/`follow-up-prospek` tidak dimiliki pembeli. **Saran:** satu kalimat di "Kapan TIDAK digunakan": "jika skill itu tidak ada, beri satu draf netral singkat dan jelaskan perbedaannya".
+
+---
+## Uji ulang v1.0.5 (2026-10-13, penguji independen, OpenClaw sebelum/sesudah)
+- OpenClaw 2026.10.2 lokal, skenario 1 (komplain sepatu anak kekecilan di Shopee, pesan identik) ditambah satu skenario klinik gigi (aturan chat pasien v1.0.4). Rincian di `00-openclaw-sebelum-sesudah.md`.
+- Skenario 1: skor tanpa skill **6,4** -> dengan skill **8,8** (selisih +2,4), **LULUS** acuan (sesudah >= 8 dan selisih >= 1,5). Tidak ada janji ongkir atau kompensasi karangan; "mau balikin" ditanggapi dan ditandai `[KEPUTUSAN PEMILIK]` di catatan admin. SEBELUM menulis "kirim ulang tanpa biaya tambahan" dan mengabaikan permintaan balikin.
+- Klinik: tanpa skill 5,9 -> dengan skill 9,0. SESUDAH tanpa diagnosis dan tanpa dosis, IGD/119 untuk tanda bahaya, catatan PERLU REVIEW tenaga medis; SEBELUM menebak "infeksi/abses", menyarankan paracetamol, dan menawarkan kirim langsung ke pasien.
+- Sisa temuan ringan: tanda `[KEPUTUSAN PEMILIK]` hanya di catatan admin (tidak di draf); asumsi "ukuran lebih besar"; fitur Pengembalian Shopee disebut untuk tukar ukuran.
