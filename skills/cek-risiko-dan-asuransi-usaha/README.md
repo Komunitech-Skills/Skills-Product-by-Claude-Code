@@ -21,6 +21,7 @@ Uji A/B (skenario toko kelontong di Semarang Utara yang sering kena rob; satu pe
 - **Tanpa skill:** daftar risiko umum, perkiraan premi dan tarif iuran BPJS dari ingatan, arisan ikut dihitung sebagai biaya tetap tanpa catatan, dana darurat hanya berupa rentang ("11,5 sampai 23 juta"), tanpa skor dan tanpa keputusan "perlu asuransi atau tidak" per risiko.
 - **Dengan skill:** 9 risiko diberi skor dan tingkat, tiap risiko ada keputusan asuransinya (utang pelanggan macet ditulis "tidak ada asuransi umum, pakai langkah lain"), dana darurat dihitung pasti, hasilnya "kurang Rp4.050.000, sisihkan Rp675.000 per bulan selama 6 bulan", tanpa merek dan tanpa premi karangan.
 - Penilaian penguji independen: 6 dari 10 (tanpa skill) menjadi 8,5 dari 10 (dengan skill). Bahan lengkap: `examples/00-pembanding-tanpa-skill.md`.
+- Uji otomatis agent di OpenClaw (v1.0.2): rata-rata 6,6 tanpa skill menjadi 9,0 dengan skill. Rincian: `examples/00-openclaw-v1.0.2-sebelum-sesudah.md`.
 
 ## Instalasi
 Lihat `docs/instalasi.md` untuk OpenClaw, Codex, Claude Code, dan Cursor. Script opsional memakai Python standar (`python3`; Windows `python`/`py`).

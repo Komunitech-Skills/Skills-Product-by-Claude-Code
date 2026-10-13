@@ -22,6 +22,8 @@
 
 Contoh lain di `examples/`: toko hijab online per kuartal (barang terjual naik tapi laba turun karena harga pashmina turun dan campuran produk bergeser ke yang murah) dan jasa kebersihan (lembur naik Rp7,1 jt: Rp6,5 jt karena jam, Rp615 rb karena tarif).
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,75 tanpa skill menjadi 8,5 dengan skill (skala 10). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Ini anggaran vs realisasi bulan ini, kenapa biaya over budget?" (tempel tabel atau lampirkan CSV/ekspor Excel)
@@ -40,7 +42,7 @@ Salin folder `analisis-selisih-anggaran` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputermu.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputermu.
 
 ## Bukti uji di bot Telegram
 
@@ -58,6 +60,8 @@ Selisih yang layak dibahas. Default-nya selisih minimal Rp500 ribu atau 5% dari 
 
 **Bisa dipakai untuk membuat laporan ke investor terlihat sesuai target?**
 Tidak. Skill ini menolak mengubah atau menggeser angka realisasi. Sebagai gantinya ia membantu menyusun penjelasan jujur + rencana perbaikan berangka, yang justru lebih dipercaya investor dan bank.
+
+> **Catatan penting:** alat bantu membaca laporan, bukan nasihat akuntansi, pajak, atau keuangan. Angka hanya dihitung dari data yang Anda berikan dan tidak diaudit; keputusan besar (investasi, pinjaman, laporan ke investor/bank) sebaiknya dibahas dengan akuntan Anda.
 
 ## Catatan versi
 - **1.0.0 (2026-10-05):** rilis awal.

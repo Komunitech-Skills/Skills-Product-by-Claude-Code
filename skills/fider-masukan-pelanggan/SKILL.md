@@ -12,7 +12,7 @@ description: Mengelola papan masukan & voting fitur Fider (open-source, penggant
 ## Tujuan
 Pemilik usaha atau tim produk yang memasang **Fider di komputer/server sendiri** (gratis, tanpa biaya bulanan per pengguna) cukup bicara biasa, dan agent menjalankan `scripts/fider.py` yang memanggil **REST API resmi Fider** (`/api/v1/...`, header `Authorization: Bearer <kunci API>`). Hasil: catatan berantakan dari WA/marketplace jadi usulan rapi di papan, duplikat tergabung, ringkasan mingguan siap tempel, status terbarui, dan draf kabar perbaikan siap kirim. Python standar saja; tanpa instalasi paket.
 
-**Versi 1.0.8 (status uji).** Diuji terhadap **Fider v0.38.0 ASLI** (Docker + PostgreSQL 17), termasuk akun Administrator dan Collaborator, ditambah 45 uji regresi otomatis (server tiruan). **Belum diuji:** Windows/macOS, HTTPS di VPS sungguhan, jadwal OpenClaw & pengiriman Telegram, Fider selain v0.38.0.
+**Versi 1.0.9 (status uji).** Diuji terhadap **Fider v0.38.0 ASLI** (Docker + PostgreSQL 17), termasuk akun Administrator dan Collaborator, ditambah 45 uji regresi otomatis (server tiruan). **Belum diuji:** Windows/macOS, HTTPS di VPS sungguhan, jadwal OpenClaw & pengiriman Telegram, Fider selain v0.38.0.
 
 ## Aturan utama (WAJIB)
 1. **Semua perintah yang menulis ke Fider** (`impor`, `tag`, `tag-buat`, `gabung`, `status`, `komentar`) **hanya menampilkan PRATINJAU** kecuali ditambah `--ya`. Urutan: jalankan tanpa `--ya` → tunjukkan pratinjau ke pemilik → tunggu jawaban "ya" → ulangi dengan `--ya`. **Jangan menambahkan `--ya` atas inisiatif sendiri**, dan jangan menulis apa pun bila pemilik belum menyetujui pratinjau itu.
@@ -80,6 +80,7 @@ Pemilik usaha atau tim produk yang memasang **Fider di komputer/server sendiri**
 Ekspor chat/ulasan → (skill iterasi: samarkan, kelompokkan tema, skor prioritas) → `impor` tema/usulan yang layak voting → pelanggan memberi suara di Fider → `ringkasan-mingguan` → keputusan → `status` → `draf-balasan`.
 
 ## Format output
+Di balasan ke pengguna, jangan sebut kata teknis internal (token, gateway, nama perintah/CLI, nama file config). Pakai bahasa sehari-hari: "kunci akses", "bot", "jadwal", "pengaturan". Perintah teknis hanya ditampilkan bila pengguna memintanya (kecuali satu perintah yang memang harus diketik pengguna sendiri, mis. menyimpan kunci akses; jelaskan fungsinya dalam satu kalimat awam). Kode keluar dan pesan `GALAT:` mentah tidak perlu dibacakan; sampaikan masalah dan langkah perbaikannya.
 Teks siap tempel berbahasa Indonesia: baris `#nomor  N suara  N komentar  [Status]  Judul  (tag: ...)`; pratinjau tulis selalu diakhiri kalimat "PRATINJAU - BELUM ADA YANG DITULIS". Tambah `--json` untuk data terstruktur. Ringkasan mingguan memuat catatan bahwa suara pemilik/tim ikut terhitung.
 
 ## Contoh
@@ -93,4 +94,4 @@ Agent: buat berkas → pratinjau `impor` → "Ada 3 butir; 1 mirip #1 'Tambah pe
 - Maks. 50 butir per impor; lebih dari itu, pecah berkas. Judul maks. 100 karakter (Fider menolak lebih).
 - Angka suara/komentar berasal dari Fider apa adanya (suara akun pemilik/tim ikut terhitung). Jangan dibulatkan atau dikarang.
 - Fider selain v0.38.0 mungkin berbeda perilaku; bila bentuk jawaban tidak dikenal, hentikan dan laporkan.
-- Papan tidak bisa dijangkau/Fider mati → arahkan ke bagian "Masalah umum" di `docs/panduan-fider.md`.
+- Papan tidak bisa dijangkau/Fider mati → arahkan ke bagian "Masalah umum" di panduan Fider (`docs/panduan-fider.md`; nama berkas hanya bila pengguna perlu membukanya).

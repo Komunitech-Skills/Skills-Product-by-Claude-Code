@@ -38,7 +38,7 @@ Salin folder `kelayakan-investasi-usaha` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputermu.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputermu.
 
 ## Bukti uji di bot Telegram
 
@@ -46,6 +46,8 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk angg
 - Tanpa skill: https://t.me/c/4407409583/908/950 — skor 6,5
 - Dengan skill: https://t.me/c/4407409583/909/952 — skor 9
 Verdik gelombang: LULUS — Keduanya benar soal payback ±1 th 1 bln, tetapi hanya dengan skill ada NPV/IRR/payback terdiskonto, uji meleset −10%/−20%/+10%, batas aman, asumsi diskonto & disclaimer, semuanya cocok dengan hitungan ulang.
+
+- Pilot 26 (kirim ulang 4 pesan di topik baru, 2026-10-12, dijalankan Akun C): skor 6,5 → 9, verdik LULUS — hasil sama dengan gelombang 11 dan 11b (`koordinasi/telegram-gelombang-11b-pilot-2026-10-12.md`; tautan pesan tidak tercatat di log).
 
 ## FAQ
 **Apakah hasilnya menjamin usaha saya untung?**
@@ -62,4 +64,4 @@ Tidak. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, ren
 - **1.0.0 (2026-10-05):** rilis awal.
 
 ---
-Sebagian rumus dan kasus uji diturunkan dari numpy-financial (BSD-3-Clause, © NumPy Developers) — lihat `ATTRIBUTION.md`. Komunitech tidak berafiliasi dengan NumPy.
+Sebagian rumus dan kasus uji diturunkan dari numpy-financial (BSD-3-Clause, © NumPy Developers) — lihat `ATTRIBUTION.md`. Komunitech tidak berafiliasi dengan NumPy. Hasil hitungan adalah simulasi dari angka yang Anda masukkan, bukan nasihat keuangan atau pajak dan bukan jaminan untung.

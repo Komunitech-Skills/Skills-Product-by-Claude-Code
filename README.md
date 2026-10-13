@@ -9,7 +9,7 @@ Library **agent skills** siap pakai untuk pengusaha & profesional Indonesia, ole
 
 ## Isi library (per 2026-10-05)
 
-Katalog: **140 skill** = 110 `beta` + 26 `lulus` + 0 `uji` + 4 `arsip` (136 aktif; 97 orisinal, 43 kurasi). Belum ada yang `rilis`.
+Katalog: **140 skill** = 119 `beta` + 17 `lulus` + 0 `uji` + 4 `arsip` (136 aktif; 97 orisinal, 43 kurasi). Belum ada yang `rilis`.
 Kategori: Produktivitas (25), Keuangan & Akuntansi (24), Marketing & Konten (23), Data & Analisis (12), HR (10),
 Sales (9), E-commerce/Marketplace Indonesia (8), Customer Service (7), Legal & Dokumen (3), Pendidikan (1), Kehidupan Pribadi (1).
 

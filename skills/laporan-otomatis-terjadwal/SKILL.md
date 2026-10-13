@@ -183,7 +183,7 @@ a. **Cek kanal (satu kali, hanya baca):** `openclaw channels status --channel te
    akhiri giliran. **Jangan** mengirim pesan uji untuk "memastikan" kanal. Pengakuan pengguna
    "sudah tersambung" → cek ulang sekali dengan perintah yang sama; masih belum → ulangi panduan.
 b. **Tampilkan ringkasan rencana** dalam satu pesan: isi laporan, sumber data, jadwal (hari &
-   jam, `Asia/Jakarta`), kanal & ID tujuan, perintah yang akan dijalankan, dan bahwa sesudahnya
+   jam, `Asia/Jakarta`), kanal & ID tujuan, langkah yang akan dilakukan (tanpa nama perintah mentah), dan bahwa sesudahnya
    akan ada **satu uji kirim** (Langkah 6). Akhiri dengan "Lanjut? (ya/tidak)".
 c. **Berhenti dan tunggu "ya".** "Lanjut bikin jadwalnya", "gas", "sudah tersambung", atau
    permintaan awal yang diucapkan **sebelum** ringkasan ditampilkan **bukan** persetujuan.
@@ -230,7 +230,7 @@ Tunjukkan hasil run ini ke pengguna sebagai bukti jadwal bekerja, **sebelum** me
 jangan aktifkan jadwal yang belum terbukti jalan.
 
 ### 7. Jelaskan cara melihat/menjeda/mengubah/menghapus jadwal
-Sertakan ringkasan ini ke pengguna setelah jadwal aktif (detail lengkap di
+Sampaikan ke pengguna setelah jadwal aktif dalam kalimat biasa (lihat, jeda, aktifkan lagi, ubah, hapus: "cukup minta saya"); daftar perintah di bawah hanya ditampilkan bila diminta (detail di
 `references/openclaw.md` §5):
 ```bash
 openclaw automations list --all          # lihat semua jadwal (termasuk yang nonaktif)
@@ -244,13 +244,14 @@ Lupa id? Jalankan `openclaw automations list --all` dan cari lewat nama jadwal.
 
 ### 8. Ingatkan syarat "komputer harus menyala"
 Jelaskan **sebelum** jadwal dianggap selesai (lihat `references/mesin-24-jam.md` untuk teks
-lengkap & opsi): jadwal berjalan di dalam proses Gateway OpenClaw -- kalau komputer mati/tidur
+lengkap & opsi): jadwal berjalan di dalam OpenClaw -- kalau komputer mati/tidur
 saat jam jadwal, laporan **tidak terkirim**. Tawarkan 3 opsi (laptop/mini PC yang selalu
 menyala, VPS milik member sendiri, atau **jasa setup Komunitech** -- disebut sebagai opsi,
 tanpa menyebut harga) dan sarankan `cek-privasi-openclaw` sebagai langkah lanjutan bila kanal
 baru saja dibuka ke WhatsApp/publik.
 
 ## Format output
+Di balasan ke pengguna, jangan sebut kata teknis internal (token, gateway, nama perintah/CLI, nama file config). Pakai bahasa sehari-hari: "kunci akses", "bot", "jadwal", "pengaturan". Perintah teknis hanya ditampilkan bila pengguna memintanya (di Langkah 4-5 hanya perintah yang harus diketik pengguna sendiri, dengan satu kalimat pengantar awam).
 Pesan laporan mengikuti keluaran `susun_pesan.py`: judul tebal, subjudul (periode), lalu
 maksimal ~15 baris berisi angka penting dahulu, daftar pendek (opsional), catatan netral, dan
 peringatan (⚠️) di bagian bawah bila ada -- catatan & peringatan tampil beda supaya pengguna
@@ -284,11 +285,11 @@ tahu mana info biasa dan mana yang perlu diwaspadai. Contoh lengkap tiap resep a
   agregat, bukan daftar nama+kontak.
 - **Klinik/kesehatan:** hanya angka operasional agregat (kunjungan, pendapatan, jam ramai).
   Jangan pernah menjadwalkan laporan berisi nama pasien atau diagnosis.
-- **Gateway harus menyala** saat jam jadwal -- kalau tidak, run tidak pernah terjadi (bukan
+- **OpenClaw harus menyala** saat jam jadwal -- kalau tidak, run tidak pernah terjadi (bukan
   gagal dengan pesan error, tapi memang tidak berjalan). Ini bukan bug skill; jelaskan ke
   pengguna dan arahkan ke `references/mesin-24-jam.md`.
 - **Buat jadwal lewat chat WhatsApp:** belum diuji langsung. Bila `openclaw automations add` gagal dari chat WA, jelaskan dan tawarkan menjalankannya dari Control UI atau terminal.
-- **Setiap run memakai token model** (biaya ditanggung pengguna). Sarankan `--session isolated`
+- **Setiap run memakai kuota model AI** (biaya ditanggung pengguna). Sarankan `--session isolated`
   (sudah dipakai di contoh) supaya jadwal tidak mencampuri sesi chat utama, dan model yang lebih
   hemat untuk laporan rutin bila tersedia (`--model`).
 - **Python tidak bisa dijalankan:** hitung manual mengikuti langkah script sumber, beri tahu bahwa hasil belum diverifikasi script; untuk `cek_sumber_data.py` cukup periksa manual folder berisi file tidak 0 byte.

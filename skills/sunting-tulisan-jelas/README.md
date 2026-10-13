@@ -22,6 +22,8 @@
 
 Ukuran pada contoh itu: **165 kata menjadi 97**, kalimat lebih dari 25 kata **3 menjadi 0**, kata pengisi/jargon **11 menjadi 0**, semua angka dan tanggal utuh. Lima contoh lengkap ada di folder `examples/`.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.0):** rata-rata nilai 6,25 tanpa skill menjadi 8,5 dengan skill (skala 10). Catatan jujur: tanpa skill pun model sudah merapikan email dengan baik; nilai jual skill ini adalah isi tetap utuh (angka, tanggal, janji) dan penolakan klaim karangan. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa lalu tempel tulisannya:
 - "Tolong perjelas pengumuman ini, karyawan saya banyak yang bingung."
@@ -41,7 +43,7 @@ Salin folder `sunting-tulisan-jelas` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Angka keterbacaan memakai Python 3 biasa (tanpa instalasi tambahan); kalau Python tidak ada, skill tetap menyunting dan menghitung perkiraan.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Angka keterbacaan memakai Python 3 biasa (tanpa instalasi tambahan); kalau Python tidak ada, skill tetap menyunting dan menghitung perkiraan.
 
 ## Bukti uji di bot Telegram
 

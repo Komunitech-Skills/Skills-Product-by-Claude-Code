@@ -37,6 +37,8 @@
 
 → Anda juga menerima ringkasan: berapa yang diperbaiki per jenis, nama mana yang tampaknya sama, baris kembar, dan sel yang tidak bisa dibaca beserta alasannya.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 3,5 tanpa skill menjadi 9,0 dengan skill (skala 10). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Tolong rapikan daftar pelanggan ini" (lalu kirim file CSV)
@@ -59,7 +61,7 @@ Salin folder `rapikan-data-berantakan` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## Bukti uji di bot Telegram
 

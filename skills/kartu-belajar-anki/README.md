@@ -9,17 +9,29 @@
 - Cocok CPNS, UTBK, sertifikasi, bahasa, dan SOP karyawan baru.
 - Menolak permintaan bocoran/hak cipta, tetap bantu dari materi Anda sendiri.
 
-## Cocok untuk
+## Cocok untuk siapa
 Pelajar dan mahasiswa, guru/bimbel, HR yang onboarding karyawan, profesional yang belajar sertifikasi.
 
 ## Sebelum / sesudah
 - **Sebelum:** mengetik kartu satu per satu di Anki, bingung cloze/tag.
 - **Sesudah:** agent menyusun puluhan kartu + jadwal; Anda tinggal impor.
 
-Contoh sebelum/sesudah lengkap akan diisi dari hasil uji independen.
+- **Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,75 tanpa skill menjadi 8,5 dengan skill (skala 10). Tanpa skill, kartu hanya disimpan sebagai berkas dan tidak sampai ke chat Telegram; dengan skill isi kartu, jadwal belajar, dan cara impor tampil utuh di chat. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
+## Cara pakai
+Ketik permintaan biasa lalu tempel catatan Anda, misalnya: "Bikinin kartu belajar Anki dari SOP kasir toko kami buat karyawan baru ya" (lalu tempel SOP-nya). Info yang kurang (jumlah hari belajar, jenis kartu) ditanyakan sekali, atau agent memakai pilihan wajar dan menyebut asumsinya. Python bawaan hanya dipakai untuk memeriksa kartu dan menghitung jadwal; tanpa Python hasil tetap muncul di chat.
 
 ## Instalasi
-Salin folder `kartu-belajar-anki` ke lokasi skill platform Anda. Panduan lengkap: `docs/instalasi.md` (ikut paket).
+Salin folder `kartu-belajar-anki` ke folder skills AI agent Anda:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## FAQ
 

@@ -51,6 +51,8 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk angg
 - Dengan skill: https://t.me/c/4407409583/907/948 — skor 8,5
 Verdik gelombang: LULUS — Tanpa skill satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" (tanpa dasar); dengan skill perbandingan jujur (pesaing tetap ±Rp15 rb lebih murah), 3 pilihan balasan termasuk opsi tanpa memaksa, kapan berhenti, dan ongkir pesaing ditandai perkiraan.
 
+- Pilot 26 (kirim ulang 4 pesan di topik baru, 2026-10-12, dijalankan Akun C): skor 6,5 → 8,5, verdik LULUS — hasil sama dengan gelombang 11 dan 11b (`koordinasi/telegram-gelombang-11b-pilot-2026-10-12.md`; tautan pesan tidak tercatat di log).
+
 ## FAQ
 **Apakah skill ini bisa membuat pelanggan "takut kehabisan" supaya cepat beli?**
 Tidak. Stok, hitung mundur, diskon, atau testimoni yang tidak nyata berisiko melanggar UU Perlindungan Konsumen dan merusak kepercayaan. Skill ini menawarkan alternatif jujur: info stok/promo yang benar-benar nyata, atau ajakan tanpa tekanan.

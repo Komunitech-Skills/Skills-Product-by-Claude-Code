@@ -21,6 +21,8 @@
 **Sesudah (cukup ketik):** "Toko kue saya mau bikin pesan sambutan buat pelanggan baru, pelanggan pertama beli Rabu 7 Oktober."
 → Tabel 4 pesan dengan tanggal (7, 10, 17, 28 Oktober), keempat pesan ditulis lengkap dengan "balas stop", aturan kapan berhenti, dan cara kirim dari WA Anda sendiri. Contoh lengkap ada di `examples/`.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 3,0 tanpa skill menjadi 8,25 dengan skill (skala 10). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa, misalnya:
 - "Bikin rangkaian pesan sambutan untuk pelanggan baru toko saya."
@@ -40,7 +42,13 @@ Salin folder `rangkaian-pesan-pelanggan` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
+
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 12, 2026-10-12 (tautan pesan tidak tercatat di log ini).
+- Skor: 7,5 tanpa skill menjadi 8,75 dengan skill.
+Verdik gelombang: BELUM — Dengan skill jadwal bertanggal, opt-out `stop`, dan tabel lebih terstruktur; tanpa skill sudah menolak blast dan diskon untuk bintang 5, sehingga selisihnya (+1,25) belum mencapai acuan 1,5.
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan?**
