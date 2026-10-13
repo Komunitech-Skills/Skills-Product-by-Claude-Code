@@ -1,3 +1,5 @@
+> **Catatan 2026-10-13:** rekaman uji asli; "alokasi stok & jadwal promo" pada ringkasan WA bagian B tidak ada di data input dan sudah diganti `[isian: ...]` — lihat berkas 03 terbaru.
+
 # Uji A/B — Tanpa Skill vs Dengan Skill
 
 Skenario dipakai: Normal #1 (Uji 03) — manajer cabang lapor omzet 3 bulan ke pemilik.

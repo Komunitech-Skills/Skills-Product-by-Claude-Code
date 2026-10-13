@@ -1,3 +1,5 @@
+> **Catatan 2026-10-13:** rekaman uji asli; skor di contoh 01 dihitung ulang menjadi 65,3 dan keahlian yang bukan milik pelamar diganti [isi …] — lihat berkas 01 terbaru.
+
 # Uji OpenClaw asli SEBELUM vs SESUDAH — cv-lamaran-ats
 
 **Tanggal:** 2026-10-01 · **Penguji:** agent penguji independen (bukan pembuat skill)

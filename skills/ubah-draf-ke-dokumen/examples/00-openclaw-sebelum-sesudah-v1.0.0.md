@@ -10,7 +10,7 @@
 
 **Skenario 1**
 ```
-Tolong rapikan draf ini jadi surat resmi siap kirim ke pelanggan, pakai kop usaha saya. Kop: Kopi Seduh Nusantara, Jl. Dago Asri No. 12, Bandung 40135, Telp 0812-3456-7890, email halo@kopiseduh-nusantara.example. Ini drafnya dari chat WA saya sama ChatGPT:
+Tolong rapikan draf ini jadi surat resmi siap kirim ke pelanggan, pakai kop usaha saya. Kop: Kopi Seduh Nusantara, Jl. Dago Asri No. 12, Bandung 40135, Telp 08xx-xxxx-xxxx (nomor fiktif), email halo@kopiseduh-nusantara.example. Ini drafnya dari chat WA saya sama ChatGPT:
 
 Tentu! Berikut ini draf suratnya ya kak 😊
 yth. pelanggan setia kami
@@ -19,7 +19,7 @@ mulai 1 nov 2026 harga biji kopi kami naik ya soalnya harga bahan baku naik juga
 - robusta lampung 250 gr dari 45rb jadi 49rb
 - house blend 500gr dari 120.000 jadi 129.000
 pesanan yg masuk sebelum 31 okt masih pake harga lama
-kalau mau tanya wa aja ke 0812-3456-7890
+kalau mau tanya wa aja ke 08xx-xxxx-xxxx (nomor fiktif)
 makasih banyak ya kak 🙏
 -bayu pemilik
 ```
@@ -58,7 +58,7 @@ kepada bank, saya Ibu Lastri pemilik Warung Makan Sederhana Bu Lastri jl. melati
 ### SEBELUM (skill mati) — Telegram (`uji-tg.sh`)
 > KOPI SEDUH NUSANTARA
 > Jl. Dago Asri No. 12, Bandung 40135
-> Telp: 0812-3456-7890 | Email: halo@kopiseduh-nusantara.example
+> Telp: 08xx-xxxx-xxxx (nomor fiktif) | Email: halo@kopiseduh-nusantara.example
 >
 > Bandung, 12 Oktober 2026
 >
@@ -77,7 +77,7 @@ kepada bank, saya Ibu Lastri pemilik Warung Makan Sederhana Bu Lastri jl. melati
 >
 > Pesanan yang kami terima sebelum tanggal 31 Oktober 2026 masih akan dikenakan harga lama.
 >
-> Apabila ada pertanyaan lebih lanjut, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
+> Apabila ada pertanyaan lebih lanjut, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 08xx-xxxx-xxxx (nomor fiktif).
 >
 > Kami mengucapkan terima kasih atas kepercayaan dan dukungan Bapak/Ibu selama ini.
 >
@@ -106,7 +106,7 @@ kepada bank, saya Ibu Lastri pemilik Warung Makan Sederhana Bu Lastri jl. melati
 >
 > **KOPI SEDUH NUSANTARA**
 > Jl. Dago Asri No. 12, Bandung 40135
-> Telp. 0812-3456-7890 · Email: halo@kopiseduh-nusantara.example
+> Telp. 08xx-xxxx-xxxx (nomor fiktif) · Email: halo@kopiseduh-nusantara.example
 > ────────────────────────────────────────
 >
 > Bandung, 12 Oktober 2026
@@ -130,7 +130,7 @@ kepada bank, saya Ibu Lastri pemilik Warung Makan Sederhana Bu Lastri jl. melati
 >
 > Bagi Bapak/Ibu yang melakukan pemesanan **sebelum tanggal 31 Oktober 2026**, harga yang berlaku masih mengikuti harga lama.
 >
-> Apabila terdapat pertanyaan lebih lanjut, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
+> Apabila terdapat pertanyaan lebih lanjut, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 08xx-xxxx-xxxx (nomor fiktif).
 >
 > Kami mengucapkan terima kasih atas kepercayaan dan dukungan Bapak/Ibu selama ini kepada Kopi Seduh Nusantara.
 >
@@ -159,7 +159,7 @@ kepada bank, saya Ibu Lastri pemilik Warung Makan Sederhana Bu Lastri jl. melati
 
 ### SESUDAH (skill aktif) — biasa (`uji.sh`)
 > # KOPI SEDUH NUSANTARA
-> Jl. Dago Asri No. 12, Bandung 40135 · Telp. 0812-3456-7890 · Email: halo@kopiseduh-nusantara.example
+> Jl. Dago Asri No. 12, Bandung 40135 · Telp. 08xx-xxxx-xxxx (nomor fiktif) · Email: halo@kopiseduh-nusantara.example
 > ────────────────────────────────────────
 >
 > Bandung, 12 Oktober 2026
@@ -183,7 +183,7 @@ kepada bank, saya Ibu Lastri pemilik Warung Makan Sederhana Bu Lastri jl. melati
 >
 > Sebagai bentuk apresiasi atas kesetiaan Bapak/Ibu, setiap pesanan yang kami terima **sebelum tanggal 31 Oktober 2026** masih akan dikenakan harga lama.
 >
-> Apabila terdapat pertanyaan lebih lanjut, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
+> Apabila terdapat pertanyaan lebih lanjut, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 08xx-xxxx-xxxx (nomor fiktif).
 >
 > Demikian pemberitahuan ini kami sampaikan. Atas perhatian dan kerja sama Bapak/Ibu, kami ucapkan terima kasih.
 >
