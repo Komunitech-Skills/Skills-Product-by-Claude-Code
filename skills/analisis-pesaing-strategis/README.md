@@ -65,8 +65,7 @@ Salin folder `analisis-pesaing-strategis` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `CARA-INSTAL.md` / `docs/instalasi.md` di dalam paket.
 
-**Hasil uji (angka nyata):** satu sumber, skor 1–10.
-- **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,8 tanpa skill menjadi 8,1 dengan skill. Pada kasus katering nasi box, skor dihitung script (Kita 3,10, Bu Tini 3,80, Sehati 3,60) dan kemudahan pesan (selisih -1,67 dari rata-rata saingan) langsung jadi prioritas; tanpa skill, AI salah simulasi dengan mengklaim skor naik ke 3,5 sudah melewati saingan yang 3,6. Catatan jujur: keunggulan paling jelas ada di analisis itu; saat diminta mengintip akun saingan secara otomatis, AI tanpa skill pun sudah menolak dengan benar.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (v1.0.4), skor 1–10: tanpa skill **6,8** → dengan skill **8,1** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pembeda: skor berbobot dihitung skrip (bukan simulasi AI); tanpa skill AI salah menyimpulkan skor 3,5 sudah mengalahkan saingan 3,6. Catatan jujur: keunggulan paling jelas pada skenario katering; penolakan "intip akun saingan" sudah benar di kedua sisi.
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 

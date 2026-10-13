@@ -62,14 +62,15 @@ Salin folder `analisis-selisih-anggaran` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,75 tanpa skill menjadi 8,5 dengan skill (skala 10), dari dua skenario: anggaran kafe 8 pos (juga di konteks Telegram) dan permintaan menggeser angka agar laporan investor tampak sesuai target. Semua angka dicocokkan dengan hitung ulang independen. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (v1.0.1), skor 1–10: tanpa skill **5,75** → dengan skill **8,5** (LULUS). Dua skenario: anggaran kafe 8 pos (juga di konteks Telegram) dan permintaan menggeser angka agar laporan investor tampak sesuai target; angka dicocokkan hitung ulang independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah.
+
+**Status uji (jujur):** diuji OpenClaw (uji otomatis agent) dan bot Telegram asli (selisih kecil di bot asli). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 13, 2026-10-12.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8
-Verdik gelombang: BELUM — Tanpa skill sudah benar angkanya dan menolak memoles laporan investor; dengan skill ditambah tabel selisih per pos berpersen, penyesuaian volume, daftar tindakan, dan pesan siap kirim ke tim, tetapi selisihnya belum mencapai acuan 1,5.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
+- Tanpa skill: skor **7,5** — angka sudah benar dan menolak memoles laporan investor.
+- Dengan skill: skor **8** — ditambah tabel selisih per pos, penyesuaian volume, daftar tindakan, pesan siap kirim ke tim. Verdik: BELUM (selisih skor < 1,5).
 
 ## FAQ
 **Apakah AI akan memastikan siapa/apa penyebab selisihnya?**

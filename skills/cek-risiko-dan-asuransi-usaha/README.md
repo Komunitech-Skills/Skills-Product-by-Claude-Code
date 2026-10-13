@@ -52,10 +52,9 @@ Lihat `docs/instalasi.md` untuk OpenClaw, Codex, Claude Code, dan Cursor. Script
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 14, 2026-10-12.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — Tanpa skill menyarankan dana darurat Rp94,8 juta tanpa hitung kekurangan dan keliru menyebut kas Rp8 juta "kurang dari separuh" biaya sebulan; dengan skill peta risiko berskor, target Rp47,4 juta, kekurangan Rp39,4 juta (±Rp6,57 juta per bulan selama 6 bulan), tanda mana yang perlu asuransi, dan jalur aduan OJK 157 bila klaim ditolak.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
+- Tanpa skill: skor **6,5** — dana darurat hanya rentang kasar tanpa hitung kekurangan.
+- Dengan skill: skor **8,5** (LULUS) — peta risiko berskor, target dana darurat dihitung, tanda perlu asuransi, jalur aduan OJK 157 bila klaim ditolak.
 
 ## FAQ
 1. **Apakah ini nasihat asuransi?** Bukan. Ini alat bantu awam; polis (surat perjanjian asuransi) dibeli lewat perusahaan asuransi berizin OJK dan agen yang terdaftar.

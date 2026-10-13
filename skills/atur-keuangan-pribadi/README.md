@@ -64,9 +64,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
 - **Uji OpenClaw otomatis agent, Sep–Okt 2026** (v1.0.11; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS). Contoh gaji bersih Rp6,5 juta vs pengeluaran Rp8 juta: dengan skill pos fleksibel dipangkas tanpa menyentuh kiriman ibu dan sekolah anak; tanpa skill disarankan mengurangi kiriman ibu.
-- **Uji bot Telegram asli, gelombang 2–3 (2026-10-02):** hasilnya konsisten dengan uji OpenClaw.
+- **Uji bot Telegram asli (2026-10-02):** hasilnya konsisten dengan uji OpenClaw.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 2–3). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill orisinal Komunitech (inspirasi open-source lemah).
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill orisinal Komunitech (inspirasi open-source lemah). Bukan nasihat keuangan berlisensi.
 
 ## FAQ
 **Apakah skill ini menyarankan investasi tertentu?**

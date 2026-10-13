@@ -70,3 +70,28 @@ Daftar 40 skill (`random.seed(20261013+23)`), pool = skill aktif minus set A–F
 | kasir-lokal | subjudul ganda Hasil uji; rujukan bot uji | rapikan + bahasa awam |
 
 C14 set G–J selesai (40/40).
+
+---
+
+# C15 — cek acak README jualan (set K–N)
+
+Sisa 36 skill aktif (bukan set A–F Akun B, bukan G–J C14), urut abjad, 10 skill per run.
+
+| Set | Skill |
+|-----|--------|
+| K | actual-budget-usaha, agen-cs-toko, aktifkan-kembali-pelanggan, analisis-excel, analisis-pesaing-strategis, analisis-selisih-anggaran, atur-keuangan-pribadi, cari-prospek-web, cek-risiko-dan-asuransi-usaha, checklist-keamanan-pangan-usaha |
+
+## Set K (2026-10-13 ~19:30 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| actual-budget-usaha | sudah memenuhi checklist | — |
+| agen-cs-toko | kode internal "gelombang 9" di Bukti Telegram | bahasa awam |
+| aktifkan-kembali-pelanggan | blok Hasil uji nonstandar; gelombang 11/11b | blok **Hasil uji (angka nyata):** + Status uji; rapikan Bukti |
+| analisis-excel | sudah memenuhi checklist | — |
+| analisis-pesaing-strategis | baris pembuka Hasil uji vague | skor eksplisit tanpa→dengan |
+| analisis-selisih-anggaran | blok Hasil uji nonstandar; gelombang 13 | blok standar + Status uji; rapikan Bukti |
+| atur-keuangan-pribadi | rujukan "gelombang 2–3" | tanggal saja |
+| cari-prospek-web | gelombang 15 | bahasa awam |
+| cek-risiko-dan-asuransi-usaha | gelombang 14 | bahasa awam |
+| checklist-keamanan-pangan-usaha | blok Hasil uji nonstandar; tanpa Status uji; gelombang 14 + paragraf versi duplikat | blok standar + Status uji; rapikan Bukti |

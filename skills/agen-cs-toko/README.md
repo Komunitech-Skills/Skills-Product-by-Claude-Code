@@ -65,10 +65,9 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 9, 2026-10-05.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 4,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — DENGAN menolak auto-balas WA dengan alasan yang benar (WhatsApp Web tidak resmi, nomor bisa diblokir), langsung menawarkan mode Copilot, dan menyerahkan 7 template balasan + aturan nada + alur admin; TANPA hanya bertanya, tidak memberi satu template pun, dan menawarkan memandu pairing WA, plus pesan sistem/gateway bocor ke chat.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
+- Tanpa skill: skor **4,5**
+- Dengan skill: skor **8,5** (LULUS). Dengan skill menolak auto-balas WA (WhatsApp Web tidak resmi), menawarkan mode Copilot, template balasan + aturan nada; tanpa skill hanya bertanya dan menawarkan pairing WA otomatis.
 
 ## FAQ
 **Apakah bot ini otomatis membalas pelanggan di WhatsApp?**
