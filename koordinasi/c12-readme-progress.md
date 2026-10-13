@@ -12,4 +12,6 @@ Daftar skill: baris C12 di `papan-tugas.md` (53 skill `beta`). Maks 8 skill per 
 | 2026-10-13 ~06:20 | actual-budget-usaha, validasi-ide-produk-baru, tulisan-tanpa-kesan-ai, notebook-riset-lokal, audit-akun-iklan, pantau-website-toko, riset-harga-kompetitor, studio-video-pendek-ai | Batch 5: `Hasil uji` + `Status uji`; rujukan `docs/instalasi.md`; studio-video judul jualan ≤8 kata |
 | 2026-10-13 ~06:34 | riset-saham-berita, peringatan-dini-operasional, kpi-tim, inventree-gudang, klon-diri-konten, kalkulator-klinis-nakes, bot-trading-kripto, odoo-usaha | Batch 6: `Hasil uji` + `Status uji`; rujukan `docs/instalasi.md`; kalkulator: ganti blok Bukti uji lama |
 
-**Sisa (5):** spt-tahunan-op, kanboard-papan-kerja, strategi-merek-usaha, program-referral-loyalitas, strategi-konten-iklan (judul >8 kata opsional).
+| 2026-10-13 ~07:15 | spt-tahunan-op, kanboard-papan-kerja, strategi-merek-usaha, program-referral-loyalitas, strategi-konten-iklan | Batch 7 (final): `Hasil uji` + `Status uji`; rujukan `docs/instalasi.md`; atribusi kurasi MIT |
+
+**C12 selesai** — 53/53 skill beta di daftar papan.

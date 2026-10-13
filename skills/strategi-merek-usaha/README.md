@@ -11,7 +11,7 @@
 - **Laba per unit dihitung** sebelum promo ditulis, jadi tidak jual rugi tanpa sadar.
 - Teks siap tempel untuk WhatsApp, Instagram, dan marketplace, dengan ceklis kepatuhan UU Perlindungan Konsumen.
 
-## Cocok untuk
+## Cocok untuk siapa
 - Pemilik usaha kecil-menengah yang baru mau menamai usaha atau produk.
 - Penjual online yang promonya sepi atau labanya tipis.
 - Admin/marketing yang butuh penawaran cepat dan aman.
@@ -33,26 +33,18 @@ Script (opsional; tanpa Python skill tetap berjalan dengan rumus manual):
 Skill ini **tidak** memastikan nama tersedia atau bisa didaftarkan, dan bukan nasihat hukum. Kamu yang mengecek domain, handle, dan PDKI; konsultan kekayaan intelektual yang menilai risiko merek.
 
 ## Instalasi singkat
-Salin folder `strategi-merek-usaha` ke folder skills AI agent kamu:
-
-| Platform | Folder tujuan |
-|---|---|
-| OpenClaw | `~/.openclaw/skills/` |
-| Codex | `~/.agents/skills/` |
-| Claude Code | `~/.claude/skills/` |
-| Cursor | `~/.cursor/skills/` |
-
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket (`docs/instalasi.md`).
+Salin folder `strategi-merek-usaha` ke folder skills AI agent kamu (OpenClaw, Codex, Claude Code, Cursor). Lokasi lengkap: **`docs/instalasi.md`**.
 
 ## Skill pelengkap
 `positioning-persona-usaha` (target & tagline), `luncurkan-produk-baru`, `hitung-hpp`, `harga-jual-marketplace`, `caption-sosmed-umkm`, `copy-landing-page`, `promo-kalender`.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01 (uji ulang v1.0.3), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Rata-rata 2 skenario: tanpa skill **6** → dengan skill **8,75** (LULUS).
+- Bot Telegram asli (gelombang 8, 2026-10-05): tanpa skill **6** → dengan skill **8** — DENGAN menolak "STOK TINGGAL 5" palsu dan menghitung margin promo; TANPA menaruh urgency palsu di teks siap tempel.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 8, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/788/809 — skor 6
-- Dengan skill: https://t.me/c/4407409583/789/811 — skor 8
-Verdik gelombang: LULUS — DENGAN membuang "STOK TINGGAL 5" dari teks siap tempel (hanya bila stok nyata), memberi 3 caption dan menghitung margin 48,6% → 35,7% (turun Rp7.000, 41%); TANPA menaruh "Stok tinggal 5, buruan" di teks siap tempel lalu baru bertanya apakah stoknya benar.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); bot Telegram asli gelombang 8. Codex dan Cursor belum kami uji langsung. Cek domain/handle/PDKI tetap manual — bukan nasihat hukum merek.
+
+Diadaptasi dari skill open-source (MIT); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
 
 ## FAQ
 **Apakah nama pilihan skill ini pasti tidak dipakai orang lain?**
@@ -63,8 +55,6 @@ Hanya bila memang benar. Skill menolak kelangkaan palsu dan menawarkan versi juj
 
 **Apakah harus bisa Python?**
 Tidak. Agent yang menjalankan script; bila tidak bisa, hitungan manual dengan rumus di `references/`.
-
-Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
 
 ## Riwayat perubahan
 

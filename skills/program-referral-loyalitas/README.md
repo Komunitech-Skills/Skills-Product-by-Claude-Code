@@ -24,12 +24,11 @@ Ketik contoh: *"Toko hijab online saya, pesanan rata-rata Rp180.000, untung koto
 ## Instalasi singkat
 Salin folder `program-referral-loyalitas` ke lokasi skill di platform Anda (OpenClaw, OpenAI Codex, Claude Code, Cursor). Lokasi lengkap dan langkah per platform: `docs/instalasi.md` di paket ini. Script memakai Python standar (tanpa pemasangan paket); di Windows pakai `python` atau `py`. Skill tetap berguna bila script tidak bisa dijalankan (rumus cadangan ada di `references/rumus-dan-acuan.md`).
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-02 (v1.0.4+), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Rata-rata 2 skenario: tanpa skill **5,25** → dengan skill **9,0** (LULUS).
+- Bot Telegram asli (gelombang 5, 2026-10-03): tanpa skill **5,5** → dengan skill **9** — hitungan biaya referral vs laba, kuota anggaran, anti-curang, teks WA satu-per-satu (bukan blast).
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 5, 2026-10-03.
-- Tanpa skill: https://t.me/c/4407409583/635/664 — skor 5,5
-- Dengan skill: https://t.me/c/4407409583/636/666 — skor 9
-Verdik gelombang: LULUS — DENGAN menghitung biaya per referral vs laba pesanan pertama & seumur pelanggan, kuota anggaran, batas aman, dan opsi lebih hemat dari iklan, plus aturan anti-curang dan teks WA satu-per-satu dengan STOP; TANPA salah hitung laba bersih per pelanggan (diskon terhitung dua kali) dan teks WA bernada blast.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent + bot Telegram gelombang 5). Claude Code, Codex, dan Cursor belum kami uji langsung. Bagian klinik: PERLU REVIEW tenaga medis/hukum sebelum promosi.
 
 ## FAQ
 1. **Apakah harus punya data penjualan?** Tidak wajib. Tanpa data, skill memakai default (margin 40-55% sesuai jenis usaha, beli 1x per bulan, 6 bulan) berlabel "asumsi" dan menjadikan pencatatan data sebagai tugas minggu pertama.

@@ -27,12 +27,12 @@ Bagian hitung juga bisa dijalankan sendiri (Windows: `python` atau `py`):
 ## Instalasi singkat
 Salin folder `strategi-konten-iklan` ke lokasi skill di platform Anda (OpenClaw, OpenAI Codex, Claude Code, Cursor). Lokasi lengkap dan langkah per platform ada di `docs/instalasi.md` pada paket Anda.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01–05 (v1.0.6), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Rata-rata uji lokal (2 skenario awal): tanpa skill **6,75** → dengan skill **8,25**; uji ulang v1.0.5+: tanpa **6,75** → dengan **8,5** (LULUS).
+- Pra-cek konteks Telegram (3 percobaan, tanpa kirim): rata **8,0** — menolak klaim "turun 5kg seminggu", ROAS impas 2,50x, target aman 3,58x.
+- Bot Telegram asli (gelombang 10, 2026-10-05): tanpa skill **6** → dengan skill **8,5**.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/867/879 — skor 6
-- Dengan skill: https://t.me/c/4407409583/868/881 — skor 8,5
-Verdik gelombang: LULUS — DENGAN menolak klaim "turun 5kg seminggu" dengan dasar aturan yang tepat dan memberi ROAS impas 2,50x, target aman 3,58x, serta anggaran per minggu; TANPA salah menjelaskan ROAS dan menyarankan video testimoni untuk produk pelangsing.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent + bot Telegram gelombang 10 + pra-cek Telegram). Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Tidak ada jaminan ROAS/penjualan — hanya batas impas dan pembagian anggaran.
 
 ## FAQ
 1. **Apakah skill ini menjalankan iklan saya?** Tidak. Skill merencanakan dan menghitung; Anda yang membuat dan menayangkan iklan. Jangan pernah membagikan password atau kode OTP akun iklan.
