@@ -65,20 +65,9 @@ Salin folder `pdf-lokal` ke folder skills AI agent kamu:
 Panduan lengkap memasang skill (termasuk Windows): `docs/instalasi.md` di ZIP paket.
 Cara memasang Stirling-PDF: `references/pasang-stirling.md` di dalam folder skill ini.
 
-## Status pengujian (jujur, biar tidak salah ekspektasi)
-- Script **sudah diuji nyala ke Stirling-PDF sungguhan versi 2.14.3 DAN 3.0.0** (lewat
-  Docker, karena lingkungan pembuatan skill ini tidak punya installer desktop) untuk
-  SEMUA perintah: cek, gabung, pisah-halaman, pisah-rentang, kompres, OCR, foto-ke-pdf,
-  putar, watermark, kunci, buka-kunci, rapikan-resi - semua berhasil memanggil API asli
-  dan menghasilkan file PDF nyata, diverifikasi ulang oleh penguji independen memakai
-  alat pihak ketiga (`pdfinfo`, `pdftotext`, `qpdf`, `sha256sum`). Detail di
-  `references/sumber-api-stirling.md` dan `examples/HASIL-UJI.md`.
-- Selain itu ada rangkaian tes otomatis (`tests/uji_regresi.py`, 16/16 lulus) yang
-  memakai server tiruan, supaya bisa dijalankan ulang kapan saja tanpa perlu memasang
-  Stirling-PDF.
-- **Belum diuji oleh manusia di aplikasi desktop resmi Stirling-PDF (.msi Windows /
-  .dmg macOS)**, dan belum diuji di OpenClaw/Codex/Cursor sungguhan - baru simulasi
-  agent (Claude Code). Uji platform asli & beta tester menyusul sebelum status `rilis`.
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi, qpdf/Ghostscript tersedia), 1 Okt 2026 (v1.0.5), skor 1–10 penguji independen: tanpa skill **8,75** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pembeda bukan “mustahil tanpa skill”, melainkan konsistensi aman: tanpa pip install, tanpa unggah PDF sensitif, file asli tidak ditimpa, verifikasi ukuran/hasil. Script juga diuji ke Stirling-PDF 2.14.3 & 3.0.0 (Docker) — detail di `examples/HASIL-UJI.md` (16/16 regresi tiruan).
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Belum uji manusia di installer desktop Stirling-PDF (.msi/.dmg). Codex dan Cursor belum uji platform asli.
 
 ## FAQ
 **Apakah file PDF-ku dikirim ke internet?**

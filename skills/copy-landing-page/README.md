@@ -43,6 +43,10 @@ Salin folder `copy-landing-page` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill struktur landing lengkap, meta & tautan WA terverifikasi script, testimoni tidak dikarang.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
+
 ## FAQ
 **Apakah testimoni/rating di halaman jualan dibuatkan otomatis?**
 Tidak. Skill ini sengaja **tidak pernah mengarang** testimoni, rating bintang, atau angka penjualan — itu melanggar kepercayaan pembeli dan berisiko hukum. Kalau kamu belum punya testimoni asli, bagian itu ditandai placeholder yang bisa kamu isi belakangan.
@@ -56,3 +60,5 @@ Tidak wajib. Kalau Python ada, tautan WhatsApp dan panjang meta title/descriptio
 ## Riwayat perubahan
 
 Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+Skill ini diadaptasi dari struktur marketing skill open-source (MIT, coreyhaines31/marketingskills); teks, contoh Indonesia, script, dan ceklis kepatuhan milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber.

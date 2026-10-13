@@ -49,12 +49,9 @@ Salin folder `atur-keuangan-pribadi` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Sep 2026 (v1.0.11), skor 1–10: tanpa skill **6,5** → dengan skill **9,0** (LULUS). Contoh gaji bersih Rp6,5 juta vs pengeluaran Rp8 juta: DENGAN memangkas pos fleksibel tanpa menyentuh kiriman ibu/sekolah anak; TANPA saran mengurangi kiriman ibu. Uji bot Telegram gelombang 2–3 (2026-10-02) konsisten. Sumber: `examples/HASIL-UJI.md`, `promosi/sebelum-sesudah.jsonl`.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02.
-- Tanpa skill: https://t.me/c/4407409583/517/525 — skor: lihat catatan gelombang
-- Dengan skill: https://t.me/c/4407409583/313/542 — skor: lihat catatan gelombang
-Verdik gelombang: — — DENGAN menyusun anggaran zero-based dari script; TANPA hanya anggaran dan dana darurat 6–9x pengeluaran tanpa script. Catatan jujur: THR sempat dihitung ganda, diperbaiki di versi 1.0.7.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 2–3). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill orisinal Komunitech (inspirasi open-source lemah).
 
 ## FAQ
 **Apakah skill ini menyarankan investasi tertentu?**

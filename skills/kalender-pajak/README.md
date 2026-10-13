@@ -40,7 +40,11 @@ Salin folder `kalender-pajak` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python standar (tanpa instal paket apa pun); tanpa Python pun skill tetap bisa menyusun jadwal dari tabel aturan.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Script memakai Python standar (tanpa instal paket apa pun); tanpa Python pun skill tetap bisa menyusun jadwal dari tabel aturan.
+
+**Hasil uji (angka nyata):** uji independen Sep 2026 (v1.0.7): **108 tenggat** Okt 2026–Des 2027 **0 selisih** dari verifikasi manual; uji A/B skenario warung OP — tanpa skill **13/20** tanggal benar → dengan skill **20/20**. Skor penguji: **8/10** LULUS (setelah perbaikan unggah faktur tgl 20). Sumber: `examples/HASIL-UJI.md`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). **Belum** uji bot Telegram asli untuk skill ini. Codex dan Cursor belum uji platform asli. PERLU REVIEW: beberapa pasal PMK dari sumber sekundar.
 
 ## FAQ
 **Apakah tanggalnya pasti benar?**

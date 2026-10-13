@@ -43,6 +43,10 @@ Salin folder `audit-seo-toko-online` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 2 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **7,0** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill checklist SEO terstruktur, prioritas perbaikan, dan batasan jujur (tidak menjanjikan peringkat 1).
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
+
 ## FAQ
 **Apakah ini menjamin toko saya jadi peringkat 1 di Google?**
 Tidak. Tidak ada yang bisa menjamin itu — peringkat Google dipengaruhi banyak faktor di luar satu halaman (persaingan, waktu, faktor lain). Skill ini fokus membenahi hal-hal dasar yang benar-benar dalam kendalimu dan bisa dicek, dengan jujur menyebutkan kalau ada data yang tidak tersedia.
@@ -52,3 +56,5 @@ Tidak. Semua pengecekan teknis dilakukan dari file HTML yang kamu tempel/kirim l
 
 **Bagaimana kalau website saya WordPress dan pakai plugin SEO (Yoast/RankMath)?**
 Tetap bisa diaudit. Ada catatan khusus di hasil audit soal data terstruktur (JSON-LD) yang disisipkan plugin lewat JavaScript — supaya cara kamu mengambil HTML (Simpan Halaman vs Lihat Sumber Halaman) tidak membuat hasilnya salah dibaca.
+
+Skill ini diadaptasi dari struktur marketing skill open-source (MIT, coreyhaines31/marketingskills); teks, contoh Indonesia, dan checklist milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber.

@@ -61,11 +61,13 @@ Setelah terpasang dan terhubung, cukup ketik permintaan biasa:
 
 3. Simpan kunci API sekali (di terminal Anda sendiri, bukan di chat): `python3 ~/.openclaw/skills/dolibarr-usaha/scripts/dolibarr.py simpan-kunci` (Windows: `python` / `py`).
 
-Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, atau paket tambahan.
+Panduan pemasangan skill lengkap: `docs/instalasi.md` dan `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, atau paket tambahan.
 
 **Baru (1.0.10):** perintah `piutang-csv` membaca file CSV ekspor Dolibarr (tanpa koneksi/kunci) dan menghitung umur piutang lewat script; agent tidak pernah mengirim tagihan ke pelanggan, hanya menyiapkan draf yang Anda kirim sendiri.
 
-**Status uji jujur (versi 1.0.5):** diuji dengan Dolibarr asli **24.0.1 dan 22.0.4** (versi DoliWamp terbaru) di Linux, uji independen v1.0.0 s.d. v1.0.4 (lulus 8/10; v1.0.3–v1.0.4 di server tiruan). Versi 1.0.4 menambah pengaman saat koneksi putus di tengah pembuatan draf (tidak membuat draf kedua, memberi tahu apa yang harus dicek di Dolibarr). Versi 1.0.5 memperluas pengaman itu ke galat server (500/502/504) dan jawaban yang terpotong, dan draf kosong milik perintah lain tidak lagi menahan draf baru (cukup catatan); perbaikan 1.0.5 baru diuji pembuat di server tiruan dan menunggu uji ulang independen, uji otomatis, dan jadwal OpenClaw 2026.9.6 (tanpa pengiriman Telegram sungguhan). **Belum** diuji di DoliWamp Windows sungguhan; versi Dolibarr lain akan diberi tanda "belum diuji".
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi + data contoh), 2 Okt 2026 (v1.0.12), skor 1–10 penguji independen: tanpa skill **5,25** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill pernah menerima kunci API di chat dan siap eksekusi hapus massal; dengan skill menolak hapus/kunci di chat, menjalankan `piutang-csv`, dan pratinjau draf invoice aman.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent dengan data contoh, 2026-10-02). Uji manusia Dolibarr asli (Windows/DoliWamp) mengikuti `docs/uji-manusia-akuntansi.md` — hasil menunggu pemilik/tim. Codex dan Cursor belum uji platform asli.
 
 ## FAQ
 **Apakah AI bisa salah mengirim atau menghapus invoice saya?**
