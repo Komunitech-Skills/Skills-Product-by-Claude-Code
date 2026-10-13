@@ -70,7 +70,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - 2 Okt 2026, uji ulang v1.0.7 (dua skenario): **5,0** → **8,5** (LULUS).
 - 2 Okt 2026, uji ulang v1.0.8 (satu skenario): **7** → **8** (LULUS).
 
-Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, total nilai prospek dihitung; tanpa skill: menyarankan broadcast otomatis yang berisiko. Di bot Telegram asli (gelombang 2–3): selisih positif, draf terstruktur (lihat bagian Bukti uji di bawah).
+Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, total nilai prospek dihitung; tanpa skill: menyarankan broadcast otomatis yang berisiko. Di bot Telegram uji (2026-10-02): selisih positif, draf terstruktur (lihat bagian Bukti uji di bawah).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji muat CLI, uji platform otomatis agent, uji sebelum/sesudah 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
 
@@ -83,10 +83,10 @@ Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, tota
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang uji 2–3 (putaran uji di bot), 2026-10-02 (3 giliran). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.6).
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor tidak dicatat di gelombang itu
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor tidak dicatat di gelombang itu
-Verdik gelombang: tidak dicatat di gelombang itu — DENGAN (giliran 1–2) mendeteksi nama ganda dan mencatat status Deal + DP; TANPA mencatat ke CSV buatan sendiri. Catatan jujur: giliran 3 DENGAN salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-02 (tiga giliran uji bot-ke-bot). Versi skill saat uji: 1.0.6 (versi terkini saat dibaca: lihat baris Versi terkini di bawah).
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor angka tidak dicatat di catatan uji itu
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor angka tidak dicatat di catatan uji itu
+Verdik: DENGAN (giliran 1–2) mendeteksi nama ganda dan mencatat status Deal + DP; TANPA mencatat ke CSV buatan sendiri. Catatan jujur: giliran 3 DENGAN salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
 
 Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.10), belum diuji ulang di bot Telegram.
 

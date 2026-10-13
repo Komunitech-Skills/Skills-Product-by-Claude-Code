@@ -71,8 +71,6 @@ Salin folder `gaji-umkm` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-## Hasil uji (jujur)
-
 **Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (26 Sep 2026; 12 karyawan fiktif; simulasi Claude Code).
 - Tanpa skill: penguji yang sangat teliti butuh ±1 jam untuk mendapat angka yang benar. Agen umum biasanya terjebak, misalnya memakai batas upah JP (Jaminan Pensiun) lama Rp 10.547.400 (berlaku s.d. Februari 2026), PPh 21 Eka kurang potong (Rp 900.000, yang benar Rp 1.092.420), atau Lina yang resign 14 September dihitung biasa (seharusnya kelebihan potong Rp 931.100 dikembalikan). Tidak ada riwayat bulan lalu, slip, atau file transfer.
 - Dengan skill: 12 dari 12 karyawan cocok dengan hitungan independen di semua komponen, dalam ±6 perintah dan kurang dari 1 menit waktu script (program kecil). Lina dihitung ulang setahun dengan benar, lalu slip dan file transfer langsung jadi.
