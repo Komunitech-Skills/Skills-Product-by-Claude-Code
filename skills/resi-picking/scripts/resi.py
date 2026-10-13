@@ -25,7 +25,7 @@ import unicodedata
 from collections import OrderedDict
 from pathlib import Path
 
-VERSI = "1.0.2"
+VERSI = "1.0.4"
 BATAS_UKURAN = 200 * 1024 * 1024
 
 

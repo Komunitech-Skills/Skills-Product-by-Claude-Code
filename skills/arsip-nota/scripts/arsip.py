@@ -25,7 +25,7 @@ from pathlib import Path
 
 APLIKASI = "komunitech-arsip-nota"
 SKEMA = 1
-VERSI = "1.0.5"
+VERSI = "1.0.6"
 
 KATEGORI = OrderedDict([
     ("bahan-baku", ("Bahan baku", ["bahan", "baku", "sembako", "grosir", "supplier", "pemasok",

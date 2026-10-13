@@ -37,7 +37,7 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
-VERSI = "1.0.8"
+VERSI = "1.0.10"
 VERSI_DIUJI = "Frappe Books v0.36.0 (skema juga dicocokkan dengan cabang main 0.37.0, 20 Sep 2026)"
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9}
 NOL = Decimal(0)

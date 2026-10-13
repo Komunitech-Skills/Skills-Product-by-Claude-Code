@@ -469,7 +469,7 @@ class UjiV101(TmpMixin, unittest.TestCase):
         readme = (SKILL / "README.md").read_text(encoding="utf-8")
         self.assertIn("kas-umkm", skill.split("---")[1])   # di description
         self.assertIn("Kas UMKM", readme)
-        self.assertEqual(ab.VERSI, "1.0.6")
+        self.assertEqual(ab.VERSI, "1.0.7")
         fmt = (SKILL / "references" / "format-bank.md").read_text(encoding="utf-8")
         self.assertIn("`12,5` = Rp 12,50", fmt)
 

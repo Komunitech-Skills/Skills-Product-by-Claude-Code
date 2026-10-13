@@ -28,7 +28,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from fractions import Fraction
 
-VERSI = "1.0.2"
+VERSI = "1.0.6"
 PENAFIAN = ("Alat bantu untuk tenaga kesehatan, bukan pengganti penilaian klinis. "
             "Keputusan klinis tetap pada dokter/bidan yang memeriksa.")
 

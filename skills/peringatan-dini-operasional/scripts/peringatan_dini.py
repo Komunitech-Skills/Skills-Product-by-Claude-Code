@@ -47,7 +47,7 @@ from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal as D, InvalidOperation, 
 
 getcontext().prec = 28
 
-VERSI = "1.0.1"
+VERSI = "1.0.7"
 MIN_RATA7 = 7
 MIN_TREN = 5
 MIN_SIGMA = 14
