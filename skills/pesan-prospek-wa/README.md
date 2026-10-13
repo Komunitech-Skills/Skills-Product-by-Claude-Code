@@ -1,4 +1,4 @@
-# Pesan Pertama ke Calon Pelanggan, Sopan & Tidak Terkesan Spam
+# Pesan Pertama ke Calon Pelanggan, Tak Terkesan Spam
 
 **Punya kontak calon pelanggan baru (dari referral, pameran, Google Maps, IG, atau grup)? Dapatkan pesan pembuka WhatsApp yang personal, jelas asal-usulnya, dan tidak terkesan spam — dalam 3 pilihan panjang, siap kirim.**
 
@@ -21,11 +21,11 @@ Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (dengan skill pesan
 - **Bukan untuk:** menindaklanjuti prospek yang sudah dihubungi (pakai `follow-up-prospek`), promo massal ke banyak kontak (pakai `broadcast-wa`), atau mencari daftar calon pelanggan (pakai `riset-calon-pelanggan`)
 
 ## Contoh sebelum & sesudah
-**Sebelum:** "Halo kak, kenalin aku dari usaha X, mau nawarin produk nih, boleh?" — dikirim ke nomor asing tanpa menjelaskan dari mana nomornya didapat, sering langsung dicurigai penipuan/spam dan diblokir.
+**Sebelum:** "Halo kak, kenalin aku dari usaha X, mau nawarin produk nih, boleh?" — dikirim ke nomor asing tanpa menjelaskan dari mana nomornya didapat, bisa langsung dicurigai penipuan/spam dan diblokir. Dalam uji OpenClaw, AI tanpa skill hanya membuat satu pesan tanpa opsi keluar sopan, tidak menyinggung beda jam WIB dan WITA, dan malah menawarkan mengirimkannya sendiri ke nomor calon pelanggan.
 
 **Sesudah (cukup ceritakan):** "Saya lihat usaha katering ini di Google Maps, mau nawarin jasa desain kemasan, nomor WA-nya segini"
 
-Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/uji-pembuat-01-jasa-desain-kemasan.md`):
+Cuplikan hasil (dipotong; keluaran asli dari uji simulasi oleh pembuat skill, data fiktif; `examples/uji-pembuat-01-jasa-desain-kemasan.md`):
 ```
 Varian 1 — Singkat
 Selamat siang, Pak Andra. Saya Nadia dari Studio Kemas Ceria, dapat nomor Bapak dari
@@ -62,11 +62,11 @@ Salin folder `pesan-prospek-wa` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** tiga sumber, skor 1–10 penguji independen.
-- **Uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026** (versi sebelum 1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,0** → dengan skill **9,0** (LULUS). Dengan skill ada draf WhatsApp + email, asal kontak wajib disebut, zona jam benar, panjang pesan dicek skrip, dan tanpa tawaran kirim massal.
-- **Uji ulang konteks Telegram v1.0.7, 5 Okt 2026** (OpenClaw dengan kanal Telegram, tanpa kirim; sumber sama): **8,7** (rata-rata tiga percobaan, lulus 3 dari 3).
-- **Uji bot Telegram asli, gelombang 7 (2026-10-05):** 6 → 8,5, LULUS tampilan.
+- **Uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026** (versi sebelum 1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,0** → dengan skill **9,0** (LULUS). Dengan skill ada 3 draf pesan WhatsApp, asal kontak wajib disebut, zona jam benar, panjang pesan dicek skrip, dan tanpa tawaran kirim massal.
+- **Uji ulang v1.0.7 dalam konteks Telegram, 5 Okt 2026** (OpenClaw dengan kanal Telegram, tanpa kirim sungguhan; berkas sama): **8,7** (rata-rata tiga percobaan, ketiganya lulus).
+- **Uji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 5 Okt 2026:** satu pesan tanpa dan dengan skill, skor 6 → 8,5 dari 10. Dengan skill, AI langsung memberi 3 draf, mengoreksi jam kirim, dan menutup dengan daftar periksa anti-blokir.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Bisa dipakai untuk kirim ke banyak kontak sekaligus?**
@@ -76,7 +76,7 @@ Tidak. Skill ini khusus pesan pertama yang dikirim **satu per satu oleh manusia*
 Tidak disarankan dan skill ini akan menolak membantu jika sumbernya jelas database beli/bocoran/scraping berlogin — berisiko melanggar UU PDP dan nomor Anda bisa diblokir WhatsApp. Skill ini hanya untuk kontak dari sumber sah (referral, pameran, listing bisnis publik, media sosial usaha, grup komunitas).
 
 **Kalau prospek tidak membalas, apa langkah selanjutnya?**
-Skill ini berhenti di pesan pertama. Untuk menindaklanjuti prospek yang belum membalas dengan jadwal H+1/H+3/H+7/H+14, pakai skill `follow-up-prospek`.
+Skill ini berhenti di pesan pertama. Untuk menindaklanjuti prospek yang belum membalas dengan jadwal H+1/H+3/H+7/H+14 (1, 3, 7, dan 14 hari setelah pesan pertama), pakai skill `follow-up-prospek`.
 
 ## Riwayat perubahan
 

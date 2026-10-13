@@ -2,7 +2,7 @@
 
 **Naskah ucapan dan pesan WA siap pakai untuk obrolan 1-on-1 (empat mata), teguran halus, karyawan baru, dan pengumuman perubahan.**
 
-Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (tanpa skill saran umum yang malah menyuruh membahas masalah rumah tangga karyawan; dengan skill pesan ajakan, naskah empat mata berisi tanggal dan jam kejadian, serta tanggal cek ulang).
+Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (tanpa skill, saran umum yang ikut menyinggung masalah rumah tangga karyawan dan tanpa pesan WA ajakan; dengan skill, ada pesan ajakan, naskah empat mata berisi tanggal dan jam kejadian, serta usulan tanggal cek ulang).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -19,11 +19,11 @@ Pemilik/atasan UMKM dengan tim 3-20 orang. Bukan untuk memecat atau menghitung p
 ## Contoh sebelum & sesudah
 **Permintaan:** "Si Rina kasir saya sering telat (09.40, 09.35, 09.50; toko buka 09.00). Dedi jadi sendirian, ada pelanggan pergi. Anaknya baik, kabarnya lagi ada masalah rumah. Saya nggak enak negur."
 
-| Tanpa skill | Dengan skill |
+| Tanpa skill (uji OpenClaw, 12 Okt 2026) | Dengan skill (uji OpenClaw yang sama) |
 |---|---|
-| Saran umum "awali dengan empati, lalu tegas", membuka dengan pujian pembungkus, ikut menyinggung masalah rumah tangga, mengarang konsekuensi potongan gaji, lalu menawarkan "mau dibuatkan pesan WA?" | Langsung jadi: pesan WA ajakan bicara (terpisah dari teguran), naskah empat mata urut konteks → fakta tanggal & jam → dampak → tanya → sepakat (tiba 08.45, cek ulang Jumat), pujian dipisah, kalimat halus-tapi-jelas, tindak lanjut 3 baris. Hal pribadi tidak diangkat; yang belum diketahui ditandai `[isian]`, 3 pertanyaan di akhir. |
+| Saran umum "pisahkan empati dari ekspektasi kerja" dengan contoh kalimat. Naskahnya membuka dengan "kelihatan agak berat ya?" dan ikut menyinggung masalah di rumah yang hanya kabar orang lain. Tidak ada pesan WA ajakan siap kirim, dan cek ulang hanya "dua minggu ke depan" tanpa tanggal. | Langsung jadi: pesan WA ajakan bicara (terpisah dari teguran), naskah empat mata urut konteks → fakta tanggal & jam → dampak → tanya → sepakat (tiba 08.45, cek ulang Jumat 16 Okt sebagai usulan), langkah lanjut bertanggal. Kabar rumah tangga sengaja tidak dimasukkan; yang belum diketahui ditandai `[isian]`, 2 pertanyaan di akhir. |
 
-Cuplikan keluaran nyata dengan skill (uji OpenClaw v1.0.2, dipotong; `examples/01-teguran-kasir-terlambat.md`):
+Cuplikan keluaran nyata dengan skill (uji OpenClaw otomatis, v1.0.2, 12 Okt 2026, dipotong; `examples/01-teguran-kasir-terlambat.md`):
 
 > **Pesan WA ajakan ngobrol (kirim dulu, jangan langsung tegur lewat WA):**
 >
@@ -56,14 +56,14 @@ Salin folder `satu-lawan-satu-dan-umpan-balik` ke folder skills platform Anda. L
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1252/1272 — skor 6
-- Dengan skill: https://t.me/c/4407409583/1253/1275 — skor 8,5
-Verdik gelombang: LULUS — Tanpa skill saran umum yang malah menyuruh membahas kabar masalah rumah; dengan skill ada pesan ajakan, naskah empat mata berisi tanggal dan jam kejadian yang benar, serta tanggal cek ulang.
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 12 Okt 2026, satu skenario (kasir terlambat), tanpa dan dengan skill:
+- Tanpa skill: skor 6 dari 10.
+- Dengan skill: skor 8,5 dari 10.
+Tanpa skill, jawabannya saran umum yang ikut menyinggung kabar masalah rumah tangga karyawan. Dengan skill, ada pesan ajakan ngobrol, naskah empat mata berisi tanggal dan jam kejadian yang benar, serta usulan tanggal cek ulang.
 
 ## FAQ
 **Apakah ini nasihat hukum?**
-Bukan; untuk PHK dan sengketa, konsultasikan ke ahli ketenagakerjaan.
+Bukan. Skill ini alat bantu menyiapkan naskah bicara; untuk PHK dan sengketa, konsultasikan ke ahli ketenagakerjaan.
 
 **Kalau saya minta pecat lewat WA?**
 Ditolak singkat; Anda tetap dibantu pesan ajakan bicara, naskah empat mata, dan format catatan kejadian (versi 1.0.2).
@@ -72,7 +72,7 @@ Ditolak singkat; Anda tetap dibantu pesan ajakan bicara, naskah empat mata, dan 
 WA hanya untuk mengajak bicara; teguran inti disampaikan empat mata.
 
 **Perlu instal apa-apa?**
-Tidak.
+Tidak perlu program tambahan: cukup salin folder skill ke AI agent Anda (lihat Instalasi), tanpa akun atau API key dari Komunitech. Langganan AI agent-nya tetap Anda tanggung sendiri.
 
 ## Catatan
 Bukan nasihat hukum; naskah ini alat bantu bicara, bukan pengganti ahli ketenagakerjaan. Skill ini menyiapkan naskah; Anda yang menyampaikannya. Diadaptasi dan diubah dari ide "Manager's Playbook" karya Kamal Sindi (CC BY 4.0); pembuat asli tidak mendukung hasil adaptasi ini. Lihat `ATTRIBUTION.md`.

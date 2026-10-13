@@ -2,7 +2,7 @@
 
 **Ketik gaji dan status karyawan, langsung dapat potongan PPh 21 (pajak penghasilan karyawan) per bulan sampai Desember — sesuai tabel TER resmi (tarif efektif rata-rata, cara potong PPh 21 bulanan sejak 2024).**
 
-*Diuji AI penguji independen: 7,25 → 8,9 dari 10 (selisih tipis karena angka tarif tanpa skill juga benar; skill unggul di kecepatan, cek sektor usaha untuk PPh 21 ditanggung pemerintah, dan hitungan Desember plus THR yang konsisten).*
+*Diuji AI penguji independen di OpenClaw: 7,25 → 8,9 dari 10 (selisih tipis karena angka tarif tanpa skill juga benar; pembedanya, skill menanyakan sektor usaha dulu untuk PPh 21 ditanggung pemerintah, empat angka hasilnya konsisten, dan hitungan Desember plus THR selesai jauh lebih cepat).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -21,9 +21,9 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Mencari tabel TER di internet, bingung karyawan K/1 masuk kategori mana, lalu kaget potongan Desember jauh lebih besar dan tidak tahu cara menghitungnya.
 
-**Sesudah (cukup ketik):** "Karyawan saya statusnya K/1, gaji 12 juta sebulan. THR 12 juta dibayar bulan Maret. Iuran JHT+JP yang dipotong dari gajinya 360 ribu per bulan. PPh 21 setahun 2026 berapa aja per bulannya?" (K/1 = menikah dengan 1 tanggungan; JHT dan JP = iuran BPJS untuk hari tua dan pensiun)
+**Sesudah (cukup ketik):** "Karyawan saya statusnya K/1, gaji 12 juta sebulan. THR 12 juta dibayar bulan Maret. Iuran JHT+JP yang dipotong dari gajinya 360 ribu per bulan. PPh 21 setahun 2026 berapa aja per bulannya?" (K/1 = menikah dengan 1 tanggungan; TK/0 = belum menikah tanpa tanggungan; JHT dan JP = iuran BPJS untuk hari tua dan pensiun)
 
-*Cuplikan hasil nyata dari `examples/01-setahun-dengan-thr.md` (bulan lain dan sebagian rincian dipotong):*
+*Cuplikan hasil nyata dari uji simulasi agen penguji, 23 Sep 2026 (`examples/01-setahun-dengan-thr.md`; bulan lain dan sebagian rincian dipotong):*
 ```
 **PPh 21 2026 — status K/1 (TER kategori B)**
 | Bulan | Penghasilan bruto | Tarif TER | PPh 21 dipotong |
@@ -41,7 +41,7 @@
 - Sudah dipotong bulan-bulan sebelumnya: Rp 5.760.000
 - **PPh 21 dipotong di Desember: Rp 642.000**
 ```
-(TER = tarif efektif rata-rata; PTKP = batas penghasilan yang tidak dikenai pajak; PKP = penghasilan yang dikenai pajak.)
+(TER = tarif efektif rata-rata; Pasal 17 = tarif pajak penghasilan tahunan; PTKP = batas penghasilan yang tidak dikenai pajak; PKP = penghasilan yang dikenai pajak.)
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -68,12 +68,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/736/754 — skor 8
-- Dengan skill: https://t.me/c/4407409583/737/757 — skor 6
-Verdik gelombang: BELUM — DENGAN lebih rapi (TER A 0,75% = Rp45.000, minta konfirmasi KLU, syarat bruto Januari 2026) tetapi **salah di jawaban inti**: "uang diterima Rp6.045.000" (gaji + DTP, PPh "dipotong Rp0"). Menurut teks PMK 105/2025, PPh 21 tetap dipotong lalu nilai DTP dibayar tunai, sehingga pegawai menerima Rp6.000.000. Nominal ini sama dengan jawaban TANPA.
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 5 Okt 2026. Pertanyaan yang sama dikirim tanpa dan dengan skill: karyawan konveksi bergaji Rp6.000.000, apakah dapat PPh 21 ditanggung pemerintah (DTP), berapa PPh bulan Oktober, dan berapa uang yang diterima.
+- Tanpa skill: skor 8 dari 10.
+- Dengan skill (versi 1.0.4): skor 6 dari 10.
 
-Kekurangan ini diperbaiki di versi 1.0.5 (lihat `CHANGELOG.md`).
+Jadi di uji ini skill kalah. Jawaban dengan skill lebih rapi (tarif TER 0,75% = Rp45.000, meminta konfirmasi sektor usaha, menyebut syarat gaji Januari 2026), tetapi **salah di jawaban inti**: menulis uang diterima Rp6.045.000 dan PPh "dipotong Rp0". Menurut teks PMK 105/2025, PPh 21 tetap dipotong lalu nilai DTP dibayar tunai, sehingga pegawai menerima Rp6.000.000, sama dengan jawaban tanpa skill.
+
+Kekurangan ini diperbaiki di versi 1.0.5 (rincian teknis ada di `CHANGELOG.md`). Setelah perbaikan, uji ulang di OpenClaw dengan konteks Telegram (5 Okt 2026, dua kali jalan) menghasilkan angka yang benar; perbaikan itu belum diulang di bot Telegram sungguhan.
 
 ## FAQ
 **Kenapa potongan Desember berbeda dari bulan lain?**

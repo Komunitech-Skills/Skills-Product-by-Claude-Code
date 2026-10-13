@@ -1,8 +1,8 @@
-# Surat Penawaran Harga Rapi dalam 1 Menit
+# Surat Penawaran Harga Rapi, Cepat Dibuat
 
 **Sebutkan barang dan harganya, dapat surat penawaran resmi plus teks WhatsApp-nya, dengan hitungan dari kalkulator bawaan, bukan dikira-kira.**
 
-Diuji AI penguji independen di OpenClaw: 7 → 8 dari 10 (selisih kecil karena angka sudah benar di kedua sisi; pembedanya surat lengkap dengan keterangan PPN yang tidak menyesatkan, terbilang, daftar asumsi, dan teks WhatsApp siap kirim).
+Diuji AI penguji independen di OpenClaw (satu skenario, di dalam paket 25 skill): 7 → 8 dari 10 (selisih kecil karena angka sudah benar di kedua sisi; pembedanya, tanpa skill AI menulis "harga belum termasuk PPN" untuk usaha non-PKP dan memasang paket PDF tanpa izin, sedangkan dengan skill suratnya lengkap dengan keterangan PPN yang tidak menyesatkan, terbilang, daftar asumsi, dan teks WhatsApp siap kirim).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -19,11 +19,11 @@ Diuji AI penguji independen di OpenClaw: 7 → 8 dari 10 (selisih kecil karena a
 - Admin sales yang tiap hari mengetik ulang penawaran di Word
 
 ## Contoh sebelum & sesudah
-**Sebelum:** 30–60 menit menyalin template Word, menghitung PPN dengan kalkulator HP, dan takut salah angka.
+**Sebelum:** menyalin template Word, menghitung PPN dengan kalkulator HP, dan takut salah angka, yang bisa memakan waktu cukup lama.
 
 **Sesudah (cukup ketik):** "Saya CV Teknik Mandiri Fiktif, Surabaya, sudah PKP. Mau kirim penawaran ke Klinik Sehat Sentosa Fiktif, Pak dr. Budi (pemilik). 5 unit AC split 1 PK @4.250.000, jasa pasang + pipa 3 meter 350rb per titik, ongkir 200rb. Harga belum PPN. Berlaku seminggu aja karena harga AC naik terus. Pembayaran 30% DP, sisanya setelah terpasang. Nomor surat 7."
 
-Cuplikan surat (dipotong; DPP = harga sebelum pajak; dari `examples/03-ac-pkp-dengan-ongkir.md`):
+Cuplikan surat (dipotong; keluaran asli dari uji simulasi agen penguji, 23 Sep 2026, data fiktif; DPP = harga sebelum pajak; `examples/03-ac-pkp-dengan-ongkir.md`):
 ```
 Nomor    : 007/SPH/TMF/IX/2026
 Perihal  : Penawaran Harga Pengadaan dan Pemasangan AC Split
@@ -62,7 +62,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji perbandingan oleh penguji independen (simulasi agent; skor kualitas 8/10):** 400 surat acak (diskon baris dan total, ongkir, non-PKP/PKP, harga termasuk PPN) dicocokkan dengan hitungan independen: 0 selisih. Pada uji A/B untuk percetakan non-PKP, surat tanpa skill menulis "belum termasuk pajak" (menyesatkan), masa berlaku tanpa tanggal, nomor surat tanpa kode usaha, dan tanpa teks WhatsApp; dengan skill: "Harga tidak dikenakan PPN", berlaku sampai tanggal pasti, nomor baku `045/SPH/PSJ/IX/2026`, plus teks WA siap kirim. Rincian: `examples/HASIL-UJI.md` dan `examples/00-pembanding-tanpa-skill.md`.
-- **Uji OpenClaw, 2026-10-01** (uji otomatis agent, satu skenario surat; angka dari `examples/00-openclaw-sebelum-sesudah.md`): 7 → 8 (8 pada uji ulang terakhir; selisih kecil). Temuannya diperbaiki di versi 1.0.3 sampai 1.0.5 (rincian di `CHANGELOG.md`). Uji ulang terakhir memakai v1.0.4; perbaikan v1.0.5 belum diuji ulang di OpenClaw.
+- **Uji OpenClaw, 1 Okt 2026** (uji otomatis agent, satu skenario surat, skill diuji di dalam paket 25 skill; angka dari `examples/00-openclaw-sebelum-sesudah.md`): 7 → 8 (8 pada uji ulang terakhir; selisih kecil, jadi bukan kemenangan telak). Temuannya diperbaiki di versi 1.0.3 sampai 1.0.5 (rincian di `CHANGELOG.md`). Uji ulang terakhir memakai v1.0.4; perbaikan v1.0.5 belum diuji ulang di OpenClaw.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
