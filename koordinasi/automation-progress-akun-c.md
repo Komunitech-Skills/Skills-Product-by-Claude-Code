@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~05:43 | `cursor/iterasi-otomatis-akun-c-8b42` | dc79bb54 | selesai 05:43 UTC — C12 batch 4 README ×8 | 32/53 C12 | docs OK | ya |
 | 2026-10-13 ~05:11 | `cursor/iterasi-otomatis-akun-c-8b42` | 356c86d0 | selesai 05:11 UTC — C12 batch 3 README ×8 | 24/53 C12 | docs OK | ya |
 | 2026-10-13 ~04:38 | `cursor/iterasi-otomatis-akun-c-8b42` | 69cd9880 | selesai 04:38 UTC — C12 batch 1 ulang Hasil uji ×8 | 16/53 C12 | docs OK | ya |
 | 2026-10-13 ~03:34 | `cursor/iterasi-otomatis-akun-c-8b42` | 5e187314 | C12 README Tahap 8 ×8 (fider + 7 marketplace) | 8/53 C12 | docs OK | ya |
