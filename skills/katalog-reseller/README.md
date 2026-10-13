@@ -59,10 +59,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 5, 2026-10-03.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 3 Okt 2026.
 - Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5
 - Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — DENGAN menghitung harga dari diskon atas harga eceran + untung mitra setelah biaya Shopee dan tidak menyuruh reseller jual di bawah harga eceran sendiri; TANPA menyarankan reseller jual Rp20–22 rb (merusak harga eceran Rp25 rb) tanpa memperhitungkan potongan Shopee.
+Verdik uji bot: LULUS — DENGAN menghitung harga dari diskon atas harga eceran + untung mitra setelah biaya Shopee dan tidak menyuruh reseller jual di bawah harga eceran sendiri; TANPA menyarankan reseller jual Rp20–22 rb (merusak harga eceran Rp25 rb) tanpa memperhitungkan potongan Shopee.
 
 ## FAQ
 **Bisa dibuatkan bonus untuk reseller yang merekrut reseller lain?**

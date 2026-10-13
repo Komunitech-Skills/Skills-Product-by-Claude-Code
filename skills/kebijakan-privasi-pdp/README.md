@@ -77,9 +77,9 @@ Memakai pemeriksa kebijakan tanpa AI: jalankan `python3 scripts/cek_kebijakan.py
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
 - **Uji OpenClaw otomatis agent, Sep–Okt 2026** (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,0** → dengan skill **9,0** (LULUS). Tanpa skill ada kalimat "dianggap setuju", promo tanpa persetujuan terpisah, tanpa klausul kebocoran dan transfer ke luar negeri, serta salah hitung tenggat (sekitar 34 jam, seharusnya sekitar 10 jam).
-- **Uji bot Telegram asli, gelombang 5 (2026-10-03):** **5,5** → **8,5**. Dengan skill memuat dasar UU PDP lengkap (transfer ke luar negeri, kebocoran 3×24 jam, hak pemilik data); tanpa skill promo cukup diberi opsi berhenti (opt-out) dan transfer luar negeri serta kebocoran terlewat.
+- **Uji bot Telegram asli, 3 Okt 2026:** **5,5** → **8,5**. Dengan skill memuat dasar UU PDP lengkap (transfer ke luar negeri, kebocoran 3×24 jam, hak pemilik data); tanpa skill promo cukup diberi opsi berhenti (opt-out) dan transfer luar negeri serta kebocoran terlewat.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 5). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Catatan: detail PP 33/2026 berasal dari sumber sekunder dan belum dicek ke naskah resminya.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (3 Okt 2026). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Catatan: detail PP 33/2026 berasal dari sumber sekunder dan belum dicek ke naskah resminya.
 
 ## FAQ
 **Apakah usaha kecil juga wajib punya kebijakan privasi?**

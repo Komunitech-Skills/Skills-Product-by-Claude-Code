@@ -71,7 +71,7 @@ Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech; tautan pesa
 - Dengan skill: (pesan di grup uji internal Komunitech) — skor 9
 Hasilnya LULUS. Keduanya benar soal balik modal (±1 tahun 1 bulan), tetapi hanya dengan skill ada NPV, IRR, balik modal dengan nilai waktu uang, uji omzet turun 10%/20% dan biaya naik 10%, batas aman, asumsi patokan 12%, dan catatan bukan nasihat keuangan; semuanya cocok dengan hitungan ulang.
 
-Pesan serupa dikirim ulang di topik baru bot Telegram uji pada 12 Okt 2026: skor 6,5 → 9, LULUS, hasil sama dengan uji pertama (tautan pesan uji ulang ini tidak tercatat).
+Uji ulang di bot Telegram uji, 12 Okt 2026: skor 6,5 → 9, LULUS, hasil sama dengan uji pertama.
 
 ## FAQ
 **Apakah hasilnya menjamin usaha saya untung?**

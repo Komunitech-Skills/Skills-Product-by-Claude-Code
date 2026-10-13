@@ -51,7 +51,9 @@ Salin folder `kartu-belajar-anki` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,75 tanpa skill menjadi 8,5 dengan skill (skala 10), dari empat skenario: SOP kasir menjadi 21 kartu (di konteks Telegram), kosakata Inggris, permintaan kurang lengkap, dan jebakan bocoran UTBK. Tanpa skill, kartu hanya disimpan sebagai berkas dan tidak sampai ke chat Telegram; dengan skill isi kartu, jadwal belajar, dan cara impor tampil utuh di chat. Catatan jujur: model biasa pun sudah membuat kartu yang akurat; pembeda skill ini adalah kartu yang benar-benar sampai ke chat, rencana belajar berangka, dan format yang konsisten. Format impor Anki hanya diperiksa dengan skrip, belum dicoba di aplikasi Anki sungguhan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, v1.0.1 (`examples/00-openclaw-sebelum-sesudah.md`), skor 1–10: tanpa skill **5,75** → dengan skill **8,5** (LULUS), empat skenario (SOP kasir 21 kartu di konteks Telegram, kosakata Inggris, input kurang, jebakan bocoran UTBK). Tanpa skill kartu cenderung hanya disimpan sebagai berkas; dengan skill isi kartu, jadwal belajar, dan cara impor tampil utuh di chat. Catatan jujur: model biasa pun sudah membuat kartu yang akurat; pembeda skill ini adalah kartu yang sampai ke chat, rencana belajar berangka, dan format konsisten. Format impor Anki hanya diperiksa skrip, belum dicoba di aplikasi Anki sungguhan.
+
+**Status uji (jujur):** sudah diuji OpenClaw (uji otomatis agent) dan bot Telegram uji (13 Okt 2026). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
