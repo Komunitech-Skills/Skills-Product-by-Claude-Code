@@ -80,6 +80,7 @@ Sisa 36 skill aktif (bukan set A–F Akun B, bukan G–J C14), urut abjad, 10 sk
 | Set | Skill |
 |-----|--------|
 | K | actual-budget-usaha, agen-cs-toko, aktifkan-kembali-pelanggan, analisis-excel, analisis-pesaing-strategis, analisis-selisih-anggaran, atur-keuangan-pribadi, cari-prospek-web, cek-risiko-dan-asuransi-usaha, checklist-keamanan-pangan-usaha |
+| L | crm-wa, cv-lamaran-ats, edukasi-pasien-klinik, ekstrak-nota-faktur, follow-up-prospek, foto-produk-brief, frappe-books-usaha, gaji-umkm, harga-jual-marketplace, hitung-ppn |
 
 ## Set K (2026-10-13 ~19:30 UTC)
 
@@ -95,3 +96,18 @@ Sisa 36 skill aktif (bukan set A–F Akun B, bukan G–J C14), urut abjad, 10 sk
 | cari-prospek-web | gelombang 15 | bahasa awam |
 | cek-risiko-dan-asuransi-usaha | gelombang 14 | bahasa awam |
 | checklist-keamanan-pangan-usaha | blok Hasil uji nonstandar; tanpa Status uji; gelombang 14 + paragraf versi duplikat | blok standar + Status uji; rapikan Bukti |
+
+## Set L (2026-10-13 ~20:00 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| crm-wa | kode internal "gelombang" di Hasil uji & Bukti Telegram | bahasa awam + tanggal uji |
+| cv-lamaran-ats | sudah memenuhi checklist | — |
+| edukasi-pasien-klinik | "gelombang 6" di Bukti Telegram | tanggal uji bot asli |
+| ekstrak-nota-faktur | sudah memenuhi checklist | — |
+| follow-up-prospek | sudah memenuhi checklist | — |
+| foto-produk-brief | sudah memenuhi checklist | — |
+| frappe-books-usaha | sudah memenuhi checklist | — |
+| gaji-umkm | subjudul ganda Hasil uji (jujur) | hapus duplikat, satu blok angka nyata |
+| harga-jual-marketplace | sudah memenuhi checklist | — |
+| hitung-ppn | sudah memenuhi checklist | — |
