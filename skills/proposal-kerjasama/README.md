@@ -21,6 +21,8 @@
 **Sesudah (cukup ketik):** "Bikin proposal titip jual keripik singkong ke 5 cabang Kopi Senja Jogja, harga 25rb, toko dapat 20%"
 → Proposal 1 halaman berisi skema titip jual, tabel pendapatan kafe per bulan (Rp 250.000–Rp 1.000.000 per cabang), tawaran uji coba 3 bulan, plus pesan WA pengantarnya.
 
+**Hasil uji (OpenClaw, uji otomatis agent):** pada uji pertama rata-rata nilai 5,5 tanpa skill menjadi 8,0 dengan skill (skala 10). Tanpa skill, modal dan tulisan "rugi Rp1.000/botol" ikut masuk ke proposal untuk mitra; dengan skill, peringatan rugi hanya sampai ke kamu dan proposal ke mitra tetap bersih. Uji ulang v1.0.7: rata-rata 8,33 dengan skill, semua angka benar. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram ada di bagian "Bukti uji di bot Telegram" di bawah. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Buat proposal sponsorship bazar UMKM kampus, ada paket platinum, gold, silver"
@@ -37,7 +39,7 @@ Salin folder `proposal-kerjasama` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## Bukti uji di bot Telegram
 

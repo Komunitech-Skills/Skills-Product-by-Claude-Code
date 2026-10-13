@@ -21,6 +21,8 @@
 **Sesudah (cukup ketik):** "Roti sobek saya jual 28 ribu, modal 11.500, sewa+gaji 6,5 juta, laku 600 sebulan. Mau buka reseller dan promo 20%."
 → Titik impas 394 pcs/bulan. Tangga harga Rp28.000 / Rp24.000 (≥10) / Rp21.000 (≥50) / Rp18.000 (≥200), semua di atas margin minimum. Diskon 20% butuh penjualan naik **51,38%** (600 → 909 pcs) — disarankan diganti "beli 5 gratis 1" khusus Jumat dengan kuota. Plus teks daftar harga reseller siap tempel.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.9):** rata-rata nilai 7,0 tanpa skill menjadi 8,75 dengan skill (skala 10), tanpa satu pun angka harga, diskon, atau margin yang salah di empat balasan. Pada hampers PKP Rp189.000 (modal Rp110.000), skill membandingkan cara keliru (dibagi 1,12: margin 34,81%) dengan yang benar (DPP Rp170.271, margin 35,4%), memberi harga lantai Rp203.500 untuk margin pangan 40%, dan menolak harga coret palsu. Catatan jujur: tanpa skill, margin dan pasal harga coret sudah benar, tetapi AI menyarankan "naikin dulu ke Rp249.000 beberapa hari, baru promo" dan tidak memberi harga lantai. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Harga bolu pandan saya enaknya berapa? Modal 19 ribu."
@@ -43,7 +45,7 @@ Salin folder `strategi-harga-produk` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` di dalam paket. Tidak perlu API key, akun, atau instalasi tambahan. Hitungan memakai Python bawaan; bila Python tidak tersedia, AI menghitung manual dengan rumus yang ditampilkan.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu API key, akun, atau instalasi tambahan. Hitungan memakai Python bawaan; bila Python tidak tersedia, AI menghitung manual dengan rumus yang ditampilkan.
 
 ## FAQ
 **Apa bedanya margin dan markup? Saya bilang "untung 50%".**
@@ -54,6 +56,9 @@ Tidak ada yang bisa memastikan. Yang pasti dihitung: berapa penjualan boleh turu
 
 **Usaha saya PKP, bagaimana dengan PPN?**
 Untung dihitung dari harga sebelum PPN. Bila ingin harga tayang cantik yang sudah termasuk PPN (mis. Rp49.900), skill menghitung DPP dan PPN-nya (tarif 12% × DPP nilai lain 11/12, dibulatkan ke bawah), margin dari DPP, dan harga tayang minimum termasuk PPN — untuk harga satuan, reseller, paket, promo, dan harga cantik. Pembulatan belum dicocokkan dengan Coretax; untuk faktur resmi ikuti Coretax atau konsultan pajak. Bila bukan PKP, Anda tidak boleh memungut PPN.
+
+## Atribusi & lisensi
+Kerangka strategi harga diadaptasi dari dua karya berlisensi MIT: coreyhaines31/marketingskills (Corey Haines) dan phuryn/pm-skills (Pawel Huryn), lalu ditulis ulang untuk UMKM Indonesia dengan hitungan Rupiah buatan Komunitech. Teks lisensi asli ada di `LICENSE-MIT-marketingskills` dan `LICENSE-MIT-pm-skills`; rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan para pembuat sumber.
 
 ## Riwayat versi
 - **1.0.9 (2026-10-03)** — dari uji ulang OpenClaw 1.0.8: AI sempat mengisi sendiri baris tabel ("~40,2%", "15%+"). Kini hitungan mencetak tabel siap salin: harga promo + margin promo + status untuk setiap harga cantik (`cantik --diskon`), harga normal minimal agar bisa diskon X% (`margin --diskon-target`), dan tabel rentang diskon di ringkasan. AI wajib menyalin tabel utuh, tanpa angka perkiraan.

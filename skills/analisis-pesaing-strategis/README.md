@@ -18,6 +18,8 @@
 **Sebelum:** Pemilik laundry kiloan hanya bilang "saingan makin banyak". Tidak tahu kenapa pelanggan pindah, dan mau menurunkan harga.
 **Sesudah:** cukup ketik "Laundry kiloan saya Rp7.000/kg, ada 3 saingan yang saya tahu, saya harus apa?" Hasilnya: skor Kita 3,50 vs saingan tertinggi 3,75; ternyata harga justru keunggulan, yang kalah adalah kemudahan pesan (belum ada WA Bisnis) dan kecepatan. Tindakan: pasang WA Bisnis + katalog, tambah opsi kilat, paket langganan kos-kosan. Contoh lengkap: `examples/contoh-laundry-kiloan.md`.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.4):** rata-rata nilai 6,8 tanpa skill menjadi 8,1 dengan skill (skala 10). Pada kasus katering nasi box, skor dihitung script (Kita 3,10, Bu Tini 3,80, Sehati 3,60) dan kemudahan pesan (selisih -1,67 dari rata-rata saingan) langsung jadi prioritas; tanpa skill, AI salah simulasi dengan mengklaim skor naik ke 3,5 sudah melewati saingan yang 3,6. Catatan jujur: keunggulan paling jelas ada di analisis itu; saat diminta mengintip akun saingan secara otomatis, AI tanpa skill pun sudah menolak dengan benar. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Setelah terpasang, ketik biasa ke AI agent kamu:
 - "Analisis saingan warung kopi saya, ini tiga yang saya tahu."

@@ -2,14 +2,14 @@
 
 **Tanya "pengunjung web saya minggu lalu berapa?", "promo di IG, TikTok, atau WA yang paling ramai?", atau "berapa yang klik tombol WA?" — AI Anda langsung membaca Umami, analitik website gratis tanpa cookie yang jalan di server Anda sendiri, lalu menjawab dengan angka pasti dan perbandingan minggu lalu.**
 
-> Komunitech **tidak berafiliasi** dengan Umami Software, Inc. Umami adalah software open-source (lisensi MIT) milik pengembangnya; skill dan panduan ini adalah karya orisinal Komunitech untuk memudahkan pemakaiannya oleh UMKM Indonesia.
+> Komunitech **tidak berafiliasi** dengan Umami Software, Inc. Umami adalah software open-source (lisensi MIT) milik pengembangnya dan tidak ikut didistribusikan dalam paket ini; skill dan panduan ini adalah karya orisinal Komunitech untuk memudahkan pemakaiannya oleh UMKM Indonesia. Rincian lisensi: `ATTRIBUTION.md`.
 
 ## Manfaat
 - ✅ **Pengganti Google Analytics yang gratis & sederhana.** Tanpa biaya bulanan, tanpa spanduk "setuju cookie", data pengunjung tetap di server Anda sendiri.
 - ✅ **Cukup ngobrol, tanpa belajar dashboard.** "Halaman apa yang paling dilihat?", "pengunjung pakai HP atau laptop?", "dari kota mana?" — jawaban rapi dengan angka gaya Indonesia (1.200 / 27,3%).
 - ✅ **Tahu promo mana yang berhasil.** Laporan kampanye UTM Instagram/TikTok/WhatsApp, sumber trafik, klik link di bio IG/QR kemasan, dan **klik tombol WA/Beli** (tingkat konversi) — dihitung script, bukan dikira.
 - ✅ **Perbandingan yang adil.** "Minggu ini vs minggu lalu" dibandingkan sampai jam yang sama, jadi Selasa sore tidak dibandingkan dengan satu minggu penuh.
-- ✅ **Laporan tiap Senin di Telegram** (lewat OpenClaw) + ekspor CSV siap Excel.
+- ✅ **Laporan tiap Senin di Telegram** (opsional, lewat OpenClaw; jadwal otomatisnya belum diuji di Gateway sungguhan) + ekspor CSV siap Excel.
 
 ## Cocok untuk siapa
 - **UMKM dengan website, landing page, atau toko online sendiri** (WordPress, HTML, pembuat landing page yang bisa ditempel kode) yang jualan lewat Instagram, TikTok, dan WhatsApp.
@@ -41,6 +41,8 @@ Ketik *"Berapa yang klik tombol WA minggu lalu?"*
 ```
 (Contoh nyata dari uji dengan Umami 3.4.0 asli dan data fiktif — lihat `examples/`.)
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.6):** rata-rata nilai 5,3 tanpa skill menjadi 8,7 dengan skill (skala 10). Tanpa skill, AI tidak menemukan konfigurasi Umami dan hanya meminta alamat, ID website, dan kunci API tanpa hasil apa pun; dengan skill langsung menjawab dengan angka seperti di atas. Pada pertanyaan privasi (melacak individu), AI tanpa skill pun sudah menolak dengan baik (8 vs 9). Catatan jujur: uji OpenClaw memakai data contoh dan server tiruan yang memutar rekaman respons Umami 3.4.0 asli, bukan Umami hidup di server Anda; belum diuji: pengiriman laporan ke Telegram sungguhan dan Windows/macOS. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Setelah Umami terpasang dan tersambung, cukup ketik:
 - "Cek Umami saya sudah nyambung belum"
@@ -57,7 +59,7 @@ Setelah Umami terpasang dan tersambung, cukup ketik:
 - "Kirim laporan web ke Telegram saya tiap Senin jam 7 pagi" (OpenClaw)
 
 ## Instalasi singkat
-1. **Umami** sudah terpasang dan menyala. Belum? Ikuti `references/panduan-umami.md` di paket (Docker resmi, ±20–40 menit, termasuk pengamanan, HTTPS, kode lacak, tombol WA terlacak, dan tautan UTM) — atau pakai **jasa setup Komunitech**.
+1. **Umami** sudah terpasang dan menyala. Belum? Ikuti `references/panduan-umami.md` di paket (isinya sama dengan `docs/panduan-umami.md`; Docker resmi, ±20–40 menit, termasuk pengamanan, HTTPS, kode lacak, tombol WA terlacak, dan tautan UTM) — atau pakai **jasa setup Komunitech**.
 2. Salin folder `umami-analitik` ke folder skills AI agent:
 
 | Platform | Folder tujuan |
@@ -67,7 +69,7 @@ Setelah Umami terpasang dan tersambung, cukup ketik:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-(Rincian & verifikasi lokasi ada di `docs/instalasi.md`.)
+(Rincian & verifikasi lokasi: `docs/instalasi.md`, di dalam paket bernama `CARA-INSTAL.md`.)
 
 3. Buat akun "hanya lihat" + kunci API di Umami (panduan §7), lalu simpan sekali di terminal Anda sendiri (bukan di chat): `python3 ~/.openclaw/skills/umami-analitik/scripts/umami.py simpan-kunci` (Windows: `python` / `py`). Umami di server sendiri: `... umami.py simpan-alamat https://analitik.domainanda.id`.
 4. Coba: "Cek Umami saya sudah nyambung belum?"

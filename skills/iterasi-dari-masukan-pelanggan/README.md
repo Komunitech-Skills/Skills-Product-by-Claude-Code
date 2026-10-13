@@ -3,13 +3,11 @@
 **Satukan chat WA, ulasan, komentar, dan survei jadi daftar "perbaiki ini dulu" - lengkap dengan balasan ke pelanggan.**
 
 ## Manfaat
-- ✅ Masukan dari WhatsApp, Shopee/Tokopedia/Google Maps, Instagram/TikTok, dan survei dibaca sekaligus, bukan satu-satu
+- ✅ Masukan dari WhatsApp, Shopee/Tokopedia/Google Maps, Instagram/TikTok, dan survei dibaca sekaligus, bukan satu-satu; ekspor Shopee/Tokopedia/TikTok Shop, Google Form, dan chat WA langsung terbaca (kolom yang dipakai selalu disebut, file rusak diberi pesan jelas)
 - ✅ Nama, nomor HP, email, alamat, dan nomor pesanan pelanggan disamarkan otomatis sebelum dianalisis
 - ✅ Angka dihitung script: isu teratas (rasa, kemasan, harga, pengiriman, layanan, tempat, antrean), sentimen, NPS survei 0-10, dan tren naik/turun tiap bulan
-- ✅ Langsung membaca ekspor Shopee/Tokopedia/TikTok Shop, Google Form, dan chat WA - kolom yang dipakai selalu disebut, file rusak diberi pesan jelas
 - ✅ Menghitung keluhan pelanggan yang **belum dibalas admin** di chat WA (dan ulasan yang belum dibalas penjual) - sering jadi isu terpenting
-- ✅ Rencana perbaikan berurutan: bukti, tindakan, siapa, tenggat, dan ukuran berhasil
-- ✅ Draf balasan ke pelanggan dan "Kabar Perbaikan" siap dikirim, supaya pelanggan tahu masukannya didengar
+- ✅ Rencana perbaikan berurutan (bukti, tindakan, siapa, tenggat, ukuran berhasil), plus draf balasan ke pelanggan dan "Kabar Perbaikan" siap dikirim, supaya pelanggan tahu masukannya didengar
 
 ## Cocok untuk siapa
 - Pemilik katering, kafe, toko online, salon, klinik, atau jasa yang dapat masukan lewat banyak kanal
@@ -22,6 +20,8 @@
 → Laporan: "Pengiriman telat: 9 dari 51 masukan (17,6%), muncul di 4 kanal", "3 laporan rambut/ulat = Segera", backlog dengan ukuran berhasil,
 draf balasan, dan kabar perbaikan. Bulan depan: tren menunjukkan perbaikan berhasil atau belum.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.10):** rata-rata nilai 6,9 tanpa skill menjadi 8,6 dengan skill (skala 10). Dari chat WA dan ulasan Shopee sebuah toko kue fiktif (31 masukan), AI tanpa skill menyebut sekitar 10 nama pelanggan di laporan dan salah hitung jumlah chat (16, padahal 13); dengan skill data pelanggan disamarkan dan angka disalin dari script, dengan temuan 88,9% (8 dari 9) keluhan WhatsApp tidak dibalas admin, lengkap dengan draf balasan siap kirim. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Ketik permintaan biasa, misalnya:
 - "Olah masukan pelanggan bulan ini, file-nya chat-wa.txt dan ulasan.csv"
@@ -31,8 +31,16 @@ Cara ekspor chat WhatsApp: `templates/cara-ekspor-chat-whatsapp.txt`. Tidak perl
 (`python3`, di Windows `python` atau `py`). Skill tetap berguna walau script tidak bisa dijalankan (agent menghitung manual dan menandainya).
 
 ## Instalasi singkat
-Salin folder `iterasi-dari-masukan-pelanggan` ke lokasi skill platform Anda: OpenClaw, OpenAI Codex, Claude Code, atau Cursor.
-Lokasi terverifikasi ada di `docs/instalasi.md` dalam paket. Setelah itu mulai sesi baru.
+Salin folder `iterasi-dari-masukan-pelanggan` ke folder skills AI agent Anda:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Setelah itu mulai sesi baru.
 
 ## Isi paket
 `SKILL.md` (alur kerja), `scripts/olah_masukan.py` (+ `uji_olah_masukan.py`, `tests/uji_regresi.py`, `tests/uji_regresi_104.py`, `tests/uji_regresi_105.py` s/d `tests/uji_regresi_108.py`), `templates/` (tema untuk katering, fashion, kafe, laundry/jasa; berkas koreksi; backlog, balasan, kabar perbaikan, cara ekspor WA),

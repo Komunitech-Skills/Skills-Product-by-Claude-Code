@@ -17,8 +17,10 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** 30–60 menit menyalin template Word, menghitung PPN dengan kalkulator HP, dan takut salah angka.
 
-**Sesudah (cukup ketik):** "Buatin SPH dari CV Maju Kreasi (PKP) ke PT Sinar Logistik, 10 kursi @1.250.000 diskon 5%, 10 meja @950rb, ongkir 300rb"
+**Sesudah (cukup ketik):** "Buatin SPH dari CV Maju Kreasi (PKP) ke PT Sinar Logistik, 10 kursi @1.250.000 diskon 5%, 10 meja @950rb, potongan 250rb, ongkir 300rb, nomor urut 12"
 → Surat bernomor `012/SPH/MKS/IX/2026` dengan total Rp 23.781.750 (sudah PPN), terbilang, berlaku 14 hari, plus teks WA siap kirim.
+
+**Hasil uji (penguji independen, simulasi agent; skor kualitas 8/10):** 400 surat acak (diskon baris dan total, ongkir, non-PKP/PKP, harga termasuk PPN) dicocokkan dengan hitungan independen: 0 selisih. Pada uji A/B untuk percetakan non-PKP, surat tanpa skill menulis "belum termasuk pajak" (menyesatkan), masa berlaku tanpa tanggal, nomor surat tanpa kode usaha, dan tanpa teks WhatsApp; dengan skill: "Harga tidak dikenakan PPN", berlaku sampai tanggal pasti, nomor baku `045/SPH/PSJ/IX/2026`, plus teks WA siap kirim. Rincian: `examples/HASIL-UJI.md` dan `examples/00-pembanding-tanpa-skill.md`. Skill ini juga diuji ulang di OpenClaw; temuannya tercatat di catatan revisi 1.0.3 sampai 1.0.5 di bawah. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -36,7 +38,7 @@ Salin folder `surat-penawaran-harga` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Usaha saya belum PKP, apakah tetap bisa?**

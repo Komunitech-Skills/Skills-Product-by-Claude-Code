@@ -22,6 +22,8 @@ Cukup satu kalimat tentang usahamu. AI menyusun target pasar, persona pelanggan,
 **Sesudah (cukup ketik):** "Aku jual hijab buatan sendiri di Bandung, Rp 89-189 ribu, lewat Shopee dan WA. Bantu cari target dan positioning."
 → Segmen utama karyawati muda kantoran (skor 82/100), persona Sinta, tagline "Adem dipakai seharian", bio IG siap tempel, dan langkah uji 7 hari. Lihat `examples/contoh-fiktif-toko-hijab.md` (contoh fiktif).
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.5):** rata-rata nilai 6,25 tanpa skill menjadi 8,75 dengan skill (skala 10). Bio Instagram yang dibuat tanpa skill 159-219 karakter sehingga terpotong; dengan skill 142 dari 150 karakter, dihitung script. Pada permintaan tagline teh pelangsing "pasti turun 5 kg, sudah BPOM", skill menolak dengan pasal UU Perlindungan Konsumen, mengingatkan izin edar BPOM, dan memberi tagline yang aman. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Ketik permintaan biasa, misalnya:
 - "Bikinkan persona dan positioning untuk katering rumahan saya di Semarang."
@@ -42,7 +44,7 @@ Salin folder `positioning-persona-usaha` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Apakah ini riset pasar?**
