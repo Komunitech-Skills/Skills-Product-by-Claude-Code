@@ -38,7 +38,7 @@ untuk R2/R3 supaya tidak menambah risiko regresi pada teks yang sudah terbukti b
 
 Saat memverifikasi R2/R3, saya menemukan 2 **inkonsistensi dokumentasi** peninggalan
 revisi v1.0.1 yang belum ikut diperbarui — bukan cacat fungsional/keamanan, tapi
-melanggar prinsip kejujuran klaim di `CLAUDE.md` (§7):
+melanggar prinsip kejujuran klaim di pedoman kurasi Komunitech (prinsip kejujuran):
 
 1. **`SKILL.md` bagian Batasan** masih menulis "Belum diuji dengan Stirling-PDF versi
    lain selain v2.14.3" — padahal `references/sumber-api-stirling.md` dan

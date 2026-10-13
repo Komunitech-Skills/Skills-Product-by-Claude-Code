@@ -11,7 +11,7 @@
 
 **Akar masalah:** pencegah dobel membandingkan `total_ht` draf yang sudah ada di Dolibarr **secara persis** dengan DPP Komunitech. Keduanya memakai aturan pembulatan berbeda:
 - Dolibarr menyimpan total per baris dengan **2 desimal** (sen): 3 × 10.333 × 92,5% = 28.674,075 → 28.674,08; ongkir 15.000,50 → total_ht **43.674,58**.
-- Standar Komunitech (CLAUDE.md Tahap 4) membulatkan total baris ke **rupiah terdekat**: 28.674 + 15.001 = **43.675**.
+- Standar Komunitech (pedoman kurasi Komunitech Tahap 4) membulatkan total baris ke **rupiah terdekat**: 28.674 + 15.001 = **43.675**.
 
 `43.674,58 ≠ 43.675`, jadi draf lama tidak pernah dikenali sebagai kembar setiap kali ada baris bersen (diskon, harga ,50, harga produk Rp 83.333,33). DPP bulat tetap tertahan karena kedua cara menghasilkan angka sama.
 

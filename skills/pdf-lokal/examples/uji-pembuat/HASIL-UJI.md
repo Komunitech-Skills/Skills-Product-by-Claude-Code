@@ -26,7 +26,7 @@ terpisah - lihat catatan di bawah).
 - (+) Nilai tambah lokal jelas: "rapikan-resi" untuk kebutuhan cetak resi marketplace
   Indonesia, yang tidak ada di UI default Stirling-PDF (harus digabung dulu manual).
 - (-) **Belum diuji A/B (dengan skill vs tanpa skill)** dan **belum diuji banding
-  pesaing** secara formal sesuai Tahap 6 CLAUDE.md - keduanya butuh sesi terpisah
+  pesaing** secara formal sesuai pedoman kurasi Komunitech tahap 6 - keduanya butuh sesi terpisah
   dengan agent lain. Ditandai PERLU REVIEW di laporan sesi.
 - (-) Belum diuji di aplikasi desktop resmi Stirling-PDF (.msi/.dmg) maupun di
   OpenClaw/Codex/Cursor sungguhan - baru simulasi agent + Docker.
@@ -34,7 +34,7 @@ terpisah - lihat catatan di bawah).
   minimal buatan sendiri, karena tidak ada sampel PDF nyata di lingkungan pembuatan).
 
 ## PERLU REVIEW (untuk pemilik / sesi berikutnya)
-1. Uji A/B "tanpa skill vs dengan skill" (Tahap 6.4 CLAUDE.md) - belum dilakukan.
+1. Uji A/B "tanpa skill vs dengan skill" (pedoman kurasi Komunitech) - belum dilakukan.
 2. Uji banding pesaing (Tahap 6.5) - belum dicari skill publik sejenis untuk
    dibandingkan; kata kunci yang perlu dicoba: "stirling pdf skill", "pdf agent skill
    claude", "pdf mcp server".
