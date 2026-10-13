@@ -11,7 +11,7 @@ Diuji AI penguji independen di OpenClaw (satu skenario, di dalam paket 25 skill)
 - ✅ Tanggal otomatis digeser ke hari kerja bila jatuh di Sabtu, Minggu, libur nasional, atau cuti bersama 2026–2027 — lengkap dengan alasannya
 - ✅ File kalender (.ics, format umum aplikasi kalender) siap impor ke Google Calendar, Outlook, atau kalender HP — dengan pengingat H-3 & H-1 (3 hari dan 1 hari sebelum tenggat; di Google Calendar, pakai opsi acara pengingat terpisah; lihat FAQ)
 - ✅ Checklist bulanan untuk admin + ringkasan "apa yang jatuh tempo 2 minggu ke depan"
-- ✅ Bisa dijadwalkan kirim pengingat otomatis ke Telegram lewat OpenClaw (belum diuji langsung)
+- ✅ Bisa dijadwalkan kirim pengingat otomatis ke Telegram lewat OpenClaw (diuji di bot Telegram uji 2026-10-13, one-shot command-argv)
 
 ## Cocok untuk siapa
 - Pemilik UMKM dan toko online yang membayar PPh final 0,5%
@@ -40,7 +40,7 @@ Setelah terpasang, ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Buatkan kalender pajak 2027 untuk usaha saya, saya jualan online pribadi pakai PPh 0,5%."
 - "Pajak apa saja yang jatuh tempo 2 minggu ke depan? PT saya PKP dan punya karyawan."
 - "Bikinin file .ics pengingat pajak untuk Google Calendar."
-- "Ingatkan saya tiap bulan lewat Telegram." (belum diuji langsung)
+- "Ingatkan saya tiap bulan lewat Telegram." (pola jadwal command-argv sudah diuji bot Telegram uji 2026-10-13)
 
 ## Instalasi singkat
 Salin folder `kalender-pajak` ke folder skills AI agent Anda:
@@ -56,7 +56,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** dua sumber. (1) Uji independen oleh agent penguji (simulasi Claude Code), 25–26 Sep 2026, versi 1.0.0 sampai 1.0.3 (`examples/HASIL-UJI.md`; bukan skor sebelum/sesudah OpenClaw): uji ulang v1.0.2 mencocokkan **202 tenggat** (9 profil, Okt 2026–Des 2027) dengan **0 selisih** dari penghitung independen; skor penguji **8/10**, LULUS (setelah perbaikan batas unggah faktur tanggal 20). Uji A/B skenario warung perorangan: tanpa skill **13/20** tanggal benar → dengan skill **20/20**; catatan jujur, jawaban "tanpa skill" di uji ini disusun penguji dengan meniru jawaban tipikal AI umum, bukan rekaman sesi sungguhan (`examples/00-pembanding-tanpa-skill.md`). (2) Uji OpenClaw 1 Okt 2026 (paket konsultan, satu skenario): skor tanpa skill **5** → dengan skill **7**, lalu **8,5** setelah perbaikan v1.0.7 (hanya sisi dengan skill yang diulang; lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 1 Okt 2026; muat CLI) dan Claude Code (simulasi agent). **Belum** uji bot Telegram asli untuk skill ini. Codex dan Cursor belum uji platform asli. PERLU REVIEW: beberapa pasal PMK dari sumber sekunder.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 1 Okt 2026; muat CLI), Claude Code (simulasi agent), dan **bot Telegram uji** (jadwal automations one-shot 2026-10-13, topik C13 — lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Codex dan Cursor belum uji platform asli. PERLU REVIEW: beberapa pasal PMK dari sumber sekunder.
 
 ## FAQ
 **Seberapa bisa dipercaya tanggalnya?**
