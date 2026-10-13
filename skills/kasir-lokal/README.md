@@ -1,6 +1,6 @@
 # Kasir Toko Tanpa Langganan, Cukup Lewat Chat
 
-**Catat penjualan, cetak struk, tutup kasir, dan siapkan rekap harian untuk dikirim ke Telegram (lewat OpenClaw, belum diuji langsung) — data kasir disimpan di komputer Anda sendiri.**
+**Catat penjualan, cetak struk, tutup kasir, dan siapkan rekap harian untuk dikirim ke Telegram (lewat OpenClaw) — data kasir disimpan di komputer Anda sendiri.**
 
 Diuji AI penguji independen di OpenClaw: 6,5 → 8,5 dari 10 (pajak resto diluruskan sebagai PBJT, bukan PPN, dan nota bernomor urut tersimpan di komputer Anda).
 
@@ -15,7 +15,7 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 8,5 dari 10 (pajak resto diluru
 
 ## Cocok untuk siapa
 - Warung, toko kelontong, kedai kopi, kafe, warung makan, toko kue, toko bangunan (sak, m3, meter), kios, butik kecil — **satu outlet, satu komputer kasir**.
-- Pemilik yang ingin laporan penjualan harian masuk ke Telegram tanpa buka aplikasi (lewat OpenClaw; pengiriman sungguhan ke Telegram belum diuji langsung).
+- Pemilik yang ingin laporan penjualan harian masuk ke Telegram tanpa buka aplikasi (lewat OpenClaw; jadwal otomatis diuji di bot Telegram uji 13 Okt 2026).
 - Toko yang sudah memakai skill **Buku Stok** dan ingin stoknya terpotong dari penjualan kasir.
 
 **Kurang cocok:** banyak kasir di perangkat berbeda sekaligus, atau yang butuh aplikasi kasir di HP/tablet. Punya beberapa cabang? Bisa dengan satu file data (database) per cabang lalu laporan digabung manual (bukan sinkron otomatis).
@@ -44,7 +44,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Batalkan nota terakhir, salah input"
 - "Tutup kasir, uang di laci 1.250.000"
 - "Rekap kasir hari ini" / "rekap bulan September" / "omzet tahun ini untuk pajak"
-- "Kirim rekap kasir ke Telegram saya tiap jam 9 malam" (OpenClaw; pengiriman sungguhan belum diuji langsung)
+- "Kirim rekap kasir ke Telegram saya tiap jam 9 malam" (OpenClaw; jadwal otomatis diuji di bot Telegram uji 13 Okt 2026)
 - "Ini nota hari ini (tempel daftar nota), rekap + cocokkan laci + bikinin laporan buat grup karyawan" — tanpa perlu menyimpan data dulu: nota batal tidak dihitung, porsi & jumlah nota dipisah, dan ringkasan untuk grup tidak memuat nama/nomor pelanggan atau bon per orang
 
 **Mencetak struk ke printer thermal:** agent membuat file struk (berformat HTML, bisa dibuka di browser). Buka file itu di browser (Chrome/Edge) → tekan **Ctrl+P** (Mac: Cmd+P) → pilih printer thermal → ukuran kertas 58 mm atau 80 mm → Margin: **None/Tidak ada** → Skala **100%** → matikan **Header dan footer** → Cetak. Pastikan driver printer thermal sudah terpasang di komputer. Pengaturan ini cukup sekali; browser biasanya mengingatnya.
@@ -69,7 +69,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - Tugas: "2 kopi susu dan 1 roti bakar, diskon 10%, bayar tunai 100 ribu, buatkan struknya" (harga menu di uji ini berbeda dari contoh di atas). Tanpa skill, angkanya benar tetapi pajak resto 10% disebut PPN (jenis pajaknya salah) dan catatannya tidak terstruktur. Dengan skill: total Rp 35.100, kembalian Rp 64.900, nota bernomor urut tersimpan di komputer Anda, struk 58 mm siap cetak, dan pajak resto diluruskan sebagai PBJT, bukan PPN.
 - Jujur: untuk satu transaksi saja, hasil tanpa skill juga benar. Nilai tambahnya ada di penyimpanan data yang rapi, nomor nota urut, tutup kasir, rekap, dan jenis pajak yang tepat.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: diuji di bot Telegram uji 13 Okt 2026 (rekap harian one-shot ~5 menit, angka Rp 51.000 cocok; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 
 ## Yang perlu Anda tahu (jujur)
 - **Bukan mesin pembayaran.** Kasir hanya *mencatat* bahwa pembeli membayar tunai/QRIS/transfer/debit. Tidak membuat QRIS dinamis, tidak menarik kartu, tidak mengecek uang masuk. Cocokkan QRIS/transfer dengan mutasi bank Anda (angkanya ada di laporan tutup kasir).

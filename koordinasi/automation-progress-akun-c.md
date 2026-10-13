@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C C13** — skill berikutnya: `kasir-lokal` (uji jadwal Telegram sungguhan, satu skill per run).
+1. **Akun C C13** — skill berikutnya: `buku-stok` (uji jadwal Telegram sungguhan, satu skill per run).
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~09:25 UTC — C13 `kasir-lokal` jadwal TG topik 1343 | jadwal LOLOS, penjualan bersih Rp 51rb cocok | LOLOS | ya |
+| 2026-10-13 ~09:14 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:14 UTC — merge default; getUpdates 242 kosong; C13 kasir-lokal topik 1343 | — | — | — |
 | 2026-10-13 ~08:21 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~08:21 UTC — C13 `kas-umkm` jadwal TG topik 1331 | jadwal LOLOS, hasil usaha Rp 900rb cocok | LOLOS | ya |
 | 2026-10-13 ~08:11 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 08:11 UTC — merge default; getUpdates 242 kosong; C13 kas-umkm | — | — | — |
 | 2026-10-13 ~07:55 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~07:55 UTC — C13 `laporan-otomatis-terjadwal` jadwal TG topik 1321 | jadwal LOLOS, omzet cocok | LOLOS | ya |
