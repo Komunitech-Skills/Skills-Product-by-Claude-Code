@@ -23,6 +23,8 @@
 
 Tanpa skill ini, AI biasanya memberi penjelasan umum tentang rasio, memakai patokan perusahaan besar (mis. rasio cepat 1,5 untuk warung), menghitung di kepala, dan tidak menangani modal negatif atau pembagian nol dengan benar.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** pada skenario rasio keuangan untuk bahan rapat komisaris, nilai tanpa skill 8 dan dengan skill 8, jadi seri: untuk laporan yang rapi, AI biasa sudah pandai menghitung rasio dasar. Setelah perbaikan v1.0.4, uji ulang dengan skill bernilai 9 (skala 10): skill menandai bahwa utang bank jatuh tempo ≤ 12 bulan (Rp900 juta) lebih besar dari kas (Rp420 juta), dengan seluruh angka dari script. Pembeda skill ada di angka yang dihitung script, patokan sesuai jenis dan skala usaha, serta bahasa awam. Satu skenario, bagian dari uji paket Kantor & Manajemen (catatan uji internal Komunitech).
+
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa ke AI agent kamu:
 - "Usaha saya sehat nggak? Ini neraca dan laba rugi tahun ini."
@@ -41,7 +43,7 @@ Salin folder `analisis-rasio-keuangan-usaha` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` di dalam paket. Script hanya butuh Python bawaan, tanpa instalasi tambahan dan tanpa akun atau API key. Kalau Python tidak ada, AI tetap bisa menghitung manual dengan rumus di `references/ambang-wajar.md` dan akan memberi tahu bahwa hasilnya belum diverifikasi script.
+Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script hanya butuh Python bawaan, tanpa instalasi tambahan dan tanpa akun atau API key. Kalau Python tidak ada, AI tetap bisa menghitung manual dengan rumus di `references/ambang-wajar.md` dan akan memberi tahu bahwa hasilnya belum diverifikasi script.
 
 ## FAQ
 **Apakah patokan "wajar" ini standar resmi bank/OJK?**

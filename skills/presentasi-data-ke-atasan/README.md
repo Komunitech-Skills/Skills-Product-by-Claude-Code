@@ -38,15 +38,33 @@ depan sambil evaluasi materi iklan.
 Plus versi email formal, 1 halaman eksekutif, dan skrip bicara 2 menit — semua dengan
 angka yang sama persis.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** rata-rata nilai 7,5 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario.
+Pembeda nyata ada di skenario normal: dengan skill Anda langsung mendapat pesan inti "jadi bagaimana?" yang siap kirim, bukan sekadar daftar angka.
+Jujur: saat diminta menulis penurunan omzet 19,2% sebagai "sekitar 10%", AI tanpa skill pun menolak dan memakai angka asli, jadi itu bukan pembeda.
+Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
+## Cara pakai
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+- "Tolong buatkan ringkasan untuk owner dari data ini: omzet Agustus 32 juta, September 24,5 juta."
+- "Ubah analisis ini jadi pesan WA 5 baris untuk bos."
+- "Buatkan email formal dan skrip bicara 2 menit untuk laporan ke direktur."
+
 ## Syarat
 Tidak perlu instalasi apa pun untuk pemakaian dasar. Untuk perhitungan selisih/persen
 yang diverifikasi script, dibutuhkan Python (biasanya sudah ada di Mac/Linux; di Windows
 bisa dipasang gratis dari python.org) — hanya Python standar, tanpa paket tambahan.
 
 ## Instalasi singkat
-Salin folder `presentasi-data-ke-atasan` ke folder skills AI agent kamu. Panduan
-lengkap per platform (OpenClaw, Claude Code, Codex, Cursor, dll.) ada di
-`CARA-INSTAL.md` di dalam paket.
+Salin folder `presentasi-data-ke-atasan` ke folder skills AI agent kamu:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## FAQ
 **Apakah angkanya bisa salah/dikarang AI?**

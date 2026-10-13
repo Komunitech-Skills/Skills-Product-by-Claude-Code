@@ -11,7 +11,7 @@
 
 ## Cocok untuk siapa
 - Pemilik toko online/offline dengan chat pelanggan yang sering menumpuk (WhatsApp, Shopee, Tokopedia).
-- Klinik/praktik kecil yang ingin membalas pertanyaan jadwal & info umum lebih cepat, tanpa risiko memberi saran medis yang keliru.
+- Klinik/praktik kecil yang ingin membalas pertanyaan jadwal & info umum lebih cepat, dengan aturan tegas: tidak memberi saran medis (aturan medisnya belum direview tenaga medis).
 - Siapa pun yang sudah pakai OpenClaw dan ingin laporan CS otomatis dikirim ke Telegram tiap hari.
 
 ## Contoh sebelum & sesudah
@@ -31,6 +31,8 @@ Untuk COD, area Bintaro termasuk yang kami layani. Mau pesan berapa cup, Kak?
 - (tidak ada — semua fakta ada di basis pengetahuan)
 ```
 Tinggal tempel ke WhatsApp/marketplace, kirim.
+
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** rata-rata nilai 6,0 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (membangun CS toko hijab; komplain dengan ancaman, data KTP/rekening, dan permintaan bot WA auto-reply). Tanpa skill, agent menawarkan memasang auto-reply di nomor WA pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan, mode Copilot, eskalasi ke pemilik, dan draf penahan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -65,7 +67,7 @@ Tidak. Skill ini bekerja mode **Copilot**: bot menyiapkan draf, Anda yang menemp
 Tidak. Jika info belum ada di basis pengetahuan, draf akan menandai bagian itu "perlu dicek admin" — tidak pernah mengira-ngira.
 
 **Bisa dipakai untuk klinik/praktik dokter?**
-Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** memberi diagnosis, saran dosis, atau triase — pertanyaan medis selalu diarahkan ke dokter.
+Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** memberi diagnosis, saran dosis, atau triase — pertanyaan medis selalu diarahkan ke dokter. Batas medis ini belum direview tenaga medis, jadi draf untuk pasien tetap dicek staf atau dokter sebelum dikirim.
 
 ## Catatan revisi 1.0.6 (2026-10-01)
 - Dari uji OpenClaw sebelum/sesudah: draf penahan sempat berbunyi "data rekening kami simpan" dan janji jam 09.00 muncul tanpa disebut sebagai asumsi. Kini draf tidak boleh mengklaim menyimpan data pembayaran/KTP pelanggan (rekening diminta lagi lewat kanal resmi saat klaim disetujui), dan jam kerja default selalu disebut sebagai asumsi.

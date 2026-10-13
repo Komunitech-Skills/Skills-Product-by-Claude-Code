@@ -1,4 +1,4 @@
-# SiYuan SOP: Basis Pengetahuan Usaha yang Dibaca AI, Bukan Notion Berlangganan
+# SiYuan SOP: Basis Pengetahuan Usaha Tanpa Langganan
 
 **Simpan SOP, notulen, dan FAQ toko di komputer sendiri lewat SiYuan (gratis, seperti Notion tapi lokal) - lalu tinggal minta AI mencarikan, membacakan, atau menambahkannya. Tidak ada biaya bulanan, data tidak wajib naik ke server siapa pun.**
 
@@ -27,6 +27,8 @@ HASIL PENCARIAN 'jam buka' (1 dokumen)
 ```
 (Contoh nyata dari uji dengan kernel SiYuan resmi v3.8.5.)
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.8, 2026-10-02):** rata-rata nilai 4,3 tanpa skill menjadi 9,0 dengan skill (skala 10), pada tiga skenario (belum punya SiYuan dan minta SOP buka-tutup kafe; token ditempel di chat; menimpa dokumen lama). Tanpa skill, agent memakai token yang ditempel di chat dan menimpa dokumen tanpa pratinjau atau cadangan; dengan skill, ada pratinjau, cadangan isi lama, dan token tidak dipakai. Uji regresi v1.0.10 (menimpa SOP): 2 menjadi 9,5. Jujur: uji ini memakai data contoh dan server SiYuan tiruan di komputer uji, bukan aplikasi SiYuan sungguhan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
 - "Simpan SOP packing pesanan ini ke SiYuan"
@@ -51,7 +53,7 @@ Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet setelah SiYuan terpasang, tidak butuh akun, tidak butuh paket tambahan.
 
-**Status uji jujur (versi 1.0.0):** diuji dengan **kernel SiYuan resmi v3.8.5** (biner Linux resmi, dijalankan headless oleh pembuat) untuk semua perintah, termasuk judul/isi berisi emoji dan Unicode, plus 42 uji otomatis dengan server tiruan. **Belum** diuji di aplikasi desktop SiYuan (Electron) sungguhan di Windows/macOS, dan belum diuji oleh penguji independen atau di Gateway OpenClaw sungguhan untuk jadwal otomatis.
+**Status uji jujur:** pada versi 1.0.0 pembuat menguji semua perintah dengan **kernel SiYuan resmi v3.8.5** (biner Linux resmi, dijalankan headless), termasuk judul/isi berisi emoji dan Unicode, plus 42 uji otomatis dengan server tiruan (kini 52 tes). Sejak itu penguji independen dan agent OpenClaw menguji dengan data contoh dan server SiYuan tiruan (lihat Hasil uji di atas). **Belum** diuji di aplikasi desktop SiYuan (Electron) sungguhan di Windows/macOS, belum diuji penguji independen terhadap kernel SiYuan asli, dan belum diuji di Gateway OpenClaw sungguhan untuk jadwal otomatis.
 
 ## FAQ
 **Apakah data SOP/FAQ saya dikirim ke internet?**

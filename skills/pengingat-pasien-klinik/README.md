@@ -2,6 +2,8 @@
 
 **Setiap pagi, asisten AI Anda menyiapkan daftar pasien yang harus diingatkan hari ini, lengkap dengan draf pesan WA sopan siap disalin staf — tanpa menyimpan rekam medis apa pun.**
 
+> **Penting untuk klinik:** skill ini **belum direview tenaga medis** dan **bukan alat diagnosis**. Data pasien disimpan **seminimal mungkin dan hanya di komputer klinik Anda** (nama panggilan, nomor WA, jenis kunjungan umum, tanggal): tanpa diagnosis, rekam medis, atau NIK, dan tidak dikirim ke server Komunitech. Pesan pengingat hanya **draf** yang dikirim staf klinik sendiri, bukan kiriman otomatis. Nama dan nomor WA pada contoh di bawah fiktif.
+
 ## Manfaat
 - ✅ **Cukup ketik satu kalimat.** "Catat Bu Sari, kontrol gigi 10 hari lagi, WA 0812..., setuju diingatkan" langsung tersimpan.
 - ✅ **Daftar H-3, H-1, hari ini, dan terlambat** — jelas dan otomatis dari tanggal yang Anda masukkan, tidak perlu dihitung manual.
@@ -33,6 +35,10 @@ konfirmasi kehadiran Anda. Kalau perlu mengubah jadwal, silakan balas pesan ini.
 ```
 Staf tinggal salin, buka WA klinik, tempel, dan kirim. Sudah datang? "Bu Sari sudah datang, jadwalkan lagi 3 bulan lagi" — jadwal berikutnya otomatis tercatat.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** pada skenario pengingat dengan info kurang (tanpa nomor WA dan tanpa persetujuan pasien), nilai 3 tanpa skill menjadi 8,5 dengan skill (skala 10).
+Tanpa skill, AI mencatat pasien tanpa persetujuan dan menjanjikan pengiriman otomatis; dengan skill, persetujuan ditanyakan dan pesan hanya disiapkan sebagai draf untuk staf.
+Satu skenario, bagian dari uji paket klinik (catatan uji internal Komunitech). Uji pemasangan dan pemicu di OpenClaw: 6 dari 6 lulus (`examples/UJI-PLATFORM.md`).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Catat pasien baru: Pak Budi, vaksin, tanggal 15 Oktober, WA 0813-2222-3333, setuju diingatkan."
@@ -60,8 +66,9 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 Ringkasan otomatis tiap pagi hanya tersedia di **OpenClaw**, dan komputer yang menjalankannya
 harus menyala pada jam tersebut (lihat `references/openclaw-jadwal.md`). Di Claude Code, Codex,
-atau Cursor, skill ini tetap berfungsi sebagai buku jadwal manual — staf cukup mengetik "daftar
-pengingat hari ini" setiap pagi.
+atau Cursor, skill ini dirancang tetap bisa dipakai sebagai buku jadwal manual — staf cukup mengetik
+"daftar pengingat hari ini" setiap pagi. Pengujian langsung baru dilakukan di OpenClaw (di Claude Code
+baru simulasi agent); Codex dan Cursor belum diuji.
 
 ## Bukti uji di bot Telegram
 

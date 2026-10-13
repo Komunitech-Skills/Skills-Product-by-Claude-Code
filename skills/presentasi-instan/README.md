@@ -4,8 +4,7 @@
 
 ## Manfaat
 - ✅ Tidak perlu install PowerPoint/Canva atau bikin akun apa pun — hasilnya satu file HTML yang langsung bisa dibuka.
-- ✅ Bisa dibuka tanpa internet, di laptop maupun HP, kapan saja.
-- ✅ Tinggal cetak ke PDF (Print → Save as PDF) untuk dikirim lewat email/WA atau dicetak.
+- ✅ Bisa dibuka tanpa internet, di laptop maupun HP, dan tinggal dicetak ke PDF (Print → Save as PDF) untuk dikirim lewat email/WA atau dicetak.
 - ✅ Sudah ada 7 kerangka slide siap pakai untuk konteks Indonesia: pitch investor, proposal ke perusahaan lain, pengajuan KUR/bank, laporan bulanan, profil perusahaan, penawaran ke reseller, dan materi pelatihan karyawan, lengkap dengan kartu angka, tabel rapi, timeline, dan kutipan siap pakai.
 - ✅ Angka Rupiah ditulis dengan format yang benar (`Rp 1.250.000`) dan diambil dari data Anda atau skill hitung lain di library ini (mis. `pengajuan-kur`, `rekap-penjualan-csv`) — bukan ditebak.
 - ✅ Bisa dibuka & dicetak jadi PDF rapi satu slide per halaman, tidak terpotong; di HP tegak akan diingatkan untuk memutar ke posisi mendatar (bisa ditutup lewat tombol "Tetap lihat"). Ada mode edit teks langsung di browser (tombol "Edit") — menyimpan hasil edit (Ctrl+S/Cmd+S) hanya bisa di laptop/komputer, di HP minta AI yang mengubah teksnya.
@@ -27,6 +26,12 @@ saya, omzet Rp 35 juta/bulan, mau pinjam Rp 50 juta buat nambah stok dan gerobak
 keliling."
 → Dalam beberapa saat, dapat satu file HTML berisi 10 slide rapi (profil usaha, omzet,
 aset, tujuan pinjaman, proyeksi, dst.), sudah bisa dibuka di HP dan dicetak jadi PDF.
+
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** rata-rata nilai 6,0 tanpa skill menjadi 8,25 dengan skill (skala 10).
+Pada skenario pengajuan KUR, slide buatan AI tanpa skill memuat klaim "rasio di bawah 70% umumnya dianggap wajar" (tanpa sumber) dan tidak memperingatkan bahwa rasio cicilan ±65% itu berat;
+dengan skill, angka yang belum pasti ditandai `[isi]` dan peringatan rasio berat disampaikan ke Anda secara pribadi, tidak ditaruh di slide.
+Jujur: pada uji ini masih ada beberapa kalimat kualitatif karangan di slide; perbaikannya (v1.1.5) belum diuji ulang.
+Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
