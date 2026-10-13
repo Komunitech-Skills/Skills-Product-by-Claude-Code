@@ -75,6 +75,7 @@ Masukan: "Rencana marketing Q4 kedai kopi saya, budget 6 juta, target 200 pesana
 
 ## Batasan & Penanganan Error
 - Ini alat perencanaan, **bukan jaminan hasil**; angka target adalah tujuan, bukan prediksi. Konversi/CAC nyata bervariasi antar usaha dan musim.
+- Jangan mengarang spesifikasi produk, bahan, ukuran, angka pasar/kanal, atau klaim hasil; yang tidak diberikan pengguna ditulis `[isi: ...]` atau ditandai asumsi.
 - Tidak memakai data pribadi pelanggan. Jangan menyarankan broadcast massal/spam WA (risiko nomor diblokir); WA dipakai untuk pelanggan yang sudah pernah chat/beli.
 - Klaim iklan harus jujur (UU Perlindungan Konsumen); jangan menyarankan testimoni palsu atau klaim kesehatan/medis. Iklan produk teregulasi (obat, kosmetik, makanan) wajib memenuhi aturan BPOM/platform: arahkan ke profesional.
 - Tanggal momen dan aturan platform berubah: sebutkan "dicek per <tanggal>" dan minta pengguna memastikan di sumber resmi.

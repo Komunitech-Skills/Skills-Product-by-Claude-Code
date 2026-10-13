@@ -6,7 +6,7 @@
 
 > Komunitech **tidak berafiliasi** dengan proyek Uptime Kuma. Uptime Kuma adalah software open-source (MIT) milik Louis Lam & komunitasnya; skill dan panduan ini adalah karya orisinal Komunitech untuk mempermudah pemakaiannya bagi pemilik usaha Indonesia.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan (opsional): Uptime Kuma (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Software tambahan (opsional): Uptime Kuma (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tahu duluan, bukan dari komplain pelanggan.** Website/checkout/link WA mati ("down") biasanya baru ketahuan saat pelanggan sudah kesal — dengan Uptime Kuma + notifikasi Telegram, Anda bisa tahu dalam hitungan menit sesuai jarak pengecekan yang Anda atur (notifikasi Telegram belum diuji langsung).

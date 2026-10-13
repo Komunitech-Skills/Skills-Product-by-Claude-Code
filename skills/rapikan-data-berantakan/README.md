@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 3,5 → 9,0 dari 10 (nomor HP, tanggal, dan harga diseragamkan dengan ringkasan angka tetap, tanpa menggabungkan nama diam-diam); di bot Telegram asli selisihnya kecil (7 → 7,5), lihat bukti di bawah.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Nomor HP seragam:** `0812-3450-0101`, `+62 812 3450 0101`, `812 3450 0101` jadi satu bentuk, `6281234500101`.

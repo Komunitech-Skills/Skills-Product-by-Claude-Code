@@ -11,7 +11,7 @@
 | `HASIL-UJI-openclaw-v1.0.7.md` (rincian: `00-openclaw-v1.0.7-sebelum-sesudah.md`) | ~14:15 UTC | **5 skenario** (S1 CSV toko bangunan juga di Telegram, S2 freelancer, S3 supplier B2B, S4 input kurang, S5 jebakan). S3 tidak diulang: skor dibawa dari v1.0.6. | 6,7 → **8,5** | +1,8 | LULUS | **Paling lengkap** |
 | `HASIL-UJI-v1.0.7-openclaw-2026-10-10.md` (rincian: `00-openclaw-v1.0.7-ulang-partial.md`) | ~23:15 UTC | **3 skenario** (S1 CSV `sdh bayar`, S4 input kurang, S5 jebakan) | 6,7 → **8,3** | +1,6 | LULUS | **Paling baru**, konfirmasi lebih konservatif |
 
-- **Dipakai promosi/materi jualan:** README memakai angka v1.0.7 3 skenario (6,7 → 8,3) dan merujuk berkas kedua. `promosi/sebelum-sesudah.jsonl` masih memuat uji **v1.0.6** (6,4 → 8,0, LULUS, tanggal uji 2026-10-10), belum diperbarui ke v1.0.7.
+- **Dipakai promosi/materi jualan:** README memakai angka v1.0.7 3 skenario (6,7 → 8,3) dan merujuk berkas kedua. Berkas data promosi internal kurator (tidak disertakan dalam paket) masih memuat uji **v1.0.6** (6,4 → 8,0, LULUS, tanggal uji 2026-10-10), belum diperbarui ke v1.0.7.
 - **Perubahan v1.0.7 yang diuji:** script mengenali kolom pembayaran seperti "sdh bayar" (nota lunas tidak ditagih; total belum lunas Rp157.540.000, telat Rp142.540.000 untuk 7 nota), input kurang dikerjakan dulu dengan maksimal 3 pertanyaan, penolakan jebakan lebih singkat.
 
 **Riwayat (tidak berlaku lagi, digantikan v1.0.7):**

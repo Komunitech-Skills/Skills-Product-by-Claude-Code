@@ -9,8 +9,8 @@
 | Urutan | Tanggal | Versi | Uji | Tanpa → Dengan skill | Selisih | Verdik | Berlaku? | Sumber |
 |---|---|---|---|---|---|---|---|---|
 | 1 | 2026-10-06 | 1.0.0 | OpenClaw lokal + konteks Telegram, 4 skenario | 6,5 → 7,6 | +1,1 | BELUM (skor 7/10) | Tidak (digantikan 1.0.1; jebakan brosur tidak andal, satu salah fakta di skenario 2) | bagian paling atas di bawah ("Skor kualitas: 7/10") |
-| 2 | 2026-10-06 | 1.0.1 | OpenClaw lokal + konteks Telegram, 4 skenario (penguji independen kedua; SEBELUM dipakai ulang dari 1.0.0) | 6,5 → 8,75 | +2,25 | **LULUS** (skor 9/10) | **Ya, resmi** | bagian "Uji ulang 1.0.1" di bawah; `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang 1.0.1" dan "Ringkasan 1.0.1"); `promosi/sebelum-sesudah.jsonl` (6,5 → 8,75, tanggal uji 2026-10-06) |
-| 3 | 2026-10-12 | 1.0.1 | Bot Telegram OpenClaw asli, gelombang 14 (topik 1198–1207) | 6 → 8,5 | +2,5 | **LULUS** | **Ya, konfirmasi** | `koordinasi/telegram-gelombang-14-2026-10-12.md`; tautan pesan di README bagian "Bukti uji di bot Telegram" |
+| 2 | 2026-10-06 | 1.0.1 | OpenClaw lokal + konteks Telegram, 4 skenario (penguji independen kedua; SEBELUM dipakai ulang dari 1.0.0) | 6,5 → 8,75 | +2,25 | **LULUS** (skor 9/10) | **Ya, resmi** | bagian "Uji ulang 1.0.1" di bawah; `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang 1.0.1" dan "Ringkasan 1.0.1"); berkas data promosi internal kurator, tidak disertakan dalam paket (6,5 → 8,75, tanggal uji 2026-10-06) |
+| 3 | 2026-10-12 | 1.0.1 | Bot Telegram OpenClaw asli, gelombang 14 (topik 1198–1207) | 6 → 8,5 | +2,5 | **LULUS** | **Ya, konfirmasi** | catatan internal kurator (tidak disertakan dalam paket); tautan pesan di README bagian "Bukti uji di bot Telegram" |
 
 Skor 1.0.1 per skenario (tanpa → dengan): motor flat 6,5 → 9; KPR fixed→floating 7 → 9; kredit HP tanpa bunga 6,5 → 8,5; jebakan brosur "bunga 0%" 6 → 8,5 (3 run, semua memuat skill).
 

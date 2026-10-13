@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 5,63 → 8,28 dari 10 (isi dokumen tampil utuh di chat, dan data yang belum Anda beri ditandai `[isi: ...]`, tidak ditebak).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) hanya untuk membuat file Word otomatis; tanpa Python, isi dokumen tetap tampil utuh di chat dan bisa Anda salin. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - Mengubah poin-poin hasil AI jadi surat, laporan, atau notulen lengkap dengan kop dan bagian jelas.
@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 5,63 → 8,28 dari 10 (isi dokumen tamp
 ## Contoh sebelum & sesudah
 **Sebelum:** 20 baris poin-poin acak dari ChatGPT tanpa kop dan tanpa penutup.
 
-**Sesudah:** satu dokumen dengan kop, judul, paragraf rapi, tabel, dan penutup siap tanda tangan. Cuplikan keluarannya dari draf WA/ChatGPT tentang kenaikan harga (contoh dengan data fiktif, dari `examples/01-surat-kenaikan-harga.md`):
+**Sesudah:** satu dokumen dengan kop, judul, paragraf rapi, tabel, dan penutup siap tanda tangan. Cuplikan keluarannya dari draf WA/ChatGPT tentang kenaikan harga (hasil uji OpenClaw dengan data fiktif, dipotong; dari `examples/01-surat-kenaikan-harga.md`):
 
 ```
 KOPI SEDUH NUSANTARA
@@ -58,7 +58,7 @@ Salin folder `ubah-draf-ke-dokumen` ke folder skills agent Anda. Detail: `docs/i
 
 Python opsional (hanya untuk file Word otomatis).
 
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,63 tanpa skill menjadi 8,28 dengan skill (skala 10), dari empat skenario: draf WA/ChatGPT jadi surat kenaikan harga (juga di konteks Telegram), notulen rapat dengan tabel tindak lanjut, laporan dari satu kalimat, dan jebakan (kop dinas palsu dan omzet digelembungkan). Tanpa skill, notulen hanya disimpan sebagai berkas sehingga tidak terlihat di chat, dan data yang belum diberikan ditebak; dengan skill isi dokumen utuh di chat dan yang belum diputuskan ditandai `[isi: ...]`. Catatan jujur: model biasa pun sudah menulis surat yang baik pada skenario pertama. Pembukaan file Word di aplikasi Word asli dan pengiriman lampiran Word lewat bot Telegram sungguhan belum diuji. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,63 tanpa skill menjadi 8,28 dengan skill (skala 10), dari empat skenario: draf WA/ChatGPT jadi surat kenaikan harga (juga di konteks Telegram), notulen rapat dengan tabel tindak lanjut, laporan dari satu kalimat, dan jebakan (kop dinas palsu dan omzet digelembungkan). Tanpa skill, notulen hanya disimpan sebagai berkas sehingga tidak terlihat di chat, dan data yang belum diberikan ditebak; dengan skill isi dokumen utuh di chat dan yang belum diputuskan ditandai `[isi: ...]`. Catatan jujur: model biasa pun sudah menulis surat yang baik pada skenario pertama. Pada uji, file Word sempat tidak valid; sudah diperbaiki dan strukturnya dicek ulang lewat tes otomatis. Pembukaan file Word di aplikasi Word asli dan pengiriman lampiran Word lewat bot Telegram sungguhan belum diuji. Rekap angka: `examples/HASIL-UJI.md`; balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah wajib memasang Pandoc (program konversi dokumen)?** Tidak. File Word dibuat dengan program kecil bawaan skill.

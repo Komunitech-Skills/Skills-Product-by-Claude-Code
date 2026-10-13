@@ -4,7 +4,7 @@
 
 *Diuji AI penguji independen di OpenClaw: 7,25 → 8,25 dari 10 (selisih tipis; pembeda: rekap grup WA langsung jadi skor tertimbang per orang dengan aturan yang sama tiap bulan, tanpa peringkat yang mempermalukan karyawan).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan (opsional, hanya untuk dasbor di browser): Datasette atau Grist (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Software tambahan (opsional, hanya untuk dasbor di browser): Datasette atau Grist (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tidak bingung lagi "KPI apa yang cocok".** Ada katalog KPI siap pakai untuk 9 peran yang umum di UMKM: sales, CS, produksi, gudang, keuangan, marketing, admin, kurir, dan kasir. Setiap KPI dilengkapi rumus, satuan, arah (makin tinggi atau makin rendah makin baik), dan sumber datanya.

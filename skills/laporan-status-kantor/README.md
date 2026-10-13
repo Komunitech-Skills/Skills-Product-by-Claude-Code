@@ -1,16 +1,16 @@
 # Laporan Kantor Rapi dalam Hitungan Detik
 
-**Dari chat berantakan jadi laporan siap kirim ke atasan, tim, atau klien — angka tidak dikarang, yang kurang ditandai.**
+**Dari chat berantakan jadi laporan siap kirim ke atasan, tim, atau klien — info yang kurang ditandai, bukan dikarang.**
 
-Diuji AI penguji independen: 6,3 → 9,0 dari 10 di OpenClaw (tanpa skill, nominal THR per orang bisa ikut masuk teks pengumuman grup); di bot Telegram asli belum lulus (4,5 → 5 dari 10, lihat bukti uji di bawah).
+Diuji AI penguji independen di OpenClaw: 6,3 → 9,0 dari 10 (tanpa skill, nominal THR per orang bisa ikut masuk teks pengumuman grup); di bot Telegram asli belum lulus (4,5 → 5 dari 10, lihat bukti uji di bawah).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Ubah catatan chat/poin acak/transkrip voice note jadi laporan 3P (Progres-Rencana-Kendala) yang rapi
-- ✅ Satu skill untuk 9 jenis komunikasi kantor: laporan mingguan, harian, newsletter (buletin internal), pengumuman, FAQ (daftar tanya-jawab karyawan), memo, laporan insiden
+- ✅ Satu skill untuk 9 format komunikasi kantor: laporan mingguan, harian, newsletter (buletin internal), pengumuman, FAQ (daftar tanya-jawab karyawan), memo, laporan insiden
 - ✅ Format siap tempel langsung ke WA grup kantor/Telegram (`*tebal*`, bullet pendek) atau email formal
-- ✅ Tidak mengarang progres/angka — info yang kurang ditandai jelas atau ditanyakan (tetap baca ulang sebelum dikirim)
+- ✅ Dirancang tidak mengarang progres/angka — info yang kurang ditandai jelas atau ditanyakan (tetap baca ulang sebelum dikirim)
 - ✅ Nada otomatis menyesuaikan: sopan-formal khas kantor Indonesia atau santai-profesional ala startup
 
 ## Cocok untuk siapa
@@ -21,21 +21,29 @@ Diuji AI penguji independen: 6,3 → 9,0 dari 10 di OpenClaw (tanpa skill, nomin
 - Siapa saja yang WFH/WFO dan diminta laporan harian singkat
 
 ## Contoh sebelum & sesudah
-**Sebelum:** Catatan chat tim berantakan — "udah kelar redesign landing page", "fitur
-checkout masih nunggu API vendor", "server sempet down 2 jam Selasa udah difix", "minggu
-depan mulai notifikasi WA".
+**Sebelum:** Poin-poin tim yang berantakan dan campur Indonesia-Inggris — "landing page udah deploy ke production", "ada 2 orang tim resign minggu ini jadi rada kacau workload-nya", "budget server bulan ini over dikit gara2 traffic naik".
 
-**Sesudah (cukup ketik):** "Buatin laporan mingguan ke bos dari chat ini, tim Produk."
-→
+**Sesudah (cukup ketik):** "bikinin update mingguan buat tim ya, santai aja gaya startup gitu. terus sekalian versi yang bisa dikirim ke klien kita, PT Maju Bersama, tapi jangan ada info internal yang sensitif." (disertai poin-poinnya)
+
+Cuplikan versi untuk klien (contoh dengan data fiktif; dipotong dari `examples/02-startup-tim-dan-klien.md`; production = sudah tayang untuk pengguna, payment gateway = sistem pembayaran online):
 ```
-🧩 *Tim Produk* — 15–19 Sep 2026
-*Progres:* Redesign landing page selesai. Sempat ada gangguan server ±2 jam pada Selasa
-akibat disk penuh, sudah diperbaiki.
-*Rencana:* Mulai mengerjakan fitur notifikasi WA minggu depan.
-*Kendala:* Fitur checkout masih menunggu API payment dari vendor, perkiraan selesai
-minggu depan.
+Yth. Bapak/Ibu PT Maju Bersama,
+
+Berikut update progres proyek untuk periode 21–25 Sep 2026.
+
+Progres:
+- Landing page telah selesai dan sudah tayang di production.
+- Dashboard analytics sedang berjalan sesuai rencana, ditargetkan selesai minggu depan.
+
+Rencana selanjutnya:
+- Mulai proses testing untuk fitur baru minggu depan.
+
+Catatan:
+- Integrasi payment gateway masih menunggu proses dari pihak vendor terkait; kami akan
+  menginformasikan estimasi waktu penyelesaian segera setelah ada kepastian dari vendor.
+…
 ```
-Siap tempel langsung ke WA grup atau email — tidak perlu dirapikan lagi.
+Di contoh ini, kabar karyawan yang resign dan anggaran server yang membengkak sengaja tidak ikut masuk ke versi klien; versi santai untuk tim dibuat dalam jawaban yang sama. Hasilnya tinggal Anda baca ulang lalu tempel ke WA grup atau email.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -58,19 +66,19 @@ Salin folder `laporan-status-kantor` ke folder skills AI agent Anda:
 | Claude Code (belum diuji langsung) | `~/.claude/skills/` |
 | Cursor (belum diuji langsung) | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## Hasil uji (jujur)
 
-**Hasil uji (angka nyata):** uji di OpenClaw, 2 Okt 2026 (v1.0.7), skor 1-10 dari agen penguji independen: tanpa skill 6,3 → dengan skill 9,0.
+**Hasil uji (angka nyata):** uji di OpenClaw otomatis oleh agen penguji independen, 2 Okt 2026 (v1.0.4, dipasang bersama skill `hitung-thr` v1.0.6), skor 1-10: tanpa skill 6,3 → dengan skill 9,0.
 - Tugas: pengumuman libur Natal 2026 untuk grup WA karyawan, lengkap dengan nominal THR. Tanpa skill, AI kadang menghitung THR sendiri (salah Rp 3.333.333 di satu sesi, yang benar Rp 3.000.000 = 9/12 × Rp 4.000.000) dan memuat nominal per orang di teks grup. Dengan skill (dipasang bersama skill Hitung THR, `hitung-thr`, yang menghitung nominal THR): THR benar (total 4 karyawan Rp 13.766.667), nominal per orang hanya di blok khusus pemilik/HR, teks grup aman, dan tanggal masuk yang janggal ditandai.
 - Jujur: di bot Telegram asli hasilnya belum lulus (lihat bagian bukti uji di bawah).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, termasuk bot Telegram asli). Claude Code, Codex, dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, termasuk bot Telegram asli). Claude Code, Codex, dan Cursor memakai format skill yang sama, tetapi belum kami uji langsung.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05.
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05 (v1.0.7).
 - Tanpa skill: https://t.me/c/4407409583/869/884 — skor 4,5
 - Dengan skill: https://t.me/c/4407409583/870/887 — skor 5
 Verdik gelombang: BELUM — Kedua sisi menolak nominal THR per orang di grup dengan benar, tetapi keduanya tidak memberi teks pengumuman; DENGAN malah menanyakan tanggal cuti bersama yang sudah ada di rujukan skill.
@@ -84,8 +92,8 @@ Verdik gelombang: BELUM — Kedua sisi menolak nominal THR per orang di grup den
 Tidak. Skill ini hanya menyusun teks pengumuman/laporan. Untuk menghitung nominal, gunakan
 skill `hitung-thr` atau skill hitung terkait, lalu hasilnya bisa dimasukkan ke pengumuman.
 
-**Apakah harus punya akses Slack/Google Drive/email seperti versi aslinya (sumber
-internasional)?**
+**Apakah harus punya akses Slack/Google Drive/email seperti skill sumbernya (buatan
+luar negeri)?**
 Tidak perlu. Skill ini dirancang untuk bekerja langsung dari bahan yang Anda berikan
 (tempel chat, ketik poin-poin, atau tempel transkrip voice note) — tanpa integrasi apa pun.
 

@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,5 → 8,5 dari 10 (nomor pesanan yang rusak karena Excel ditandai dan ditahan, bukan diremehkan; pada pesanan biasa, AI tanpa skill sudah hampir sama bagusnya).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Cocokkan barang dengan resi dalam waktu singkat.** Cukup kirim file ekspor pesanan, admin gudang langsung dapat daftar ambil per SKU (kode barang) dan urutan kemas per kurir - tidak perlu mencocokkan satu per satu di Excel.
@@ -79,7 +79,7 @@ Salin folder `resi-picking` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: skrip hitung bawaan skill, file siap cetak, peringatan nomor pesanan yang rusak karena Excel; tanpa skill di jebakan Excel: picking tetap terisi tapi kerusakan nomor pesanan diremehkan.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: skrip hitung bawaan skill, file siap cetak, peringatan nomor pesanan yang rusak karena Excel; tanpa skill di jebakan Excel: picking tetap terisi tapi kerusakan nomor pesanan diremehkan.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Semua uji memakai file pesanan contoh (data fiktif) dengan judul kolom yang meniru ekspor Shopee/Tokopedia/TikTok Shop, belum dengan ekspor toko asli.
 

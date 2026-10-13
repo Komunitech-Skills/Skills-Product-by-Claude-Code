@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,17 → 8,83 dari 10 (rundown per menit dengan angka promo yang dihitung dan tanpa klaim produk karangan; tanpa skill naskahnya generik tanpa pembagian waktu live).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Rundown per menit: setiap produk kebagian waktu, dan ada segmen rekap promo untuk penonton yang baru masuk
@@ -65,7 +65,7 @@ Salin folder `naskah-live-jualan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (skill v1.0.5), skor 1–10 penguji independen: tanpa skill **6,17** → dengan skill **8,83** (LULUS). Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ulang di konteks Telegram pada v1.0.7 (5 Okt 2026, 3 percobaan, tanpa kirim ke grup): rata-rata dengan skill **8,17**, lulus 3 dari 3 (tanpa pembanding tanpa-skill). Dengan skill: rundown per menit dengan tanda kapan menyebut stok dan harga, fakta dicek silang, dan tidak ada istilah internal yang ikut terucap; tanpa skill: naskah generik tanpa pembagian waktu live.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (skill v1.0.5), skor 1–10 penguji independen: tanpa skill **6,17** → dengan skill **8,83** (LULUS). Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ulang di konteks Telegram pada v1.0.7 (5 Okt 2026, 3 percobaan, tanpa kirim ke grup): rata-rata dengan skill **8,17**, lulus 3 dari 3 (tanpa pembanding tanpa-skill). Dengan skill: rundown per menit dengan tanda kapan menyebut stok dan harga, fakta dicek silang, dan tidak ada istilah internal yang ikut terucap; tanpa skill: naskah generik tanpa pembagian waktu live.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
 

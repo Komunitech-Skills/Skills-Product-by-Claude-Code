@@ -99,7 +99,7 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 ---
 
 ## Riwayat revisi 1.0.8 (2026-10-05) - menunggu uji ulang independen
-- Pemicu: pra-cek konteks Telegram gelombang 7 (`koordinasi/pracek-telegram-g7-2026-10-05.md`): skor konteks 6,5; bot hanya membalas 4 pertanyaan padahal jenis kerja sama, produk, dan angka sudah ada; tanpa proposal dan tanpa peringatan bahwa porsi toko 35% bisa merugikan.
+- Pemicu: pra-cek konteks Telegram gelombang 7 (catatan internal kurator, tidak disertakan dalam paket): skor konteks 6,5; bot hanya membalas 4 pertanyaan padahal jenis kerja sama, produk, dan angka sudah ada; tanpa proposal dan tanpa peringatan bahwa porsi toko 35% bisa merugikan.
 - Perbaikan: aturan baru "kerjakan dulu, tanya di akhir" di SKILL.md dan description (klaim belum terbukti -> hitungan script + peringatan rugi -> proposal lengkap -> maks. 1-3 pertanyaan di akhir). Contoh baru: `07-kerjakan-dulu-tanya-di-akhir-klaim-dan-porsi-rugi.md`.
 - Status: **menunggu uji ulang independen** (belum diuji ulang; skor di atas belum berlaku untuk 1.0.8).
 
@@ -108,7 +108,7 @@ Cacat berat v1.0.0 sudah diperbaiki dengan benar dan dilindungi uji regresi. Sem
 
 
 ## Riwayat revisi 1.0.9 (2026-10-05) - menunggu uji ulang independen
-- Pemicu: cacat no. 1 gelombang 8 Telegram (`koordinasi/telegram-gelombang-8-2026-10-05.md`): rumus laba/titik impas tidak tampil (hanya minta HPP), baris proses "HASIL: LULUS" ikut terkirim, path file tidak bisa dibuka dari Telegram.
+- Pemicu: cacat no. 1 gelombang 8 Telegram (catatan internal kurator, tidak disertakan dalam paket): rumus laba/titik impas tidak tampil (hanya minta HPP), baris proses "HASIL: LULUS" ikut terkirim, path file tidak bisa dibuka dari Telegram.
 - Perbaikan: rumus + tabel contoh HPP wajib tampil di "Catatan untuk Anda" walau HPP kosong; keluaran `cek_fakta.py` bertanda "UNTUK AGENT SAJA" tanpa LULUS/GAGAL di baris ringkas; larangan menyebut file/proses di balasan, isi utuh di chat.
 - Status: **menunggu uji ulang independen** (skor di atas belum berlaku untuk 1.0.9).
 

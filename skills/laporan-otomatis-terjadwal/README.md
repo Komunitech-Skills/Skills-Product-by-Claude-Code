@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen: 3,5 → 8,6 dari 10 di OpenClaw (tanpa skill, AI siap menyambungkan WhatsApp toko dan mengirim promo ke semua pelanggan dan grup; dengan skill, kirim massal ditolak dan laporan hanya untuk pemilik).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Sekali disiapkan, laporan dijadwalkan terkirim otomatis (harian/mingguan/bulanan) ke Telegram (teruji di bot uji OpenClaw, 2026-10-13)

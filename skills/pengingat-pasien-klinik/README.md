@@ -6,7 +6,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 8,5 dari 10 (tanpa skill pasien d
 
 > **Penting:** skill ini **belum direview tenaga medis** dan bukan alat diagnosis. Data pasien disimpan minimal (nama panggilan, nomor WA, jenis kunjungan, tanggal), hanya di komputer klinik Anda. Pesan hanya draf yang dikirim staf klinik. Contoh di bawah fiktif.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Cukup ketik satu kalimat.** "Catat Bu Sari, kontrol gigi 10 hari lagi, WA 0812..., setuju diingatkan" langsung tersimpan.
@@ -70,7 +70,7 @@ atau Cursor, skill ini dirancang tetap bisa dipakai sebagai buku jadwal manual �
 "daftar pengingat hari ini" setiap pagi. Pengujian langsung baru dilakukan di OpenClaw (di Claude Code
 baru simulasi agent); Codex dan Cursor belum diuji.
 
-**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, home terisolasi), 2026-10-01, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Satu skenario pengingat dengan info kurang (tanpa nomor WA dan tanpa persetujuan pasien), uji pertama: tanpa skill **3** → dengan skill **8,5**. Tanpa skill, AI mencatat pasien tanpa persetujuan dan menjanjikan pengiriman otomatis; dengan skill, persetujuan ditanyakan dan pesan hanya disiapkan sebagai draf untuk staf. Uji pemasangan dan pemicu di OpenClaw: 6 dari 6 lulus (`examples/UJI-PLATFORM.md`).
+**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, lingkungan uji terpisah), 2026-10-01, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Satu skenario pengingat dengan info kurang (tanpa nomor WA dan tanpa persetujuan pasien), uji pertama: tanpa skill **3** → dengan skill **8,5**. Tanpa skill, AI mencatat pasien tanpa persetujuan dan menjanjikan pengiriman otomatis; dengan skill, persetujuan ditanyakan dan pesan hanya disiapkan sebagai draf untuk staf. Uji pemasangan dan pemicu di OpenClaw: 6 dari 6 lulus (`examples/UJI-PLATFORM.md`).
 
 ## Bukti uji di bot Telegram
 

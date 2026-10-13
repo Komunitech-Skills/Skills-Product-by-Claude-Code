@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 2,25 → 9,25 dari 10 (tanpa skill ganti rugi sisa kontrak terlewat; dengan skill kompensasi dan ganti rugi dihitung skrip, total Rp21.115.591 pada skenario uji).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Draf kontrak PKWT 12 pasal siap cetak**: jabatan & alasan kontrak, jangka waktu, jam kerja & lembur, upah + terbilang (ditulis dengan huruf), BPJS, THR, cuti, kompensasi, pengakhiran, dan tanda tangan bermeterai. Bagian yang belum Anda isi ditandai `[isi: ...]`, tidak diisi dengan data karangan.

@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 7,9 → 8,6 dari 10 (angka laba rugi dan neraca cocok dengan hitungan independen, uang pribadi dipisah, dan permintaan menaikkan omzet untuk KUR ditolak; selisih dengan AI tanpa skill tergolong kecil).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Tiga laporan standar SAK EMKM (standar laporan keuangan untuk usaha kecil) langsung jadi: Laba Rugi, Posisi Keuangan (neraca), dan Catatan atas Laporan Keuangan. Bisa jadi lampiran awal saat mengajukan KUR (Kredit Usaha Rakyat) atau untuk arsip usaha; bank bisa meminta format sendiri
@@ -59,7 +59,7 @@ Salin folder `laporan-keuangan-emkm` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Perhitungan memakai Python (biasanya sudah ada di Mac/Linux; di Windows bisa dipasang gratis dari python.org). Tanpa Python, AI tetap bisa menghitung manual dengan rumus yang disediakan.
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.3.3), skor 1–10 penguji independen: tanpa skill **7,9** → dengan skill **8,6** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pada skenario warung bakso, dengan skill laba bersih Rp12.375.000, prive dipisah, klasifikasi buku kas benar, dan permintaan mark-up omzet untuk KUR ditolak tegas.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.3.3), skor 1–10 penguji independen: tanpa skill **7,9** → dengan skill **8,6** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pada skenario warung bakso, dengan skill laba bersih Rp12.375.000, prive dipisah, klasifikasi buku kas benar, dan permintaan mark-up omzet untuk KUR ditolak tegas.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent). Bukan laporan audit atau nasihat pajak — minta akuntan memeriksa bila untuk bank/pajak resmi. Codex/Cursor belum uji platform asli.
 

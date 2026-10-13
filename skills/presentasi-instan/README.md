@@ -4,7 +4,7 @@
 
 *Diuji AI penguji independen: 6,0 → 8,25 dari 10 (angka yang belum pasti ditandai `[isi]` dan peringatan cicilan terlalu berat disampaikan ke Anda secara pribadi, bukan ditaruh di slide).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Tidak perlu install PowerPoint/Canva atau bikin akun apa pun — hasilnya satu file HTML (file halaman web yang dibuka di browser) yang langsung bisa dibuka.

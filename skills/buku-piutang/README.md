@@ -4,7 +4,7 @@
 
 *Diuji AI penguji independen: 5,75 → 8,75 dari 10 (tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis; dengan skill ia menolak, menyiapkan draf untuk dikirim sendiri, dan kelebihan bayar ditanyakan dulu).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Bon tidak mudah terlupa.** Setiap pagi Anda tahu tagihan yang **terlewat**, yang **jatuh tempo hari ini**, dan yang **jatuh tempo minggu ini**, lengkap dengan sisa dan berapa kali sudah diingatkan. Bisa dikirim otomatis ke Telegram Anda (jadwal otomatis ini belum diuji langsung).

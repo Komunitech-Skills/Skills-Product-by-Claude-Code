@@ -74,6 +74,7 @@ Katakan singkat bahwa pencarian langsung tidak tersedia, lalu beri: (a) **kata k
 ## Format output
 1. **Profil ideal & asumsi** (2-3 baris).
 2. **Tabel prospek** (8-15 baris), kolom: `No | Nama usaha | Kota | Jenis | Alasan cocok (1 kalimat) | Skor | Kontak bisnis publik | Sumber (URL) | Dicek`
+   Alasan prospek hanya menyebut apa yang tertulis di sumber yang dikutip; jangan menyimpulkan kebutuhan atau ukuran usaha sebagai kepastian ("pasti butuh", "terbesar"); tandai sebagai perkiraan yang perlu dicek.
 3. **3 prospek prioritas**: alasan + 1 kalimat pembuka masing-masing.
 4. **CSV siap tempel** dalam satu blok kode, kolom: `nama,kota,jenis,alasan,skor,kontak,website,sumber,tanggal_cek` (bidang berisi koma diberi tanda kutip ganda).
 5. **Catatan kejujuran:** berapa baris terverifikasi penuh, berapa ada `[belum terverifikasi]`, dan apa penyebabnya.
@@ -89,6 +90,7 @@ Katakan singkat bahwa pencarian langsung tidak tersedia, lalu beri: (a) **kata k
 - Skrip `scripts/saring_prospek.py` (opsional, >30 baris): domain platform bersama (Maps, IG, FB, marketplace, linktr.ee, wa.me) tidak dipakai sebagai kunci duplikat; baris CSV tidak rata ditoleransi dengan peringatan; `DUMMY?` = placeholder, skor 0. Salin angka skor hasil skrip apa adanya.
 
 ## Batasan & penanganan error
+- Versi 1.0.3 (2026-10-13): alasan prospek dan kalimat pembuka hanya memuat yang tertulis di sumber yang dikutip; kebutuhan atau ukuran usaha yang tidak ada di sumber ditulis sebagai perkiraan yang perlu dicek, bukan kepastian.
 - Versi 1.0.2 (2026-10-06): pendekatan baru "hanya halaman direktori" (maks. 3 pencarian + 6 halaman, tanpa membuka situs usaha satu per satu atau menebak URL kontak, kontak hanya dari halaman direktori, cuplikan hanya untuk nama/kota), tabel penolakan dipindah ke sebelum Langkah kerja, baris "Cara cek", skrip hanya menandai alamat "No. 123/12345/000" sebagai dummy.
 - Versi 1.0.1 (2026-10-06): batas waktu & upaya (±25 halaman, ±15 di kanal chat, hasil parsial dibolehkan), saring placeholder/dummy, penolakan tegas di awal jawaban, nomor HP perorangan tidak masuk CSV, tanpa menyebut nama skill, komposisi merata antar jenis usaha, skrip lebih toleran (platform bersama, baris tidak rata, penanda DUMMY?).
 - Bukan nasihat hukum; ringkasan aturan PDP ada di `references/sumber-sah.md` dan ditandai PERLU REVIEW. Bila pengguna ragu soal legalitas, sarankan konsultasi ke ahli hukum.

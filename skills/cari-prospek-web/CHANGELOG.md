@@ -2,6 +2,11 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.3 (2026-10-13)
+- SKILL.md: ditambah aturan bahwa alasan prospek hanya menyebut apa yang tertulis di sumber yang dikutip; kebutuhan atau ukuran usaha ('pasti butuh', 'terbesar') tidak boleh ditulis sebagai kepastian, melainkan sebagai perkiraan yang perlu dicek. Alur kerja dan batas 3 pencarian + 6 halaman tidak berubah.
+- Folder `examples/` dirapikan karena ikut dikirim ke pembeli: nomor telepon/WA dan email usaha disamarkan (sisa 4 digit terakhir), nama perorangan diganti `[nama pemilik]`, dan alasan prospek yang spekulatif diganti kalimat hati-hati yang hanya menyebut isi sumber. Skor, verdik, tanggal uji, dan jumlah prospek tidak diubah; data fiktif untuk uji skrip tidak diubah.
+- Tes `tests/uji_regresi.py` dijalankan ulang: lolos.
+
 ## Catatan revisi 1.0.2 (2026-10-06)
 - Jalur pencarian dipersingkat agar selesai kurang dari sekitar 5 menit: hanya memakai halaman direktori publik (Google Maps, Kadin, marketplace B2B, media lokal) dengan batas 3 pencarian dan 6 halaman direktori; situs usaha tidak lagi dibuka satu per satu. Hasil 8-15 prospek, bukan 10-20.
 - Bagian "Permintaan di luar batas" dipindah ke depan dan diubah menjadi tabel: penolakan 1-2 kalimat wajib menjadi kalimat pertama jawaban (login akun, scraping grup, beli database, WA massal), lalu padanan yang sah, lalu daftar tetap dibuat. Nomor HP perorangan tidak masuk tabel maupun CSV.

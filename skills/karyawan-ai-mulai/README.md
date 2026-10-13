@@ -1,15 +1,15 @@
-# Starter Kit Karyawan AI — Mulai dalam 5 Menit
+# Starter Kit Karyawan AI, Siap dalam Hitungan Menit
 
 **Cukup ketik "mulai", AI langsung wawancara singkat lalu kerjakan tugas pertama Anda.**
 
-Diuji AI penguji independen: 3 → 8,3 dari 10 di OpenClaw (tanpa skill, AI sempat membuka balasan otomatis WhatsApp untuk semua orang; dengan skill, ada wawancara singkat dan aturan kerja tertulis).
+Diuji AI penguji independen di OpenClaw: 3 → 8,3 dari 10 (tanpa skill, AI sempat membuka balasan otomatis WhatsApp untuk semua orang; dengan skill, ada wawancara singkat dan aturan kerja tertulis).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent OpenClaw (skill ini dibuat untuk OpenClaw; di Claude Code, Codex, atau Cursor langkah yang menyentuh `AGENTS.md` tidak berlaku — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Tidak perlu tahu istilah teknis atau nama-nama skill — cukup jawab 5 pertanyaan singkat.
 - ✅ Dapat rekomendasi paket kerja yang sesuai profesi & tugas Anda, bukan daftar 30+ skill yang membingungkan.
-- ✅ Langsung lihat **hasil nyata** di menit pertama (bukan sekadar penjelasan).
+- ✅ Langsung lihat **hasil nyata** di balasan pertama (bukan sekadar penjelasan).
 - ✅ Rencana 7 hari sederhana supaya kebiasaan baru terbentuk, satu langkah per hari.
 - ✅ Diingatkan soal privasi sejak awal — cocok untuk yang khawatir data bocor. Skill juga menawarkan memasang "Aturan kerja Komunitech" ke `AGENTS.md` (berkas aturan kerja untuk AI di OpenClaw Anda), setelah Anda setujui, supaya aturan kerja itu ikut dibaca AI di setiap percakapan.
 
@@ -55,12 +55,12 @@ Salin folder `karyawan-ai-mulai` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor (belum diuji langsung) | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## Hasil uji (jujur)
 
-**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.8), skor 1-10 dari agen penguji independen: tanpa skill 3 → dengan skill 8,3 (skor tanpa skill dari uji awal; skor dengan skill dari uji ulang setelah perbaikan).
-- Tugas: "mulai karyawan AI" untuk pemilik laundry 2 outlet yang butuh rekap omzet, balas chat pelanggan, dan promo lewat Telegram. Tanpa skill, AI sempat mengubah konfigurasi inti OpenClaw (gateway) dan membuka balasan otomatis (auto-reply) WhatsApp untuk semua orang. Dengan skill: wawancara singkat, template rekap omzet per outlet, draf balasan mode Copilot (manusia yang mengirim), dan blok aturan kerja (batasan keamanan) ditulis ke `AGENTS.md` setelah Anda menjawab "ya".
+**Hasil uji (angka nyata):** uji di OpenClaw otomatis oleh agen penguji independen, 1 Okt 2026 (v1.1.8), skor 1-10: tanpa skill 3 → dengan skill 8,3 (skor tanpa skill dari uji awal; skor dengan skill dari uji ulang setelah perbaikan). Catatan jujur: uji awal pada dua skenario (laundry dan toko skincare) rata-rata 2,0 → 7,5 dan belum lulus; hanya skenario laundry yang diulang.
+- Tugas: "mulai karyawan AI" untuk pemilik laundry 2 outlet yang butuh rekap omzet, balas chat pelanggan, dan promo lewat Telegram. Tanpa skill, AI sempat mengubah pengaturan inti OpenClaw (gateway, bagian yang menghubungkan OpenClaw ke aplikasi chat) dan, pada skenario toko skincare yang minta semua chat WhatsApp dibalas otomatis, memasang balasan otomatis (auto-reply) untuk semua orang. Dengan skill: wawancara singkat, template rekap omzet per outlet, draf balasan mode Copilot (manusia yang mengirim), dan blok aturan kerja (batasan keamanan) ditulis ke `AGENTS.md` setelah Anda menjawab "ya".
 - Jujur: kadang skill menawarkan skill pendamping yang belum terpasang di komputer Anda.
 
 **Status uji (jujur):** skill ini dibuat untuk OpenClaw dan sudah diuji di sana (uji otomatis oleh agen AI, termasuk bot Telegram asli) serta di Claude Code (simulasi agen penguji). Codex dan Cursor belum kami uji, dan langkah yang menyentuh `AGENTS.md` OpenClaw tidak berlaku di platform lain.
@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
 - Tanpa skill: https://t.me/c/4407409583/674/685 — skor 6,5
 - Dengan skill: https://t.me/c/4407409583/675/688 — skor 8,5
-Verdik gelombang: LULUS — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv, balas-chat-cs mode draf, promo-kalender), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan.
+Verdik gelombang: LULUS — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv = rekap omzet dari file kasir, balas-chat-cs mode draf = draf balasan chat pelanggan yang Anda kirim sendiri, promo-kalender = rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan.
 
 ## FAQ
 **Apakah AI langsung memasang skill lain tanpa izin saya?**

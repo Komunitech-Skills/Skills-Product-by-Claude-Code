@@ -2,7 +2,7 @@
 
 **Dapatkan daftar foto, cara menata cahaya jendela, dan ide video 15–30 detik yang tinggal dikerjakan, tanpa studio dan tanpa alat mahal.**
 
-Diuji AI penguji independen di OpenClaw: 6,5 → 8,8 dari 10 (brief lengkap berisi daftar foto per sudut, properti, dan pengaturan cahaya HP; tanpa skill hanya daftar umum tanpa urutan kerja).
+Diuji AI penguji independen di OpenClaw: 6,5 → 8,8 dari 10 (pembeda: untuk kamar berjendela menghadap timur, dengan skill jam foto disesuaikan ke 11.00–16.00 dan brief memuat urutan foto per tempat jualan, rasio, serta catatan keselamatan api untuk lilin; tanpa skill AI menyarankan foto pagi saat matahari timur masuk langsung).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -16,7 +16,7 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 8,8 dari 10 (brief lengkap beri
 ## Cocok untuk siapa
 - Seller marketplace yang memotret produk sendiri di rumah
 - Pemilik UMKM kuliner, fashion, kecantikan, kerajinan yang ingin foto lebih meyakinkan
-- Pemilik usaha yang ingin memberi brief jelas ke staf, teman, atau fotografer freelance
+- Pemilik usaha yang ingin memberi brief (arahan kerja tertulis) jelas ke staf, teman, atau fotografer freelance
 
 ## Contoh sebelum & sesudah
 **Sebelum:** Foto produk di meja makan dengan lampu kuning, latar berantakan, warna tidak sesuai aslinya. Pembeli sering bertanya "ukurannya berapa?" dan ada ulasan "warna beda dengan foto".
@@ -58,9 +58,9 @@ Salin folder `foto-produk-brief` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,8** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: brief berisi daftar foto per sudut pengambilan, properti, dan pengaturan cahaya HP; tanpa skill: daftar umum tanpa urutan kerja.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,8** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh lilin aromaterapi dengan jendela menghadap timur: dengan skill, brief berisi 9 foto lengkap dengan urutan slot marketplace, rasio, sudut, tes warna, catatan keselamatan api, dan 3 ide video per detik; tanpa skill, AI menyarankan foto pagi hari saat matahari timur masuk langsung, dan daftar fotonya tanpa rasio, urutan slot, maupun catatan keselamatan api. Catatan jujur: skor 6,5 tanpa skill berasal dari uji awal; sisi dengan skill diulang setelah perbaikan (uji awal 7,5, belum lulus). Teks video hasil skill masih sekali memuat klaim yang tidak Anda berikan ("tahan lama"), jadi baca ulang sebelum dipakai.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung, dan bot Telegram asli belum diuji.
 
 ## FAQ
 **Harus beli lampu studio atau kamera?**

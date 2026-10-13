@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di bot Telegram asli: 7 → 8,5 dari 10 (pembedanya minat lisan 41,7% dipisahkan dari konversi nyata 0 dari 12, lengkap dengan rentang wajar 0–24% dan keputusan tegas; tanpa skill, saran praktisnya sudah benar tetapi tanpa angka).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - Tahu asumsi mana yang paling berbahaya dan diuji dulu, tidak semua sekaligus.

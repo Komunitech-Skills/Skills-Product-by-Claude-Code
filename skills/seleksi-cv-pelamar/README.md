@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di bot Telegram asli: 7 → 8,5 dari 10 (tanpa skill hanya 3 kandidat dengan satu pertanyaan masing-masing; dengan skill skor per kriteria berbukti kutipan CV dan 4 pertanyaan wawancara per kandidat).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Ranking terbuka, bukan tebakan.** Setiap skor dipecah per kriteria (Terpenuhi, Sebagian, Belum terlihat) dengan kutipan dari CV, jadi Anda bisa memeriksa dan berbeda pendapat.

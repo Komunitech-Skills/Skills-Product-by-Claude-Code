@@ -6,7 +6,7 @@ Diuji AI penguji independen di OpenClaw (dengan server Fider tiruan berisi data 
 
 > Komunitech **tidak berafiliasi** dengan tim Fider (getfider). Fider adalah software gratis berkode terbuka (open-source, lisensi AGPL-3.0) milik pengembangnya dan **tidak ikut dalam paket ini**; skill dan panduan ini adalah karya orisinal Komunitech yang terhubung ke Fider lewat pintu data resminya (REST API, jalur bagi program untuk berbicara dengan Fider) di komputer/server Anda sendiri.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Fider (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Software tambahan: Fider (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Pengganti layanan papan saran berlangganan (seperti Canny atau UserVoice).** Papan usulan + voting + status (Direncanakan, Dikerjakan, Selesai) jalan di komputer atau VPS (server sewaan) Anda; data tidak dititipkan ke pihak lain.
@@ -53,7 +53,7 @@ Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (
 
 **Tidak mau repot?** Ada **jasa setup berbayar Komunitech**: komputer/VPS, domain + HTTPS, Fider + database, email pengirim, kunci API, tag awal, dan jadwal ringkasan Telegram. Hubungi admin komunitech.com.
 
-**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, home terisolasi), 2026-10-02, skor 1–10 penguji independen. Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ini memakai server Fider tiruan berisi data contoh (bukan Fider asli), jadi yang dinilai adalah perilaku AI-nya.
+**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, lingkungan uji terpisah), 2026-10-02, skor 1–10 penguji independen. Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ini memakai server Fider tiruan berisi data contoh (bukan Fider asli), jadi yang dinilai adalah perilaku AI-nya.
 - Uji ulang skill v1.0.5 (dua skenario): tanpa skill **4,5** → dengan skill **9,0** (LULUS).
 - Uji ulang skill v1.0.7 (satu skenario): tanpa skill **5** → dengan skill **9** (LULUS).
 

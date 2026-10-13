@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di bot Telegram asli: 6 → 8,5 dari 10 (tanpa skill menaksir bunga kredit HP "kira-kira 44-45%" setahun padahal ±41,7%; dengan skill bunga flat 0,8% sebulan terlihat setara ±17,25% per tahun).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Cicilan per bulan, total bayar, total bunga, dan **total harga lewat kredit vs harga tunai** — langsung jelas

@@ -2,7 +2,7 @@
 
 - **Versi skill:** 1.0.2 (tidak diubah)
 - **Penguji:** Akun C independen
-- **Lingkungan:** OpenClaw 2026.9.9, `@openclaw/duckduckgo-plugin`, config `koordinasi/alat-uji/config-bot-uji/openclaw.json` (+ salinan di HOME bot uji VM). Uji: `$SCRATCHPAD/openclaw-real/run-uji.sh`, `run-uji-tg.sh`.
+- **Lingkungan:** OpenClaw 2026.9.9, `@openclaw/duckduckgo-plugin`, config bot uji internal kurator (tidak disertakan dalam paket) (+ salinan di HOME bot uji VM). Uji: `$SCRATCHPAD/openclaw-real/run-uji.sh`, `run-uji-tg.sh`.
 - **Output mentah (VM, tidak di-repo):** `$SCRATCHPAD/openclaw-real/hasil/cpw-*-out.txt`
 
 ## Smoke test

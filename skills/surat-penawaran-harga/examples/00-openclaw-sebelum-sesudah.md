@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — surat-penawaran-harga
 
-Sumber: `solusi-vip/konsultan/UJI-OPENCLAW.md` (rincian: `solusi-vip/konsultan/uji-openclaw/02-surat-penawaran-harga.md`, `02-surat-penawaran-harga-ulang.md`, `02-surat-penawaran-harga-ulang3.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.3); uji ulang ke-2 = 1.0.3; uji ulang ke-3 = 1.0.4 (versi katalog saat ini 1.0.5). Penguji: agent penguji independen (bukan pembuat skill).
+Sumber (ada di paket VIP): `solusi-vip/konsultan/UJI-OPENCLAW.md` (rincian: `solusi-vip/konsultan/uji-openclaw/02-surat-penawaran-harga.md`, `02-surat-penawaran-harga-ulang.md`, `02-surat-penawaran-harga-ulang3.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.3); uji ulang ke-2 = 1.0.3; uji ulang ke-3 = 1.0.4 (versi katalog saat ini 1.0.5). Penguji: agent penguji independen (bukan pembuat skill).
 
 Berkas ini hanya menyalin ringkasan dari catatan uji internal di atas; balasan utuh kedua sisi ada di berkas sumber.
 

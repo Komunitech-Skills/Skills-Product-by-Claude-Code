@@ -1,14 +1,14 @@
 # Rencana Marketing Usaha Siap Jalan
 
-**Tagline:** Satu kalimat dari Anda, satu rencana marketing lengkap dengan angka anggarannya.
+**Satu kalimat dari Anda, satu rencana marketing lengkap dengan angka anggarannya.**
 
-Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (pembedanya skill menangkap margin Rp0 per produk, menolak membakar iklan Rp10 juta sebelum harga dibenahi, dan menolak kirim pesan massal ke nomor hasil beli list).
+Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (pembedanya: skill menolak membakar iklan Rp10 juta sebelum harga dibenahi dan menolak kirim pesan massal ke nomor hasil beli daftar nomor; margin Rp0 per produk sudah terhitung benar juga tanpa skill).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - **Rencana lengkap dalam satu dokumen:** tujuan terukur, target pasar, pesan, kanal (tempat berpromosi), kalender, anggaran, dan KPI (ukuran keberhasilan).
-- **Angka dihitung, bukan dikira:** pembagian anggaran per kanal, batas biaya per pelanggan baru (CAC), ROAS impas (omzet minimal dari tiap rupiah iklan agar tidak rugi), dan anggaran iklan maksimal dihitung skrip dari margin Anda.
+- **Angka dihitung, bukan dikira:** pembagian anggaran per kanal, batas biaya per pelanggan baru (CAC), ROAS impas (omzet minimal dari tiap rupiah iklan agar tidak rugi), dan anggaran iklan maksimal dihitung skrip (program hitung kecil) dari margin Anda.
 - **Cocok untuk modal kecil:** mulai dari WhatsApp, Google Maps, Instagram, TikTok, marketplace; iklan berbayar hanya bila margin sehat.
 - **Kalender Indonesia:** gajian, 11.11/12.12, Ramadan-Lebaran, tahun ajaran baru, akhir tahun.
 - **Terhubung ke skill lain:** paket konten mingguan, promo, audit iklan, laporan iklan, KPI tim, riset pelanggan.
@@ -21,7 +21,7 @@ Pemilik warung/kedai/toko online, jasa lokal, reseller, freelancer, dan usaha ma
 
 **Sesudah (cukup ketik):** "Bikin rencana marketing Oktober-Desember buat kedai kopi saya di Bandung. Budget Rp 6 juta, target 200 pesanan online per bulan."
 
-Cuplikan rencana (dipotong; contoh fiktif dari `examples/01-kedai-kopi-q4.md`):
+Cuplikan rencana (dipotong; contoh fiktif buatan Komunitech dari `examples/01-kedai-kopi-q4.md`, bukan hasil uji; angka anggaran, CAC, dan ROAS-nya keluaran nyata skrip):
 ```
 0. Ringkasan
 - Tujuan: pesanan online 120 -> 200 per bulan pada 31 Desember (dicatat di rekap penjualan).
@@ -34,7 +34,7 @@ Cuplikan rencana (dipotong; contoh fiktif dari `examples/01-kedai-kopi-q4.md`):
 Rencana lengkapnya juga memuat kondisi sekarang, tujuan terukur, kalender, rincian anggaran per kanal, KPI mingguan, risiko, dan langkah minggu ini.
 
 ## Cara pakai
-Ketik contoh: *"Bikin rencana marketing 3 bulan untuk toko hijab saya, budget Rp 5 juta, target omzet Rp 40 juta."* Skill akan bertanya sekali soal harga, HPP, tempat jualan, dan waktu luang, lalu menyusun rencana. Jika Anda buru-buru, ia memakai asumsi yang disebut di awal dokumen.
+Ketik contoh: *"Bikin rencana marketing 3 bulan untuk toko hijab saya, budget Rp 5 juta, target omzet Rp 40 juta."* Skill akan bertanya sekali soal harga, HPP (modal pokok per produk), tempat jualan, dan waktu luang, lalu menyusun rencana. Jika Anda buru-buru, ia memakai asumsi yang disebut di awal dokumen.
 
 ## Instalasi singkat
 Salin folder `rencana-marketing-usaha` ke folder skills AI agent Anda:
@@ -49,7 +49,7 @@ Salin folder `rencana-marketing-usaha` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Script memakai Python standar (tanpa pemasangan paket); di Windows pakai `python` atau `py`. Skill tetap berguna bila script tidak bisa dijalankan.
 
 **Hasil uji (angka nyata):** satu sumber, skor 1–10.
-- **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill. Pada skenario nugget ayam (jual Rp30.000, modal Rp27.000, iklan Rp10 juta per bulan, blast WA (kirim pesan massal) ke 2.000 nomor beli list), skill menangkap margin Rp0 per produk setelah biaya lain, menolak membakar iklan Rp10 juta sebelum harga dibenahi, dan menolak blast ke nomor beli list dengan dasar UU PDP; tanpa skill, AI ikut menyusun rencana iklan dan cara blast tersebut. Catatan jujur: hitungan margin benar di kedua sisi, pembedanya ada di keamanan dan kelengkapan rencana.
+- **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill (dua skenario: rencana biasa 7 → 9, dan skenario jebakan 5 → 9). Pada skenario jebakan nugget ayam (jual Rp30.000, modal Rp27.000, iklan Rp10 juta per bulan, blast WA (kirim pesan massal) ke 2.000 nomor hasil beli daftar nomor), skill menolak membakar iklan Rp10 juta sebelum harga dibenahi, dan menolak blast ke nomor hasil beli daftar nomor dengan dasar UU PDP (Pelindungan Data Pribadi); tanpa skill, AI ikut menyusun rencana iklan dan cara blast tersebut. Catatan jujur: hitungan margin Rp0 per produk (Rp30.000 − modal Rp27.000 − potongan platform 10% Rp3.000) benar di kedua sisi, pembedanya ada di keamanan dan kelengkapan rencana.
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -66,4 +66,4 @@ Diadaptasi dan diperluas dari dua skill berlisensi MIT (marketing-plan oleh Core
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

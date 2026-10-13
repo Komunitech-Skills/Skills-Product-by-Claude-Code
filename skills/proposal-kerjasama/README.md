@@ -2,14 +2,14 @@
 
 **Ceritakan ide kerja sama Anda, dapat proposal rapi yang fokus pada untungnya calon mitra, lengkap dengan simulasi angka.**
 
-Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (tanpa skill, AI tidak menghitung untung-rugi dan mengarang komitmen; dengan skill ada peringatan rugi, proposal, pesan WA, dan email siap kirim).
+Diuji AI penguji independen di OpenClaw (bot Telegram asli): 6,5 → 8,5 dari 10 (tanpa skill, AI tidak menghitung untung-rugi dan mengarang komitmen; dengan skill ada peringatan rugi, proposal, pesan WA, dan email siap kirim).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Proposal jadi dalam dua pilihan: 1 halaman ringkas atau versi lengkap
 - ✅ Kerangka khusus untuk titip jual (konsinyasi), reseller/agen, pasokan ke kantor/kafe, sponsorship acara, dan kolaborasi brand
-- ✅ Tabel simulasi bagi hasil, margin reseller, dan porsi titip jual dihitung oleh skrip bawaan, bukan dikira-kira (tetap cek ulang sebelum dikirim)
+- ✅ Tabel simulasi bagi hasil, margin reseller, dan porsi titip jual dihitung oleh skrip (program hitung kecil) bawaan, bukan dikira-kira (tetap cek ulang sebelum dikirim)
 - ✅ Sekaligus dapat pesan pengantar WhatsApp dan email untuk mengirim proposalnya
 - ✅ Klaim atau data yang belum Anda berikan tidak dikarang: bagian itu ditandai `[isi: ...]` untuk Anda lengkapi, dan klaim seperti "sudah BPOM" ditulis hati-hati sampai ada buktinya
 
@@ -24,7 +24,7 @@ Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (tanpa ski
 
 **Sesudah (cukup ketik):** "Bikinin proposal titip jual kopi susu botol 250 ml saya ke minimarket lokal di Solo. Harga jual Rp15.000, porsi toko 35%. Tulis juga 'sudah BPOM' dan 'paling laris se-Solo' biar meyakinkan."
 
-Cuplikan balasan (dipotong; HPP = modal pokok per botol; PIRT/BPOM = izin edar makanan-minuman; dari `examples/07-kerjakan-dulu-tanya-di-akhir-klaim-dan-porsi-rugi.md`):
+Cuplikan balasan (dipotong; HPP = modal pokok per botol; PIRT/BPOM = izin edar makanan-minuman; dari pra-cek tampilan Telegram, `examples/07-kerjakan-dulu-tanya-di-akhir-klaim-dan-porsi-rugi.md`):
 ```
 Dua klaim saya tulis hati-hati dulu
 - "Sudah BPOM": belum ada nomor izin edar dari Anda, jadi di proposal saya tulis `[isi: nomor izin edar BPOM-MD / PIRT]`. …
@@ -43,7 +43,7 @@ Balasan lengkapnya masih memuat proposal untuk mitra, pesan WhatsApp pengantar, 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Buat proposal sponsorship bazar UMKM kampus, ada paket platinum, gold, silver"
-- "Proposal cari reseller untuk hijab, HET 150rb, diskon reseller 20%"
+- "Proposal cari reseller untuk hijab, HET 150rb, diskon reseller 20%" (HET = harga eceran tertinggi)
 - "Proposal kerja sama katering makan siang untuk pabrik garmen 200 karyawan, versi lengkap"
 
 ## Instalasi singkat
@@ -59,17 +59,17 @@ Salin folder `proposal-kerjasama` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
-- **Uji OpenClaw, uji otomatis agent** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): pada uji pertama rata-rata nilai 5,5 tanpa skill menjadi 8,0 dengan skill. Tanpa skill, modal dan tulisan "rugi Rp1.000/botol" ikut masuk ke proposal untuk mitra; dengan skill, peringatan rugi hanya sampai ke Anda dan proposal ke mitra tetap bersih. Uji ulang v1.0.7: rata-rata 8,33 dengan skill, semua angka benar. Balasan utuh ada di berkas itu.
+- **Uji OpenClaw, uji otomatis agent** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): pada uji pertama rata-rata nilai 5,5 tanpa skill menjadi 8,0 dengan skill. Tanpa skill, modal dan tulisan "rugi Rp1.000/botol" ikut masuk ke proposal untuk mitra; dengan skill, peringatan rugi hanya sampai ke Anda dan proposal ke mitra tetap bersih. Uji ulang v1.0.7: rata-rata 8,33 dengan skill, semua angka benar (pembanding tanpa skill pada skenario yang sama: 5,17). Uji ulang tambahan yang meniru tampilan di bot Telegram (tanpa mengirim pesan) pada v1.0.8, v1.0.9, dan v1.0.10: rata-rata dengan skill 8,43; 8,40; dan 8,05. Balasan utuh ada di berkas itu.
 - **Uji di bot Telegram asli:** angkanya ada di bagian berikutnya.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 9, 2026-10-05.
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang uji 9 (satu putaran uji di bot), 2026-10-05.
 - Tanpa skill: https://t.me/c/4407409583/827/835 — skor 6,5
 - Dengan skill: https://t.me/c/4407409583/828/837 — skor 8,5
-Verdik gelombang: LULUS — DENGAN kini memberi peringatan rugi lengkap (laba per botol = Rp9.750 − HPP − kirim, contoh Rp3.750 / impas / rugi Rp1.250) plus proposal, pesan WA, dan email yang ditulis utuh tanpa kata proses; TANPA menolak klaim palsu dengan tepat tetapi tidak menghitung untung/rugi, tidak memberi pesan WA/email, dan mengarang komitmen (kirim rutin, tarik barang kedaluwarsa).
+Verdik gelombang: LULUS — DENGAN kini memberi peringatan rugi lengkap (laba per botol = Rp9.750 − HPP − kirim, contoh Rp3.750 / impas / rugi Rp1.250) plus proposal, pesan WA, dan email yang ditulis utuh tanpa bocoran istilah teknis; TANPA menolak klaim palsu dengan tepat tetapi tidak menghitung untung/rugi, tidak memberi pesan WA/email, dan mengarang komitmen (kirim rutin, tarik barang kedaluwarsa).
 
 Kekurangan yang ditemukan dari uji ini diperbaiki di versi 1.0.10: PIRT kini dibedakan dari BPOM, dan komitmen yang tidak Anda berikan (mis. display kami sediakan) tidak lagi tercetak di proposal.
 
@@ -81,7 +81,7 @@ Seharusnya tidak. Hitungan modal dan laba hanya ditunjukkan kepada Anda; proposa
 Belum. Proposal adalah ajakan. Setelah sepakat, buat perjanjian tertulis (bisa dengan skill Perjanjian Sederhana).
 
 **Bisa dalam bahasa Inggris?**
-Bisa. Minta saja "buat versi bahasa Inggris" setelah proposal jadi.
+Bisa diminta: ketik "buat versi bahasa Inggris" setelah proposal jadi. Versi bahasa Inggris belum kami uji khusus, jadi baca ulang sebelum dikirim.
 
 ## Riwayat perubahan
 

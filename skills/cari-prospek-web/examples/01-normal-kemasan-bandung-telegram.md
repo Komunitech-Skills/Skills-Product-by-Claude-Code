@@ -14,49 +14,51 @@ Sudah saya carikan lewat halaman direktori publik (bukan membuka tiap situs usah
 
 **Tabel 15 calon pelanggan**
 
+*Nama usaha dari direktori publik; kontak disamarkan dalam contoh ini.* Kolom "Alasan cocok" hanya mengulang yang tertulis di sumber yang dikutip; skor adalah perkiraan kecocokan, bukan data ukuran atau kebutuhan usaha. Cek langsung sebelum menghubungi.
+
 | No | Nama usaha | Kota | Jenis | Alasan cocok | Skor | Kontak bisnis publik | Sumber (URL) | Dicek |
 |---|---|---|---|---|---|---|---|---|
-| 1 | Kartika Sari Pusat | Bandung | Toko kue/bakery | Brand besar 9 outlet, jual kue dus/hampers volume tinggi, punya situs & email resmi | Tinggi | (022) 4231355, order@kartikasari.com, kartikasari.com | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
-| 2 | Amanda Brownies Pusat | Bandung | Toko kue/bakery | Brand nasional asal Bandung, jual brownies kemasan kotak dalam jumlah besar | Tinggi | (022) 7514657, amandabrownies.co.id | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
-| 3 | Holland Bakery Buah Batu | Bandung | Toko kue/bakery | Waralaba roti nasional, kemasan kue/roti harian volume tinggi | Sedang | (022) 7304499, hollandbakery.co.id | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
-| 4 | Amanda Brownies Hj. Juanda | Bandung | Toko kue/bakery | Cabang brand sama, lokasi ramai (Dago), potensi tambahan selain cabang pusat | Sedang | (022) 2516123, amandabrownies.co.id | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
-| 5 | Kartika Sari Cake Shop (Jl. Ir. H. Djuanda) | Bandung | Toko kue/bakery | Outlet utama brand kue puff ternama, kemasan box jadi bagian identitas produk | Sedang | (022) 2509500, kartikasari.com | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
-| 6 | Cita Rasa Catering | Bandung | Katering | Katering area komplek perumahan, butuh kotak makan sekali pakai rutin harian | Tinggi | (022) 6070781 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
-| 7 | Citra Boga Bandung (by Ibu Ella) | Bandung | Katering | Katering lama & dikenal, volume box pesanan rutin | Tinggi | (022) 7501921 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
-| 8 | Adinda Catering | Bandung | Katering | Katering kota, perlu kemasan box makan ramah lingkungan untuk acara/harian | Sedang | (022) 7271884 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
-| 9 | Asparagus Catering | Bandung | Katering | Katering area Lengkong, konsumsi kemasan box rutin | Sedang | (022) 7313730 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
-| 10 | Bey Catering Service & Wedding Organizer | Bandung | Katering | Katering + WO, kemasan untuk acara pernikahan butuh tampilan premium/estetik | Sedang | (022) 7530039, 0815-72011490 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
-| 11 | Armor Kopi | Bandung (Cimenyan) | Kafe | Kafe konsep outdoor populer, jual kopi take-away, cocok dengan citra "ramah lingkungan" | Tinggi | 0812-1396-0941 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
-| 12 | 56 Degrees Cafe | Bandung | Kafe | Lokasi di area perkantoran/mall (Paskal Hyper Square), volume take-away tinggi | Sedang | (022) 86060668 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
-| 13 | 13 Cups Coffee House | Bandung | Kafe | Coffee shop di area ruko ramai, potensi pesanan kemasan reguler | Sedang | 0813-3388-1313 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
-| 14 | Abraham And Smith | Bandung | Kafe | Cafe & eatery di pusat kota, menu makanan perlu kemasan to-go | Sedang | (022) 20523371 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
-| 15 | 18 Hrs Cafe | Bandung | Kafe | Cafe area Setiabudhi dekat kampus, potensi take-away pelajar/mahasiswa | Rendah | (022) 2032600 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
+| 1 | Kartika Sari Pusat | Bandung | Toko kue/bakery | Menurut halaman direktori: 9 outlet; situs dan email tercantum (perlu dicek langsung) | Tinggi | (022) xxx1355, order@…, kartikasari.com | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
+| 2 | Amanda Brownies Pusat | Bandung | Toko kue/bakery | Menurut halaman direktori: gerai pusat dengan situs resmi; cabang Hj. Juanda juga terdaftar (perlu dicek langsung) | Tinggi | (022) xxx4657, amandabrownies.co.id | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
+| 3 | Holland Bakery Buah Batu | Bandung | Toko kue/bakery | Menurut halaman direktori: gerai Buah Batu dengan situs resmi tercantum (perlu dicek langsung) | Sedang | (022) xxx4499, hollandbakery.co.id | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
+| 4 | Amanda Brownies Hj. Juanda | Bandung | Toko kue/bakery | Menurut halaman direktori: cabang kedua merek yang sama (Hj. Juanda) dengan situs resmi (perlu dicek langsung) | Sedang | (022) xxx6123, amandabrownies.co.id | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
+| 5 | Kartika Sari Cake Shop (Jl. Ir. H. Djuanda) | Bandung | Toko kue/bakery | Menurut halaman direktori: gerai di Jl. Ir. H. Djuanda dengan situs resmi tercantum (perlu dicek langsung) | Sedang | (022) xxx9500, kartikasari.com | alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html | 6 Okt 2026 |
+| 6 | Cita Rasa Catering | Bandung | Katering | Menurut halaman direktori: katering di komplek perumahan (Taman Holis Indah); kebutuhan kemasan belum diketahui (perlu dicek langsung) | Tinggi | (022) xxx0781 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
+| 7 | Citra Boga Bandung (by [nama pemilik]) | Bandung | Katering | Menurut halaman direktori: terdaftar sebagai katering (perlu dicek langsung) | Tinggi | (022) xxx1921 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
+| 8 | Adinda Catering | Bandung | Katering | Menurut halaman direktori: terdaftar sebagai katering (perlu dicek langsung) | Sedang | (022) xxx1884 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
+| 9 | Asparagus Catering | Bandung | Katering | Menurut halaman direktori: katering di area Lengkong (perlu dicek langsung) | Sedang | (022) xxx3730 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
+| 10 | Bey Catering Service & Wedding Organizer | Bandung | Katering | Menurut halaman direktori: katering sekaligus wedding organizer (perlu dicek langsung) | Sedang | (022) xxx0039, 08xx-xxxx1490 | alamatpenting.com/daftar-alamat-catering-di-bandung/ | 6 Okt 2026 |
+| 11 | Armor Kopi | Bandung (Cimenyan) | Kafe | Menurut halaman direktori: kafe di kawasan Cimenyan, nomor kontak tercantum (perlu dicek langsung) | Tinggi | 08xx-xxxx-0941 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
+| 12 | 56 Degrees Cafe | Bandung | Kafe | Menurut halaman direktori: alamat di Paskal Hyper Square (perlu dicek langsung) | Sedang | (022) xxxx0668 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
+| 13 | 13 Cups Coffee House | Bandung | Kafe | Menurut halaman direktori: coffee house di area ruko (perlu dicek langsung) | Sedang | 08xx-xxxx-1313 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
+| 14 | Abraham And Smith | Bandung | Kafe | Menurut halaman direktori: cafe & eatery di Bandung (perlu dicek langsung) | Sedang | (022) xxxx3371 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
+| 15 | 18 Hrs Cafe | Bandung | Kafe | Menurut halaman direktori: cafe di area Setiabudhi (perlu dicek langsung) | Rendah | (022) xxx2600 | alamatpenting.com/daftar-alamat-cafe-di-bandung/ | 6 Okt 2026 |
 
 **3 prospek prioritas**
-1. **Kartika Sari Pusat** — brand kue terbesar di Bandung dengan 9 outlet, pasti butuh kemasan box dalam skala besar dan punya email resmi untuk follow-up tertulis. *Pembuka:* "Selamat siang, saya lihat Kartika Sari punya banyak gerai di Bandung — apakah boleh saya kirimkan contoh kemasan makanan ramah lingkungan untuk kebutuhan kue dan hampers Bapak/Ibu?"
-2. **Cita Rasa Catering** — katering dengan kebutuhan kotak makan harian berulang, cocok untuk kontrak pasokan rutin. *Pembuka:* "Selamat siang, saya melihat Cita Rasa Catering di Komplek Taman Holis Indah — kami sediakan kemasan makanan ramah lingkungan untuk box katering, apakah boleh saya kirim info produknya?"
-3. **Armor Kopi** — kafe konsep outdoor/alam yang citranya sudah selaras dengan isu ramah lingkungan, jadi pesan jualan lebih mudah diterima. *Pembuka:* "Halo, saya lihat Armor Kopi punya konsep kafe di alam terbuka — mungkin cocok juga pakai kemasan to-go yang ramah lingkungan, boleh saya kirim contohnya?"
+1. **Kartika Sari Pusat** — menurut halaman direktori punya 9 outlet dan email resmi, jadi bisa dihubungi tertulis lebih dulu (ukuran usaha dan kebutuhan kemasan perlu dicek langsung). *Pembuka:* "Selamat siang, saya lihat Kartika Sari punya banyak gerai di Bandung — apakah boleh saya kirimkan contoh kemasan makanan ramah lingkungan untuk kebutuhan kue dan hampers Bapak/Ibu?"
+2. **Cita Rasa Catering** — terdaftar di direktori sebagai katering di Komplek Taman Holis Indah; kebutuhan kotak makan dan minat pasokan rutin belum diketahui (perlu dicek langsung). *Pembuka:* "Selamat siang, saya melihat Cita Rasa Catering di Komplek Taman Holis Indah — kami sediakan kemasan makanan ramah lingkungan untuk box katering, apakah boleh saya kirim info produknya?"
+3. **Armor Kopi** — kafe di kawasan Cimenyan dengan nomor kontak tercantum di direktori; minat pada kemasan ramah lingkungan perlu ditanyakan langsung. *Pembuka:* "Halo, saya lihat Armor Kopi di kawasan Cimenyan — mungkin cocok juga pakai kemasan to-go yang ramah lingkungan, boleh saya kirim contohnya?"
 
 Mau saya buatkan pesan pembuka lengkap (versi WA) untuk ketiganya?
 
 **CSV siap tempel**
 ```
 nama,kota,jenis,alasan,skor,kontak,website,sumber,tanggal_cek
-"Kartika Sari Pusat","Bandung","Toko kue/bakery","Brand besar 9 outlet, volume kemasan kue tinggi","Tinggi","(022) 4231355; order@kartikasari.com","kartikasari.com","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Amanda Brownies Pusat","Bandung","Toko kue/bakery","Brand nasional, kemasan kotak volume besar","Tinggi","(022) 7514657","amandabrownies.co.id","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Holland Bakery Buah Batu","Bandung","Toko kue/bakery","Waralaba nasional, kemasan harian volume tinggi","Sedang","(022) 7304499","hollandbakery.co.id","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Amanda Brownies Hj. Juanda","Bandung","Toko kue/bakery","Cabang brand sama, lokasi ramai","Sedang","(022) 2516123","amandabrownies.co.id","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Kartika Sari Cake Shop","Bandung","Toko kue/bakery","Outlet utama, kemasan box jadi identitas produk","Sedang","(022) 2509500","kartikasari.com","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
-"Cita Rasa Catering","Bandung","Katering","Butuh kotak makan sekali pakai rutin","Tinggi","(022) 6070781","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
-"Citra Boga Bandung","Bandung","Katering","Katering lama & dikenal, volume box rutin","Tinggi","(022) 7501921","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
-"Adinda Catering","Bandung","Katering","Perlu kemasan box makan untuk acara/harian","Sedang","(022) 7271884","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
-"Asparagus Catering","Bandung","Katering","Konsumsi kemasan box rutin","Sedang","(022) 7313730","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
-"Bey Catering Service & Wedding Organizer","Bandung","Katering","Butuh kemasan premium untuk acara pernikahan","Sedang","(022) 7530039; 0815-72011490","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
-"Armor Kopi","Bandung","Kafe","Konsep outdoor populer, citra selaras ramah lingkungan","Tinggi","0812-1396-0941","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
-"56 Degrees Cafe","Bandung","Kafe","Lokasi perkantoran/mall, volume take-away tinggi","Sedang","(022) 86060668","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
-"13 Cups Coffee House","Bandung","Kafe","Coffee shop area ruko ramai","Sedang","0813-3388-1313","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
-"Abraham And Smith","Bandung","Kafe","Cafe & eatery pusat kota, menu perlu kemasan to-go","Sedang","(022) 20523371","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
-"18 Hrs Cafe","Bandung","Kafe","Area kampus, potensi take-away pelajar","Rendah","(022) 2032600","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
+"Kartika Sari Pusat","Bandung","Toko kue/bakery","9 outlet menurut direktori; situs dan email tercantum","Tinggi","(022) xxx1355; order@…","kartikasari.com","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
+"Amanda Brownies Pusat","Bandung","Toko kue/bakery","Gerai pusat dengan situs resmi, tercantum di direktori","Tinggi","(022) xxx4657","amandabrownies.co.id","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
+"Holland Bakery Buah Batu","Bandung","Toko kue/bakery","Gerai Buah Batu dengan situs resmi, tercantum di direktori","Sedang","(022) xxx4499","hollandbakery.co.id","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
+"Amanda Brownies Hj. Juanda","Bandung","Toko kue/bakery","Cabang kedua merek yang sama, tercantum di direktori","Sedang","(022) xxx6123","amandabrownies.co.id","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
+"Kartika Sari Cake Shop","Bandung","Toko kue/bakery","Gerai di Jl. Ir. H. Djuanda, tercantum di direktori","Sedang","(022) xxx9500","kartikasari.com","alamatelpon.com/2019/05/daftar-90-toko-roti-cake-shop-di-bandung.html","6 Okt 2026"
+"Cita Rasa Catering","Bandung","Katering","Katering di komplek perumahan menurut direktori; kebutuhan kemasan belum diketahui","Tinggi","(022) xxx0781","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
+"Citra Boga Bandung","Bandung","Katering","Terdaftar sebagai katering di direktori","Tinggi","(022) xxx1921","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
+"Adinda Catering","Bandung","Katering","Terdaftar sebagai katering di direktori","Sedang","(022) xxx1884","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
+"Asparagus Catering","Bandung","Katering","Katering di area Lengkong menurut direktori","Sedang","(022) xxx3730","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
+"Bey Catering Service & Wedding Organizer","Bandung","Katering","Katering sekaligus wedding organizer menurut direktori","Sedang","(022) xxx0039; 08xx-xxxx1490","","alamatpenting.com/daftar-alamat-catering-di-bandung/","6 Okt 2026"
+"Armor Kopi","Bandung","Kafe","Kafe di kawasan Cimenyan menurut direktori","Tinggi","08xx-xxxx-0941","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
+"56 Degrees Cafe","Bandung","Kafe","Alamat di Paskal Hyper Square menurut direktori","Sedang","(022) xxxx0668","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
+"13 Cups Coffee House","Bandung","Kafe","Coffee house di area ruko menurut direktori","Sedang","08xx-xxxx-1313","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
+"Abraham And Smith","Bandung","Kafe","Cafe & eatery di Bandung menurut direktori","Sedang","(022) xxxx3371","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
+"18 Hrs Cafe","Bandung","Kafe","Cafe di area Setiabudhi menurut direktori","Rendah","(022) xxx2600","","alamatpenting.com/daftar-alamat-cafe-di-bandung/","6 Okt 2026"
 ```
 
 **Catatan kejujuran:** Semua 15 baris terverifikasi dari 3 halaman direktori (alamatpenting.com untuk kafe & katering, alamatelpon.com untuk toko kue/bakery) — nama, alamat, dan telepon sama persis seperti tercantum di sana; alamat lengkap ada di kolom sumber jika perlu dicek lagi. Beberapa toko kue yang ditemukan di direktori "sini.id" ternyata usaha manufaktur/pemasok bahan kue (bukan toko retail), jadi tidak dipakai agar tidak keliru jenisnya.

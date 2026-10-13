@@ -2,7 +2,7 @@
 
 ## Uji ulang 1.0.14 (2026-09-30)
 
-**Penguji:** agent independen (bukan pembuat). Yang dibaca hanya folder skill ini, ditambah bagian 4 `koordinasi/verifikasi-perilaku-2026-09-30.md` sebagai konteks temuan.
+**Penguji:** agent independen (bukan pembuat). Yang dibaca hanya folder skill ini, ditambah bagian 4 catatan internal kurator (tidak disertakan dalam paket) sebagai konteks temuan.
 **Lingkungan:** salinan skill di scratchpad (`uji-ae-1014/skill`), dijalankan di Linux dengan Python 3 standar (tanpa openpyxl). Semua data uji fiktif dan dibuat penguji.
 **Fokus:** perbaikan temuan "menimpa file `--keluar` diam-diam" (script dan SKILL.md langkah 6).
 
