@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-13 ~13:45 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~13:45 UTC — C13 `siyuan-sop` jadwal TG topik 1380 | jadwal LOLOS, 2 dokumen + HOOK-9922 cocok | LOLOS | ya |
+| 2026-10-13 ~13:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 78d9c0de | selesai ~13:45 UTC — C13 `siyuan-sop` jadwal TG topik 1380 | jadwal LOLOS, 2 dokumen + HOOK-9922 cocok | LOLOS | ya |
 | 2026-10-13 ~13:36 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 13:36 UTC — merge default; getUpdates 242; C13 siyuan-sop | — | — | — |
 | 2026-10-13 ~13:18 | `cursor/iterasi-otomatis-akun-c-8b42` | 1156e0c3 | selesai ~13:18 UTC — C13 `fider-masukan-pelanggan` jadwal TG topik 1377 | jadwal LOLOS, 28 suara + HOOK-8831 cocok | LOLOS | ya |
 | 2026-10-13 ~13:06 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 13:06 UTC — merge default; getUpdates 242; C13 fider-masukan-pelanggan | — | — | — |
