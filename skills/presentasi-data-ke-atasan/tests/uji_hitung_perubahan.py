@@ -65,6 +65,13 @@ class TesDaftar(unittest.TestCase):
         self.assertEqual(hasil["min"], 18)
         self.assertEqual(hasil["max"], 41)
 
+    def test_rata_rata_rupiah_penuh_contoh_02(self):
+        """Audit 2026-10-13: contoh 02 menulis rata-rata Rp30.000.000 karena daftar diisi
+        'dalam juta' (30,33 -> 30). Dengan satuan jt hasilnya Rp30.333.333."""
+        hasil = modul.proses_daftar("Stok mingguan=18jt,24jt,29jt,33jt,37jt,41jt")
+        self.assertEqual(hasil["total"], 182000000)
+        self.assertEqual(hasil["rata_rata"], 30333333)
+
 
 class TesFormatAngkaIndonesia(unittest.TestCase):
     """Audit format angka 2026-09-30: '38.000' dulu terbaca 38 (selisih 7, bukan 7.000)."""

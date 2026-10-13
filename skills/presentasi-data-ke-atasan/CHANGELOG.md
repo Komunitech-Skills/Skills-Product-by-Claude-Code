@@ -2,6 +2,11 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.5 (2026-10-13)
+- Batasan di SKILL.md ditambah aturan eksplisit: angka hanya dari data pengguna atau keluaran script (nominal dimasukkan dalam Rupiah penuh atau `jt`/`rb`, bukan "dalam juta", agar rata-rata tidak terbulatkan); detail yang tidak ada di input (kanal/marketplace, PIC, nominal anggaran, jadwal/program) ditulis `[isian: ...]`.
+- Contoh 02: rata-rata mingguan nilai stok diperbaiki Rp30.000.000 → Rp30.333.333 (182.000.000 ÷ 6, dihitung ulang lewat script). Contoh 01–03 dan cuplikan README: "Shopee", nominal penurunan budget, PIC, dan "alokasi stok & jadwal promo" yang tidak ada di input diganti `[isian: ...]`.
+- Tes ditambah: rata-rata daftar ber-satuan `jt` contoh 02 = 30.333.333.
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Petunjuk lokasi script ditambahkan di SKILL.md: script ada di subfolder `scripts/` di folder skill. Agent dilarang mencari script atau file pengguna ke seluruh disk (mis. `find /`).
 

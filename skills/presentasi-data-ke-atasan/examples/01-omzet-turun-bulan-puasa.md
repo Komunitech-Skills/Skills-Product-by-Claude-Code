@@ -26,8 +26,9 @@
 5. Grafik: batang berdampingan 2 kolom (Agustus vs September) untuk omzet & biaya iklan
    — hanya 2 titik waktu, bukan tren garis (lihat `references/pilih-grafik.md`).
 6. Risiko: bila rasio terus naik, margin bisa tergerus dalam 1-2 bulan ke depan.
-7. Rekomendasi: turunkan budget iklan Shopee ~Rp1.000.000/bulan mulai minggu depan
-   sambil evaluasi materi iklan — PIC: Admin Toko, tenggat: minggu depan.
+7. Rekomendasi: turunkan budget iklan [isian: kanal iklan] sebesar [isian: nominal]/bulan
+   mulai minggu depan sambil evaluasi materi iklan — PIC: [isian: nama/jabatan], tenggat:
+   minggu depan. (Kanal, besar penurunan, dan PIC tidak ada di input → `[isian: ...]`.)
 
 ## Output — Ringkasan WA
 ```
@@ -37,8 +38,8 @@ efisiensi iklan menurun tajam.
 • Omzet: Rp32.000.000 → Rp24.500.000 (-23%)
 • Biaya iklan: Rp4.000.000 → Rp5.600.000 (+40%)
 • Rasio biaya iklan/omzet: 12,5% → 22,9%
-👉 Usul turunkan budget iklan Shopee ~Rp1.000.000/bulan mulai
-minggu depan sambil evaluasi materi iklan. Mohon persetujuan Bapak/Ibu.
+👉 Usul turunkan budget iklan [isian: kanal iklan] sebesar [isian: nominal]/bulan
+mulai minggu depan sambil evaluasi materi iklan. Mohon persetujuan Bapak/Ibu.
 ```
 
 ## Output — Email formal
@@ -62,14 +63,14 @@ Bila rasio ini terus naik di bulan berikutnya, margin bisa tergerus lebih
 jauh sebelum omzet kembali normal pasca-puasa.
 
 Rekomendasi:
-1. Turunkan budget iklan Shopee sekitar Rp1.000.000/bulan mulai minggu
-   depan, sambil mengevaluasi materi iklan yang kurang efektif — PIC:
-   Admin Toko, tenggat: minggu depan.
+1. Turunkan budget iklan [isian: kanal iklan] sebesar [isian: nominal]/bulan
+   mulai minggu depan, sambil mengevaluasi materi iklan yang kurang efektif —
+   PIC: [isian: nama/jabatan], tenggat: minggu depan.
 
 Mohon arahan/persetujuan Bapak/Ibu untuk langkah di atas.
 
 Terima kasih,
-Admin Toko
+[isian: nama/jabatan pengirim]
 ```
 
 ## Output — Skrip bicara 2 menit (ringkas)
@@ -85,8 +86,9 @@ Rasio biaya iklan terhadap omzet naik dari 12,5% jadi hampir 23% //
 
 Kalau dibiarkan, efisiensi iklan kita bisa makin turun di bulan berikutnya.
 
-Rekomendasi kami, budget iklan Shopee diturunkan dulu sekitar Rp1 juta per
-bulan mulai minggu depan, sambil kami evaluasi materi iklannya. // Mohon
+Rekomendasi kami, budget iklan [isian: kanal iklan] diturunkan dulu sebesar
+[isian: nominal] per bulan mulai minggu depan, sambil kami evaluasi materi
+iklannya. // Mohon
 persetujuan Bapak/Ibu untuk langkah ini.
 
 Itu ringkasannya. // Ada yang ingin ditanyakan?
@@ -94,5 +96,7 @@ Itu ringkasannya. // Ada yang ingin ditanyakan?
 
 ## Asumsi yang disebutkan ke pengguna
 - Penerima: owner/pemilik usaha (sesuai permintaan)
+- Kanal iklan, besar penurunan budget, dan PIC tidak disebutkan pengguna → ditulis
+  `[isian: ...]` untuk diisi sebelum dikirim (revisi 2026-10-13).
 - Format 1 halaman eksekutif tidak dibuat karena pengguna hanya minta "ringkasan" —
   ditawarkan sebagai opsi tambahan, tidak dipaksakan.

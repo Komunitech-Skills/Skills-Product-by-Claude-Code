@@ -20,6 +20,7 @@ Faktor risiko sedang: MAP >= 90 mmHg; Nullipara (kehamilan pertama); Obesitas se
 Faktor terisi otomatis dari angka: map-90; usia-ibu-35; obesitas
 MAP (mmHg): 93.3
 Catatan: Aturan kategori: Buku KIA (cetakan 2025): >= 2 faktor risiko sedang dan/atau >= 1 faktor risiko tinggi -> ibu berisiko preeklampsia -> rujukan terencana. Hanya faktor dari daftar pedoman ini yang dihitung (tidak dicampur).
+Catatan: Belum ditanyakan (anggap tidak ada, konfirmasi ke pasien): hipertensi kronik, diabetes, penyakit ginjal, autoimun/APS.
 Catatan: Buku KIA: skrining dilakukan pada usia kehamilan < 20 minggu.
 Catatan: Keputusan terapi/obat pencegahan (termasuk dosis) BUKAN bagian alat ini - ikuti PNPK/pedoman dan resep dokter.
 Sumber: Kemenkes RI, Buku Kesehatan Ibu dan Anak (Buku KIA) edisi terbaru - cetakan Ditjen Kesehatan Primer dan Komunitas 2025 (ISBN 978-623-301-149-5) - lembar skrining preeklampsia usia kehamilan < 20 minggu
@@ -30,8 +31,10 @@ PENTING: Alat bantu untuk tenaga kesehatan, bukan pengganti penilaian klinis. Ke
 ```
 🩺 Skrining faktor risiko preeklampsia — Bu R — 29 September 2026
 
-Tanda bahaya: tidak ada (TD 120/80 < 140/90; gejala bahaya tidak disebut — mohon konfirmasi
-tidak ada nyeri kepala hebat, pandangan kabur, nyeri ulu hati, bengkak mendadak).
+Tanda bahaya: tidak ada (TD 120/80 < 140/90 — ambang hipertensi dalam kehamilan menurut NICE
+NG133 (2019, diperbarui 2023), sumber lapisan tanda bahaya skill; gejala bahaya tidak disebut —
+mohon konfirmasi tidak ada nyeri kepala hebat, pandangan kabur, nyeri ulu hati, bengkak
+mendadak).
 
 Hasil:
 - MAP 93,3 mmHg (≥ 90)
@@ -61,4 +64,5 @@ Verifikasi manual: MAP = (120 + 160)/3 = 93,33 ≥ 90 ✓. Faktor sedang = 5 (�
 `python3 scripts/klinis.py preeklampsia --faktor nullipara,riwayat-keluarga --sistolik 170 --diastolik 115`
 → `!! TANDA BAHAYA: TD 170/115 mmHg dalam rentang BERAT` · `KATEGORI: TANDA BAHAYA - SEGERA
 EVALUASI/RUJUK` · arti "SEGERA evaluasi/rujuk sesuai protokol kegawatdaruratan fasilitas Anda"
-(sumber NICE NG133 & ACOG PB 222); tidak ada kalimat "ANC rutin".
+(sumber NICE NG133 (2019, diperbarui 2023) & ACOG Practice Bulletin No. 222 (2020)); tidak ada
+kalimat "ANC rutin".
