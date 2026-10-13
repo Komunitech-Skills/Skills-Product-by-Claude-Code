@@ -11,7 +11,7 @@ Diuji AI penguji independen di OpenClaw: 6 → 8,5 dari 10 (tanpa skill, stok ha
 - ✅ **Stok terpotong dari file pesanan Shopee, TikTok Shop, dan Tokopedia.** Pesanan batal, retur, dan belum bayar diabaikan otomatis. Pesanan yang sama dikenali, jadi tidak terpotong dua kali saat file diimpor ulang. Pesanan yang batal setelah diimpor dikembalikan stoknya.
 - ✅ **Daftar ambil barang (picking) per rak + urutan tempel resi.** Siap dicetak, jadi packing lebih cepat dan jarang salah kirim.
 - ✅ **HPP (modal per barang) rata-rata dihitung otomatis.** Harga kulakan naik-turun dan ongkir kulakan ikut masuk ke modal per barang. Nilai persediaan bisa dilihat kapan saja.
-- ✅ **Stock opname (hitung fisik stok) rapi.** Masukkan hasil hitung fisik, lalu selisih dan nilai rupiahnya keluar, lengkap dengan alasan. Laporan stok menipis, barang tidak laku, dan laporan harian bisa dijadwalkan ke Telegram lewat OpenClaw (pengiriman sungguhan belum diuji langsung).
+- ✅ **Stock opname (hitung fisik stok) rapi.** Masukkan hasil hitung fisik, lalu selisih dan nilai rupiahnya keluar, lengkap dengan alasan. Laporan stok menipis, barang tidak laku, dan laporan harian bisa dijadwalkan ke Telegram lewat OpenClaw (diuji di bot Telegram uji 2026-10-13).
 
 ## Cocok untuk siapa
 - Seller Shopee/TikTok Shop/Tokopedia yang masih mencatat stok di Excel atau buku, atau sering kelebihan jual (oversell)
@@ -51,7 +51,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Potong stok dari file pesanan TikTok ini, lalu buatkan daftar ambil barang (picking list)"
 - "Mau stock opname: kaos hitam M ada 22, tote bag 41"
 - "Barang apa saja yang hampir habis? Yang tidak laku 60 hari berapa modalnya?"
-- "Kirim laporan stok ke Telegram saya setiap jam 9 malam" (OpenClaw; pengiriman sungguhan belum diuji langsung)
+- "Kirim laporan stok ke Telegram saya setiap jam 9 malam" (OpenClaw; jadwal ke Telegram diuji 2026-10-13)
 
 Perubahan data ditunjukkan dulu dan baru disimpan setelah Anda setuju.
 
@@ -77,7 +77,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Tugas: catat stok kaos dan tote bag, lalu barang datang "kaos hitam M 50 pcs harga 34 ribu, ongkir 25 ribu". Tanpa skill, angka benar tetapi hanya jadi catatan teks di memori AI tanpa konfirmasi, dan untuk sinkron Shopee AI menawarkan menyimpan kredensial (data login). Dengan skill: buku stok sungguhan di komputer Anda, stok 24 → 74 dan HPP rata-rata Rp 35.000 → Rp 34.662 (ongkir ikut masuk modal), tersimpan setelah Anda balas "ya". Permintaan menempel email dan password Seller Center ditolak.
 - Jujur: hitungan HPP benar di kedua sisi. Bedanya sistem stok yang bisa dipakai ulang (backup, laporan stok menipis, potong stok dari file pesanan).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal laporan harian ke Telegram: diuji di bot Telegram uji 2026-10-13 (C13, topik 1353, delivery LOLOS — `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 
 ## FAQ
 **Apakah stok di Shopee/TikTok ikut berubah otomatis?**
