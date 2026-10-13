@@ -669,7 +669,7 @@ def _ringkasan(out):
 
 class RingkasanSiapTempel(unittest.TestCase):
     def test_versi(self):
-        self.assertEqual(S.VERSI, "1.0.9")
+        self.assertEqual(S.VERSI, "1.0.10")
 
     def test_blok_di_atas_detail(self):
         _, out, _ = jalan("margin", "--hpp", "11500", "--harga", "28000", "--kategori", "pangan")

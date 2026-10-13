@@ -155,3 +155,4 @@ Catatan: simulasi, bukan penawaran atau nasihat keuangan; angka final mengikuti 
 - Pinjaman harian dihitung bunga sederhana, dibayar sekali di akhir. Batas bunga pinjaman daring berubah bertahap; angka yang dicatat ada di `references/istilah-dan-jebakan.md` — selalu tulis "cek aturan OJK terbaru".
 - Pelunasan dipercepat, penalti pelunasan, cicilan bertingkat (step-up) tidak dihitung → sebut dan sarankan tanyakan ke lembaga.
 - Bukan nasihat keuangan atau penawaran kredit; keputusan meminjam tetap di tangan pengguna. Untuk utang yang sudah terasa berat, sarankan bicara dengan lembaga pemberi pinjaman tentang restrukturisasi, atau layanan pengaduan OJK 157.
+- **Sumber tarif & angka:** setiap tarif/aturan yang disebut wajib disertai dasar aturan + tahunnya; angka hanya dari keluaran script atau input pengguna; nilai yang tidak diberikan pengguna (default, ilustrasi, patokan) ditandai sebagai asumsi, tanpa label "wajar/umum/lazim" yang tidak bersumber.

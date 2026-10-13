@@ -74,4 +74,4 @@ Tidak. Skill ini tidak menyebut atau merekomendasikan merek. Kirimkan angka dari
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

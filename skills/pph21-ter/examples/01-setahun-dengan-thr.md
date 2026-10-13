@@ -54,7 +54,7 @@ Catatan:
 _Alat bantu hitung, bukan nasihat pajak. Dasar: PP 58/2023 (tarif TER), PMK 168/2023 (tata cara PPh 21), UU 7/2021 HPP (PTKP & tarif Pasal 17), PMK 105/2025 (PPh 21 DTP 2026), berlaku per 23 September 2026. Untuk kasus khusus (ekspatriat, pesangon, pensiun, natura, gross-up) hubungi Kring Pajak 1500200 atau konsultan pajak._
 
 Asumsi:
-- "Gaji 12 juta" dianggap sudah penghasilan bruto pajak per bulan. Jika perusahaan membayar premi JKK, JKM, dan BPJS Kesehatan 4%, premi itu harus ditambahkan ke bruto (angka akan sedikit naik) — kirimkan rinciannya bila ingin dihitung ulang.
+- "Gaji 12 juta" dianggap sudah penghasilan bruto pajak per bulan. Jika perusahaan membayar premi JKK, JKM, dan BPJS Kesehatan 4% (iuran pemberi kerja 4% + pekerja 1%, Perpres 82/2018; dasar upah maksimal sesuai ketentuan), premi itu harus ditambahkan ke bruto (angka akan sedikit naik) — kirimkan rinciannya bila ingin dihitung ulang.
 - Gaji tetap > Rp 10 juta, jadi PPh 21 DTP 2026 (PMK 105/2025) tidak berlaku dan tidak ditanyakan.
 
 **Catatan penguji:**

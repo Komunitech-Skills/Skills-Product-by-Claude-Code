@@ -152,3 +152,4 @@ Contoh lengkap: `examples/`.
 - Jangan menyarankan harga coret palsu (harga "sebelum diskon" yang tidak benar-benar berlaku, termasuk harga normal "formalitas" beberapa hari) atau klaim "termurah" tanpa bukti: menyesatkan konsumen (UU 8/1999 Perlindungan Konsumen; sebut pasal → PERLU REVIEW).
 - Jangan menyarankan kesepakatan harga dengan pesaing (UU 5/1999); saat menolak, jangan menambahkan klaim sanksi atau penerapan hukum yang spesifik.
 - Nama marketplace hanya penyebut kanal; skill ini tidak berafiliasi dengan marketplace mana pun.
+- **Sumber tarif & angka (v1.0.10):** setiap tarif/aturan yang disebut wajib disertai dasar aturan + tahunnya; angka hanya dari keluaran script atau input pengguna; nilai yang tidak diberikan pengguna (default, ilustrasi, patokan) ditandai sebagai asumsi, tanpa label "wajar/umum/lazim" yang tidak bersumber.

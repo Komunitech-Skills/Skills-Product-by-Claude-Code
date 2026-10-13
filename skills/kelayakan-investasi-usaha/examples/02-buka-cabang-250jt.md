@@ -40,7 +40,7 @@ Uji ketat: Bila hasil minimal yang diminta dinaikkan ke 20%/tahun (bunga lebih m
 **Kalau meleset (NPV):** omzet −10% → −Rp75.717.359 · omzet −20% → −Rp168.734.518 · biaya +10% → −Rp128.060.244.
 **Kenapa kurang layak:** batas amannya sangat sempit — omzet hanya boleh turun 1,9% dan biaya naik 1,2%. Hasil positif juga bergantung pada peralatan laku Rp40 juta di akhir.
 **Agar layak:** omzet rata-rata minimal ±Rp38.721.639/bulan bila sama tiap tahun; atau tekan modal (peralatan bekas, renovasi bertahap) dan biaya tetap; atau uji dulu dengan gerobak/booth kecil.
-**Asumsi:** patokan 12%/tahun (bunga KUR 6% + risiko usaha 6%, bisa diganti), masa 5 tahun, biaya tetap naik 5%/tahun, PPh final 0,5% dari omzet cabang.
+**Asumsi:** patokan 12%/tahun (asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih), masa 5 tahun, biaya tetap naik 5%/tahun, PPh final 0,5% dari omzet cabang.
 Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untung.
 
 Supaya lebih tajam:

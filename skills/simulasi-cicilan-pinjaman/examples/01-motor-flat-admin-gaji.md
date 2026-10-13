@@ -24,7 +24,7 @@
 > 2 | Rp6.666.672 | Rp1.920.000 | Rp6.666.656
 > 3 | Rp6.666.656 | Rp1.920.000 | Rp0
 >
-> **Kemampuan bayar:** cicilan maksimal aman Rp1.300.000 (30% dari gaji Rp6.000.000, dikurangi cicilan HP Rp500.000); cicilan motor ini masuk rasio total 20,3% → **AMAN**. Pinjaman maksimal aman dengan bunga & tenor sama ±Rp36.335.404.
+> **Kemampuan bayar:** cicilan maksimal aman Rp1.300.000 (30% dari gaji Rp6.000.000, dikurangi cicilan HP Rp500.000; patokan hati-hati yang dipakai simulasi ini, bukan aturan resmi); cicilan motor ini masuk rasio total 20,3% → **AMAN**. Pinjaman maksimal aman dengan bunga & tenor sama ±Rp36.335.404.
 >
 > **Yang perlu diperhatikan:**
 > - Bunga flat 0,8%/bulan terasa kecil tapi efektif setaranya ±17,25%/tahun karena bunga dihitung dari pokok awal, bukan sisa utang yang terus mengecil.
@@ -61,7 +61,7 @@
 > | 2 | Rp6.666.672 | Rp1.920.000 | Rp6.666.656 |
 > | 3 | Rp6.666.656 | Rp1.920.000 | Rp0 |
 >
-> **Kemampuan bayar:** cicilan maksimal aman Rp1.300.000 (30% dari gaji bersih Rp6.000.000, sudah dikurangi cicilan HP Rp500.000); cicilan motor ini masuk total cicilan 20,3% dari gaji → **AMAN**. Dengan bunga & tenor yang sama, pinjaman maksimal aman buat kamu sekitar Rp36.335.404.
+> **Kemampuan bayar:** cicilan maksimal aman Rp1.300.000 (30% dari gaji bersih Rp6.000.000, sudah dikurangi cicilan HP Rp500.000; patokan hati-hati yang dipakai simulasi ini, bukan aturan resmi); cicilan motor ini masuk total cicilan 20,3% dari gaji → **AMAN**. Dengan bunga & tenor yang sama, pinjaman maksimal aman buat kamu sekitar Rp36.335.404.
 >
 > **Yang perlu diperhatikan:**
 > - Bunga flat 0,8%/bulan terasa kecil tapi dihitung dari pokok awal terus, jadi setara efektif ±17,25%/tahun, bukan 9,6%/tahun.
@@ -104,7 +104,7 @@
 > | 2 | Rp6.666.672 | Rp1.920.000 | Rp6.666.656 |
 > | 3 | Rp6.666.656 | Rp1.920.000 | Rp0 |
 >
-> **Kemampuan bayar:** cicilan maksimal aman Rp1.300.000 (30% dari gaji bersih Rp6.000.000, sudah dikurangi cicilan HP Rp500.000). Total cicilanmu (motor + HP) = Rp1.215.556 → rasio **20,3% dari gaji → AMAN**. Dengan bunga & tenor sama, pinjaman maksimal aman sekitar Rp36.335.404 — jadi motor 25 juta ini masih jauh di bawah batas.
+> **Kemampuan bayar:** cicilan maksimal aman Rp1.300.000 (30% dari gaji bersih Rp6.000.000, sudah dikurangi cicilan HP Rp500.000; patokan hati-hati yang dipakai simulasi ini, bukan aturan resmi). Total cicilanmu (motor + HP) = Rp1.215.556 → rasio **20,3% dari gaji → AMAN**. Dengan bunga & tenor sama, pinjaman maksimal aman sekitar Rp36.335.404 — jadi motor 25 juta ini masih jauh di bawah batas.
 >
 > **Yang perlu diperhatikan:**
 > - Bunga 0,8%/bulan itu flat (dihitung dari pokok awal terus-menerus, bukan sisa utang), makanya efektifnya jauh lebih tinggi: ±17,25%/tahun, bukan 9,6%/tahun seperti kesannya.
