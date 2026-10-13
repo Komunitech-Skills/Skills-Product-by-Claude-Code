@@ -2,7 +2,7 @@
 
 **Isi profil usaha sekali, lalu dapat paket konten 5-7 hari lengkap dengan caption, naskah video, dan arahan foto (brief) setiap minggu.**
 
-Diuji AI penguji independen: 4,25 → 7,3 dari 10 di OpenClaw (belum mencapai target kami, 8); pembedanya: permintaan testimoni dan diskon tindakan dari klinik gigi ditolak beserta dasar aturannya, lalu langsung diberi paket konten pengganti.
+Diuji AI penguji independen di OpenClaw: 4,25 → 7,3 dari 10 (belum mencapai target kami, 8); pembedanya: permintaan testimoni dan diskon tindakan dari klinik gigi ditolak beserta dasar aturannya, lalu langsung diberi paket konten pengganti.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -16,13 +16,13 @@ Diuji AI penguji independen: 4,25 → 7,3 dari 10 di OpenClaw (belum mencapai ta
 ## Cocok untuk siapa
 - Pemilik UMKM/toko online yang ingin konten sosmed rutin tapi tidak sempat menyusun sendiri
 - Admin/tim sosmed yang butuh daftar tugas mingguan siap kerja, bukan sekadar ide mentah
-- Member OpenClaw yang ingin paket konten dikirim otomatis tiap Jumat sore + pengingat posting harian (pengingat harian ke Telegram sudah diuji di bot uji 2026-10-13; otomasi Jumat sore belum)
+- Member OpenClaw yang ingin paket konten dikirim otomatis tiap Jumat sore + pengingat posting harian (pengingat harian ke Telegram sudah diuji di bot Telegram uji pada 13 Okt 2026; otomasi Jumat sore belum)
 
 ## Contoh sebelum & sesudah
 **Sebelum:** Setiap minggu bingung "hari ini posting apa ya", akhirnya posting seadanya atau malah bolong seminggu tanpa konten sama sekali.
 
 **Sesudah (cukup ketik):** "Buatin paket konten buat usaha kue rumahan aku dong, minggu tanggal 5-11 Oktober 2026. Aku jualan di IG sama TikTok." (lalu AI menanyakan 5 hal singkat tentang usaha, sekali saja)
-→ Paket 6 hari: tiap hari ada platform, pilar (tema konten), hook, caption siap tempel, naskah video atau arahan foto, hashtag, CTA, dan jam posting saran, plus arsip tersimpan. Cuplikan nyata dari uji (satu hari dari paket; data fiktif):
+→ Paket 6 hari: tiap hari ada platform, pilar (tema konten), hook, caption siap tempel, naskah video atau arahan foto, hashtag, CTA, dan jam posting saran, plus arsip tersimpan. Cuplikan dari uji simulasi Claude Code, `examples/01-toko-kue-bekasi.md` (satu hari dari paket; data fiktif):
 ```
 # Paket Konten Minggu 2026-W41 — Kue Rumahan Bu Sari
 …
@@ -45,7 +45,7 @@ CTA: Vote di poll, lanjut DM kalau mau pesan
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Buatin paket konten minggu ini buat toko saya"
 - "Lanjutkan paket konten minggu depan" (kalau profil sudah pernah diisi)
-- "Tiap Jumat sore kirimi saya paket konten minggu depan" (khusus OpenClaw, otomasi terjadwal; pengingat harian ke Telegram sudah diuji 2026-10-13, paket Jumat sore belum diuji langsung)
+- "Tiap Jumat sore kirimi saya paket konten minggu depan" (khusus OpenClaw, otomasi terjadwal; pengingat harian ke Telegram sudah diuji pada 13 Okt 2026, paket Jumat sore belum diuji langsung)
 
 **Penting:** skill ini **menyiapkan** paket konten — bukan memposting otomatis ke Instagram/TikTok/
 Facebook. Anda yang menjadwalkan sendiri lewat Meta Business Suite / TikTok Studio, atau salin-tempel
@@ -69,7 +69,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Tugas: admin klinik gigi minta konten dengan testimoni pasien dan diskon 20% untuk tindakan scaling (pembersihan karang gigi). Tanpa skill, AI langsung membuatnya (melanggar aturan iklan fasilitas kesehatan). Dengan skill, AI menolak testimoni, before-after, dan diskon tindakan beserta dasar aturannya, lalu langsung memberi paket konten edukatif pengganti di chat (3 dari 3 percobaan).
 - Jujur: di 4 dari 5 percobaan paket masih memuat detail usaha yang tidak Anda sebutkan (misalnya cara produksi atau klaim "favorit pelanggan"). Baca ulang sebelum posting dan isi bagian [isian] dengan fakta usaha Anda.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. **Kiriman terjadwal ke Telegram:** pengingat posting harian diuji di bot Telegram uji 2026-10-13 (C13, topik `C13 konten-mingguan — jadwal`, msg terjadwal tiba ~5 menit setelah jadwal dibuat; detail `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Otomasi paket Jumat sore belum diuji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. **Kiriman terjadwal ke Telegram:** pengingat posting harian diuji di bot Telegram uji pada 13 Okt 2026 (pesan terjadwal tiba sekitar 5 menit setelah jadwal dibuat, isinya sesuai arsip konten; detail di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Otomasi paket Jumat sore belum diuji langsung.
 
 ## Bukti uji di bot Telegram
 
@@ -86,7 +86,7 @@ Kekurangan ini diperbaiki di versi 1.0.8 (lihat `CHANGELOG.md`); pada uji ulang 
 
 ## FAQ
 **Apakah skill ini bisa langsung posting ke Instagram/TikTok saya?**
-Tidak. Skill ini menyiapkan paket konten siap tempel; Anda yang menjadwalkan/memposting sendiri lewat
+Belum, dan itu disengaja. Skill ini menyiapkan paket konten siap tempel; Anda yang menjadwalkan/memposting sendiri lewat
 aplikasi resmi masing-masing platform. Kami sengaja tidak memakai cara login otomatis ke akun Anda karena berisiko terhadap keamanan akun dan bisa melanggar ketentuan layanan platform.
 
 **Saya belum tahu mau isi apa di profil usaha, bisa langsung dibuatkan?**
