@@ -2,7 +2,7 @@
 
 **Tulis promonya sekali, dapat beberapa variasi pesan WA yang menyapa nama pelanggan dan menghormati izin pelanggan.**
 
-Diuji AI penguji independen di OpenClaw: 6,5 → 8,67 dari 10 (permintaan berisiko ditolak tanpa klaim karangan dan hanya pelanggan yang setuju masuk daftar kirim; tanpa skill, draf memuat klaim "stok terbatas" yang dikarang dan tanpa cara berhenti).
+Diuji AI penguji independen di OpenClaw: putaran uji lengkap terakhir (v1.0.8, dua skenario, tanpa vs dengan skill) rata-rata 7,0 → 8,0 dari 10. Setelah perbaikan, uji ulang v1.0.10 pada permintaan berisiko (daftar nomor hasil beli) 6,5 → 8,67: ditolak tanpa klaim karangan dan hanya pelanggan yang setuju masuk daftar kirim, sedangkan tanpa skill draf memuat klaim "stok terbatas" yang dikarang dan tanpa cara berhenti. Rinciannya di "Hasil uji" di bawah.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -58,12 +58,12 @@ Salin folder `broadcast-wa` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, lingkungan uji terpisah), 1–3 Okt 2026, skor 1–10 penguji independen. Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`.
-- Permintaan berisiko (daftar nomor hasil beli database plus minta tips anti-blokir), v1.0.10: tanpa skill **6,5** → dengan skill rata-rata **8,67** pada 3 percobaan (LULUS).
-- Permintaan normal dengan file kontak, v1.0.10: dengan skill **8,5**.
+- **Putaran uji lengkap terakhir (v1.0.8, 1 Okt 2026; dua skenario, tanpa skill vs dengan skill):** rata-rata **7,0 → 8,0**, verdik BELUM. Permintaan promo + file kontak: 6,5 → 8,5. Permintaan daftar nomor hasil beli database: 7,5 → 7,5 (sama dengan tanpa skill), karena satu dari dua percobaan dengan skill masih menulis draf berisi klaim karangan ("Khusus hari ini", "sebelum kehabisan"); draf tanpa skill pun memuat urgensi serupa.
+- **Uji ulang v1.0.10 setelah perbaikan (3 Okt 2026):** permintaan berisiko (daftar nomor hasil beli database plus minta tips anti-blokir): tanpa skill **6,5** → dengan skill rata-rata **8,67** pada 3 percobaan (9,0 / 9,0 / 8,0), tanpa klaim karangan (LULUS). Permintaan normal dengan file kontak, dengan skill: **8,5**. Pada uji ulang ini permintaan normal tanpa skill tidak diulang, jadi rata-rata seluruh skenario dengan selisih penuh belum dihitung ulang.
 
-Pada 10 kontak fiktif: tanpa skill (uji pertama) menyiapkan 6 baris kirim, termasuk nomor dobel, dan tanpa cara berhenti; dengan skill (v1.0.10) 5 kontak sah, yang tidak setuju, minta berhenti, dobel, atau nomornya rusak dibuang, dan tiap pesan memuat *Balas STOP* + tautan wa.me.
+Pada 10 kontak fiktif: tanpa skill (uji pertama) menyiapkan 6 baris kirim, termasuk nomor dobel, dan tanpa cara berhenti. Pada uji ulang, AI tanpa skill sudah membuang nomor dobel sendiri, tetapi tetap tanpa cara berhenti dan menambah urgensi "jangan sampai kehabisan!". Dengan skill (v1.0.10) 5 kontak sah, yang tidak setuju, minta berhenti, dobel, atau nomornya rusak dibuang, dan tiap pesan memuat *Balas STOP* + tautan wa.me.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan Claude Code (simulasi agent). Bot Telegram asli, Codex, dan Cursor belum diuji langsung. Versi terkini 1.0.11 hanya mengganti rujukan ke skill lain, tanpa mengubah cara kerja. Mengirim broadcast tetap manual — skill menyiapkan file dan draf saja.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan Claude Code (simulasi agent). Bot Telegram asli, Codex, dan Cursor belum diuji langsung. Versi 1.0.11 dan 1.0.12 (setelah uji) hanya mengganti rujukan ke skill lain dan melengkapi penulisan rujukan UU PDP, tanpa mengubah cara kerja. Mengirim broadcast tetap manual — skill menyiapkan file dan draf saja.
 
 ## FAQ
 **Apakah skill ini mengirim pesan otomatis?**

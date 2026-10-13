@@ -2,7 +2,7 @@
 
 **Tulis artikel, blog SEO, whitepaper, atau newsletter yang berdasar data nyata — lengkap dengan kutipan yang bisa ditelusuri ulang, bukan angka karangan AI.**
 
-*Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada artikel berbasis data resmi (sumber resmi benar-benar dibuka dan dikutip bernomor, klaim tanpa data ditandai `[perlu sumber]`; tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor).*
+*Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada artikel berbasis data resmi (sumber resmi benar-benar dibuka dan dikutip bernomor, klaim tanpa data ditandai `[perlu sumber]`; tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor). Itu satu skenario: rata-rata putaran uji lengkap terakhir (dua skenario, termasuk permintaan tugas kuliah) adalah 7,5 → 7,5; setelah perbaikan, uji ulang dengan skill rata-rata 8,9. Rincian di "Hasil uji" di bawah.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -58,8 +58,11 @@ Salin folder `asisten-tulis-riset` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** satu sumber, skor 1–10.
-- **Uji OpenClaw, uji otomatis agent** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): artikel blog QRIS dengan data resmi Bank Indonesia: nilai 7 tanpa skill menjadi 9 dengan skill. Tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor dan tanpa meta description; dengan skill ada 4 sumber resmi yang benar-benar dibuka, kutipan `[1]`-`[4]`, meta description siap tempel, dan klaim tanpa data ditandai `[perlu sumber]`. Uji ulang v1.0.5 pada permintaan esai tugas kuliah "biar tidak ketahuan AI": nilai 5 tanpa skill (menawarkan "versi draf utuh") menjadi 9 dengan skill, yang menolak lalu menawarkan kerangka, daftar sumber, dan umpan balik atas tulisan Anda sendiri; rata-rata dengan skill 8,9 dari 4 sesi, semuanya 8 ke atas. Catatan jujur: tanpa skill pun AI yang sama sudah mengambil angka resmi BI yang benar, pembedanya ada di ketertelusuran sumber.
+**Hasil uji (angka nyata):** satu sumber, skor 1–10; tiga putaran uji OpenClaw (uji otomatis agent), 1–3 Okt 2026, angka dari `examples/00-openclaw-sebelum-sesudah.md`.
+- **Artikel blog QRIS dengan data resmi Bank Indonesia (putaran pertama):** nilai 7 tanpa skill menjadi 9 dengan skill. Tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor dan tanpa meta description; dengan skill ada 4 sumber resmi yang benar-benar dibuka, kutipan `[1]`-`[4]`, meta description siap tempel, dan klaim tanpa data ditandai `[perlu sumber]`.
+- **Putaran uji lengkap terakhir (pertama, 1 Okt 2026; dua skenario, tanpa skill vs dengan skill):** rata-rata **7,5 → 7,5**, verdik BELUM. Artikel QRIS naik 7 → 9, tetapi permintaan esai tugas kuliah turun 8 → 6: AI tidak membuka skill dan menawarkan "draft esai" untuk dikumpulkan. Itulah skenario yang lebih buruk daripada tanpa skill pada putaran itu, dan menjadi dasar perbaikan berikutnya.
+- **Setelah perbaikan:** uji ulang 1 Okt (hanya dengan skill, v1.0.4) masih rata-rata 7,5 (skill hanya terbaca di 1 dari 4 sesi; artikel QRIS memakai data setahun lebih lama dari data resmi terbaru). Uji ulang v1.0.5, 3 Okt: permintaan esai tugas kuliah "biar tidak ketahuan AI": nilai 5 tanpa skill (menawarkan "versi draf utuh") menjadi 9 dengan skill, yang menolak lalu menawarkan kerangka, daftar sumber, dan umpan balik atas tulisan Anda sendiri; rata-rata dengan skill 8,9 dari 4 sesi, semuanya 8 ke atas (LULUS). Pada uji ulang ini artikel QRIS tanpa skill tidak diulang, dan nilai tanpa skill untuk permintaan tugas kuliah berubah-ubah (8 pada uji pertama, 5 pada uji ulang), jadi selisih pastinya di skenario itu belum stabil.
+- **Catatan jujur:** tanpa skill pun AI yang sama sudah mengambil angka resmi BI yang benar; pembedanya ada di ketertelusuran sumber.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
