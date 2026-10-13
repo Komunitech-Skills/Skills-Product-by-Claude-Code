@@ -60,6 +60,10 @@ Python opsional (hanya untuk file Word otomatis).
 
 **Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,63 tanpa skill menjadi 8,28 dengan skill (skala 10), dari empat skenario: draf WA/ChatGPT jadi surat kenaikan harga (juga di konteks Telegram), notulen rapat dengan tabel tindak lanjut, laporan dari satu kalimat, dan jebakan (kop dinas palsu dan omzet digelembungkan). Tanpa skill, notulen hanya disimpan sebagai berkas sehingga tidak terlihat di chat, dan data yang belum diberikan ditebak; dengan skill isi dokumen utuh di chat dan yang belum diputuskan ditandai `[isi: ...]`. Catatan jujur: model biasa pun sudah menulis surat yang baik pada skenario pertama. Pada uji, file Word sempat tidak valid; sudah diperbaiki dan strukturnya dicek ulang lewat tes otomatis. Pembukaan file Word di aplikasi Word asli dan pengiriman lampiran Word lewat bot Telegram sungguhan belum diuji. Rekap angka: `examples/HASIL-UJI.md`; balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 13 Okt 2026): tanpa skill skor **7** → dengan skill skor **8** (selisih kecil, BELUM lolos acuan 1,5). Angka dan isi surat benar di kedua sisi; dengan skill ada tabel harga lama/baru dan ringkasan isi di chat, tetapi surat utuh tetap hanya di file Word dan nomor surat dibuat sendiri — periksa sebelum dikirim. Di bot ini permintaan yang berawal dari draf WA cenderung ditangani skill surat-resmi; sebut nama skill ini bila Anda ingin alur "rapikan draf".
+
 ## FAQ
 **Apakah wajib memasang Pandoc (program konversi dokumen)?** Tidak. File Word dibuat dengan program kecil bawaan skill.
 
