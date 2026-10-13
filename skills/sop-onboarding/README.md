@@ -45,14 +45,11 @@ Salin folder `sop-onboarding` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Sep 2026 (v1.0.6), skor 1–10: tanpa skill **6,5** → dengan skill **9,0** (LULUS). Uji bot Telegram gelombang 10 (2026-10-05): **6,5** → **8,0** — DENGAN jadwal percobaan/evaluasi/BPJS dihitung script; TANPA evaluasi melewati batas percobaan. Sumber: `examples/HASIL-UJI.md`, `promosi/sebelum-sesudah.jsonl`.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/865/871 — skor 6,5
-- Dengan skill: https://t.me/c/4407409583/866/874 — skor 8
-Verdik gelombang: LULUS — DENGAN memberi paket utuh dengan jadwal yang tepat (checkpoint, batas masa percobaan 11 Jan 2027, evaluasi keputusan 6 Jan 2027), SOP kasir 7 langkah, checklist BPJS, dan cek UMK; TANPA menulis evaluasi "paling lambat 12 Jan 2027" yang melewati batas 11 Jan buatannya sendiri.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 10). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: dasar hukum dari sumber sekunder.
 
 ## FAQ
 **Skill ini bikin kontrak kerja juga?**

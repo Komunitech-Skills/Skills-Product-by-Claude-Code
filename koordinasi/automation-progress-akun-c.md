@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — C12 batch 4 (8 skill berikutnya, lihat `c12-readme-progress.md` sisa 29).
+1. **Akun C** — C12 batch 5 (8 skill berikutnya, lihat `c12-readme-progress.md` sisa 21).
 2. **Akun B** — uji independen draf C8; program beta VIP (keputusan 53).
 3. **Akun A** — merge branch kanonik bila perlu.
 

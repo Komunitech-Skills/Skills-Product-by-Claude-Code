@@ -39,7 +39,11 @@ Salin folder `tender-checklist` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script hanya butuh Python bawaan; tanpa Python pun skill tetap bekerja memakai rumus yang tertulis.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Script hanya butuh Python bawaan; tanpa Python pun skill tetap bekerja memakai rumus yang tertulis.
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Sep 2026 (v1.0.7), skor 1–10: tanpa skill **7,25** → dengan skill **9,0** (LULUS). Contoh tender meubel HPS Rp248,5 juta: total penawaran **Rp234.487.500** (PPN 11% efektif), jaminan pelaksanaan dan jadwal hari kerja dari script — tanpa skill menawarkan skenario PPN 12% yang keliru. Sumber: `examples/HASIL-UJI.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli khusus skill ini. Codex dan Cursor belum uji platform asli. PERLU REVIEW: pasal Perpres 46/2025 dari sumber sekunder.
 
 ## FAQ
 **Apakah skill ini menjamin saya menang tender?**

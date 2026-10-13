@@ -42,14 +42,11 @@ Salin folder `kontrak-kerja-pkwt` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.8), skor 1–10: tanpa skill **2,25** → dengan skill **9,25** (LULUS). Uji bot Telegram gelombang 4 (2026-10-03): TANPA melewatkan ganti rugi sisa kontrak; DENGAN kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = **Rp21.115.591**. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03.
-- Tanpa skill: https://t.me/c/4407409583/580/594 — skor: lihat catatan gelombang
-- Dengan skill: https://t.me/c/4407409583/581/597 — skor: lihat catatan gelombang
-Verdik gelombang: — — TANPA melewatkan uang kompensasi PKWT; DENGAN menghitung kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = Rp21.115.591 (selisih Rp3,5 juta).
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 4). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: nomor ayat PP 35/2021 dari sumber sekunder.
 
 ## FAQ
 **Apakah kontrak dari skill ini pasti sah dan aman?**
