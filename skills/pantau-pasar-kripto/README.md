@@ -1,6 +1,8 @@
 # Pantau Kripto Tanpa Ikut Deg-Degan Pantau Layar
 
-**Harga, berita, riset, dan jurnal trading kripto Anda -- rapi & terjadwal, tanpa satu pun rekomendasi beli/jual.**
+**Harga, berita, riset, dan jurnal trading kripto Anda -- rapi & terjadwal. Bukan sinyal beli/jual dan tanpa janji profit.**
+
+Diuji AI penguji independen di OpenClaw: 5,3 → 8,6 dari 10 (harga diambil dari sumber terbuka dan diperiksa skrip, tanpa sinyal beli/jual, jurnal untung/rugi cocok dengan hitungan independen; tanpa skill, AI sempat memberi harga dan berita dari ingatan serta contoh auto-trading).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -8,32 +10,44 @@
 - ✅ **Notifikasi ambang otomatis** -- dikabari hanya kalau harga naik/turun sesuai batas
   yang ANDA tentukan sendiri, bukan dipantau manual tiap saat. Tidak spam: sekali sudah
   dikabari, notifikasi yang sama diredam sampai beberapa jam atau sampai kondisinya
-  berubah dulu.
+  berubah dulu. Jadwal otomatisnya sudah diuji di OpenClaw lokal (Linux); Windows dan
+  macOS belum diuji langsung.
 - ✅ **Ringkasan pagi siap baca** -- harga, perubahan 24 jam, dan berita bertautan sumber,
-  langsung ke Telegram/WhatsApp Anda.
-- ✅ **Checklist riset proyek (DYOR)** -- fakta bersumber (tim, tokenomics, audit, status
-  legal), bukan opini atau "sinyal" siapa pun.
-- ✅ **Jurnal trading rapi & P/L dihitung pasti** -- untung/rugi dihitung dari angka yang
-  Anda catat sendiri (metode FIFO, sudah termasuk biaya), bukan diperkirakan.
-- ✅ **Aman dari risiko bot trading** -- tidak pernah minta API key exchange, tidak pernah
-  mengeksekusi order. Keputusan tetap 100% di tangan Anda.
+  langsung ke Telegram Anda (WhatsApp tidak resmi: hanya dengan nomor terpisah dan
+  persetujuan risiko tertulis).
+- ✅ **Checklist riset proyek (DYOR, yaitu riset sendiri sebelum memutuskan)** -- fakta
+  bersumber (tim, tokenomics atau pasokan dan pembagian koin, audit, status legal), bukan
+  opini atau "sinyal" siapa pun.
+- ✅ **Jurnal trading rapi & untung/rugi (P/L) dihitung dengan skrip** -- dari angka yang
+  Anda catat sendiri (metode FIFO, yaitu yang dibeli lebih dulu dianggap dijual lebih
+  dulu; sudah termasuk biaya), bukan diperkirakan.
+- ✅ **Bukan bot trading** -- skill ini tidak meminta kunci API bursa (exchange) dan tidak
+  menjalankan order. Keputusan beli/jual sepenuhnya di tangan Anda. Ini bukan sinyal
+  beli/jual dan tanpa janji profit; risiko rugi tetap di Anda.
 
 ## Cocok untuk siapa
 - Pemilik/investor kripto yang ingin dikabari perubahan harga tanpa buka aplikasi terus.
 - Siapa pun yang ingin riset proyek kripto lebih sistematis sebelum memutuskan sendiri.
-- Trader yang ingin jurnal rapi + hitungan untung/rugi yang bisa dipercaya, bukan kira-kira.
+- Trader yang ingin jurnal rapi + hitungan untung/rugi yang dihitung dengan skrip, bukan kira-kira.
 - **Bukan untuk** yang mencari bot auto-trading atau sinyal beli/jual -- skill ini justru
   menolak permintaan itu (lihat FAQ).
 
 ## Contoh sebelum & sesudah
-**Sebelum:** buka aplikasi exchange berkali-kali sehari cuma untuk cek harga, lupa update
+**Sebelum:** buka aplikasi bursa kripto (exchange) berkali-kali sehari cuma untuk cek harga, lupa update
 jurnal, dan susah menilai untung/rugi sebenarnya karena beli di beberapa harga berbeda.
 
-**Sesudah (cukup ketik):** *"Pantau BTC dan ETH, kabari kalau turun lebih dari 5%, kirim
-ringkasan pagi jam 7 ke Telegram, dan rapikan jurnal trading saya."*
-→ Dapat notifikasi otomatis hanya saat ambang terlewati (dengan sumber & jam data jelas),
-ringkasan pagi dengan berita bertautan, dan hasil hitung P/L jurnal yang sudah termasuk
-biaya transaksi -- semua dengan disclaimer "bukan nasihat investasi" di setiap keluaran.
+**Sesudah (cukup ketik):** *"tolong pantau BTC, ETH sama SOL ya. kabarin kalau turun 5% atau naik 8%. terus BTC kalau di bawah 1,45 M, ETH kalau tembus 55 juta, SOL kalau di bawah 2,1 juta kabarin juga. tiap jam 7 pagi kirim ringkasan harga + berita ke telegram saya"*
+
+Cuplikan hasil (contoh dengan data pasar nyata pada 24 Sep 2026, dipotong dari `examples/01-pantau-btc-eth-sol-ringkasan-pagi.md`; hanya contoh tampilan, bukan sinyal beli/jual, dan harga berubah setiap saat; "ambang terlewati" = harga melewati batas yang Anda tetapkan):
+```
+Pantau harga kripto -- 24 Sep 2026 07:41 WIB
+- BTC: Rp 1.505.467.218 (-2.52% / 24 jam)
+- ETH: Rp 47.945.407 (-2.78% / 24 jam)
+- SOL: Rp 2.056.215 (-3.22% / 24 jam)
+  >> AMBANG TERLEWATI: Harga sudah <= ambang bawah 2100000.
+Sumber & jam data ada di rincian JSON. Informasi, bukan nasihat investasi.
+```
+Hasil lengkapnya juga memuat ringkasan pagi dengan berita bertautan sumber asli, hitungan untung/rugi jurnal yang sudah termasuk biaya, dan disclaimer "bukan nasihat investasi" di setiap keluaran.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -43,7 +57,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Rapikan jurnal trading saya, hitung untung/rugi bulan ini."
 
 ## Instalasi singkat
-Salin folder `pantau-pasar-kripto` ke folder skills AI agent kamu:
+Salin folder `pantau-pasar-kripto` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -54,36 +68,38 @@ Salin folder `pantau-pasar-kripto` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+**Hasil uji (angka nyata):** uji OpenClaw (paket solusi kripto Komunitech, home terisolasi), 3–5 Okt 2026 (v1.0.10), skor 1–10 penguji independen (rata-rata 3 skenario): tanpa skill **5,3** → dengan skill **8,6** (LULUS). Sumber: catatan uji gabungan paket solusi kripto Komunitech (internal, tidak ikut di paket) dan `examples/HASIL-UJI.md`. Tanpa skill sempat memberi harga/berita dari ingatan dan contoh auto-trading; dengan skill harga dari CoinGecko/Indodax diverifikasi skrip (program hitung kecil), tanpa sinyal beli/jual, jurnal FIFO cocok hitungan independen.
+
+**Status uji (jujur):** informasi saja — **bukan** rekomendasi investasi atau bot trading. Sudah diuji di OpenClaw Gateway asli (notifikasi ambang) dan uji gabungan agent. Regulasi kripto Indonesia berubah — cek OJK (Otoritas Jasa Keuangan) dan daftar aset keuangan digital (DAKD) yang berlaku. Jadwal OpenClaw baru diuji di Linux; macOS dan Windows belum diuji di perangkat asli.
+
 ## FAQ
 **Ini bot auto-trading, kan?**
 Bukan. Skill ini murni memberi informasi (harga, berita, hasil riset, hitungan jurnal).
-Skill ini secara sengaja **menolak** meminta/menyimpan API key exchange dan tidak pernah
+Skill ini secara sengaja **menolak** meminta/menyimpan kunci API bursa (exchange) dan tidak
 mengeksekusi order -- semua keputusan beli/jual tetap Anda lakukan sendiri di aplikasi
 exchange Anda.
 
 **Kenapa tidak ada rekomendasi beli/jual atau target harga?**
 Karena itu bukan tugas skill informasi. Rekomendasi investasi butuh izin & tanggung jawab
 yang tidak bisa diberikan oleh AI generik, dan kesalahan sinyal = kerugian uang nyata.
-Skill ini fokus pada yang bisa dipastikan: data harga dengan sumber jelas, checklist fakta
-riset, dan hitungan P/L dari angka yang Anda catat sendiri.
+Skill ini fokus pada yang bisa diperiksa: data harga dengan sumber jelas, checklist fakta
+riset, dan hitungan P/L dari angka yang Anda catat sendiri. Tidak ada janji profit; risiko
+rugi tetap pada Anda.
 
 **Notifikasi otomatisnya jalan di semua komputer?**
-Sudah terbukti jalan di macOS/Linux (diuji langsung terhadap OpenClaw). Untuk Windows,
-langkah pembuatan jadwalnya sedikit berbeda dan belum diuji di komputer Windows
-sungguhan -- kalau Anda memakai Windows, agent akan menjelaskan status ini dan mengujinya
-bersama Anda dulu sebelum jadwal diaktifkan. Semua jadwal juga butuh komputer/server yang
-menyala saat jam jadwalnya (dijelaskan detail saat setup).
+Sudah diuji berjalan di Linux (diuji langsung terhadap OpenClaw). Untuk macOS dan Windows,
+langkah pembuatan jadwalnya bisa sedikit berbeda dan belum diuji di komputer sungguhan
+-- agent akan menjelaskan status ini dan mengujinya bersama Anda dulu sebelum jadwal
+diaktifkan. Semua jadwal juga butuh komputer/server yang menyala saat jam jadwalnya
+(dijelaskan detail saat setup).
 
 **Sumber harganya dari mana, dan bagaimana kalau datanya gagal diambil?**
 CoinGecko (`simple/price`, publik tanpa API key) dan Indodax (`ticker`, publik tanpa API
 key) -- keduanya terdokumentasi resmi, lihat `references/sumber-data.md`. Kalau sumber
-gagal diambil, skill memakai data cache terakhir dengan peringatan jelas (jam data +
-"data basi"), dan **tidak pernah mengarang angka**. Kalau tidak ada cache sama sekali,
-Anda diberi tahu apa adanya, bukan diberi angka palsu.
-
-**Hasil uji (angka nyata):** uji OpenClaw (paket solusi VIP kripto, home terisolasi), 3–5 Okt 2026 (v1.0.10), skor 1–10 penguji independen (rata-rata 3 skenario): tanpa skill **5,3** → dengan skill **8,6** (LULUS). Sumber: `solusi-vip/kripto-keuangan/UJI-GABUNGAN-2026-10-03.md`, `examples/HASIL-UJI.md`. Tanpa skill sempat memberi harga/berita dari ingatan dan contoh auto-trading; dengan skill harga dari CoinGecko/Indodax diverifikasi script, tanpa sinyal beli/jual, jurnal FIFO cocok hitungan independen.
-
-**Status uji (jujur):** informasi saja — **bukan** rekomendasi investasi atau bot trading. Sudah diuji di OpenClaw Gateway asli (notifikasi ambang) dan uji gabungan agent. Regulasi kripto Indonesia berubah — cek OJK/DAKD. Windows untuk jadwal OpenClaw belum uji di perangkat asli.
+gagal diambil, skill memakai data cache terakhir (data tersimpan dari pengambilan
+sebelumnya) dengan peringatan jelas (jam data + "data basi"), dan dirancang **tidak
+mengarang angka**. Kalau tidak ada data tersimpan sama sekali, Anda diberi tahu apa
+adanya, bukan diberi angka palsu.
 
 ## Riwayat perubahan
 
