@@ -4,6 +4,8 @@
 
 > Skill ini alat riset, **bukan penasihat investasi**. Tidak ada rekomendasi beli/jual, target harga, atau sinyal. Keputusan tetap di tangan Anda.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Hemat waktu riset:** berita, keterbukaan informasi, dan jadwal dividen/RUPS/stock split dirangkum jadi satu catatan, setiap fakta ada tautan & tanggalnya
 - ✅ **Rasio dihitung, bukan dikira:** pertumbuhan pendapatan & laba, margin bersih, ROE, DER, EPS, nilai buku, PER, PBV, dan imbal dividen dihitung script dari angka laporan keuangan (paham format "Rp1,2 T", "1.234,5 miliar", "(12.000)", dan laporan "dalam jutaan")
@@ -43,9 +45,6 @@ Salin folder `riset-saham-berita` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan; tanpa Python pun tetap bisa dengan hitung manual yang ditandai "belum diverifikasi script").
 
-## Catatan revisi 1.0.5 (2026-10-01)
-- Jadwal cek level harga (OpenClaw) hanya dibuat setelah Anda melihat perintah + jamnya dan membalas **"ya"** — tidak ada percobaan membuat jadwal sebelum itu.
-
 ## FAQ
 **Kenapa AI-nya tidak mau bilang saham ini bagus dibeli atau tidak?**
 Karena rekomendasi investasi adalah wewenang pihak berizin OJK, dan AI bisa salah atau terpengaruh informasi palsu di internet. Skill ini sengaja berhenti di fakta, angka, risiko, dan pertanyaan, supaya keputusan Anda berdasar data, bukan ikut-ikutan.
@@ -58,3 +57,7 @@ Rasio dihitung script dari angka yang tertulis di laporan, dan script menampilka
 
 ---
 _Bukan nasihat investasi. Keputusan & risiko sepenuhnya di tangan Anda. Cek prospektus/laporan resmi di idx.co.id & situs emiten; info izin & pengaduan: OJK (kontak 157)._
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

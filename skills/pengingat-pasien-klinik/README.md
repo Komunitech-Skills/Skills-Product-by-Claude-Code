@@ -4,6 +4,8 @@
 
 > **Penting untuk klinik:** skill ini **belum direview tenaga medis** dan **bukan alat diagnosis**. Data pasien disimpan **seminimal mungkin dan hanya di komputer klinik Anda** (nama panggilan, nomor WA, jenis kunjungan umum, tanggal): tanpa diagnosis, rekam medis, atau NIK, dan tidak dikirim ke server Komunitech. Pesan pengingat hanya **draf** yang dikirim staf klinik sendiri, bukan kiriman otomatis. Nama dan nomor WA pada contoh di bawah fiktif.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Cukup ketik satu kalimat.** "Catat Bu Sari, kontrol gigi 10 hari lagi, WA 0812..., setuju diingatkan" langsung tersimpan.
 - ✅ **Daftar H-3, H-1, hari ini, dan terlambat** — jelas dan otomatis dari tanggal yang Anda masukkan, tidak perlu dihitung manual.
@@ -91,13 +93,6 @@ klinik — tidak ada risiko salah kirim atau nomor WA klinik diblokir karena pes
 Tinggal minta ke asisten "hapus data [nama/nomor]". Data terhapus permanen dari file lokal,
 sesuai hak pasien menurut UU PDP 27/2022.
 
-## Catatan revisi 1.0.8 (2026-10-02)
-- Temuan uji ulang paket klinik (1B): agent salah menyebut skill untuk laporan mingguan klinik. Kini rujukan dipertegas: laporan mingguan 3P → `laporan-status-kantor`; rekap dari file CSV kunjungan → `edukasi-pasien-klinik`; skill ini hanya ringkasan pengingat harian. Script tidak berubah.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.7 (2026-10-02)
-- Temuan uji gabungan paket klinik: keterangan "diabetes" dibuang diam-diam; agent menawarkan nama + "kontrol gula darah" untuk teks grup staf; daftar pasien yang setuju pengingat ditawarkan untuk promo.
-- Kini: wajib memberi tahu bila keterangan medis tidak disimpan; teks grup staf = nama panggilan/inisial tanpa nomor WA & keterangan medis (jenis bernada penyakit ditulis "kontrol"); izin pengingat ≠ izin promo. Script tidak berubah.
-
-## Catatan revisi 1.0.6 (2026-10-01)
-- Temuan uji OpenClaw (klinik 03): contoh di SKILL.md (`<perintah> [opsi] --json`) gagal kode 2 karena script hanya menerima `--json` sebelum nama perintah; agent juga sempat mencari script ke seluruh disk.
-- Script kini menerima `--json`, `--file`, `--hari-ini`, `--tz` di kedua posisi; contoh SKILL.md & `references/perintah.md` diperbaiki dan diuji; lokasi script ditulis eksplisit (jangan `find /`). Uji regresi 38/38 (4 baru).
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

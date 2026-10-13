@@ -7,6 +7,8 @@ Tanpa memberi password, tanpa login, tanpa API: cukup screenshot, file ekspor, a
 
 Versi 1.0.5.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Skor kesehatan 0–100 yang bisa dipertanggungjawabkan** — dihitung script dengan bobot jelas, bukan "feeling" AI.
 - ✅ **81 titik cek khusus pasar Indonesia**: iklan klik-ke-WhatsApp, target ROAS Shopee vs titik impas, anggaran habis sebelum jam ramai malam, tanggal kembar, kata kunci "gratis/pdf" di Google.
@@ -52,15 +54,6 @@ Salin folder `audit-akun-iklan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
 
-## Catatan revisi 1.0.5 (2026-10-01)
-- Keamanan: bila Anda tidak sengaja menempel password/OTP/token di chat, AI tidak akan mengulang, menyimpan, atau memakainya — Anda akan diminta segera mengganti password dan mengaktifkan verifikasi 2 langkah, lalu audit lanjut dari ekspor data/screenshot saja.
-- Script kini otomatis menyamarkan pola password/OTP/token/nomor kartu di catatan audit menjadi `[DISAMARKAN]`.
-
-## Catatan revisi 1.0.4 (2026-10-01)
-- Setiap ROAS yang Anda sebut (target maupun rata-rata) kini selalu dibandingkan dengan ROAS impas oleh script dan dinyatakan **RUGI / IMPAS / UNTUNG** beserta perkiraan rugi/laba per pesanan.
-- Iklan klinik & fasilitas kesehatan: saran mengikuti Permenkes 1787/2010 (tanpa testimoni pasien, tanpa promo diskon, tanpa janji hasil).
-- Lokasi file kerja yang dibuat selalu disebutkan.
-
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**
 Tidak. Skill ini sengaja tidak login dan tidak memakai API. Semua perubahan tetap Anda lakukan sendiri. Jangan pernah mengirim password/OTP ke chat.
@@ -73,3 +66,7 @@ Laporan Iklan Mingguan menghitung angka (belanja, biaya per hasil, ROAS, dibandi
 
 ---
 Sebagian metode skor diadaptasi dari proyek open-source claude-ads (MIT). Tidak berafiliasi dengan Meta, TikTok, Google, Shopee, maupun Tokopedia. Lihat `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

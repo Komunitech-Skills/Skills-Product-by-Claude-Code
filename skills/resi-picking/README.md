@@ -2,6 +2,8 @@
 
 **Ratusan pesanan Shopee/Tokopedia/TikTok Shop, satu file, langsung jadi daftar ambil barang dan urutan resi siap cetak.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Cocokkan barang dengan resi dalam hitungan detik.** Cukup kirim file ekspor pesanan, admin gudang langsung dapat daftar ambil per SKU dan urutan kemas per kurir - tidak perlu mencocokkan satu per satu di Excel.
 - ✅ **Diurutkan per rak kalau kamu punya data lokasinya.** Ambil barang jadi satu jalur, tidak bolak-balik gudang.

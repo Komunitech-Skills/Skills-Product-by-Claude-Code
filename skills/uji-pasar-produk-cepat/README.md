@@ -2,6 +2,8 @@
 
 **Tahu produk barumu laku sebelum produksi besar, dengan angka, bukan feeling.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - Tahu asumsi mana yang paling berbahaya dan diuji dulu, tidak semua sekaligus.
 - Pilih eksperimen murah yang cocok kanalmu: pre-order WA, sistem PO, sampel di bazar, landing page + WA, listing marketplace uji, konten TikTok, survei Google Form.

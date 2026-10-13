@@ -2,6 +2,8 @@
 
 **Tahu persis siapa yang belum bayar, berapa, dan sejak kapan. Pesan tagihan yang sopan sudah disiapkan. Data tetap di komputer Anda sendiri.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tidak ada lagi bon yang terlupa.** Setiap pagi Anda tahu tagihan yang **terlewat**, yang **jatuh tempo hari ini**, dan yang **jatuh tempo minggu ini**, lengkap dengan sisa dan berapa kali sudah diingatkan. Bisa dikirim otomatis ke Telegram Anda.
 - ✅ **Pembayaran dicicil pun tetap rapi.** "Kafe Senja transfer 1 juta" langsung dipotong dari nota tertua dan sisanya dihitung. Kalau pelanggan membayar **lebih**, buku tidak diam-diam jadi minus: Anda ditanya dulu, lalu kelebihannya disimpan sebagai deposit atau dicatat sudah dikembalikan.

@@ -2,6 +2,8 @@
 
 **Isi log harian sederhana, AI memberi tahu angka mana yang mulai tidak normal, seberapa gawat, dan apa yang perlu dicek hari ini.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Peringatan berwarna yang jelas:** 🔴 bahaya, 🟠 waspada, 🟡 perhatikan, masing-masing dengan alasan berangka ("reject naik 3 hari berturut-turut, 6,8σ di atas rata-rata, lewat target maks 50"). Oranye/merah hanya untuk lonjakan jelas atau yang bertahan, jadi tidak bikin "kebal alarm"; keluhan/kecelakaan yang biasanya nol langsung ditandai begitu muncul
 - ✅ **Stok tidak habis mendadak:** sisa stok diubah jadi "cukup ±3,2 hari, perkiraan habis Jumat", dibandingkan dengan lama pemasok mengirim

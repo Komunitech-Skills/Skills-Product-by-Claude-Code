@@ -4,6 +4,8 @@
 
 > Komunitech **tidak berafiliasi** dengan proyek Kanboard. Kanboard adalah software open-source (lisensi MIT) milik pembuatnya; skill dan panduan ini adalah karya orisinal Komunitech untuk memudahkan pemilik usaha Indonesia memakainya.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Kanboard (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tanpa biaya bulanan per user.** Kanboard gratis dan jalan di laptop/PC/server Anda sendiri — pengganti Trello/ClickUp berbayar untuk tim kecil.
 - ✅ **Papan siap pakai sesuai usaha dalam 1 menit.** Template kolom untuk **produksi** (konveksi, makanan, percetakan), **order & pengiriman** (toko online, distributor), **konten** medsos, dan **proyek jasa** — lengkap dengan batas kartu di tahap yang sering menumpuk.
@@ -72,6 +74,6 @@ Tidak. Skill ini tidak punya perintah hapus/tutup, dan daftar perintah yang bole
 **Saya belum pernah pakai Docker. Susah?**
 Cukup memasang Docker Desktop lalu menempel satu baris perintah dari panduan. Bila tetap ragu, Komunitech menyediakan jasa setup berbayar (pasang, amankan, buat papan & token, jadwal laporan Telegram, backup).
 
-## Riwayat versi
-- **1.0.1 (2026-09-30):** pembacaan jam bahasa Indonesia diperbaiki ("jam 3 sore" = 15:00, "10.00" = 10:00; jam 1-6 tanpa keterangan ditanyakan); tanggal tanpa tahun yang sudah lewat kini diberi PERINGATAN (tidak diam-diam ke tahun depan); kartu di kolom Selesai tidak muncul di "hari ini"; pesan ramah (tanpa traceback) untuk data aneh dari server; "kemarin" dikenali; pencocokan PIC sebagian ditegaskan.
-- **1.0.0:** rilis awal.
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

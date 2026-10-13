@@ -2,6 +2,8 @@
 
 **Dari "bingung namanya" ke nama teruji dan penawaran yang jujur, sudah dihitung labanya.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - 10 opsi nama dengan skor 0-100 yang **dihitung script** (panjang, suku kata, ejaan, kemiripan dengan merek yang kamu sebut, arti, keunikan), bukan sekadar selera.
 - Pengingat cek arti negatif di bahasa daerah dan slang, plus **daftar cek domain, handle IG/TikTok, dan merek di PDKI** (langkah demi langkah, kelas Nice).
@@ -64,21 +66,6 @@ Tidak. Agent yang menjalankan script; bila tidak bisa, hitungan manual dengan ru
 
 Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
 
-## Riwayat versi
-### Catatan revisi 1.0.4 (2026-10-01)
-- Penjelasan "3 konsonan berturut" kini menyebut huruf dan katanya dengan tepat (mis. 'ncl' di 'Kinclong'), sehingga alasan di jawaban tidak lagi keliru menunjuk huruf. Nilai skor tidak berubah.
-- Tes regresi bertambah 2.
+## Riwayat perubahan
 
-### Catatan revisi 1.0.3 (2026-10-01)
-- Cek nama kini membandingkan **bunyi**, bukan hanya ejaan: nama yang terdengar sama dengan pesaing yang Anda sebut (mis. "Kicks Klin" vs "Kick Clean") langsung ditandai.
-- Nama yang terbaca seperti kata Inggris berkonotasi buruk (mis. "Sneakuy" ~ "sneaky" = licik) ditandai dan tidak direkomendasikan.
-- Klaim produk (ukuran, bahan, "tanpa pengawet") yang tidak Anda sebut ditulis sebagai `[isi: …]`, bukan dikarang.
-- File kerja disimpan di folder kerja Anda (bukan folder skill) dan lokasinya disebutkan; nomor kelas merek (Nice) disebut di jawaban.
-- Tes regresi bertambah dari 25 menjadi 28.
-
-### Catatan revisi 1.0.1 (2026-09-30)
-- Penghitung penawaran kini membaca nominal format Indonesia (`38.000`, `Rp38.000`, `38rb`, `1,5jt`, `38.000,50`); bentuk ambigu (`38.5`) ditolak dengan pesan jelas, harga sangat kecil diberi peringatan.
-- Tabel kelas Nice ditambah kelas 5, 37, 44 dan diperiksa ulang terhadap Nice Classification edisi ke-13 (versi 2026).
-- Ringkasan Pasal 17 UU 8/1999 diperjelas: berlaku untuk pelaku usaha periklanan.
-- Nama tanpa huruf ditolak; "eu" (Sunda) dihitung satu vokal; kata generik (kopi, toko, warung, dst.) tidak lagi membuat semua nama tertandai mirip (opsi `--generik`, `--tanpa-generik`).
-- Tes regresi bertambah dari 17 menjadi 25.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

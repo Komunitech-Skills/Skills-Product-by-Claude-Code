@@ -2,6 +2,8 @@
 
 **Setiap malam satu pesan Telegram berisi omzet, stok, karyawan, dan tagihan usaha Anda. Tanpa aplikasi dashboard berlangganan, data tetap di komputer sendiri.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Satu pesan, seluruh usaha.** Penjualan, stok menipis, siapa yang terlambat/alpa, lembur yang perlu diputuskan, tagihan jatuh tempo, dan prospek/pipeline CRM, digabung dari alat Komunitech yang sudah Anda pakai (Kasir Lokal, Buku Stok, Absensi Lokal, Pengingat Follow-up, CRM WA).
 - ✅ **Langsung kelihatan naik atau turun.** Omzet dibandingkan dengan kemarin dan hari yang sama minggu lalu dalam persen. Tiap Senin pagi ada laporan mingguan dibanding minggu sebelumnya.

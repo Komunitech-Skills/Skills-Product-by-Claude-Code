@@ -2,6 +2,8 @@
 
 **Kirim file penjualan, dapat laporan omzet dan produk terlaris dalam semenit.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Total omzet, rata-rata harian, dan 5 produk terlaris
 - ✅ Hari terbaik dan hari terendah terlihat jelas
@@ -19,7 +21,7 @@
 **Sesudah (cukup ketik):** "Tolong rekap penjualan dari file penjualan-september.csv"
 → Laporan untuk contoh kedai kopi (127 transaksi, 1–14 September): omzet Rp 5.084.000, rata-rata Rp 363.143 per hari, 5 produk terlaris dengan persentasenya (Matcha Latte Rp 1.320.000 = 26,0% omzet), hari terbaik Senin 7 September (Rp 549.000) dan hari terendah Senin 14 September (Rp 214.000), plus insight yang bisa langsung dijalankan.
 
-**Hasil uji A/B (simulasi agent, 23 September 2026):** pada file yang rapi, angka agent tanpa skill sama benarnya. Nilai tambahnya ada di format Indonesia yang berantakan: pada file dengan harga `68.500,00`, cara "ambil digit saja" menghasilkan Rp 1.389.910.000 padahal yang benar Rp 13.899.100 (100 kali lipat), tanpa peringatan. Pada ekspor marketplace, bila pesanan batal dan retur ikut dihitung, omzet contoh membengkak menjadi Rp 10.793.000 dari yang seharusnya Rp 9.006.000; dengan skill keduanya benar. Rincian: `examples/00-pembanding-tanpa-skill.md`.
+**Hasil uji A/B (simulasi agent, 23 September 2026):** pada file yang rapi, angka agent tanpa skill sama benarnya. Nilai tambahnya ada di format Indonesia yang berantakan: pada file dengan harga `68.500,00`, cara "ambil digit saja" menghasilkan Rp 1.389.910.000 padahal yang benar Rp 13.899.100 (100 kali lipat), tanpa peringatan. Pada ekspor marketplace, bila pesanan batal dan retur ikut dihitung, omzet contoh membengkak menjadi Rp 10.793.000 dari yang seharusnya Rp 9.006.000; dengan skill keduanya benar. Rincian: `examples/00-pembanding-tanpa-skill.md`. Uji OpenClaw 1 Okt 2026: skor tanpa skill 7,5 → dengan skill 8,5, lalu 9 setelah perbaikan v1.2.3; selisihnya kecil dan terutama pada kelengkapan format, bukan ketepatan angka (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa ke AI agent kamu dan lampirkan file CSV-nya, misalnya:
@@ -55,12 +57,6 @@ Baris yang rusak dilewati, lalu jumlah dan alasannya dilaporkan.
 
 > **Catatan:** rekap ini menghitung omzet dari file penjualan yang kamu kirim. Bukan laporan laba rugi dan bukan perhitungan pajak; hasilnya sebaik kualitas datanya.
 
-## Catatan revisi 1.2.3 (2026-10-01)
-- Temuan uji OpenClaw: pertanyaan "hari paling rame" hanya dijawab dari sisi omzet.
-- Rekap kini juga menampilkan hari dengan transaksi terbanyak (per pesanan unik lewat `--kolom-pesanan`, atau per baris). Ditambah uji regresi `scripts/uji_regresi.py` (4 tes).
+## Riwayat perubahan
 
-## Catatan revisi 1.2.4 (2026-10-02)
-- Temuan uji gabungan paket Toko Online: nilai pesanan "Sedang Dikirim" dan hari pembatalan dikira-kira oleh AI, bukan dihitung.
-- Script kini mengeluarkan omzet & jumlah pesanan **per status** (selesai, dikirim, batal, dll.), tanggal pesanan yang batal/retur, dan blok **"RINGKASAN SIAP TEMPEL"** berisi kalimat lengkap untuk grup tim (tanpa nama/nomor pembeli).
-- Aturan privasi baru: teks grup hanya angka agregat; daftar pelanggan untuk promo hanya yang sudah setuju (opt-in) — pembeli marketplace dianggap belum setuju; tanpa broadcast.
-- Uji regresi `scripts/uji_regresi.py` kini 9 tes, termasuk pembanding hitung independen.
+Versi terkini: **1.2.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

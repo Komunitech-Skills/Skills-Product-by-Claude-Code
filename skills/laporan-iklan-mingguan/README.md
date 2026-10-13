@@ -3,6 +3,8 @@
 **Kirim ekspor Meta/TikTok/Shopee/Google Ads, dapat laporan mingguan siap kirim ke Telegram —
 lengkap dengan iklan mana yang harus dimatikan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ CPC, CPM, CTR, biaya per hasil (CPA/CPL), dan ROAS dihitung dari angka mentah — bukan
   dari kolom rata-rata bawaan file yang bisa salah kalau dijumlah langsung
@@ -96,11 +98,6 @@ Bisa, lewat skill `laporan-otomatis-terjadwal` yang memang khusus menjadwalkan (
 `references/openclaw-jadwal.md` dalam paket ini). Skill ini sendiri fokus menghitung laporannya
 dengan benar dulu.
 
-## Catatan revisi 1.0.10 (2026-10-01)
-Dari uji sebelum/sesudah OpenClaw: laporan sempat menyarankan mematikan kampanye *Traffic* dan
-*Awareness* hanya karena "0 pesan WA", padahal tujuannya memang bukan pesan. Kini tiap kampanye
-dinilai terhadap **tujuannya** (dari kolom Objective/Result indicator, atau dari nama kampanye):
-kampanye Traffic/Awareness/Reach/Video views/Engagement tampil di bagian **TUJUAN BERBEDA** dengan
-CPC, CTR, dan CPM, tidak lagi masuk daftar "matikan". Catatan juga menyebut biaya per pesan khusus
-kampanye bertujuan pesan. Baris **"Kolom dibaca"** dipindah ke baris ke-3 laporan supaya selalu
-ikut terkirim, tidak terpotong.
+## Riwayat perubahan
+
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

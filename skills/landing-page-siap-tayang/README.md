@@ -2,6 +2,8 @@
 
 **Dari info produk jadi file web siap upload, lengkap dengan cara tayang gratis.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **File landing page utuh** (`index.html`): headline, manfaat, penawaran, FAQ, dan tombol WhatsApp dengan pesan terisi.
 - ✅ **Enak di HP:** tampilan mobile-first, tombol WA melayang, ringan, tanpa pelacak diam-diam.
@@ -56,9 +58,9 @@ Tidak. Pesanan masuk lewat tombol WhatsApp. Untuk keranjang dan pembayaran onlin
 **Bagaimana kalau tampilan menu di Netlify/GitHub/Cloudflare berbeda dari panduan?**
 Situs-situs itu sering memperbarui tampilan. Ikuti tombol dengan istilah paling mirip; bagian itu ditandai PERLU REVIEW di panduan.
 
-## Catatan versi
-- **1.0.3 (2026-10-12):** di chat, halaman HTML selalu ditulis utuh (dibagi beberapa bagian bila panjang); tawaran "balas 'kirim file'" untuk versi file.
-- **1.0.0 (2026-10-06):** rilis awal.
-
 ## Catatan
 Karya orisinal Komunitech; merek pihak ketiga hanya disebut sebagai nama layanan dan tidak berafiliasi. Lihat `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

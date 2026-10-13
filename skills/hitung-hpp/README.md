@@ -2,6 +2,8 @@
 
 **Dari resep dan daftar belanja, langsung dapat HPP per produk, harga jual ideal, dan target penjualan minimal.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ HPP per unit akurat: bahan, tenaga kerja, overhead, kemasan, sampai penyusutan alat
 - ✅ Konversi satuan otomatis: beli 1 kg pakai 250 g, kain per yard dipakai per meter, lusin, kodi
@@ -20,7 +22,7 @@
 **Sesudah (cukup ketik):** daftar bahan, upah, dan biaya bulanan brownies kamu
 → HPP Rp47.158 per loyang, harga rekomendasi Rp79.000 untuk margin 40%, dan BEP 17 loyang per bulan, lengkap rinciannya.
 
-**Hasil uji A/B (simulasi agent, 23 September 2026):** resep keripik pisang balado dengan target margin 35%. Agent tanpa skill menukar margin dengan markup, sehingga harga Rp9.500 (margin sebenarnya hanya sekitar 26,8%) dan tanpa BEP. Dengan skill harga Rp11.000 (margin 36,82%) dan BEP 114 bungkus per bulan. Selisihnya Rp1.500 per bungkus, sekitar Rp720.000 per bulan pada 480 bungkus. Rincian: `examples/00-pembanding-tanpa-skill.md`.
+**Hasil uji A/B (simulasi agent, 23 September 2026):** resep keripik pisang balado dengan target margin 35%. Agent tanpa skill menukar margin dengan markup, sehingga harga Rp9.500 (margin sebenarnya hanya sekitar 26,8%) dan tanpa BEP. Dengan skill harga Rp11.000 (margin 36,82%) dan BEP 114 bungkus per bulan. Selisihnya Rp1.500 per bungkus, sekitar Rp720.000 per bulan pada 480 bungkus. Rincian: `examples/00-pembanding-tanpa-skill.md`. Uji OpenClaw 1 Okt 2026: skor tanpa skill 8 → dengan skill 7 pada uji pertama (skill kalah), lalu 8,5 setelah perbaikan v1.0.4 (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -59,11 +61,6 @@ Pakai HPP ini sebagai modal di skill `harga-jual-marketplace` untuk menghitung p
 
 > **Catatan penting:** alat bantu hitung harga pokok dan harga jual, bukan nasihat keuangan atau pajak dan bukan laporan keuangan resmi. Hasil hanya sebaik data yang kamu isi; biaya yang belum dimasukkan (mis. upah pemilik) tidak ikut terhitung dan disebut sebagai asumsi. Pajak (PPN/PPh) tidak dihitung di sini.
 
-## Catatan revisi 1.0.3 (2026-10-01)
-- Opsi baru **banding harga** (`--banding-harga "18000;19500"`): setiap harga yang disarankan AI kini dihitung script lengkap dengan laba, margin, dan BEP — tidak lagi ditaksir (temuan uji OpenClaw: BEP Rp18.000 ditaksir ~460, seharusnya 501 gelas).
-- Blok baru **Porsi biaya dalam HPP** (per kategori, variabel vs tetap, komponen terbesar) agar klaim "biaya terbesar" berasal dari angka script.
-- Instruksi: script dijalankan dari subfolder `scripts/` di folder skill (tidak mencari ke seluruh disk); angka script disalin apa adanya ke chat. 5 tes otomatis baru (`tests/`).
+## Riwayat perubahan
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Aturan kutip angka diperketat: semua angka BEP (unit, rupiah, % dari rencana produksi), laba, margin, dan porsi biaya di balasan AI wajib disalin **persis** dari keluaran script, tanpa dihitung atau dibulatkan ulang. BEP selalu dibulatkan ke atas oleh script (temuan uji ulang OpenClaw: BEP Rp19.000 & Rp20.000 ditulis 450 & 409, padahal script 451 & 410).
-- Script tidak berubah selain nomor versi; semua tes otomatis lulus.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

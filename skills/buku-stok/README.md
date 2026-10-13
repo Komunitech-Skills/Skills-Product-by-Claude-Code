@@ -2,6 +2,8 @@
 
 **Pengganti aplikasi stok berbayar: cukup chat ke AI agent, data stok tetap di laptop kamu sendiri.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Hemat biaya bulanan.** Perkiraan hemat **±Rp250 rb–800 rb per bulan** (±Rp3–9,6 jt per tahun) dibanding aplikasi kasir/stok atau omnichannel berbayar. Menurut riset harga publik kami (23 Sep 2026, bisa berubah): Majoo Rp249–999 rb, Moka Rp299–799 rb, Jubelio mulai Rp799 rb per bulan (minimal 6 bulan). Bayar sekali, tanpa langganan.
 - ✅ **Stok terpotong dari file pesanan Shopee, TikTok Shop, dan Tokopedia.** Pesanan batal, retur, dan belum bayar diabaikan otomatis. Pesanan yang sama tidak akan terpotong dua kali. Pesanan yang batal setelah diimpor dikembalikan stoknya.
@@ -63,5 +65,6 @@ Semua data ada dalam satu file. Setiap impor, opname, dan pemulihan membuat back
 **Apakah ini bisa menggantikan pembukuan/akuntansi?**
 Tidak. Buku Stok fokus pada stok, HPP, dan nilai persediaan. Laba di laporan harian hanya perkiraan kasar (omzet dikurangi HPP, belum termasuk biaya admin, ongkir, dan iklan). Untuk laporan keuangan, pakai skill `laporan-keuangan-emkm`.
 
-## Catatan revisi 1.1.6 (2026-10-01)
-- Uji OpenClaw 2026-10-01: perubahan HPP baru muncul setelah barang masuk tersimpan. Kini konfirmasi pertama barang masuk selalu menampilkan "HPP Rp lama → Rp baru" (dari pratinjau script; saat mulai dari nol, dihitung dengan rumus HPP yang ditulis lalu dicocokkan dengan script sebelum disimpan).
+## Riwayat perubahan
+
+Versi terkini: **1.1.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

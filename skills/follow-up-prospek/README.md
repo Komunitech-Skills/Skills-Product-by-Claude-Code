@@ -2,6 +2,8 @@
 
 **Calon pembeli diam setelah ditawari? Dapat 4 pesan follow-up sopan lengkap dengan tanggal kirimnya.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Urutan pesan WhatsApp dan email hari ke-1, 3, 7, dan 14 yang sudah siap salin-kirim
 - ✅ Beda situasi, beda pesan: setelah kirim penawaran, setelah demo, setelah dijawab "nanti dulu", atau setelah tanya harga lalu hilang
@@ -52,8 +54,6 @@ Hentikan urutannya dan tanggapi balasannya. Skill ini juga menyediakan contoh ja
 **Apakah saya harus kasih diskon supaya prospek mau?**
 Tidak. Pesan dibuat dengan nilai tambah lain seperti info, contoh hasil, atau uji coba. Diskon hanya dimasukkan jika kamu memintanya.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Waktu relatif ("3 hari lalu") kini dihitung dari tanggal, tidak lagi menulis "kemarin" sembarangan.
-- Tawaran baru (mis. paket lebih kecil) diberi label "usulan — konfirmasi dulu".
-- Prospek yang minta tidak dihubungi: follow-up dihentikan, ditandai jangan dihubungi, tanpa jadwal ulang; diberi satu pesan penutup.
-- Kata pemicu di deskripsi diperjelas.
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

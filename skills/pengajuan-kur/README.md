@@ -2,6 +2,8 @@
 
 **Hitung cicilan, cek sanggup bayar atau tidak, dan siapkan dokumen serta profil usaha — sebelum datang ke bank.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Simulasi cicilan **anuitas vs flat** dengan penjelasan sederhana kenapa flat bisa jauh lebih mahal
 - ✅ Tahu sejak awal cicilan itu berapa persen dari laba — dengan peringatan jelas kalau terlalu berat
@@ -64,6 +66,6 @@ Menurut Permenko Perekonomian 1/2026 (dicek September 2026): KUR Super Mikro 3%,
 **Apakah data saya dikirim ke bank?**
 Tidak. Skill tidak mengisi formulir atau mengirim data ke mana pun. Hitungan berjalan di komputermu sendiri.
 
-## Catatan revisi 1.2.3 (2026-10-01)
-- Balasan chat kini diawali **ringkasan singkat** (cicilan, aman/berat, alternatif, dokumen inti); rincian lengkap ditawarkan bila dibutuhkan.
-- Bila dana dipakai untuk alat (investasi) dan stok (modal kerja), skill menghitung **opsi pisah akad** dengan tenor berbeda (mis. investasi 60 bulan) beserta cicilan dan rasio kemampuan bayarnya.
+## Riwayat perubahan
+
+Versi terkini: **1.2.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

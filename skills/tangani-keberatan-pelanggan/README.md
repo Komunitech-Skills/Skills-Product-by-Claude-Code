@@ -2,6 +2,8 @@
 
 **Pelanggan ragu atau menolak di chat? Dapatkan 2-3 balasan sopan siap kirim, satu pertanyaan lanjutan, dan kepastian kapan berhenti, tanpa urgensi palsu dan tanpa bohong.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Langsung dapat **2-3 balasan WA siap kirim**, pendek dan sopan, beda arah (ringan, menggali, menawarkan opsi). Tinggal salin.
 - ✅ Keberatan **dikenali jenisnya**: harga, waktu, kepercayaan, kebutuhan, "tanya suami/istri/bos dulu", atau pesaing, jadi jawabannya tepat sasaran, bukan satu kalimat untuk semua.

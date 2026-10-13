@@ -2,6 +2,8 @@
 
 **Tempel link atau screenshot produk pesaing, dapatkan harga pasaran dan harga jual yang disarankan tanpa merusak margin.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tabel pembanding rapi: harga, harga coret, promo, rating, terjual, lokasi tiap pesaing
 - ✅ Adil walau ukurannya beda: 200 gr, 1/2 kg, 1 kg, paket "2 x 250 gr" atau "isi 2 @250gr" disetarakan ke ukuran produkmu (plus harga per 100 g/ml/pcs); harga yang janggal (jauh dari pasaran) dipisahkan dan ditanyakan dulu, tidak merusak hitungan

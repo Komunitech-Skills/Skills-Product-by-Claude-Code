@@ -21,6 +21,8 @@ batas rugi, dan catatan lengkap, mulai dari simulasi tanpa uang asli.
 
 ---
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 1. **Disiplin tanpa emosi**: beli rutin (DCA), grid, ambil untung/batasi rugi, atau jaga porsi
    aset persis seperti aturan yang Anda tulis, tanpa panik atau serakah.

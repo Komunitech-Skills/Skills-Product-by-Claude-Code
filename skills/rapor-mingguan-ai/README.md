@@ -2,6 +2,8 @@
 
 **Karyawan AI tumbuh dari "bayi" jadi andal kalau dikoreksi tiap minggu. Tempel contoh percakapan, dapatkan rapor satu layar dan PR minggu ini yang tinggal ditempel.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tahu bot Anda sebenarnya bagus atau tidak**, bukan sekadar perasaan: 8 kriteria tetap (fakta, nyambung, ingat konteks, panjang, nada brand, janji berlebihan, data bocor, kata teknis), nilai A-D, dan persen lolos yang dihitung.
 - ✅ **Tahu apa yang harus diajarkan minggu ini:** maksimal 3 "PR" berupa teks siap tempel ke AGENTS.md atau catatan bot (contoh jawaban benar, aturan nada, FAQ baru), bukan saran umum.
@@ -57,8 +59,9 @@ Tidak. Anda yang menempelkan contoh percakapan. Skill ini tidak membuka database
 **Apakah skill ini yang memperbaiki botnya?**
 Skill ini memberi teks perbaikan yang siap Anda tempel ke AGENTS.md atau catatan bot. Anda yang menempel dan memutuskan; kesalahan serius (data bocor, janji, saran medis) selalu masuk daftar keputusan Anda.
 
-## Catatan versi
-- **1.0.0 (2026-10-06):** rilis awal (status uji).
-
 ## Catatan
 Bukan nasihat hukum, medis, atau keuangan. Penilaian bergantung pada percakapan dan info usaha yang Anda berikan. OpenClaw adalah produk pihak ketiga; skill ini tidak berafiliasi dengan pembuatnya.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

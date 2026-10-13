@@ -2,6 +2,8 @@
 
 **Dari "usaha ini kira-kira dihargai berapa?" sampai rencana serah terima 12 bulan, tanpa janji palsu dan tanpa tebakan angka pasar.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - Daftar periksa kesiapan: pembukuan, SOP, ketergantungan pada Anda, aset, utang, kontrak, izin, pelanggan dan pemasok kunci.
 - Rentang nilai usaha yang dihitung dari angka dan asumsi Anda sendiri, lengkap dengan rumus dan peringatan (bukan harga pasti).
@@ -47,6 +49,6 @@ Verdik gelombang: BELUM — Tanpa skill ringkas dan tegas bahwa Rp500 juta di at
 
 > **Catatan penting:** hasil berupa rentang hitungan dari angka dan asumsi Anda, bukan penilaian (appraisal) resmi, bukan nasihat hukum, pajak, atau keuangan. Akta, wasiat, pembagian waris, dan pajak tetap lewat notaris, konsultan pajak, atau penilai berizin.
 
-## Riwayat versi
-- **1.0.1 (2026-10-10):** biaya sekali jalan (mis. renovasi) kini dicatat per tahun kejadiannya, tidak lagi menaikkan semua tahun; utang dihitung sekali dan terlihat "hasil bersih ke pemilik setelah utang"; jalur beli/lepas bagian sekutu (porsi); daftar pertanyaan notaris/pajak ditambah (persetujuan pasangan, hak ahli waris lain, karyawan, SKB waris, PPN aset) beserta dasar aturan dan tanggal cek.
-- **1.0.0 (2026-10-09):** rilis awal.
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

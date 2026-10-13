@@ -2,6 +2,8 @@
 
 **Kirim ekspor chat grup, dalam semenit tahu mana yang perlu ditanggapi — tanpa scroll ratusan pesan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Memilah otomatis: **Perlu Perhatian** (pertanyaan ke Anda, keputusan, tenggat, uang, komplain) vs **Info** vs **Obrolan**.
 - ✅ **Daftar tindakan** siap tindak lanjut: siapa mengerjakan apa, kapan tenggatnya.
@@ -79,12 +81,6 @@ Tidak. Skill ini berjalan di komputer/AI agent Anda sendiri. File ekspor diprose
 **Kalau grup sangat aktif (ribuan pesan sebulan), apakah tetap bisa dipakai?**
 Bisa. Minta rentang waktu tertentu (mis. "3 hari terakhir" atau "sejak kemarin sore") supaya hasilnya tetap ringkas dan relevan; untuk grup sangat ramai, hasil otomatis dipecah per hari.
 
-## Catatan revisi 1.0.5 (2026-10-01)
-- Temuan uji ulang OpenClaw: jumlah butir salah hitung ("(6)" padahal 5; "tiga lainnya" padahal 4) dan pelanggan tertulis "vendor".
-- Kini jumlah butir wajib dihitung ulang dari daftar final / keluaran script, dan peran pihak disalin dari chat.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.4 (2026-10-01)
-Perbaikan dari uji OpenClaw asli (ringkasan grup WA gudang):
-- Tenggat yang sudah lewat kini ditandai **"⏰ LEWAT TENGGAT — cek status"**. Script membaca tanggal di pesan (29/9, 5 Okt, hari ini/besok/lusa, nama hari) dan membandingkannya dengan tanggal hari ini; rencana yang tanggalnya sudah lewat tidak lagi ditulis "sudah beres".
-- Ringkasan menyebut tanggal chat terakhir dan tanggal hari ini.
-- Path script ditulis jelas (subfolder `scripts/`); AI dilarang mencari file ke seluruh disk.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

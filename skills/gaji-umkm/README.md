@@ -2,6 +2,8 @@
 
 **Hitung gaji semua karyawan, BPJS, PPh 21, dan slip cukup lewat chat. Data tetap di komputer kamu, tanpa biaya bulanan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tutup gaji sebulan dalam beberapa menit.** Tulis bonus, kasbon, dan lembur bulan ini, lalu AI menghitung gaji semua karyawan sekaligus: gaji kotor, potongan BPJS karyawan, iuran BPJS perusahaan, PPh 21, dan gaji bersih.
 - ✅ **Tahu persis berapa yang harus dibayar.** Setiap bulan keluar ringkasan "Yang harus dibayar/disetor": total transfer gaji, setoran BPJS Kesehatan, BPJS Ketenagakerjaan, PPh 21, dan total biaya gaji perusahaan.
@@ -25,6 +27,7 @@
 - Tanpa skill: penguji yang sangat teliti butuh ±1 jam untuk mendapat angka yang benar. Agen umum biasanya terjebak, misalnya memakai batas upah JP lama Rp 10.547.400 (berlaku s.d. Februari 2026), PPh 21 Eka kurang potong (Rp 900.000, yang benar Rp 1.092.420), atau Lina yang resign 14 September dihitung biasa (seharusnya kelebihan potong Rp 931.100 dikembalikan). Tidak ada riwayat bulan lalu, slip, atau file transfer.
 - Dengan skill: 12 dari 12 karyawan cocok dengan hitungan independen di semua komponen, dalam ±6 perintah dan kurang dari 1 menit waktu script. Lina dihitung ulang setahun dengan benar, lalu slip dan file transfer langsung jadi.
 - Skor penguji independen: 8 dari 10 pada uji pertama, 9 dari 10 setelah perbaikan; uji ulang terakhir (v1.0.11, 5 Okt 2026) tetap 9 dari 10.
+- Uji OpenClaw 1 Okt 2026: skor tanpa skill 8 → dengan skill 8 pada uji pertama (seri), lalu 9 setelah perbaikan v1.0.6 (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -70,19 +73,6 @@ Tidak otomatis, karena cara prorata tergantung perjanjian kerja masing-masing us
 **Apakah bisa transfer gaji langsung dari aplikasi?**
 Tidak, dan memang disengaja. Aplikasi hanya membuat file CSV daftar transfer. Kamu yang mengunggah ke internet banking dan menyetujuinya. Nomor rekening di file disamarkan, kecuali kamu memintanya lengkap untuk diunggah ke bank.
 
-## Catatan revisi 1.0.6 (2026-10-01)
-- AI tidak lagi berhenti untuk menanyakan tanggal masuk di giliran terpisah (temuan uji OpenClaw). Bila nama, status, dan gaji pokok sudah ada, AI langsung menghitung dengan default wajar (tanggal masuk 1 Januari tahun berjalan, JKK 0,24%, ikut semua BPJS) dan menyebut asumsinya. Semua hal yang perlu dicek — tanggal masuk, **UMK daerah**, tarif JKK — digabung dalam **satu** pesan.
-- Pemakaian pertama: angka langsung keluar di balasan pertama lewat mesin hitung yang sama (hitungan sementara, tanpa menyimpan), lalu database dibuat setelah Anda setuju.
-- Instruksi: script dijalankan dari subfolder `scripts/` di folder skill (tidak mencari ke seluruh disk). Script aplikasi tidak berubah; uji regresi tetap lulus.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.7 (2026-10-02)
-- Mesin THR (`scripts/mesin/thr.py`) disinkronkan dengan `hitung-thr` 1.0.6: peringatan untuk tanggal masuk di masa depan, karyawan yang masuk setelah hari raya ditandai belum berhak (tidak lagi menghentikan seluruh hitungan THR), dan teks pengumuman grup menegaskan rincian THR dikirim pribadi. Angka THR tidak berubah; sha256 baru dicatat di `SUMBER.json`.
-
-## Catatan revisi 1.0.10 (2026-10-05)
-- Pemeriksaan ulang PPh 21 DTP terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B): gaji bersih di slip **sudah benar** (PPh 21 dipotong, DTP dengan nilai sama dibayar tunai, setoran bagian DTP Rp 0). Catatan DTP di slip kini menulis jelas PPh dipotong, DTP dibayar tunai, dan setoran ke negara Rp 0.
-- Salinan mesin disinkronkan dengan skill sumber: `payroll.py` (slip-gaji-bpjs 1.0.6), `pph21.py` (pph21-ter 1.0.5, koreksi uang diterima DTP), `thr.py` (hitung-thr 1.0.9); sha256 baru di `scripts/mesin/SUMBER.json`. Tambah tes `UjiDTP` dan `references/dtp-pmk105.md`. **PERLU REVIEW konsultan pajak.**
-
-## Catatan revisi 1.0.11 (2026-10-05)
-- Data JSON rekap (`total`) kini memisahkan tiga angka PPh 21 dengan nama yang jelas: `pph21_dipotong` = total PPh 21 yang **dipotong** dari gaji (termasuk bagian DTP), `pph21_dtp` = bagian DTP yang dibayar tunai ke karyawan dan tidak disetor, `pph21_disetor_ke_negara` = perkiraan setoran. Sebelumnya `pph21_dipotong` berisi jumlah yang disetor. `setor_pph21` tetap ada dengan nilai sama seperti sebelumnya (kompatibel). Rekap periode lama yang tersimpan diubah otomatis ke arti baru saat dibaca.
-- Teks rekap bila ada karyawan DTP kini menulis "PPh 21 dipotong dari gaji bulan ini … (termasuk DTP …)" lalu "Setor PPh 21 ke negara". Angka gaji bersih & setoran tidak berubah. Mesin hitung (`scripts/mesin/`) tidak diubah. **PERLU REVIEW konsultan pajak.**
-
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

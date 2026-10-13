@@ -2,6 +2,8 @@
 
 **Tempel anggaran vs realisasi, dapatkan penyebab selisih per pos, apa yang perlu dicek, dan pesan siap kirim ke tim, dengan angka yang dihitung pasti.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Rekap 1 layar:** laba meleset berapa, pos mana penyebab terbesarnya, urut dari rupiah terbesar
 - ✅ Bedakan **"karena harga" atau "karena jumlah"**: penjualan dipecah jadi efek harga, volume, dan campuran produk; lembur/bahan dipecah jadi efek tarif vs jam/pemakaian
@@ -63,8 +65,6 @@ Tidak. Skill ini menolak mengubah atau menggeser angka realisasi. Sebagai gantin
 
 > **Catatan penting:** alat bantu membaca laporan, bukan nasihat akuntansi, pajak, atau keuangan. Angka hanya dihitung dari data yang Anda berikan dan tidak diaudit; keputusan besar (investasi, pinjaman, laporan ke investor/bank) sebaiknya dibahas dengan akuntan Anda.
 
-## Catatan versi
-- **1.0.0 (2026-10-05):** rilis awal.
+## Riwayat perubahan
 
----
-Kerangka jenis selisih dan alur analisis diadaptasi dari skill `variance-analysis` di anthropics/knowledge-work-plugins (Apache-2.0) — lihat `ATTRIBUTION.md`. Komunitech tidak berafiliasi dengan Anthropic.
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

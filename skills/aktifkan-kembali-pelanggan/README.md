@@ -2,6 +2,8 @@
 
 **Dari daftar penjualan Anda, AI memilah pelanggan yang sudah lama diam, menghitung nilainya, dan menyiapkan 3 pesan WA yang sopan, tanpa spam dan tanpa kirim massal.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tahu siapa yang layak dihubungi dulu.** Pelanggan pasif dibagi per segmen (baru senyap, senyap, lama hilang, sangat lama) dan diurutkan dari yang nilai belanjanya terbesar. Angkanya dihitung, bukan dikira.
 - ✅ **Tahu nilai yang tertinggal:** berapa pelanggan pasif dan berapa total belanja mereka dulu, plus skenario "kalau sekian persen kembali".
@@ -62,9 +64,6 @@ Bisa. Pesan pertama dan kedua memang tidak menjual, dan pesan ketiga punya versi
 **Bagaimana kalau data penjualan saya berantakan?**
 Tanggal dalam format hari/bulan/tahun, nama bulan Indonesia, nominal "Rp 1.250.000", dan pemisah titik koma dibaca otomatis. Baris yang rusak (tanggal tidak ada, nomor salah, total bukan angka) tidak dipakai dan akan disebutkan supaya Anda bisa memperbaikinya, tidak ditebak.
 
-## Catatan versi
-- **1.0.1 (2026-10-05):** semua angka tentang pelanggan wajib dihitung dulu (tidak ditebak), juga saat sebagian permintaan ditolak; urgensi palsu ("cuma hari ini") dikoreksi dan diganti tenggat nyata atau tanpa tenggat; setiap pesan (1, 2, 3) memuat opsi "stop"; kolom produk di data otomatis dibaca sebagai produk terakhir untuk mengisi pesan.
-- **1.0.0:** rilis awal.
+## Riwayat perubahan
 
----
-*Skill ini adaptasi ber-Apache-2.0 dari kerangka win-back publik, ditulis ulang untuk konteks Indonesia. Rincian dan atribusi di `ATTRIBUTION.md`. Tidak berafiliasi dengan pihak sumber. Bukan nasihat hukum.*
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

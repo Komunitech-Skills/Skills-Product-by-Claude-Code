@@ -2,6 +2,8 @@
 
 **Ceritakan produkmu, dapat halaman jualan lengkap — headline, manfaat, penawaran, FAQ, sampai tombol WhatsApp — siap tempel ke website atau link-in-bio.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Struktur lengkap yang terbukti (headline → masalah → manfaat → bukti sosial → penawaran → garansi → FAQ → CTA), bukan asal susun paragraf jualan
 - ✅ Tombol CTA otomatis dibentuk jadi tautan WhatsApp yang benar (`wa.me`) lengkap pesan siap kirim — dihitung script, bukan ditulis manual dan salah encode
@@ -51,5 +53,6 @@ Hanya kalau kamu memang sudah punya sertifikat resmi (BPJPH/MUI untuk halal, izi
 **Harus pakai Python?**
 Tidak wajib. Kalau Python ada, tautan WhatsApp dan panjang meta title/description dihitung otomatis lewat script. Kalau tidak ada, AI agent tetap menyusun halamannya dan menghitung manual, lalu memberitahumu untuk dicek sekali sebelum dipakai.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-dari uji ulang OpenClaw: seluruh isi halaman wajib tampil di chat dan lokasi file disebut; pengingat izin edar untuk kosmetik/pangan/obat; garansi, jangkauan kirim, dan janji layanan lain hanya dari pemilik, selain itu placeholder [isi: ...].
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

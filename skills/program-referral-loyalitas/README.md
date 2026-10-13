@@ -2,6 +2,8 @@
 
 **Tagline:** Satu kalimat dari Anda, satu program "ajak teman" atau poin lengkap dengan angka hadiah yang aman.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - **Hadiah dihitung dari margin, bukan dikira:** biaya per referral, titik impas, batas hadiah aman, dan nilai poin dihitung script.
 - **Tahu "utang poin" Anda:** liability poin yang beredar dan biaya per bulan dihitung, supaya tidak kaget.
@@ -37,11 +39,9 @@ Verdik gelombang: LULUS — DENGAN menghitung biaya per referral vs laba pesanan
 ## Skill pendamping
 `hitung-hpp`, `strategi-harga-produk`, `promo-kalender`, `rencana-marketing-usaha`, `caption-sosmed-umkm`, `pesan-prospek-wa`, `crm-wa`, `kebijakan-privasi-pdp`, `pengingat-pasien-klinik`.
 
-## Riwayat versi
-- **1.0.5 (2026-10-02):** temuan uji gabungan paket klinik (S3): pengecualian faskes kini menyebut eksplisit merchandise, voucher, dan layanan gratis (mis. "cek tensi gratis") sebagai imbalan rujukan yang tidak dirancang. Script tidak berubah. Tetap PERLU REVIEW tenaga medis/hukum.
-- **1.0.2 (2026-09-30):** temuan uji ulang: kartu info klinik kini untuk pasien sendiri; klinik tidak meminta/mendorong pasien membagikannya (KODEKGI 2020 Pasal 3 butir 1.2.4 & Pasal 5, KODEKI Pasal 3). Tetap PERLU REVIEW tenaga medis/hukum.
-- **1.0.1 (2026-09-30):** script menerima angka format Indonesia di semua isian (uang dan jumlah: `40.000`, `1.500.000`, `Rp38.000`, `38rb`, `1,5jt`, desimal koma `0,25`/`12,5`); angka yang bisa dibaca dua arah ditolak dengan pesan jelas, tidak ditebak. Fasilitas kesehatan: tidak lagi merancang hadiah/diskon untuk merujuk pasien (Permenkes 1787/2010 Pasal 5, kode etik profesi); diganti edukasi, pengingat kontrol, dan kartu info tanpa imbalan. Status `impas` tidak lagi "AMAN" bila pesanan pertama rugi (status `RUGI DI PESANAN PERTAMA`); batas hadiah pemberi diberi label BATAS ATAS (bukan anjuran) plus hadiah SARAN yang lebih konservatif. Tes regresi 26 -> 43.
-- **1.0.0 (2026-09-30):** rilis awal.
-
 ## Asal-usul
 Diadaptasi dan diperluas dari skill `referrals` (marketingskills, Corey Haines, lisensi MIT); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

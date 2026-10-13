@@ -4,6 +4,8 @@
 
 Cukup satu kalimat tentang usahamu. AI menyusun target pasar, persona pelanggan, positioning, tagline, dan teks siap tempel untuk bio, listing, caption, dan chat WhatsApp.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tahu **1 segmen** yang dikejar duluan, dengan skor yang dihitung (bukan dikira-kira).
 - ✅ Persona pelanggan ala Indonesia: kota/daerah, kisaran daya beli, kanal WA/Shopee/TikTok, gaya bahasa, keberatan.
@@ -56,14 +58,9 @@ Tidak. Script hanya memakai Python standar.
 **Boleh dipakai untuk produk kesehatan atau kosmetik?**
 Boleh untuk positioning, tetapi klaim khasiat tidak dibuatkan; kamu tetap perlu mengecek aturan BPOM dan sertifikasi halal.
 
-## Catatan revisi 1.0.5 (2026-10-01)
-- Rujukan UU Perlindungan Konsumen dirapikan: untuk penjual/produsen kini dipakai Pasal 8, 9, dan 10 (Pasal 17 tidak lagi dikutip karena mengatur pelaku usaha periklanan).
-- Tagline, bio, dan nama paket tidak lagi menyiratkan khasiat atau hasil (mis. "langsing", "detoks") tanpa izin edar BPOM dan bukti; diganti pembeda netral seperti "teh herbal harian".
-
-## Catatan revisi 1.0.4 (2026-10-01)
-- Klaim produk (komposisi, "alami/herbal", "100%", "tanpa pengawet") hanya ditulis bila Anda menyebutnya; selain itu muncul sebagai `[isi: …]` untuk Anda lengkapi.
-- Produk pangan, kosmetik, jamu/obat tradisional: ada pengingat izin edar BPOM (atau SPP-IRT untuk pangan olahan rumah tangga tertentu) **sebelum** dijual.
-- Lokasi file kerja yang dibuat selalu disebutkan.
-
 ## Catatan lisensi
 Sebagian kerangka diadaptasi dari skill berlisensi MIT (phuryn/pm-skills dan coreyhaines31/marketingskills); rincian dan teks lisensi ada di `ATTRIBUTION.md`. Skill ini tidak berafiliasi dengan pembuat sumber.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

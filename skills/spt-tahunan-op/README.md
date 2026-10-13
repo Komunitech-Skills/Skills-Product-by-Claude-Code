@@ -2,6 +2,8 @@
 
 **Ceritakan penghasilan setahun dengan bahasa biasa — langsung tahu kurang bayar, lebih bayar, atau nihil, lengkap dengan daftar dokumen yang harus disiapkan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tidak kaget di Coretax: tahu dari awal berapa pajak yang harus disetor (atau dikembalikan) dan alasannya
 - ✅ Angka dihitung script dengan tarif Pasal 17 UU HPP & PTKP resmi — PKP dibulatkan sesuai aturan, bukan dikira-kira
@@ -56,12 +58,6 @@ Rumus dan tarif mengikuti aturan resmi yang dicek per 30 September 2026, tetapi 
 **3. Kasus apa yang tidak bisa?**
 SPT badan, pisah harta/memilih terpisah, penghasilan luar negeri, rugi usaha, dan WNA datang/pergi di tengah tahun. Untuk itu, skill akan menyarankan konsultan pajak atau Kring Pajak 1500200.
 
-## Riwayat versi
-- **Catatan revisi 1.0.5 (2026-10-03)** — Temuan uji Telegram: untuk SPT tahun pajak 2025 yang belum dilapor per Oktober 2026, jawaban hanya menulis "Batas lapor: 31 Maret 2026" tanpa menyebut sudah lewat. Kini script mencetak **Status tenggat lapor** di awal hasil (belum lewat + sisa hari / masa bebas sanksi KEP-55 / SUDAH TERLAMBAT + jumlah hari & bulan) beserta konsekuensi umum: denda Rp100.000 (UU KUP Ps. 7 ayat (1)) dan bunga kurang bayar per tarif KMK bulanan (UU KUP Ps. 9 s.t.d.t.d. UU HPP; tarif tidak dikarang, ada cara ceknya). Bila terlambat, skill menyarankan segera lapor setelah konsultasi singkat. Tes ditambahkan.
-- **Catatan revisi 1.0.4 (2026-10-01)** — Tenggat pemberitahuan NPPN tahun berjalan (31 Maret, PMK 81/2024 Ps. 450 ayat (2)) kini dibandingkan script dengan tanggal hari ini (`nppn_tahun_berjalan`). Bila sudah lewat, skill tidak lagi menyarankan tanggal yang sudah lewat: tahun pajak berjalan dianggap memilih pembukuan (UU PPh Ps. 14 ayat (5)) → mulai catat pembukuan; pemberitahuan berikutnya untuk tahun pajak berikutnya, dengan peringatan penguncian pembukuan (PMK 81/2024 Ps. 463 s.t.d.d. PMK 1/2026) yang perlu dikonfirmasi ke KPP. Tes ditambahkan. Tetap ⚠️ PERLU REVIEW konsultan pajak.
-- **Catatan revisi 1.0.3 (2026-10-01)** — Fakta pajak: jasa yang diterima orang pribadi (konsultan/freelancer) dipotong klien dengan **PPh 21 bukan pegawai** (BP21, PMK 168/2023), bukan PPh 23. Opsi baru `--final-salah-skema`: PPh final 0,5% yang terlanjur disetor atas pekerjaan bebas tidak dikreditkan dan **tidak** dilaporkan di Lampiran 2; diarahkan ke permohonan pengembalian pajak yang seharusnya tidak terutang lewat Coretax (pemindahbukuan umumnya tidak bisa, PMK 81/2024 Ps. 109 ayat (3)) + konfirmasi KPP/konsultan. Tetap ⚠️ PERLU REVIEW konsultan pajak.
-- **1.0.1 (2026-09-30)** — Koreksi batas lapor TP 2025: jatuh tempo tetap 31 Maret 2026; KEP-55/PJ/2026 hanya menghapus sanksi bila lapor/bayar s.d. 30 April 2026 (bukan perpanjangan). Peringatan baru untuk karyawan 1 kantor yang hasilnya kurang/lebih bayar: cek ulang bukti potong A1 dengan HRD dulu. Pesan error ramah untuk angka negatif; "5,054 miliar" kini diterima. Penjelasan beda PPh final 0,5% (usaha) vs pekerjaan bebas (PP 20/2026).
-- **1.0.0 (2026-09-30)** — Rilis pertama.
+## Riwayat perubahan
 
----
-_Alat bantu hitung, bukan konsultan pajak. Tidak berafiliasi dengan Direktorat Jenderal Pajak._
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

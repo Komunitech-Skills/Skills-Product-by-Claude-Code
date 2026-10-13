@@ -2,6 +2,8 @@
 
 **Kirim data/analisis, dapat 4 format siap kirim: WA, email, 1 halaman eksekutif, dan skrip bicara.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Satu kalimat inti ("so what") yang langsung menjawab "jadi bagaimana?" — bukan
   tabel mentah yang harus ditafsirkan atasan sendiri

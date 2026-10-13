@@ -2,6 +2,8 @@
 
 **Ketik harganya, langsung tahu DPP, PPN, dan totalnya sesuai aturan terbaru.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Sesuai aturan PPN 12% dengan DPP nilai lain 11/12 (efektif 11%) untuk barang/jasa biasa
 - ✅ Bisa dari harga sebelum pajak **atau** harga yang sudah termasuk PPN
@@ -52,5 +54,6 @@ Tidak. Faktur pajak resmi tetap dibuat di Coretax. Skill ini membantu menghitung
 
 > **Catatan penting:** alat bantu hitung, bukan nasihat pajak. Dasar aturan (berlaku per 23 September 2026): UU HPP dan PMK 131/2024, yaitu tarif 12% dengan DPP nilai lain 11/12 untuk barang/jasa non-mewah (berlaku 1 Januari 2025) dan 12% dari harga penuh untuk barang mewah (sejak 1 Februari 2025). PPN dihitung dari DPP lalu dibulatkan ke bawah sekali; pembulatan ini belum dicocokkan dengan Coretax, jadi bila Coretax menampilkan angka berbeda, ikuti Coretax. Kasus khusus: hubungi DJP (Kring Pajak 1500200) atau konsultan pajak.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Hasil hitung kini menyertakan **teks siap tempel** untuk penawaran/chat yang selalu memuat baris "DPP nilai lain (11/12)", agar pembaca tidak mengira "PPN 12%" salah hitung.
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

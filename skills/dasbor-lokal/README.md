@@ -2,6 +2,8 @@
 
 **Tanya "stok apa yang menipis?" dan AI Anda langsung membaca semua alat lokal Komunitech (kasir, stok, CRM, absensi, piutang, kas) lalu menjawab dari data asli, atau menyiapkan dasbor di browser komputer sendiri. Tanpa biaya bulanan, tanpa data keluar dari komputer Anda.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Datasette (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Satu jawaban, bukan enam aplikasi.** "Penjualan hari ini berapa, stok apa yang tinggal sedikit, siapa yang piutangnya lewat jatuh tempo?" — semua dijawab langsung dari database asli, dihitung ulang, bukan dikira-kira.
 - ✅ **Dasbor beneran di browser (opsional).** Lewat Datasette (perangkat lunak gratis terpisah), buka `http://127.0.0.1:8001` dan lihat, sortir, klik-klik tabel data toko Anda sendiri seperti dasbor BI berbayar — tanpa kirim satu baris pun ke internet. Tidak mau pasang Datasette? Skill ini tetap menjawab pertanyaan lewat Python bawaan, langsung dari terminal/chat, tanpa instalasi apa pun.

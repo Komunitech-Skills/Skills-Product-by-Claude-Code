@@ -2,6 +2,8 @@
 
 **Puluhan keluhan masuk sekaligus? Tempel saja, dan dapatkan urutan kerja P1-P3, tindakan pertama, serta draf balasan siap kirim untuk tiap keluhan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tahu mana yang dibalas dulu.** Keluhan yang mengancam lapor/bintang 1, menyangkut keamanan, mendekati tenggat platform, atau bernilai besar naik ke atas daftar, lengkap dengan alasan pendek.
 - ✅ **Dikelompokkan menurut penyebab:** barang rusak/tidak sesuai, belum sampai/kurir, salah kirim, COD gagal/ditolak, komplain layanan, minta retur/refund, atau memang bukan keluhan.
@@ -60,11 +62,11 @@ Tidak. Yang bisa: menyelesaikan masalahnya, membalas ulasan secara sopan, dan me
 **Apakah tenggat retur/refund Shopee, Tokopedia, dan TikTok Shop sudah pasti?**
 Tidak pasti: platform sering mengubahnya. Skill ini memakai ketentuan umum yang dicek per 2026-10-05 dan selalu mengingatkan Anda mencocokkan dengan Pusat Penjual sebelum menjanjikan sesuatu ke pelanggan.
 
-## Catatan versi
-- **1.0.1 (2026-10-05):** permintaan seperti "hapus ulasan", "balas pakai akun lain", atau "minta nomor pembeli" kini memicu skill: ditolak singkat dengan alasan, lalu tetap disiapkan draf balasan resmi dan langkah melaporkan ulasan. Setiap keluhan P1/P2 marketplace kini memuat baris "Batas waktu" (Shopee dan TikTok Shop, terkonfirmasi di halaman resmi, dicek 2026-10-05). Draf balasan tidak lagi berisi kalimat membela diri, permintaan menunda lapor, atau klaim perbaikan yang belum terjadi.
-- **1.0.0 (2026-10-05):** rilis awal.
-
 ## Catatan
 Bukan nasihat hukum. Ringkasan aturan di `references/dasar-hukum-dan-platform.md` membantu menulis dengan aman, bukan pengganti konsultasi hukum.
 
 Skill ini adaptasi (dengan perubahan besar dan penambahan lokal) dari skill `ticket-triage` dan `customer-escalation` di `anthropics/knowledge-work-plugins` (Apache-2.0). Tidak berafiliasi dengan Anthropic, Shopee, Tokopedia, TikTok, Google, atau GoFood; nama dipakai sekadar menyebut produk. Lihat `ATTRIBUTION.md`, `NOTICE`, dan `LICENSE-APACHE`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

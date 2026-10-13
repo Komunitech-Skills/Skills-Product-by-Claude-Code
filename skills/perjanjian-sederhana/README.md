@@ -2,6 +2,8 @@
 
 **Ceritakan kesepakatanmu, dapat draf perjanjian berpasal lengkap, angka dan terbilang sudah dicek, plus checklist sebelum tanda tangan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tujuh jenis perjanjian yang paling sering dipakai UMKM: reseller/distributor, supplier, NDA (kerahasiaan), sewa tempat, sewa alat, bagi hasil, dan jasa freelance
 - ✅ Susunan pasal lazim di Indonesia: para pihak, ruang lingkup, hak & kewajiban, pembayaran, jangka waktu, wanprestasi, keadaan memaksa, penyelesaian sengketa, tanda tangan & meterai
@@ -60,15 +62,6 @@ Tetap sah. Meterai Rp10.000 adalah pajak atas dokumen (UU 10/2020), bukan syarat
 **Bisa untuk jual beli tanah atau perjanjian dengan investor asing?**
 Tidak. Transaksi seperti jual beli tanah, investasi atau saham, kerja sama dengan pihak asing, pinjaman dengan jaminan, dan kontrak karyawan harus ditangani notaris, PPAT, atau pengacara. Untuk kasus seperti ini, skill akan menjelaskan alasannya, lalu membantu menyiapkan daftar dokumen dan pertanyaan untuk dibawa saat konsultasi.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Tanggal penandatanganan tidak lagi diisi otomatis dengan tanggal hari ini; bila belum disebut, draf memuat `[isi: tanggal]`.
-- Nilai bawaan template (mis. denda keterlambatan 0,1%/hari maks. 5%) kini selalu dicantumkan sebagai asumsi yang perlu kamu konfirmasi.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.5 (2026-10-03)
-- Naskah perjanjian lengkap kini selalu ditampilkan langsung di chat (dipecah rapi per pasal bila panjang) sehingga bisa disalin, tidak hanya disimpan sebagai file.
-- Ada pengecekan konsistensi biaya: listrik, air, iuran/retribusi pasar, PBB, dan perbaikan masing-masing ditanggung satu pihak dan sama di semua pasal maupun daftar asumsi. Pemeriksa draf otomatis menandai bila bertentangan.
-- Tetap: draf ini bukan nasihat hukum.
-
-## Catatan revisi 1.0.6 (2026-10-03)
-- Pasal pengakhiran sewa tempat & sewa alat kini memakai jalur yang sah: teguran tertulis, tenggat, lalu musyawarah atau pengadilan. Tidak ada lagi pengosongan/pengambilan paksa sebagai bawaan.
-- Bila kamu sendiri meminta klausul pengosongan sepihak, skill menampilkannya sebagai opsi dengan peringatan risiko hukumnya. Pemeriksa draf menandai klausul seperti ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

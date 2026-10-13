@@ -2,6 +2,8 @@
 
 **Ketik gaji dan status karyawan, langsung dapat potongan PPh 21 per bulan sampai Desember — sesuai tabel TER resmi.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tarif diambil dari tabel TER resmi PP 58/2023 (127 baris), bukan dikira-kira — sudah diuji dengan semua contoh hitungan resmi DJP
 - ✅ Desember atau bulan karyawan resign dihitung ulang otomatis, termasuk kelebihan potong yang harus dikembalikan
@@ -60,11 +62,6 @@ Skill akan menanyakan sektor dan mengecek syarat gaji (maks. Rp 10 juta). Kepast
 
 > **Catatan penting:** alat bantu hitung, bukan nasihat pajak. Dasar aturan (berlaku per 23 September 2026): PP 58/2023 (tabel TER, berlaku sejak 1 Januari 2024), PMK 168/2023, UU HPP (tarif Pasal 17), dan PMK 105/2025 untuk PPh 21 ditanggung pemerintah Masa Pajak Januari–Desember 2026. PPh dibulatkan ke bawah dan pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Bagian PPh 21 DTP PERLU REVIEW konsultan pajak. Kasus khusus: Kring Pajak 1500200 atau konsultan pajak.
 
-## Catatan revisi 1.0.5 (2026-10-05)
-- **Koreksi PPh 21 DTP (PMK 105/2025):** versi 1.0.4 menulis "PPh 21 dipotong Rp 0" dan "uang diterima = gaji + DTP" (contoh Rp 6.045.000). Setelah teks resmi dibaca ulang (Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B), mekanisme yang benar: PPh 21 tetap dipotong, DTP dengan nilai sama dibayar tunai ke pegawai, sehingga pegawai menerima **Rp 6.000.000** (gaji tidak berkurang pajak), dan setoran ke negara untuk bagian DTP Rp 0. Script kini mencetak empat baris: PPh dipotong, DTP tunai, setoran ke negara, uang diterima. Ringkasan dasar hukum: `references/dtp-pmk105.md`. **PERLU REVIEW konsultan pajak.**
+## Riwayat perubahan
 
-## Catatan revisi 1.0.4 (2026-10-01)
-> **DIKOREKSI di 1.0.5 (2026-10-05):** butir DTP di bawah ini **keliru** dan dibiarkan hanya sebagai riwayat. Menurut PMK 105/2025, PPh 21 DTP **tetap dipotong** (bukan Rp 0) lalu nilai yang sama dibayar tunai, sehingga pegawai gaji Rp 6.000.000 **menerima Rp 6.000.000**, bukan Rp 6.045.000. Lihat "Catatan revisi 1.0.5" di atas dan `references/dtp-pmk105.md`.
-
-- ~~Dari uji OpenClaw sebelum/sesudah: untuk karyawan penerima **PPh 21 DTP 2026**, jawaban sempat menyebut gaji diterima "Rp 6.000.000 utuh", padahal PMK 105/2025 Pasal 5 mewajibkan PPh 21 DTP **dibayarkan tunai** ke karyawan (yang benar Rp 6.045.000). Kini hitungan satu bulan (`bulan`) juga mendukung `--dtp` dan mencetak tiga baris wajib: PPh 21 dipotong dari gaji (Rp 0), DTP yang wajib dibayar tunai, dan **uang yang diterima pegawai**; AI wajib mengutip baris itu dari script. Hitungan setahun dengan DTP juga menegaskan hal yang sama.~~ *(dikoreksi di 1.0.5: yang benar PPh 21 dipotong Rp 45.000, DTP tunai Rp 45.000, diterima Rp 6.000.000 sesuai PMK 105/2025)*
-- Istilah seperti KLU, TER, Masa Pajak Terakhir, dan DTP kini dijelaskan dengan bahasa sehari-hari saat pertama muncul.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

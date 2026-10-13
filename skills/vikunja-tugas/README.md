@@ -4,6 +4,8 @@
 
 > Komunitech **tidak berafiliasi** dengan proyek Vikunja. Vikunja adalah software open-source (AGPL-3.0) milik komunitasnya sendiri; skill dan panduan ini adalah karya orisinal Komunitech untuk mempermudah pemakaiannya bagi pemilik usaha Indonesia.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Vikunja (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tanpa biaya per user, selamanya.** Vikunja gratis, jalan di komputer/server Anda sendiri — tidak ada tagihan bulanan seperti Trello Standard, ClickUp, atau Asana untuk tim kecil.
 - ✅ **Cukup ngobrol, bukan klik-klik menu.** "Tugas apa yang telat?", "tambahkan tugas ... jatuh tempo Jumat depan" — AI yang menerjemahkan ke Vikunja, termasuk tanggal gaya Indonesia ("besok", "lusa", "Jumat depan", "25/10").

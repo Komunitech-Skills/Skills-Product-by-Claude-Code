@@ -2,6 +2,8 @@
 
 **Asisten persiapan tender untuk UMKM: cek layak ikut, dokumen lengkap, jadwal tidak telat, harga dihitung benar.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tahu layak ikut atau tidak dalam 5 menit** — cek kualifikasi usaha kecil, KBLI di NIB, NPWP/PKP, SBU/SKK, pengalaman, dan sisa kemampuan paket.
 - ✅ **Checklist dokumen siap centang** per metode: tender, pengadaan langsung, e-katalog/e-purchasing.
@@ -49,13 +51,6 @@ Ringkasan aturan dicek per 25 September 2026 dan pasal Perpres 16/2018 jo. 12/20
 **Bisa dipakai untuk "mengatur" pemenang atau pinjam bendera?**
 Tidak. Skill akan menolak permintaan persekongkolan, pinjam bendera, dokumen palsu, atau gratifikasi karena melanggar hukum (UU 5/1999, UU Tipikor) dan berujung daftar hitam. Skill akan menawarkan jalur yang sah.
 
-## Riwayat versi
-- **1.0.5 (26 Sep 2026)** — perbaikan kecil dari uji ulang v1.0.4: untuk **pekerjaan terintegrasi** dengan `--pagu` diisi, jaminan penawaran 1%–3% kini dihitung dari **pagu anggaran** (Pasal 31 ayat (3)) dan jaminan pelaksanaan memakai ambang 80% pagu serta 5% pagu bila di bawahnya (Pasal 33 ayat (4)); tanpa `--pagu`, angka dari HPS ditandai sebagai gambaran dengan kalimat yang lebih jelas. Klarifikasi kewajaran harga tetap terhadap HPS. Teks "jasa-lainnya" ditulis "jasa lainnya"; pagu 0/negatif ditolak dengan pesan jelas. Angka hitungan untuk jenis lain tidak berubah. Tes: 60.
-- **1.0.4 (26 Sep 2026)** — disesuaikan dengan naskah konsolidasi resmi LKPP Perpres 16/2018 jo. 12/2021 jo. 46/2025 (jdih.lkpp.go.id): (a) jaminan penawaran kini **hanya untuk pekerjaan konstruksi & pekerjaan terintegrasi** (Pasal 30 ayat (2)) — script punya opsi baru `--jenis konstruksi|barang|jasa-lainnya|konsultansi|terintegrasi` dan menyebut asumsi bila jenis tidak disebut; (b) pengecualian e-purchasing dari jaminan pelaksanaan **dihapus** (Pasal 33); (c) syarat TKDN ditulis "paling sedikit 25%" (≥ 25%, Pasal 66); (d) pengecualian cadangan paket UMK dirujuk ke Pasal 65 ayat (4). Angka hitungan (subtotal, PPN, total, % HPS, 80%) tidak berubah. Tes: 53.
-- **1.0.3 (25 Sep 2026)** — perbaikan bug TINGGI dari uji ulang v1.0.2 (skor 7/10): judul kolom banyaknya `Banyaknya`, `Jml`, `Qty.`, `Volume Pekerjaan`, `Quantity` kini dikenali sebagai volume, dan kolom rupiah ("Jumlah Harga", "Total Harga") tidak pernah lagi dipakai sebagai volume — bila kolom volume tidak ditemukan, script berhenti dengan pesan jelas (kode 2) alih-alih menghitung total triliunan. `--hps 0`/negatif kini input buruk (kode 2). Tes: 49.
-- **1.0.2 (2026-09-25)** — perbaikan alarm palsu dari uji ulang: label "Total Harga Sebelum PPN"/"Total sebelum pajak"/"Subtotal (belum PPN)" dikenali sebagai jumlah sebelum PPN; baris "DPP Nilai Lain (11/12)" dicek terhadap 11/12 × DPP; tabel dengan kolom "Jumlah" (banyaknya) + "Jumlah Harga" kini menunjuk baris salah hitung; label total yang tidak dikenali (mis. "Harga Total") dilaporkan, tidak dilewati diam-diam; tidak ada lagi "cocok" terhadap total sementara; kode keluar baru (0 bersih, 1 ada peringatan, 2 input buruk, 3 total belum final).
-- **1.0.1 (2026-09-25)** — revisi temuan uji independen: total di file yang belum termasuk PPN kini diperingatkan (tidak lagi "cocok"); kolom Jumlah Anda dicek per baris dan baris salah hitung ditunjuk beserta selisihnya; baris TOTAL di kolom mana pun dikenali (tidak ada lagi alarm "belum final" palsu); HPS "2,4 M"/"Rp2,4 miliar" terbaca; info jaminan pelaksanaan hanya untuk kontrak > Rp200 juta; label jadwal acara yang sudah lewat diperjelas; pengingat PPh final konstruksi; rujukan jaminan penawaran dikoreksi ke Pasal 31.
-- **1.0.0 (2026-09-25)** — rilis draft pertama.
+## Riwayat perubahan
 
----
-*Bukan nasihat hukum/pajak. Pembulatan PPN belum dicocokkan dengan Coretax.*
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

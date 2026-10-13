@@ -2,6 +2,8 @@
 
 **Tempel lowongan + ceritakan pengalamanmu, dapat CV ramah ATS dan surat lamaran siap kirim — tanpa karangan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Profil pengalaman induk — isi riwayat kerja sekali, dipakai berulang di setiap lamaran (tidak ketik ulang)
 - ✅ Evaluasi kecocokan lowongan: skor + alasan + celah, sebelum kamu buang waktu melamar yang tidak cocok
@@ -63,6 +65,6 @@ Bisa, tapi versi ATS (teks polos, satu kolom) tetap yang utama untuk lamaran onl
 **Apakah skill ini mengambil lowongan otomatis dari LinkedIn/JobStreet/Glints?**
 Tidak. Kamu yang menempel teks lowongan dari sumber mana pun (JobStreet, Glints, Kalibrr, LinkedIn, Instagram, dll). Skill ini tidak login atau mengambil data otomatis dari situs manapun — lebih aman dan tidak melanggar aturan platform tersebut.
 
-## Riwayat versi singkat
-- **1.1.0** — tambah profil pengalaman induk, evaluasi kecocokan lowongan (skor+alasan+celah), dan latihan wawancara STAR.
-- **1.0.1** — versi awal: CV ramah ATS, surat lamaran, skor kecocokan kata kunci.
+## Riwayat perubahan
+
+Versi terkini: **1.1.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

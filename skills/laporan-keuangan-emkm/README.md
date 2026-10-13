@@ -2,6 +2,8 @@
 
 **Tempel catatan uang masuk-keluar, dapat laba rugi, neraca seimbang, dan penjelasan bahasa awam dalam semenit.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tiga laporan standar SAK EMKM langsung jadi: Laba Rugi, Posisi Keuangan (neraca), dan Catatan atas Laporan Keuangan. Siap dilampirkan saat mengajukan KUR atau untuk arsip usaha
 - ✅ Uang pribadi dan uang usaha otomatis dipisah (prive), jadi laba yang tampil adalah laba usaha yang sebenarnya
@@ -55,7 +57,6 @@ Kata umum seperti bahan, gaji, listrik, ongkir, iklan, dan prive sudah dikenali.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent). Bukan laporan audit atau nasihat pajak — minta akuntan memeriksa bila untuk bank/pajak resmi. Codex/Cursor belum uji platform asli.
 
-## Catatan revisi 1.3.3 (2026-10-01)
-- Modal (ekuitas) negatif kini selalu diperiksa: skill menanyakan aset lama yang belum dicatat dan utang, tidak lagi menyebutnya "wajar".
-- Tambah **Laporan Arus Kas** (operasi/investasi/pendanaan) dan ekspor **siap cetak** (`--html`, buka di browser → simpan PDF, ada kolom tanda tangan) serta CSV arus kas.
-- Permintaan "mark-up omzet" untuk pinjaman ditolak tegas, dijelaskan risikonya, dan diganti tawaran laporan jujur yang rapi (termasuk dari estimasi pemilik bila tidak ada catatan).
+## Riwayat perubahan
+
+Versi terkini: **1.3.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

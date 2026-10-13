@@ -2,6 +2,8 @@
 
 **Kirim link atau tempel halaman toko online kamu, langsung dapat skor per bagian, daftar perbaikan urut prioritas, dan teks pengganti siap tempel — bukan sekadar saran umum "perbaiki SEO-nya".**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Angka dihitung, bukan dikira: panjang title & meta description dihitung persis lewat script, bukan tebak-tebakan "kayaknya kepanjangan"
 - ✅ Cek data terstruktur (JSON-LD) yang sering dilewatkan — termasuk cek khusus `LocalBusiness`/`Product` dengan format alamat Indonesia, plus contoh JSON-LD siap isi

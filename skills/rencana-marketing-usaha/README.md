@@ -2,6 +2,8 @@
 
 **Tagline:** Satu kalimat dari Anda, satu rencana marketing lengkap dengan angka anggarannya.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - **Rencana lengkap dalam satu dokumen:** tujuan terukur, target pasar, pesan, kanal, kalender, anggaran, KPI.
 - **Angka dihitung, bukan dikira:** pembagian anggaran per kanal, batas biaya per pelanggan (CAC), ROAS impas, dan anggaran iklan maksimal dihitung script dari margin Anda.

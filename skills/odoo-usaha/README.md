@@ -6,6 +6,8 @@
 
 > **Status jujur (v1.0.1, 30 Sep 2026):** sudah diuji ke **Odoo Community 18 & 19 asli** (dijalankan lokal dengan data uji fiktif) oleh penguji independen, plus 51 uji otomatis. **Belum** diuji ke Odoo Online (*.odoo.com), Enterprise, atau Odoo 16/17/20, maupun data usaha sungguhan. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda. Bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Odoo (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tanpa buka banyak menu.** Penjualan hari ini vs kemarin, produk terlaris, faktur terbit, piutang per umur, dan stok kritis — cukup satu kalimat biasa.
 - ✅ **Tahu siapa yang harus ditagih hari ini.** Piutang dikelompokkan (belum jatuh tempo, 1–30, 31–60, 61–90, >90 hari), faktur terlama di atas, nota kredit yang belum dipakai ikut diingatkan.
@@ -86,7 +88,6 @@ Skill ini hanya membaca, dan satu-satunya yang bisa ditulis adalah **draf penawa
 **Odoo saya versi baru/lama, apakah jalan?**
 Dirancang untuk Odoo 16–20: Odoo 19 ke atas memakai API JSON-2 yang baru, Odoo 16–18 memakai XML-RPC (dipilih otomatis). Sudah diuji ke Odoo Community 18 & 19; versi lain dan Odoo Online (harus **paket Custom** agar API aktif) belum diuji, jadi cocokkan angka pertama kali dengan layar Odoo Anda.
 
-## Riwayat versi
-- **1.0.2 (30 Sep 2026)** — panduan §5: sisa saran hak akses versi lama (Billing/Own Documents) dihapus; hanya satu tabel hak akses.
-- **1.0.1 (30 Sep 2026)** — perbaikan dari uji ke Odoo Community 18 & 19 asli: (1) hak *Own Documents* tidak lagi menghasilkan angka penjualan/faktur kecil (bisa Rp 0) diam-diam — `cek` menampilkan cakupan data, laporan memberi **PERINGATAN DATA SEBAGIAN** + kode 9 (`--terima-sebagian` bila memang disengaja); (2) `piutang --per-tanggal` di masa lalu tidak lagi memasukkan faktur yang belum terbit dan memperhitungkan pelunasan setelah tanggal itu; (3) panduan hak pengguna diperbaiki secara jujur (Odoo tidak punya peran Penjualan baca-saja; pengaman tulis ada di script); (4) keterangan "barang masuk terjadwal" di stok menipis; (5) ENV `ODOO_HOST_DIIZINKAN` dihapus (host hanya lewat `atur --izinkan-host`).
-- **1.0.0 (30 Sep 2026)** — rilis awal.
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

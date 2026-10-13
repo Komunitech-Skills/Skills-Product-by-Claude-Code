@@ -2,6 +2,8 @@
 
 **Tahu persis siapa yang bisa menyuruh AI Anda, dan ke mana data Anda pergi — tanpa istilah teknis.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Laporan "lampu lalu lintas" (🔴🟡🟢) yang mudah dipahami, bukan tumpukan istilah teknis.
 - ✅ Setiap perbaikan ditawarkan satu per satu, **selalu minta izin Anda dulu** sebelum diubah.
@@ -61,6 +63,6 @@ Tidak. Pemeriksaan berjalan di OpenClaw Anda sendiri; hasilnya hanya muncul di p
 Tidak. Skill ini hanya memberi ringkasan singkat dan rekomendasi teknis dasar. Untuk kepatuhan
 hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ahli hukum/DPO. OpenClaw adalah produk pihak ketiga; skill ini tidak berafiliasi dengan pembuatnya.
 
-## Catatan revisi 1.1.4 (2026-10-01)
-- Uji OpenClaw 2026-10-01: agent sempat menjalankan `chmod` sebelum menampilkan daftar perbaikan. Kini semua perubahan (config, `chmod`/izin file, `--fix`) hanya dijalankan setelah daftar lengkap ditampilkan dan pemilik menjawab "ya"; "gak usah nanya" sebelum melihat daftar bukan persetujuan.
-- Permintaan menyadap/memata-matai chat orang lain: penolakan kini wajib ditulis lengkap & sopan di balasan itu sendiri (alasan UU ITE Pasal 31 & UU PDP + alternatif sah), bukan hanya "tetap saya tolak".
+## Riwayat perubahan
+
+Versi terkini: **1.1.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
