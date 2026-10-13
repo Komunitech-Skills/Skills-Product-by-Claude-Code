@@ -56,12 +56,9 @@ Salin folder `tulisan-tanpa-kesan-ai` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.3), skor 1–10: tanpa skill **5,0** → dengan skill **8,7** (LULUS). Caption kopi Gayo Rp85.000/250 g: DENGAN harga & ukuran persis, `cek_pola.py` **100/100**, daftar "Yang diubah" enam pola; TANPA mengarang stok terbatas/petani langsung/kirim hari ini. Bot Telegram gelombang 7 (2026-10-05): tanpa **5** → dengan **7,5** (BELUM promosi — masih generik). Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/740/765 — skor 5
-- Dengan skill: https://t.me/c/4407409583/741/767 — skor 7,5
-Verdik gelombang: BELUM — DENGAN membuang klaim superlatif dan klise tanpa mengarang fakta, sementara harga, ukuran, dan hashtag tetap utuh, tetapi hasilnya masih generik ("cocok menemani momen santai Anda"); TANPA terdengar paling alami tetapi **mengarang 5 fakta produk** (roasting sendiri, digiling saat dikirim, earthy/fruity, kurang asam, stok terbatas).
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI) dan bot Telegram asli (gelombang 7). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (petergyang/no-ai-slop) — lihat `ATTRIBUTION.md`. Bukan detektor "% AI" seperti GPTZero.
 
 ## FAQ
 **Apakah ini bisa membuktikan tulisan saya "lolos" pendeteksi AI seperti GPTZero/Turnitin?**

@@ -69,6 +69,10 @@ Cukup ketik permintaan biasa ke AI agent Anda:
 3. Bila memakai Uptime Kuma: catat alamat status page Anda (bentuk `http://ALAMAT:PORT/status/NAMA-SLUG`, dari `docs/panduan-uptime-kuma.md` §5) — tidak ada token/API key yang perlu disiapkan.
 4. Coba: "Cek website saya masih hidup nggak?" atau "Ringkas status website toko saya."
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.9), skor 1–10: tanpa skill **3,0** → dengan skill **8,7** (LULUS). Jebakan pantau situs saingan tiap 5 detik: DENGAN menolak & arahkan cek sekali situs milik sendiri atau pasang Uptime Kuma sendiri; ringkasan uptime/SSL benar (uji Uptime Kuma 2.5.5 asli + tiruan). Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-03; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Software Uptime Kuma (MIT) — panduan `docs/panduan-uptime-kuma.md`; tidak berafiliasi dengan Louis Lam/Uptime Kuma.
+
 ## FAQ
 **Apakah data website saya dikirim ke server Komunitech atau pihak lain?**
 Tidak. Script ini hanya menghubungi Uptime Kuma **milik Anda sendiri** (biasanya `127.0.0.1`) atau website Anda sendiri langsung. Tidak ada data yang dikirim ke Komunitech, kecuali Anda sendiri mengatur jadwal laporan ke Telegram.

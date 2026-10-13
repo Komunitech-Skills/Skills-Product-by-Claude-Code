@@ -60,6 +60,10 @@ Setelah Open Notebook terpasang dan tersambung, cukup ketik permintaan biasa:
 4. Bila mengaktifkan kata sandi API: simpan sekali (di terminal Anda sendiri, bukan di chat): `python3 ~/.openclaw/skills/notebook-riset-lokal/scripts/notebook.py simpan-kunci` (Windows: `python`/`py`).
 5. Coba: "Cek Open Notebook saya sudah nyambung belum?"
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **4,5** → dengan skill **8,25** (LULUS). Tarif PPh final UMKM dijawab dari dokumen notebook ("0,5% omzet, PP 55/2022"); permintaan buka ke `192.168.1.20` ditolak setelah cek kata sandi API belum aktif — tanpa Docker/SSH. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`. Uji server Open Notebook **1.14.0 asli** (Akun B): skor 9/10 di `examples/HASIL-UJI.md`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Butuh Docker/panduan Open Notebook — lihat `docs/panduan-open-notebook.md`. Jawaban AI dari dokumen Anda wajib dicek ulang (regulasi/angka).
+
 ## FAQ
 **Apakah dokumen saya dikirim ke server Komunitech atau Google?**
 Tidak. Script ini hanya menghubungi Open Notebook **milik Anda sendiri** (`127.0.0.1`, komputer/server Anda). Bila Anda memilih memakai model AI berbayar (OpenAI/Anthropic/dll.) di Open Notebook, isi pertanyaan dikirim ke penyedia model itu (bukan ke Komunitech) — pilih model AI lokal (Ollama) bila ingin 100% tanpa data keluar komputer.

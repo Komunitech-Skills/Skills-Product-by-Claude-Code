@@ -40,7 +40,11 @@ Salin folder `riset-harga-kompetitor` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan; tanpa Python pun tetap bisa dengan hitung manual).
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan; tanpa Python pun tetap bisa dengan hitung manual).
+
+**Hasil uji (angka nyata):** uji Claude Code simulasi agent (v1.0.5), skor **8,5/10** (LULUS) — **117** angka diverifikasi Decimal independen, **0 selisih**; contoh kopi Gayo median Rp54.375, rekomendasi Rp50.588–Rp57.188, harga cantik Rp53.900 (laba Rp13.913). Belum ada file `00-openclaw-sebelum-sesudah.md` di repo; muat OpenClaw CLI tercatat di `catalog.csv`. Sumber: `examples/HASIL-UJI.md`, `examples/06-uji-ulang-v1.0.1.md`.
+
+**Status uji (jujur):** sudah diuji Claude Code (simulasi agent) dan muat OpenClaw CLI. OpenClaw sebelum/sesudah otomatis belum tercatat di `examples/`. Codex dan Cursor belum uji platform asli. Tidak login/scrape marketplace; link sering diblokir → tempel teks/screenshot.
 
 ## FAQ
 **Apakah AI bisa otomatis mengambil harga dari Shopee/Tokopedia?**
