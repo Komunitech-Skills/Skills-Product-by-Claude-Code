@@ -63,7 +63,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Pada 10 kontak fiktif: tanpa skill (uji pertama) menyiapkan 6 baris kirim, termasuk nomor dobel, dan tanpa cara berhenti; dengan skill (v1.0.10) 5 kontak sah, yang tidak setuju, minta berhenti, dobel, atau nomornya rusak dibuang, dan tiap pesan memuat *Balas STOP* + tautan wa.me.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan bot Telegram uji (gelombang tampilan). Codex/Cursor belum uji platform asli. Mengirim broadcast tetap manual — skill menyiapkan file dan draf saja.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan Claude Code (simulasi agent). Bot Telegram asli, Codex, dan Cursor belum diuji langsung. Versi terkini 1.0.11 hanya mengganti rujukan ke skill lain, tanpa mengubah cara kerja. Mengirim broadcast tetap manual — skill menyiapkan file dan draf saja.
 
 ## FAQ
 **Apakah skill ini mengirim pesan otomatis?**

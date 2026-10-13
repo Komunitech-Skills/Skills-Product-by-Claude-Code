@@ -2,7 +2,7 @@
 
 **Karyawan AI tumbuh dari "bayi" jadi andal kalau dikoreksi tiap minggu. Tempel contoh percakapan, dapatkan rapor satu layar dan "PR" (pekerjaan rumah) minggu ini yang tinggal ditempel.**
 
-Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (tanpa skill hanya daftar masalah dan saran umum; dengan skill nilai per kriteria dan teks perbaikan siap tempel).
+Diuji AI penguji independen di OpenClaw: 4,75 → 8,25 dari 10 (tanpa skill, nama dan nomor HP pelanggan lain diulang utuh di rapor dan AI malah memeriksa pengaturan sistem bot lalu menawarkan mengubahnya; dengan skill ada nilai per kriteria, data pelanggan disamarkan, dan teks perbaikan siap tempel). Di bot Telegram asli: 6,5 → 8,5.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -57,7 +57,15 @@ Salin folder `rapor-mingguan-ai` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python tidak wajib; hanya membantu bila percakapan sangat banyak.
+Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Python tidak wajib; hanya membantu bila percakapan sangat banyak.
+
+**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, home terisolasi), 6 Okt 2026 (v1.0.0), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`.
+- Skenario normal (12 percakapan bot toko skincare minggu ke-2): tanpa skill **5** → dengan skill **8** (uji lokal 8,5; dengan pengaturan kanal Telegram 7,5).
+- Skenario jebakan (diminta mengubah pengaturan bot, membolehkan bot bilang "pasti cocok", dan membaca database): tanpa skill **4,5** → dengan skill **8,5**.
+- Rata-rata: **4,75** → **8,25** (LULUS). Persen lolos per kriteria dan nilai A–D cocok dengan hitungan independen (5 dari 12 percakapan bersih). Tanpa skill, nama dan nomor HP pelanggan lain diulang utuh di rapor.
+- Catatan jujur: pada v1.0.0 urutan "3 kesalahan teratas" belum selalu konsisten (di satu uji, masalah yang tidak kritis mendahului data bocor atau janji berlebihan). Ini diperbaiki di v1.0.1 (versi terkini). Skrip hitung tidak dipakai pada 12 percakapan.
+
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent, v1.0.0) dan di bot Telegram asli (gelombang 13, 2026-10-12; versi yang diuji tidak tercatat). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
@@ -71,7 +79,7 @@ Verdik gelombang: LULUS — Tanpa skill hanya daftar masalah dan saran umum (fil
 Tidak. Anda yang menempelkan contoh percakapan. Skill ini tidak membuka database, log, atau kunci OpenClaw, demi keamanan data pelanggan Anda.
 
 **Seberapa banyak percakapan yang perlu ditempel?**
-10-20 per minggu, campur yang mudah dan yang sulit. Kurang dari 10 tetap dinilai, tetapi ditandai "indikatif".
+10-20 per minggu, campur yang mudah dan yang sulit. Kurang dari 10 tetap dinilai, tetapi ditandai "indikatif" (hanya gambaran awal).
 
 **Apakah skill ini yang memperbaiki botnya?**
 Skill ini memberi teks perbaikan yang siap Anda tempel ke catatan bot (berkas AGENTS.md di OpenClaw). Anda yang menempel dan memutuskan; kesalahan serius (data bocor, janji, saran medis) dimasukkan ke daftar keputusan Anda.
