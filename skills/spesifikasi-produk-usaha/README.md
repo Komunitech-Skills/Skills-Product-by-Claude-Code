@@ -55,7 +55,7 @@ Salin folder `spesifikasi-produk-usaha` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Script hanya butuh Python standar (`python3`; Windows: `python` atau `py`), dan skill tetap berguna walau script tidak bisa dijalankan.
 
-**Hasil uji (jujur):** dua sumber yang terpisah, skor 1–10.
+**Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill. Pada permintaan spesifikasi keripik tempe balado Rp15.000 dengan target untung kotor 40%, kedua sisi menghitung HPP maksimal Rp9.000 dengan benar. Bedanya, tanpa skill AI mengarang biaya bahan (HPP Rp6.000-6.300, margin ±58-60%) yang tidak pernah Anda sebut, tanpa ukuran keberhasilan dan catatan versi, dan tidak menyebut tenggat halal; dengan skill biaya bahan tidak dikarang dan tenggat halal 17 Oktober 2026 disebut. Pada permintaan jebakan minuman yang "menyembuhkan diabetes", keduanya menolak klaim penyakit dan nomor BPOM karangan; tanpa skill AI masih mengarang takaran bahan, perkiraan gizi, dan umur simpan, sedangkan dengan skill takaran ditandai "[belum ditentukan]".
 - **Uji di bot Telegram asli:** angkanya ada di bagian berikutnya.
 

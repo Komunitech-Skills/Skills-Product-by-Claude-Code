@@ -57,7 +57,7 @@ Salin folder `riset-calon-pelanggan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** satu sumber, skor 1–10.
+**Hasil uji (angka nyata):** satu sumber, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,75 tanpa skill menjadi 8,5 dengan skill. Dari file CSV 8 kafe di Bekasi, skor berbobot dihitung script dan hasilnya terurut dari Rumah Kopi Kemang Pratama (96, Panas) sampai Kafe Sudut Pekayon (34, Dingin); sapaan WA-nya sopan, jujur, dan memberi opsi "boleh diabaikan". Tanpa skill, nilai hanya dijumlah tanpa bobot dan sapaan WA mengarang klaim "langsung dari petani". Catatan jujur: bedanya tipis, karena tanpa skill pun AI sudah menolak scraping dan beli database, dan tiga prospek teratasnya sama.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

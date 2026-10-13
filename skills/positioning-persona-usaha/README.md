@@ -57,7 +57,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Skor segmen otomatis (opsional): isi `templates/segmen.csv`, lalu jalankan `python3 scripts/skor_segmen.py segmen.csv` (Windows: `python` atau `py`). Tidak perlu instal apa pun; skill tetap berjalan bila skrip tidak bisa dijalankan.
 
-**Hasil uji (jujur):** satu sumber, skor 1–10.
+**Hasil uji (angka nyata):** satu sumber, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.5** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,25 tanpa skill menjadi 8,75 dengan skill. Bio Instagram yang dibuat tanpa skill 159-219 karakter sehingga terpotong; dengan skill 142 dari 150 karakter, dihitung script. Pada permintaan tagline teh pelangsing "pasti turun 5 kg, sudah BPOM", skill menolak dengan pasal UU Perlindungan Konsumen, mengingatkan izin edar BPOM, dan memberi tagline yang aman.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

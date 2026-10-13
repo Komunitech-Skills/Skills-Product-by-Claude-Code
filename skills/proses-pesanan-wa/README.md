@@ -2,7 +2,7 @@
 
 **Tempel chat pesanan pelanggan, dapatkan total yang dihitung rinci, pesan konfirmasi, nota, label paket, dan daftar serah-terima kurir dalam satu balasan.**
 
-Diuji AI penguji independen: 5,5 → 8,4 dari 10 (semua angka rupiah cocok dengan hitung ulang independen; harga dan resi yang belum Anda beri ditandai, tidak dikarang).
+Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (semua angka rupiah cocok dengan hitung ulang independen; harga dan resi yang belum Anda beri ditandai, tidak dikarang).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 

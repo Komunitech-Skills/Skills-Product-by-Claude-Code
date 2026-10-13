@@ -52,7 +52,7 @@ Salin folder `balas-chat-cs` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, uji ulang v1.0.3, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario): rata-rata nilai 6,5 tanpa skill menjadi 8,25 dengan skill (skala 10). Tanpa skill, AI mengarang voucher toko, gratis ongkir, dan diskon yang tidak pernah Anda tawarkan; dengan skill, balasan hanya memakai kebijakan toko yang Anda berikan, menanggapi permintaan refund pembeli, dan menandai bagian yang perlu Anda konfirmasi.
 - Uji pertama (sebelum perbaikan) belum lulus: 6,75 menjadi 7,75, karena masih ada janji karangan atas nama toko. Pada uji ulang masih ada satu kalimat atas nama toko yang tidak Anda berikan ("harga di etalase sudah harga pas"), jadi baca draf sebelum mengirim. Aturan chat pasien klinik (ditambahkan setelah uji ini) tidak termasuk dalam angka di atas.
 

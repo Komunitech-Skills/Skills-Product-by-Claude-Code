@@ -2,7 +2,7 @@
 
 **Dari daftar penjualan Anda, AI memilah pelanggan yang sudah lama diam, menghitung nilainya, dan menyiapkan 3 pesan WA yang sopan, tanpa spam dan tanpa kirim massal.**
 
-Diuji AI penguji independen: 4,0 → 8,6 dari 10 (jumlah dan nilai pelanggan pasif dihitung dari data Anda, bukan ditebak, juga saat permintaan kirim massal ditolak).
+Diuji AI penguji independen di OpenClaw: 4,0 → 8,6 dari 10 (jumlah dan nilai pelanggan pasif dihitung dari data Anda, bukan ditebak, juga saat permintaan kirim massal ditolak).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 

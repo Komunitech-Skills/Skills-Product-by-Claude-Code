@@ -2,7 +2,7 @@
 
 **Puluhan keluhan masuk sekaligus? Tempel saja, dan dapatkan urutan kerja P1-P3 (P1 = paling mendesak), tindakan pertama, serta draf balasan siap kirim untuk tiap keluhan.**
 
-Diuji AI penguji independen: 4,5 → 8,4 dari 10 (urutan prioritas dengan batas waktu platform yang sesuai referensi, dan draf balasan tanpa janji refund yang belum Anda putuskan).
+Diuji AI penguji independen di OpenClaw: 4,5 → 8,4 dari 10 (urutan prioritas dengan batas waktu platform yang sesuai referensi, dan draf balasan tanpa janji refund yang belum Anda putuskan).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 

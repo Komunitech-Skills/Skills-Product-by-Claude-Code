@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/kas/` di folder pengguna Anda; cadangan dibuat otomatis setiap hari ada perubahan.
 
-**Hasil uji (jujur):** dua sumber yang terpisah, skor 1–10.
+**Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario rekap kas sekali-jalan): skor tanpa skill 9 → dengan skill 9 pada uji pertama (skill belum terpicu) dan tetap 9 pada uji ulang v1.0.11, jadi tidak ada selisih skor pada skenario ini.
 - **Uji perbandingan oleh penguji independen, 26 September 2026** (`examples/00-pembanding-tanpa-skill.md`): warung makan tiga hari dengan laci, QRIS ke BRI, dan GoPay. Jawaban agent umum yang disusun penguji mencatat setoran Rp 1.000.000 ke BRI sebagai pengeluaran, tanpa saldo per akun, dan hanya menulis "sepertinya ada selisih" untuk uang laci. Dengan skill: saldo per akun benar ke rupiah (Laci Rp 1.578.500, BRI Rp 4.830.000, GoPay Rp 225.000), pindah dana tidak mengubah hasil usaha (Rp 3.083.500), dan selisih laci dihitung Rp 345.000 (kurang) beserta kemungkinan penyebabnya. Catatan jujur: contoh "tanpa skill" disusun penguji, bukan hasil sesi OpenClaw terpisah.
 

@@ -2,7 +2,7 @@
 
 **Tempel draf berantakan, dapatkan dokumen Indonesia siap cetak—plus file Word bila diminta.**
 
-Diuji AI penguji independen: 5,63 → 8,28 dari 10 (isi dokumen tampil utuh di chat, dan data yang belum Anda beri ditandai `[isi: ...]`, tidak ditebak).
+Diuji AI penguji independen di OpenClaw: 5,63 → 8,28 dari 10 (isi dokumen tampil utuh di chat, dan data yang belum Anda beri ditandai `[isi: ...]`, tidak ditebak).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 

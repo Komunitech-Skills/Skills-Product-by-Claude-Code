@@ -58,7 +58,7 @@ Salin folder `laporan-insiden-usaha` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, uji ulang v1.0.2** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,5 tanpa skill menjadi 8,75 dengan skill (skala 10). Tanpa skill, laporan menyebut nama admin sebagai akar masalah dan menulis tindakan yang belum terjadi seolah sudah dilakukan. Dengan skill, akar masalah mengarah ke proses, pembeli terdampak yang belum komplain ikut dihubungi, dan tenggat pemberitahuan kebocoran data (3×24 jam) dihitung tepat.
 - Uji pertama (sebelum perbaikan) belum lulus: 7 menjadi 7,5, karena skill belum menyebut batas 3×24 jam. Pada uji ulang masih ada hal kecil yang perlu Anda periksa: satu klaim "sudah dilakukan" yang tidak Anda sebutkan, dan satu salah hitung durasi pada contoh apotek. Bagian hukum tetap perlu ditinjau konsultan hukum Anda.
 

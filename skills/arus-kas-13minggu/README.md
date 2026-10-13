@@ -57,7 +57,7 @@ Salin folder `arus-kas-13minggu` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
 - **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario: saldo awal Rp380 juta, info dilengkapi setelah ditanya sekali): skor tanpa skill 7,5 → dengan skill 8,5 pada uji pertama, lalu 9 setelah perbaikan v1.0.3.
 - **Uji simulasi agent (perbandingan tanpa dan dengan skill), 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`, usaha katering dengan kas Rp 35 juta): jawaban tanpa skill per bulan: "aman, saldo terendah sekitar Rp 14,9 juta". Padahal di minggu ke-6 (2–8 November) saldo tinggal Rp 6.300.000 karena freezer, sewa, dan bahan jatuh di minggu yang sama. Dengan skill titik kritis itu ketemu, lengkap dengan 5 opsi tindakan berangka; saldo 13 minggu cocok dengan hitungan independen (13 dari 13 minggu).
 

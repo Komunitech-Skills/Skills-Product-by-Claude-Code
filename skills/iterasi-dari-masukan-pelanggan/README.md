@@ -59,7 +59,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Skrip hitung memakai Python standar (`python3`, di Windows `python` atau `py`). Skill tetap berguna walau skrip tidak bisa dijalankan (agent menghitung manual dan menandainya).
 
-**Hasil uji (jujur):** satu sumber, skor 1–10.
+**Hasil uji (angka nyata):** satu sumber, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.10** (angka dari `examples/00-openclaw-sebelum-sesudah.md`; versi terkini di katalog 1.0.11): rata-rata nilai 6,9 tanpa skill menjadi 8,6 dengan skill. Dari chat WA dan ulasan Shopee sebuah toko kue fiktif (31 masukan), AI tanpa skill menyebut sekitar 10 nama pelanggan di laporan dan salah hitung jumlah chat (16, padahal 13); dengan skill data pelanggan disamarkan dan angka disalin dari script, dengan temuan 88,9% (8 dari 9) keluhan WhatsApp tidak dibalas admin, lengkap dengan draf balasan siap kirim. Catatan jujur dari berkas uji: masih ada selip kecil pada label (kalimat ringkasan bisa terbaca "5 jamur" padahal 4 jamur dan 1 semut), bukan salah hitung.
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).

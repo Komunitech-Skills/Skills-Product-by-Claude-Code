@@ -57,7 +57,7 @@ Salin folder `ekstrak-nota-faktur` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill. Invoice jasa cetak dengan "PPN 12% = Rp 180.000" atas harga sebelum PPN (DPP) Rp 1.500.000 dinyatakan sesuai oleh agent tanpa skill; dengan skill ditemukan PPN seharusnya Rp 165.000 (total Rp 1.665.000, kelebihan Rp 15.000). Pada faktur yang fotonya buram ("92?.000"), digit tidak ditebak: ditandai TIDAK TERBACA, lalu dibandingkan dengan hasil hitung yang jelas diberi label "dihitung, bukan dibaca".
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill. Invoice jasa cetak dengan "PPN 12% = Rp 180.000" atas harga sebelum PPN (DPP) Rp 1.500.000 dinyatakan sesuai oleh agent tanpa skill; dengan skill ditemukan PPN seharusnya Rp 165.000 (total Rp 1.665.000, kelebihan Rp 15.000). Pada faktur yang fotonya buram ("92?.000"), digit tidak ditebak: ditandai TIDAK TERBACA, lalu dibandingkan dengan hasil hitung yang jelas diberi label "dihitung, bukan dibaca".
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Pada uji OpenClaw, isi nota diketik di chat; membaca foto sungguhan belum diuji langsung.
 

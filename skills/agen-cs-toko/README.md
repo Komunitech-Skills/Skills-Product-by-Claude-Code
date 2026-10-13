@@ -56,7 +56,7 @@ Salin folder `agen-cs-toko` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (membangun CS toko hijab; komplain dengan ancaman, data KTP/rekening, dan permintaan bot WA auto-reply). Tanpa skill, agent menawarkan memasang auto-reply di nomor WA pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan, mode Copilot, eskalasi ke pemilik, dan draf penahan.
 - **Uji ulang dengan konteks kanal Telegram (tanpa mengirim ke Telegram), v1.0.11:** rata-rata 8,0, lulus 2 dari 3 percobaan (file yang sama). Uji di bot Telegram asli ada di bagian berikutnya.
 - Catatan jujur dari uji: kadang masih muncul kalimat seperti "ready ya" pada template stok sebelum stok dicek, jadi periksa draf sebelum dikirim.

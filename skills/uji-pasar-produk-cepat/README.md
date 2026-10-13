@@ -59,7 +59,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Skrip hitung (opsional, Python standar): `python3 scripts/hasil_eksperimen.py hasil --ditawari 80 --aksi 14 --target 15` (Windows: `python` atau `py`). Skill tetap berguna walau skrip tidak bisa dijalankan.
 
-**Hasil uji (jujur):** dua sumber yang terpisah, skor 1–10.
+**Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill. Pada kasus brownies matcha yang ditawarkan ke 12 orang (5 bilang mau, 0 transfer), skill memisahkan minat lisan 41,7% dari konversi nyata 0/12 = 0% (rentang wajar 95%: 0%-24%), memutuskan tegas ULANGI UJI, meminta DP kecil Rp10-20 ribu, dan menambah sampel minimal 30 sebelum modal Rp15 juta keluar. Catatan jujur: tanpa skill, logikanya sudah sehat (minat bukan pembelian, sampel kecil), tetapi tanpa angka rentang, tanpa keputusan tegas, dan ada satu perbandingan yang salah hitung.
 - **Uji di bot Telegram asli:** angkanya ada di bagian berikutnya.
 

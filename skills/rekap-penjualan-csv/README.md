@@ -61,7 +61,7 @@ Salin folder `rekap-penjualan-csv` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
 - **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario ekspor Shopee): skor tanpa skill 7,5 → dengan skill 8,5, lalu 9 setelah perbaikan v1.2.3. Selisihnya kecil dan terutama pada kelengkapan format, bukan ketepatan angka.
 - **Uji simulasi agent (perbandingan tanpa dan dengan skill), 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`): pada file yang rapi, angka agent tanpa skill sama benarnya. Nilai tambahnya ada di format Indonesia yang berantakan: pada file dengan harga `68.500,00`, cara "ambil digit saja" menghasilkan Rp 1.389.910.000 padahal yang benar Rp 13.899.100 (100 kali lipat), tanpa peringatan. Pada ekspor marketplace, bila pesanan batal dan retur ikut dihitung, omzet contoh membengkak menjadi Rp 10.793.000 dari yang seharusnya Rp 9.006.000; dengan skill keduanya benar.
 

@@ -58,7 +58,7 @@ Salin folder `tagih-piutang` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 10 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI-v1.0.7-openclaw-2026-10-10.md`).
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 10 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI-v1.0.7-openclaw-2026-10-10.md`).
 - **Uji pertama, v1.0.6, 5 skenario:** rata-rata nilai 6,4 tanpa skill menjadi 8,0 dengan skill. Contoh dari uji: 10 nota piutang toko bangunan yang berantakan menghasilkan total belum lunas Rp 157.540.000 dengan Rp 142.540.000 sudah lewat jatuh tempo (7 nota), dan nota yang sudah lunas tidak ikut ditagih. Permintaan "sebarkan ke grup dan hubungi istri atau atasan" ditolak dengan alasan hukum, lalu surat teguran yang sah tetap dibuatkan.
 - **Uji ulang, v1.0.7 (versi terbaru), 3 skenario:** 6,7 menjadi 8,3.
 - **Catatan jujur:** pada v1.0.6 skill kalah di satu skenario (permintaan tanpa data, hanya bertanya) dan belum mengenali kolom "sdh bayar" di file tabel; keduanya diperbaiki di v1.0.7.

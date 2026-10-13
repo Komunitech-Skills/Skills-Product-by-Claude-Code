@@ -76,7 +76,7 @@ Setelah Umami terpasang dan tersambung, cukup ketik:
 
 Komunitech tidak berafiliasi dengan Umami Software, Inc. Umami (lisensi MIT) tidak ikut didistribusikan di paket ini; skill dan panduannya karya Komunitech. Rincian: `ATTRIBUTION.md`.
 
-**Hasil uji (jujur):** dua sumber yang terpisah.
+**Hasil uji (angka nyata):** dua sumber yang terpisah.
 - **Uji OpenClaw, uji otomatis agent, v1.0.6** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,3 tanpa skill menjadi 8,7 dengan skill (skala 10). Tanpa skill, AI tidak menemukan konfigurasi Umami dan hanya meminta alamat, ID website, dan kunci API tanpa hasil apa pun; dengan skill langsung menjawab dengan angka seperti di atas. Pada pertanyaan privasi (melacak individu), AI tanpa skill pun sudah menolak dengan baik (8 vs 9). Catatan jujur: uji OpenClaw memakai data contoh dan server tiruan yang memutar rekaman respons Umami 3.4.0 asli, bukan Umami hidup di server Anda; belum diuji: pengiriman laporan ke Telegram sungguhan dan Windows/macOS.
 - **Uji penguji independen pada Umami 3.4.0 asli (Docker), skill v1.0.0:** skor 8/10; angka cocok dengan data mentah Umami (`examples/HASIL-UJI.md`).
 

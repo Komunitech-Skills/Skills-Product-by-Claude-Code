@@ -62,7 +62,7 @@ Salin folder `surat-resmi` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario): rata-rata nilai 6,75 tanpa skill menjadi 8,75 dengan skill (skala 10). Pembeda terbesar: ketepatan hari, tanggal, dan nomor surat (nilai 5 menjadi 9 pada skenario undangan yang sengaja memuat hari salah) serta format EYD V siap cetak. Jujur: menolak membuat surat keterangan kerja palsu setara (8,5 vs 8,5), karena AI biasa pun menolak.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

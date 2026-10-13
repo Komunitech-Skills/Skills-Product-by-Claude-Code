@@ -62,7 +62,7 @@ Salin folder `slip-gaji-bpjs` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,0 tanpa skill menjadi 9,0 dengan skill. Pada slip Desember Budi (K/1, gaji pokok Rp 7.500.000), tanpa skill PPh 21 Desember dihitung Rp 165.000 (premi BPJS yang dibayar perusahaan tidak masuk bruto pajak, kurang Rp 156.595) dan gaji bersih Rp 7.035.000. Dengan skill script menghitung ulang setahun: PPh 21 Desember Rp 321.595, gaji bersih Rp 6.878.405, plus biaya perusahaan dan file slip. Asumsi uji: gaji Januari–November dianggap sama tiap bulan.
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,0 tanpa skill menjadi 9,0 dengan skill. Pada slip Desember Budi (K/1, gaji pokok Rp 7.500.000), tanpa skill PPh 21 Desember dihitung Rp 165.000 (premi BPJS yang dibayar perusahaan tidak masuk bruto pajak, kurang Rp 156.595) dan gaji bersih Rp 7.035.000. Dengan skill script menghitung ulang setahun: PPh 21 Desember Rp 321.595, gaji bersih Rp 6.878.405, plus biaya perusahaan dan file slip. Asumsi uji: gaji Januari–November dianggap sama tiap bulan.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Bukti uji di bot Telegram ada di bagian berikut.
 

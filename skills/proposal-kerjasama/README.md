@@ -58,7 +58,7 @@ Salin folder `proposal-kerjasama` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** dua sumber yang terpisah, skor 1–10.
+**Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): pada uji pertama rata-rata nilai 5,5 tanpa skill menjadi 8,0 dengan skill. Tanpa skill, modal dan tulisan "rugi Rp1.000/botol" ikut masuk ke proposal untuk mitra; dengan skill, peringatan rugi hanya sampai ke Anda dan proposal ke mitra tetap bersih. Uji ulang v1.0.7: rata-rata 8,33 dengan skill, semua angka benar. Balasan utuh ada di berkas itu.
 - **Uji di bot Telegram asli:** angkanya ada di bagian berikutnya.
 

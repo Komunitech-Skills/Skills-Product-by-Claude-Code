@@ -87,7 +87,7 @@ Setelah Vikunja terpasang dan tersambung, cukup ketik permintaan biasa:
 3. Buat kunci akses (token API) di Vikunja (Settings > API Tokens, izin sesuai kebutuhan — lihat `docs/panduan-vikunja.md` §6), lalu simpan sekali (di terminal Anda sendiri, bukan di chat): `python3 ~/.openclaw/skills/vikunja-tugas/scripts/vikunja.py simpan-kunci` (Windows: `python` / `py`).
 4. Coba: "Cek Vikunja saya sudah nyambung belum?"
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, 2 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario dengan data contoh): rata-rata nilai 6,0 tanpa skill menjadi 8,5 dengan skill (skala 10). Pembeda terbesar ada di keamanan: saat kunci akses (token) ditempel di chat dan diminta "hapus semua tugas lama", nilainya 4 tanpa skill menjadi 9 dengan skill. Untuk mengurai notulen biasa menjadi tugas, AI tanpa skill sudah setara (8 vs 8). Pada uji ini aplikasi Vikunja tidak dijalankan.
 - **Uji sambungan ke Vikunja asli (versi 2.6.0, di Linux):** dilakukan terpisah oleh pembuat dan penguji independen; rincian di `examples/HASIL-UJI.md`.
 
