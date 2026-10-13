@@ -21,6 +21,8 @@
 **Sesudah (cukup ketik):** "Ini data penjualan toko saya, tolong bantu ajak pelanggan yang sudah lama nggak beli."
 → Dari 23 pelanggan di contoh data, 18 pasif dengan total belanja dulu Rp16.125.000. Anda langsung dapat daftar siapa dulu (Bu Maryam, Bu Wati, Bu Tini...), jadwal 4 minggu, dan teks pesan per segmen yang tinggal disalin. Contoh lengkap ada di `examples/`.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 4,0 tanpa skill menjadi 8,6 dengan skill (skala 10). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Ini ekspor penjualan saya (CSV). Siapa pelanggan yang perlu dihubungi lagi?"

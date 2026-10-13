@@ -1,6 +1,6 @@
 ---
 name: pantau-cron-openclaw
-description: Memantau jadwal/laporan otomatis OpenClaw milik sendiri agar kegagalan tidak diam-diam (cron monitoring, dead man's switch): daftar job, tambah langkah "lapor selesai", satu pengawas yang mengabari Telegram hanya bila TERLAMBAT/HILANG. Gunakan saat pengguna bilang "jadwal otomatis gagal", "laporan otomatis mati", "kabari kalau laporan saya gagal", "laporan 21.00 tidak terkirim", "cron OpenClaw mati", "job mana yang terlambat", juga bila jobnya belum disebut (kerjakan dulu dengan contoh) atau Gateway belum bisa diakses (beri rencana siap salin). WAJIB juga dipakai bila pengguna minta "pantau karyawan", memantau komputer/aktivitas karyawan, pasangan, atau orang lain, "kapan karyawan online/offline", monitor employee activity, track staff online status, spy, "diam-diam": MENOLAK itu dengan kalimat baku, lalu menawarkan memantau jadwal otomatis milik sendiri dan tetap menyiapkan rencana contohnya. Bukan untuk membuat laporannya (laporan-otomatis-terjadwal) atau memantau website (pantau-website-toko).
+description: Memantau jadwal/laporan otomatis OpenClaw milik sendiri agar kegagalan tidak diam-diam (cron monitoring, dead man's switch): daftar job, tambah langkah "lapor selesai", satu pengawas yang mengabari Telegram hanya bila TERLAMBAT/HILANG. Gunakan saat pengguna bilang "jadwal otomatis gagal", "laporan otomatis mati", "kabari kalau laporan saya gagal", "laporan 21.00 tidak terkirim", "cron OpenClaw mati", "job mana yang terlambat", juga bila jobnya belum disebut (kerjakan dulu dengan contoh) atau OpenClaw belum bisa diakses (beri rencana siap salin). WAJIB juga dipakai bila pengguna minta "pantau karyawan", memantau komputer/aktivitas karyawan, pasangan, atau orang lain, "kapan karyawan online/offline", monitor employee activity, track staff online status, spy, "diam-diam": MENOLAK itu dengan kalimat baku, lalu menawarkan memantau jadwal otomatis milik sendiri dan tetap menyiapkan rencana contohnya. Bukan untuk membuat laporannya (laporan-otomatis-terjadwal) atau memantau website (pantau-website-toko).
 ---
 
 # Pantau Cron OpenClaw
@@ -15,7 +15,7 @@ Terpicu bila pengguna minta memantau komputer/akun/aktivitas **karyawan, pasanga
 Sesudahnya, TANPA kuliah hukum dan TANPA menyebut nama aplikasi/perangkat pemantau karyawan, **langsung lanjut** ke "Kerjakan dulu, tanya di akhir": tampilkan rencana contoh untuk jadwal milik sendiri (`laporan-harian` dan `piutang-pagi`), lalu PENUTUP BAKU. Pertanyaan (a) di penutup untuk kasus ini: "Jadwal otomatis apa milik Anda yang ingin dipantau, dan jam berapa?" Pemantauan di sini hanya "apakah jadwal otomatis sudah lapor selesai", bukan isi komputer, layar, pesan, atau perilaku orang.
 
 ## BAHASA KE PENGGUNA (wajib, seluruh jawaban)
-Pengguna awam. DILARANG muncul di jawaban: nama skill ini, kata "skill", "script", "cron" / "cron job" (katakan **jadwal otomatis**), "ping" (katakan **lapor selesai**; nama perintah di dalam blok kode boleh), "kredensial", "token", "agen" / "agent", "aturan kerja saya" / "sesuai aturan", "Gateway", "heartbeat", "dead man's switch", dan alamat folder/path apa pun. Alamat dalam perintah salin ditulis `[isian: folder pantauan Anda]` disertai satu kalimat cara mengisinya ("alamat folder tempat panduan pantauan ini terpasang di komputer Anda"); data pantauan disebut "folder data Anda". Alasan gagal cukup: "belum ada izin ke pengatur jadwal OpenClaw Anda".
+Pengguna awam. DILARANG muncul di jawaban: nama skill ini, kata "skill", "script", "cron" / "cron job" (katakan **jadwal otomatis**), "ping" (katakan **lapor selesai**; nama perintah di dalam blok kode boleh), "kredensial", "token", "agen" / "agent", "aturan kerja saya" / "sesuai aturan", "Gateway", "heartbeat", "dead man's switch", nama perintah/CLI (mis. `openclaw cron list`, `openclaw automations ...`), nama file pengaturan (`openclaw.json`, `.env`, `healthchecks.json`), dan alamat folder/path apa pun. Di balasan ke pengguna, jangan sebut kata teknis internal (token, gateway, nama perintah/CLI, nama file config). Pakai bahasa sehari-hari: "kunci akses", "bot", "jadwal", "pengaturan". Perintah teknis hanya ditampilkan bila pengguna memintanya; satu-satunya pengecualian: perintah salin di rencana siap-pasang (Mode terblokir), dalam blok kode dengan kalimat pengantar awam. Alamat dalam perintah salin ditulis `[isian: folder pantauan Anda]` disertai satu kalimat cara mengisinya ("alamat folder tempat panduan pantauan ini terpasang di komputer Anda"); data pantauan disebut "folder data Anda". Alasan gagal cukup: "belum ada izin ke pengatur jadwal OpenClaw Anda".
 
 ## PENUTUP BAKU (selalu di akhir jawaban pertama, urutan ini)
 1. Satu kalimat jujur: "Catatan jujur: pemasangan penuh di pengatur jadwal OpenClaw (sampai kabar benar-benar masuk ke Telegram) belum teruji otomatis; setelah terpasang, kita jalankan satu uji peringatan dulu."
@@ -34,7 +34,7 @@ Bila perintah `openclaw automations ...` atau `openclaw cron ...` GAGAL **satu k
 - **DILARANG** menjalankan `openclaw doctor` (apa pun opsinya, termasuk `--fix`), merestart Gateway, atau meminta alat/agent lain mengubah konfigurasi Gateway.
 - Lanjut ke **Mode terblokir** di bawah: tampilkan rencana lengkap, sebut satu kalimat awam apa yang perlu dibereskan pengguna, selesai.
 
-## Mode terblokir (Gateway/kanal tidak bisa dipakai)
+## Mode terblokir (OpenClaw/kanal tidak bisa dipakai)
 Pekerjaan lokal tetap jalan (daftar job ke pantauan lokal bila job-nya sudah disebut/terdeteksi). Lalu tampilkan **rencana lengkap siap salin** dalam satu pesan, dengan isi lengkap (bukan "nanti saya tunjukkan"):
 1. Tabel job: nama, jadwal dalam kata-kata, toleransi, jadwal berikutnya.
 2. Untuk tiap job: kalimat "lapor selesai" yang akan ditambahkan di akhir (Langkah 2), dan perintah `openclaw automations edit <id> --message "..."` dalam blok kode (alamat folder ditulis `[isian: folder pantauan Anda]`).
@@ -107,14 +107,14 @@ c. **Uji peringatan** (alarm palsu terkendali): `tambah uji-alarm --jam <3 menit
 d. Jalankan tiap job sekali (`openclaw automations run <id> --wait`) lalu `cek`: semua OK.
 
 ### 6. Setelah ada peringatan
-Bantu pengguna menelusuri, urut dari yang paling sering: (1) komputer/gateway mati atau tidur saat jam jadwal (lihat `laporan-otomatis-terjadwal`, mesin 24 jam); (2) job error -- `openclaw automations runs <id>`; (3) langkah "lapor selesai" belum ada atau tidak diizinkan jalan; (4) jadwal/zona tidak cocok. Setelah diperbaiki dan job jalan, peringatan PULIH muncul sendiri sekali.
+Bantu pengguna menelusuri, urut dari yang paling sering: (1) komputer atau OpenClaw mati/tidur saat jam jadwal (lihat `laporan-otomatis-terjadwal`, mesin 24 jam); (2) job error -- `openclaw automations runs <id>`; (3) langkah "lapor selesai" belum ada atau tidak diizinkan jalan; (4) jadwal/zona tidak cocok. Setelah diperbaiki dan job jalan, peringatan PULIH muncul sendiri sekali.
 
 ### 7. Opsi lanjutan (tanpa wajib): layanan luar milik pengguna sendiri
-Pengawas lokal ikut mati bila komputer/gateway mati total. Pengguna yang ingin **diingatkan walau komputernya mati** boleh memakai layanan Healthchecks (self-host atau hosted, milik pengguna sendiri; Komunitech tidak berafiliasi). Pengguna membuat check di layanan itu, lalu **menyimpan sendiri** alamat ping di berkas `healthchecks.json` di folder data (bentuk: `{"nama-job": "<alamat ping>"}`). Alamat itu rahasia: **jangan diminta ditempel di chat, jangan dibaca, jangan ditampilkan**; script hanya memakainya diam-diam saat `ping`. Panduan: `references/openclaw-jadwal.md` bagian 5.
+Pengawas lokal ikut mati bila komputer atau OpenClaw mati total. Pengguna yang ingin **diingatkan walau komputernya mati** boleh memakai layanan Healthchecks (self-host atau hosted, milik pengguna sendiri; Komunitech tidak berafiliasi). Pengguna membuat check di layanan itu, lalu **menyimpan sendiri** alamat lapor selesai itu di berkas pengaturan di folder data (nama berkas dan bentuk, hanya untuk memandu langkah ini: `{"nama-job": "<alamat ping>"}`). Alamat itu rahasia: **jangan diminta ditempel di chat, jangan dibaca, jangan ditampilkan**; script hanya memakainya diam-diam saat `ping`. Panduan: `references/openclaw-jadwal.md` bagian 5.
 
 ## Format output
 - Hasil `cek` disalin **apa adanya** ke chat (ASCII ringkas, siap diteruskan ke Telegram). Susunannya tetap: judul `PANTAU CRON`, blok `BERMASALAH (N dari M):` (baris HILANG/TERLAMBAT), lalu blok `OK (K):` terpisah. Tambahkan satu kalimat saran bila ada masalah.
-- Setelah memasang: tampilkan daftar job + jadwal pengawas + cara jeda/hapus (`openclaw automations disable <id>`), tanpa menyebut nama berkas atau folder internal.
+- Setelah memasang: tampilkan daftar jadwal + jadwal pengawas + cara jeda/hapus dalam kalimat biasa ("minta saya menjeda jadwal ini"); perintah teknisnya hanya bila pengguna memintanya. Tanpa menyebut nama berkas atau folder internal.
 - Patuhi BAHASA KE PENGGUNA; berlaku juga untuk teks yang ditempel dari keluaran perintah (bila memuat path, ganti dengan "folder data Anda").
 
 ## UNTUK AGENT SAJA
@@ -138,7 +138,7 @@ OK (1): piutang-pagi
 ```
 
 ## Batasan & penanganan error
-- **Pengawas ikut mati bersama gateway/komputer.** Katakan jujur; tawarkan opsi lanjutan (Langkah 7) atau mesin 24 jam. Jangan menjanjikan "pasti ketahuan".
+- **Pengawas ikut mati bersama OpenClaw/komputer.** Katakan jujur; tawarkan opsi lanjutan (Langkah 7) atau mesin 24 jam. Jangan menjanjikan "pasti ketahuan".
 - Pantauan ini tidak tahu job gagal karena apa -- hanya bahwa tidak ada lapor. Peringatan palsu mungkin terjadi bila job lupa lapor selesai; itu sebabnya langkah itu diminta sebagai langkah terakhir yang eksplisit.
 - Job berjadwal cron saja; jadwal `--at` sekali jalan dan `--every` tidak didukung (sarankan cron yang setara).
 - Jam musim panas tidak relevan di Indonesia; zona didukung WIB, WITA, WIT, UTC.

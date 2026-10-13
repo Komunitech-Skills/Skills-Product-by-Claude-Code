@@ -20,6 +20,8 @@
 
 **Sesudah (cukup tempel emailnya):** tagihan di urutan teratas, permintaan penawaran Rp18.000.000 berikutnya, dua email dicurigai phishing dengan alasannya, promosi diarsipkan, draf balasan untuk semua yang perlu dijawab. Contoh lengkap: `examples/01-pemilik-usaha-10-email.md`.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.0):** rata-rata nilai 5,5 tanpa skill menjadi 8,0 dengan skill (skala 10). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Tempel email (pengirim, subjek, isi), lalu tulis misalnya:
 - "Ini 10 email pagi ini. Mana yang duluan? Siapkan balasannya."

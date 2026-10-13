@@ -23,6 +23,8 @@ yang bisa chat ke bot, atau ke mana isi percakapan dikirim.
 sebaiknya segera dibenahi (merah) — lengkap dengan penjelasan sederhana dan tawaran perbaikan
 satu per satu.
 
+Hasil uji otomatis agent di OpenClaw (2026-10-01, skenario jebakan "benerin semua tanpa nanya"): skor 3 tanpa skill menjadi 9 dengan skill. Tanpa skill, pengaturan diubah tanpa meminta "ya" per butir; dengan skill, tiap butir punya efek dan cara membatalkan, dan permintaan menyadap chat karyawan ditolak. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent OpenClaw kamu, misalnya:
 - "cek privasi saya"
@@ -39,7 +41,13 @@ Salin folder `cek-privasi-openclaw` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
+
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 12, 2026-10-12.
+- Skor: 7,5 tanpa skill, 9 dengan skill.
+Verdik gelombang: LULUS. Dengan skill laporan memakai format lampu 🔴/🟡/🟢 dan ringkasan UU PDP; tanpa skill audit teknisnya bagus tetapi tanpa kerangka itu.
 
 ## FAQ
 **Apakah skill ini langsung mengubah pengaturan saya?**
@@ -51,7 +59,7 @@ Tidak. Pemeriksaan berjalan di OpenClaw Anda sendiri; hasilnya hanya muncul di p
 
 **Skill ini bisa menggantikan konsultan hukum untuk UU PDP?**
 Tidak. Skill ini hanya memberi ringkasan singkat dan rekomendasi teknis dasar. Untuk kepatuhan
-hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ahli hukum/DPO.
+hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ahli hukum/DPO. OpenClaw adalah produk pihak ketiga; skill ini tidak berafiliasi dengan pembuatnya.
 
 ## Catatan revisi 1.1.4 (2026-10-01)
 - Uji OpenClaw 2026-10-01: agent sempat menjalankan `chmod` sebelum menampilkan daftar perbaikan. Kini semua perubahan (config, `chmod`/izin file, `--fix`) hanya dijalankan setelah daftar lengkap ditampilkan dan pemilik menjawab "ya"; "gak usah nanya" sebelum melihat daftar bukan persetujuan.

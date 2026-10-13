@@ -15,13 +15,13 @@ Laporan harian 21.00, tagihan piutang 07.45, ringkasan stok... semuanya berjalan
 Member VIP dan pengguna OpenClaw yang sudah punya beberapa laporan/jadwal otomatis dan tidak ingin tahu terlambat bahwa salah satunya mati: pemilik toko, manajer kantor, pemilik klinik, konsultan.
 
 ## Sebelum / sesudah
-> Bagian ini **diisi setelah uji** (hasil uji sebelum/sesudah OpenClaw akan ditempel di `examples/`).
-
 | Sebelum | Sesudah |
 |---|---|
-| Baru sadar laporan mati saat dibutuhkan, berhari-hari kemudian | _akan diisi dari hasil uji_ |
+| Baru sadar laporan mati saat dibutuhkan, berhari-hari kemudian. Asisten tanpa skill hanya menjawab "sudah terpasang dan aktif" tanpa bukti, dan tidak ada pengawas bagi jadwal yang hilang | Daftar jadwal yang dipantau, satu langkah "lapor selesai" di akhir tiap laporan, pengawas siap salin, dan peringatan Telegram hanya saat ada yang terlambat atau hilang |
 
-Versi 1.0.2. Laporan pantauan memisahkan blok **BERMASALAH** (HILANG/TERLAMBAT) dan blok **OK**.
+Uji otomatis agent di OpenClaw (2026-10-12): skor rata-rata 4,63 tanpa skill menjadi 8,19 dengan skill. Rincian: `examples/00-openclaw-sebelum-sesudah.md` dan bagian "Bukti uji di bot Telegram" di bawah.
+
+Versi 1.0.3. Laporan pantauan memisahkan blok **BERMASALAH** (HILANG/TERLAMBAT) dan blok **OK**.
 
 ## Contoh peringatan Telegram
 ```

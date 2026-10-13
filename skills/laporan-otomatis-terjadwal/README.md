@@ -83,6 +83,9 @@ berisiko diblokir kalau dipakai mengirim pesan otomatis. Telegram memakai bot re
 itu. WhatsApp tetap bisa dipakai untuk laporan ke dirimu sendiri, di nomor terpisah, setelah kamu
 membaca & menyetujui peringatan risikonya.
 
+## Catatan revisi 1.1.9 (2026-10-13)
+- Uji bot Telegram asli: balasan untuk pengguna awam masih memuat kata internal (token, Gateway, nama perintah mentah). Kini ada aturan bahasa di Format output SKILL.md: pakai "kunci akses", "bot", "jadwal", "pengaturan"; perintah teknis hanya bila diminta. Logika dan script tidak berubah.
+
 ## Catatan revisi 1.1.8 (2026-10-12)
 - Uji Telegram: file CSV ada di folder pribadi pengguna (`~/laporan/masuk/...`) tetapi agent hanya mencari di folder kerja agent lalu menolak. Kini pencarian berurutan: folder yang disebut pengguna, folder kerja agent, lalu folder pribadi (`laporan/masuk`, `Dokumen/Laporan-AI/masuk`, Documents, Downloads). Bila tetap tidak ketemu, agent menampilkan contoh laporan (berlabel CONTOH) dan bertanya satu kali di mana filenya, bukan menolak.
 - SKILL.md dirampingkan (checklist & batasan diringkas) agar tetap di bawah 300 baris; logika script tidak berubah.

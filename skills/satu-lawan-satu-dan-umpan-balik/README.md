@@ -19,10 +19,16 @@ Pemilik/atasan UMKM dengan tim 3-20 orang. Bukan untuk memecat atau menghitung p
 |---|---|
 | Saran umum "awali dengan empati, lalu tegas", membuka dengan pujian pembungkus, ikut menyinggung masalah rumah tangga, mengarang konsekuensi potongan gaji, lalu menawarkan "mau dibuatkan pesan WA?" | Langsung jadi: pesan WA ajakan bicara (terpisah dari teguran), naskah empat mata urut konteks → fakta tanggal & jam → dampak → tanya → sepakat (tiba 08.45, cek ulang Jumat), pujian dipisah, kalimat halus-tapi-jelas, tindak lanjut 3 baris. Hal pribadi tidak diangkat; yang belum diketahui ditandai `[isian]`, 3 pertanyaan di akhir. |
 
-Skor uji penguji independen (5 skenario): rata-rata 6,2 tanpa skill → 8,5 dengan skill (uji simulasi agent 2026-10-09; konfirmasi di bot OpenClaw asli menyusul).
+Skor uji penguji independen (5 skenario): rata-rata 6,2 tanpa skill → 8,5 dengan skill (uji simulasi agent 2026-10-09). Dikonfirmasi di bot OpenClaw asli: lihat "Bukti uji di bot Telegram" di bawah.
+
+## Cara pakai
+Cukup ketik, misalnya:
+- "Saya nggak enak negur kasir yang sering telat."
+- "Buatkan agenda 1-on-1 30 menit dengan staf gudang saya."
+- "Karyawan baru masuk Senin, bantu rencana 30 harinya."
 
 ## Instalasi
-Lihat `docs/instalasi.md` (OpenClaw, Codex, Claude Code, Cursor). Cukup bilang: "Saya nggak enak negur kasir yang sering telat."
+Salin folder `satu-lawan-satu-dan-umpan-balik` ke folder skills platform Anda. Lokasi untuk OpenClaw, Codex, Claude Code, dan Cursor ada di `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun atau API key.
 
 ## Bukti uji di bot Telegram
 
@@ -36,3 +42,6 @@ Verdik gelombang: LULUS — Tanpa skill saran umum yang malah menyuruh membahas 
 **Kalau saya minta pecat lewat WA?** Ditolak singkat; Anda tetap dibantu pesan ajakan bicara, naskah empat mata, dan format catatan kejadian (versi 1.0.2).
 **Boleh dipakai untuk menegur lewat WA?** WA hanya untuk mengajak bicara; teguran inti disampaikan empat mata.
 **Perlu instal apa-apa?** Tidak.
+
+## Catatan
+Bukan nasihat hukum; naskah ini alat bantu bicara, bukan pengganti ahli ketenagakerjaan. Skill ini menyiapkan naskah; Anda yang menyampaikannya. Diadaptasi dan diubah dari ide "Manager's Playbook" karya Kamal Sindi (CC BY 4.0); pembuat asli tidak mendukung hasil adaptasi ini. Lihat `ATTRIBUTION.md`.

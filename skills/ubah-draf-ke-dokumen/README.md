@@ -19,14 +19,20 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** 20 baris bullet acak dari ChatGPT tanpa kop dan tanpa penutup.
 
-**Sesudah:** satu dokumen dengan kop, judul, paragraf rapi, tabel tindak lanjut, dan penutup siap tanda tangan. (Contoh lengkap akan diisi dari hasil uji independen.)
+**Sesudah:** satu dokumen dengan kop, judul, paragraf rapi, tabel tindak lanjut, dan penutup siap tanda tangan. 
+
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,63 tanpa skill menjadi 8,28 dengan skill (skala 10). Tanpa skill, notulen hanya disimpan sebagai berkas sehingga tidak terlihat di chat, dan data yang belum diberikan ditebak; dengan skill isi dokumen utuh di chat dan yang belum diputuskan ditandai `[isi: ...]`. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
+## Cara pakai
+Ketik, misalnya: "Tolong rapikan draf ini jadi surat resmi siap kirim ke pelanggan, pakai kop usaha saya" lalu tempel drafnya. Ingin file Word? Tambahkan "buatkan file Word-nya" atau balas "kirim file". Berkas `.docx` dibuat dengan script bawaan; pembukaannya di aplikasi Word asli belum diuji tim Komunitech, jadi bila ada masalah, salin teks dari chat.
 
 ## Instalasi singkat
-Salin folder `ubah-draf-ke-dokumen` ke folder skills agent Anda. Detail: `docs/instalasi.md` di paket.
+Salin folder `ubah-draf-ke-dokumen` ke folder skills agent Anda. Detail: `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-| Platform | Folder |
+| Platform | Folder tujuan |
 |---|---|
 | OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 

@@ -21,6 +21,8 @@
 
 **Sesudah (cukup tempel keluhannya):** daftar kerja berurutan: COD Rp875.000 dan ancaman lapor dikerjakan pertama, pertanyaan stok paling akhir; draf balasan untuk semuanya; 3 hal yang perlu keputusan pemilik. Contoh lengkap: `examples/01-toko-fashion-8-keluhan-campur.md`.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 4,5 tanpa skill menjadi 8,4 dengan skill (skala 10). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, tempel keluhan dan ceritakan singkat usahanya, misalnya:
 - "Ini 8 keluhan hari ini dari Shopee dan WA. Mana yang duluan dibalas? Siapkan balasannya."
