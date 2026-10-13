@@ -4,13 +4,15 @@
 
 **Status verifikasi (jujur).** Bentuk perintah di bawah disalin dari pola `openclaw automations add` yang sudah
 dijalankan sungguhan di Gateway lokal OpenClaw **2026.9.5-2026.9.6** untuk skill lain (`kasir-lokal`, `crm-wa`,
-`buku-stok`). Khusus arsip-nota, jadwal ini **belum** diuji di Gateway sungguhan; ikuti `docs/uji-platform.md`
-sebelum mengklaim "teruji" di `catalog.csv`.
+`buku-stok`). Khusus arsip-nota, jadwal ini **belum** diuji di Gateway sungguhan. Jadi coba dulu satu kali
+dengan `openclaw automations run <id>` (lihat "Mengelola jadwal" di bawah) dan pastikan ringkasannya benar-benar
+tiba di Telegram sebelum Anda mengandalkannya.
 
 ## Aturan (keputusan pemilik Komunitech, 2026-09-23)
 - **Telegram (bot resmi) = default.** `--to` selalu ID chat **pemilik**, bukan karyawan/pelanggan/grup.
 - **WhatsApp** hanya dengan nomor terpisah milik pemilik, hanya ke pemilik sendiri, dan persetujuan risiko
-  tertulis (lihat CLAUDE.md §1). Untuk ringkasan arsip yang tidak sensitif, Telegram tetap disarankan.
+  tertulis (OpenClaw memakai WhatsApp Web, tidak resmi, nomor bisa diblokir). Untuk ringkasan arsip yang tidak
+  sensitif, Telegram tetap disarankan.
 - Jadwal **hanya menjalankan perintah baca**: `rekap`, `info`, `duplikat`. Tidak pernah `--ya`, `tambah`, `restore`.
 - Tunjukkan perintahnya + "Lanjut? (ya/tidak)" ke pengguna sebelum membuat jadwal.
 - **Privasi:** ringkasan berisi nama vendor dan nominal pengeluaran usaha; tersimpan di riwayat chat Telegram

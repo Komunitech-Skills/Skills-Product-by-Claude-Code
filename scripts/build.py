@@ -25,7 +25,7 @@ DIST = ROOT / "dist"
 DIABAIKAN = {"__pycache__", ".DS_Store", "Thumbs.db", "tests"}  # tests/ = uji internal, tidak dikirim ke pembeli
 # Panduan bersama di docs/ yang dirujuk skill (`docs/nama.md` di SKILL.md/README.md) ikut dipaketkan ke docs/.
 POLA_DOCS = re.compile(r"\bdocs/([a-z0-9][a-z0-9-]*\.md)\b")
-DOCS_INTERNAL = {"instalasi.md", "program-beta.md", "uji-platform.md"}  # instalasi.md sudah jadi CARA-INSTAL.md
+DOCS_INTERNAL = {"instalasi.md", "program-beta.md", "uji-platform.md", "uji-manusia-akuntansi.md"}  # instalasi.md sudah jadi CARA-INSTAL.md
 
 
 def docs_dirujuk(folder):

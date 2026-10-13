@@ -56,7 +56,7 @@ Pekerja kantor sekitar Jl. contoh (fiktif). Masalah: butuh kopi enak cepat saat 
 | 15-24 Des | Natal & akhir tahun | Paket hampers kopi, pre-order 20 Des |
 | 26-31 Des | Evaluasi | Ucapan terima kasih via WA, hitung hasil |
 
-Jadwal posting harian: `kalender-konten-30hari`.
+Jadwal posting dan tulis konten mingguan: `konten-mingguan`.
 
 ## 7. Anggaran (keluaran script)
 ```

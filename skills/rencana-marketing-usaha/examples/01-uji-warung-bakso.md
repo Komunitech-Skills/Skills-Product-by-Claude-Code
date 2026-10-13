@@ -62,7 +62,7 @@ Catatan klaim: jangan menulis "paling enak se-Bekasi" atau "100% tanpa pengawet"
 | Nov | Evaluasi bulan 1 | Bandingkan CAC iklan vs Rp 10.000; pindahkan dana bila perlu | — | Pemilik |
 | 25 Nov-3 Des | Gajian | Pengingat WA ke pelanggan yang pernah chat | WA | Istri |
 | 20-31 Des | Libur sekolah & tahun baru | Pre-order bakso frozen/paket malam tahun baru (bila kapasitas ada) | WA, IG | Berdua |
-Tanggal momen dicek per 29 Sep 2026; pastikan ulang jadwal promo GoFood di GoBiz. Jadwal posting harian -> `kalender-konten-30hari`.
+Tanggal momen dicek per 29 Sep 2026; pastikan ulang jadwal promo GoFood di GoBiz. Jadwal posting dan tulis konten mingguan -> `konten-mingguan`.
 
 ## 7. Anggaran (keluaran script)
 ```
