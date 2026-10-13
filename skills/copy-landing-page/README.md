@@ -1,4 +1,4 @@
-# Landing Page Jualan Sekali Jadi, Siap Kirim ke Pembeli
+# Landing Page Jualan Siap Kirim ke Pembeli
 
 **Ceritakan produk Anda, dapat halaman jualan lengkap — judul utama, manfaat, penawaran, FAQ, sampai tombol WhatsApp — siap tempel ke website atau link-in-bio.**
 

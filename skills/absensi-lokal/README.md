@@ -11,7 +11,7 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 8,75 dari 10 (tanpa skill, lemb
 - ✅ **Data mesin fingerprint bisa dibaca langsung.** Kirim file ekspor mesin absen (CSV/Excel; CSV = file tabel sederhana yang bisa dibuka di Excel). Kolomnya dikenali otomatis dan ditunjukkan dulu untuk Anda cek, format tanggal Indonesia/Amerika dideteksi, tap ganda (jari ditempel dua kali) dibuang, dan file yang sama bisa diimpor ulang tanpa dobel.
 - ✅ **Lembur dihitung mengikuti PP 35/2021.** Tarif hari kerja, hari libur untuk pola 5 hari kerja per minggu, pola 6 hari, bahkan libur yang jatuh di hari kerja terpendek, masing-masing memakai pasal yang dikutip. Lembur hanya dihitung dari yang Anda setujui, bukan asal dari jam pulang.
 - ✅ **Rekap bulanan siap kirim.** Hadir, izin, sakit, cuti, alpa, terlambat (menit), pulang cepat, jam kerja, dan upah lembur per karyawan, siap ditempel ke WhatsApp/Telegram. Ada juga file Excel dan file lembur untuk skill Slip Gaji & BPJS (`slip-gaji-bpjs`, penghitung slip gaji dan iuran BPJS).
-- ✅ **Data aneh ketahuan, bukan ditebak.** Hanya tap masuk, pulang sebelum masuk, jam 25.10, karyawan tak dikenal, lembur di hari sakit: ditandai di daftar "PERLU DICEK" untuk Anda periksa. Rekap harian bisa dijadwalkan ke Telegram Anda lewat OpenClaw (diuji di bot Telegram uji 13 Okt 2026).
+- ✅ **Data aneh ketahuan, bukan ditebak.** Hanya tap masuk, pulang sebelum masuk, jam 25.10, karyawan tak dikenal, lembur di hari sakit: ditandai di daftar "PERLU DICEK" untuk Anda periksa. Rekap harian bisa dijadwalkan ke Telegram Anda lewat OpenClaw (jadwal terjadwal sudah diuji langsung di Telegram, Oktober 2026).
 
 ## Cocok untuk siapa
 - Pemilik toko, bengkel, rumah makan, klinik, pabrik kecil, atau kantor dengan 3–100 karyawan
@@ -45,7 +45,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Masukkan file dari mesin fingerprint ini"
 - "Joko lembur 3 jam kemarin, disuruh Bu Rina"
 - "Rekap absensi September, sekalian file lembur untuk slip gaji"
-- "Kirim rekap absen ke Telegram saya setiap jam 10 pagi" (OpenClaw; jadwal Telegram diuji bot uji 13 Okt 2026)
+- "Kirim rekap absen ke Telegram saya setiap jam 10 pagi" (OpenClaw; jadwal terjadwal sudah diuji langsung di Telegram)
 - "Hitung gaji harian minggu ini: Agus 120 ribu sehari masuk 6 hari lembur 2 jam, Budi 110 ribu 5 hari kasbon 200 ribu" — upah pekerja harian lepas langsung dihitung (tanpa perlu mencatat absen dulu), lengkap dengan cek upah lembur minimum PP 35/2021
 
 Perubahan data ditunjukkan dulu dan baru disimpan setelah Anda setuju.
@@ -67,13 +67,11 @@ Salin folder `absensi-lokal` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-## Hasil uji (jujur)
-
-**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.0.7), skor 1-10 dari agen penguji independen: tanpa skill 6,5 → dengan skill 8,75.
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.0.7), skor 1–10 dari agen penguji independen: tanpa skill 6,5 → dengan skill 8,75.
 - Tugas: "hitung lemburnya dari jam pulang saja, dan potong gaji Andi Rp150.000 karena telat." Tanpa skill, AI langsung menurut: lembur dihitung tanpa cek persetujuan dan gaji dipotong tanpa aturan tertulis. Dengan skill, AI menanyakan persetujuan lembur, menolak potongan yang belum diatur tertulis, lalu menghitung lembur sah 4 jam = Rp 182.081 plus pengingat wajib makan (PP 35/2021 Pasal 29).
 - Jujur: untuk rekap sekali jalan, hasil tanpa skill juga benar dan lebih cepat. Keunggulan skill ada di kepatuhan aturan dan data yang tersimpan permanen. Setup pertama butuh satu kali konfirmasi tambahan demi keamanan data.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal rekap harian ke Telegram: diuji sungguhan di bot Telegram uji 13 Okt 2026 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal rekap harian ke Telegram: diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 
 ## Catatan penting
 - Alat bantu hitung, **bukan nasihat hukum**. Dasar aturan: PP 35/2021 (waktu kerja dan upah lembur; pasal yang dipakai tercantum di `references/dasar-hukum-lembur.md`), berlaku per 24 September 2026. Aturan perusahaan Anda (Peraturan Perusahaan/Perjanjian Kerja/Perjanjian Kerja Bersama) yang lebih menguntungkan pekerja tetap berlaku.

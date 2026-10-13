@@ -54,4 +54,19 @@ Daftar 40 skill (`random.seed(20261013+23)`), pool = skill aktif minus set A–F
 | notebook-riset-lokal | judul >8 kata | judul dipersingkat |
 | pantau-website-toko | judul >8 kata | judul dipersingkat |
 
-Sisa: set J (run berikutnya).
+## Set J (2026-10-13 ~19:00 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| surat-resmi | sudah memenuhi checklist | — |
+| bot-trading-kripto | sudah memenuhi checklist | — |
+| grist-usaha | subjudul Hasil uji tidak standar | blok **Hasil uji (angka nyata):** |
+| positioning-persona-usaha | baris pembuka redundan di blok Hasil uji | rapikan format |
+| copy-landing-page | judul >8 kata | judul dipersingkat |
+| vikunja-tugas | rujukan internal bot uji | bahasa pembeli awam |
+| rekonsiliasi-bank | sudah memenuhi checklist | — |
+| arus-kas-13minggu | sudah memenuhi checklist | — |
+| absensi-lokal | subjudul ganda Hasil uji; rujukan bot uji | rapikan + bahasa awam |
+| kasir-lokal | subjudul ganda Hasil uji; rujukan bot uji | rapikan + bahasa awam |
+
+C14 set G–J selesai (40/40).

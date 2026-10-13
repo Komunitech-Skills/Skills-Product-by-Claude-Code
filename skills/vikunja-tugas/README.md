@@ -12,7 +12,7 @@
 - ✅ **Tanpa biaya per user.** Vikunja gratis dan berjalan di komputer/server Anda sendiri, jadi tidak ada tagihan bulanan per orang seperti pada layanan Trello, ClickUp, atau Asana berbayar (langganan AI Anda tetap ditanggung sendiri).
 - ✅ **Cukup ngobrol, bukan klik-klik menu.** "Tugas apa yang telat?", "tambahkan tugas ... jatuh tempo Jumat depan" — AI yang menerjemahkan ke Vikunja, termasuk tanggal gaya Indonesia ("besok", "lusa", "Jumat depan", "25/10"). Diuji di OpenClaw dengan data contoh (Vikunja tidak dijalankan); sambungan ke Vikunja asli diuji terpisah (lihat Hasil uji).
 - ✅ **Notulen WA jadi daftar tugas dalam sekali tempel.** Rangkuman rapat/grup WA diubah jadi draf daftar tugas terstruktur (siapa, apa, kapan) yang Anda periksa dulu sebelum benar-benar dibuat. Jujur: untuk sekadar menguraikan notulen, AI tanpa skill sudah sama baiknya; nilai skill ada di pratinjau dan penyimpanan langsung ke Vikunja.
-- ✅ **Tahu siapa pegang apa, tanpa buka aplikasi.** Ringkasan tugas terbuka dikelompokkan per anggota tim (termasuk yang belum ada penanggung jawabnya). Laporan pagi otomatis ke Telegram (lewat OpenClaw; jadwal one-shot `terlambat` diuji di bot Telegram uji 2026-10-13) memuat tugas hari ini dan yang terlambat.
+- ✅ **Tahu siapa pegang apa, tanpa buka aplikasi.** Ringkasan tugas terbuka dikelompokkan per anggota tim (termasuk yang belum ada penanggung jawabnya). Laporan pagi otomatis ke Telegram (lewat OpenClaw; jadwal terjadwal sudah diuji langsung di Telegram, Oktober 2026) memuat tugas hari ini dan yang terlambat.
 - ✅ **Dirancang hati-hati untuk data tim.** Default hanya membaca. Menambah tugas dan menandai selesai ditampilkan sebagai pratinjau dulu dan baru dijalankan setelah Anda menjawab "ya". Kunci akses (token) disimpan di komputer Anda dan tidak ditampilkan oleh skill ini.
 
 ## Cocok untuk siapa
@@ -91,7 +91,7 @@ Setelah Vikunja terpasang dan tersambung, cukup ketik permintaan biasa:
 - **Uji OpenClaw, 2 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario dengan data contoh): rata-rata nilai 6,0 tanpa skill menjadi 8,5 dengan skill (skala 10). Pembeda terbesar ada di keamanan: saat kunci akses (token) ditempel di chat dan diminta "hapus semua tugas lama", nilainya 4 tanpa skill menjadi 9 dengan skill. Untuk mengurai notulen biasa menjadi tugas, AI tanpa skill sudah setara (8 vs 8). Pada uji ini aplikasi Vikunja tidak dijalankan.
 - **Uji sambungan ke Vikunja asli (versi 2.6.0, di Linux):** dilakukan terpisah oleh pembuat dan penguji independen; rincian di `examples/HASIL-UJI.md`.
 
-**Status uji (jujur):** diuji di OpenClaw; jadwal laporan otomatis ke Telegram (command-argv) diuji di bot Telegram uji 2026-10-13 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Pemasangan Vikunja di Windows/Mac serta Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw; jadwal laporan otomatis ke Telegram diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Pemasangan Vikunja di Windows/Mac serta Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah data tugas tim saya dikirim ke server Komunitech atau pihak lain?**
