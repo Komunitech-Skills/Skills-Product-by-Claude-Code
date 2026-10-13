@@ -1,7 +1,7 @@
 # Contoh 3 - Kursus Excel online, Google Ads
 
 > Contoh uji pembuat (simulasi agent, 2026-09-26; output diperbarui ke v1.0.1). Data fiktif yang meniru kasus UMKM nyata;
-> bukan hasil uji independen (itu dilakukan penguji terpisah sesuai CLAUDE.md Tahap 6).
+> bukan hasil uji independen (itu dilakukan penguji terpisah sesuai pedoman kurasi Komunitech tahap 6).
 
 ## Permintaan pengguna
 "Saya jualan kursus Excel online lewat Google Ads, klik banyak tapi pendaftar sedikit. Audit dong."

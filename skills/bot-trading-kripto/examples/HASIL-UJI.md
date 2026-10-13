@@ -1,6 +1,6 @@
 # HASIL UJI INDEPENDEN — bot-trading-kripto v1.0.0
 
-- **Penguji:** agent independen (bukan pembuat), 2026-09-29. Hanya membaca folder skill, CLAUDE.md, dan
+- **Penguji:** agent independen (bukan pembuat), 2026-09-29. Hanya membaca folder skill, pedoman kurasi Komunitech, dan
   (riset internal kurator, tidak disertakan dalam paket). SKILL.md & scripts **tidak diubah**.
 - **Lingkungan:** salinan skill di scratchpad (di luar repo git), Python 3 standar, Linux. Tanpa uang/kunci asli;
   order live hanya ke server tiruan lokal dengan contoh kunci publik dari dokumentasi resmi.
@@ -39,7 +39,7 @@ ringkasan DJP https://www.pajak.go.id/index.php/en/node/118105):
   PPMSE belum ditunjuk. ✔
 - Pasal 2 ayat (1): penyerahan aset kripto (dipersamakan surat berharga) **tidak dikenai PPN**. ✔
 - Pasal 28: berlaku **1 Agustus 2025**; ditetapkan 25 Juli 2025. ✔
-- Tidak ada aturan pembulatan di PMK; pembulatan ke bawah = standar CLAUDE.md, disebut "belum dicocokkan Coretax". ✔
+- Tidak ada aturan pembulatan di PMK; pembulatan ke bawah = standar pedoman kurasi Komunitech, disebut "belum dicocokkan Coretax". ✔
 - Dua catatan → temuan M2 & L8 di bawah (swap kripto-kripto; PPN jasa platform Pasal 2 ayat (2)).
 
 ## 3. Stres lapisan risiko (semua paper)

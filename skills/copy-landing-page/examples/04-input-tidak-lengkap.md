@@ -20,7 +20,7 @@ SKILL.md Langkah "Kalau info kurang": *"tanyakan SEKALI dalam satu pesan berisi 
 >
 > Kalau kamu belum tahu produknya secara detail, minimal kasih tahu dulu jualan apa ya — bagian lain saya bisa pakai default (nada santai-profesional, bayar transfer & QRIS, tanpa testimoni dulu)."
 
-**Tidak** mencoba mengarang produk generik ("Produk Berkualitas Terbaik untuk Semua Kebutuhan Anda") hanya supaya ada output — ini sesuai prinsip "Powerful: hasil langsung siap pakai" di `CLAUDE.md` dan "Hindari headline generik" di `references/struktur-halaman.md`.
+**Tidak** mencoba mengarang produk generik ("Produk Berkualitas Terbaik untuk Semua Kebutuhan Anda") hanya supaya ada output — ini sesuai prinsip "Powerful: hasil langsung siap pakai" di `pedoman kurasi Komunitech` dan "Hindari headline generik" di `references/struktur-halaman.md`.
 
 ## Uji lanjutan: pengguna menjawab minimal
 > "Oh iya lupa, jual jasa titip beli oleh-oleh khas Bandung, harga jasa 15% dari total belanja."

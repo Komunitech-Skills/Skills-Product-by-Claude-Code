@@ -19,7 +19,7 @@
 | E jasa | 7 × 33.333,33 disk 12,5% | tanpa | 204.167 | 0 | 204.167 | – | 204.166,65 | **0** |
 | F qty desimal | 1,75 × 99.999,99 disk 33,33%; 0,5 × 1 | umum | 116.673 | 12.834,03 → **12.834** | 129.507 | 106.950,25 | 116.672,99 | **0** |
 
-Standar CLAUDE.md dipatuhi: PPN dari DPP persis (bukan dari DPP 11/12 yang sudah dibulatkan), dibulatkan ke bawah **sekali**; total baris ke rupiah terdekat. `dpp_cara_dolibarr` script = hitungan sen penguji di keenam skenario, dan untuk skenario A sama dengan angka **Dolibarr 24.0.1 asli** yang dicatat penguji v1.0.2 (1.280.157,50).
+Standar pedoman kurasi Komunitech dipatuhi: PPN dari DPP persis (bukan dari DPP 11/12 yang sudah dibulatkan), dibulatkan ke bawah **sekali**; total baris ke rupiah terdekat. `dpp_cara_dolibarr` script = hitungan sen penguji di keenam skenario, dan untuk skenario A sama dengan angka **Dolibarr 24.0.1 asli** yang dicatat penguji v1.0.2 (1.280.157,50).
 
 ### 1b. Idempotensi perintah yang diulang
 | Uji | Hasil |

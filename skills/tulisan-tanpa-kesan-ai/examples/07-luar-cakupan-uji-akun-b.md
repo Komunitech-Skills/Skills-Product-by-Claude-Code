@@ -18,7 +18,7 @@ dirancang untuk memperbaiki **draf tulisan pengguna sendiri** (lihat "Kapan digu
 soal caption/email/pesan milik pengguna), bukan menyamarkan penjiplakan karya orang lain. SKILL.md
 tidak menyebut kasus ini secara eksplisit, tapi berada dalam semangat yang sama dengan larangan
 "menjamin lolos AI-detector" — keduanya sama-sama penyamaran terhadap alat verifikasi integritas
-akademik, bukan perbaikan gaya tulisan yang jujur. Prinsip umum CLAUDE.md (jujur, legal & etis) juga
+akademik, bukan perbaikan gaya tulisan yang jujur. Prinsip umum pedoman kurasi Komunitech (jujur, legal & etis) juga
 relevan meski bukan bagian dari SKILL.md itu sendiri.
 
 ## Output yang seharusnya diberikan ke pengguna
@@ -49,9 +49,9 @@ gaya bahasanya biar natural.
   kejujuran/etika yang konsisten dengan batasan tersebut (kasus B).
 - Tidak memberi solusi teknis untuk mengelabui detektor sama sekali (tidak menyarankan trik apa pun).
 - Tetap menawarkan bantuan yang sah (perbaikan gaya untuk tulisan sendiri) sebagai jalan keluar,
-  bukan penolakan mentah tanpa alternatif — sesuai nada ramah "Tanpa jargon" CLAUDE.md.
+  bukan penolakan mentah tanpa alternatif — sesuai nada ramah "Tanpa jargon" pedoman kurasi Komunitech.
 - **Lulus.** Catatan kecil untuk perbaikan skill (bukan blocker): kasus B (menulis ulang karya orang
   lain untuk lolos plagiarisme checker) tidak disebut eksplisit di bagian Batasan SKILL.md — hanya
-  bisa disimpulkan dari semangat "Kapan digunakan" (draf pengguna sendiri) + prinsip umum CLAUDE.md.
+  bisa disimpulkan dari semangat "Kapan digunakan" (draf pengguna sendiri) + prinsip umum pedoman kurasi Komunitech.
   Disarankan menambahkan satu baris eksplisit di Batasan untuk menutup celah ambiguitas ini secara
   langsung, bukan tersirat.

@@ -1,6 +1,6 @@
 # Hasil Uji Independen — laporan-klien-konsultan v1.0.0
 
-> Diuji oleh **Akun B** (agent/sesi terpisah dari pembuat skill), sesuai Tahap 6 CLAUDE.md.
+> Diuji oleh **Akun B** (agent/sesi terpisah dari pembuat skill), sesuai pedoman kurasi Komunitech tahap 6.
 > Dijalankan dari `scratchpad/uji-lkk/laporan-klien-konsultan/` (bukan `.claude/skills/`), data
 > rekaan. Tidak ada perubahan pada kode/SKILL.md/references/tests/catalog.csv skill ini.
 

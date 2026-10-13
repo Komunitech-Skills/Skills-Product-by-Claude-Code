@@ -22,7 +22,7 @@ tidak ada di sumber (lihat "Apa yang diubah/ditambahkan").
   `plugin-submission.md`, `PRIVACY.md`, `TERMS.md` — semuanya infrastruktur distribusi plugin sumber,
   bukan bagian yang diadaptasi.
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - File `LICENSE` di root repo sumber dicek langsung: MIT, Copyright (c) 2026 Peter Yang — mengizinkan
   modifikasi & penjualan turunan.
 - Seluruh isi `skills/no-ai-slop/SKILL.md` dan `skills/no-ai-slop/eval.md` dibaca penuh (97 + 43
@@ -34,7 +34,7 @@ tidak ada di sumber (lihat "Apa yang diubah/ditambahkan").
   sepintas untuk memastikan tidak ada payload berbahaya, namun **tidak dijalankan** dan **tidak
   diadaptasi** — di luar cakupan skill ini.
 - Tidak ditemukan API key, token, atau data pribadi tertanam di bagian yang diadaptasi.
-- Sinyal bukti pemakaian nyata (Tahap 2 CLAUDE.md): repo aktif dirawat, ★11,3k/Fork 775 (dicatat di
+- Sinyal bukti pemakaian nyata (pedoman kurasi Komunitech): repo aktif dirawat, ★11,3k/Fork 775 (dicatat di
   catatan riset internal kurator (tidak disertakan dalam paket) #15), instruksi spesifik & teruji (dilengkapi
   `eval.md` sebagai checklist verifikasi), dipakai lintas platform (ChatGPT/Claude/Codex sesuai
   README sumber). Lolos ambang kurasi.

@@ -1,5 +1,5 @@
 # Hasil Uji Ulang Independen - iterasi-dari-masukan-pelanggan v1.0.1
-Penguji ulang: agent terpisah (bukan pembuat, bukan penguji pertama), 2026-09-29. Hanya membaca folder skill + CLAUDE.md;
+Penguji ulang: agent terpisah (bukan pembuat, bukan penguji pertama), 2026-09-29. Hanya membaca folder skill + pedoman kurasi Komunitech;
 set berlabel pembuat di scratchpad TIDAK dibaca. Platform: `claude-code (simulasi agent)`.
 Berkas bantu (data uji, pengukur): scratchpad `uji-ulang-iterasi/` (`label_penguji.py`, `ukur_penguji.py`, `negasi.py`, `kolom/`, `skala/`, `dup/`, `rusak/`, `s1`-`s4`).
 
@@ -99,7 +99,7 @@ Keterbatasan tersisa (sengaja tidak ditangani, sudah ada di Batasan/peringatan):
 
 
 ## Uji ulang 1.0.2 (penguji independen kedua, 2026-09-30)
-Penguji: agent terpisah (bukan pembuat, bukan penguji 1.0.1). Hanya membaca folder skill + CLAUDE.md. Platform: `claude-code (simulasi agent)`.
+Penguji: agent terpisah (bukan pembuat, bukan penguji 1.0.1). Hanya membaca folder skill + pedoman kurasi Komunitech. Platform: `claude-code (simulasi agent)`.
 Berkas bantu: scratchpad `uji-ulang-iterasi2/` (`label.py` = set berlabel baru, `ukur.py`, `fitur.py`, `f/` = berkas uji).
 
 ### A. Pemeriksaan dasar

@@ -18,7 +18,7 @@ karena **belum ada uji terhadap Grist sungguhan** (masih tiruan di kedua sisi, p
 
 ## Temuan berprioritas
 
-1. **[TINGGI, harus diperbaiki sebelum rilis] Overclaim di README/CLAUDE.md soal format Rupiah.**
+1. **[TINGGI, harus diperbaiki sebelum rilis] Overclaim di README/pedoman kurasi Komunitech soal format Rupiah.**
    Contoh "Rp 1,25jt" disebut sebagai format yang "dirapikan otomatis", tapi diuji langsung:
    `_bersihkan_angka("Rp 1,25jt")` → `None` (tidak dikonversi). Regex `ANGKA_RP` tidak menerima
    singkatan "jt"/"rb"/"ribu"/"juta" yang lazim dipakai UMKM. Perbaiki salah satu: (a) tambah

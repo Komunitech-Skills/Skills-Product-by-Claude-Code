@@ -11,7 +11,7 @@
 - **Bagian yang dipelajari:** `skills/seo-audit/SKILL.md` (kerangka & prioritas audit teknis-onpage-konten, ambang aman title/meta description, catatan keterbatasan deteksi schema lewat `web_fetch`/`curl`, format laporan Issue/Impact/Evidence/Fix/Priority), sekilas `skills/schema/SKILL.md` (daftar field wajib/disarankan per tipe schema.org) dan `skills/programmatic-seo/SKILL.md` (dibaca untuk menilai relevansi cakupan — di luar cakupan audit satu halaman, tidak diadaptasi).
 - **Bagian yang TIDAK dipakai:** `ai-seo` (AI Overviews/GEO — di luar cakupan audit dasar toko online), `programmatic-seo` (pembuatan halaman skala besar — beda fungsi dari audit), bagian "International SEO/hreflang" di `seo-audit` (tidak relevan untuk mayoritas toko online UMKM satu bahasa).
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - File `LICENSE` di root repo sumber dicek langsung: MIT, Copyright (c) 2025 Corey Haines — mengizinkan modifikasi & penjualan turunan.
 - Tidak ada file `LICENSE` terpisah per-skill di `skills/*/` — seluruh repo tunduk pada satu `LICENSE` MIT di root.
 - Skill `seo-audit`, `schema`, dan `programmatic-seo` tidak memiliki folder `scripts/` — hanya berisi `SKILL.md`, `references/*.md`, dan `evals/evals.json` (kasus uji, tidak dijalankan). Tidak ada kode dari sumber ini yang dijalankan.

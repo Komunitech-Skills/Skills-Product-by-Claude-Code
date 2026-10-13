@@ -11,7 +11,7 @@
 - **Bagian yang dipelajari:** skill `skills/copywriting/SKILL.md`, `skills/cro/SKILL.md`, dan `skills/offers/SKILL.md` (kerangka halaman, prinsip benefit-over-feature, value equation, dan daftar larangan taktik manipulatif/scarcity palsu).
 - **Bagian yang TIDAK dipakai:** skill lain di repo tersebut (mis. `pricing`, `signup`, `ads`, `social`) tidak relevan dengan cakupan `copy-landing-page` dan tidak diadaptasi.
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - File `LICENSE` di root repo sumber dicek langsung: MIT, Copyright (c) 2025 Corey Haines — mengizinkan modifikasi & penjualan turunan.
 - Tidak ditemukan file `LICENSE` terpisah per-skill di dalam `skills/*/` — seluruh repo tunduk pada satu `LICENSE` MIT di root.
 - Skill `copywriting`, `cro`, dan `offers` tidak memiliki folder `scripts/` — tidak ada kode yang dijalankan dari sumber ini.

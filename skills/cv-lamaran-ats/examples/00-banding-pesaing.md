@@ -12,7 +12,7 @@ tidak disalin**):
   dikecualikan** sesuai instruksi penguji (lisensi tidak sah untuk dipakai sebagai
   pembanding produk berbayar).
 - `unnati06/ats-checker-skill` — MIT, 0 bintang, 2 commit. Terlalu belum terbukti
-  untuk jadi pembanding utama (gagal ambang "terbukti" CLAUDE.md §Tahap 2), tapi
+  untuk jadi pembanding utama (gagal ambang "terbukti" pedoman kurasi Komunitech §Tahap 2), tapi
   fiturnya (skor 0-100 + rating per bagian) relevan untuk dinilai.
 - `dabydat/resume-builder-skill` — MIT, 59 bintang, klaim "battle-tested 500K+
   engineers r/EngineeringResumes" (klaim promosi, tidak diverifikasi independen).

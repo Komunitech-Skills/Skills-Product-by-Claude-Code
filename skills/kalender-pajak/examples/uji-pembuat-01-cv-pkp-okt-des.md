@@ -1,6 +1,6 @@
 # Contoh 01 (Normal) — "CV saya PKP, karyawan 3, sering potong PPh 23. Jadwal pajak Oktober–Desember 2026"
 
-> Dibuat oleh **pembuat skill** untuk verifikasi awal (menjalankan script sungguhan dan memeriksa hasilnya dengan kalender secara independen), **bukan pengganti** pengujian independen Tahap 6 CLAUDE.md. Tanggal uji: 2026-09-25, Python 3 (Linux).
+> Dibuat oleh **pembuat skill** untuk verifikasi awal (menjalankan script sungguhan dan memeriksa hasilnya dengan kalender secara independen), **bukan pengganti** pengujian independen pedoman kurasi Komunitech tahap 6. Tanggal uji: 2026-09-25, Python 3 (Linux).
 
 > **Catatan pembaruan (2026-10-13):** tabel di bawah berasal dari verifikasi awal (skill v1.0.0; 18 baris) dan belum memuat baris unggah faktur pajak keluaran tanggal 20 untuk PKP (ditambahkan sejak v1.0.1). Keluaran skill versi terbaru (v1.0.7) untuk perintah yang sama (21 baris) ada di bagian "Keluaran skill versi terbaru (v1.0.7)" di akhir berkas; contoh ini juga dirujuk dari SKILL.md.
 

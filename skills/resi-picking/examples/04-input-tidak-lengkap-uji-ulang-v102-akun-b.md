@@ -19,4 +19,4 @@ python3 scripts/resi.py pesanan-minimal.csv --json
   2 jenis barang — cocok dengan `total_barang: 8.0` di JSON.
 
 **Hasil: BENAR.** Skill tetap berguna dan jujur soal keterbatasannya saat input minimal, sesuai
-prinsip CLAUDE.md "instan tapi reliable" (pakai default masuk akal + sebutkan asumsi/keterbatasan).
+prinsip pedoman kurasi Komunitech "instan tapi reliable" (pakai default masuk akal + sebutkan asumsi/keterbatasan).

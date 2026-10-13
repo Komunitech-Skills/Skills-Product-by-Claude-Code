@@ -84,7 +84,7 @@ pasca-tulis seperti `cek_sitasi.py` kita.
    teks di antara tanda kutip `"..."` benar-benar muncul verbatim di sumber — itu masih 100% tanggung
    jawab manusia/agent. Ide: tambahkan mode opsional yang membandingkan teks kutipan dengan salinan
    halaman sumber yang ditempel pengguna (tanpa perlu akses jaringan dari script itu sendiri, tetap
-   stdlib-only sesuai aturan CLAUDE.md).
+   stdlib-only sesuai aturan pedoman kurasi Komunitech).
 2. **Pendaftaran sumber "sebelum menulis"**: pesaing memaksa urutan register-dulu-baru-tulis. Skill kita
    bisa memperkuat instruksi di §4 Langkah Kerja agar draf sementara `templates/daftar-pustaka.md` diisi
    dan dikonfirmasi **sebelum** draf ditulis (sudah ada di alur, tapi bisa ditegaskan lebih keras sebagai

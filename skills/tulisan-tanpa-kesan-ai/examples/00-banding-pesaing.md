@@ -1,4 +1,4 @@
-# Uji Banding Pesaing (Wajib, Tahap 6 CLAUDE.md)
+# Uji Banding Pesaing (Wajib, pedoman kurasi Komunitech tahap 6)
 
 Skill pesaing dibaca penuh untuk dinilai, **tidak disalin** ke produk kami.
 

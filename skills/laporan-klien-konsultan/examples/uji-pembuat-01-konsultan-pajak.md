@@ -1,7 +1,7 @@
 # Contoh 01 — Konsultan pajak, laporan mingguan untuk satu klien
 
 > Dijalankan sendiri oleh pembuat skill saat pengembangan (bukan uji independen Tahap 6
-> `CLAUDE.md` — itu perlu agent/sesi terpisah yang belum dilakukan untuk skill ini). Disertakan
+> `pedoman kurasi Komunitech` — itu perlu agent/sesi terpisah yang belum dilakukan untuk skill ini). Disertakan
 > agar pembeli/reviewer bisa melihat contoh nyata input → output sebelum memakainya. Semua nama
 > klien dan angka **fiktif**.
 

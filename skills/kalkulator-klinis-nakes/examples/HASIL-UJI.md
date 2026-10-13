@@ -1,6 +1,6 @@
 # HASIL UJI — kalkulator-klinis-nakes v1.0.0
 
-- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md.
+- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech.
 - **Tanggal:** 2026-09-29. **Platform:** `claude-code (simulasi agent)`; uji muat OpenClaw 2026.9.6
   (`scripts/uji_openclaw.sh`): skill ini **eligible/modelVisible/commandVisible** (3 skill lain
   di repo gagal, bukan skill ini).

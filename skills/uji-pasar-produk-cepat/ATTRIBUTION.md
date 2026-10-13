@@ -16,7 +16,7 @@ Teks lisensi asli: [`LICENSE-APACHE`](LICENSE-APACHE) (root repo product-on-purp
 ## Pernyataan perubahan (Apache-2.0 §4(b))
 Seluruh materi telah **diubah**: tidak ada berkas sumber yang disalin apa adanya. Struktur langkah yang dipertahankan: (a) daftar asumsi berisiko dengan prioritas dampak x risiko (dari phuryn `identify-assumptions-new` / `prioritize-assumptions`, konsep Teresa Torres dan Impact x Risk); (b) hipotesis "sedikitnya X% dari Y akan melakukan Z" dan prinsip "aksi nyata lebih kuat dari opini" / pretotype (phuryn `brainstorm-experiments-new`, gagasan Alberto Savoia); (c) kriteria sukses ditetapkan sebelum uji dan pola desain eksperimen (product-on-purpose `measure-experiment-design`); (d) opsi persevere/pivot beserta bukti dan dokumen keputusan (product-on-purpose `iterate-pivot-decision`).
 
-## Audit lisensi & keamanan (Tahap 2-3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - `LICENSE` kedua repo dicek langsung: Apache-2.0 dan MIT, mengizinkan modifikasi dan penjualan turunan dengan atribusi.
 - Skill sumber yang dipakai dibaca penuh. Pencarian pola (perintah destruktif, `curl`, `eval`, base64, SSH/token, "ignore previous instructions") pada folder skill tersebut: **tidak ditemukan**. Skill sumber hanya berisi instruksi teks; tidak ada script yang dijalankan. Skrip CI/tooling repo sumber tidak disalin.
 - Tidak ada API key/data pribadi tertanam.

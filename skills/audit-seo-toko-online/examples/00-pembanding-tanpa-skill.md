@@ -1,6 +1,6 @@
 # Uji A/B — Tanpa Skill vs Dengan Skill
 
-> Dibuat oleh **penguji independen**, Tahap 6 butir 4 CLAUDE.md. Memakai skenario normal pertama (`01-woocommerce-keripik-title-panjang.md`): halaman produk keripik pedas Bandung dengan title kepanjangan, tanpa meta description, gambar tanpa alt.
+> Dibuat oleh **penguji independen**, Tahap 6 butir 4 pedoman kurasi Komunitech. Memakai skenario normal pertama (`01-woocommerce-keripik-title-panjang.md`): halaman produk keripik pedas Bandung dengan title kepanjangan, tanpa meta description, gambar tanpa alt.
 
 ## Permintaan pengguna (sama persis untuk kedua kondisi)
 > "Audit SEO halaman produk toko saya dong: https://tokorenyahjaya.co.id/produk/keripik-pedas-bandung-250gr/ — saya tempel HTML-nya juga. Kata kunci yang saya incar: 'keripik pedas Bandung'."
@@ -39,4 +39,4 @@ Lihat hasil lengkap di `01-woocommerce-keripik-title-panjang.md`. Ringkasan perb
 - **Teks siap tempel yang sudah dihitung ulang panjangnya** (title baru 50 karakter, meta description baru 143 karakter) — pengguna tinggal salin-tempel, bukan menebak sendiri.
 
 ## Kesimpulan
-Skill **jelas lebih baik**, bukan hanya "sedikit lebih rapi": tanpa skill, respons berisi **karangan angka volume pencarian, janji peringkat, dan saran berisiko (ulasan insentif)** — tiga pelanggaran yang justru dilarang tegas oleh skill ini. Dengan skill, semua angka dihitung & diverifikasi, tidak ada janji palsu, dan hasilnya langsung bisa ditempel. Perbandingan ini memenuhi Tahap 6 butir 4 CLAUDE.md — skill memberi nilai tambah yang jelas, bukan skor maksimal 6.
+Skill **jelas lebih baik**, bukan hanya "sedikit lebih rapi": tanpa skill, respons berisi **karangan angka volume pencarian, janji peringkat, dan saran berisiko (ulasan insentif)** — tiga pelanggaran yang justru dilarang tegas oleh skill ini. Dengan skill, semua angka dihitung & diverifikasi, tidak ada janji palsu, dan hasilnya langsung bisa ditempel. Perbandingan ini memenuhi Tahap 6 butir 4 pedoman kurasi Komunitech — skill memberi nilai tambah yang jelas, bukan skor maksimal 6.

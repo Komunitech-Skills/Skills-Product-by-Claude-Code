@@ -61,7 +61,7 @@ Ekspor EMKM skenario 01 → `laporan_emkm.py`: laba Rp 914.749 (EMKM bulat), tot
 
 ## Lampiran — Uji pembuat (Akun A), dipertahankan apa adanya
 
-> Ini uji **pembuat skill**, bukan uji independen. Sesuai CLAUDE.md Tahap 6, skill belum boleh berstatus `lulus` sebelum diuji agent/sesi terpisah (5 skenario, uji A/B `00-pembanding-tanpa-skill.md`, uji banding pesaing `00-banding-pesaing.md`). Skor kualitas sengaja dikosongkan.
+> Ini uji **pembuat skill**, bukan uji independen. Sesuai pedoman kurasi Komunitech tahap 6, skill belum boleh berstatus `lulus` sebelum diuji agent/sesi terpisah (5 skenario, uji A/B `00-pembanding-tanpa-skill.md`, uji banding pesaing `00-banding-pesaing.md`). Skor kualitas sengaja dikosongkan.
 
 - **Tanggal:** 2026-09-26
 - **Lingkungan:** Linux x86_64, Python 3.11.

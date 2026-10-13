@@ -24,7 +24,7 @@
 ## Bagian yang TIDAK dipakai
 Metrik nilai SaaS (per seat/usage/credit/outcome), freemium vs free trial, harga enterprise, audit halaman harga & kesiapan dibaca AI (pricing-page-teardown), MaxDiff, proyeksi ARR, contoh harga dolar dan aturan "$10/$100/$1.000" — tidak relevan untuk UMKM Indonesia yang menjual produk fisik/jasa.
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - File `LICENSE` di root kedua repo dibaca langsung: MIT, mengizinkan modifikasi & penjualan turunan dengan menyertakan pemberitahuan hak cipta + teks lisensi (disertakan di folder ini).
 - Sinyal bukti (dari catatan riset internal kurator (tidak disertakan dalam paket)): marketingskills ±51,9 rb bintang / 7,8 rb fork, 473 commit, masih aktif, sudah dipakai untuk 3 skill kita; pm-skills ±26,7 rb bintang / 2,8 rb fork, rilis v2.0–v2.1, ada PR kontributor luar. Keduanya lolos ≥ 3 sinyal.
 - Folder sumber yang dipakai tidak berisi script (hanya `.md` dan `evals/evals.json` yang tidak dijalankan). Tidak ada kode sumber yang dijalankan.

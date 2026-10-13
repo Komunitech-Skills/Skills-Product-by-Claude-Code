@@ -1,7 +1,7 @@
 # HASIL UJI - program-referral-loyalitas v1.0.0
 
 - **Tanggal:** 2026-09-30
-- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md. Skill disalin ke scratchpad `.../scratchpad/uji-referral/`, tidak dipasang di `.claude/skills` repo.
+- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech. Skill disalin ke scratchpad `.../scratchpad/uji-referral/`, tidak dipasang di `.claude/skills` repo.
 - **Platform:** claude-code (simulasi agent). Uji muat OpenClaw otomatis: lihat bawah.
 
 ## 1. Ringkasan

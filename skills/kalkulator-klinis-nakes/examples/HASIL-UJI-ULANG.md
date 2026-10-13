@@ -1,7 +1,7 @@
 # HASIL UJI ULANG — kalkulator-klinis-nakes v1.0.1
 
 - **Penguji:** agent independen kedua (bukan pembuat, bukan penguji v1.0.0). Hanya membaca folder
-  skill ini + CLAUDE.md. Skill **tidak diubah** oleh penguji.
+  skill ini + pedoman kurasi Komunitech. Skill **tidak diubah** oleh penguji.
 - **Tanggal:** 2026-09-29. **Platform:** `claude-code (simulasi agent)`.
 - **Script penguji (ditulis ulang dari nol, tidak menyalin logika script skill):** scratchpad
   `uji-ulang-klinis/verif.py` — MAP & ambang dengan `Fraction`, tampilan 1 desimal dengan

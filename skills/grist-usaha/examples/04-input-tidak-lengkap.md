@@ -43,7 +43,7 @@ GAGAL: Dokumen 'Toko Saya' tidak ditemukan. Dokumen yang bisa diakses kunci ini:
 > **Pengguna:** "Bantu aku rapikan data di Grist dong"
 
 Terlalu umum untuk langsung dieksekusi — agent tidak menebak, tapi juga tidak diam. Balasan
-(satu pesan, beberapa pertanyaan singkat sekaligus, sesuai prinsip "instan" di CLAUDE.md):
+(satu pesan, beberapa pertanyaan singkat sekaligus, sesuai prinsip "instan" di pedoman kurasi Komunitech):
 
 > Boleh, supaya pas: (1) datanya tentang apa — pelanggan, pesanan, stok, atau jadwal konten
 > sosmed? (2) sudah ada tabelnya di Grist atau perlu dibuatkan baru? (3) nama dokumen Grist-nya

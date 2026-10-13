@@ -91,7 +91,7 @@ Alasan:
   sementara pemeriksaan kesehatan (`cek`) melapor sukses — kontradiksi ini sudah
   diketahui pembuat sendiri di catatan internal (`references/sumber-api-stirling.md`)
   tapi tidak sampai ke panduan yang dibaca pembeli. Ini bertentangan langsung dengan
-  prinsip inti CLAUDE.md "instan, tanpa setup rumit, reliable" untuk pembeli awam yang
+  prinsip inti pedoman kurasi Komunitech "instan, tanpa setup rumit, reliable" untuk pembeli awam yang
   butuh OCR — mayoritas pembeli yang mengikuti Jalur B akan mengira mereka sudah
   siap pakai padahal belum.
 - (−) S1 & R1-R3 kekurangan minor pada dokumentasi/instruksi, tidak fatal sendiri-sendiri

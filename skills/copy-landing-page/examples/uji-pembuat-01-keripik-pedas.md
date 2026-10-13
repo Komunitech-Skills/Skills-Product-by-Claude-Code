@@ -122,4 +122,4 @@ Rp25.000/bungkus. Kirim seluruh Indonesia, COD area Solo.
 ---
 
 ## Ringkasan
-Contoh ini menunjukkan alur lengkap: pertanyaan tunggal saat info kurang → struktur halaman lengkap → versi pendek → 3 variasi headline → meta SEO terukur via script → tautan WA valid via script → ceklis kepatuhan sesuai `references/dasar-hukum-klaim.md`. Uji independen (A/B tanpa-vs-dengan skill, banding pesaing, skenario tambahan, dan skor kualitas) dilakukan terpisah oleh penguji lain sesuai Tahap 6 CLAUDE.md.
+Contoh ini menunjukkan alur lengkap: pertanyaan tunggal saat info kurang → struktur halaman lengkap → versi pendek → 3 variasi headline → meta SEO terukur via script → tautan WA valid via script → ceklis kepatuhan sesuai `references/dasar-hukum-klaim.md`. Uji independen (A/B tanpa-vs-dengan skill, banding pesaing, skenario tambahan, dan skor kualitas) dilakukan terpisah oleh penguji lain sesuai pedoman kurasi Komunitech tahap 6.

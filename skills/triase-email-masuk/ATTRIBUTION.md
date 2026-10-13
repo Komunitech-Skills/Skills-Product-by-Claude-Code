@@ -6,7 +6,7 @@
 ## Sumber ide
 Konsep umum "triase kotak masuk" dan tanda-tanda phishing yang dikenal luas dalam panduan keamanan publik. Tidak ada teks, contoh, template, atau kode dari proyek lain yang disalin. Tidak ada repositori yang di-clone dan tidak ada kode luar yang dijalankan.
 
-## Audit keamanan (Tahap 3 CLAUDE.md)
+## Audit keamanan (pedoman kurasi Komunitech)
 `scripts/triase_email.py` (karya Komunitech) memakai pustaka standar saja (`argparse`, `csv`, `email`, `mailbox`, `re`, `json`, `datetime`, `decimal`, `pathlib`, `urllib.parse`); hanya membaca berkas yang diberikan pengguna, tidak membuka tautan, tidak ada akses jaringan, tidak ada `eval`/`exec`/`subprocess`, tidak menulis berkas kecuali `--keluar` yang diminta pengguna. Nama, perusahaan, alamat email, dan domain di `examples/` fiktif.
 
 ## Merek pihak ketiga

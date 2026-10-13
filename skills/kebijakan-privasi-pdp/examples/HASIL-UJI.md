@@ -99,7 +99,7 @@ Rumus & pembulatan konsisten; status mengikuti ambang ≥85/60 sesuai `reference
 - **R-6 Tingkat GDPR/CCPA tidak konsisten**: script SEDANG, checklist C bagian 2 menyebut TINGGI.
 - **R-7 Alasan risiko berbahasa Inggris** tampil untuk pengguna Indonesia bila frasanya berbahasa Inggris (mis. "We may sell…"). Perbaikan: pakai alasan ID (sebut juga EN bila perlu).
 - **R-8 SKILL.md**: tidak ada panduan bila tenggat 3×24 jam kebocoran **sudah lewat** (skenario 05); opsi "jawab 1–3 saja" untuk pengguna yang ingin cepat belum tertulis; pertanyaan data kesehatan/anak (wajib) hanya tersirat di pertanyaan no. 3.
-- **R-9 README** menyebut `CARA-INSTAL.md`, sedangkan CLAUDE.md menyatakan paket berisi `docs/instalasi.md` — pastikan nama file sesuai hasil `build.py`.
+- **R-9 README** menyebut `CARA-INSTAL.md`, sedangkan pedoman kurasi Komunitech menyatakan paket berisi `docs/instalasi.md` — pastikan nama file sesuai hasil `build.py`.
 - ℹ Saran dari banding pesaing: tambahkan ringkasan 3–5 baris di awal output mode SUSUN dan pengingat perjanjian pengendali–prosesor (Ps. 51); celah PP 33/2026 data anak (identifikasi & verifikasi persetujuan orang tua) untuk aplikasi/layanan anak.
 
 ## 5. Skor kualitas: **7/10** — lulus bersyarat (perbaiki T-1, T-2, S-1, S-4 sebelum beta)

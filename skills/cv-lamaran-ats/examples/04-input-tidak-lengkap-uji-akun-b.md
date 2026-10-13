@@ -34,7 +34,7 @@ Sebelum saya bantu, saya perlu beberapa info (jawab dalam satu pesan ya):
 - **Temuan RINGAN:** SKILL.md tidak secara eksplisit membatasi urutan prioritas
   pertanyaan bila jawaban pengguna nanti tetap tidak lengkap (mis. hanya
   menjawab 3 dari 5 poin) — apakah agent boleh bertanya sekali lagi atau harus
-  jalan dengan asumsi. Berdasarkan prinsip umum CLAUDE.md ("pakai default yang
+  jalan dengan asumsi. Berdasarkan prinsip umum pedoman kurasi Komunitech ("pakai default yang
   masuk akal dan sebutkan asumsinya" bila pengguna ingin cepat), interpretasi
   wajar: lanjut dengan default/asumsi untuk poin yang tidak dijawab kecuali itu
   riwayat pengalaman inti (yang wajib, tidak boleh dikarang). SKILL.md sendiri

@@ -1,6 +1,6 @@
 # Uji banding pesaing
 
-> Dicari via web search (WebSearch), sesuai Tahap 6 CLAUDE.md. Kata kunci: "weekly client update"
+> Dicari via web search (WebSearch), sesuai pedoman kurasi Komunitech tahap 6. Kata kunci: "weekly client update"
 > prompt/skill freelancer consultant github; ClawHub/skills.sh "client status report" freelancer
 > consultant. Pesaing **hanya dibaca untuk dinilai**, tidak disalin isinya.
 

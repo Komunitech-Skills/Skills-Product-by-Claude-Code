@@ -1,7 +1,7 @@
 # Hasil Uji Independen — `presentasi-data-ke-atasan` v1.0.0
 
 Penguji: agen terpisah dari pembuat skill, hanya membaca folder skill ini (Tahap 6
-CLAUDE.md). Tanggal: 2026-09-26.
+pedoman kurasi Komunitech). Tanggal: 2026-09-26.
 
 ## Ringkasan pengujian
 - 5 skenario dijalankan: 3 normal (`03`, `04`, `05`), 1 input tidak lengkap (`06`),
@@ -19,7 +19,7 @@ CLAUDE.md). Tanggal: 2026-09-26.
 - Atribusi MIT diperiksa: `ATTRIBUTION.md` menyebut sumber, URL, lisensi MIT, tanggal
   tinjau, dan daftar rinci yang diambil vs diubah/ditambahkan; `LICENSE-MIT` berisi
   teks lisensi MIT asli dengan nama pemegang hak cipta asli (Nimrod Fisher) — **sesuai
-  aturan lisensi MIT Tahap 2 CLAUDE.md** (atribusi + teks lisensi asli disertakan).
+  aturan lisensi MIT pedoman kurasi Komunitech tahap 2** (atribusi + teks lisensi asli disertakan).
 - Tidak ditemukan pola unduh-pipe-ke-shell, instruksi tersembunyi/prompt injection, atau
   permintaan kredensial di SKILL.md maupun script — konsisten dengan catatan audit di
   `ATTRIBUTION.md`.
@@ -67,14 +67,14 @@ CLAUDE.md). Tanggal: 2026-09-26.
    datanya** (Uji 05) — bukti kepatuhan konsisten pada larangan mengarang, diuji di dua
    skenario berbeda.
 6. Disclaimer keuangan (Batasan SKILL.md) muncul dengan benar pada skenario bank/KUR
-   (Uji 05), sesuai domain sensitif Tahap 4 poin 5 CLAUDE.md.
+   (Uji 05), sesuai domain sensitif Tahap 4 poin 5 pedoman kurasi Komunitech.
 
 ## Skor kualitas: 9/10
 
 **Alasan:**
 - Tidak ada perhitungan yang dikarang; seluruh angka di 5 skenario dan pengujian script
   terverifikasi independen dan cocok 100%.
-- Format & pembulatan konsisten sesuai standar CLAUDE.md Tahap 4 dan
+- Format & pembulatan konsisten sesuai standar pedoman kurasi Komunitech tahap 4 dan
   `references/gaya-komunikasi.md` di semua kanal dan skenario.
 - Uji A/B menunjukkan skill unggul telak dibanding respons tanpa skill (kesimpulan di
   depan, angka presisi, rekomendasi PIC/tenggat, 4 format sekaligus) — tidak memenuhi
@@ -93,4 +93,4 @@ CLAUDE.md). Tanggal: 2026-09-26.
 2. Tambahkan satu baris eksplisit di Batasan SKILL.md untuk menolak permintaan
    memalsukan arah data/mengarang target (Temuan #3).
 3. Lanjutkan ke uji muat OpenClaw (`scripts/uji_openclaw.sh`) dan uji platform asli
-   sesuai Tahap 6 poin 8–10 CLAUDE.md sebelum status naik dari `draft`/`uji` ke `lulus`.
+   sesuai Tahap 6 poin 8–10 pedoman kurasi Komunitech sebelum status naik dari `draft`/`uji` ke `lulus`.

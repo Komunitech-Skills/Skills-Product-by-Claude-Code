@@ -66,7 +66,7 @@ dan berbasis git, dicatat sebagai temuan tapi tidak sebanding). Tidak memicu bat
   memang wajar dan bukan pelanggaran.
 - (riset internal kurator, tidak disertakan dalam paket) **lengkap**: mencantumkan nama,
   URL, pembuat, commit, tanggal, lisensi, hasil audit keamanan, penilaian sinyal bukti, dan
-  keputusan — sesuai format Tahap 2 CLAUDE.md.
+  keputusan — sesuai format pedoman kurasi Komunitech tahap 2.
 - Catatan: skor sinyal bukti kurasi (Tahap 2) sendiri diakui pembuat "≈2-3 dari 5" (di
   ambang bawah), diterima karena pembuat kredibel (Anthropic resmi) dan bukan AI slop —
   penilaian ini masuk akal dan sudah didokumentasikan jujur, bukan disembunyikan.

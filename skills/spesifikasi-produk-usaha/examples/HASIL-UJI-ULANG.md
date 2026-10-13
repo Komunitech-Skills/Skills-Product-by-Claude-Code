@@ -1,6 +1,6 @@
 # HASIL UJI ULANG - spesifikasi-produk-usaha v1.0.1
 
-Penguji: agent independen (bukan pembuat, bukan penguji v1.0.0), 2026-09-29. Hanya membaca folder skill + CLAUDE.md. Platform: `claude-code (simulasi agent)`. Data uji & skrip bantu ada di scratchpad penguji (tidak di folder skill). Skill tidak diubah.
+Penguji: agent independen (bukan pembuat, bukan penguji v1.0.0), 2026-09-29. Hanya membaca folder skill + pedoman kurasi Komunitech. Platform: `claude-code (simulasi agent)`. Data uji & skrip bantu ada di scratchpad penguji (tidak di folder skill). Skill tidak diubah.
 
 ## 1. Pemeriksaan otomatis
 | Cek | Hasil |

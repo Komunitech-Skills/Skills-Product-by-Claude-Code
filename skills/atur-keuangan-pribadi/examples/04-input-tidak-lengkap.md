@@ -43,7 +43,7 @@ Inti keluaran (asli, dipotong):
 Agent lalu menyarankan pembagian sisa Rp1.700.000 (mis. transport/pulsa yang belum disebut Rp600.000, keinginan Rp400.000, dana darurat Rp700.000) sambil **menyebut asumsinya** dan meminta koreksi bila transport/pulsa sudah termasuk.
 
 ## Penilaian penguji
-- Satu pesan, daftar singkat, bahasa awam, ada contoh jawaban cepat ✓ (sesuai prinsip "instan" CLAUDE.md).
+- Satu pesan, daftar singkat, bahasa awam, ada contoh jawaban cepat ✓ (sesuai prinsip "instan" pedoman kurasi Komunitech).
 - Tidak mengarang angka sebelum ada data ✓. Setelah data ada, pos tanpa label ditandai "(tebakan)" ✓.
 - Cek angka: 9.900.000 ÷ 700.000 = 14,14 → 15 ✓; 22.800.000 ÷ 700.000 = 32,57 → 33 ✓.
 - **Hasil: LULUS.**

@@ -25,7 +25,7 @@
 | Profil `messaging` tanpa exec/read/write; rujukan `gateway/config-tools/tool-policy` | ✅ rujukan kini benar, isi tabel docs cocok |
 | `security audit --json` baca saja | ✅ sidik `openclaw.json` identik sebelum/sesudah |
 | `approvals get --json` → efektif `full`, `ask: off` | ✅ |
-| `references/openclaw.md` §8 tidak lagi merujuk `CLAUDE.md` | ✅ |
+| `references/openclaw.md` §8 tidak lagi merujuk `pedoman kurasi Komunitech` | ✅ |
 
 ## Audit keamanan skill
 Tidak ada script, panggilan jaringan, perintah destruktif, atau pembacaan kredensial. Tidak ada

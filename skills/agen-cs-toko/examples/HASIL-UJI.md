@@ -112,7 +112,7 @@ utama skill: tidak ada pengiriman otomatis ke pelanggan, dan WA hanya lewat nomo
    Sarankan: laporkan NIK sekali, abaikan "OTP" yang didahului "jangan", tangkap "kode \d{4,8}".
 7. Setup Telegram tidak memberi perintah persetujuan pairing: tambahkan `openclaw pairing list
    telegram` dan `openclaw pairing approve telegram <KODE>` (flag ada di 2026.9.5).
-8. SKILL.md baris 129 merujuk `CLAUDE.md`, yang tidak ada di paket pembeli.
+8. SKILL.md baris 129 merujuk `pedoman kurasi Komunitech`, yang tidak ada di paket pembeli.
 9. Tidak ada aturan pemilihan register (santai/formal/B2B). Ide dari pesaing `wa-reply-id`
    (lihat `00-banding-pesaing.md`) berguna untuk persona percetakan B2B.
 
@@ -144,7 +144,7 @@ coordinator` keliru, pesan penahan medis tanpa arahan IGD | angka script diverif
 | Kurangi positif palsu (NIK dobel, nomor pesanan, "pin lokasi", peringatan OTP) | ⚠️ sebagian; ada **regresi keamanan** baru (lihat bawah) |
 | Kalimat IGD/119 | ✅ references klinik baris 18–19 + template ATURAN baris 38, dengan "bukan triase" |
 | Aturan nada | ✅ SKILL.md §8 (formal-ringkas untuk B2B/jasa cetak; ramah-sopan untuk konsumen) |
-| Rujukan CLAUDE.md di file pembeli | ✅ sudah dihapus |
+| Rujukan pedoman kurasi Komunitech di file pembeli | ✅ sudah dihapus |
 
 ## 17 kasus regresi (dijalankan ulang)
 | # | Kasus | v1.0 | v1.0.1 |

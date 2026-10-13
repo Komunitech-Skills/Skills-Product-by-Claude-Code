@@ -35,7 +35,7 @@ gagal **dengan pesan error yang jelas & ramah guru**, tidak ada crash tak terdug
 ada angka salah yang lolos. Kasus banyak-pertemuan campur cocok/tidak cocok (KEKURANGAN)
 juga terverifikasi benar. **Lulus penuh.**
 
-## Kepatuhan lisensi (CLAUDE.md Tahap 2 — Apache-2.0)
+## Kepatuhan lisensi (pedoman kurasi Komunitech tahap 2 — Apache-2.0)
 | Syarat Apache-2.0 | Terpenuhi? |
 |---|---|
 | Teks lisensi lengkap disertakan | ✓ `LICENSE-APACHE.txt` — teks Apache 2.0 lengkap & benar |
@@ -72,7 +72,7 @@ juga terverifikasi benar. **Lulus penuh.**
 ## Temuan cacat
 | ID | Keparahan | Lokasi | Temuan & reproduksi |
 |---|---|---|---|
-| **CACAT-01** | **Sedang** | `SKILL.md` baris ~40 (tabel Input) vs baris ~133 (§Contoh) | Tabel Input hanya mendefinisikan SATU default gabungan **"1 pertemuan × 2 JP"** bila jumlah pertemuan & JP sama sekali tidak disebut. Tidak ada aturan terpisah "JP default per jenjang/mapel" di mana pun di Langkah Kerja/Batasan. Namun contoh bawaan `SKILL.md` sendiri (kasus identik: "IPA kelas 7 ekosistem 2 pertemuan", JP tidak disebut) menulis asumsi **"2 pertemuan × 3 JP (default SMP)"** — istilah "default SMP" itu tidak pernah didefinisikan sebagai aturan. Repro: minta ulang persis skenario yang sama ke dua sesi agent berbeda yang keduanya hanya membaca `SKILL.md` — satu bisa masuk akal mengikuti tabel Input (2 JP → 80 menit/pertemuan, seperti diuji di `01-uji-independen-modul-ajar-ipa-kelas7-ekosistem.md`), satu lagi mengikuti pola Contoh (3 JP → 120 menit/pertemuan, seperti `examples/01-modul-ajar-ipa-kelas7-ekosistem.md` milik pembuat). Keduanya tetap dihitung & diverifikasi via script (tidak ada angka salah), tapi **hasil tidak konsisten** untuk permintaan yang identik — bertentangan dengan prinsip CLAUDE.md §1 "format output konsisten". Saran: tambahkan baris eksplisit di tabel Input, mis. "JP/pertemuan tidak disebutkan → 2 JP untuk semua jenjang" ATAU tabel default JP per jenjang eksplisit, lalu selaraskan kalimat asumsi di §Contoh dengan aturan itu (hapus/ganti frasa "default SMP" yang tidak berdasar). |
+| **CACAT-01** | **Sedang** | `SKILL.md` baris ~40 (tabel Input) vs baris ~133 (§Contoh) | Tabel Input hanya mendefinisikan SATU default gabungan **"1 pertemuan × 2 JP"** bila jumlah pertemuan & JP sama sekali tidak disebut. Tidak ada aturan terpisah "JP default per jenjang/mapel" di mana pun di Langkah Kerja/Batasan. Namun contoh bawaan `SKILL.md` sendiri (kasus identik: "IPA kelas 7 ekosistem 2 pertemuan", JP tidak disebut) menulis asumsi **"2 pertemuan × 3 JP (default SMP)"** — istilah "default SMP" itu tidak pernah didefinisikan sebagai aturan. Repro: minta ulang persis skenario yang sama ke dua sesi agent berbeda yang keduanya hanya membaca `SKILL.md` — satu bisa masuk akal mengikuti tabel Input (2 JP → 80 menit/pertemuan, seperti diuji di `01-uji-independen-modul-ajar-ipa-kelas7-ekosistem.md`), satu lagi mengikuti pola Contoh (3 JP → 120 menit/pertemuan, seperti `examples/01-modul-ajar-ipa-kelas7-ekosistem.md` milik pembuat). Keduanya tetap dihitung & diverifikasi via script (tidak ada angka salah), tapi **hasil tidak konsisten** untuk permintaan yang identik — bertentangan dengan prinsip pedoman kurasi Komunitech §1 "format output konsisten". Saran: tambahkan baris eksplisit di tabel Input, mis. "JP/pertemuan tidak disebutkan → 2 JP untuk semua jenjang" ATAU tabel default JP per jenjang eksplisit, lalu selaraskan kalimat asumsi di §Contoh dengan aturan itu (hapus/ganti frasa "default SMP" yang tidak berdasar). |
 | CACAT-02 | Rendah | `SKILL.md` baris ~46-53 (aturan "tanyakan sekali") | Tidak ada aturan untuk kasus guru menjawab **sebagian** dari pertanyaan bernomor (mis. jenjang dijawab, mapel/topik masih kosong). Skill hanya mengatur "tanyakan sekali di awal" dan "jika ingin cepat, pakai default" — tidak menulis bagaimana menangani jawaban parsial tanpa mengulang pertanyaan dari nol atau mengarang mapel. Repro: lihat `examples/04-input-tidak-lengkap.md` §"Uji tambahan". Risiko rendah karena mapel/topik tetap "wajib ditanyakan" di tabel Input sehingga agent yang taat aturan itu tidak akan mengarang — tapi perilaku pastinya (tanya ulang penuh vs tanya ulang sebagian) tidak ditentukan, berisiko pengalaman tidak konsisten antar sesi. |
 | K1 | Kosmetik | `ATTRIBUTION.md` §"Pembagian lisensi" | Judul resmi halaman guru.kemendikdasmen.go.id untuk BSKAP 046/2025 memakai frasa "Perubahan atas" (amandemen), sedangkan `dasar-kurikulum.md` & `ATTRIBUTION.md` konsisten memakai "mencabut". Isi kebijakannya memang mencabut & menyatakan tidak berlaku CP 2024 (dikonfirmasi sumber kedua independen sesi ini), jadi klaim skill **tetap benar secara substansi** — hanya beda framing judul vs isi peraturan, tidak perlu revisi.
 
@@ -95,7 +95,7 @@ Alasan:
 - (+) Lulus uji muat OpenClaw 2026.9.6 (eligible/modelVisible/commandVisible).
 - (−) **CACAT-01**: SKILL.md self-contradict soal default JP ketika hanya jumlah
   pertemuan disebutkan — bisa membuat guru dapat hasil beda-beda untuk permintaan yang
-  sama, mengurangi "reliable" (prinsip CLAUDE.md §1).
+  sama, mengurangi "reliable" (prinsip pedoman kurasi Komunitech §1).
 - (−) CACAT-02: penanganan jawaban klarifikasi sebagian tidak ditentukan (risiko rendah).
 
 **Keputusan: LULUS (≥ 7)**, boleh naik ke status `lulus`. Disarankan memperbaiki

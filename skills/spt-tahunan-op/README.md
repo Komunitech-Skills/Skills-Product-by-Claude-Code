@@ -74,4 +74,4 @@ SPT badan, pisah harta/memilih terpisah, penghasilan luar negeri, rugi usaha, da
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

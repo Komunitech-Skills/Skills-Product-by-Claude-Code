@@ -15,7 +15,7 @@ skill agent pesaing langsung** yang bisa dibaca & dinilai berdampingan untuk uji
    lintas marketplace (Tokopedia/TikTok Shop), dan tidak melakukan cross-check stok gudang sendiri.
 2. **BigSeller / OneCart** — SaaS pihak ketiga berbayar (biaya bulanan/langganan), multi-channel,
    fitur lebih lengkap (barcode scanner, wave picking), tapi mengharuskan hubungkan akun toko ke
-   layanan pihak ketiga (sesuai risiko yang justru dihindari CLAUDE.md: tanpa scraping/login akun
+   layanan pihak ketiga (sesuai risiko yang justru dihindari pedoman kurasi Komunitech: tanpa scraping/login akun
    toko oleh pihak luar) dan berbayar bulanan.
 
 ## Perbandingan
@@ -31,7 +31,7 @@ skill agent pesaing langsung** yang bisa dibaca & dinilai berdampingan untuk uji
 ## Kesimpulan uji banding
 Tidak ada skill agent pesaing yang unggul untuk dinilai berdampingan langsung; dibanding
 alternatif SaaS berbayar, keunggulan resi-picking adalah privasi (data tidak keluar komputer) dan
-tanpa biaya bulanan — sejalan dengan misi "produk pengganti SaaS berbayar" di CLAUDE.md.
+tanpa biaya bulanan — sejalan dengan misi "produk pengganti SaaS berbayar" di pedoman kurasi Komunitech.
 Kelemahannya: tidak menggabungkan lintas marketplace otomatis dan deteksi kolom non-standar masih
 perlu override manual (lihat skenario 02) — SaaS berbayar biasanya lebih matang di titik ini karena
 integrasi API resmi per marketplace.

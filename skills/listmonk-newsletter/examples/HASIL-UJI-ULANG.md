@@ -1,5 +1,5 @@
 # HASIL UJI ULANG - listmonk-newsletter 1.0.1 (penguji independen, 29 Sep 2026)
-Lingkungan: **listmonk v6.2.0 ASLI** (Docker, postgres:17, port 127.0.0.1:9100) + **mailpit** sebagai SMTP penampung; pengguna API berperan sesuai panduan §7; HOME sementara agar `~/.komunitech` bersih. Semua kontak/alamat fiktif (`*.test`). Penguji hanya membaca folder skill, `docs/panduan-listmonk.md`, CLAUDE.md. Token tidak dicetak. `python3 scripts/validate.py --skill listmonk-newsletter` lolos; `tests/uji_regresi.py` 53 tes OK. Kontainer dihentikan setelah uji.
+Lingkungan: **listmonk v6.2.0 ASLI** (Docker, postgres:17, port 127.0.0.1:9100) + **mailpit** sebagai SMTP penampung; pengguna API berperan sesuai panduan §7; HOME sementara agar `~/.komunitech` bersih. Semua kontak/alamat fiktif (`*.test`). Penguji hanya membaca folder skill, `docs/panduan-listmonk.md`, pedoman kurasi Komunitech. Token tidak dicetak. `python3 scripts/validate.py --skill listmonk-newsletter` lolos; `tests/uji_regresi.py` 53 tes OK. Kontainer dihentikan setelah uji.
 
 ## Gerbang yang dicoba dibobol
 | Gerbang | Percobaan | Hasil (listmonk asli) |

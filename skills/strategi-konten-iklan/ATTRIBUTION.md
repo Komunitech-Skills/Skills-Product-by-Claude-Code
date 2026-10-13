@@ -14,7 +14,7 @@ Skill `strategi-konten-iklan` dibuat oleh Komunitech (komunitech.com) dengan met
 ## Bagian yang TIDAK dipakai
 Konten SEO/blog/CMS headless, distribusi B2B, LinkedIn/ABM, contoh perusahaan SaaS asing, harga dolar, integrasi alat SaaS, dan otomasi akses langsung ke akun iklan.
 
-## Audit lisensi & keamanan (Tahap 2-3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - File `LICENSE` di root repo dibaca langsung: MIT, mengizinkan modifikasi dan penjualan turunan dengan menyertakan pemberitahuan hak cipta + teks lisensi (disertakan di folder ini).
 - Folder sumber hanya berisi `.md` dan `evals/evals.json` yang tidak dijalankan. **Tidak ada script pihak ketiga** yang disertakan atau dijalankan.
 - Catatan riset: catatan riset internal kurator (tidak disertakan dalam paket) di repo kurator.

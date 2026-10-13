@@ -1,6 +1,6 @@
 # Skenario 04 (Input Tidak Lengkap) — "Cek SEO toko saya dong"
 
-> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code), sesuai Tahap 6 CLAUDE.md.
+> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code), sesuai pedoman kurasi Komunitech tahap 6.
 
 ## Permintaan pengguna
 > "Cek SEO toko saya dong"
@@ -13,7 +13,7 @@ Menurut tabel **Input** dan bagian "Kalau info wajib (halaman) belum ada" di SKI
 ## Respons yang benar (simulasi agent mengikuti SKILL.md persis)
 > "Boleh kirim link halamannya, atau tempel teks/HTML-nya di sini? Kalau mau saya sekalian cek Google Bisnisku, sebutkan juga nama usaha & apakah punya toko/area layanan fisik."
 
-Ini persis kalimat template dari SKILL.md baris "Kalau info wajib (halaman) belum ada" — dipakai apa adanya karena sudah singkat, satu pesan, dan mencakup semua yang dibutuhkan (link/HTML, opsional nama usaha, opsional info lokasi fisik) sekaligus, sesuai prinsip "instan: tanya SEKALI dalam satu pesan" (CLAUDE.md §1).
+Ini persis kalimat template dari SKILL.md baris "Kalau info wajib (halaman) belum ada" — dipakai apa adanya karena sudah singkat, satu pesan, dan mencakup semua yang dibutuhkan (link/HTML, opsional nama usaha, opsional info lokasi fisik) sekaligus, sesuai prinsip "instan: tanya SEKALI dalam satu pesan" (pedoman kurasi Komunitech §1).
 
 **Yang TIDAK boleh dilakukan** (diverifikasi tidak terjadi kalau instruksi diikuti benar):
 - ❌ Tidak boleh mengarang/menebak URL atau isi halaman.
@@ -22,4 +22,4 @@ Ini persis kalimat template dari SKILL.md baris "Kalau info wajib (halaman) belu
 - ❌ Tidak boleh langsung mengasumsikan skill lain yang tidak diminta (mis. langsung membuat listing marketplace) karena kalimatnya ambigu.
 
 ## Hasil uji
-**Lulus.** Instruksi SKILL.md sudah menyediakan kalimat tanya yang tepat, singkat, satu pesan, dan sesuai prinsip "tanya sekali" di CLAUDE.md §1. Tidak ditemukan celah yang membuat agent kebingungan atau berisiko mengarang data karena SKILL.md eksplisit menyediakan kalimat siap pakai untuk kasus ini (bukan hanya instruksi abstrak "tanyakan info yang kurang").
+**Lulus.** Instruksi SKILL.md sudah menyediakan kalimat tanya yang tepat, singkat, satu pesan, dan sesuai prinsip "tanya sekali" di pedoman kurasi Komunitech §1. Tidak ditemukan celah yang membuat agent kebingungan atau berisiko mengarang data karena SKILL.md eksplisit menyediakan kalimat siap pakai untuk kasus ini (bukan hanya instruksi abstrak "tanyakan info yang kurang").

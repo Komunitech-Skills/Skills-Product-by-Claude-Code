@@ -1,6 +1,6 @@
 # Uji A/B — Tanpa skill vs Dengan skill
 
-> Dijalankan oleh **penguji independen (Akun B)**, bukan pembuat skill, sesuai Tahap 6 CLAUDE.md.
+> Dijalankan oleh **penguji independen (Akun B)**, bukan pembuat skill, sesuai pedoman kurasi Komunitech tahap 6.
 > Skenario: sama seperti Skenario 01 (konsultan pajak, PT Maju Jaya, 21-27 September 2026).
 
 ## Prompt yang diberikan ke agent

@@ -37,7 +37,7 @@ Sisanya boleh aku asumsikan.
 
 ## Catatan penguji
 **Bagus:**
-- Skill mengikuti aturan CLAUDE.md "instan tapi powerful": tetap menawarkan jalur cepat ("pakai
+- Skill mengikuti aturan pedoman kurasi Komunitech "instan tapi powerful": tetap menawarkan jalur cepat ("pakai
   default") alih-alih memaksa wawancara panjang, sesuai §Input SKILL.md ("Pengguna ingin cepat → isi
   kolom kosong dengan asumsi wajar dan sebutkan di akhir").
 - Pertanyaan wawancara dibatasi maksimal 5 dan dikirim dalam **satu pesan** (bukan tanya-jawab

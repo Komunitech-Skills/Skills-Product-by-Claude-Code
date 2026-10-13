@@ -17,7 +17,7 @@ OpenClaw otomatis.
   API key/token/data pribadi tertanam.
 - `ATTRIBUTION.md` jujur mengungkap bahwa repo sumber inspirasi (`ComposioHQ/awesome-claude-skills`)
   tidak dibuka/disalin karena tidak ada LICENSE terverifikasi — konsisten dengan aturan kurasi
-  CLAUDE.md.
+  pedoman kurasi Komunitech.
 - **Kesimpulan keamanan: AMAN.**
 
 ## 2. Verifikasi sitasi (skenario a–c) — WAJIB dibaca
@@ -172,7 +172,7 @@ Tidak ditemukan cacat berat pada isi/keamanan skill maupun pada draf final (sete
 | Kriteria | Skor | Alasan |
 |---|---|---|
 | Pemicu (description tepat) | 9 | Kata kunci ID & EN lengkap (artikel/blog/SEO/whitepaper/newsletter/materi presentasi/research writing/content writing/cek sumber/anti-halusinasi), batasan cakupan jelas ("TIDAK untuk caption/kalender medsos", "TIDAK untuk tugas kuliah/skripsi") sehingga tidak akan salah trigger atau salah tidak-trigger di skenario uji manapun |
-| Kemudahan awam | 8 | Alur brief→riset→kerangka→draf jelas, bahasa instruksi tidak jargon, tapi §Input meminta hingga 5 pertanyaan sekaligus untuk kasus topik kosong — masih dalam batas wajar dan sesuai prinsip CLAUDE.md, hanya bisa dirasa agak panjang bagi pengguna paling malas |
+| Kemudahan awam | 8 | Alur brief→riset→kerangka→draf jelas, bahasa instruksi tidak jargon, tapi §Input meminta hingga 5 pertanyaan sekaligus untuk kasus topik kosong — masih dalam batas wajar dan sesuai prinsip pedoman kurasi Komunitech, hanya bisa dirasa agak panjang bagi pengguna paling malas |
 | Kualitas output | 9 | Ketiga draf riset (a–c) siap tempel, terstruktur, nada sesuai audiens masing-masing (konsultan pajak, startup logistik, koperasi), disclaimer tepat di tempat yang butuh |
 | Akurasi (angka/fakta) | 9 | 7/7 sitasi diverifikasi cocok dengan sumber asli; klaim tak terverifikasi ditandai jujur `[perlu sumber]`; dikurangi sedikit karena proses awal sempat nyaris mengutip sumber yang belum dibuka (lihat §2 & §6.3) — meski akhirnya dikoreksi sendiri sebelum diserahkan |
 | Penanganan input kurang | 9 | S4 ditangani persis sesuai §Input: maksimal 5 pertanyaan bernomor + opsi jalan cepat dengan asumsi disebutkan |

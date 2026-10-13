@@ -35,4 +35,4 @@ Angka-angka ini **diverifikasi independen** oleh penguji langsung dari data hear
 - Format siap tempel/kirim (bisa langsung diteruskan ke tim/pelanggan), bukan jawaban naratif yang perlu diolah lagi.
 - Tidak ada risiko field API yang salah tebak (nama field Uptime Kuma tidak baku secara publik).
 
-Skill ini **memberi nilai tambah nyata** untuk skenario ini — tidak masuk kategori "skor maksimal 6" pada CLAUDE.md Tahap 6.4.
+Skill ini **memberi nilai tambah nyata** untuk skenario ini — tidak masuk kategori "skor maksimal 6" pada pedoman kurasi Komunitech tahap 6.4.

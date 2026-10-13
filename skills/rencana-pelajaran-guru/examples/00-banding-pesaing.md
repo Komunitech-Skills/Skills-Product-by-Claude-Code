@@ -27,7 +27,7 @@ student materials, observation template) + `.html`.
 - **Butuh instalasi/dependensi**: mewajibkan Python + script rendering `.docx` (via
   `render_lesson_docx.py`, `lesson_common.py`) dan idealnya konektor Learning Commons
   Knowledge Graph berbayar/proprietary pihak ketiga untuk standar resmi — bertentangan
-  langsung dengan prinsip CLAUDE.md §1 "tanpa setup, tanpa API key/akun/instalasi paket".
+  langsung dengan prinsip pedoman kurasi Komunitech §1 "tanpa setup, tanpa API key/akun/instalasi paket".
   Skill kita sengaja tidak mereplikasi pipeline ini (lihat ATTRIBUTION.md poin 4).
 - Tidak ada perhitungan JP/menit ala Indonesia sama sekali — pesaing pakai "45-60 minute
   period" generik ala sekolah AS, tanpa satuan JP dan tanpa validasi total menit
@@ -47,7 +47,7 @@ Sumber: kumpulan "30 Prompt AI Terbaik untuk Guru 2026" — Dea Learning Center
 skill/agent-skill format, prompt teks biasa untuk ditempel ke chatbot apa pun).
 Pencarian tambahan: ClawHub, skills.sh, GitHub ("skill RPP kurikulum merdeka",
 "modul ajar AI generator") — tidak ditemukan skill berformat Agent Skills (SKILL.md)
-publik untuk RPP/Modul Ajar Indonesia yang memenuhi ambang bukti pemakaian CLAUDE.md
+publik untuk RPP/Modul Ajar Indonesia yang memenuhi ambang bukti pemakaian pedoman kurasi Komunitech
 Tahap 2 (bintang/instal/riwayat commit); yang ada adalah web tools closed-source
 (modulajarcerdas.my.id, digitaleducation.id, dsb. — tidak bisa "dibaca" isinya/dinilai
 sebagai skill) dan prompt teks lepas seperti di atas.
@@ -98,6 +98,6 @@ lebih unggul dari sumber ATM Anthropic pada SEMUA aspek lokal (yang memang bukan
 sumbernya), dan lebih unggul dari prompt publik Indonesia terbaik yang ditemukan pada
 kepatuhan regulasi terkini, verifikasi waktu, kejujuran soal CP, dan kelengkapan dokumen.
 Tidak ditemukan skill Agent Skills (SKILL.md) publik Indonesia yang lolos ambang bukti
-kurasi CLAUDE.md Tahap 2 untuk topik ini — kata kunci yang dicari: "skill RPP kurikulum
+kurasi pedoman kurasi Komunitech tahap 2 untuk topik ini — kata kunci yang dicari: "skill RPP kurikulum
 merdeka", "modul ajar generator SKILL.md", "lesson plan Indonesia agent skill" di GitHub,
 ClawHub, skills.sh (tidak ada hasil relevan berformat skill).

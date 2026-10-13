@@ -47,5 +47,5 @@ Mau pilih satu untuk saya buatkan rencana uji 7 harinya, atau jawab 3 pertanyaan
 
 ## Catatan penguji
 - Skill menangani input minim dengan benar: klasifikasi, opsi "langsung kasih ide aja", asumsi disebut, tidak mengarang data pasar.
-- **Temuan (sedang):** aturan "satu pertanyaan per pesan" (warisan skill coding sumber) membuat pengguna awam menjawab **5 giliran** sebelum melihat satu ide pun. Ini bertentangan dengan prinsip rumah CLAUDE.md §1 "Jika info kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan singkat." Usul: untuk Jalur B/C, satu pesan berisi 3–5 pertanyaan pilihan ganda singkat (modal, waktu, lokasi, keahlian, target), lalu hanya tanya susulan bila jawaban ambigu.
+- **Temuan (sedang):** aturan "satu pertanyaan per pesan" (warisan skill coding sumber) membuat pengguna awam menjawab **5 giliran** sebelum melihat satu ide pun. Ini bertentangan dengan prinsip rumah pedoman kurasi Komunitech §1 "Jika info kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan singkat." Usul: untuk Jalur B/C, satu pesan berisi 3–5 pertanyaan pilihan ganda singkat (modal, waktu, lokasi, keahlian, target), lalu hanya tanya susulan bila jawaban ambigu.
 - Ramadan 2027 disebut sebagai perkiraan dan "perlu dicek", sesuai peringatan di `references/musim-dan-momentum.md`.

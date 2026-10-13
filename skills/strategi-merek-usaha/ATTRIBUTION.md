@@ -14,7 +14,7 @@ Bagian yang dipelajari (struktur/alur saja):
 - pm-skills: `pm-marketing-growth/skills/product-name/SKILL.md` (pendekatan menamai: beberapa opsi beralasan, mudah diucap/dieja, catatan domain dan merek).
 - Tidak dipakai: skill lain di kedua repo; tautan, kursus, atau contoh kasus milik pembuat sumber tidak disalin.
 
-## Audit keamanan (Tahap 3 CLAUDE.md)
+## Audit keamanan (pedoman kurasi Komunitech)
 - Seluruh `SKILL.md` dan `references/` yang diadaptasi dibaca penuh. Skill `offers` dan `product-name` tidak memiliki folder `scripts/`; tidak ada kode dari sumber yang dijalankan atau disalin.
 - Pencarian pola berbahaya (curl/wget/eval/exec/base64, kredensial, token, instruksi "abaikan") pada file terpilih: tidak ditemukan. Tidak ada prompt injection tersembunyi, permintaan mengirim file, atau menonaktifkan konfirmasi.
 - Tidak ada API key/token/data pribadi tertanam.

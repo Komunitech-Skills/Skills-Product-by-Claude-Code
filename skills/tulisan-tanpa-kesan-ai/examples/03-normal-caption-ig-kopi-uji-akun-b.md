@@ -1,7 +1,7 @@
 # Skenario 3 (uji independen) — Normal 1: Caption IG promo kopi penuh gaya AI
 
 Diuji oleh agen penguji terpisah yang **hanya membaca folder skill** (SKILL.md + references), sesuai
-Tahap 6 CLAUDE.md.
+pedoman kurasi Komunitech tahap 6.
 
 ## Input pengguna
 "Tolong bikin caption promo kopi ini lebih natural, jangan kedengeran AI:

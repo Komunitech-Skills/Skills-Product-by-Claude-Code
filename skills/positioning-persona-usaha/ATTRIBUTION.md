@@ -14,7 +14,7 @@ Bagian yang dipelajari (struktur/alur saja):
 - marketingskills: `skills/product-marketing` (konteks pemasaran, pembeda, keberatan/anti-persona, Empat Gaya peralihan JTBD, bahasa pelanggan).
 - Tidak dipakai: skill lain di kedua repo; tautan kursus/templat luar milik pembuat sumber tidak disalin.
 
-## Audit keamanan (Tahap 3 CLAUDE.md)
+## Audit keamanan (pedoman kurasi Komunitech)
 - Seluruh `SKILL.md` yang diadaptasi dibaca penuh. Tidak ada folder `scripts/` pada skill sumber ini; tidak ada kode dari sumber yang dijalankan atau disalin.
 - Pencarian pola berbahaya (curl/wget/eval/exec/base64, kredensial, `.env`, token, instruksi "abaikan") pada skill terpilih: tidak ditemukan. Tidak ada prompt injection tersembunyi, permintaan mengirim file, atau menonaktifkan konfirmasi. Skill sumber hanya berisi instruksi prompt dan tautan bacaan.
 - Tidak ada API key/token/data pribadi tertanam.

@@ -1,5 +1,5 @@
 # HASIL UJI ULANG INDEPENDEN - fider-masukan-pelanggan v1.0.1
-Penguji: agen terpisah (Tahap 6, uji ulang), 2026-09-29. Hanya membaca folder skill, docs/panduan-fider.md, CLAUDE.md. Fider v0.38.0 ASLI di port 3100 (proyek `ujifider`) sedang menyala dan dipakai (akun Collaborator/Administrator). `validate.py --skill fider-masukan-pelanggan` lulus; 37 uji regresi maker lulus (33 dtk). Tidak ada kunci yang dicetak (semua keluaran uji disaring). Data uji fiktif. Basis data uji sengaja ditulis: pos #11 dan #12 dibuat oleh uji M3.
+Penguji: agen terpisah (Tahap 6, uji ulang), 2026-09-29. Hanya membaca folder skill, docs/panduan-fider.md, pedoman kurasi Komunitech. Fider v0.38.0 ASLI di port 3100 (proyek `ujifider`) sedang menyala dan dipakai (akun Collaborator/Administrator). `validate.py --skill fider-masukan-pelanggan` lulus; 37 uji regresi maker lulus (33 dtk). Tidak ada kunci yang dicetak (semua keluaran uji disaring). Data uji fiktif. Basis data uji sengaja ditulis: pos #11 dan #12 dibuat oleh uji M3.
 
 ## Skor: 8 / 10 (LULUS; siap uji platform asli setelah butir kecil di bawah)
 Semua butir WAJIB (M1-M4) terbukti bekerja. Nilai tidak 9 karena masih ada celah penyamaran kecil (termasuk satu celah baru pada `--sumber`), satu traceback, dan pendeteksi sinonim yang terbatas.

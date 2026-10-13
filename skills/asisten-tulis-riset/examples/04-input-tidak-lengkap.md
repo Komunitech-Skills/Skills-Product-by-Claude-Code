@@ -23,7 +23,7 @@ akhir tulisan supaya Anda bisa koreksi kalau meleset.
 
 **Catatan penguji:** Ini persis mengikuti aturan §Input SKILL.md ("Jika topik tidak ada, tanyakan
 sekali, maks. 5 pertanyaan bernomor"). Pertanyaan singkat, tidak menginterogasi berlebihan, dan
-menawarkan jalan cepat (opsi pakai default) sesuai prinsip "instan tapi powerful" di CLAUDE.md. Tidak
+menawarkan jalan cepat (opsi pakai default) sesuai prinsip "instan tapi powerful" di pedoman kurasi Komunitech. Tidak
 langsung mengarang topik sendiri, yang tepat karena "artikel dong" benar-benar tidak punya topik sama
 sekali (beda dengan kasus di mana topik ada tapi detail lain kurang — di situ default boleh dipakai
 langsung).

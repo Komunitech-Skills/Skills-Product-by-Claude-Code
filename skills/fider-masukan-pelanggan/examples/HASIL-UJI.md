@@ -1,5 +1,5 @@
 # HASIL UJI INDEPENDEN - fider-masukan-pelanggan v1.0.0
-Penguji: agen terpisah (Tahap 6), 2026-09-29. Hanya membaca folder skill, docs/panduan-fider.md, CLAUDE.md. Fider v0.38.0 ASLI dijalankan ulang (Docker + PostgreSQL 17, port 3100, SMTP tiruan), termasuk akun Administrator dan akun Collaborator sungguhan. `validate.py --skill` lulus; 24 uji regresi maker lulus.
+Penguji: agen terpisah (Tahap 6), 2026-09-29. Hanya membaca folder skill, docs/panduan-fider.md, pedoman kurasi Komunitech. Fider v0.38.0 ASLI dijalankan ulang (Docker + PostgreSQL 17, port 3100, SMTP tiruan), termasuk akun Administrator dan akun Collaborator sungguhan. `validate.py --skill` lulus; 24 uji regresi maker lulus.
 
 ## Skor: 7 / 10 (lulus BERSYARAT; perbaiki butir WAJIB sebelum beta)
 A/B menang, banding pesaing menang (tanpa batas skor 6). Nilai dipotong karena satu celah gerbang tulis, satu celah cek HTTPS, dan deteksi duplikat yang salah sasaran.

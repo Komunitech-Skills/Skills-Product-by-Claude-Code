@@ -24,7 +24,7 @@ Kalau nggak yakin nanti aku tebak dari isinya.
 ```
 
 Ini **satu pertanyaan** berisi permintaan draf + pertanyaan konteks opsional dalam satu pesan — sesuai
-prinsip CLAUDE.md "Jika info kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan
+prinsip pedoman kurasi Komunitech "Jika info kurang, tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan
 singkat", bukan berondongan pertanyaan terpisah.
 
 ## Verifikasi lewat script (bukti bukan asumsi)

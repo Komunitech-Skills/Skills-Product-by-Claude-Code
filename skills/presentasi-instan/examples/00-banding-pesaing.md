@@ -1,7 +1,7 @@
 # Uji banding pesaing — skill SUMBER `frontend-slides` vs `presentasi-instan`
 
 ## Sumber pesaing
-- **frontend-slides** oleh Zara Zhang — https://github.com/zarazhangrui/frontend-slides — lisensi **MIT** (commit teratas 9906a34, 23 Jun 2026). Ini skill sumber ATM kita, jadi menurut CLAUDE.md Tahap 2 hasil ATM **wajib menang telak**.
+- **frontend-slides** oleh Zara Zhang — https://github.com/zarazhangrui/frontend-slides — lisensi **MIT** (commit teratas 9906a34, 23 Jun 2026). Ini skill sumber ATM kita, jadi menurut pedoman kurasi Komunitech tahap 2 hasil ATM **wajib menang telak**.
 - Dibaca lewat `git clone --depth 1` ke /tmp: `SKILL.md` (380 baris), `html-template.md`, `viewport-base.css`, `STYLE_PRESETS.md`, `scripts/deploy.sh`, `scripts/export-pdf.sh` (hanya dibaca, **tidak dijalankan**). Tidak ada teks pesaing yang disalin ke skill kita (cek otomatis baris ≥35 karakter: hanya 3 baris boilerplate umum yang sama — `meta viewport`, reset `*{margin:0…}`, `@media (prefers-reduced-motion…)`).
 - Pesaing lain yang relevan (anthropics/skills `pptx`) menghasilkan `.pptx` dan butuh pustaka tambahan — format berbeda, tidak dibandingkan di sini.
 

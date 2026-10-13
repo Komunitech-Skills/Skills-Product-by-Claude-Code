@@ -1,7 +1,7 @@
 # HASIL UJI - riset-saham-berita v1.0.0
 
 - **Tanggal uji:** 2026-09-29
-- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md. SKILL.md & script tidak diubah.
+- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech. SKILL.md & script tidak diubah.
 - **Platform:** claude-code (simulasi agent). Belum diuji di OpenClaw/Codex/Cursor asli; `scripts/uji_openclaw.sh` tidak dijalankan dalam sesi uji ini.
 - **Folder kerja:** scratchpad `uji-saham/` (bukan `.claude/skills/`).
 

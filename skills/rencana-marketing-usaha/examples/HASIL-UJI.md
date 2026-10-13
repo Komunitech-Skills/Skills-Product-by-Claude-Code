@@ -1,7 +1,7 @@
 # HASIL UJI — rencana-marketing-usaha v1.0.0
 
 - Tanggal: 2026-09-29
-- Penguji: agent independen (Claude Code, Opus), **bukan pembuat skill**; hanya membaca folder skill + CLAUDE.md + sumber asli. SKILL.md dan scripts tidak diubah.
+- Penguji: agent independen (Claude Code, Opus), **bukan pembuat skill**; hanya membaca folder skill + pedoman kurasi Komunitech + sumber asli. SKILL.md dan scripts tidak diubah.
 - Jenis uji: simulasi agent (`claude-code (simulasi agent)`) + uji muat OpenClaw otomatis. Belum ada uji platform asli oleh manusia.
 - Skrip verifikasi penguji (tidak ikut paket): scratchpad `uji-rencana-mkt/verifikasi.py`.
 
@@ -46,7 +46,7 @@ Input rusak (26 kasus): 22 ditolak dengan `ERROR:` jelas (persen ≠ 100, huruf,
 - **L3 — Data pribadi:** Batasan belum eksplisit melarang memakai database nomor yang dibeli / menyebut UU PDP 27/2022; agent menyimpulkannya sendiri di uji 05. Tambah satu baris.
 - **L4 — Contoh bawaan melanggar aturan sendiri:** `examples/01-kedai-kopi-q4.md` punya 5 kanal setara, padahal langkah 6 "maksimal 3 kanal utama". Tandai 3 utama + 2 pendukung.
 - **L5 — Tidak ada panduan klaim produk teregulasi** (kosmetik/makanan/suplemen): cukup 4-5 baris contoh klaim boleh/tidak di references (uji 02 bergantung pada pengetahuan umum agent).
-- **L6 — Catatan riset sumber** ada di (riset internal kurator, tidak disertakan dalam paket), bukan di (riset internal kurator, tidak disertakan dalam paket) seperti diminta CLAUDE.md Tahap 2. Tambahkan tautan/berkas di (riset internal kurator, tidak disertakan dalam paket).
+- **L6 — Catatan riset sumber** ada di (riset internal kurator, tidak disertakan dalam paket), bukan di (riset internal kurator, tidak disertakan dalam paket) seperti diminta pedoman kurasi Komunitech tahap 2. Tambahkan tautan/berkas di (riset internal kurator, tidak disertakan dalam paket).
 
 ### Info
 - Nama skill yang dirujuk (17) semuanya ada di `skills/`: audit-akun-iklan, audit-seo-toko-online, balas-ulasan-pelanggan, crm-wa, harga-jual-marketplace, hitung-hpp, kalender-konten-30hari, konten-mingguan, kpi-tim, laporan-iklan-mingguan, naskah-live-jualan, pengingat-follow-up, pesan-prospek-wa, promo-kalender, rekap-penjualan-csv, riset-calon-pelanggan, surat-penawaran-harga. ✔

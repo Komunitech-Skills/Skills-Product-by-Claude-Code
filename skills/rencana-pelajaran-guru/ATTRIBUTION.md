@@ -16,7 +16,7 @@ Skill `rencana-pelajaran-guru` dibuat lewat proses **ATM (Amati, Tiru, Modifikas
 
 ## Pembagian lisensi (penting)
 
-Sesuai Tahap 2 `CLAUDE.md`: bagian yang **diadaptasi/diturunkan langsung** dari struktur
+Sesuai Tahap 2 `pedoman kurasi Komunitech`: bagian yang **diadaptasi/diturunkan langsung** dari struktur
 skill sumber tunduk pada Apache-2.0 (atribusi + keterangan perubahan, lihat di bawah).
 Konten baru yang **ditulis dari nol** oleh Komunitech (contoh lokal Indonesia, aturan
 kurikulum Indonesia, script hitung, dsb.) adalah karya Komunitech dan dapat dijual sebagai
@@ -71,7 +71,7 @@ relevan dan **tidak dipakai** sebagai isi.
    pipeline JSON (`lesson.json`) + script rendering ~800+ baris per skill
    (`scripts/lesson_common.py`, `render_lesson_docx.py`, dst., walau seluruhnya Python
    standar tanpa `python-docx`). Versi ini **sengaja tidak mereplikasi pipeline rendering
-   tersebut** — sesuai prinsip "instan/tanpa setup" `CLAUDE.md` §1, output berupa teks
+   tersebut** — sesuai prinsip "instan/tanpa setup" `pedoman kurasi Komunitech` §1, output berupa teks
    Markdown terstruktur yang tinggal disalin-tempel ke Word/Google Docs (`SKILL.md` §Format
    Output), sehingga skill tetap 100% berguna meski Python tidak tersedia sama sekali —
    sumber mewajibkan Python + script rendering untuk menghasilkan dokumen apa pun.
@@ -94,7 +94,7 @@ relevan dan **tidak dipakai** sebagai isi.
     pihak ketiga), istilah dan kode standar AS (CCSS-M, CCSS-ELA, NGSS PE, C3, TEKS, SOL,
     OAS), referensi kurikulum bermerek AS (Illustrative Mathematics, OpenSciEd), dan seluruh
     frontmatter/field `license` bergaya sumber (frontmatter kami hanya `name` dan
-    `description` sesuai `CLAUDE.md` §2).
+    `description` sesuai `pedoman kurasi Komunitech` §2).
 
 Seluruh teks `SKILL.md`, `README.md`, `references/`, `templates/`, `examples/`, dan
 `scripts/hitung_alokasi_waktu.py` ditulis ulang dari nol dalam Bahasa Indonesia; tidak ada

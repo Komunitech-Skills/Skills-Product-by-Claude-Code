@@ -1,5 +1,5 @@
 # HASIL UJI - studio-video-pendek-ai v1.0.0
-Penguji: agen independen (simulasi agent; BUKAN uji platform asli). Tanggal: 2026-09-29. Membaca hanya folder skill + CLAUDE.md.
+Penguji: agen independen (simulasi agent; BUKAN uji platform asli). Tanggal: 2026-09-29. Membaca hanya folder skill + pedoman kurasi Komunitech.
 Skenario: 01 laundry 15 dtk PASS; 02 klinik gigi 45 dtk PASS (tanpa klaim kesehatan); 03 hijab UGC 30 dtk PASS; 04 info kurang PASS (catatan); 05 luar cakupan (suara artis, testimoni palsu, >60 dtk, auto-post) PASS. A/B: menang jelas. Pesaing: menang untuk konteks Indonesia/keamanan/durasi, kalah kedalaman hook & konsistensi visual (pembacaan terbatas README).
 
 ## Skor: 8/10

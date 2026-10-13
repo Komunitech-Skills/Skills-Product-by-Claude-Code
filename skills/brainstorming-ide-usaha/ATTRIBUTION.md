@@ -11,12 +11,12 @@
 - **Commit yang dipakai:** `5bf4e78011075bcfc0dc295f0724994cd123ee71` (default branch, tanggal commit 2026-09-18), diambil via `git clone --depth 1 --filter=blob:none --sparse` pada 2026-09-25, sparse-checkout folder `skills/brainstorming` + `LICENSE`.
 - **File yang dibaca penuh:** `skills/brainstorming/SKILL.md`, `skills/brainstorming/spec-document-reviewer-prompt.md`, `skills/brainstorming/visual-companion.md`, serta isi `skills/brainstorming/scripts/` (`server.cjs`, `helper.js`, `frame-template.html`, `start-server.sh`, `stop-server.sh`) — dibaca untuk audit, **tidak dijalankan**.
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - File `LICENSE` di root repo sumber dicek langsung via `git show`/`cat`: MIT, Copyright (c) 2025 Jesse Vincent — mengizinkan modifikasi & penjualan turunan.
 - Seluruh isi `skills/brainstorming/` (termasuk folder `scripts/`) dibaca penuh dan di-`grep` untuk pola mencurigakan (perintah destruktif, unduh-lalu-eksekusi skrip dari internet, pengiriman data ke server luar, permintaan kredensial/SSH key/data browser, kode ter-obfuscate, instruksi tersembunyi menyuruh mengabaikan pengguna).
 - Satu-satunya perintah berpotensi destruktif ditemukan: `stop-server.sh` berisi `rm -rf "$SESSION_DIR"` — tapi `$SESSION_DIR` adalah folder sesi sementara yang dibuat oleh skill itu sendiri (server companion visual lokal berbasis Node.js), bukan folder sembarang milik pengguna. Tidak berbahaya dalam konteksnya.
 - Tidak ditemukan pola unduh-lalu-eksekusi skrip dari internet, eksfiltrasi data ke server luar, API key/token tertanam, atau prompt injection ("ignore the user", instruksi menonaktifkan konfirmasi, dll.) — instruksi `SKILL.md` murni prosedural (klasifikasi → tanya → gerbang persetujuan).
-- **Kesimpulan: lolos audit.** Sesuai catatan catatan riset internal kurator (tidak disertakan dalam paket) bagian obra/superpowers, versi Indonesia ini **sengaja tidak menyertakan** server companion visual (`scripts/server.cjs` dkk., file `visual-companion.md`) — di luar cakupan prinsip "tanpa setup, tanpa Node.js" CLAUDE.md Bagian 1; hanya alur teksnya yang diadaptasi.
+- **Kesimpulan: lolos audit.** Sesuai catatan catatan riset internal kurator (tidak disertakan dalam paket) bagian obra/superpowers, versi Indonesia ini **sengaja tidak menyertakan** server companion visual (`scripts/server.cjs` dkk., file `visual-companion.md`) — di luar cakupan prinsip "tanpa setup, tanpa Node.js" prinsip library Komunitech; hanya alur teksnya yang diadaptasi.
 
 ## Apa yang diubah/ditambahkan (nilai tambah ATM, ±90% ditulis ulang)
 Sumber aslinya untuk **agen coding** (klasifikasi spike/bounded/architectural, spec file, git worktree, invoke skill `writing-plans`) — konsepnya generik ("gali dulu, baru eksekusi, dengan gerbang persetujuan") tapi seluruh contoh, istilah, dan target keluarannya spesifik pengembangan software. Perubahan besar untuk versi ini:

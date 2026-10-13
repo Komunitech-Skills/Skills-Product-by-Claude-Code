@@ -93,7 +93,7 @@ Angka dihitung dengan script dari data yang Anda berikan. Keputusan harga tetap 
 
 ## Verifikasi penguji
 
-Standar CLAUDE.md: PPN dari DPP persis dibulatkan ke bawah sekali; harga termasuk PPN → DPP = rupiah bulat terbesar dengan DPP + PPN ≤ harga. Penguji mencari DPP secara brute force (Fraction), dibandingkan dengan script pada 9.045 kasus (termasuk mewah 12%): **0 selisih**.
+Standar pedoman kurasi Komunitech: PPN dari DPP persis dibulatkan ke bawah sekali; harga termasuk PPN → DPP = rupiah bulat terbesar dengan DPP + PPN ≤ harga. Penguji mencari DPP secara brute force (Fraction), dibandingkan dengan script pada 9.045 kasus (termasuk mewah 12%): **0 selisih**.
 - 54.900 → DPP **49.460**, PPN 5.440 (49.461 → total 54.901 > harga) ✔.
 - 59.900 → DPP **53.964**, PPN 5.936 ✔. 150.000 → DPP **135.136**, PPN 14.864 ✔.
 - Margin: 21.460/49.460 = 43,39% ✔; 18.460/49.460 = 37,32% ✔; 22.964/53.964 = 42,55% ✔; markup 76,64% / 59,55% / 74,08% ✔.

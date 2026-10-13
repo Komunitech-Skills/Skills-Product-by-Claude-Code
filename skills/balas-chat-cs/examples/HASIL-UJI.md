@@ -40,6 +40,6 @@ Uji A/B: skill jelas lebih baik (versi tanpa skill menjanjikan "pasti sampai seb
 ### Ringan
 1. `templates/bank-jawaban.md` tidak punya template untuk kategori berizin (kosmetik/pangan: nomor BPOM/PIRT, halal, klaim manfaat, kedaluwarsa), padahal README menyasar skincare & kuliner. **Saran:** tambah bagian "Izin edar & klaim produk" dengan peringatan "hanya bila benar ada".
 2. Janji waktu tindak lanjut ("paling lambat [waktu]") tidak dikaitkan dengan jam operasional toko. **Saran:** di Input, tambah "jam operasional" dengan default `[isi]`, dan di langkah 3 minta waktu tindak lanjut dalam jam kerja.
-3. `references/alur-komplain.md` bagian "Dasar" tanpa tanggal cek ("per 2026-09-23"), padahal CLAUDE.md Tahap 4.5 memintanya. **Saran:** tambahkan.
+3. `references/alur-komplain.md` bagian "Dasar" tanpa tanggal cek ("per 2026-09-23"), padahal pedoman kurasi Komunitech tahap 4.5 memintanya. **Saran:** tambahkan.
 4. Dari banding pesaing (ide): deteksi register dari gaya chat pelanggan ("dong/sih" → santai), katalog frasa kaku vs natural, dan aturan "jangan minta pelanggan mengulang info yang sudah diberikan" sebagai butir checklist.
 5. Tidak ada kalimat cadangan bila `balas-ulasan-pelanggan`/`tagih-piutang`/`follow-up-prospek` tidak dimiliki pembeli. **Saran:** satu kalimat di "Kapan TIDAK digunakan": "jika skill itu tidak ada, beri satu draf netral singkat dan jelaskan perbedaannya".

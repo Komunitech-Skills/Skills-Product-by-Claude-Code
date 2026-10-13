@@ -67,7 +67,7 @@ Alasan:
 - (+) Aman & privat: tanpa jaringan/kredensial/data pelanggan; formula injection nama kampanye tertangani; penolakan login/scraping & "jaminan ROAS" sesuai keputusan pemilik; lolos uji muat OpenClaw 2026.9.6 dan `automations add/run` sungguhan.
 - (+) Konteks lokal kuat (Shopee/TikTok Shop, bahasa awam, Telegram); tidak kalah dari pesaing publik.
 - (−) **T1–T4: empat jalur angka salah secara diam-diam pada bentuk ekspor yang realistis** (sel kosong Meta, baris Total/Google, kolom Google, mata uang di kolom terpisah). Laporan ini dikirim otomatis ke pemilik tiap Senin, jadi angka salah yang terlihat meyakinkan adalah risiko terbesar.
-- (−) **A/B tidak jelas lebih baik** pada skenario normal pertama dalam bentuk ekspor apa adanya. Sesuai `CLAUDE.md` Tahap 6 no. 4, skor **maks. 6**. Dikurangi lagi karena T2–T4 juga menjatuhkan skenario 02B dan 03.
+- (−) **A/B tidak jelas lebih baik** pada skenario normal pertama dalam bentuk ekspor apa adanya. Sesuai `pedoman kurasi Komunitech` Tahap 6 no. 4, skor **maks. 6**. Dikurangi lagi karena T2–T4 juga menjatuhkan skenario 02B dan 03.
 - (−) S1–S4: mode gabung tanpa peringatan pada kasus yang paling sering (nama kolom sama), daftar PERLU PERHATIAN bisa diisi kampanye Rp 0, baris judul Google/Shopee tidak ditangani, omzet "20 juta".
 
 **Keputusan: TIDAK LULUS (< 7). Revisi dulu, jangan naik status.**

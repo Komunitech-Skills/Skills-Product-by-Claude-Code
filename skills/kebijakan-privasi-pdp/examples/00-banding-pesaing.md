@@ -12,7 +12,7 @@
 URL:
 - https://github.com/phuryn/pm-skills/blob/main/pm-toolkit/skills/privacy-policy/SKILL.md (dibaca penuh, 238 baris)
 - https://github.com/PGScully/privacy-skill (README dibaca: cakupan Australia, EU GDPR/AI Act/Data Act, California CCPA — **tidak mencakup Indonesia**)
-- https://github.com/mukul975/privacy-data-protection-skills (deskripsi: GDPR, CCPA, EU AI Act, HIPAA, LGPD, PIPL, DPDP — tidak menyebut Indonesia; tanda "ratusan skill" = pola yang CLAUDE.md waspadai)
+- https://github.com/mukul975/privacy-data-protection-skills (deskripsi: GDPR, CCPA, EU AI Act, HIPAA, LGPD, PIPL, DPDP — tidak menyebut Indonesia; tanda "ratusan skill" = pola yang pedoman kurasi Komunitech waspadai)
 - https://github.com/openclaw/skills/blob/main/skills/metehan777/gdpr-cookie-consent/SKILL.md (hanya cookie/GDPR)
 
 Jumlah bintang/instal tidak bisa diverifikasi (akses API GitHub untuk repo luar dibatasi di lingkungan uji).

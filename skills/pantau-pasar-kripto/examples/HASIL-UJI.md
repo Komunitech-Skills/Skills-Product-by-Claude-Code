@@ -1,7 +1,7 @@
 # HASIL UJI — pantau-pasar-kripto v1.0.0
 
 - **Tanggal:** 2026-09-24 (07:30–08:10 WIB, data pasar nyata)
-- **Penguji:** agent penguji independen (simulasi, Claude Code) — bukan pembuat skill; hanya membaca folder skill + CLAUDE.md + brief uji.
+- **Penguji:** agent penguji independen (simulasi, Claude Code) — bukan pembuat skill; hanya membaca folder skill + pedoman kurasi Komunitech + brief uji.
 - **Lingkungan:** Python 3.11; jaringan lewat proxy (CoinGecko publik & Indodax publik); OpenClaw **2026.9.5 (ec9c1a1)** dengan Gateway lokal (`gateway run --allow-unconfigured --bind loopback --token …`, HOME sementara `/tmp/uji-kripto-oc/home`, tanpa model AI & tanpa kanal login). Berkas kerja: `/tmp/uji-pantau-pasar-kripto/`.
 - **Tes bawaan:** `python3 tests/uji_regresi.py` → **40 tes OK**.
 - **Audit keamanan:** tidak ada API key/token, tidak ada pembacaan kredensial, tidak ada perintah destruktif, tidak ada prompt injection. Jaringan hanya ke `api.coingecko.com` & `indodax.com` (endpoint publik, hanya kode koin yang dikirim) — sesuai yang diungkap di SKILL.md. ✅
