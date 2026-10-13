@@ -54,25 +54,20 @@ Salin folder ini ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.2):** rata-rata nilai 5,6 tanpa skill menjadi 8,25 dengan skill (skala 10), dari empat skenario: katering nasi box dengan jebakan "ayam 63 °C cukup kan?" (di konteks Telegram), warung bakso dan es campur, permintaan kurang lengkap, serta jebakan label halal dan "bebas alergen". Tidak ditemukan kesalahan fakta keselamatan pada empat jawaban dengan skill. Pemeriksaan catatan suhu (kulkas 9 °C selama sekitar 3 jam dan freezer -17 °C tertangkap, cocok dengan hitungan independen) berasal dari uji sebelumnya pada v1.0.1 (`examples/02-cek-log-suhu-kafe-v1.0.1.md`) dan tidak termasuk dalam empat skenario ini. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri pada versi sebelum perbaikan 1.0.2 (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (v1.0.2), skor 1–10: tanpa skill **5,6** → dengan skill **8,25** (LULUS). Empat skenario OpenClaw: katering nasi box (jebakan suhu ayam), warung bakso, input kurang, jebakan halal/bebas alergen. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Pemeriksaan log suhu v1.0.1 ada di `examples/02-cek-log-suhu-kafe-v1.0.1.md` (skenario terpisah). Angka di bagian "Bukti uji di bot Telegram" dari uji bot asli v1.0.1 (sebelum perbaikan fakta).
+
+**Status uji (jujur):** diuji OpenClaw (uji otomatis agent) dan bot Telegram asli; **PERLU REVIEW tenaga medis/ahli pangan** sebelum dijual sebagai alat klinis. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 14, 2026-10-12.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 7,5
-Verdik gelombang: BELUM — Dengan skill paketnya lebih lengkap (checklist bercentang, log suhu dengan tindakan bila di atas 5 °C, kartu aturan staf, peta risiko menu), tetapi memuat kesalahan fakta (ayam boleh 63 °C untuk potongan utuh, santan ditulis alergen susu, halal ditulis opsional); tanpa skill sudah menolak sertifikat/logo palsu dan klaim bebas alergen.
-
-Kekurangan ini diperbaiki di versi 1.0.2.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12 (versi **1.0.1** saat uji).
+- Tanpa skill: skor **7** — menolak sertifikat/logo palsu dan klaim bebas alergen.
+- Dengan skill: skor **7,5** — paket lebih lengkap, tetapi ada kesalahan fakta (ayam 63 °C, alergen santan, halal opsional); diperbaiki di **1.0.2**. Verdik uji bot: BELUM.
 
 ## FAQ
 **Apakah ini menggantikan pelatihan atau SLHS resmi?** Tidak. Ini alat bantu kebiasaan kerja; pelatihan dan pemeriksaan resmi tetap lewat Dinas Kesehatan/BPOM.
 **Apakah angka suhunya sesuai aturan Indonesia?** Angka suhu dari WHO, FDA Food Code 2022, dan USDA (dicek 2026-10-12; ayam harus matang di bagian inti sampai 74 °C), daftar alergen mengikuti label BPOM, dan halal ditulis wajib sesuai UU 33/2014 & PP 42/2024. Tetap cocokkan dengan Dinkes setempat (PERLU REVIEW).
 **Perlu instal apa-apa?** Tidak. Skill tetap berguna tanpa program kecil bawaannya (script); program itu hanya butuh Python standar.
-
-> PERLU REVIEW perizinan/ahli: bagian perizinan (selain halal dan alergen yang dicek 2026-10-12) belum diverifikasi ulang ke sumber resmi. Bukan nasihat hukum.
-
-Versi 1.0.2 (2026-10-12): perbaikan fakta suhu ayam, alergen santan, dan kewajiban halal setelah uji Telegram gelombang 14.
 
 ## Riwayat perubahan
 

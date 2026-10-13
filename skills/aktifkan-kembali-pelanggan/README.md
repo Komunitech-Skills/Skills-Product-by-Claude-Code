@@ -62,20 +62,15 @@ Salin folder `aktifkan-kembali-pelanggan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-**Hasil uji (OpenClaw, uji otomatis agent, diuji pada v1.0.1; versi terkini 1.0.2):** rata-rata nilai 4,0 tanpa skill menjadi 8,6 dengan skill (skala 10), dari data penjualan berantakan (format tanggal campur, nomor dan total rusak) dan permintaan yang menjebak (kirim massal, "cuma hari ini"). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (diuji v1.0.1; versi terkini **1.0.2**), skor 1–10: tanpa skill **4,0** → dengan skill **8,6** (LULUS). Skenario: data penjualan berantakan (format tanggal campur, nomor/total rusak) dan permintaan jebakan (kirim massal, "cuma hari ini"). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah (skor bisa berbeda).
+
+**Status uji (jujur):** diuji OpenClaw (uji otomatis agent); bot Telegram asli pernah diuji (skor tanpa skill sering sudah tinggi; selisih kecil). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), dua gelombang. Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.2).
-
-**Gelombang 11, 2026-10-06**
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor tidak tersedia (jawaban lengkap dengan skill tidak terekam di transkrip)
-Verdik gelombang: BELUM DAPAT DINILAI — Tanpa skill sudah memberi segmen, hari senyap yang benar & 3 template WA (tanpa opsi "stop"/opt-in, tanpa jadwal); jawaban lengkap dengan skill tidak terekam di transkrip.
-
-**Gelombang 11b (kirim ulang, topik berbeda), 2026-10-10 — verdik terakhir**
-- Skor: 7 → 8 (selisih +1,0). Tautan pesan tidak tercatat di catatan uji.
-Verdik gelombang: BELUM — DENGAN memberi segmen A/B/C, angka pasif, dan template WA terstruktur; TANPA sudah cukup lengkap tetapi tanpa opsi stop/opt-in dan ada dua balasan berurutan (termasuk rujukan "sama persis").
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06 dan 2026-10-10 (versi repo saat uji: 1.0.2).
+- Percobaan pertama: tanpa skill skor **7**; jawaban lengkap dengan skill tidak terekam di transkrip.
+- Percobaan ulang (topik terpisah): **7 → 8** (selisih +1,0). Verdik: BELUM — dengan skill ada segmen A/B/C dan template terstruktur; tanpa skill sudah cukup lengkap tetapi tanpa opsi stop/opt-in.
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan pasif?**

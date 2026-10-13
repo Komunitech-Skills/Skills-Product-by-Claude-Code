@@ -99,7 +99,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 89 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
 | 90 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
 | 91 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 92 | Landing Page Jualan Sekali Jadi, Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 92 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
 | 93 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
 | 94 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
 | 95 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
@@ -921,7 +921,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Durasi sulih suara 28,5 dtk dari target 30 dtk
 - **Catatan jujur:** Tolak klon wajah/suara tanpa izin: tanpa skill sama bagusnya (8 vs 8); tidak diulang pada v1.0.3.
 
-### Landing Page Jualan Sekali Jadi, Siap Kirim ke Pembeli — 6 → 8
+### Landing Page Jualan Siap Kirim ke Pembeli — 6 → 8
 `copy-landing-page` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-01
 
 - **Permintaan:** Bikinin teks landing page laundry kiloan 'Laundry Bersih Kilat' di Depok: Rp8.000/kg min 3 kg, express Rp12.000/kg, order lewat WA.
