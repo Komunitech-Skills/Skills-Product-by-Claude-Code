@@ -21,6 +21,8 @@ Contoh:
   python3 buat_invoice.py --file invoice.json
   python3 buat_invoice.py --file invoice.json --html invoice.html
   python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007
+  python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
+  (--counter-file mencatat setiap nomor yang dibuat + nama pembeli agar invoice berikutnya tidak bernomor dobel)
 """
 import argparse
 import datetime
@@ -38,7 +40,7 @@ from hitung_ppn import hitung_ppn_dari_dpp, parse_angka, format_rp, format_angka
 BATAS_METERAI = Decimal(5000000)
 TARIF_METERAI = Decimal(10000)
 TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 TARIF_PPH23_JASA = Decimal(2)   # UU PPh Pasal 23 ayat (1) huruf c; tanpa NPWP 100% lebih tinggi (ayat 1a)
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
               "Oktober", "November", "Desember"]
@@ -207,8 +209,8 @@ def nomor_berikutnya(terakhir, tgl=None, urut_lanjut=False):
     return baru, ket
 
 
-def nomor_dari_counter(path, prefix, tgl):
-    kunci = "{}/{}/{:02d}".format(prefix, tgl.year, tgl.month)
+def baca_counter(path):
+    """Isi file counter: {"INV/2026/10": 13, "terbit": {"INV/2026/10/0013": "<nama pembeli>", ...}}."""
     data = {}
     if os.path.exists(path):
         try:
@@ -216,11 +218,55 @@ def nomor_dari_counter(path, prefix, tgl):
                 data = json.load(f)
         except (OSError, json.JSONDecodeError):
             raise ValueError("file counter '{}' rusak atau tidak bisa dibaca".format(path))
-        if not isinstance(data, dict):
+        if not isinstance(data, dict) or not isinstance(data.get("terbit", {}), dict):
             raise ValueError("file counter '{}' harus berisi objek JSON".format(path))
+    return data
+
+
+def nomor_dari_counter(path, prefix, tgl, data=None):
+    kunci = "{}/{}/{:02d}".format(prefix, tgl.year, tgl.month)
+    if data is None:
+        data = baca_counter(path)
     urut = int(data.get(kunci, 0)) + 1
     data[kunci] = urut
     return "{}/{:04d}".format(kunci, urut), data
+
+
+def cegah_dobel(data, nomor, pembeli, manual=False):
+    """v1.0.5: catat setiap nomor yang dibuat di file counter (nomor -> nama pembeli) agar tidak dobel.
+
+    - Nomor belum pernah dibuat -> dipakai.
+    - Sudah dibuat untuk pembeli YANG SAMA -> dianggap revisi, nomor tetap.
+    - Sudah dibuat untuk pembeli LAIN -> nomor otomatis dinaikkan ke nomor berikutnya yang belum dipakai
+      pembeli lain; nomor manual (kolom 'nomor' di JSON) -> error.
+    Kembalikan (nomor, catatan atau None).
+    """
+    terbit = data.setdefault("terbit", {})
+    awal, catatan = nomor, None
+    if terbit.get(nomor) not in (None, pembeli):
+        if manual:
+            raise ValueError("nomor {} sudah pernah dibuat untuk {} (tercatat di file counter). Nomor invoice tidak "
+                             "boleh dobel; pakai nomor lain atau hapus 'nomor' agar dibuat otomatis."
+                             .format(nomor, terbit[nomor]))
+        while terbit.get(nomor) not in (None, pembeli):
+            nomor = nomor_berikutnya(nomor)[0]
+        catatan = ("nomor {} sudah dipakai untuk {} (tercatat di file counter), jadi dipakai nomor {}. Sampaikan ke "
+                   "pengguna.".format(awal, terbit[awal], nomor))
+    if terbit.get(nomor) == pembeli:
+        akhir = nomor   # nomor terakhir yang sudah terpakai berurutan setelah nomor ini
+        try:
+            while nomor_berikutnya(akhir)[0] in terbit:
+                akhir = nomor_berikutnya(akhir)[0]
+        except ValueError:
+            pass
+        catatan = ((catatan + " ") if catatan else "") + (
+            "Nomor {} sudah pernah dibuat untuk pembeli yang sama: dianggap revisi (nomor tidak berubah). Bila ini "
+            "invoice BARU, jalankan ulang dengan --nomor-terakhir {}.".format(nomor, akhir))
+    terbit[nomor] = pembeli
+    m = re.fullmatch(r"(.+/\d{4}/\d{2})/(\d+)", nomor)
+    if m:  # counter per bulan ikut maju (mis. setelah --nomor-terakhir), agar mode counter tidak mengulang nomor
+        data[m.group(1)] = max(int(data.get(m.group(1), 0)), int(m.group(2)))
+    return nomor, catatan
 
 
 # ---------------------------------------------------------------- perhitungan
@@ -683,7 +729,8 @@ def main(argv=None):
     p.add_argument("--nomor-terakhir", help="Nomor invoice terakhir, mis. INV/2026/09/0007 -> dibuat 0008")
     p.add_argument("--urut-lanjut", action="store_true",
                    help="Dengan --nomor-terakhir: saat bulan/tahun berganti, urut dilanjutkan (bukan mulai 0001)")
-    p.add_argument("--counter-file", help="File JSON penyimpan nomor urut (dibuat/diperbarui otomatis)")
+    p.add_argument("--counter-file", help="File JSON penyimpan nomor urut & nomor yang sudah dibuat (dibuat/diperbarui "
+                   "otomatis); mencegah nomor dobel, bisa digabung dengan --nomor-terakhir")
     p.add_argument("--format", choices=["markdown", "json"], default="markdown")
     a = p.parse_args(argv)
 
@@ -699,7 +746,7 @@ def main(argv=None):
             raise ValueError("isi JSON harus berupa objek {...}. Lihat templates/contoh-invoice.json")
         h = hitung(d)
         prefix = str(d.get("prefix") or ("KWT" if h["jenis_dokumen"] == "kuitansi" else "INV")).strip("/")
-        data_counter = None
+        data_counter = baca_counter(a.counter_file) if a.counter_file else None
         catatan_nomor = None
         keterangan_nomor = None
         if d.get("nomor"):
@@ -707,12 +754,21 @@ def main(argv=None):
         elif a.nomor_terakhir:
             nomor, keterangan_nomor = nomor_berikutnya(a.nomor_terakhir, h["tanggal"], a.urut_lanjut)
         elif a.counter_file:
-            nomor, data_counter = nomor_dari_counter(a.counter_file, prefix, h["tanggal"])
-            keterangan_nomor = "Nomor dari file counter {}: {}.".format(a.counter_file, nomor)
+            nomor, data_counter = nomor_dari_counter(a.counter_file, prefix, h["tanggal"], data_counter)
+            keterangan_nomor = "Nomor dari file counter: {}.".format(nomor)
         else:
             nomor = "{}/{}/{:02d}/0001".format(prefix, h["tanggal"].year, h["tanggal"].month)
             catatan_nomor = ("Nomor urut memakai 0001. Sebutkan nomor dokumen terakhir Anda agar nomor berurutan "
                              "(--nomor-terakhir) atau pakai --counter-file.")
+        if data_counter is not None:
+            calon = nomor
+            nomor, dobel = cegah_dobel(data_counter, nomor, str(h["pembeli"]["nama"]), manual=bool(d.get("nomor")))
+            if dobel:
+                h["peringatan"].append(dobel[0].upper() + dobel[1:])
+            keterangan_nomor = "{}{}{}Nomor tercatat di file counter {} (pakai file yang sama untuk dokumen " \
+                "berikutnya).".format(keterangan_nomor or "", " " if keterangan_nomor else "",
+                                      "Nomor yang dipakai: {} ({} sudah terpakai). ".format(nomor, calon)
+                                      if nomor != calon else "", os.path.abspath(a.counter_file))
     except ValueError as ex:
         sys.stderr.write("ERROR: {}\n".format(ex))
         return 2
@@ -724,8 +780,10 @@ def main(argv=None):
             with open(a.html, "w", encoding="utf-8") as f:
                 f.write(html_dok(h, nomor))
         if data_counter is not None:
-            with open(a.counter_file, "w", encoding="utf-8") as f:
+            sementara = a.counter_file + ".tmp"   # tulis dulu ke file sementara agar counter tidak rusak setengah jalan
+            with open(sementara, "w", encoding="utf-8") as f:
                 json.dump(data_counter, f, ensure_ascii=False, indent=2)
+            os.replace(sementara, a.counter_file)
     except OSError as ex:
         sys.stderr.write("ERROR: gagal menulis file: {}\n".format(ex.strerror or ex))
         return 2

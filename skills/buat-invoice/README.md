@@ -79,4 +79,4 @@ Bila dokumen menyatakan uang yang diterima lebih dari Rp5.000.000, misalnya kuit
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
