@@ -16,7 +16,7 @@ Mengubah "saya mau usaha saya lebih laku" menjadi **satu dokumen rencana 1-3 bul
 - Meluncurkan produk/cabang baru dan butuh urutan langkah + target.
 
 ## Kapan TIDAK digunakan (arahkan ke skill lain)
-- Jadwal posting harian -> `kalender-konten-30hari`; tulis konten mingguan -> `konten-mingguan`.
+- Jadwal posting dan tulis konten mingguan -> `konten-mingguan`.
 - Mekanisme diskon/promo momen + cek margin promo -> `promo-kalender`.
 - Audit iklan yang sedang jalan -> `audit-akun-iklan`; laporan hasil iklan -> `laporan-iklan-mingguan`.
 - Riset dan wawancara calon pelanggan -> `riset-calon-pelanggan`; harga jual -> `hitung-hpp` / `harga-jual-marketplace`.
@@ -45,7 +45,7 @@ Aturan tanya: jika ada info **wajib** yang kurang, tanyakan **sekali** dalam sat
 4. **Target pasar.** Pilih **satu segmen prioritas** (mis. pekerja kantor sekitar toko, ibu muda di kota X), bukan "semua orang". Tulis masalahnya, momen beli, dan tempat mereka menghabiskan waktu. Bila belum kenal pelanggan, arahkan ke `riset-calon-pelanggan`.
 5. **Pesan kunci.** Satu kalimat janji utama + 3 bukti (ulasan, foto hasil, angka nyata) + 1 ajakan bertindak (chat WA, kunjungi, klik keranjang). Jangan melebih-lebihkan klaim.
 6. **Pilih kanal (maksimal 3 utama).** Pakai matriks di `references/kanal-umkm-indonesia.md`: cocokkan kanal dengan segmen, kapasitas orang, dan anggaran. Kanal gratis dulu (WA pelanggan lama, Google Maps, konten organik), berbayar hanya bila margin sehat. Aturan 70/20/10: 70% dana ke kanal yang sudah terbukti, 20% ke kanal berikutnya, 10% eksperimen.
-7. **Kalender.** Petakan momen yang jatuh di periode (gajian tanggal 25-1, 9.9/10.10/11.11/12.12, Ramadan-Lebaran, tahun ajaran baru, musim hujan, dll.) memakai `references/kalender-momen.md`; **verifikasi tanggal bergerak (Ramadan, Lebaran) ke kalender resmi**. Buat linimasa per minggu: apa, siapa, kanal. Detail promo -> `promo-kalender`; jadwal konten -> `kalender-konten-30hari`.
+7. **Kalender.** Petakan momen yang jatuh di periode (gajian tanggal 25-1, 9.9/10.10/11.11/12.12, Ramadan-Lebaran, tahun ajaran baru, musim hujan, dll.) memakai `references/kalender-momen.md`; **verifikasi tanggal bergerak (Ramadan, Lebaran) ke kalender resmi**. Buat linimasa per minggu: apa, siapa, kanal. Detail promo -> `promo-kalender`; jadwal konten -> `konten-mingguan`.
 8. **Anggaran.** Jalankan script `alokasi`. Tampilkan Rp per kanal, per bulan, plus cadangan eksperimen 10%.
 9. **Target angka.** Jalankan `target` (CAC titik impas, CAC & ROAS target, batas atas anggaran iklan dari target omzet) dan `funnel` (berapa jangkauan/klik/chat yang dibutuhkan untuk target pesanan). Konversi funnel dari data nyata; tanpa data pakai angka contoh di `references/patokan-angka.md` dan **beri label "asumsi, ganti dengan data Anda"**.
 10. **KPI & rutinitas pantau.** Per tahap corong (Kenal, Tertarik, Beli, Beli lagi, Rekomendasi) 1-2 KPI, sumber datanya, dan pemilik. Rutinitas: catat mingguan 10 menit, evaluasi bulanan, aturan "hentikan" (mis. kanal dihentikan bila 4 minggu CAC > CAC titik impas). Hubungkan ke `laporan-iklan-mingguan` / `kpi-tim`.

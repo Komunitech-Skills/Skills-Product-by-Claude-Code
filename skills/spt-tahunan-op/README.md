@@ -30,23 +30,14 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Karyawan K/2 plus usaha jasa, zakat ke BAZNAS 5 juta — pajak tahunan saya berapa?"
 
 ## Instalasi singkat
-Salin folder `spt-tahunan-op` ke folder skills AI agent kamu:
+Salin folder `spt-tahunan-op` ke folder skills AI agent kamu (OpenClaw, Codex, Claude Code, Cursor). Lokasi lengkap per platform: **`docs/instalasi.md`**. Script memakai Python standar (tanpa instal paket); bila Python tidak ada, agent menghitung manual dengan rumus yang sama.
 
-| Platform | Folder tujuan |
-|---|---|
-| OpenClaw | `~/.openclaw/skills/` |
-| Codex | `~/.agents/skills/` |
-| Claude Code | `~/.claude/skills/` |
-| Cursor | `~/.cursor/skills/` |
+**Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Rata-rata 2 skenario: tanpa skill **4,75** → dengan skill **8,75** (LULUS; selisih +4,0).
+- Skenario jebakan (konsultan IT pakai PPh final 0,5%): tanpa skill **3** → dengan skill **8,5** (meluruskan pekerjaan bebas + NPPN/Coretax, bukan nihil/lebih bayar).
+- Bot Telegram asli (gelombang 4, 2026-10-03): TANPA tidak memberi jawaban; DENGAN meluruskan skema pajak dan menghitung kurang bayar Rp14.400.000 setelah giliran lanjutan.
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python standar (tanpa instal apa pun); bila Python tidak ada, agent menghitung manual dengan rumus yang sama.
-
-## Bukti uji di bot Telegram
-
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03.
-- Tanpa skill: https://t.me/c/4407409583/586/612 — skor: lihat catatan gelombang
-- Dengan skill: https://t.me/c/4407409583/587/614 — skor: lihat catatan gelombang
-Verdik gelombang: — — TANPA tidak memberi jawaban; DENGAN meluruskan skema pajak (pekerjaan bebas, bukan PPh final 0,5%) dan setelah giliran lanjutan menghitung kurang bayar Rp14.400.000.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent + bot Telegram asli gelombang 4). Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Angka simulasi belum dicocokkan dengan Coretax resmi — gunakan sebagai pembanding, bukan pengganti pelaporan DJP.
 
 ## FAQ
 **1. Apakah skill ini melaporkan SPT saya ke DJP?**

@@ -24,6 +24,10 @@ Hitung paket: `python3 scripts/rencana_konten_avatar.py --paket paket.json --vid
 ## Instalasi singkat
 Salin folder `klon-diri-konten` ke folder skill platform Anda (OpenClaw, Codex, Claude Code, Cursor). Lokasi per platform: `docs/instalasi.md` dalam paket. Tidak butuh API key. Pasangkan dengan skill `studio-video-pendek-ai` untuk naskah.
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **7,75** → dengan skill **8,5** (LULUS). Contoh 12 video × 45 detik + cadangan revisi 25% = **11,25 menit**; HeyGen Creator perkiraan **Rp478.500** muat budget Rp600.000 + gerbang persetujuan & label AI. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-02). Harga alat = perkiraan bertanggal (cek situs resmi). Tidak merender video; Codex/Cursor belum uji platform asli.
+
 ## FAQ
 **Apakah skill membuat klon atau video?** Tidak. Skill memandu keputusan, persetujuan, rekam sampel, dan hitungan; render dilakukan di alat pilihan Anda, dan unggah dilakukan manual oleh Anda.
 **Boleh klon wajah/suara karyawan atau artis?** Karyawan/talent hanya dengan persetujuan tertulis (formulir tersedia). Artis/tokoh atau siapa pun tanpa izin: tidak.

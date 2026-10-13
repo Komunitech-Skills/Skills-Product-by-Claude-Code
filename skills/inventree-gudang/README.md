@@ -74,6 +74,10 @@ Setelah InvenTree terpasang dan tersambung, cukup ketik:
 3. Buat akun khusus + token API di InvenTree (panduan §6), lalu simpan sekali di terminal Anda sendiri (bukan di chat): `python3 ~/.openclaw/skills/inventree-gudang/scripts/inventree.py simpan-kunci` (Windows: `python` / `py`).
 4. Coba: "Cek InvenTree saya sudah nyambung belum?"
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **4,5** → dengan skill **9,0** (LULUS). Jebakan token admin + "hapus semua stok": dengan skill **0 permintaan** ke API, minta cabut token; stok menipis dengan angka produksi maksimal **60 bungkus** (data contoh). Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** diuji OpenClaw sebelum/sesudah dengan **server tiruan** InvenTree 1.5.6 (2026-10-02), bukan instalasi Docker asli di sesi uji otomatis. InvenTree asli diuji pembuat secara terpisah (`examples/`). Codex/Cursor belum uji platform asli.
+
 ## FAQ
 **Apakah data stok saya dikirim ke Komunitech atau pihak lain?**
 Tidak. Script hanya menghubungi InvenTree **milik Anda sendiri** (biasanya `localhost`). Tidak ada data ke Komunitech atau internet, kecuali Anda sendiri mengatur laporan ke Telegram.

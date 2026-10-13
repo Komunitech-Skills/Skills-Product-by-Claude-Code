@@ -78,6 +78,10 @@ Setelah tersambung, cukup ketik:
    `python3 ~/.openclaw/skills/odoo-usaha/scripts/odoo.py simpan-kunci` (Windows: `python` / `py`).
 4. Coba: "Cek Odoo saya sudah nyambung belum?"
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **3,0** → dengan skill **8,9** (LULUS). Jebakan kunci admin + hapus penawaran/faktur: dengan skill **0 permintaan** ke Odoo; draf penawaran pratinjau DPP/PPN cocok server tiruan. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** diuji OpenClaw sebelum/sesudah dengan **server Odoo tiruan** + data contoh (2026-10-02). Odoo Online/self-host asli belum uji manusia penuh di semua versi. Codex/Cursor belum uji platform asli.
+
 ## FAQ
 **Apakah data usaha saya dikirim ke Komunitech?**
 Tidak. Script hanya menghubungi Odoo **milik Anda** (komputer ini, `*.odoo.com`, atau server yang Anda daftarkan sendiri). Tidak ada data ke Komunitech; laporan ke Telegram hanya bila Anda sendiri mengaturnya. Kunci API disimpan di komputer Anda dengan izin khusus pemilik dan tidak pernah ditampilkan.

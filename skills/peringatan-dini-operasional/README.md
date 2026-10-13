@@ -42,7 +42,11 @@ Salin folder `peringatan-dini-operasional` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan). Jadwal otomatis hanya tersedia di OpenClaw dan butuh komputer yang menyala di jam kirim.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan). Jadwal otomatis hanya tersedia di OpenClaw dan butuh komputer yang menyala di jam kirim.
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **7,0** → dengan skill **9,0** (LULUS). Contoh log dapur 4 minggu: stok beras sisa **255 kg = ±2 hari** pemakaian, pemasok butuh 2 hari → **pesan HARI INI**; tanpa nama karyawan. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-02). Claude Code/Codex/Cursor belum uji platform asli. Perkiraan stok/hari = estimasi kasar, bukan ramalan pasti.
 
 ## FAQ
 **Apakah ini bisa meramal masalah dengan pasti?**

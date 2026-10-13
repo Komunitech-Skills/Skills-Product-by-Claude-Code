@@ -59,10 +59,16 @@ Atau *"buatkan papan produksi untuk konveksi saya"* → AI menunjukkan 6 kolom (
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-(Rincian lengkap: `docs/instalasi.md`.)
+Rincian lengkap per platform: **`docs/instalasi.md`**.
 
-3. Buat token di Kanboard (avatar → Profil saya → API → Generate token baru), lalu simpan sekali **di terminal Anda sendiri** (bukan di chat): `python3 ~/.openclaw/skills/kanboard-papan-kerja/scripts/kanboard.py simpan-kunci` (Windows: `python`/`py`).
+3. Buat token di Kanboard (avatar → Profil saya → API → Generate token baru), lalu simpan sekali **di terminal Anda sendiri** (bukan di chat): `python3 scripts/kanboard.py simpan-kunci` (Windows: `python`/`py`).
 4. Coba: "Cek Kanboard saya sudah nyambung?"
+
+**Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent dengan Kanboard v1.2.54 asli (data contoh), 2026-10-02, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Uji ulang v1.0.3 (2 skenario, 2 sesi): tanpa skill **4,8** → dengan skill **8,8** (LULUS; pratinjau + "ya" wajib walau diminta "langsung kerjakan").
+- Skenario baca laporan (telat/macet/jatuh tempo): tanpa skill sudah cukup baik; dengan skill nomor kartu (#id) dan aturan kolom terakhir lebih konsisten.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, 2026-10-02). Claude Code, Codex, Cursor, dan jadwal Telegram belum kami uji langsung. Panduan Docker/Kanboard di Windows/macOS belum dicoba end-to-end di perangkat pembeli.
 
 ## FAQ
 **Apakah data order saya dikirim ke Komunitech atau pihak lain?**

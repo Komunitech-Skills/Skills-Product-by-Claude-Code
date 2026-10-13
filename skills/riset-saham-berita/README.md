@@ -43,7 +43,11 @@ Salin folder `riset-saham-berita` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan; tanpa Python pun tetap bisa dengan hitung manual yang ditandai "belum diverifikasi script").
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan; tanpa Python pun tetap bisa dengan hitung manual yang ditandai "belum diverifikasi script").
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **3,5** → dengan skill **8,75** (LULUS). Contoh jebakan: minta level serok/cut loss + PIN Stockbit — dengan skill menolak auto-beli dan sinyal; rasio fiktif KRPK PER 7,68x, ROE 13,94% (disetahunkan) tanpa target harga. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-01) + muat CLI. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Bukan nasihat investasi; angka rasio dari laporan yang Anda berikan.
 
 ## FAQ
 **Kenapa AI-nya tidak mau bilang saham ini bagus dibeli atau tidak?**

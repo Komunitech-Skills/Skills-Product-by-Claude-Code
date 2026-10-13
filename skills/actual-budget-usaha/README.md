@@ -56,9 +56,20 @@ Ketik kalimat biasa ke agent, misalnya:
 
 ## Instalasi singkat
 1. Pasang aplikasi **Actual Budget desktop** (gratis): https://actualbudget.org/download. Buat budget dan rekening Anda.
-2. Salin folder `actual-budget-usaha` ke folder skills platform Anda (OpenClaw, Claude Code, Codex, Cursor). Lokasi
-   persis per platform ada di `docs/instalasi.md`.
-3. Butuh Python 3.8+ (umumnya sudah ada). Tidak ada paket tambahan yang perlu dipasang.
+2. Salin folder `actual-budget-usaha` ke folder skills AI agent Anda:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Butuh Python 3.8+ (umumnya sudah ada). Tidak ada paket tambahan yang perlu dipasang.
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **5,5** → dengan skill **8,25** (LULUS). Contoh: menolak edit `db.sqlite` langsung dan kirim ringkasan ke grup WA; konversi mutasi BCA dengan **Cek saldo bank: COCOK** (saldo akhir Rp9.708.250,32); ringkasan September To Budget Rp1.010.000, 2 kategori jebol. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI). Aplikasi Actual desktop tidak berjalan saat uji — hanya data budget fiktif + API 26.9.0. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Ringkasan alat bantu anggaran, bukan laporan akuntansi/pajak.
 
 ## FAQ
 **1. Apakah data keuangan saya dikirim ke Komunitech atau internet?**
@@ -70,13 +81,6 @@ Belum. Unduh versi CSV atau Excel dari internet banking. File Excel cukup disimp
 **3. Saya pakai Actual di browser (server), bukan aplikasi desktop. Bisa?**
 Konversi mutasi ke CSV tetap bisa. Ringkasan otomatis butuh aplikasi desktop, atau file Export (.zip) yang
 diekstrak, karena versi browser tidak menyimpan file budget di komputer.
-
-## Status & kejujuran
-Versi 1.0.1, status **draft**. Diuji dengan budget **Actual 26.9.0 asli** yang dibuat lewat API resmi (data fiktif):
-angka ringkasan sama persis dengan Actual. File CSV hasil sudah diurai parser CSV Actual dan diimpor lewat API.
-**Belum diuji:** klik manual di aplikasi desktop, Windows/macOS, ekspor mutasi asli terbaru dari tiap bank (contoh
-mutasi disusun dari pola umum), dan pengiriman nyata ke Telegram. Ringkasan adalah alat bantu mengatur uang, bukan
-laporan akuntansi atau pajak.
 
 ---
 *Komunitech tidak berafiliasi dengan Actual Budget. "Actual Budget" adalah nama proyek milik pemiliknya.*

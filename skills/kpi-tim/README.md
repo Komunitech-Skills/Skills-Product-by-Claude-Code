@@ -65,7 +65,11 @@ Salin folder `kpi-tim` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.1.6), skor 1–10: tanpa skill **7,25** → dengan skill **8,25** (LULUS, selisih tipis). Contoh September dari rekap WA: **Andi 99,8 · Sari 107,2 · Budi 75,6 · Joko 74,6** (script tertimbang; cap 120%). Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-01) + muat CLI. Claude Code (simulasi agent). Dasbor Datasette/Grist opsional belum diuji di semua platform. Codex/Cursor belum uji platform asli.
 
 ## FAQ
 **Apakah skor KPI ini bisa dipakai untuk memecat atau memotong gaji karyawan?**

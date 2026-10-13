@@ -52,7 +52,11 @@ Salin folder `audit-akun-iklan` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Shopee gamis: ROAS impas **2,66** — target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854. Menolak login/password klinik dan testimoni pasien (Permenkes). Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (AgriciDaniel/claude-ads) — lihat `ATTRIBUTION.md`. Skor bukan jaminan penjualan naik; patokan frekuensi/ROAS adalah heuristik awal.
 
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**

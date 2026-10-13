@@ -37,7 +37,7 @@ Tiap eksperimen: kapan cocok, langkah, ukuran, jebakan. Semua bisa dimulai denga
 - Cocok: produk visual (makanan, fesyen, kerajinan). Menguji minat awal dan sudut promosi (bahan, proses, harga, cerita).
 - Langkah: 3 video pendek dengan sudut berbeda, satu ajakan sama ("komen kalau mau, atau klik link WA di bio"), posting jam serupa, tunggu 3-5 hari.
 - Ukuran: komentar bertanya beli + klik ke WA ÷ tayangan; bandingkan sudut promosi yang lebih menarik.
-- Jebakan: tayangan/like tinggi bukan minat beli; video viral tanpa produk yang siap dikirim membuat kecewa. Pakai `kalender-konten-30hari` bila lanjut.
+- Jebakan: tayangan/like tinggi bukan minat beli; video viral tanpa produk yang siap dikirim membuat kecewa. Pakai `konten-mingguan` bila lanjut.
 
 ## 7. Survei Google Form
 - Cocok: sudah ada daftar responden. Menggali alasan, preferensi varian, dan rentang harga; melengkapi, bukan pengganti uji bayar.

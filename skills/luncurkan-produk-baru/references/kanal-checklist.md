@@ -28,4 +28,4 @@ Beri nilai 0-3 pada tiap kanal untuk 3 pertanyaan: (a) pembeli utamamu ada di sa
 - Tidak ada broadcast/blast ke nomor yang tidak pernah minta. Pesan massal hanya untuk yang sudah mendaftar (opt-in) dan beri jalan keluar ("balas STOP").
 - Jangan membeli pengikut, ulasan palsu, atau minta kreator menyembunyikan bahwa itu endorse/iklan.
 - Setiap kanal punya **satu tautan pelacak** (mis. kode promo berbeda per kanal atau tautan wa.me dengan kata kunci berbeda di pesan awal) supaya hasilnya bisa dibandingkan.
-- Konten: gunakan skill `caption-sosmed-umkm`, `kalender-konten-30hari`, `naskah-live-jualan`, `foto-produk-brief`, `listing-marketplace`, `copy-landing-page`. Iklan: `audit-akun-iklan`, `laporan-iklan-mingguan`.
+- Konten: gunakan skill `konten-mingguan`, `naskah-live-jualan`, `foto-produk-brief`, `listing-marketplace`, `copy-landing-page`. Iklan: `audit-akun-iklan`, `laporan-iklan-mingguan`.

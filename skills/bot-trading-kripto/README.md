@@ -93,6 +93,10 @@ Jadwal otomatis & notifikasi Telegram di OpenClaw: `references/openclaw-jadwal.m
 Butuh **Python 3** (tanpa paket tambahan). Agar bot berjalan terus, komputer/VPS harus menyala;
 Komunitech menyediakan **jasa setup berbayar** bila Anda ingin dibantu.
 
+**Hasil uji (angka nyata):** uji independen Claude Code (simulasi agent), Sep 2026 (v1.0.6): DCA paper Indodax **12/12** transaksi cocok verifikasi Decimal; gerbang live & penolakan kunci ber-withdraw lulus; A/B tanpa skill → langsung skrip `ccxt` live tanpa batas risiko vs skill paper + 5 batas wajib. Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`.
+
+**Status uji (jujur):** status catalog **lulus** setelah revisi H1/M1–M4; **belum** uji OpenClaw sebelum/sesudah otomatis di bot Telegram. Order live/testnet sungguhan belum (hanya server tiruan + harga publik). Uji testnet butuh kunci milik pemilik. Codex/Cursor belum uji platform asli.
+
 ## FAQ
 **1. Apakah bot ini menjamin untung?**
 Tidak. Tidak ada yang bisa menjamin. Bot hanya menjalankan aturan Anda dengan disiplin dan

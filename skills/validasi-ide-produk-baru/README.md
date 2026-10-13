@@ -37,7 +37,11 @@ Salin folder `validasi-ide-produk-baru` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket pembelian.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.4), skor 1–10: tanpa skill **7,5** → dengan skill **8,25** (LULUS). Contoh keripik tempe: konversi bayar **4/45 = 8,9%** dipisah dari 52 vote IG (minat, bukan pesanan); selisih tes **−Rp26.000** → keputusan UBAH, bukan produksi 200 bungkus. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent, skor 9/10 di `examples/HASIL-UJI.md`). Codex dan Cursor belum uji platform asli. Skill kurasi Apache-2.0 (product-on-purpose/pm-skills) — lihat `ATTRIBUTION.md`. Ambang 15%/8% heuristik praktis, bukan rumus ilmiah baku.
 
 ## FAQ
 **Apakah saya butuh install Python atau aplikasi lain?**
