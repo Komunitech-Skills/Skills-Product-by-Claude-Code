@@ -25,6 +25,8 @@
 - Dengan skill: semua mekanisme (diskon, bundling, beli 2 gratis 1, voucher, subsidi ongkir) dibandingkan dalam satu tabel. Diskon maksimal sebelum rugi 56,2% (serum) dan 40,5% (toner dengan ongkir); diskon 40% perlu terjual 3,47 kali lipat penjualan biasa agar laba setara; laba bersih kampanye Rp 4.643.100 setelah iklan; linimasa bertanggal; ada peringatan harga coret (UU 8/1999 Pasal 11 huruf f).
 - Skor penguji independen: 8 dari 10; 300 dari 300 kombinasi hitungan cocok dengan kalkulator terpisah.
 
+Uji OpenClaw 2026-10-01: 6,5 → 8 (8,5 setelah perbaikan dan uji ulang) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Bikinin rencana promo Harbolnas 12.12 buat 3 produk saya"

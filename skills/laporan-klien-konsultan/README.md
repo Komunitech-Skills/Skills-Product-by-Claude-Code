@@ -55,7 +55,7 @@ Total jam tercatat: 4 jam.
 ```
 (Contoh lengkap tiga versi + Markdown: `examples/uji-pembuat-01-konsultan-pajak.md`.)
 
-**Hasil uji:** skor kualitas 9/10 pada uji penguji independen (simulasi agent). Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Di OpenClaw 2026.9.6 (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/UJI-PLATFORM.md`. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Hasil uji:** skor kualitas 9/10 pada uji penguji independen (simulasi agent). Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Di OpenClaw 2026.9.6 (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/UJI-PLATFORM.md`. Uji OpenClaw 2026-10-01: 8 → 7 sebelum perbaikan, 8 → 8,5 setelah perbaikan v1.0.5 (lihat `examples/00-openclaw-sebelum-sesudah.md`). Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:

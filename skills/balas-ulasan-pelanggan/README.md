@@ -25,6 +25,8 @@
 - Dengan skill: 0 pelanggaran; balasan publik 358 dari batas 500 karakter dan mengarah ke chat toko, ditambah pesan chat pribadi siap kirim dan urutan "chat pribadi dulu, baru posting balasan publik".
 - Skor penguji independen: 8 dari 10 (lulus uji).
 
+Uji OpenClaw 2026-10-01: 5,5 → 8,25 (rata-rata dua skenario ulasan; 8,5 setelah perbaikan dan uji ulang) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Bantu balas review Google Maps ini: <tempel ulasan>"

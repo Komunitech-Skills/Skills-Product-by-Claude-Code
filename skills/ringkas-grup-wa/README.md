@@ -27,6 +27,8 @@
 - Dengan skill: 11 butir Perlu Perhatian dengan kutipan asli + jam, tabel tugas siapa-kapan, statistik dihitung script, dan 2 hal yang belum dijawab pemilik ditandai ⚠️ "belum ada jawaban dari Anda".
 - Skor akhir penguji independen (v1.0.1): 8 dari 10; 68 dari 68 uji otomatis bawaan lulus.
 
+Uji OpenClaw 2026-10-01: 7,5 → 8 (8,5 setelah perbaikan dan uji ulang; selisih kecil) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+
 ## Cara pakai
 
 ### 1. Ekspor chat dari WhatsApp (sekali per ringkasan, ±30 detik)
