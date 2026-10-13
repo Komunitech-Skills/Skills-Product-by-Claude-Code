@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 5,5 → 9,0 dari 10; di bot Telegram asli 5,5 → 8,5 (pembedanya untuk produk yang izin BPOM-nya belum terbit: tanpa skill, AI masih menyarankan pre-order dan harga promo; dalam uji ini dengan skill semua jalur jual ditutup sampai izin terbit dan jadwal digeser).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - Jadwal bertanggal otomatis dari tanggal peluncuran (T-30 = 30 hari sebelum hari peluncuran, T+30 = 30 hari sesudahnya), sudah menghindari hari libur nasional 2026-2027 untuk urusan pemasok/kemasan/izin.

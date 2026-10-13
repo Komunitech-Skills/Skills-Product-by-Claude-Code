@@ -4,7 +4,7 @@
 
 *Diuji AI penguji independen: 4,3 → 9,0 dari 10 (tanpa skill, agent memakai kunci akses yang ditempel di chat dan menimpa dokumen tanpa pratinjau; dengan skill ada pratinjau dan cadangan isi lama).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **"Cari SOP retur" langsung ketemu.** AI mencari lewat isi seluruh SOP/FAQ/notulen di SiYuan, bukan menebak-nebak dari ingatan model. Diuji dengan data contoh dan server SiYuan tiruan (bukan aplikasi SiYuan sungguhan); lihat Hasil uji.

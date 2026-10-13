@@ -4,7 +4,7 @@
 
 *Diuji AI penguji independen di OpenClaw: 7,0 → 9,0 dari 10 (pembeda: laporan 1 halaman dihitung skrip dan tanpa nama karyawan, sedangkan AI biasa menawarkan mengirimnya ke grup WA karyawan; memakai data contoh).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Peringatan berwarna yang jelas:** 🔴 bahaya, 🟠 waspada, 🟡 perhatikan, masing-masing dengan alasan berangka ("reject (barang cacat) naik 3 hari berturut-turut, 6,8σ di atas rata-rata, lewat target maks 50"; σ = ukuran seberapa jauh angka menyimpang dari kebiasaan). Dirancang agar oranye/merah muncul hanya untuk lonjakan jelas atau yang bertahan, supaya Anda tidak "kebal alarm"; keluhan/kecelakaan yang biasanya nol ditandai begitu muncul

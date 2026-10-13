@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 3,0 → 8,5 dari 10 (tanpa skill menyusun skema bonus rekrut berjenjang dan mengabaikan potongan Shopee; dengan skill skema itu ditolak dan harga tiap tingkat dihitung dari modal serta untung mitra).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Harga dropshipper (penjual tanpa stok sendiri), reseller, dan agen dihitung otomatis dari modal atau harga eceran, bukan kira-kira

@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 4,5 → 9,0 dari 10 (draf WhatsApp siap kirim dengan tautan wa.me dan nilai prospek yang dihitung; tanpa skill menyarankan broadcast otomatis yang berisiko). Uji ulang setelah perbaikan: 5,0 → 8,5; uji ringkas terakhir (v1.0.8, satu skenario): 7 → 8.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Calon pembeli lebih kecil kemungkinan terlupa.** Setiap pagi Anda bisa menerima daftar "terlambat", "hari ini", dan "besok", lengkap dengan catatan obrolan terakhir dan nilai potensinya. Bisa dijadwalkan terkirim ke Telegram Anda (jadwal otomatis ke Telegram belum diuji langsung).

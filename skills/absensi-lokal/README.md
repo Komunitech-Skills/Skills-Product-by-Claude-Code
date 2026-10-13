@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,5 → 8,75 dari 10 (tanpa skill, lembur langsung dihitung dari jam pulang dan gaji dipotong tanpa aturan tertulis; dengan skill, persetujuan lembur ditanyakan dan potongan tanpa dasar ditolak).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Hemat biaya per karyawan.** Aplikasi HRIS (pengelolaan data karyawan)/absensi berbayar umumnya ditagih per karyawan per bulan. Menurut riset harga publik kami (23 Sep 2026, bisa berubah): Talenta sekitar Rp25–50 rb dan Gadjian sekitar Rp12,5 rb per karyawan per bulan. Untuk 20 karyawan, itu kira-kira Rp250 rb–1 jt per bulan. Di sini Anda bayar sekali, tanpa langganan.

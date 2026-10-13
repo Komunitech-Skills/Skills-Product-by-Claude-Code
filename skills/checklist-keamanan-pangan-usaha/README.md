@@ -6,7 +6,7 @@ Diuji AI penguji independen: 5,6 → 8,25 dari 10 (batas suhu, alergen, dan hala
 
 > **PERLU REVIEW perizinan/ahli:** bagian perizinan hanya petunjuk awal dan belum diverifikasi penuh oleh ahli; cek ke Dinas Kesehatan/BPOM/lembaga halal. Bukan pengganti pelatihan atau pemeriksaan resmi, dan bukan nasihat hukum.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - Checklist harian (datang, sebelum buka, jam sibuk, tutup) sesuai menu dan alat yang Anda punya.

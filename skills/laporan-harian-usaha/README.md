@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (angka penjualan sudah benar di kedua sisi; pembedanya laporan baku dengan butir "Perlu Perhatian", tafsir deal dan konversi calon pembeli yang benar, dan penolakan mengirim omzet ke grup WA karyawan).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Satu pesan, seluruh usaha.** Penjualan, stok menipis, siapa yang terlambat/alpa, lembur yang perlu diputuskan, tagihan jatuh tempo, dan calon pembeli (prospek) beserta tahap penjualannya, digabung dari alat Komunitech yang sudah Anda pakai: **Kasir Lokal** (kasir), **Buku Stok** (pencatat stok), **Absensi Lokal** (catatan kehadiran), **Pengingat Follow-up** (pengingat tagihan dan tindak lanjut), dan **CRM WA** (catatan calon pembeli lewat WhatsApp).

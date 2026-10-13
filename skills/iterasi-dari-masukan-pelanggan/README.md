@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,9 → 8,6 dari 10 (pembedanya data pelanggan disamarkan dan angka disalin dari skrip, dengan temuan 88,9% keluhan WhatsApp tidak dibalas admin; tanpa skill, AI menyebut sekitar 10 nama pelanggan dan salah hitung jumlah chat).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Masukan dari WhatsApp, Shopee/Tokopedia/Google Maps, Instagram/TikTok, dan survei dibaca sekaligus, bukan satu-satu; ekspor (file unduhan) Shopee/Tokopedia/TikTok Shop, Google Form, dan chat WA langsung terbaca (kolom yang dipakai disebutkan, file rusak diberi pesan jelas)

@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (dengan skill pesan dicek skrip dan jam kirim dikoreksi, mis. 19.30 WIB = 20.30 WITA di Makassar, tanpa tawaran kirim otomatis).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Wajib menyebut **dari mana kontak didapat** — bukan basa-basi "kenalan yuk", inti dari pesan pertama yang dipercaya, bukan dicurigai penipuan

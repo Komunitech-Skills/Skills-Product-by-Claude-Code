@@ -5,7 +5,7 @@ lengkap dengan saran iklan mana yang perlu ditinjau atau dimatikan.**
 
 Diuji AI penguji independen di OpenClaw: 6,0 → 8,75 dari 10 (tanpa skill menebak kurs dolar dan menghitung biaya per hasil dari sebagian kampanye saja; dengan skill AI berhenti menanyakan kurs lalu menghitung seluruh belanja).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ CPC (biaya per klik), CPM (biaya per 1.000 tayangan), CTR (persentase yang mengeklik), biaya per hasil (CPA/CPL), dan ROAS (omzet per rupiah iklan) dihitung dari angka mentah — bukan

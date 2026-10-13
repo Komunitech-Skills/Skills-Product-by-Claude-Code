@@ -6,7 +6,7 @@ menyiapkan file impor yang rapi, tanpa biaya bulanan.**
 
 Diuji AI penguji independen di OpenClaw (dengan data contoh): 5,5 → 9,0 dari 10 (tanpa skill disuruh menyetor PPN Rp511.500; dengan skill PPN masukan diperhitungkan sehingga lebih bayar Rp93.500, dan file database tidak disentuh).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Laporan dalam satu kalimat.** Penjualan & pembelian per bulan/hari/pelanggan/barang, laba rugi ringkas, lengkap dengan

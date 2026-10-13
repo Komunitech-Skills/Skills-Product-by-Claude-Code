@@ -4,7 +4,7 @@
 
 Diuji penguji independen: tanggal yang benar 13 → 20 dari 20 pada skenario warung perorangan (pembedanya tanggal yang digeser karena libur dan batas unggah faktur pajak tanggal 20); skor penguji 8 dari 10.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Daftar tanggal setor & lapor setahun sesuai kondisi usaha Anda (UMKM 0,5%, PKP/PPN, punya karyawan, potong PPh 23; PKP = Pengusaha Kena Pajak) — untuk PKP termasuk batas unggah faktur pajak keluaran tgl 20

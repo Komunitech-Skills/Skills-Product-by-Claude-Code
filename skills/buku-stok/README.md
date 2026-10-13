@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6 → 8,5 dari 10 (tanpa skill, stok hanya jadi catatan teks di memori AI; dengan skill, buku stok sungguhan di komputer dengan HPP rata-rata yang dihitung).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Hemat biaya bulanan.** Perkiraan hemat **±Rp250 rb–800 rb per bulan** (±Rp3–9,6 jt per tahun) dibanding aplikasi kasir/stok atau omnichannel (pengelola banyak toko online sekaligus) berbayar. Menurut riset harga publik kami (23 Sep 2026, bisa berubah): Majoo Rp249–999 rb, Moka Rp299–799 rb, Jubelio mulai Rp799 rb per bulan (minimal 6 bulan). Bayar sekali, tanpa langganan.

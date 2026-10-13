@@ -6,7 +6,7 @@ Cukup satu kalimat tentang usaha Anda. AI menyusun target pasar, persona pelangg
 
 Diuji AI penguji independen di OpenClaw: 6,25 → 8,75 dari 10 (pembedanya bio Instagram yang dihitung karakternya agar pas 150 karakter, dan tagline yang menjanjikan "pasti turun 5 kg, sudah BPOM" ditolak dengan dasar hukum lalu diganti tagline yang aman).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Tahu **1 segmen** (kelompok pembeli) yang dikejar duluan, dengan skor yang dihitung (bukan dikira-kira).

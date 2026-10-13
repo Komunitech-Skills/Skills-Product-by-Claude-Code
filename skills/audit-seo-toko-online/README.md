@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 7,0 → 8,75 dari 10 (temuan inti benar di kedua sisi; pembedanya prioritas perbaikan yang jelas dan teks pengganti siap tempel yang hanya memakai data Anda, tanpa fakta karangan).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Angka dihitung, bukan dikira: panjang judul halaman (title) & deskripsi Google (meta description) dihitung persis lewat skrip, bukan tebak-tebakan "kayaknya kepanjangan"

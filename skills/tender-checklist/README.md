@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 7,25 → 9,0 dari 10 (hitungan dasar benar di kedua sisi; pembedanya jadwal hari kerja, jaminan pelaksanaan, pengingat PPh 22, dan skenario PPN yang tidak keliru).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tahu layak ikut atau tidak dalam beberapa menit** — cek kualifikasi usaha kecil, KBLI (kode bidang usaha) di NIB (nomor induk berusaha), NPWP/PKP (Pengusaha Kena Pajak), SBU/SKK (sertifikat usaha dan keahlian konstruksi), pengalaman, dan sisa kemampuan paket.

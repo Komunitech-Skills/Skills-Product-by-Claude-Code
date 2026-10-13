@@ -13,7 +13,7 @@ CSV (file tabel sederhana), dan membacakan ringkasannya.
 > Inc., lisensi Apache-2.0) diunduh & dipasang sendiri mengikuti `docs/panduan-grist.md` — gratis,
 > resmi, tanpa akun berbayar. Komunitech tidak berafiliasi dengan Grist Labs Inc.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Grist (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Software tambahan: Grist (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Kenapa ini, bukan sekadar pakai Grist sendiri?
 Grist memang bisa dipakai sendiri tanpa AI — tapi merancang struktur tabel yang benar, menulis

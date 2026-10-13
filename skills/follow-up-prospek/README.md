@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,25 → 8,0 dari 10 (tanggal kirim dihitung dengan skrip sehingga nama harinya benar dan tawaran baru diberi label usulan; tanpa skill 3 dari 4 tanggal salah nama hari dan ada kesan mendesak yang dikarang).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Urutan pesan WhatsApp dan email hari ke-1, 3, 7, dan 14 yang sudah siap salin-kirim

@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen: 7 → 8,75 dari 10 di OpenClaw (tanpa skill, rata-rata per nota salah karena nota yang sudah dibatalkan ikut dihitung).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Datasette (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Software tambahan: Datasette (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Satu jawaban, bukan enam aplikasi.** "Penjualan hari ini berapa, stok apa yang tinggal sedikit, siapa yang piutangnya lewat jatuh tempo?" — dijawab langsung dari data asli di komputer Anda (file database), dihitung ulang, bukan dikira-kira.
