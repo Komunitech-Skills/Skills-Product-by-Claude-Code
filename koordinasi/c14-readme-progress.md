@@ -24,4 +24,19 @@ Daftar 40 skill (`random.seed(20261013+23)`), pool = skill aktif minus set A–F
 | fider-masukan-pelanggan | sudah memenuhi checklist | — |
 | simulasi-cicilan-pinjaman | tanpa blok Hasil uji; tautan t.me | blok Hasil uji + Status uji; hapus t.me |
 
-Sisa: set H (run berikutnya).
+## Set H (2026-10-13 ~18:00 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| slip-gaji-bpjs | tautan t.me privat di Bukti Telegram | diganti ringkasan teks |
+| tagih-piutang | sudah memenuhi checklist | — |
+| siyuan-sop | sudah memenuhi checklist | — |
+| ringkas-grup-wa | baris pembeda & subjudul ganda Hasil uji | rapikan format |
+| kpi-tim | sudah memenuhi checklist | — |
+| balas-ulasan-pelanggan | baris pembeda & subjudul ganda Hasil uji | rapikan format |
+| hitung-hpp | tautan t.me privat di Bukti Telegram | diganti ringkasan teks |
+| laporan-insiden-usaha | sudah memenuhi checklist | — |
+| riset-saham-berita | sudah memenuhi checklist | — |
+| asisten-tulis-riset | tagline terpotong; baris pembeda | tagline satu baris + italic |
+
+Sisa: set I (run berikutnya).

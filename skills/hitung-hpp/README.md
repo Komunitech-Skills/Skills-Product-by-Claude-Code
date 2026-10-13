@@ -64,10 +64,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02 (skenario usaha-offline). Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.4, sama dengan versi terkini).
-- Tanpa skill: https://t.me/c/4407409583/518/520 — skor tidak dicatat di gelombang itu
-- Dengan skill: https://t.me/c/4407409583/235/533 — skor tidak dicatat di gelombang itu
-Verdik gelombang: tidak dicatat di gelombang itu — DENGAN HPP Rp6.950, harga Rp11.000 (margin 36,82%), titik impas 114 bungkus/bln, cocok dengan contoh teruji; TANPA HPP Rp6.950 benar tetapi memberi dua pilihan harga (Rp10.700 / Rp9.400) dan bertanya definisi margin.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 2026-10-02, skenario usaha offline, putaran uji di bot). Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.4, sama dengan versi terkini); skor angka tidak dicatat di putaran itu. **Dengan skill:** HPP Rp6.950, harga Rp11.000 (margin 36,82%), titik impas 114 bungkus/bln, cocok dengan contoh teruji. **Tanpa skill:** HPP Rp6.950 benar tetapi memberi dua pilihan harga (Rp10.700 / Rp9.400) dan bertanya definisi margin.
 
 ## FAQ
 **Apa bedanya margin dan markup?**

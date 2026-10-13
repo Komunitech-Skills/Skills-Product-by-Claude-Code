@@ -2,7 +2,7 @@
 
 **Tempel ulasan pelanggan, dapat balasan yang menenangkan, sopan, dan membantu calon pembeli tetap percaya.**
 
-Diuji AI penguji independen: 5,5 → 8,25 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang); pembedanya: balasan tanpa skill mengajak pembeli ke WhatsApp dan meminta ubah rating (dilarang marketplace), dengan skill tidak.
+*Diuji AI penguji independen: 5,5 → 8,25 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang); pembedanya: balasan tanpa skill mengajak pembeli ke WhatsApp dan meminta ubah rating (dilarang marketplace), dengan skill tidak.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -47,8 +47,6 @@ Salin folder `balas-ulasan-pelanggan` ke folder skills AI agent Anda:
 | Cursor (belum diuji langsung) | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
-
-## Hasil uji (jujur)
 
 **Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; ulasan Shopee bintang 1 "gamis ukuran L yang datang M").
 - Tanpa skill: balasan memuat 2 pelanggaran kebijakan marketplace sekaligus, yaitu mengajak ke WhatsApp lengkap dengan nomor dan meminta pembeli mengubah rating. Alasan keterlambatan ("lonjakan pesanan") dikarang dan janji ongkir retur ditulis di depan umum.

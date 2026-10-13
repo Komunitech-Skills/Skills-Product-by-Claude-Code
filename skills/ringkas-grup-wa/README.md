@@ -2,7 +2,7 @@
 
 **Kirim ekspor chat grup, dalam semenit tahu mana yang perlu ditanggapi — tanpa scroll ratusan pesan.**
 
-Diuji AI penguji independen: 7,5 → 8 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang; selisih skor kecil); pembedanya: ringkasan dengan skill memuat kutipan asli, jam, dan tabel tugas siapa-kapan, sedangkan tanpa skill berupa narasi tanpa kutipan.
+*Diuji AI penguji independen: 7,5 → 8 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang; selisih skor kecil); pembedanya: ringkasan dengan skill memuat kutipan asli, jam, dan tabel tugas siapa-kapan, sedangkan tanpa skill berupa narasi tanpa kutipan.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -78,8 +78,6 @@ Salin folder `ringkas-grup-wa` ke folder skills AI agent Anda:
 | Cursor (belum diuji langsung) | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
-
-## Hasil uji (jujur)
 
 **Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; grup renovasi toko, 99 pesan).
 - Tanpa skill: ringkasan berupa narasi; nominal dibulatkan ("Rp 12 jutaan"), tanpa kutipan atau jam, dan keliru menyimpulkan "keputusan sudah diambil" / "sisanya menyusul" padahal pemilik belum menjawab (sisa pembayaran Rp 6.250.000 dan budget material masih menggantung).
