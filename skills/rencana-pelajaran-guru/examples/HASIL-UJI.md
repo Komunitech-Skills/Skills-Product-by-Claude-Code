@@ -105,7 +105,7 @@ ke pembeli awam. CACAT-02 boleh dijadwalkan versi berikutnya.
 
 ---
 ## Riwayat v1.0.5 (2026-10-05) — menunggu uji ulang independen
-Perbaikan dari cacat no. 3 `koordinasi/telegram-gelombang-6-2026-10-05.md` (DENGAN 7,5; selisih +1,5):
+Perbaikan dari cacat no. 3 pada catatan internal kurator, tidak disertakan dalam paket (DENGAN 7,5; selisih +1,5):
 (a) lembar siswa tanpa jawaban + "Kunci Jawaban (untuk guru)" utuh & terpisah; (b) format baku tanpa
 garis pemisah/baris kosong berulang, catatan tempel Word/Docs sesuai tanda `#`; (c) `scripts/buat_docx.py`
 (zipfile+XML, Python standar) + `tests/uji_buat_docx.py` (10 pemeriksaan lulus: XML valid, tabel, halaman baru,

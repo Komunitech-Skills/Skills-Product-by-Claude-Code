@@ -511,7 +511,7 @@ _Alat bantu hitung, bukan nasihat pajak final — dasar PP 58/2023, PMK 168/2023
 
 ## Uji ulang v1.0.5 (DTP) — 2026-10-05
 
-Penguji independen baru (bukan pembuat, tidak mengubah skill). Tujuan: memastikan cacat no. 1 gelombang 7 (`koordinasi/telegram-gelombang-7-2026-10-05.md`: DENGAN menulis "diterima Rp6.045.000") sudah hilang di perilaku bot, bukan hanya di script.
+Penguji independen baru (bukan pembuat, tidak mengubah skill). Tujuan: memastikan cacat no. 1 gelombang 7 (catatan internal kurator, tidak disertakan dalam paket: DENGAN menulis "diterima Rp6.045.000") sudah hilang di perilaku bot, bukan hanya di script.
 
 **Cara uji:** OpenClaw 2026.9.8 lokal (`openclaw agent --local`), model router Komunitech (`komunitech`, sama dengan bot), home bersih per skenario/run. SEBELUM = home tanpa skill (`uji.sh`); SESUDAH = home hanya berisi `pph21-ter` 1.0.5. Skenario 1 SESUDAH dijalankan **2× dengan `uji-tg.sh`** (konteks kanal Telegram, tanpa kirim), run A dilanjutkan 1 giliran jawaban pengguna (KLU). Skenario 2 dengan `uji.sh` 1× per sisi. Verifikasi angka: Python `Decimal` milik penguji (`scratchpad/verif-pph21-v105.py`, tabel TER diketik dari PP 58/2023, tidak mengimpor script skill).
 

@@ -1,6 +1,6 @@
 # Catatan pembuat — resi-picking v1.0.1 → v1.0.2 (tugas H1, Akun B)
 
-Catatan AGENT PEMBUAT (bukan penguji independen). Tugas H1 di `koordinasi/papan-tugas.md` meminta
+Catatan AGENT PEMBUAT (bukan penguji independen). Tugas H1 di papan tugas internal kurator (tidak disertakan dalam paket) meminta
 deteksi kolom per-kata (bukan substring), sinonim per marketplace dengan sumber dicatat, pesan saran
 `--kolom-...` yang jelas saat kolom ambigu/tidak ditemukan, dan tes fixture per marketplace.
 

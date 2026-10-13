@@ -11,7 +11,7 @@
 | 1 | 2026-10-06 | OpenClaw, `web_search` bawaan tidak aktif (tanpa penyedia pencarian), 5 run | 5,8 → 6,6 | +0,8 | BELUM | Tidak (pencarian web mati) | bagian "Skor kualitas: 6,6/10" di bawah |
 | 2 | 2026-10-10 | OpenClaw 2026.9.8, penyedia **Tavily**, 4 skenario + S1 Telegram | 5,8 → 7,7 | +1,9 | BELUM | Tidak (digantikan hasil DuckDuckGo; sesudah 7,7 < 8) | bagian "Uji ulang dengan Tavily" di bawah |
 | 3 | 2026-10-10 | OpenClaw 2026.9.9, plugin `@openclaw/duckduckgo-plugin` (`tools.web.search.provider: duckduckgo`, tanpa kunci), 4 skenario + S1 Telegram | 6,7 → 8,2 | +1,5 | **LULUS** | **Ya, resmi** | `HASIL-UJI-openclaw-websearch-2026-10-10.md` (ringkasan), `09-openclaw-websearch-hidup-2026-10-10.md` (rincian skenario), `08-uji-web-search-hidup-2026-10-10.md` (uji parsial awal). Hasil ini tidak ditulis di bagian bawah berkas ini. |
-| 4 | 2026-10-12 | Bot Telegram OpenClaw asli, gelombang 15 (satu pesan tanpa skill, satu dengan skill), pencarian DuckDuckGo | 7,0 → 8,5 | +1,5 | **LULUS** | **Ya, konfirmasi** | `koordinasi/telegram-gelombang-15-cari-prospek-2026-10-12.md` |
+| 4 | 2026-10-12 | Bot Telegram OpenClaw asli, gelombang 15 (satu pesan tanpa skill, satu dengan skill), pencarian DuckDuckGo | 7,0 → 8,5 | +1,5 | **LULUS** | **Ya, konfirmasi** | catatan internal kurator (tidak disertakan dalam paket) |
 
 **Catatan kejujuran (dari berkas sumber):**
 - Lulus tipis: selisih tepat 1,5 di uji 3 dan 4; skenario 3 (input tidak lengkap) masih 7,0 (< 8) di uji 3.

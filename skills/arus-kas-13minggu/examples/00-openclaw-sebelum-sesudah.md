@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH: arus-kas-13minggu
 
-**Sumber:** `solusi-vip/kantor-manajemen/UJI-OPENCLAW.md` (tabel skor skenario 05, bagian "Cacat per skill", "Cuplikan jualan" dan "Uji ulang ke-3 2026-10-01") dengan rincian per skenario di `solusi-vip/kantor-manajemen/uji-openclaw/05-arus-kas-13-minggu-info-kurang.md` dan `05-arus-kas-13-minggu-ulang3.md`.
+**Sumber (ada di paket VIP):** `solusi-vip/kantor-manajemen/UJI-OPENCLAW.md` (tabel skor skenario 05, bagian "Cacat per skill", "Cuplikan jualan" dan "Uji ulang ke-3 2026-10-01") dengan rincian per skenario di `solusi-vip/kantor-manajemen/uji-openclaw/05-arus-kas-13-minggu-info-kurang.md` dan `05-arus-kas-13-minggu-ulang3.md`.
 **Tanggal uji:** 2026-10-01 (Asia/Jakarta).
 **Versi skill saat uji:** uji pertama kira-kira 1.0.2 (disimpulkan dari riwayat `catalog.csv` sebelum perbaikan pasca-uji; berkas sumber tidak menyebut versi), uji ulang = 1.0.3. Versi di katalog saat ini: 1.0.3.
 **Penguji (agent):** agent penguji independen (bukan pembuat skill); uji ulang oleh penguji independen ke-3 untuk paket kantor-manajemen (satu-satunya uji ulang skill ini).

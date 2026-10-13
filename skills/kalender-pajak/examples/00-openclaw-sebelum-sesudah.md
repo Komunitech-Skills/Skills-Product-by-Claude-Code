@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH: kalender-pajak
 
-**Sumber:** `solusi-vip/konsultan/UJI-OPENCLAW.md` (tabel skor skenario 05, bagian "Cacat per skill" dan "Uji ulang 2026-10-01 (keuangan)") dengan rincian per skenario di `solusi-vip/konsultan/uji-openclaw/05-kalender-pajak-info-kurang.md` (uji pertama) dan `solusi-vip/konsultan/uji-openclaw/05-kalender-pajak-info-kurang-ulang.md` (uji ulang).
+**Sumber (ada di paket VIP):** `solusi-vip/konsultan/UJI-OPENCLAW.md` (tabel skor skenario 05, bagian "Cacat per skill" dan "Uji ulang 2026-10-01 (keuangan)") dengan rincian per skenario di `solusi-vip/konsultan/uji-openclaw/05-kalender-pajak-info-kurang.md` (uji pertama) dan `solusi-vip/konsultan/uji-openclaw/05-kalender-pajak-info-kurang-ulang.md` (uji ulang).
 **Tanggal uji:** 2026-10-01 (Asia/Jakarta), uji pertama dan uji ulang di hari yang sama.
 **Versi skill saat uji:** uji pertama **tidak tercatat** di berkas sumber (kemungkinan 1.0.6, versi sebelum 1.0.7; 1.0.7 dibuat sebagai revisi atas temuan uji ini, lihat `CHANGELOG.md`). Uji ulang = **1.0.7** (tertulis di berkas sumber). Versi di katalog saat ini: 1.0.7.
 **Versi OpenClaw:** tidak dicatat di berkas sumber 05; kolom `platform_teruji` di katalog menyebut `openclaw 2026.9.6–9.7` untuk uji sebelum/sesudah 2026-10-01.
@@ -39,7 +39,7 @@ Acuan kurator (keputusan pemilik 2026-10-03): LULUS bila skor sesudah >= 8 **dan
 - **Sisa kekurangan (belum diperbaiki):** batas 7 tahun tarif PPh final 0,5% untuk orang pribadi tidak disinggung di jawaban SESUDAH; versi tanpa skill justru menyebutnya (nilai tambah di sisi tanpa skill). Di `SKILL.md` saat ini juga tidak ada pembahasan batas 7 tahun.
 - **Keterbatasan penilaian:** hanya satu skenario (orang pribadi UMKM 0,5%), dua giliran; profil badan/PKP/karyawan tidak diuji di OpenClaw. Pengiriman pengingat terjadwal ke Telegram juga belum diuji di sini.
 - **Alat uji:** pada uji ulang argumen tool call tidak dapat diaudit (hanya nama tool dari keluaran JSON). Pemakaian skill pada uji pertama terbukti dari jejak tool (`read` SKILL.md lalu `exec` `kalender_pajak.py --profil op-umkm --tahun 2026 --bulan-mulai 10 --jumlah-bulan 1`).
-- **Bukan bagian berkas ini:** angka 13/20 → 20/20 dan 108 tenggat dengan 0 selisih ada di `HASIL-UJI.md` (uji simulasi Claude Code, bukan OpenClaw). Uji gabungan paket konsultan 2026-10-03 (`solusi-vip/konsultan/UJI-GABUNGAN-2026-10-03.md`) memasang `kalender-pajak` tetapi tidak memberi skor khusus untuk skill ini, jadi tidak dipakai di sini.
+- **Bukan bagian berkas ini:** angka 13/20 → 20/20 dan 108 tenggat dengan 0 selisih ada di `HASIL-UJI.md` (uji simulasi Claude Code, bukan OpenClaw). Uji gabungan paket konsultan 2026-10-03 (`solusi-vip/konsultan/UJI-GABUNGAN-2026-10-03.md`, ada di paket VIP) memasang `kalender-pajak` tetapi tidak memberi skor khusus untuk skill ini, jadi tidak dipakai di sini.
 
 ## Cuplikan dari sumber (sebelum/sesudah)
 - Tanpa skill: "PPh 21 ... bayar paling lambat tanggal 10" (aturan lama) dan dasar "PP 23".

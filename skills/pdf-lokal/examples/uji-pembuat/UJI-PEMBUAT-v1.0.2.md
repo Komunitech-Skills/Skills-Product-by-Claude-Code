@@ -8,7 +8,7 @@ tetap yang ada di file itu (skor 8/10, lulus, per uji ulang v1.0.1 2026-09-24).
 ## Tugas
 Perawatan rutin: cek apakah temuan rendah (R2, R3) dari `HASIL-UJI.md` masih terbuka,
 perbaiki yang jelas & aman, tanpa menambah fitur baru. Data uji sesi ini disiapkan di
-`/tmp/claude-0/-home-user-Skills/c4837769-917a-5ae6-8a30-fbc2c92d2ee9/scratchpad/pdf`
+`<folder uji sementara>/pdf`
 (tidak dipakai — lihat bagian "Verifikasi" di bawah, tidak perlu data uji baru karena
 pengecekan ini murni membaca teks yang sudah ada + regresi otomatis yang sudah tersedia).
 

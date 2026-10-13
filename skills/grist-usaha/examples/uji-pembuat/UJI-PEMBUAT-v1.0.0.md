@@ -59,7 +59,7 @@ berikutnya: "grist skill", "grist mcp", "airtable agent skill", "grist api agent
 - Lihat `docs/panduan-grist.md` bagian 0 dan `README.md` untuk keterangan yang sama ke pembeli.
 
 ## Uji muat OpenClaw
-Lihat catatan hasil `bash scripts/uji_openclaw.sh` di laporan sesi (`reports/2026-09-26.md`).
+Lihat catatan hasil `bash scripts/uji_openclaw.sh` di laporan sesi (catatan internal kurator, tidak disertakan dalam paket).
 
 ## Skor kualitas: **6/10**
 Alasan: fungsi inti benar & teruji otomatis (fungsi murni + SQLite read-only + REST API lewat
