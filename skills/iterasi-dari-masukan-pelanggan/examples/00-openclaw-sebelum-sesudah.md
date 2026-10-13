@@ -1,5 +1,46 @@
 # Uji OpenClaw sebelum/sesudah — iterasi-dari-masukan-pelanggan
 
+## Uji ulang v1.0.11 (2026-10-13, penguji independen)
+
+**Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech yang sama dengan bot member (`ninerouter/komunitech`). Home bersih per sisi, sesi baru, satu giliran, terisolasi (repo dan folder lain tidak terlihat). SEBELUM = tanpa skill; SESUDAH = hanya skill ini (v1.0.11, tanpa folder `tests/` dan `examples/`). Berkas data fiktif identik disalin ke folder kerja kedua sisi.
+
+**Skenario (pesan identik dengan uji 2 Okt, skenario 1):** "kak saya punya toko kue online Kue Nara. ini chat WA pelanggan (chat-wa-september.txt) sama ulasan shopee bulan september (ulasan-shopee-september.csv). tolong dibaca semua ya, apa yg harus saya benahi duluan? yg chat dari 'Admin Kue Nara' itu admin saya". Catatan: berkas data uji lama tidak tersimpan di repo, jadi dibuat ulang (fiktif) mengikuti uraian uji lama: 13 pesan pelanggan + 2 balasan admin + 1 baris media, dan 18 ulasan Shopee (7 x bintang 5, 3 x 4, 3 x 3, 3 x 2, 2 x 1) dengan tema jamur (4) dan semut (1), kotak penyok/bocor, pengiriman telat, bolu bantat, harga naik, sindiran "baru dibalas sore", dan permintaan kue tanpa gula. Kalimat tiap pesan tidak byte-identik dengan berkas lama.
+
+**Verifikasi independen** (penguji menjalankan `olah_masukan.py` sendiri dengan `--staf "Admin Kue Nara"`, memakai `koreksi.csv` yang dibuat agent, lalu membandingkan dengan jawaban):
+- Semua angka SESUDAH cocok dengan keluaran script: total 31 (Shopee 18, WhatsApp 13); sentimen Shopee 10/3/5 dan WhatsApp 2/2/9; pesan tanpa balasan 11 dari 13 (84,6%); keluhan tanpa balasan 8 dari 9 (88,9%); keamanan 5 (jamur 4 + hewan/serangga 1; 16,1%); rasa 4, kemasan 4, pengiriman 4 (12,9% masing-masing); harga 2 (6,5%). Rata-rata rating Shopee yang benar 64/18 = 3,56.
+- Privasi: laporan, backlog, dan draf balasan SESUDAH tidak memuat nama, nomor, atau alamat pelanggan (dicek dengan pencarian kata). SEBELUM menyebut 11 nama pelanggan di laporannya.
+- SEBELUM: menulis "chat WA (16 pesan)" (yang benar 13 pesan pelanggan; 16 baris termasuk 2 admin dan 1 media), rata-rata rating "~3.4" (benar 3,56), menyebut jamur kedua sebagai roti sobek (benar: roti tawar) dan menulis respons admin pada kasus jamur "cuma mohon maaf" padahal laporan jamur kedua tidak pernah dibalas; tidak menyebut bahwa 11 dari 13 pesan tidak dibalas. Hasilnya urutan masalah + saran, tanpa backlog (siapa/tenggat/ukuran) dan tanpa draf balasan.
+- Cacat SESUDAH: (1) ringkasan cepat poin 1 menulis "5 laporan jamur/benda asing", padahal rinciannya 4 jamur + 1 semut (label salah di satu kalimat; tabel dan backlog benar); (2) Rasa diturunkan ke "Pantau" dengan alasan "2 dari 4 keluhan tumpang-tindih dengan pengiriman", padahal hanya 1 (roti keras setelah 4 hari di jalan); penurunan itu diumumkan terbuka, tetapi alasannya berlebihan; (3) draf balasan (hanya di berkas, tidak ditampilkan di chat): draf 3 memuat salah ketik "kriminal" (maksudnya "krim"), draf 4 menawarkan kompensasi ("kabari kami maunya yang mana") tanpa keputusan pemilik, draf 1 dan balasan publik 9-11 menulis "ganti/refund" (kalimat ini berasal dari templat skill, tanpa tanda `[KEPUTUSAN PEMILIK]`), draf 7 memastikan tulisan custom pasti bisa; (4) menyebut "skill olah-masukan" (nama keliru) dan sekali menjalankan `find / -maxdepth 6` untuk mencari folder skill.
+- SESUDAH menyimpan `anonim-2026-09.csv`, `koreksi.csv`, `backlog-perbaikan-2026-09.csv`, `draf-balasan-2026-09.md` di folder kerja dan menyebut lokasinya.
+
+| Kriteria | SEBELUM | SESUDAH |
+|---|---|---|
+| Ketepatan | 5,5 | 8 |
+| Siap pakai | 5,5 | 7,5 |
+| Konteks Indonesia | 7 | 9 |
+| Keamanan/privasi | 3,5 | 9,5 |
+| Kejelasan | 8 | 8,5 |
+| **Total (rata-rata)** | **5,9** | **8,5** |
+
+SEBELUM: laporan enak dibaca dan urutannya masuk akal, tetapi ada salah hitung, salah kaitan kasus jamur, 11 nama pelanggan di laporan, dan tidak melihat bahwa hampir semua chat tidak dibalas. SESUDAH: angka disalin dari script, ada backlog dan 12 draf balasan, privasi terjaga; nilai tertahan oleh label "jamur/benda asing", alasan menurunkan Rasa yang berlebihan, dan draf balasan yang masih menjanjikan kompensasi.
+
+**Selisih +2,6. Verdik: LULUS** (sesudah 8,5 >= 8 dan selisih 2,6 >= 1,5).
+
+**Pembeda (hanya muncul saat skill aktif):** angka dihitung script lalu disalin (11 dari 13 pesan WhatsApp tanpa balasan; jamur 4 + semut 1), data pelanggan disamarkan, dan hasilnya langsung berupa backlog + draf balasan; tanpa skill, AI menyebut 11 nama pelanggan, salah hitung (16 pesan, rata-rata 3,4), dan tidak melihat bahwa 11 dari 13 pesan tidak pernah dibalas.
+
+Proses: SESUDAH ±7,3 menit (membaca SKILL.md, menjalankan script tiga kali, menulis 4 berkas); SEBELUM ±1 menit (membaca dua berkas, satu `find /` untuk mencari berkas data).
+
+Cuplikan jawaban:
+> **SEBELUM:** "Udah aku baca semua - chat WA (16 pesan) dan ulasan Shopee (18 ulasan, rating rata-rata ~3.4)."
+> **SEBELUM:** "WA: [nama lengkap] komplain 2x (5 Sep & 19 Sep) - sama-sama roti sobek berjamur" ... "Cuma 1 sindiran langsung, tapi kasus jamur di atas juga responnya cuma 'mohon maaf, kami cek segera'"
+> **SESUDAH:** "Admin nyaris tidak membalas chat WA: 11 dari 13 pesan pelanggan (84,6%) tak dibalas <=24 jam; termasuk keluhan jamur kedua yang tidak pernah dibalas sama sekali."
+> **SESUDAH:** "| Keamanan produk (jamur 4, hewan/serangga 1) | 5 (16,1%) | 0 | 5 | 25 | Shopee+WA | **Segera** |"
+> **SESUDAH:** "Semua angka di atas disalin langsung dari keluaran skrip (sudah termasuk koreksi), bukan dihitung ulang manual." ... "Nama pelanggan sudah disamarkan otomatis"
+
+Riwayat uji 2 Okt (v1.0.10 dan sebelumnya) dipertahankan di bawah ini.
+
+---
+
 ## Riwayat
 
 - **Uji pertama 2026-10-02 (versi sebelum perbaikan):** rata-rata SEBELUM 6,5 → SESUDAH 8,25, LULUS tipis. Cacat: script tidak membaca "bantat" sebagai keluhan; "bintik hijau" tidak masuk Keamanan; telat berjam tanpa kata "telat" tidak terbaca; tidak ada hitungan keluhan WA tanpa balasan; selip angka sentimen Shopee (ditulis 11/5/2, seharusnya 10/3/5) karena belum ada sentimen per kanal; draf balasan berupa arahan.

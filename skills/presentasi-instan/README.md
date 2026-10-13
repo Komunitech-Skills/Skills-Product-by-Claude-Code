@@ -2,7 +2,7 @@
 
 **Cukup ceritakan usaha Anda, langsung jadi presentasi siap kirim — buka di HP pun bisa.**
 
-*Diuji AI penguji independen di OpenClaw: 6,0 → 8,25 dari 10 (tanpa skill, slide ke bank memuat angka cicilan dan klaim rasio 65% "wajar" tanpa peringatan; dengan skill, angka yang belum pasti ditandai `[isi]` dan peringatan cicilan terlalu berat disampaikan ke Anda secara pribadi, bukan ditaruh di slide).*
+*Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 pada uji ulang v1.1.5 (13 Okt 2026; uji pertama 6,0 → 8,25) (tanpa skill, slide ke bank memuat angka cicilan dan klaim rasio 65% "wajar" tanpa peringatan; dengan skill, angka yang belum pasti ditandai `[isi]` dan peringatan cicilan terlalu berat disampaikan ke Anda secara pribadi, bukan ditaruh di slide).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -63,7 +63,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 **Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 8,25 dengan skill (skala 10). Pada skenario pengajuan KUR, slide buatan AI tanpa skill memuat klaim "rasio di bawah 70% umumnya dianggap wajar" (tanpa sumber) dan tidak memperingatkan bahwa rasio cicilan ±65% itu berat; dengan skill, angka yang belum pasti ditandai `[isi]` dan peringatan rasio berat disampaikan ke Anda secara pribadi, tidak ditaruh di slide.
 - Jujur: pada skenario pitch investor, kedua sisi sama-sama menghasilkan presentasi yang layak (nilai 7 tanpa skill vs 8 dengan skill). Tanpa skill, AI di uji ini langsung membuat file PDF (dan file PowerPoint pada skenario KUR), sedangkan skill menghasilkan file HTML dan memandu Anda mencetak PDF sendiri.
-- Jujur: pada uji ini masih ada beberapa kalimat kualitatif karangan di slide; perbaikannya (v1.1.5) belum diuji ulang.
+- **Uji ulang v1.1.5, 13 Okt 2026** (OpenClaw 2026.10.2, penguji independen, pesan identik dengan uji pertama): tanpa skill **6,0** → dengan skill **8,5** (LULUS). Tanpa skill, rincian dana Rp250 juta dan klaim "profitable/terbukti" dikarang sebagai fakta; dengan skill semua angka yang belum pasti ditandai `[isi]` dan validator lolos. Catatan jujur: isi chat memuat urutan judul, angka kunci, dan asumsi, bukan teks lengkap tiap slide.
 - Tampilan di HP dan cetak PDF diuji lewat peramban Chromium di komputer penguji (`examples/HASIL-UJI.md`), bukan di HP atau printer sungguhan.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

@@ -2,7 +2,7 @@
 
 **Satukan chat WA, ulasan, komentar, dan survei jadi daftar "perbaiki ini dulu" - lengkap dengan balasan ke pelanggan.**
 
-Diuji AI penguji independen di OpenClaw: 6,9 → 8,6 dari 10 (pembedanya data pelanggan disamarkan dan angka disalin dari skrip, dengan temuan 88,9% keluhan WhatsApp tidak dibalas admin; tanpa skill, AI menyebut sekitar 10 nama pelanggan dan salah hitung jumlah chat).
+Diuji AI penguji independen di OpenClaw: 5,9 → 8,5 dari 10 pada uji ulang v1.0.11 (13 Okt 2026; uji pertama 6,9 → 8,6) (pembedanya data pelanggan disamarkan dan angka disalin dari skrip, dengan temuan 88,9% keluhan WhatsApp tidak dibalas admin; tanpa skill, AI menyebut sekitar 10 nama pelanggan dan salah hitung jumlah chat).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -61,6 +61,8 @@ Skrip hitung memakai Python standar (`python3`, di Windows `python` atau `py`). 
 
 **Hasil uji (angka nyata):** satu sumber, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.10** (angka dari `examples/00-openclaw-sebelum-sesudah.md`; versi terkini di katalog 1.0.11): rata-rata nilai 6,9 tanpa skill menjadi 8,6 dengan skill. Dari chat WA dan ulasan Shopee sebuah toko kue fiktif (31 masukan), AI tanpa skill menyebut sekitar 10 nama pelanggan di laporan dan salah hitung jumlah chat (16, padahal 13); dengan skill data pelanggan disamarkan dan angka disalin dari script, dengan temuan 88,9% (8 dari 9) keluhan WhatsApp tidak dibalas admin, lengkap dengan draf balasan siap kirim. Catatan jujur dari berkas uji: masih ada selip kecil pada label (kalimat ringkasan bisa terbaca "5 jamur" padahal 4 jamur dan 1 semut), bukan salah hitung.
+
+- **Uji ulang v1.0.11, 13 Okt 2026** (OpenClaw 2026.10.2, penguji independen, data fiktif dibuat ulang mengikuti uji pertama): tanpa skill **5,9** → dengan skill **8,5** (LULUS). Angka sama dengan keluaran script (11 dari 13 pesan tanpa balasan), tanpa nama pelanggan, ada backlog dan 12 draf balasan; tanpa skill 11 nama pelanggan disebut dan hitungannya salah. Catatan jujur: satu draf memuat salah ketik dan tawaran kompensasi yang perlu Anda cek sebelum dikirim.
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 

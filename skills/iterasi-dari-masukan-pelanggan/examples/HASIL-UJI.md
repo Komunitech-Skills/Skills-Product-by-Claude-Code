@@ -122,3 +122,9 @@ dan satu keluhan yang tercatat di tema tetangga ("restock ... udh nunggu lama" -
 - Tes: 21 -> 66 (lulus di Python 3.10, 3.11, 3.12, 3.13). `python3 scripts/validate.py --skill iterasi-dari-masukan-pelanggan`: valid.
   Kinerja: 5.000 baris CSV ~1,2 detik.
 - Mohon uji ulang independen (disarankan dengan set berlabel baru yang tidak dilihat pembuat).
+
+---
+## Uji ulang v1.0.11 (2026-10-13, penguji independen, OpenClaw sebelum/sesudah)
+- OpenClaw 2026.10.2 lokal, skenario 1 (toko kue Kue Nara, chat WhatsApp + ulasan Shopee; pesan identik, berkas data dibuat ulang karena aslinya tidak tersimpan). Rincian di `00-openclaw-sebelum-sesudah.md`.
+- Skor tanpa skill **5,9** -> dengan skill **8,5** (selisih +2,6), **LULUS** acuan (sesudah >= 8 dan selisih >= 1,5). Semua angka SESUDAH cocok dengan keluaran script yang dijalankan penguji (11 dari 13 pesan tanpa balasan = 84,6%, keluhan 8 dari 9, jamur 4 + semut 1); tidak ada nama pelanggan di laporan, backlog, atau draf. SEBELUM menyebut 11 nama, salah hitung (16 pesan, rata-rata 3,4), dan tidak melihat bahwa hampir semua chat tidak dibalas.
+- Sisa temuan: label "5 laporan jamur/benda asing" di satu kalimat (rincian benar 4 jamur + 1 semut); alasan menurunkan Rasa ke "Pantau" berlebihan; draf balasan memuat salah ketik "kriminal", satu tawaran kompensasi, dan "ganti/refund" tanpa tanda keputusan pemilik; draf tidak ditampilkan di chat.

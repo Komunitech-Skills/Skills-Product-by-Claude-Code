@@ -217,3 +217,10 @@ Semua klaim perbaikan terbukti bekerja di Chromium, tanpa regresi. Tidak ada cac
 
 ## Catatan koordinator — v1.1.2 (setelah uji ulang v1.1.1, skor 8 LULUS)
 Cacat ringan 1–2 diperbaiki langsung di `references/kerangka-html.md`: blok pembersih saat load kini juga mengembalikan label & kelas tombol Edit ke "✏️ Edit"; teks timeline, nomor timeline, dan sumber kutipan dinaikkan ke 24px (lingkaran nomor 40px) sesuai aturan-desain #2. Cacat ringan 3 (kontras rgb()/latar kelas, poster= dan tautan PDF lokal) dicatat untuk versi berikutnya.
+
+---
+## Uji ulang v1.1.5 (2026-10-13, penguji independen, OpenClaw sebelum/sesudah)
+- OpenClaw 2026.10.2 lokal, skenario pitch investor laundry kiloan yang sama (pesan identik); SEBELUM tanpa skill, SESUDAH hanya skill ini. Rincian di `00-openclaw-sebelum-sesudah.md`.
+- Skor tanpa skill **6,0** -> dengan skill **8,5** (selisih +2,5), **LULUS** acuan (sesudah >= 8 dan selisih >= 1,5). Validator skill: SESUDAH LULUS tanpa peringatan.
+- Perbaikan v1.1.5 terbukti: klaim "selesai 1-2 hari" dan "repeat order rutin tiap minggu" tidak muncul lagi; rincian dana, tarif, dan kontak ditulis `[isi ...]`. Tanpa skill, rincian dana Rp 250 juta dan klaim "profitable/terbukti" dikarang sebagai fakta.
+- Sisa temuan ringan: tagline "terpercaya" dan satu kalimat pasar umum di slide 2; chat hanya memuat urutan judul slide, angka kunci, asumsi, dan daftar yang harus dilengkapi (teks tiap slide hanya di berkas HTML); tidak ada PDF otomatis.
