@@ -88,7 +88,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.10), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka iklan bisa meleset (kurs ditebak, biaya per hasil hanya dari sebagian kampanye); dengan skill angka pada skenario uji cocok dengan hitungan independen dan rekomendasi kanal jelas.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Jadwal laporan iklan ke Telegram (automations one-shot, command-argv) diuji bot uji 2026-10-13 (C13). Codex dan Cursor belum kami uji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Jadwal laporan iklan ke Telegram (automations one-shot, command-argv) diuji bot uji 2026-10-13. Codex dan Cursor belum kami uji langsung.
 
 ## FAQ
 **Data iklan saya dikirim ke internet?**
@@ -102,8 +102,8 @@ Anda cukup ditanya satu kali nama kolom mana yang dimaksud — tidak ada yang di
 **Bisa langsung dikirim otomatis tiap Senin pagi ke Telegram?**
 Bisa, lewat skill `laporan-otomatis-terjadwal` atau pola `openclaw automations` di
 `references/openclaw-jadwal.md` (command-argv disarankan agar angka tidak ditulis ulang AI). Pengiriman
-one-shot ke Telegram sudah diuji bot uji 2026-10-13 (C13). Skill ini fokus menghitung laporannya dengan benar.
+one-shot ke Telegram sudah diuji bot uji 2026-10-13. Skill ini fokus menghitung laporannya dengan benar.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

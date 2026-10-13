@@ -1,8 +1,8 @@
 # Uji OpenClaw sebelum/sesudah: cek-risiko-dan-asuransi-usaha v1.0.1
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** Akun C (agent independen, bukan pembuat skill)
-- **Cara uji:** OpenClaw 2026.9.8 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5`. SEBELUM = home tanpa skill; SESUDAH = home berisi hanya `cek-risiko-dan-asuransi-usaha`. Home dibuat ulang bersih per skenario (`mk-home.sh`). Skenario 1 SESUDAH juga di konteks Telegram (`--channel telegram`, tanpa `--deliver`). VM Cursor: `run-uji.sh` (tanpa `unshare` karena batasi container).
+- **Penguji:** penguji otomatis Komunitech (agent independen, bukan pembuat skill)
+- **Cara uji:** OpenClaw 2026.9.8 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5`. SEBELUM = home tanpa skill; SESUDAH = home berisi hanya `cek-risiko-dan-asuransi-usaha`. Home dibuat ulang bersih per skenario (`mk-home.sh`). Skenario 1 SESUDAH juga di konteks Telegram (`--channel telegram`, tanpa `--deliver`). Mesin uji internal: `run-uji.sh` (tanpa `unshare` karena batasi container).
 - **Tes script:** `python3 tests/uji_regresi.py` → 16 tes OK.
 - **Verifikasi angka:** Python independen (biaya tetap, target dana, kekurangan, cicilan, contoh klaim polis) — cocok output SESUDAH.
 

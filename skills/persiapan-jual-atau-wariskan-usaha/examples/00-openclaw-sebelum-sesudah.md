@@ -1,8 +1,8 @@
 # Uji OpenClaw sebelum/sesudah: persiapan-jual-atau-wariskan-usaha v1.0.0
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** Akun C (agent independen, bukan pembuat skill)
-- **Cara uji:** OpenClaw 2026.9.8 lokal, model router `claude-sonnet-5`. SEBELUM/SESUDAH via `mk-home.sh` + `run-uji.sh` (VM Cursor).
+- **Penguji:** penguji otomatis Komunitech (agent independen, bukan pembuat skill)
+- **Cara uji:** OpenClaw 2026.9.8 lokal, model router `claude-sonnet-5`. SEBELUM/SESUDAH via `mk-home.sh` + `run-uji.sh` (mesin uji internal).
 - **Tes script:** `python3 tests/uji_regresi.py` → 9 tes OK.
 - **Verifikasi angka:** Python independen — cocok (Bu Sri Rp96.900.000–251.940.000; 30% saham Rp15.364.800–19.206.000).
 

@@ -123,7 +123,7 @@ Sisi SESUDAH saja (SEBELUM tetap 5,75 dari v1.0.5): S1-A 8, S1-B 8,5, S2 (RPP Ma
 
 ---
 ## Riwayat v1.0.7 (2026-10-05) — perbaikan dari uji ulang Telegram v1.0.6, menunggu uji ulang independen
-Uji Telegram v1.0.6 (topik 724) skor 5 (TANPA 6): bot hanya mengirim ringkasan, menulis "isi lengkap ada di file .md di workspace" (tidak sampai ke guru), dan bertanya "mau dibuatkan .docx?" padahal guru menyebut supervisi besok. Perbaikan: aturan paling atas (isi utuh di chat, dipecah per bagian; .docx langsung + lampiran kanal chat bila bisa; tidak menulis .md di workspace) dan `description`. Status: menunggu uji ulang independen, termasuk konteks Telegram (isi utuh terkirim berurutan, .docx dilampirkan atau jalur disebut). Belum diuji di OpenClaw.
+Uji Telegram v1.0.6 (grup uji Telegram internal) skor 5 (TANPA 6): bot hanya mengirim ringkasan, menulis "isi lengkap ada di file .md di workspace" (tidak sampai ke guru), dan bertanya "mau dibuatkan .docx?" padahal guru menyebut supervisi besok. Perbaikan: aturan paling atas (isi utuh di chat, dipecah per bagian; .docx langsung + lampiran kanal chat bila bisa; tidak menulis .md di workspace) dan `description`. Status: menunggu uji ulang independen, termasuk konteks Telegram (isi utuh terkirim berurutan, .docx dilampirkan atau jalur disebut). Belum diuji di OpenClaw.
 
 ---
 ## Uji ulang v1.0.7 konteks Telegram (2026-10-05) — penguji independen, OpenClaw 2026.9.6 lokal

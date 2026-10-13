@@ -1,7 +1,7 @@
-# Uji jadwal Telegram sungguhan — C13 (2026-10-13)
+# Uji jadwal Telegram sungguhan (2026-10-13)
 
 **Skill:** `dasbor-lokal` v1.0.4 (catalog; SKILL.md tidak diubah)  
-**Penguji:** Akun C (Cursor Cloud), independen  
+**Penguji:** penguji otomatis Komunitech, independen  
 **Verdik:** **TIDAK BERLAKU** (skill tidak menjanjikan kiriman terjadwal ke Telegram)
 
 ## Ringkasan
@@ -16,12 +16,11 @@
 
 - `SKILL.md` baris 31–32: laporan teks harian siap kirim ke Telegram/WA → **bukan** skill ini.  
 - `README.md` FAQ & "Kurang cocok": laporan otomatis tiap malam → pakai `laporan-harian-usaha`.  
-- Tidak ada file `references/openclaw-jadwal.md` di folder skill (berbeda dari skill C13 yang diuji jadwal sungguhan).
+- Tidak ada file `references/openclaw-jadwal.md` di folder skill (berbeda dari skill lain yang diuji jadwal sungguhan).
 
-## Rekomendasi koordinasi
+## Kesimpulan
 
-- C13 untuk `dasbor-lokal` **ditutup** sebagai N/A; tidak perlu revisi pembuat untuk jadwal Telegram.  
-- Daftar C13 tersisa di papan: `umami-analitik` dan `vikunja-tugas` sudah memiliki `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md` dari run sebelumnya — verifikasi sinkron di merge Akun A.
+- Uji jadwal untuk `dasbor-lokal` **ditutup** sebagai tidak berlaku (N/A); tidak perlu revisi pembuat untuk jadwal Telegram.
 
 ## Pesan Telegram terjadwal
 

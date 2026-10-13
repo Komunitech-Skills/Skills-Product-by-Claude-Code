@@ -1,12 +1,12 @@
 # Uji OpenClaw sebelum/sesudah — persiapan-jual-atau-wariskan-usaha **v1.0.1** (fokus perbaikan)
 
 - **Tanggal:** 2026-10-10 (UTC ~22:15)
-- **Penguji:** Akun C (independen, bukan pembuat v1.0.1)
-- **Cara uji:** OpenClaw 2026.9.8, model router `claude-sonnet-5`, `SCRATCHPAD=$HOME/komunitech-uji`, `mk-home.sh` + `run-uji.sh` (tanpa `unshare`, VM Cursor)
+- **Penguji:** penguji otomatis Komunitech (independen, bukan pembuat v1.0.1)
+- **Cara uji:** OpenClaw 2026.9.8, model router `claude-sonnet-5`, folder kerja uji internal kurator (tidak disertakan dalam paket), `mk-home.sh` + `run-uji.sh` (tanpa `unshare`, mesin uji internal)
 - **Tes script:** `python3 tests/uji_regresi.py` → 15 tes OK
 - **Verifikasi angka:** Python/Decimal — warung bakso S1 dan buyout CV S3 cocok output script v1.0.1
 
-Fokus run ini: cacat **T1** (`--biaya-sekali` per tahun) dan **S4** (jalur sekutu + `--porsi`), sesuai tugas C5 papan.
+Fokus run ini: cacat **T1** (`--biaya-sekali` per tahun) dan **S4** (jalur sekutu + `--porsi`).
 
 ---
 

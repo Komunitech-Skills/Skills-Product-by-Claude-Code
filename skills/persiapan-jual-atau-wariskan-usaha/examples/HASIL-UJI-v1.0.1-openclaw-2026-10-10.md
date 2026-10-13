@@ -1,7 +1,7 @@
 # HASIL UJI — persiapan-jual-atau-wariskan-usaha **1.0.1** (OpenClaw, fokus perbaikan)
 
 - Tanggal: 2026-10-10
-- Penguji: Akun C (independen)
+- Penguji: penguji otomatis Komunitech (independen)
 - Platform: `openclaw (uji otomatis agent)` — OpenClaw 2026.9.8, router `claude-sonnet-5`
 - Cakupan: 6 skenario OpenClaw v1.0.1 (A–B `00-openclaw-v1.0.1-sebelum-sesudah.md`; C–D `08-openclaw-v1.0.1-skenario-2-3.md`; E–F `09-openclaw-v1.0.1-skenario-4-5.md`, run 2026-10-11).
 - Tes script: 15/15 OK (`tests/uji_regresi.py`)
@@ -31,7 +31,7 @@ Renovasi Rp12 jt hanya menaikkan laba 2024 → batas atas warung turun **Rp28 jt
 
 ## Cacat tersisa (ringan)
 
-- S1 subset masih output panjang (~10 rb karakter); pra-cek Telegram v1.0.1 sudah OK di run terpisah (C3, branch `cursor/uji-persiapan-jual-tg-8b42`).
+- S1 subset masih output panjang (~10 rb karakter); pra-cek Telegram v1.0.1 sudah OK di run terpisah.
 - `references/dasar-aturan.md` sebagian PERLU REVIEW (situs instansi).
 
 ## PERLU REVIEW

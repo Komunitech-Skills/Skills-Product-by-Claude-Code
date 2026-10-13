@@ -1,7 +1,7 @@
 # HASIL UJI — persiapan-jual-atau-wariskan-usaha 1.0.0
 
 - Tanggal: 2026-10-10
-- Penguji: Akun C (independen, bukan pembuat)
+- Penguji: penguji otomatis Komunitech (independen, bukan pembuat)
 - Platform: `openclaw (uji otomatis agent)` — OpenClaw 2026.9.8, model router `claude-sonnet-5`
 - Tes script: `python3 tests/uji_regresi.py` → 9 tes OK
 - Verifikasi angka: Python independen — Bu Sri & jual 30% saham cocok script

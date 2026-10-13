@@ -1,9 +1,9 @@
 # Uji konteks Telegram — skenario 1 (warung Bu Sri)
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** Akun C (independen)
+- **Penguji:** penguji otomatis Komunitech (independen)
 - **Skill:** persiapan-jual-atau-wariskan-usaha **v1.0.1**
-- **Cara:** `mk-home.sh` + `run-uji-tg.sh` (OpenClaw 2026.9.8, `--channel telegram` tanpa `--deliver`; VM Cursor tanpa `unshare`)
+- **Cara:** `mk-home.sh` + `run-uji-tg.sh` (OpenClaw 2026.9.8, `--channel telegram` tanpa `--deliver`; mesin uji internal tanpa `unshare`)
 - **Pesan uji:** sama dengan skenario 01 di `00-openclaw-sebelum-sesudah.md` (warung Dapur Bu Sri, pensiun, laba 2023–2025, KUR, kelipatan 2–3x, dll.)
 
 ## Hasil

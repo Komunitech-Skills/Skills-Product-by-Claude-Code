@@ -57,7 +57,7 @@ Ambang rata-rata (8,0) dan selisih (1,7) terpenuhi, tetapi ada **kesalahan isi s
 
 ---
 
-# Uji ulang 1.0.1 — OpenClaw (2026-10-10, Akun C)
+# Uji ulang 1.0.1 — OpenClaw (2026-10-10, penguji otomatis Komunitech)
 
 - Penguji independen; platform `openclaw (uji otomatis agent)` OpenClaw 2026.9.8, model router `claude-sonnet-5`.
 - Tes script: 16/16 OK (termasuk parser biaya dobel, desimal `.00`, `bisa_diasuransikan`, jarang-tapi-berat).
@@ -87,5 +87,5 @@ Selisih +2,1.
 - S1 Telegram: format bullet, bukan tabel penuh (isi setara).
 - S2 SESUDAH: target dana darurat 6 bulan (54,3 jt) vs simulasi lama 3 bulan — wajar karena ketergantungan tinggi, konsisten SKILL.
 
-## Usulan skor_kualitas catalog
-**9** (cacat berat B1–B3 v1.0.0 terbukti beres; siap diproses Akun A ke `lulus` setelah merge).
+## Usulan skor kualitas
+**9** (cacat berat B1–B3 v1.0.0 terbukti beres; siap naik ke status `lulus`).

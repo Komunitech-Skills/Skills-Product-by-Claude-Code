@@ -1,7 +1,7 @@
 # Hasil uji: kartu-belajar-anki
 
 - **Tanggal:** 2026-10-12
-- **Penguji:** agent penguji independen Komunitech (bukan pembuat; pembuat Akun C / Cursor)
+- **Penguji:** agent penguji independen Komunitech (bukan pembuat; pembuat: agent pembuat Komunitech)
 - **Platform:** openclaw (uji otomatis agent), OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5; skenario 1 juga di konteks kanal Telegram (tanpa mengirim)
 - **Rincian:** `00-openclaw-sebelum-sesudah.md`
 

@@ -1,9 +1,9 @@
-# Uji ulang parsial — `web_search` hidup (C2)
+# Uji ulang parsial — `web_search` hidup
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** Akun C (independen)
+- **Penguji:** penguji otomatis Komunitech (independen)
 - **Versi skill:** 1.0.2 (SKILL.md tidak diubah)
-- **Perubahan lingkungan:** OpenClaw **2026.9.9**, plugin `@openclaw/duckduckgo-plugin`, `tools.web.search.provider: duckduckgo` (tanpa kunci API). Uji via `run-uji.sh` (VM Cursor, tanpa `unshare`).
+- **Perubahan lingkungan:** OpenClaw **2026.9.9**, plugin `@openclaw/duckduckgo-plugin`, `tools.web.search.provider: duckduckgo` (tanpa kunci API). Uji via `run-uji.sh` (mesin uji internal, tanpa `unshare`).
 - **Smoke test:** pesan "cari 3 toko kue di Bandung…" → `web_search` terpanggil, 3 nomor/entri (2 terverifikasi + 1 tanpa nomor di sumber).
 
 ## Skenario 1 lokal (kemasan ramah lingkungan → kafe/katering/toko kue Bandung)
@@ -19,9 +19,8 @@ Pesan identik dengan uji 1.0.2 (`00-openclaw-sebelum-sesudah.md`).
 
 ## Verdik parsial (diperbarui)
 
-**Infrastruktur C2: SELESAI.** Uji penuh 4 skenario + S1 Telegram selesai run **2026-10-10 ~18:04 UTC** → **LULUS** 6,7→8,2 (+1,5). Detail: `09-openclaw-websearch-hidup-2026-10-10.md`, `HASIL-UJI-openclaw-websearch-2026-10-10.md`.
+**Pengaktifan pencarian web: SELESAI.** Uji penuh 4 skenario + S1 Telegram selesai run **2026-10-10 ~18:04 UTC** → **LULUS** 6,7→8,2 (+1,5). Detail: `09-openclaw-websearch-hidup-2026-10-10.md`, `HASIL-UJI-openclaw-websearch-2026-10-10.md`.
 
-## Output mentah (VM uji, tidak di-repo)
+## Output mentah
 
-- `$SCRATCHPAD/openclaw-real/hasil/cpw-s1-b1-01.txt`
-- `$SCRATCHPAD/openclaw-real/hasil/cpw-s1-s1-01.txt`
+Output mentah uji ada di catatan internal kurator (tidak disertakan dalam paket).

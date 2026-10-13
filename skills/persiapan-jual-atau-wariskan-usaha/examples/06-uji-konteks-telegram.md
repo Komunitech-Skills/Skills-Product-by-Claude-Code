@@ -1,9 +1,9 @@
 # Uji konteks Telegram — skenario 1 (Bu Sri)
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** Akun C (independen)
+- **Penguji:** penguji otomatis Komunitech (independen)
 - **Versi skill:** 1.0.0
-- **Cara:** `mk-home.sh` + `run-uji-tg.sh` (VM Cursor, tanpa `unshare`), OpenClaw 2026.9.8, model router `claude-sonnet-5`, `--channel telegram` tanpa `--deliver`.
+- **Cara:** `mk-home.sh` + `run-uji-tg.sh` (mesin uji internal, tanpa `unshare`), OpenClaw 2026.9.8, model router `claude-sonnet-5`, `--channel telegram` tanpa `--deliver`.
 
 ## Pesan uji
 Sama dengan skenario 01 di `00-openclaw-sebelum-sesudah.md` (warung Dapur Bu Sri, Semarang).
@@ -15,4 +15,4 @@ Sama dengan skenario 01 di `00-openclaw-sebelum-sesudah.md` (warung Dapur Bu Sri
 - **Verdik pra-cek Telegram:** **OK untuk pilot** — isi utuh di chat, struktur konsisten dengan uji lokal; tidak perlu revisi khusus kanal Telegram untuk panjang jawaban S1.
 
 ## Catatan
-- `uji.sh` / `uji-tg.sh` bawaan gagal `unshare` di VM Cursor; gunakan `run-uji-tg.sh` dari folder alat uji internal kurator (tidak disertakan dalam paket).
+- `uji.sh` / `uji-tg.sh` bawaan gagal `unshare` di mesin uji internal; gunakan `run-uji-tg.sh` dari folder alat uji internal kurator (tidak disertakan dalam paket).

@@ -4,28 +4,28 @@
 
 *Ringkasan penunjuk, ditambahkan 2026-10-13. Riwayat uji di bawah tidak diubah; angka disalin dari berkas sumber yang disebut.*
 
-**Yang berlaku: v1.0.7 (versi di katalog, status `beta`) — uji ulang OpenClaw 2026-10-10 oleh Akun C (independen dari pembuat), LULUS di dua berkas yang konsisten.** Keduanya memakai OpenClaw 2026.9.8, model router `claude-sonnet-5`, 33/33 tes regresi OK:
+**Yang berlaku (resmi): v1.0.7 (versi di katalog, status `beta`) — uji OpenClaw 2026-10-10 oleh penguji otomatis Komunitech (independen dari pembuat): 6,7 → 8,5 dari 10, selisih +1,8, LULUS, 5 skenario** (rincian: `HASIL-UJI-openclaw-v1.0.7.md`). Ada satu uji ulang parsial pada hari yang sama (3 skenario, 6,7 → 8,3, juga LULUS) sebagai konfirmasi; keduanya konsisten. Keduanya memakai OpenClaw 2026.9.8, model router `claude-sonnet-5`, 33/33 tes regresi OK:
 
-| Berkas | Waktu run (laporan Akun C) | Cakupan | Tanpa → Dengan skill | Selisih | Verdik | Peran |
+| Berkas | Waktu run | Cakupan | Tanpa → Dengan skill | Selisih | Verdik | Peran |
 |---|---|---|---|---|---|---|
-| `HASIL-UJI-openclaw-v1.0.7.md` (rincian: `00-openclaw-v1.0.7-sebelum-sesudah.md`) | ~14:15 UTC | **5 skenario** (S1 CSV toko bangunan juga di Telegram, S2 freelancer, S3 supplier B2B, S4 input kurang, S5 jebakan). S3 tidak diulang: skor dibawa dari v1.0.6. | 6,7 → **8,5** | +1,8 | LULUS | **Paling lengkap** |
-| `HASIL-UJI-v1.0.7-openclaw-2026-10-10.md` (rincian: `00-openclaw-v1.0.7-ulang-partial.md`) | ~23:15 UTC | **3 skenario** (S1 CSV `sdh bayar`, S4 input kurang, S5 jebakan) | 6,7 → **8,3** | +1,6 | LULUS | **Paling baru**, konfirmasi lebih konservatif |
+| `HASIL-UJI-openclaw-v1.0.7.md` (rincian: `00-openclaw-v1.0.7-sebelum-sesudah.md`) | ~14:15 UTC | **5 skenario** (S1 CSV toko bangunan juga di Telegram, S2 freelancer, S3 supplier B2B, S4 input kurang, S5 jebakan). S3 tidak diulang: skor dibawa dari v1.0.6. | 6,7 → **8,5** | +1,8 | LULUS | **Resmi** (paling lengkap) |
+| `HASIL-UJI-v1.0.7-openclaw-2026-10-10.md` (rincian: `00-openclaw-v1.0.7-ulang-partial.md`) | ~23:15 UTC | **3 skenario** (S1 CSV `sdh bayar`, S4 input kurang, S5 jebakan) | 6,7 → **8,3** | +1,6 | LULUS | Konfirmasi parsial (dijalankan lebih akhir, hasil lebih konservatif); bukan angka utama |
 
-- **Dipakai promosi/materi jualan:** README memakai angka v1.0.7 3 skenario (6,7 → 8,3) dan merujuk berkas kedua. Berkas data promosi internal kurator (tidak disertakan dalam paket) masih memuat uji **v1.0.6** (6,4 → 8,0, LULUS, tanggal uji 2026-10-10), belum diperbarui ke v1.0.7.
+- **Dipakai promosi/materi jualan:** README memakai angka resmi v1.0.7 (5 skenario, 6,7 → 8,5), dengan catatan bahwa skenario ke-3 dibawa dari uji v1.0.6, dan menyebut uji ulang parsial (6,7 → 8,3). Berkas data promosi internal kurator (tidak disertakan dalam paket) memuat uji ulang parsial v1.0.7 (3 skenario, 6,7 → 8,3, LULUS, tanggal uji 2026-10-10) dan mencatat uji 5 skenario (6,7 → 8,5) di catatannya; angka utamanya (8,3) belum disamakan dengan angka resmi (8,5).
 - **Perubahan v1.0.7 yang diuji:** script mengenali kolom pembayaran seperti "sdh bayar" (nota lunas tidak ditagih; total belum lunas Rp157.540.000, telat Rp142.540.000 untuk 7 nota), input kurang dikerjakan dulu dengan maksimal 3 pertanyaan, penolakan jebakan lebih singkat.
 
 **Riwayat (tidak berlaku lagi, digantikan v1.0.7):**
 - v1.0.6, 2026-10-10: 6,4 → 8,0 (+1,6), 5 skenario, LULUS tipis: `HASIL-UJI-openclaw-2026-10-10.md`, `00-openclaw-sebelum-sesudah.md`. Dasar perbaikan v1.0.7.
-- v1.0.6, 2026-10-10: 6,9 → 8,6 (+1,8), 4 skenario, skor 9/10, LULUS: blok pertama tepat di bawah. Rincian jalannya, yang dirujuk blok itu ke `00-openclaw-sebelum-sesudah.md`, tidak ada lagi di berkas tersebut (berkas sekarang memuat uji 6,4 → 8,0); isinya masih di riwayat git (commit a1fa08b).
+- v1.0.6, 2026-10-10: 6,9 → 8,6 (+1,8), 4 skenario, skor 9/10, LULUS: blok pertama tepat di bawah. Rincian jalannya, yang dirujuk blok itu ke `00-openclaw-sebelum-sesudah.md`, tidak ada lagi di berkas tersebut (berkas sekarang memuat uji 6,4 → 8,0); isinya hanya tersimpan di catatan internal kurator (tidak disertakan dalam paket).
 - 2026-09-23: simulasi Claude Code (skenario 01–05, A/B, banding pesaing), skor 8/10 LULUS, bagian paling bawah.
 
 **Catatan:** skenario 4 (input kurang) paling rendah di v1.0.7: 7,5 (tanpa skill 7) di berkas 5 skenario, 8 (tanpa skill 7) di berkas 3 skenario. PERLU REVIEW: catatan hukum KUHPerdata, UU ITE, UU PDP per tanggal skill. Temuan simulasi 2026-09-23 di bagian bawah (ambang meterai, uji kewajaran denda) belum diverifikasi ulang terhadap v1.0.7 oleh penyusun blok ini.
 
 ---
 
-## Uji OpenClaw sebelum/sesudah (2026-10-10, Akun C)
+## Uji OpenClaw sebelum/sesudah (2026-10-10, penguji otomatis Komunitech)
 
-- **Versi:** 1.0.6 · **Platform:** openclaw (uji otomatis agent, Cursor Cloud), OpenClaw 2026.9.8 + router; skenario 1 juga `--channel telegram` (4750 karakter, utuh).
+- **Versi:** 1.0.6 · **Platform:** openclaw (uji otomatis agent), OpenClaw 2026.9.8 + router; skenario 1 juga `--channel telegram` (4750 karakter, utuh).
 - **Rincian:** `00-openclaw-sebelum-sesudah.md` · regresi 16/16 OK.
 
 | Skenario | Tanpa | Dengan | |
