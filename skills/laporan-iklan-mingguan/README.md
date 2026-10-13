@@ -29,7 +29,7 @@ Diuji AI penguji independen di OpenClaw: 6,0 → 8,75 dari 10 (tanpa skill meneb
   tiap minggu cuma untuk tahu "habis berapa, dapat apa"
 - Admin/tim marketing kecil yang bikin laporan mingguan manual ke bos lewat WA/Telegram
 - Member VIP komunitech.com yang sudah pakai OpenClaw — laporan ini bisa dijadwalkan otomatis
-  tiap Senin pagi lewat skill `laporan-otomatis-terjadwal` (penjadwal laporan ke Telegram; pengiriman ke Telegram belum diuji langsung, panduan ada di dalam paket)
+  tiap Senin pagi lewat skill `laporan-otomatis-terjadwal` (penjadwal ke Telegram; pengiriman laporan iklan via `automations` command-argv diuji bot Telegram uji 2026-10-13, lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`)
 
 ## Contoh sebelum & sesudah
 **Sebelum:** buka Ads Manager tiap platform satu-satu, catat angka manual di Excel, hitung sendiri
@@ -88,7 +88,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.10), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka iklan bisa meleset (kurs ditebak, biaya per hasil hanya dari sebagian kampanye); dengan skill angka pada skenario uji cocok dengan hitungan independen dan rekomendasi kanal jelas.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Penjadwalan dicoba di OpenClaw, tetapi pengiriman ke Telegram belum diuji langsung. Codex dan Cursor belum uji platform asli.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Jadwal laporan iklan ke Telegram (automations one-shot, command-argv) diuji bot uji 2026-10-13 (C13). Codex dan Cursor belum kami uji langsung.
 
 ## FAQ
 **Data iklan saya dikirim ke internet?**
@@ -100,9 +100,9 @@ AI agent akan mencoba mencocokkan otomatis (mendukung istilah Inggris & Indonesi
 Anda cukup ditanya satu kali nama kolom mana yang dimaksud — tidak ada yang ditebak sembarangan.
 
 **Bisa langsung dikirim otomatis tiap Senin pagi ke Telegram?**
-Bisa, lewat skill `laporan-otomatis-terjadwal` yang memang khusus menjadwalkan (panduannya ada di
-`references/openclaw-jadwal.md` dalam paket ini); pengiriman ke Telegram belum diuji langsung. Skill ini sendiri fokus menghitung laporannya
-dengan benar dulu.
+Bisa, lewat skill `laporan-otomatis-terjadwal` atau pola `openclaw automations` di
+`references/openclaw-jadwal.md` (command-argv disarankan agar angka tidak ditulis ulang AI). Pengiriman
+one-shot ke Telegram sudah diuji bot uji 2026-10-13 (C13). Skill ini fokus menghitung laporannya dengan benar.
 
 ## Riwayat perubahan
 
