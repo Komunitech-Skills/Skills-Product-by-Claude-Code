@@ -9,7 +9,7 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 9,0 dari 10 (hitungan benar di 
 ## Manfaat
 - ✅ **Anggaran bulanan yang pas untuk keluarga Indonesia** — kiriman orang tua, arisan, zakat/perpuluhan/sedekah (opsional), cicilan motor/KPR, THR dibagi 12, dan jebakan top-up e-wallet sudah dipikirkan. Setiap rupiah punya tugas sampai sisa Rp0.
 - ✅ **Tahu kapan utang lunas (simulasi)** — metode Avalanche (paling hemat) vs Snowball (paling cepat terasa menang), lengkap dengan jadwal per bulan, total bunga, dan selisih biayanya.
-- ✅ **Bongkar bunga flat** — leasing "cuma 12% flat" ternyata ±21,6% efektif. Bandingkan pinjaman dengan angka yang jujur.
+- ✅ **Bongkar bunga flat** — leasing "cuma 12% flat" (tenor 2 tahun) ternyata ±21,6% efektif per tahun. Bandingkan pinjaman dengan angka yang jujur.
 - ✅ **Alarm bahaya** — cicilan minimum yang tidak menutup bunga, bunga di atas batas OJK/BI (tanda pinjol ilegal), dan larangan tegas gali lubang tutup lubang, plus kontak resmi OJK.
 - ✅ **Target jelas per bulan** — "DP rumah 60 juta 5 tahun lagi" → berapa yang harus ditabung tiap bulan, dengan asumsi inflasi tertulis.
 
@@ -25,7 +25,7 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 9,0 dari 10 (hitungan benar di 
 
 **Sesudah:** Keluarga Dimas & Rina (pemasukan Rp10,29 juta termasuk THR ÷ 12, empat utang) mendapat hasil seperti ini.
 
-Cuplikan (dipotong; contoh dengan data fiktif dari `examples/uji-pembuat-01-keluarga-muda-cicilan.md`):
+Cuplikan (dipotong; contoh buatan pembuat skill dengan data fiktif dari `examples/uji-pembuat-01-keluarga-muda-cicilan.md`; tabel terakhir = target dana darurat, baris "9 bulan" = 9 bulan pengeluaran pokok):
 ```
 | **Total dialokasikan** | | **Rp10.291.666** | 100,0% |
 | **Sisa** | | **Rp0** | zero-based tercapai |
@@ -63,10 +63,10 @@ Salin folder `atur-keuangan-pribadi` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
-- **Uji OpenClaw otomatis agent, Sep–Okt 2026** (v1.0.11; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS). Contoh gaji bersih Rp6,5 juta vs pengeluaran Rp8 juta: dengan skill pos fleksibel dipangkas tanpa menyentuh kiriman ibu dan sekolah anak; tanpa skill disarankan mengurangi kiriman ibu.
-- **Uji bot Telegram asli (2026-10-02):** hasilnya konsisten dengan uji OpenClaw.
+- **Uji OpenClaw otomatis agent, 1–2 Oktober 2026** (v1.0.11; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS). Contoh gaji bersih Rp6,5 juta vs pengeluaran Rp8 juta: dengan skill pos fleksibel dipangkas tanpa menyentuh kiriman ibu dan sekolah anak; tanpa skill disarankan mengurangi kiriman ibu.
+- **Uji bot Telegram asli (2 Okt 2026, versi lebih lama):** dengan skill anggaran dihitung skrip secara zero-based (setiap rupiah punya tugas, sisa Rp0); tanpa skill, anggaran dan dana darurat 6–9× pengeluaran dibuat tanpa hitungan skrip. Ditemukan satu cacat (THR terhitung ganda) yang diperbaiki di v1.0.7 dan diuji ulang di OpenClaw.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill orisinal Komunitech (inspirasi open-source lemah). Bukan nasihat keuangan berlisensi.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill orisinal Komunitech (terinspirasi proyek open-source berlisensi MIT; atribusi di `ATTRIBUTION.md`). Bukan nasihat keuangan berlisensi.
 
 ## FAQ
 **Apakah skill ini menyarankan investasi tertentu?**
@@ -79,7 +79,7 @@ Tidak ke mana-mana oleh skill ini. Script berjalan di komputer Anda, tanpa inter
 Rumus hitungannya sudah diverifikasi secara independen, tetapi hasilnya simulasi: bunga bisa berubah, ada denda/biaya admin, dan hidup tidak selalu sesuai rencana. Ini **bukan nasihat keuangan**; untuk kasus rumit, konsultasikan ke perencana keuangan bersertifikat. Aturan OJK/BI dicek 26 September 2026.
 
 **Bunga KTA saya "0,9% per bulan", apakah dihitung benar?**
-Ya. Sebutkan satuannya (per bulan/per tahun). Kalau satuannya tidak jelas, AI akan menanyakan dulu — karena 0,9% per bulan flat ternyata setara ±19,5% per tahun efektif, sedangkan 0,9% per tahun hanya ±1,7%.
+Ya. Sebutkan satuannya (per bulan/per tahun). Kalau satuannya tidak jelas, AI akan menanyakan dulu — karena 0,9% per bulan flat (tenor 24 bulan) ternyata setara ±19,5% per tahun efektif, sedangkan 0,9% per tahun hanya ±1,7%.
 
 ## Riwayat perubahan
 

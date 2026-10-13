@@ -25,7 +25,7 @@ Diuji AI penguji independen di OpenClaw: 5,0 → 9,0 dari 10 (tanpa skill memaka
 **Sesudah (cukup ketik):** "Bikinin kebijakan privasi toko kue online aku, jualan lewat website & WA, pakai kurir, payment gateway, dan Meta Pixel."
 (payment gateway = layanan pembayaran online; Meta Pixel = pelacak iklan dari Meta)
 
-Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/uji-pembuat-01-toko-kue-susun-dan-cek.md`):
+Cuplikan hasil (dipotong; contoh buatan pembuat skill dengan data fiktif dari `examples/uji-pembuat-01-toko-kue-susun-dan-cek.md`):
 ```
 # Kebijakan Privasi Dapur Bu Sari
 …
@@ -41,7 +41,7 @@ Kami **tidak menjual** data pribadi Anda. Data hanya kami bagikan seperlunya kep
 ## 5. Penyimpanan data di luar negeri
 …
 ```
-Hasil lengkapnya: kebijakan 12 bagian, hak pelanggan dan cara mengajukannya dalam 3×24 jam, pemberitahuan bila terjadi kebocoran, pesan salam WA dengan pilihan "SETUJU PROMO", dan daftar isian yang masih perlu Anda lengkapi. Skor struktur 100/100 (status "BELUM SIAP" sampai isian dilengkapi).
+Hasil lengkapnya: kebijakan 12 bagian, hak pelanggan dan cara mengajukannya dalam 3×24 jam, pemberitahuan bila terjadi kebocoran, pesan salam WA dengan pilihan "SETUJU PROMO", dan daftar isian yang masih perlu Anda lengkapi. Skor struktur 100/100 (di contoh ini masih ada isian kosong; versi terbaru memberi status "BELUM SIAP" sampai isian dilengkapi).
 
 ## Cara pakai
 Setelah skill terpasang, ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -76,8 +76,8 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 Memakai pemeriksa kebijakan tanpa AI: jalankan `python3 scripts/cek_kebijakan.py kebijakan.md` dari folder skill (Windows: `python` atau `py`). Tidak perlu instal apa pun selain Python.
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
-- **Uji OpenClaw otomatis agent, Sep–Okt 2026** (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,0** → dengan skill **9,0** (LULUS). Tanpa skill ada kalimat "dianggap setuju", promo tanpa persetujuan terpisah, tanpa klausul kebocoran dan transfer ke luar negeri, serta salah hitung tenggat (sekitar 34 jam, seharusnya sekitar 10 jam).
-- **Uji bot Telegram asli, 3 Okt 2026:** **5,5** → **8,5**. Dengan skill memuat dasar UU PDP lengkap (transfer ke luar negeri, kebocoran 3×24 jam, hak pemilik data); tanpa skill promo cukup diberi opsi berhenti (opt-out) dan transfer luar negeri serta kebocoran terlewat.
+- **Uji OpenClaw otomatis agent, 1 Oktober 2026** (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,0** → dengan skill **9,0** (LULUS). Tanpa skill ada kalimat "dianggap setuju", promo tanpa persetujuan terpisah, tanpa klausul kebocoran dan transfer ke luar negeri, serta salah hitung tenggat (sekitar 34 jam, seharusnya sekitar 10 jam).
+- **Uji bot Telegram asli, 3 Okt 2026:** **5,5** → **8,5**. Dengan skill memuat dasar pemrosesan per tujuan, masa simpan, transfer ke luar negeri, kebocoran 3×24 jam, dan hak pemilik data (UU PDP); tanpa skill, Meta Pixel disebut "bukan data pribadi" dan transfer ke luar negeri, kebocoran, serta masa simpan terlewat.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (3 Okt 2026). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Catatan: detail PP 33/2026 berasal dari sumber sekunder dan belum dicek ke naskah resminya.
 
@@ -86,7 +86,7 @@ Memakai pemeriksa kebijakan tanpa AI: jalankan `python3 scripts/cek_kebijakan.py
 UU PDP berlaku untuk siapa pun yang memproses data pribadi orang lain untuk usaha, termasuk UMKM yang mencatat nomor WA dan alamat pelanggan. Undang-undang ini mewajibkan Anda memberi tahu pelanggan data apa yang dikumpulkan, untuk apa, berapa lama disimpan, dan apa saja hak mereka (Pasal 21). Kebijakan privasi adalah cara paling praktis untuk memenuhinya.
 
 **Apakah hasilnya dijamin sah dan bebas sanksi?**
-Tidak ada dokumen yang bisa menjamin itu. Skill ini menyusun draf yang mengacu pada UU 27/2022 (dicek 25 September 2026) dan menandai hal yang belum pasti. Peraturan pelaksananya, PP 33/2026, baru berlaku 16 Januari 2027, dan lembaga pengawas PDP belum terbentuk saat pengecekan. Jika usaha Anda memproses data kesehatan, anak, atau keuangan dalam jumlah besar, mintalah konsultan hukum meninjau hasilnya.
+Tidak ada dokumen yang bisa menjamin itu. Skill ini menyusun draf yang mengacu pada UU 27/2022 (dicek 25 September 2026) dan menandai hal yang belum pasti. Peraturan pelaksananya, PP 33/2026, menurut sumber sekunder baru berlaku 16 Januari 2027 (belum dicek ke naskah resminya), dan lembaga pengawas PDP belum terbentuk saat pengecekan. Jika usaha Anda memproses data kesehatan, anak, atau keuangan dalam jumlah besar, mintalah konsultan hukum meninjau hasilnya.
 
 **Data pelanggan saya aman kalau saya tempel ke AI?**
 Untuk menyusun kebijakan, Anda tidak perlu menempel data pelanggan asli. Cukup ceritakan *jenis* datanya. Skill ini juga diinstruksikan untuk tidak menyimpan atau mengirim data yang Anda tempel ke tempat lain.

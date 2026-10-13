@@ -2,7 +2,7 @@
 
 **Beli mesin, buka cabang, atau beli mobil usaha? Ketahui kapan balik modal dan seberapa kuat rencananya kalau hasil meleset, dengan hitungan yang transparan.**
 
-Diuji AI penguji independen di OpenClaw dan bot Telegram asli: 6,5 → 9 dari 10 (keduanya benar soal balik modal, tetapi hanya dengan skill ada NPV, IRR, uji "kalau meleset", dan batas aman).
+Diuji AI penguji independen di OpenClaw dan bot Telegram asli: 6,5 → 9 dari 10 (keduanya benar soal balik modal, tetapi hanya dengan skill ada NPV, IRR, uji "kalau meleset" lengkap (omzet turun 10–20%, biaya naik 10%), dan batas aman).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 

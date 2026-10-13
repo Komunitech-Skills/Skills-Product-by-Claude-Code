@@ -83,7 +83,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 73 | Surat Penawaran Harga Rapi, Cepat Dibuat (`surat-penawaran-harga`) | Sales | 6 → 8,5 | +2,5 |
 | 74 | Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
 | 75 | Pilah Inbox, Balas yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
-| 76 | Balas Chat Pelanggan Cepat, Ramah, Minim Salah Janji (`balas-chat-cs`) | Customer Service | 6,4 → 8,8 | +2,4 |
+| 76 | Balas Chat Pelanggan Ramah, Minim Salah Janji (`balas-chat-cs`) | Customer Service | 6,4 → 8,8 | +2,4 |
 | 77 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
 | 78 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
 | 79 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
@@ -92,7 +92,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 82 | Sunting Tulisan Kerja Jadi Jelas (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
 | 83 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
 | 84 | Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak (`cek-risiko-dan-asuransi-usaha`) | Keuangan & Akuntansi | 6,5 → 8,6 | +2,1 |
-| 85 | Cek Kesehatan Keuangan Usaha dalam Hitungan Menit (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
+| 85 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
 | 86 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
 | 87 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
 | 88 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 9 | +2 |
@@ -780,7 +780,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** 10 email → P1/P2/P3 + 1 phishing terdeteksi dari domain mirip
 - **Catatan jujur:** Lulus tepat di ambang (8,0). Deteksi phishing juga bisa tanpa skill; pembedanya pada draf tanpa karangan dan tetap bekerja saat menolak. Cacat janji karangan sisa ditutup di 1.0.1. Di bot Telegram asli (gelombang 13, 2026-10-12) selisih +0,5 (7,5 → 8): tetap di bundle, tidak dipakai sebagai cuplikan pilot.
 
-### Balas Chat Pelanggan Cepat, Ramah, Minim Salah Janji — 6,4 → 8,8
+### Balas Chat Pelanggan Ramah, Minim Salah Janji — 6,4 → 8,8
 `balas-chat-cs` · Customer Service · versi 1.0.5 · diuji 2026-10-13
 
 - **Permintaan:** Pembeli sepatu anak ukuran 28 kekecilan dan mau balikin. Bisa tukar ukuran, ongkir tukar ditanggung pembeli. Bikinin balasannya.
@@ -859,7 +859,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Biaya tetap Rp15,8 jt/bulan, kekurangan dana darurat Rp39,4 jt; 16/16 tes script; semua angka cocok hitungan independen
 - **Catatan jujur:** Edukasi, bukan nasihat keuangan; jenis perlindungan perlu review tenaga asuransi bila dipakai sebagai materi jual (PERLU REVIEW). Versi 1.0.0 BELUM (7/10, 3 cacat berat angka/isi) diperbaiki di 1.0.1. Ide dari materi domain publik (FDIC), ditulis ulang bersih. Terbukti di bot Telegram asli (gelombang 14, 2026-10-12): 6,5 → 8,5, LULUS.
 
-### Cek Kesehatan Keuangan Usaha dalam Hitungan Menit — 7 → 9
+### Cek Kesehatan Keuangan Usaha Anda — 7 → 9
 `analisis-rasio-keuangan-usaha` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-13
 
 - **Permintaan:** Neraca 31 Des 2025 dan laba rugi 2025 perusahaan dagang (penjualan Rp9,6 M, kas Rp420 jt, utang bank jatuh tempo Rp900 jt): sehat atau tidak, apa yang harus dibereskan dulu?

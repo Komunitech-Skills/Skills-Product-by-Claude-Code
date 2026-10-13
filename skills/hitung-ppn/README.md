@@ -11,7 +11,7 @@
 - ✅ Bisa dari harga sebelum pajak **atau** harga yang sudah termasuk PPN
 - ✅ Bisa menghitung barang biasa maupun barang mewah (kena PPnBM, pajak untuk barang mewah). Bila Anda tidak menyebut, dianggap barang biasa dan asumsinya ditulis
 - ✅ Mengingatkan bila penjual belum PKP (Pengusaha Kena Pajak), karena yang belum PKP tidak boleh menagih PPN
-- ✅ Pembulatan dijelaskan, angka dihitung script, bukan dikira-kira
+- ✅ Pembulatan dijelaskan, angka dihitung oleh program kecil (skrip) di komputer Anda, bukan dikira-kira
 
 ## Cocok untuk siapa
 - Pemilik usaha yang sudah PKP dan sering membuat penawaran/tagihan
