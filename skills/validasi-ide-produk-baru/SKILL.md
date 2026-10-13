@@ -1,6 +1,6 @@
 ---
 name: validasi-ide-produk-baru
-description: Mengubah satu kalimat ide produk/menu/layanan baru menjadi hipotesis teruji (siapa pembeli, masalah apa, harga berapa) lalu merancang uji murah 7 hari ala Indonesia (pre-order WA/status, polling story IG, lapak marketplace percobaan, sampel ke 10 pelanggan tetap, titip di warung) dengan kriteria lulus/gagal berbasis angka dan skrip penghitung konversi — supaya UMKM tahu LANJUT, UBAH, atau HENTIKAN sebelum invest modal besar. Gunakan saat pengguna sudah punya SATU ide konkret dan mau tahu apakah layak dijalankan (validate product idea, cheap MVP test, pre-order test, product-market fit UMKM). Untuk MENGGALI ide dari nol → brainstorming-ide-usaha; untuk MENGHITUNG modal/HPP → hitung-hpp; untuk STRATEGI harga jual → harga-jual-marketplace; untuk MENCARI daftar calon pelanggan baru → riset-calon-pelanggan.
+description: Mengubah satu kalimat ide produk/menu/layanan baru menjadi hipotesis teruji (siapa pembeli, masalah apa, harga berapa) lalu merancang uji murah 7 hari ala Indonesia (pre-order WA/status, polling story IG, lapak marketplace percobaan, sampel ke 10 pelanggan tetap, titip di warung) dengan kriteria lulus/gagal berbasis angka dan skrip penghitung konversi — supaya UMKM tahu LANJUT, UBAH, atau HENTIKAN sebelum invest modal besar. Gunakan saat pengguna sudah punya SATU ide konkret dan mau tahu apakah layak dijalankan (validate product idea, cheap MVP test, pre-order test, product-market fit UMKM). Untuk MENGGALI ide dari nol bukan tugas skill ini (butuh satu ide spesifik); untuk MENGHITUNG modal/HPP → hitung-hpp; untuk STRATEGI harga jual → harga-jual-marketplace; untuk MENCARI daftar calon pelanggan baru → riset-calon-pelanggan.
 ---
 
 # Validasi Ide Produk Baru
@@ -18,7 +18,7 @@ Mengubah ide satu kalimat ("saya mau jual kopi susu gula aren kemasan literan") 
 - Sudah menjalankan uji dan punya data (jumlah ditawari, jumlah pre-order) → minta dihitung dan diputuskan lanjut/tidak.
 
 ## Kapan TIDAK digunakan
-- Belum ada ide sama sekali, masih mau curah gagasan dari nol → `brainstorming-ide-usaha` dulu, baru kembali ke sini setelah dapat 1 ide spesifik.
+- Belum ada ide sama sekali, masih mau curah gagasan dari nol → skill ini belum bisa dipakai; kembali setelah punya 1 ide spesifik (satu kalimat produk/menu/layanan).
 - Sudah yakin lanjut dan hanya butuh hitung HPP/margin/BEP secara rinci → `hitung-hpp`.
 - Sudah yakin lanjut dan hanya butuh strategi harga untuk listing marketplace → `harga-jual-marketplace`.
 - Mau mencari daftar calon pelanggan baru di luar kontak/pengikut yang sudah ada (lead generation) → `riset-calon-pelanggan`. Skill ini menguji minat memakai audiens yang **sudah dimiliki** (kontak WA, follower IG, pelanggan tetap, warung langganan), bukan mencari prospek baru.
@@ -129,7 +129,7 @@ Bandingkan konversi ke ambang Langkah 3 — skill tetap berguna tanpa script.
 Berdasarkan klasifikasi hasil:
 - **LULUS** → LANJUT: mulai produksi/investasi bertahap (bukan langsung besar-besaran), tawarkan lanjut ke `hitung-hpp` (hitung HPP & BEP rinci) dan `harga-jual-marketplace` (strategi harga jual final).
 - **LULUS BERSYARAT** → UBAH: revisi satu variabel dulu (harga, penawaran/kemasan, atau target pembeli — bukan sekaligus semua supaya jelas apa yang berubah), lalu uji ulang 7 hari dengan hipotesis baru.
-- **GAGAL** → HENTIKAN ide ini (atau pivot besar): sampaikan dengan sopan bahwa datanya belum mendukung, tawarkan opsi lanjut ke `brainstorming-ide-usaha` untuk mencari ide lain memakai alasan penolakan sebagai bahan.
+- **GAGAL** → HENTIKAN ide ini (atau pivot besar): sampaikan dengan sopan bahwa datanya belum mendukung, tawarkan untuk merumuskan ide lain bersama pengguna memakai alasan penolakan sebagai bahan, lalu ulangi validasi.
 
 Selalu tampilkan alasan yang diberikan calon pembeli yang menolak (dari form pencatatan) sebagai bahan keputusan, bukan cuma angka.
 

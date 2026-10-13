@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.5 (2026-10-13)
+- Rujukan ke skill `brainstorming-ide-usaha` (status arsip, tidak dijual) dihapus dari description, bagian Kapan TIDAK digunakan, dan langkah GAGAL; diganti arahan netral. Logika & skrip tidak berubah.
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 Hasil uji sebelum/sesudah di OpenClaw (`examples/00-openclaw-sebelum-sesudah.md`) menemukan salah hitung: 52 vote polling IG dijumlahkan dengan 4 PO berbayar sehingga muncul klaim "balik modal +Rp416.000" (yang benar −Rp26.000). Perbaikan:
 - **Aturan hitung baru di SKILL.md:** hanya pesanan berkomitmen (PO sudah transfer/DP/bayar, checkout, laku terjual) yang masuk konversi, pendapatan, margin, dan balik modal. Vote/like/komentar/"mau" = **minat**, dilaporkan terpisah dan tidak pernah dijumlahkan dengan pesanan. Instruksi lama "gabungkan metode jadi satu total" dihapus.
