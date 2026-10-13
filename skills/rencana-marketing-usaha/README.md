@@ -48,7 +48,7 @@ Salin folder `rencana-marketing-usaha` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Script memakai Python standar (tanpa pemasangan paket); di Windows pakai `python` atau `py`. Skill tetap berguna bila script tidak bisa dijalankan.
 
-**Hasil uji (jujur):** satu sumber, skor 1–10.
+**Hasil uji (angka nyata):** satu sumber, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill. Pada skenario nugget ayam (jual Rp30.000, modal Rp27.000, iklan Rp10 juta per bulan, blast WA (kirim pesan massal) ke 2.000 nomor beli list), skill menangkap margin Rp0 per produk setelah biaya lain, menolak membakar iklan Rp10 juta sebelum harga dibenahi, dan menolak blast ke nomor beli list dengan dasar UU PDP; tanpa skill, AI ikut menyusun rencana iklan dan cara blast tersebut. Catatan jujur: hitungan margin benar di kedua sisi, pembedanya ada di keamanan dan kelengkapan rencana.
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
@@ -63,3 +63,7 @@ paket konten mingguan (`konten-mingguan`), kalender promo (`promo-kalender`), ce
 
 ## Asal-usul
 Diadaptasi dan diperluas dari dua skill berlisensi MIT (marketing-plan oleh Corey Haines; gtm-strategy oleh Pawel Huryn); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan para pembuat sumber.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

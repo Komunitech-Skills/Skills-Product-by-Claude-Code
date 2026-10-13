@@ -2,16 +2,15 @@
 
 **Hitung cicilan, cek sanggup bayar atau tidak, dan siapkan dokumen serta profil usaha — sebelum datang ke bank.**
 
-Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (tanpa skill menyebut "flat 6%" itu murah dan menyarankan agunan tambahan; dengan skill dijelaskan bahwa "flat 6%" setara ±11% efektif, batas 2 akad KUR Mikro dagang, dan hak tanpa agunan tambahan sampai Rp100 juta).
+Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (tanpa skill menyebut "flat 6%" itu murah dan menyarankan agunan tambahan; dengan skill dijelaskan bahwa "flat 6%" setara ±11% efektif, batas 2 kali akad (perjanjian kredit) KUR (Kredit Usaha Rakyat) Mikro dagang, dan hak tanpa agunan tambahan sampai Rp100 juta).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Simulasi cicilan **anuitas** (bunga dihitung dari sisa pinjaman) **vs flat** (bunga dihitung dari pinjaman awal terus) dengan penjelasan sederhana kenapa flat bisa jauh lebih mahal
-- ✅ Tahu sejak awal cicilan itu berapa persen dari laba — dengan peringatan jelas kalau terlalu berat (patokan umum 30% dari laba, bukan aturan bank)
-- ✅ Hitung perkiraan **plafon (jumlah pinjaman) maksimal yang masih terjangkau** untuk usaha Anda
+- ✅ Tahu sejak awal cicilan itu berapa persen dari laba — dengan peringatan jelas kalau terlalu berat (patokan umum 30% dari laba, bukan aturan bank) — plus perkiraan **plafon (jumlah pinjaman) maksimal yang masih terjangkau** untuk usaha Anda
 - ✅ Profil usaha & rencana penggunaan dana siap salin, jumlahnya dicek otomatis
-- ✅ Cek otomatis terhadap aturan KUR yang berlaku per September 2026 (Permenko Perekonomian 1/2026): jenis KUR, bunga acuan, batas tenor (lama cicilan), kapan wajib NPWP, dan hak **tanpa agunan tambahan (jaminan) s.d. Rp100 juta**
+- ✅ Cek otomatis terhadap aturan KUR yang berlaku per September 2026 (Permenko Perekonomian 1/2026, peraturan menteri tentang KUR): jenis KUR, bunga acuan, batas tenor (lama cicilan), kapan wajib NPWP (nomor pokok wajib pajak), dan hak **tanpa agunan tambahan (jaminan) s.d. Rp100 juta**
 - ✅ Checklist dokumen lengkap: syarat resmi dan yang perlu dicek ke bank penyalur dipisahkan jelas
 
 ## Cocok untuk siapa
@@ -66,7 +65,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
 - Tanpa skill: https://t.me/c/4407409583/732/742 — skor 6
 - Dengan skill: https://t.me/c/4407409583/733/745 — skor 8,5
-Verdik gelombang: LULUS — DENGAN menghitung cicilan anuitas 6% efektif (Rp2.281.645, 35,1% dari laba), plafon aman 30% (±Rp64,1 jt), memperingatkan bahwa "flat 6%" setara ±11% efektif, dan menyebut hak tanpa agunan tambahan (Pasal 20); TANPA keliru menyebut KUR "flat 6%" sehingga cicilan dibesarkan Rp176.688 per bulan (Rp2,46 jt, 38%).
+Verdik gelombang: LULUS — dengan skill AI menghitung cicilan anuitas 6% efektif (Rp2.281.645, 35,1% dari laba), plafon aman 30% (±Rp64,1 jt), memperingatkan bahwa "flat 6%" setara ±11% efektif, dan menyebut hak tanpa agunan tambahan (Pasal 20); sedangkan tanpa skill AI keliru menganggap KUR berbunga "flat 6%" sehingga cicilan terhitung Rp176.688 per bulan lebih besar (Rp2,46 jt, 38% dari laba).
 
 ## FAQ
 **Apakah skill ini menjamin KUR saya disetujui?**

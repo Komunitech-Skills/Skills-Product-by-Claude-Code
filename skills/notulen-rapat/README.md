@@ -2,7 +2,7 @@
 
 **Tempel catatan atau transkrip rapat, dapat notulen lengkap dan pesan ringkas siap kirim ke grup WA.**
 
-*Diuji AI penguji independen: 6 → 9 dari 10 (tanggal seperti "Jumat depan" dihitung jadi tanggal nyata, dan angka yang tidak jelas ditandai, bukan ditebak).*
+*Diuji AI penguji independen di OpenClaw: 6 → 9 dari 10 (satu skenario; uji pertama 6 → 8,5, lalu 9 setelah perbaikan. Tanggal seperti "Jumat depan" dihitung jadi tanggal nyata, dan angka yang tidak jelas ditandai, bukan ditebak).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -56,10 +56,10 @@ Salin folder `notulen-rapat` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):**
-- **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario notulen dari catatan rapat berantakan): nilai 6 tanpa skill menjadi 8,5 dengan skill (skala 10); uji ulang setelah perbaikan v1.0.3 bernilai 9. Tanpa skill, "sales sept 2,1M" salah ditulis Rp2,1 juta, tanggal relatif tidak diubah menjadi tanggal nyata, dan ada satu tugas yang dikarang. Dengan skill, tanggal dihitung skrip (mis. "Sebelum Rabu, 7 Oktober 2026") dan satuan "M" yang belum jelas ditandai untuk dikonfirmasi.
+**Hasil uji (angka nyata):**
+- **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario notulen dari catatan rapat berantakan): nilai 6 tanpa skill menjadi 8,5 dengan skill (skala 10); uji ulang setelah perbaikan v1.0.3 bernilai 9. Tanpa skill, "sales sept 2,1M" langsung ditulis Rp2,1 juta tanpa konfirmasi padahal satuan "M" belum jelas, tanggal relatif tidak diubah menjadi tanggal nyata, dan ada satu tugas yang dikarang. Dengan skill, tanggal dihitung program kecil (skrip) (mis. "Sebelum Rabu, 7 Oktober 2026") dan satuan "M" yang belum jelas ditandai untuk dikonfirmasi.
 - Pada uji ulang v1.0.3 masih muncul satu tugas tambahan yang melampaui catatan (diberi peringatan, tetapi tetap tampil). Perbaikannya ada di v1.0.4 dan belum diuji ulang di OpenClaw.
 
 **Status uji (jujur):** diuji di OpenClaw (satu skenario) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

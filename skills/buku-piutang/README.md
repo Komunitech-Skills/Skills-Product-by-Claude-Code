@@ -74,7 +74,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/piutang/` di komputer Anda, dengan cadangan otomatis di `KomunitechData/piutang/backup-piutang/`. Tanpa Python pun skill tetap membantu dengan tabel piutang manual di Excel.
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,75 tanpa skill menjadi 8,75 dengan skill. Untuk mencatat bon dan mengecek yang telat, kedua sisi sama-sama benar (7 vs 8,5). Pembeda besarnya di keamanan dan pembukuan: tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis (berisiko nomor diblokir) dan salah mengganti nama pelanggan; dengan skill ia menolak kirim otomatis, menyiapkan draf dan tautan untuk dikirim sendiri, dan kelebihan bayar tidak ditebak (ditanyakan dulu, lalu piutang Rp 0 dan deposit Rp 50.000).
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,75 tanpa skill menjadi 8,75 dengan skill. Untuk mencatat bon dan mengecek yang telat, kedua sisi sama-sama benar (7 vs 8,5). Pembeda besarnya di keamanan dan pembukuan: tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis (berisiko nomor diblokir) dan salah mengganti nama pelanggan; dengan skill ia menolak kirim otomatis, menyiapkan draf dan tautan untuk dikirim sendiri, dan kelebihan bayar tidak ditebak (ditanyakan dulu, lalu piutang Rp 0 dan deposit Rp 50.000).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal otomatis ke Telegram belum diuji di Gateway OpenClaw (program OpenClaw yang berjalan di latar belakang) sungguhan.
 
@@ -97,3 +97,7 @@ Tidak. Simpan sebagai CSV (Excel: *Save As → CSV*), kirim ke agent, lalu perik
 
 **Apakah data pelanggan saya dikirim ke internet?**
 Tidak. Script buku piutang tidak memakai internet sama sekali; semuanya ada di satu file di komputer Anda. Yang keluar hanya ringkasan yang Anda minta dikirim ke Telegram Anda sendiri (lewat OpenClaw) dan pesan yang Anda kirim sendiri lewat WhatsApp.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

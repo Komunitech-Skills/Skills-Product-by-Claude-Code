@@ -9,7 +9,7 @@ Diuji AI penguji independen di OpenClaw: 5,0 → 9,0 dari 10 (tanpa skill memaka
 ## Manfaat
 - ✅ **Kebijakan privasi lengkap** untuk website, toko online, aplikasi, WhatsApp Business, klinik, atau jasa. Bahasa Indonesia, dengan versi Inggris bila perlu.
 - ✅ **Kalimat persetujuan siap pakai** untuk formulir website, pesan salam WA, Google Form, dan formulir pasien. Persetujuan dibuat aktif (bukan "dianggap setuju").
-- ✅ **Cek kebijakan yang sudah ada**: AI agent membaca seluruh kebijakan Anda kalimat demi kalimat dan memeriksanya terhadap 16 kategori risiko, misalnya data dijual atau dibagikan ke mitra, "dianggap setuju", permintaan hapus data ditolak, atau data anak tanpa izin orang tua. Setiap temuan disertai kutipan kalimat, risikonya, dan kalimat pengganti. Setelah itu script menghitung skor kelengkapan 0–100 sebagai pemeriksa kedua.
+- ✅ **Cek kebijakan yang sudah ada**: AI agent membaca seluruh kebijakan Anda kalimat demi kalimat dan memeriksanya terhadap 16 kategori risiko, misalnya data dijual atau dibagikan ke mitra, "dianggap setuju", permintaan hapus data ditolak, atau data anak tanpa izin orang tua. Setiap temuan disertai kutipan kalimat, risikonya, dan kalimat pengganti. Setelah itu program pemeriksa kecil (script) menghitung skor kelengkapan 0–100 sebagai pemeriksa kedua.
 - ✅ **Siap saat pelanggan minta datanya dihapus.** Ada template balasan akses, koreksi, hapus, dan berhenti promo, lengkap dengan tenggat 3×24 jam.
 - ✅ **Checklist darurat kebocoran data**: langkah per jam dan draf pemberitahuan ke pelanggan dan lembaga dalam 3×24 jam.
 
@@ -47,7 +47,7 @@ Hasil lengkapnya: kebijakan 12 bagian, hak pelanggan dan cara mengajukannya dala
 Setelah skill terpasang, ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Buatkan kebijakan privasi untuk aplikasi booking salon saya"
 - "Bikin kalimat persetujuan data untuk Google Form pendaftaran seminar"
-- "Cek kebijakan privasi ini, sudah sesuai UU PDP belum?" (tempel teks atau lampirkan file .md/.txt)
+- "Cek kebijakan privasi ini, sudah sesuai UU PDP belum?" (tempel teks atau lampirkan file teks biasa, berekstensi .md atau .txt)
 - "Pelanggan minta nomornya dihapus dari daftar promo, balasnya gimana?"
 - "Akun email toko saya dibobol, data pelanggan mungkin bocor, harus ngapain?"
 
@@ -79,7 +79,7 @@ Memakai pemeriksa kebijakan tanpa AI: jalankan `python3 scripts/cek_kebijakan.py
 - **Uji OpenClaw otomatis agent, Sep–Okt 2026** (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,0** → dengan skill **9,0** (LULUS). Tanpa skill ada kalimat "dianggap setuju", promo tanpa persetujuan terpisah, tanpa klausul kebocoran dan transfer ke luar negeri, serta salah hitung tenggat (sekitar 34 jam, seharusnya sekitar 10 jam).
 - **Uji bot Telegram asli, gelombang 5 (2026-10-03):** **5,5** → **8,5**. Dengan skill memuat dasar UU PDP lengkap (transfer ke luar negeri, kebocoran 3×24 jam, hak pemilik data); tanpa skill promo cukup diberi opsi berhenti (opt-out) dan transfer luar negeri serta kebocoran terlewat.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 5). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: detail PP 33/2026 dari sumber sekunder.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 5). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Catatan: detail PP 33/2026 berasal dari sumber sekunder dan belum dicek ke naskah resminya.
 
 ## FAQ
 **Apakah usaha kecil juga wajib punya kebijakan privasi?**

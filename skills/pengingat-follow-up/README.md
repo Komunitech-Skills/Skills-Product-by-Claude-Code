@@ -64,7 +64,7 @@ Rekap otomatis tiap pagi hanya tersedia di **OpenClaw**, dan komputer yang menja
 pada jam tersebut. Di Claude Code, Codex, atau Cursor, skill ini berfungsi sebagai daftar pantauan manual:
 ketik "rekap pengingat" setiap pagi (Codex dan Cursor belum diuji langsung).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 3,5 tanpa skill menjadi 9,25 dengan skill. Tanpa skill, agent menebak nominal, menyimpan nomor HP pihak ketiga, mengubah konfigurasi tanpa izin, dan berniat mengirim tagihan otomatis ke pelanggan. Dengan skill, nominal ambigu ("5m") dan tanggal mustahil (31/9) ditanyakan dulu, daftar tersimpan rapi bernomor, dan draf pesan dikirim sendiri oleh Anda.
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 3,5 tanpa skill menjadi 9,25 dengan skill. Tanpa skill, agent menebak nominal, menyimpan nomor HP pihak ketiga, mengubah konfigurasi tanpa izin, dan berniat mengirim tagihan otomatis ke pelanggan. Dengan skill, nominal ambigu ("5m") dan tanggal mustahil (31/9) ditanyakan dulu, daftar tersimpan rapi bernomor, dan draf pesan dikirim sendiri oleh Anda.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk membuat jadwal harian dan menjalankannya sekali di Gateway uji, yaitu program OpenClaw yang berjalan di latar belakang) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung. Kiriman terjadwal yang benar-benar tiba di Telegram pada jam yang ditentukan belum diuji langsung.
 

@@ -1,13 +1,13 @@
-# Cek Kesehatan Keuangan Usaha dalam 1 Menit
+# Cek Kesehatan Keuangan Usaha dalam Hitungan Menit
 
 **Kirim neraca & laba rugi, AI langsung menjawab: usaha Anda sehat, waspada, atau bahaya, dan apa yang harus diperbaiki dulu.**
 
-*Diuji AI penguji independen: 8 → 9 dari 10 (selisih tipis karena AI biasa sudah pandai rasio dasar; pembedanya patokan sesuai jenis usaha, angka dari skrip, dan bahasa awam).*
+*Diuji AI penguji independen di OpenClaw: 8 → 9 dari 10 (satu skenario, setelah perbaikan; uji pertama seri 8 → 8. Selisih tipis karena AI biasa sudah pandai rasio dasar; pembedanya patokan sesuai jenis usaha, angka dari skrip, dan bahasa awam).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Rapor keuangan lengkap sekali jalan.** 15+ rasio (angka perbandingan untuk menilai kemampuan bayar tagihan, keuntungan, utang, serta perputaran stok & piutang) dihitung skrip, bukan kira-kira.
+- ✅ **Rapor keuangan lengkap sekali jalan.** 15+ rasio (angka perbandingan untuk menilai kemampuan bayar tagihan, keuntungan, utang, serta perputaran stok & piutang) dihitung program hitung kecil (skrip) di komputer Anda, bukan kira-kira.
 - ✅ **Dinilai sesuai jenis usaha Anda.** Warung/toko, jasa, dan produksi/kuliner punya patokan berbeda. Warung tidak dicap "bahaya" hanya karena asetnya banyak di stok.
 - ✅ **Bahasa awam.** Setiap angka punya arti sehari-hari, misalnya "Dari tiap Rp 100.000 penjualan, laba bersih Rp 5.000" atau "Barang rata-rata diam di rak ±36 hari".
 - ✅ **Saran tindakan yang bisa langsung dikerjakan,** diurutkan dari yang paling mendesak.
@@ -57,9 +57,9 @@ Salin folder `analisis-rasio-keuangan-usaha` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Skrip hanya butuh Python bawaan, tanpa instalasi tambahan dan tanpa akun atau API key. Kalau Python tidak ada, AI tetap bisa menghitung manual dengan rumus di `references/ambang-wajar.md` dan akan memberi tahu bahwa hasilnya belum diverifikasi skrip.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Skrip hanya butuh Python bawaan, tanpa instalasi tambahan dan tanpa akun atau API key. Kalau Python tidak ada, AI tetap bisa menghitung manual dengan rumus di `references/ambang-wajar.md` dan akan memberi tahu bahwa hasilnya belum diverifikasi skrip.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario rasio keuangan untuk bahan rapat komisaris, bagian dari uji paket Kantor & Manajemen): nilai tanpa skill 8 dan dengan skill 8, jadi seri: untuk laporan yang rapi, AI biasa sudah pandai menghitung rasio dasar. Setelah perbaikan v1.0.4, uji ulang dengan skill bernilai 9 (skala 10): skill menandai bahwa utang bank jatuh tempo ≤ 12 bulan (Rp900 juta) lebih besar dari kas (Rp420 juta), dengan seluruh angka dari skrip. Pembeda skill ada di angka yang dihitung skrip, patokan sesuai jenis dan skala usaha, serta bahasa awam.
 - Perbaikan sesudah uji itu (v1.0.5, jenis usaha yang diasumsikan diberi label) belum diuji ulang di OpenClaw.
 

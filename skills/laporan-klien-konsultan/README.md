@@ -87,7 +87,7 @@ Salin folder `laporan-klien-konsultan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** tiga sumber yang terpisah, skor 1–10.
+**Hasil uji (angka nyata):** tiga sumber yang terpisah, skor 1–10.
 - **Uji perbandingan oleh penguji independen (simulasi agent):** skor kualitas 9/10. Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Rincian: `examples/00-pembanding-tanpa-skill.md`.
 - **Uji pemasangan di OpenClaw 2026.9.6** (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/UJI-PLATFORM.md`.
 - **Uji sebelum/sesudah OpenClaw, 2026-10-01** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): 8 → 7 sebelum perbaikan (skill sempat kalah dari AI tanpa skill), 8 → 8,5 setelah perbaikan v1.0.5.

@@ -63,3 +63,7 @@ Tempel ringkasan/ catatan **Anda**; skill tidak menyalin buku berbayar utuh.
 
 **Apakah agent menginstal Anki?**  
 Tidak. Anda impor manual lewat menu File → Import.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

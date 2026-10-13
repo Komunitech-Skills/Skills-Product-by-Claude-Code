@@ -2,7 +2,7 @@
 
 **Dari satu kalimat, AI menyiapkan seluruh urutan pesan WhatsApp/Telegram/email lengkap dengan jadwal dan kapan harus berhenti.**
 
-Diuji AI penguji independen: 3,0 → 8,25 dari 10 (tanggal kirim dihitung, bukan dikira, dan permintaan kirim massal ditolak sambil tetap dibantu dengan cara yang sah).
+Diuji AI penguji independen di OpenClaw: 3,0 → 8,25 dari 10 (tanggal kirim dihitung, bukan dikira, dan permintaan kirim massal ditolak sambil tetap dibantu dengan cara yang sah).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 

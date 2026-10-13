@@ -58,7 +58,7 @@ Salin folder `sop-writer` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,0 tanpa skill menjadi 8,5 dengan skill (skala 10); uji ulang v1.0.4 untuk SOP closing kasir laundry: 6,5 tanpa skill menjadi 8,5 sampai 9 dengan skill. Pembeda: SOP lengkap langsung tampil di chat dan siap cetak (kontrol dokumen, langkah kritis ⚠️ beserta alasannya, tabel "jika … maka …", indikator, checklist berparaf), sedangkan tanpa skill SOP ditulis ke file dan tidak tampil di chat.
 - Jujur: untuk aturan dapur yang berisiko, AI biasa sudah menolak praktik berbahaya. Satu penyebutan izin PIRT yang kurang tepat tercatat pada uji; bila SOP dipakai untuk perizinan, cocokkan dengan ketentuan resmi.
 

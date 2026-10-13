@@ -86,3 +86,7 @@ tulisan Anda.
 Tidak wajib. Kalau Python ada, deteksi pola & skor awal dihitung otomatis lewat script (lebih cepat
 untuk draf panjang). Kalau tidak ada, AI agent tetap bisa memeriksa/memperbaiki secara manual memakai
 daftar pola yang sama.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

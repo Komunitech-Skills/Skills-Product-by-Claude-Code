@@ -71,3 +71,7 @@ Ya. Sekitar 300 singkatan umum sudah dikenali. Kata khas usaha Anda bisa ditamba
 
 **Perlu Python?**
 Disarankan (gratis, biasanya sudah ada di Mac/Linux). Tanpa Python, AI agent tetap bisa menghitung manual dan akan memberi tahu bahwa hasilnya belum diverifikasi script.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

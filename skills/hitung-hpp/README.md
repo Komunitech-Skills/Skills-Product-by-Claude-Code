@@ -56,7 +56,7 @@ Salin folder `hitung-hpp` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
 - **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario es kopi): skor tanpa skill 8 → dengan skill 7 pada uji pertama (skill kalah), lalu 8,5 setelah perbaikan v1.0.4. Selisih akhir hanya +0,5: hitungan modal tanpa skill juga benar; yang ditambahkan skill adalah tabel titik impas (BEP) per pilihan harga dari skrip.
 - **Uji simulasi agent, 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`, resep keripik pisang balado dengan target margin 35%): agent tanpa skill menukar margin dengan markup, sehingga harga Rp9.500 (margin sebenarnya hanya sekitar 26,8%) dan tanpa BEP. Dengan skill harga Rp11.000 (margin 36,82%) dan BEP 114 bungkus per bulan. Selisihnya Rp1.500 per bungkus, sekitar Rp720.000 per bulan pada 480 bungkus.
 

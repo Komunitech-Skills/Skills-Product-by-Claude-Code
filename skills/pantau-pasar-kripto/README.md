@@ -2,9 +2,9 @@
 
 **Harga, berita, riset, dan jurnal trading kripto Anda -- rapi & terjadwal. Bukan sinyal beli/jual dan tanpa janji profit.**
 
-Diuji AI penguji independen di OpenClaw: 5,3 → 8,6 dari 10 (harga diambil dari sumber terbuka dan diperiksa skrip, tanpa sinyal beli/jual, jurnal untung/rugi cocok dengan hitungan independen; tanpa skill, AI sempat memberi harga dan berita dari ingatan serta contoh auto-trading).
+Diuji AI penguji independen di OpenClaw: 5,3 → 8,6 dari 10 (harga diambil dari sumber terbuka dan diperiksa skrip, tanpa sinyal beli/jual, jurnal untung/rugi cocok dengan hitungan independen; tanpa skill, berita tanpa tautan sumber dan memuat level harga, AI mengubah pengaturan OpenClaw tanpa izin, dan meminta token bot dikirim lewat chat).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Perlu koneksi internet untuk mengambil harga dan berita. Notifikasi terjadwal ke Telegram butuh OpenClaw yang tersambung ke bot Telegram Anda dan komputer/server yang menyala saat jadwal; tanpa itu, harga, riset, dan jurnal tetap bisa dipakai manual. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Notifikasi ambang otomatis** -- dikabari hanya kalau harga naik/turun sesuai batas
@@ -21,7 +21,7 @@ Diuji AI penguji independen di OpenClaw: 5,3 → 8,6 dari 10 (harga diambil dari
 - ✅ **Jurnal trading rapi & untung/rugi (P/L) dihitung dengan skrip** -- dari angka yang
   Anda catat sendiri (metode FIFO, yaitu yang dibeli lebih dulu dianggap dijual lebih
   dulu; sudah termasuk biaya), bukan diperkirakan.
-- ✅ **Bukan bot trading** -- skill ini tidak meminta kunci API bursa (exchange) dan tidak
+- ✅ **Bukan bot trading** -- skill ini tidak meminta kunci API (kunci akses program ke akun) bursa (exchange) dan tidak
   menjalankan order. Keputusan beli/jual sepenuhnya di tangan Anda. Ini bukan sinyal
   beli/jual dan tanpa janji profit; risiko rugi tetap di Anda.
 
@@ -66,11 +66,11 @@ Salin folder `pantau-pasar-kripto` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (paket solusi kripto Komunitech, home terisolasi), 3–5 Okt 2026 (v1.0.10), skor 1–10 penguji independen (rata-rata 3 skenario): tanpa skill **5,3** → dengan skill **8,6** (LULUS). Sumber: catatan uji gabungan paket solusi kripto Komunitech (internal, tidak ikut di paket) dan `examples/HASIL-UJI.md`. Tanpa skill sempat memberi harga/berita dari ingatan dan contoh auto-trading; dengan skill harga dari CoinGecko/Indodax diverifikasi skrip (program hitung kecil), tanpa sinyal beli/jual, jurnal FIFO cocok hitungan independen.
+**Hasil uji (angka nyata):** uji OpenClaw (paket solusi kripto Komunitech, home terisolasi), 3–5 Okt 2026 (v1.0.10), skor 1–10 penguji independen (rata-rata 3 skenario): tanpa skill **5,3** → dengan skill **8,6** (LULUS). Skor berasal dari uji gabungan paket solusi kripto Komunitech (skill ini bersama skill pendamping); ringkasan per skenario ada di `examples/00-openclaw-sebelum-sesudah.md`, uji simulasi agent yang lebih awal di `examples/HASIL-UJI.md`. Tanpa skill, berita tanpa tautan sumber dan memuat level harga, AI mengubah pengaturan OpenClaw tanpa izin, dan meminta token bot dikirim lewat chat; dengan skill harga dari CoinGecko/Indodax (situs data harga kripto) diverifikasi skrip (program hitung kecil), tanpa sinyal beli/jual, jurnal FIFO cocok hitungan independen.
 
-**Status uji (jujur):** informasi saja — **bukan** rekomendasi investasi atau bot trading. Sudah diuji di OpenClaw Gateway asli (notifikasi ambang) dan uji gabungan agent. Regulasi kripto Indonesia berubah — cek OJK (Otoritas Jasa Keuangan) dan daftar aset keuangan digital (DAKD) yang berlaku. Jadwal OpenClaw baru diuji di Linux; macOS dan Windows belum diuji di perangkat asli.
+**Status uji (jujur):** informasi saja — **bukan** rekomendasi investasi atau bot trading. Sudah diuji di OpenClaw Gateway asli (program OpenClaw yang berjalan terus untuk menjalankan jadwal; notifikasi ambang) dan uji gabungan agent. Regulasi kripto Indonesia berubah — cek OJK (Otoritas Jasa Keuangan) dan daftar aset keuangan digital (DAKD) yang berlaku. Jadwal OpenClaw baru diuji di Linux; macOS dan Windows belum diuji di perangkat asli.
 
 ## FAQ
 **Ini bot auto-trading, kan?**

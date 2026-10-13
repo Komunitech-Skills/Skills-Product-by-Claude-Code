@@ -2,7 +2,7 @@
 
 **Pengganti aplikasi stok berbayar: cukup chat ke AI agent, data stok disimpan di laptop Anda sendiri.**
 
-Diuji AI penguji independen: 6 → 8,5 dari 10 (tanpa skill, stok hanya jadi catatan teks di memori AI; dengan skill, buku stok sungguhan di komputer dengan HPP rata-rata yang dihitung).
+Diuji AI penguji independen di OpenClaw: 6 → 8,5 dari 10 (tanpa skill, stok hanya jadi catatan teks di memori AI; dengan skill, buku stok sungguhan di komputer dengan HPP rata-rata yang dihitung).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 

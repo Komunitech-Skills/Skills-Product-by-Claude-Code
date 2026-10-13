@@ -66,3 +66,7 @@ Verdik gelombang: LULUS. Dengan skill setiap usaha ada tautan situs/Google Maps 
 
 ## Catatan
 Daftar berisi kontak bisnis dari sumber publik; patuhi UU PDP (UU 27/2022 tentang perlindungan data pribadi) dan hormati bila calon pelanggan menolak. Skill ini tidak mengirim pesan apa pun.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

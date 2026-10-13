@@ -2,7 +2,7 @@
 
 **Tempel email yang menumpuk, dapatkan urutan kerja, ringkasan, draf balasan siap edit, dan peringatan bila ada yang mirip penipuan.**
 
-Diuji AI penguji independen: 5,5 → 8,0 dari 10 (email penipuan modus "rekening baru" terdeteksi dengan alasan yang benar, dan draf balasan memakai kolom isian alih-alih mengarang harga atau tanggal).
+Diuji AI penguji independen di OpenClaw: 5,5 → 8,0 dari 10 (email penipuan modus "rekening baru" terdeteksi dengan alasan yang benar, dan draf balasan memakai kolom isian alih-alih mengarang harga atau tanggal).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 

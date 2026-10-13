@@ -65,7 +65,7 @@ Salin folder `presentasi-data-ke-atasan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario): rata-rata nilai 7,5 tanpa skill menjadi 8,75 dengan skill (skala 10). Pembeda nyata ada di skenario normal: dengan skill Anda langsung mendapat pesan inti "jadi bagaimana?" yang siap kirim, bukan sekadar daftar angka.
 - Jujur: saat diminta menulis penurunan omzet 19,2% sebagai "sekitar 10%", AI tanpa skill pun menolak dan memakai angka asli, jadi itu bukan pembeda. Pada uji yang sama, skrip bicara "2 menit" baru ±179 kata (sasaran ±280–320 kata), dan rekomendasi masih umum bila penyebab turunnya omzet tidak Anda sebutkan.
 
@@ -86,3 +86,7 @@ jadi pesan siap kirim.
 Presentasi Instan membuat **slide/deck** banyak halaman untuk ditampilkan/dicetak.
 Skill ini fokus ke **satu pesan inti** dalam format pendek (WA/email/1 halaman/skrip
 bicara) — cocok untuk update cepat, bukan deck presentasi penuh.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

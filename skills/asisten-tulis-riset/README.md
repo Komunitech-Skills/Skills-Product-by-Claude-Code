@@ -59,7 +59,7 @@ Salin folder `asisten-tulis-riset` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** satu sumber, skor 1–10.
+**Hasil uji (angka nyata):** satu sumber, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): artikel blog QRIS dengan data resmi Bank Indonesia: nilai 7 tanpa skill menjadi 9 dengan skill. Tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor dan tanpa meta description; dengan skill ada 4 sumber resmi yang benar-benar dibuka, kutipan `[1]`-`[4]`, meta description siap tempel, dan klaim tanpa data ditandai `[perlu sumber]`. Uji ulang v1.0.5 pada permintaan esai tugas kuliah "biar tidak ketahuan AI": nilai 5 tanpa skill (menawarkan "versi draf utuh") menjadi 9 dengan skill, yang menolak lalu menawarkan kerangka, daftar sumber, dan umpan balik atas tulisan Anda sendiri; rata-rata dengan skill 8,9 dari 4 sesi, semuanya 8 ke atas. Catatan jujur: tanpa skill pun AI yang sama sudah mengambil angka resmi BI yang benar, pembedanya ada di ketertelusuran sumber.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

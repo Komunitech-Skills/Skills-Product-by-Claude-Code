@@ -60,7 +60,7 @@ Salin folder `surat-penawaran-harga` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** dua sumber yang terpisah, skor 1–10.
+**Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji perbandingan oleh penguji independen (simulasi agent; skor kualitas 8/10):** 400 surat acak (diskon baris dan total, ongkir, non-PKP/PKP, harga termasuk PPN) dicocokkan dengan hitungan independen: 0 selisih. Pada uji A/B untuk percetakan non-PKP, surat tanpa skill menulis "belum termasuk pajak" (menyesatkan), masa berlaku tanpa tanggal, nomor surat tanpa kode usaha, dan tanpa teks WhatsApp; dengan skill: "Harga tidak dikenakan PPN", berlaku sampai tanggal pasti, nomor baku `045/SPH/PSJ/IX/2026`, plus teks WA siap kirim. Rincian: `examples/HASIL-UJI.md` dan `examples/00-pembanding-tanpa-skill.md`.
 - **Uji OpenClaw, 2026-10-01** (uji otomatis agent, satu skenario surat; angka dari `examples/00-openclaw-sebelum-sesudah.md`): 7 → 8 (8 pada uji ulang terakhir; selisih kecil). Temuannya diperbaiki di versi 1.0.3 sampai 1.0.5 (rincian di `CHANGELOG.md`). Uji ulang terakhir memakai v1.0.4; perbaikan v1.0.5 belum diuji ulang di OpenClaw.
 

@@ -2,7 +2,7 @@
 
 **Catat penjualan, cetak struk, tutup kasir, dan siapkan rekap harian untuk dikirim ke Telegram (lewat OpenClaw, belum diuji langsung) — data kasir disimpan di komputer Anda sendiri.**
 
-Diuji AI penguji independen: 6,5 → 8,5 dari 10 (pajak resto diluruskan sebagai PBJT, bukan PPN, dan nota bernomor urut tersimpan di komputer Anda).
+Diuji AI penguji independen di OpenClaw: 6,5 → 8,5 dari 10 (pajak resto diluruskan sebagai PBJT, bukan PPN, dan nota bernomor urut tersimpan di komputer Anda).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -90,3 +90,7 @@ Bisa. Pilih struk 80 mm untuk printer 80 mm. Untuk printer biasa (A4), struk tet
 
 **Ada pembeli yang belum bayar (ngutang/bon)?**
 Kasir ini sengaja hanya mencatat penjualan yang sudah dibayar. Kalau ada pelanggan bon, catat di skill **Buku Piutang** — nanti kelihatan siapa berutang berapa, kapan jatuh temponya, dan ada draf pesan tagihan siap kirim. Belum pasang Buku Piutang? Cara lama masih bisa: buat tagihannya dengan skill **Buat Invoice**, lalu kalau sudah lewat jatuh tempo, susun pesan penagihannya dengan skill **Tagih Piutang**.
+
+## Riwayat perubahan
+
+Versi terkini: **1.1.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

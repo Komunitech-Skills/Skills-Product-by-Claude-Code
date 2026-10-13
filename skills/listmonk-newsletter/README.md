@@ -1,16 +1,16 @@
 # listmonk Newsletter: Kirim Email ke Pelanggan Tanpa Mailchimp
 
-**Suruh AI Anda menyiapkan kontak, menulis email promo dalam bahasa Indonesia, mengujinya ke diri sendiri, menjadwalkan, dan membaca berapa yang membuka dan mengklik, memakai listmonk, aplikasi newsletter gratis yang jalan di komputer/server Anda sendiri, tanpa biaya bulanan per jumlah kontak (biaya server, domain, dan layanan pengirim email tetap ada).**
+**Suruh AI Anda menyiapkan kontak, menulis email promo dalam bahasa Indonesia, mengujinya ke diri sendiri, menjadwalkan, dan membaca berapa yang membuka dan mengklik. Semua lewat listmonk, aplikasi newsletter gratis yang jalan di komputer/server Anda sendiri, tanpa biaya bulanan per jumlah kontak (biaya server, domain, dan layanan pengirim email tetap ada).**
 
 Diuji AI penguji independen di OpenClaw (dengan server listmonk tiruan dan data contoh, bukan pengiriman email sungguhan): 5,5 → 9,0 dari 10 (tanpa skill, AI langsung memasukkan 21 kontak berstatus "sudah konfirmasi" termasuk alamat salah ketik dan membuat draf tanpa tautan berhenti berlangganan; dengan skill ada pratinjau dulu, alamat salah ketik ditahan, dan tautan berhenti tersedia).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux (Windows dan macOS belum diuji langsung). Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Listmonk (gratis, open-source; panduan pemasangan disertakan), dijalankan di komputer/server Anda sendiri; layanan pengirim email (SMTP), domain, dan server ber-HTTPS untuk newsletter sungguhan adalah biaya tersendiri di luar paket ini. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux (Windows dan macOS belum diuji langsung). Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Listmonk (gratis, open-source; panduan pemasangan disertakan), dijalankan di komputer/server Anda sendiri; layanan pengirim email (SMTP), domain, dan server ber-HTTPS (alamat aman berawalan https://) untuk newsletter sungguhan adalah biaya tersendiri di luar paket ini. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Bebas biaya per kontak.** Mailchimp menarik biaya makin mahal seiring daftar membesar; listmonk sendiri gratis. Biaya yang tetap ada: pengirim email (SMTP, "kantor pos" untuk email) yang murah atau ber-paket gratis, domain, dan server (VPS) bila tidak dipasang di komputer Anda.
+- ✅ **Bebas biaya per kontak.** Mailchimp menarik biaya makin mahal seiring daftar membesar; listmonk sendiri gratis. Biaya yang tetap ada: pengirim email (SMTP, "kantor pos" untuk email) yang murah atau ber-paket gratis, domain, dan server sewaan (VPS) bila tidak dipasang di komputer Anda.
 - ✅ **Membantu menjaga kepatuhan hukum dan reputasi pengirim.** Pengingat persetujuan UU PDP 27/2022, **double opt-in** (pendaftar mengklik tautan konfirmasi di email dulu), tautan berhenti berlangganan wajib, dan **menolak daftar tanpa persetujuan (beli, hasil menyedot data situs/scraping, grup WA, vendor, "dapat dari teman")**; saringan ini berbasis kata kunci, bukan jaminan hukum.
 - ✅ **AI dirancang agar tidak "kelepasan kirim".** Sebelum email keluar ke daftar, AI menampilkan jumlah penerima dan menunggu jawaban "ya" Anda; kirim ditolak bila versi isi yang sama belum diuji-kirim ke alamat milik Anda sendiri (tanpa jalan pintas di dalam skill), atau bila tautan berhenti berlangganan tidak benar-benar ada (tautan di dalam komentar HTML tidak dihitung). Pengaman ini melindungi dari kelalaian agent, bukan dari orang yang punya akses penuh ke komputer Anda (lihat "Batasan yang jujur").
-- ✅ **File CSV/Excel (daftar kontak) berantakan jadi rapi.** Email rusak, duplikat, salah ketik (`gmial.com`), dan yang menolak, dibuang atau ditandai otomatis; angka dihitung script, bukan dikira.
+- ✅ **File daftar kontak berantakan jadi rapi.** Bisa berupa CSV (tabel sederhana dari Excel/Google Sheets) atau Excel. Email rusak, duplikat, salah ketik (`gmial.com`), dan yang menolak, dibuang atau ditandai otomatis; angka dihitung program kecil (script), bukan dikira.
 - ✅ **Email Indonesia siap kirim, dan tahu hasilnya.** Subjek, sapaan nama, ajakan pesan WhatsApp, dan cek risiko spam; lalu terkirim, dibuka, klik, dan tautan terlaris, dengan catatan jujur cara membaca angka.
 
 ## Cocok untuk siapa
@@ -29,14 +29,16 @@ Kontak valid dan siap diimpor : 5
 Email tidak valid (dibuang)   : 1
 Duplikat (dibuang)            : 1
 Menolak/belum setuju (dibuang): 1
-Perlu dicek manual (salah ketik?): baris 5: t***@gmial.com (mungkin maksudnya @gmail.com)
+Perlu dicek manual (salah ketik?) - TETAP disertakan: 1
+  baris 5: t***@gmial.com (mungkin maksudnya @gmail.com)
 ```
-"Kirim promo sekarang" ->
+AI lalu bertanya sekali apakah alamat yang tampak salah ketik mau dibetulkan dulu. "Kirim promo sekarang" (padahal email belum diuji-kirim ke diri sendiri) ->
 ```
   list 'Newsletter Toko Uji' (opt-in double): 2 penerima
-  Uji-kirim ke diri sendiri: SUDAH (isi sama)
-BELUM DIKIRIM. WAJIB tanya pengguna: 'Kirim ke sekitar 2 orang di list tsb? (ya/tidak)'
+  Uji-kirim ke diri sendiri: BELUM / isi berubah sejak uji
+DITOLAK: lakukan 'uji-kirim' ke email Anda sendiri dulu (isi harus sama persis).
 ```
+Setelah email diuji-kirim ke diri sendiri, barulah AI menanyakan "Kirim ke sekitar 2 orang di list tsb? (ya/tidak)" dan menunggu jawaban Anda.
 "Hasilnya gimana?" -> `Dibuka (perkiraan): 1 = 50,0%` / `Klik tautan: 1 = 50,0%` / tautan terlaris. (Contoh nyata dari listmonk 6.2.0 dengan data fiktif; lihat `examples/`.)
 
 ## Cara pakai
@@ -67,8 +69,8 @@ Setelah listmonk terpasang dan tersambung, cukup ketik:
 
 Komunitech tidak berafiliasi dengan listmonk maupun Mailchimp (hanya disebut sebagai pembanding). listmonk (AGPL-3.0) tidak ikut didistribusikan di paket ini; skill dan panduannya karya Komunitech. Rincian: `ATTRIBUTION.md`.
 
-**Hasil uji (jujur):** dua sumber yang terpisah.
-- **Uji OpenClaw, uji otomatis agent, v1.0.5** (angka dari `examples/00-openclaw-sebelum-sesudah.md`; versi terkini di katalog 1.0.6, pembaruan kecil sesudah uji: larangan menulis ulang kunci yang ditempel di chat): rata-rata nilai 5,5 tanpa skill menjadi 9,0 dengan skill (skala 10). Pada tugas impor pendaftar, AI tanpa skill langsung memasukkan 21 kontak berstatus "sudah konfirmasi" (melewati double opt-in), termasuk alamat salah ketik gmial.com, dan membuat draf tanpa tautan berhenti berlangganan; dengan skill ada pratinjau dulu, alamat salah ketik ditahan, draf lengkap dengan tautan berhenti, dan tidak ada yang terkirim (nilai 3 menjadi 9). Pada permintaan impor daftar beli, AI tanpa skill pun sudah menolak (8 vs 9). Catatan jujur: uji OpenClaw memakai server tiruan dan data contoh, jadi yang dinilai perilaku AI, bukan pengiriman email sungguhan.
+**Hasil uji (angka nyata):** dua sumber yang terpisah.
+- **Uji OpenClaw, uji otomatis agent, v1.0.5** (angka dari `examples/00-openclaw-sebelum-sesudah.md`; versi terkini 1.0.6, pembaruan kecil sesudah uji: larangan menulis ulang kunci yang ditempel di chat): rata-rata nilai 5,5 tanpa skill menjadi 9,0 dengan skill (skala 10). Pada tugas impor pendaftar, AI tanpa skill langsung memasukkan 21 kontak berstatus "sudah konfirmasi" (melewati double opt-in), termasuk alamat salah ketik gmial.com, dan membuat draf tanpa tautan berhenti berlangganan; dengan skill ada pratinjau dulu, alamat salah ketik ditahan, draf lengkap dengan tautan berhenti, dan tidak ada yang terkirim (nilai 3 menjadi 9). Pada permintaan impor daftar beli, AI tanpa skill pun sudah menolak (8 vs 9). Catatan jujur: uji OpenClaw memakai server tiruan dan data contoh, jadi yang dinilai perilaku AI, bukan pengiriman email sungguhan.
 - **Uji pembuat pada listmonk 6.2.0 asli** dengan SMTP penampung lokal (server surat percobaan di komputer sendiri). Belum diuji: pengiriman lewat Brevo/Amazon SES sungguhan, kotak masuk Gmail/Yahoo, dan Windows/macOS.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, server tiruan) dan oleh pembuat pada listmonk asli; Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama). Skill bukan nasihat hukum.
@@ -81,4 +83,8 @@ Komunitech tidak berafiliasi dengan listmonk maupun Mailchimp (hanya disebut seb
 **Apakah saya bisa memakai listmonk di laptop saja?** Untuk belajar, ya. Untuk newsletter sungguhan, tautan konfirmasi dan berhenti harus bisa dibuka penerima, jadi listmonk perlu server dengan HTTPS (`docs/panduan-listmonk.md`, bagian 2 "Pilih tempat memasang" dan 4 "Pasang listmonk dengan Docker Compose") atau jasa setup Komunitech.
 
 ## Batasan yang jujur
-**Pengaman ini melindungi dari kelalaian agent, bukan dari orang yang punya akses shell.** Gerbang uji-kirim, konfirmasi jumlah penerima, alamat uji, dan saringan sumber persetujuan mencegah agent salah kirim atau lupa menguji. Orang/agent dengan akses terminal (shell) ke komputer Anda tetap bisa memalsukan berkas catatan lokal (`listmonk-uji.json`, alamat uji), memakai terminal palsu, atau memanggil pintu akses (API) listmonk langsung. Catatan uji-kirim diberi tanda keaslian (HMAC) dengan kunci di folder konfigurasi Anda agar suntingan iseng terdeteksi, tetapi itu bukan pengaman terhadap penyerang. Tetap gunakan akun API berperan terbatas dan periksa ringkasan sebelum menjawab "ya".
+**Pengaman ini melindungi dari kelalaian agent, bukan dari orang yang punya akses terminal (jendela perintah) ke komputer Anda.** Gerbang uji-kirim, konfirmasi jumlah penerima, alamat uji, dan saringan sumber persetujuan mencegah agent salah kirim atau lupa menguji. Orang/agent dengan akses terminal (shell) ke komputer Anda tetap bisa memalsukan berkas catatan lokal (`listmonk-uji.json`, alamat uji), memakai terminal palsu, atau memanggil pintu akses (API) listmonk langsung. Catatan uji-kirim diberi tanda keaslian (HMAC) dengan kunci di folder konfigurasi Anda agar suntingan iseng terdeteksi, tetapi itu bukan pengaman terhadap penyerang. Tetap gunakan akun API berperan terbatas dan periksa ringkasan sebelum menjawab "ya".
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

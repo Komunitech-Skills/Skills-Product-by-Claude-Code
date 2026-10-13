@@ -92,3 +92,7 @@ Alat ini mendeteksi nama kolom secara fleksibel (banyak sinonim), dan menunjukka
 
 **Apakah ini bisa otomatis ambil pesanan dari Shopee/Tokopedia/TikTok Shop tanpa saya unduh manual?**
 Tidak. Skill ini sengaja tidak mengambil data otomatis dari akun penjual Anda dan tidak login ke marketplace - Anda tetap yang mengekspor file pesanan dari Seller Center, alat ini hanya mengolahnya jadi picking list & urutan resi.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

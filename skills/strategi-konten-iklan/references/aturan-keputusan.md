@@ -14,4 +14,4 @@ Evaluasi tiap 7 hari, jangan tiap jam. Data dari Ads Manager/Seller Center; untu
 
 Tanda berhenti total bulan itu: laba kotor dari pesanan iklan negatif dua minggu berturut-turut dan tidak ada sudut pesan baru yang layak diuji. Kembali ke konten organik dan perbaiki penawaran.
 
-Catatan: angka ROAS platform tidak memasukkan pembatalan/retur; hitung ulang dari pesanan yang benar-benar selesai bila memungkinkan.
+Catatan: cek definisi ROAS di dasbor iklan Anda; biasanya belum memperhitungkan retur/pembatalan, pastikan sendiri. Bila memungkinkan, hitung ulang dari pesanan yang benar-benar selesai.

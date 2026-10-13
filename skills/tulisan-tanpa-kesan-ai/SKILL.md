@@ -78,7 +78,7 @@ Bila permintaan: membuat/menulis ulang tulisan AI agar **lolos Turnitin/GPTZero/
    asli kurang spesifik (mis. "produk bagus" tanpa detail), **tanyakan** detail konkretnya (harga,
    bahan, manfaat spesifik) daripada mengarang — mengarang detail produk berisiko menyesatkan pembeli.
 5. Terapkan `references/panduan-gaya.md` untuk aturan umum (aktif vs pasif, hindari kata pengisi,
-   konkret > abstrak) sesuai bahasa sehari-hari yang sopan, bukan textbook.
+   konkret > abstrak) sesuai bahasa sehari-hari yang sopan, bukan textbook. "Konkret" berarti memakai fakta yang ADA di draf atau dari pengguna, bukan menambah fakta baru; angka dalam `references/pola-ai-indonesia.md` hanya ilustrasi gaya. Bila angka/fakta tidak ada, tulis `[isi: angka Anda]`.
 6. Cocokkan hasil ke `references/pola-ai-indonesia.md` sekali lagi — pastikan pola yang tadi terdeteksi
    sudah hilang dan tidak ada pola baru muncul dari perbaikan sendiri (mis. jangan sampai penutup
    "Semoga bermanfaat!" diganti "Semoga menginspirasi!" — sama-sama klise).

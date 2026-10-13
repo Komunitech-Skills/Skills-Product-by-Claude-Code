@@ -93,3 +93,7 @@ Jatuh tempo dihitung dari tanggal invoice + tempo pembayaran yang Anda sebutkan 
 ---
 Komunitech tidak berafiliasi dengan Frappe Technologies maupun proyek Frappe Books. Frappe Books (AGPL-3.0) tidak disertakan
 dalam paket; "Frappe" dan "Frappe Books" adalah merek milik pemiliknya.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

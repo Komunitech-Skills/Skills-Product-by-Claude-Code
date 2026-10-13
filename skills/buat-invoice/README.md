@@ -59,7 +59,7 @@ Salin folder `buat-invoice` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
 - **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario invoice jasa konsultan): skor tanpa skill 7 → dengan skill 8 pada uji pertama, lalu 9 setelah perbaikan v1.0.4. Pembedanya: tanpa skill menulis "PPN 11%"; dengan skill PPN 12% (dihitung dari 11/12 harga sebelum PPN), potongan PPh 23 (pajak 2% yang dipotong klien perusahaan) Rp270.000, dan estimasi diterima bersih Rp14.715.000 dihitung skrip. Catatan jujur: pada skor 9 hanya sisi "dengan skill" yang diulang; sisi "tanpa skill" memakai skor uji pertama.
 - **Uji simulasi agent, 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`, invoice konveksi seragam, DP Rp6.000.000, sisa tagihan Rp13.530.000): agent tanpa skill menulis angka yang benar tetapi tanpa terbilang, tanpa penanda bea meterai, dan tanpa file siap cetak. Dengan skill semuanya ada, dan permintaan PPN dari penjual non-PKP ditolak.
 

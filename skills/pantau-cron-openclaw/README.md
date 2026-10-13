@@ -2,7 +2,7 @@
 
 **Pantau Cron OpenClaw** -- tagline: *jadwal otomatis Anda diam-diam mati? Anda dikabari lewat Telegram, tidak perlu menunggu sadar sendiri.*
 
-Diuji AI penguji independen: 4,63 → 8,19 dari 10 (tanpa skill asisten hanya menjawab "sudah terpasang dan aktif" tanpa bukti; dengan skill jadwal yang terlambat atau hilang ketahuan dari hitungan jam).
+Diuji AI penguji independen di OpenClaw: 4,63 → 8,19 dari 10 (tanpa skill asisten hanya menjawab "sudah terpasang dan aktif" tanpa bukti; dengan skill jadwal yang terlambat atau hilang ketahuan dari hitungan jam).
 
 Laporan harian 21.00, tagihan piutang 07.45, ringkasan stok... semuanya berjalan otomatis lewat OpenClaw. Sampai suatu hari laptop tertidur atau OpenClaw berhenti, dan **tidak ada yang memberi tahu**. Skill ini membuat setiap jadwal otomatis "melapor selesai" setiap kali sukses. Kalau laporannya tidak datang tepat waktu, Anda dikabari lewat Telegram (pengiriman ke Telegram sungguhan belum diuji langsung; lihat "Hasil uji" di bawah). Kalau semua jadwal lapor tepat waktu, Anda tidak diganggu.
 
@@ -77,3 +77,7 @@ Bisa. Zona WIB, WITA, WIT didukung, dan jadwal otomatis seperti "tanggal 1 tiap 
 
 ## Untuk pengembang / penguji
 `python3 tests/uji_regresi.py` menjalankan uji regresi (parsing jadwal, jatuh tempo lintas hari/bulan, toleransi, status, zona waktu, input rusak).
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

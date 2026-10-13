@@ -88,3 +88,7 @@ Ya. Bagian penjualan langsung terisi; bagian lain menulis "belum ada data" sampa
 
 **Kenapa nama pelanggan/prospek yang belum bayar atau belum di-follow-up tidak muncul?**
 Sengaja, supaya lebih tenang bila laporan terbaca orang lain di HP Anda. Ketik "rekap pengingat" untuk tagihan, atau "follow-up hari ini"/"rekap CRM" untuk prospek — keduanya menampilkan nama dan draf pesan dari skill masing-masing (Pengingat Follow-up, CRM WA).
+
+## Riwayat perubahan
+
+Versi terkini: **1.1.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

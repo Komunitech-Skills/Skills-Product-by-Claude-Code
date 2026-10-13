@@ -55,7 +55,7 @@ Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet setelah SiYuan terpasang, tidak butuh akun, tidak butuh paket tambahan.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, v1.0.8, 2 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 4,3 tanpa skill menjadi 9,0 dengan skill (skala 10), pada tiga skenario (belum punya SiYuan dan minta SOP buka-tutup kafe; kunci akses ditempel di chat; menimpa dokumen lama). Tanpa skill, agent memakai kunci akses yang ditempel di chat dan menimpa dokumen tanpa pratinjau atau cadangan; dengan skill, ada pratinjau, cadangan isi lama, dan kunci itu tidak dipakai. Uji ulang v1.0.10 (menimpa SOP): 2 menjadi 9,5. Uji ini memakai data contoh dan server SiYuan tiruan di komputer uji, bukan aplikasi SiYuan sungguhan.
 - **Uji oleh pembuat (v1.0.0):** semua perintah dicoba dengan mesin inti (kernel) SiYuan resmi v3.8.5 versi Linux, dijalankan tanpa tampilan layar (headless), termasuk judul/isi berisi emoji dan Unicode, plus 42 uji otomatis dengan server tiruan (kini 52 tes).
 

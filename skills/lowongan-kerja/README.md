@@ -2,7 +2,7 @@
 
 **Sebut posisinya, dapat iklan lowongan lengkap untuk JobStreet, LinkedIn, Glints, Instagram, dan grup WA.**
 
-Diuji AI penguji independen: 4,5 → 8,5 dari 10 (tanpa skill, syarat gender, usia, dan status pernikahan dipasang apa adanya; dengan skill, diganti syarat kemampuan kerja).
+Diuji AI penguji independen di OpenClaw: 4,5 → 8,5 dari 10 (tanpa skill, syarat gender, usia, dan status pernikahan dipasang apa adanya; dengan skill, diganti syarat kemampuan kerja).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 

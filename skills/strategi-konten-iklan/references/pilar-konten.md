@@ -23,6 +23,8 @@ Satu pilar = satu topik yang bisa jadi 10+ konten. Pilihan umum (pakai yang coco
 ## 3. Lengkapi tiap pilar
 Isi tabel: **tujuan** (1 kalimat), **tahap corong**, **3 sudut pesan** (contoh sudut: "hemat", "praktis", "aman untuk anak", "tahan lama", "bikin bangga"), **format** (Reels/TikTok 15-30 detik, carousel, foto produk, live, WA Status), **5 judul konkret** memakai nama produk dan kata sehari-hari pembeli.
 
+**Catatan:** contoh sudut di atas hanya gaya, bukan fakta produk. Sudut/klaim produk (mis. "tahan lama", "aman untuk anak", "bahan adem") hanya boleh dipakai bila pengguna menyebutkannya atau ditandai `[isian: konfirmasi ke pemilik usaha]`; klaim keamanan (anak, kesehatan) juga perlu dasar yang bisa dibuktikan.
+
 Aturan jumlah: usaha 1 orang -> 3 pilar, 3 konten/minggu; usaha dengan admin -> 4-5 pilar, 5-7 konten/minggu.
 
 ## 4. Hubungkan ke iklan

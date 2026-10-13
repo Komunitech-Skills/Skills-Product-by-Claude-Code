@@ -7,6 +7,8 @@ Yang — MIT, lihat `ATTRIBUTION.md` — lalu ditulis ulang dengan contoh & kont
 nama, ciri, kenapa terasa AI, dan contoh sebelum/sesudah pada konteks Indonesia (caption, marketplace,
 WA, email, blog).
 
+> **Catatan:** angka, jumlah, dan atribut dalam contoh di bawah (mis. "2x lipat", "60% naik dari 20%", "3 dari 10", "8 tahun", "1 jam") hanya ilustrasi gaya, bukan fakta. Saat memperbaiki tulisan pengguna, angka dan fakta hanya boleh dari draf atau dari pengguna; bila tidak ada, tulis `[isi: angka Anda]`. Jangan meniru angka atau atribut contoh.
+
 ## 1. Pembuka basa-basi ("throat-clearing")
 **Ciri:** kalimat pembuka yang tidak menambah informasi, hanya basa-basi sebelum masuk ke isi.
 Contoh frasa: "Di era digital ini", "Di era modern ini", "Dalam dunia yang terus berkembang",

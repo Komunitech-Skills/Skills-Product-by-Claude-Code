@@ -81,7 +81,7 @@ Salin folder `analisis-excel` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, v1.0.17** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,25 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (laporan biaya `.xlsx` dan CSV gaji yang berisi baris subtotal serta data pribadi). Pembeda: semua persen diambil dari skrip hitung (bukan dikira AI), bagian "Perlu dicek" ikut dilaporkan, dan data pribadi diingatkan. Tanpa skill, agent memasang paket tambahan tanpa bertanya dan tidak mengingatkan soal data pribadi di file gaji.
 - Catatan jujur: AI tanpa skill di uji ini juga menghitung total dengan benar. Pada uji pertama, AI dengan skill sempat menulis dua persen hasil hitungannya sendiri yang salah; perbaikannya (semua persen wajib dari skrip) lulus di uji ulang.
 

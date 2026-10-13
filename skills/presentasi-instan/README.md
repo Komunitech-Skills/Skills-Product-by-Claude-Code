@@ -59,7 +59,7 @@ Salin folder `presentasi-instan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (jujur):**
+**Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 8,25 dengan skill (skala 10). Pada skenario pengajuan KUR, slide buatan AI tanpa skill memuat klaim "rasio di bawah 70% umumnya dianggap wajar" (tanpa sumber) dan tidak memperingatkan bahwa rasio cicilan ±65% itu berat; dengan skill, angka yang belum pasti ditandai `[isi]` dan peringatan rasio berat disampaikan ke Anda secara pribadi, tidak ditaruh di slide.
 - Jujur: pada uji ini masih ada beberapa kalimat kualitatif karangan di slide; perbaikannya (v1.1.5) belum diuji ulang.
 - Tampilan di HP dan cetak PDF diuji lewat peramban Chromium di komputer penguji (`examples/HASIL-UJI.md`), bukan di HP atau printer sungguhan.

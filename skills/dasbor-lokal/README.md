@@ -95,6 +95,8 @@ Sengaja **tidak**. Skill ini hanya menyiapkan perintah untuk `127.0.0.1` (komput
 
 ## Riwayat perubahan
 
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
 Versi terkini: **1.0.4**.
 
 ---

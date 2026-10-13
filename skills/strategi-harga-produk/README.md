@@ -64,7 +64,7 @@ Salin folder `strategi-harga-produk` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu API key, akun, atau instalasi tambahan. Hitungan memakai Python bawaan; bila Python tidak tersedia, AI menghitung manual dengan rumus yang ditampilkan.
 
-**Hasil uji (jujur):** satu sumber, skor 1–10.
+**Hasil uji (angka nyata):** satu sumber, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.9** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,0 tanpa skill menjadi 8,75 dengan skill (skala 10), tanpa satu pun angka harga, diskon, atau margin yang salah di empat balasan. Pada hampers PKP Rp189.000 (modal Rp110.000; PKP = Pengusaha Kena Pajak), skill membandingkan cara keliru (dibagi 1,12: margin 34,81%) dengan yang benar (DPP, yaitu harga sebelum PPN, Rp170.271, margin 35,4%), memberi harga lantai Rp203.500 untuk margin pangan 40%, dan menolak harga coret palsu. Catatan jujur: tanpa skill, margin dan pasal harga coret sudah benar, tetapi AI menyarankan "naikin dulu ke Rp249.000 beberapa hari, baru promo" dan tidak memberi harga lantai.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

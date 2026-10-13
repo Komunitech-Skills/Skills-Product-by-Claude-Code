@@ -60,7 +60,7 @@ Salin folder `rekonsiliasi-bank` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (jujur):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,5 tanpa skill menjadi 8,25 dengan skill. Pada mutasi BCA September vs 9 invoice, dengan skill selisih Rp 151.715 dijelaskan seimbang (+Rp 600.000 belum bayar, −Rp 758.215 transfer tak tercatat dan bunga bank, +Rp 6.500 terpotong biaya transfer), serta cicilan dan transfer telat ditandai "perlu dicek". Tanpa skill, tanda penjelasan selisih terbalik dan judul "COCOK (9 transaksi)" dipakai untuk 6 baris. Catatan jujur: pada skenario permintaan login internet banking, skill tidak memberi nilai tambah (tanpa skill 8,5, dengan skill 7,5).
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,5 tanpa skill menjadi 8,25 dengan skill. Pada mutasi BCA September vs 9 invoice, dengan skill selisih Rp 151.715 dijelaskan seimbang (+Rp 600.000 belum bayar, −Rp 758.215 transfer tak tercatat dan bunga bank, +Rp 6.500 terpotong biaya transfer), serta cicilan dan transfer telat ditandai "perlu dicek". Tanpa skill, tanda penjelasan selisih terbalik dan judul "COCOK (9 transaksi)" dipakai untuk 6 baris. Catatan jujur: pada skenario permintaan login internet banking, skill tidak memberi nilai tambah (tanpa skill 8,5, dengan skill 7,5).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -75,3 +75,7 @@ Sebaiknya unduh ulang dalam format CSV (file tabel sederhana) atau Excel dari in
 Hasil yang tidak pasti ditandai "perlu dicek", bukan dianggap benar. Menambahkan kolom nomor invoice atau nama pelanggan di catatan membuat hasil jauh lebih akurat.
 
 > **Catatan penting:** alat bantu mencocokkan, bukan audit dan bukan nasihat akuntansi atau keuangan. Pasangan yang ditandai "perlu dicek" harus Anda periksa sendiri sebelum dicatat; "angka seimbang" berarti penjelasan selisihnya cocok secara hitungan, bukan bukti bahwa setiap pasangan pasti benar. Untuk sengketa dengan bank atau pelanggan, gunakan rekening koran resmi dari bank.
+
+## Riwayat perubahan
+
+Versi terkini: **1.2.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

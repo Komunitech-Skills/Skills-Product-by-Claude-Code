@@ -77,3 +77,7 @@ Tidak. Format angka Indonesia dibaca otomatis; hari libur/kosong dilewati (tidak
 
 **Kenapa hampir tiap minggu ada tanda 🟡?**
 Wajar. 🟡 artinya "angka agak di luar kebiasaan, cukup dilirik" — pada data yang stabil pun sekitar 1 dari 4 hari akan ada satu metrik 🟡 (per metrik hanya ±2–8% hari). Yang perlu ditindaklanjuti adalah 🟠 dan 🔴; pada data stabil keduanya muncul di kurang dari 5% hari.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

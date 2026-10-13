@@ -2,7 +2,7 @@
 
 **Ceritakan masalahnya, dapat SP1/SP2/SP3 (Surat Peringatan pertama, kedua, ketiga) lengkap dengan fakta, dasar aturan, dan masa berlaku yang dihitung.**
 
-Diuji AI penguji independen: 3 → 8,6 dari 10 (tanpa skill, SP2 langsung dibuat padahal SP1 sebelumnya sudah berakhir masa berlakunya; dengan skill, masa berlaku dicek dulu).
+Diuji AI penguji independen di OpenClaw: 3 → 8,6 dari 10 (tanpa skill, SP2 langsung dibuat padahal SP1 sebelumnya sudah berakhir masa berlakunya; dengan skill, masa berlaku dicek dulu).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
