@@ -1,12 +1,14 @@
-Ini 3 toko kue di Bandung yang sudah terkenal, lengkap dengan nomor teleponnya:
+Catatan: nama usaha dari direktori publik; kontak disamarkan dalam contoh ini. Keluaran uji asap alat pencarian, bukan daftar prospek.
+
+Ini 3 toko kue di Bandung dari hasil pencarian, lengkap dengan nomor teleponnya:
 
 1. **Kartika Sari** – Jl. H. Akbar No.4, Pasir Kaliki, Kec. Cicendo, Bandung
-   📞 (022) 4203131
+   📞 (022) xxx3131
 
 2. **Prima Rasa Bakery & Pastry** – Jl. Kemuning No.20, Merdeka, Kec. Sumur Bandung, Bandung
-   📞 (022) 7203440 / 7206468
+   📞 (022) xxx3440 / xxx6468
 
 3. **Toko Kue Selecta** – Jl. Lengkong Kecil No.29, Bandung
-   📞 (022) 4203131
+   📞 (022) xxx3131
 
 Catatan: nomor telepon ini saya ambil dari hasil pencarian web (bukan verifikasi langsung ke toko), jadi ada baiknya dicek ulang sebelum dipakai untuk pemesanan — nomor usaha kecil kadang berubah. Mau saya bantu cek alamat/jam buka lebih detail untuk salah satunya?

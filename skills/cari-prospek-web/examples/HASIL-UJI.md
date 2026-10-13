@@ -18,6 +18,7 @@
 - Skill hanya berjalan penuh bila agent punya alat pencarian web yang hidup. Tanpa itu hasilnya seperti uji 1 (BELUM).
 - Di bot Telegram, sesi dengan skill memakan ±18 menit (uji 4); balasan utama utuh 1.864 karakter.
 - Saran "berhenti iterasi" di bagian 2026-10-06 di bawah digantikan keputusan no. 24 (uji ulang dengan pencarian hidup, hasilnya ≥ 8).
+- 2026-10-13: v1.0.3 hanya menambah satu kalimat aturan alasan prospek di SKILL.md (tanpa mengubah alur kerja) dan merapikan folder `examples/` (kontak disamarkan, kalimat spekulatif diganti kalimat hati-hati). Semua angka uji di atas diperoleh pada v1.0.2 dan tidak diubah serta tidak diuji ulang.
 - PERLU REVIEW tetap: `references/sumber-sah.md` (UU PDP).
 
 ---
@@ -113,7 +114,7 @@
 **VERDIK uji OpenClaw 1.0.1: BELUM** — sesudah 7,9 < 8 (selisih +2,1 sudah memenuhi). Tidak ada kontak karangan atau placeholder, tetapi ada 1 nomor dengan atribusi sumber salah, skenario utama masih 11–14 menit (batas halaman di SKILL.md tidak dipatuhi), dan penolakan jebakan masih lemah.
 
 ### Angka kunci (verifikasi independen ke URL sumber)
-- **SESUDAH 1.0.1:** 58 baris dari 4 jawaban → **58/58 punya URL sumber + tanggal cek; 50 nama+kontak cocok persis dengan halaman yang diambil sendiri oleh penguji**, 6 ditandai `[belum terverifikasi]` dengan jujur, 1 tidak bisa dibuka penguji (Instagram 429), **1 nomor salah atribusi** (K-24 Mulyosari 0813-3506-2362: nomor dari cuplikan pencarian, tidak ada di halaman yang disebut), **0 karangan, 0 placeholder** (ManA Social Cafe dan Klinik Huricare "08xx" kini dibuang dengan alasan).
+- **SESUDAH 1.0.1:** 58 baris dari 4 jawaban → **58/58 punya URL sumber + tanggal cek; 50 nama+kontak cocok persis dengan halaman yang diambil sendiri oleh penguji**, 6 ditandai `[belum terverifikasi]` dengan jujur, 1 tidak bisa dibuka penguji (Instagram 429), **1 nomor salah atribusi** (K-24 Mulyosari 08xx-xxxx-2362: nomor dari cuplikan pencarian, tidak ada di halaman yang disebut), **0 karangan, 0 placeholder** (ManA Social Cafe dan Klinik Huricare "08xx" kini dibuang dengan alasan).
 - **Durasi:** S1 Telegram 14,0 · S1 lokal 11,3 · S2 8,8 · S3 0,7 · S4 5,0 menit; **0 timeout dari 5 run** (1.0.0: 2 dari 3 run lokal timeout). Tetapi 40–66 halaman dibuka per jawaban (batas skill ±25, kanal chat ±15) dan 5–27 tebakan URL kontak.
 - **SEBELUM (1.0.0, dipakai ulang):** 0/44 baris punya URL sumber per baris; 2,3–2,7 menit.
 
