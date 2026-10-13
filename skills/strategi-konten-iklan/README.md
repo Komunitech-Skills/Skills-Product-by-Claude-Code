@@ -19,21 +19,24 @@ Pemilik toko online, kafe, jasa lokal, reseller, dan admin sosmed yang mulai ata
 ## Sebelum / sesudah
 **Sebelum:** "Rp5 juta ya saya taruh semua di boost postingan IG." Tidak tahu hasil minimal, tidak ada bagian untuk uji, pesanan dari Shopee tidak terlayani.
 
-**Sesudah (cukup ketik):** "Saya jual kaos sablon, anggaran iklan Rp5 juta sebulan. Harga rata-rata Rp150.000, margin 40%. Saya punya toko Shopee dan Instagram. Tolong bagi anggarannya dan bikin strategi kontennya."
+**Sesudah (cukup ketik):** "Saya jual kaos sablon, anggaran iklan Rp5 juta sebulan. Harga rata-rata Rp150.000, margin 40%. Saya punya toko Shopee dan Instagram. Rencananya mulai 1 November. Tolong bagi anggarannya dan bikin strategi kontennya."
 
 Cuplikan balasan (dipotong; contoh dengan data fiktif dari `examples/01-toko-kaos-shopee-ig.md`):
 ```
-Target dari margin (batas impas, bukan prediksi)
-- Harga rata-rata per pesanan: Rp150.000; margin kotor 40% -> laba kotor per pesanan Rp60.000
-- Titik impas ROAS = 1/margin = 2,50x (di bawah ini iklan merugi); CPA impas Rp60.000
-- Target aman (sisakan 30% laba kotor): CPA maks Rp42.000, ROAS minimal 3,58x
-- Agar anggaran bulan ini sekadar impas dibutuhkan minimal 84 pesanan (= omzet Rp12.600.000); ini syarat impas, BUKAN perkiraan hasil.
+Angka kunci
+| Laba kotor per pesanan | Rp60.000 |
+| ROAS impas (1 / margin) | 2,50x |
+| ROAS target aman | 3,58x |
+| CPA impas / CPA maksimal (target aman) | Rp60.000 / Rp42.000 |
+| Pesanan minimal agar anggaran bulan ini impas | 84 pesanan (omzet Rp12.600.000) |
+Di bawah 2,50x iklan Anda merugi; angka itu batas, bukan hasil yang akan didapat. … Tidak ada ROAS yang "pasti": angka sebenarnya baru terlihat dari iklan yang sudah berjalan.
 …
-Pilar konten (4):
-| Padu padan & tips | Awareness | praktis, hemat, cocok tiap hari | Reels 15-20 detik | "3 cara pakai kaos polos ke kantor", "Kaos sablon awet: jangan salah cuci" |
-| Ulasan asli | Pertimbangan | ukuran pas, bahan adem, pengiriman cepat | Carousel foto ulasan (izin pembeli) | "Ulasan pembeli minggu ini" |
+Pilar konten (4 pilar)
+| 1. Padu padan & perawatan | Awareness | Dikenal karena berguna dan mudah disimpan | praktis; hemat (satu kaos banyak gaya); mudah ditiru | Reels/video pendek 15-30 detik, carousel |
+| 3. Bukti: ulasan dan foto pembeli asli | Pertimbangan | Menjawab "kaosnya bagus nggak?" | kata pembeli sendiri; foto asli dipakai; pembeli yang kembali beli | Carousel/screenshot ulasan (dengan izin pembeli) |
 …
-3 langkah hari ini: (1) foto 5 ulasan asli dengan izin; (2) rapikan judul & foto 3 kaos terlaris di Shopee; (3) buat 3 versi Reels dengan sudut pesan berbeda untuk minggu 1.
+Tiga langkah pertama (hari ini)
+1. Pastikan margin bersih. Hitung: harga jual dikurangi modal kaos dan sablon, biaya admin Shopee, ongkir yang Anda tanggung, dan kemasan. Bagi hasilnya dengan harga jual. Kalau hasilnya bukan 40%, kabari saya supaya semua angka dihitung ulang.
 ```
 Hasil lengkapnya juga memuat tabel anggaran per kanal per minggu dan aturan keputusan mingguan. Bila pesanan terbanyak lewat Shopee, porsi terbesar anggaran diarahkan ke Shopee Ads (dari Rp5 juta: Rp3.333.333 untuk Shopee Ads dan Rp1.666.667 untuk Meta).
 
