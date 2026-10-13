@@ -36,12 +36,12 @@ Pembanding bobot awal (dihitung penguji): Perantau 15x3+20x4+20x3+15x4+15x5+10x3
 **Ringkasan**
 - Target 90 hari: **Perantau asal Malang/Jatim yang rindu camilan kampung** (78,1). Wisatawan tetap dilayani lewat toko oleh-oleh (kanal yang sudah jalan), tidak dikejar online.
 - Persona: **Fajar, 29, asal Malang, kerja di Bekasi**; beli 2-3 toples tiap akhir bulan di Shopee, sering untuk dibagi ke teman kos. Anti-persona: pencari camilan termurah < Rp 10 ribu. [H — cek dari alamat kirim pesanan]
-- Positioning publik: "Keripik tempe Malang yang digoreng tiap pagi, dikirim buat kamu yang jauh dari rumah."
-- Tagline: (1) "Rasa Malang, sampai ke perantauan." (5 kata) (2) "Digoreng pagi, dikirim hari ini." (5) (3) "Camilan kampung, buat yang merantau." (5) (4) "Kriuknya dari Malang." (3) (5) "Tempe asli, rasa rumah." (4). **Rekomendasi (1)** — langsung menyebut siapa & kenapa. "Dikirim hari ini" hanya dipakai bila benar (kapasitas 40 bungkus/hari).
-- **Bio (123 karakter):** `Keripik tempe Malang, digoreng tiap pagi. Rasa rumah buat kamu yang merantau. Kirim se-Indonesia via Shopee & TikTok Shop 👇`
-- **Judul listing:** `Keripik Tempe Malang Renyah 350 g — Digoreng Tiap Pagi, Oleh-oleh Khas` + poin: toples 350 g Rp 45 ribu / bungkus 100 g Rp 15 ribu; digoreng tiap pagi [F bila benar]; [isi: tanggal produksi di label].
+- Positioning publik: "Keripik tempe Malang [isi: ciri proses/kesegaran], dikirim buat kamu yang jauh dari rumah."
+- Tagline: (1) "Rasa Malang, sampai ke perantauan." (5 kata) (2) "Digoreng pagi, dikirim hari ini." (5; hanya bila benar) (3) "Camilan kampung, buat yang merantau." (5) (4) "Kriuknya dari Malang." (3) (5) "Tempe asli, rasa rumah." (4). **Rekomendasi (1)** — langsung menyebut siapa & kenapa. "Digoreng pagi" dan "dikirim hari ini" belum diberikan pengguna, jadi hanya dipakai bila benar (asumsi, ganti dengan data Anda; kapasitas 40 bungkus/hari).
+- **Bio (122 karakter):** `Keripik tempe Malang, [isi: ciri proses/kesegaran]. Rasa rumah buat kamu yang merantau. Pesan lewat Shopee & TikTok Shop 👇`
+- **Judul listing:** `Keripik Tempe Malang 350 g — [isi: ciri proses/kesegaran], Oleh-oleh Khas` + poin: toples 350 g Rp 45 ribu / bungkus 100 g Rp 15 ribu; [isi: ciri proses/kesegaran, mis. digoreng tiap pagi, hanya bila benar]; [isi: tanggal produksi di label].
 - Uji 7 hari: cek kota tujuan 30 pesanan terakhir — bila ≥ 40% di luar Jawa Timur, target perantau dipertahankan.
-- **Ceklis klaim:** produk pangan olahan → cek izin PIRT dan kewajiban sertifikasi halal ke sumber resmi sebelum menulis "halal"/"PIRT" di listing; jangan tulis "tanpa pengawet" tanpa dasar.
+- **Ceklis klaim:** produk pangan olahan → cek izin PIRT dan kewajiban sertifikasi halal ke sumber resmi sebelum menulis "halal"/"PIRT" di listing; jangan tulis "tanpa pengawet" tanpa dasar. Ciri proses/kesegaran (mis. digoreng tiap pagi) dan jangkauan kirim (mis. se-Indonesia) tidak disebut pengguna, jadi ditulis `[isi: ...]`/dihapus (asumsi, ganti dengan data Anda).
 
 ## Uji data rusak (script)
 | Kasus | Hasil | Nilai |

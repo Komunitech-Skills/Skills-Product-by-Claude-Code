@@ -20,7 +20,7 @@ Rumah Alya
 ```
 
 ## Output DENGAN skill
-Lihat `01-shopee-bintang-1-salah-ukuran.md` (balasan publik 358 karakter + alternatif + pesan chat pribadi + hasil cek script + catatan pemilik).
+Lihat `01-shopee-bintang-1-salah-ukuran.md` (balasan publik 294 karakter + alternatif + pesan chat pribadi + hasil cek script + catatan pemilik).
 
 ## Berdampingan
 
@@ -31,7 +31,7 @@ Lihat `01-shopee-bintang-1-salah-ukuran.md` (balasan publik 358 karakter + alter
 | Alasan karangan | "lonjakan pesanan … tim kewalahan" — tidak diberikan pengguna | Tidak mengarang penyebab |
 | Janji publik | "ongkir retur kami tanggung sepenuhnya" di publik → bisa diminta semua pembeli | Janji detail hanya di chat pribadi |
 | Pesan chat pribadi | Tidak ada | Ada, siap kirim, meminta bukti foto label |
-| Pengecekan | Tidak ada | Script: tanpa data pribadi, tanpa ajakan keluar platform, panjang 358/500 |
+| Pengecekan | Tidak ada | Script: tanpa data pribadi, tanpa ajakan keluar platform, panjang 294/500 |
 | Urutan kirim | Tidak dibahas | "Kirim chat pribadi dulu, baru posting balasan publik" |
 
 ## Penilaian

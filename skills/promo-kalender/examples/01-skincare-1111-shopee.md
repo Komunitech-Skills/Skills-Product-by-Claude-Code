@@ -67,7 +67,7 @@ Anggaran iklan Rp 1.000.000 → **laba bersih kampanye Rp 4.643.100**. Sebagai p
 ## 5. Kesiapan operasional
 - Stok: serum ≥ 110 (40 satuan + 60 paket + cadangan 10), toner ≥ 70.
 - Kemasan: 30 kardus paket + bubble wrap; label "Paket 2 Serum".
-- Jam potong kirim 15.00; admin piket 10–12 Nov sampai pukul 22.00.
+- Jam potong kirim [isi: jam]; admin piket 10–12 Nov sampai pukul [isi: jam].
 
 ## 6. Syarat & ketentuan promo (siap tempel)
 **Promo 11.11 — <nama toko>**
@@ -75,10 +75,10 @@ Anggaran iklan Rp 1.000.000 → **laba bersih kampanye Rp 4.643.100**. Sebagai p
 2. Produk yang ikut: Serum 20 ml (satuan Rp 90.000 dari Rp 120.000), Paket 2 Serum 20 ml Rp 199.000, Toner 100 ml (voucher toko).
 3. Harga promo berlaku selama periode di atas atau sampai stok promo habis (serum 100 unit, toner 60 unit).
 4. Voucher toko 10% untuk Toner 100 ml, maksimal potongan Rp 15.000, minimum belanja Rp 60.000, kuota 60 voucher.
-5. Isi Paket 2 Serum tidak dapat ditukar dengan produk lain.
-6. Promo tidak dapat digabung dengan voucher toko lain (voucher platform mengikuti ketentuan Shopee).
-7. Pesanan dikirim paling lambat 2 hari kerja setelah pembayaran.
-8. Retur/tukar untuk barang rusak atau salah kirim maksimal 3 hari setelah diterima, dengan video pembukaan paket.
+5. Isi Paket 2 Serum tidak dapat ditukar dengan produk lain. (asumsi, ganti dengan data Anda)
+6. Promo tidak dapat digabung dengan voucher toko lain (voucher platform mengikuti ketentuan Shopee). (asumsi, ganti dengan data Anda)
+7. Pesanan dikirim paling lambat [isi: jumlah] hari kerja setelah pembayaran.
+8. Retur/tukar untuk barang rusak atau salah kirim maksimal [isi: jumlah] hari setelah diterima, dengan [isi: bukti yang diminta, mis. video pembukaan paket].
 
 ## 7. Ukuran evaluasi (H+7, 18 November 2026)
 Unit terjual per produk vs target, laba bersih setelah iklan (bukan omzet), biaya iklan per pesanan, stok sisa, jumlah keluhan/retur (skill `analisis-ulasan`).
@@ -87,6 +87,7 @@ Unit terjual per produk vs target, laba bersih setelah iklan (bukan omzet), biay
 - Potongan platform 12% + Rp 1.250 per pesanan berasal dari pengguna (rincian penghasilan Seller Center). Tarif bisa berubah; cek lagi sebelum 10 Nov. Program gratis ongkir/cashback dari platform yang diikuti harus ditambahkan ke persen potongan.
 - Penjualan normal 3 hari = 80/bulan × 3/30 ≈ 8 serum dan 50 × 3/30 = 5 toner.
 - Harga coret Rp 120.000 dan Rp 75.000 harus harga yang benar-benar berlaku sebelum promo (UU 8/1999 Pasal 11 huruf f). Kuota & jam wajib dipenuhi (Pasal 12).
+- Waktu kirim, batas retur/tukar, jam potong kirim, dan jam piket admin tidak diberikan pengguna, jadi ditulis `[isi: ...]`; lengkapi dengan kebijakan toko Anda sebelum S&K ditayangkan. Syarat nomor 5 dan 6 adalah usulan (asumsi, ganti dengan data Anda).
 - Pembulatan: harga promo dari diskon % dibulatkan ke atas ke Rp 100; klaim % dibulatkan ke bawah. Ini alat bantu perencanaan, bukan jaminan hasil atau nasihat hukum.
 
 ## Catatan penguji

@@ -18,7 +18,7 @@
 ## Output ke pengguna
 
 ### Ringkasan konteks
-Penerima: Bu Maya (HRD, PT Sinar Logistik Nusantara, Cikarang). Asal kontak: tukar kartu nama di Jakarta Food & Franchise Expo, JIExpo (Sabtu lalu). Ditawarkan: katering makan siang karyawan harian, menu berganti tiap minggu. B2B → sapaan "Bu".
+Penerima: Bu Maya (HRD, PT Sinar Logistik Nusantara, Cikarang). Asal kontak: tukar kartu nama di Jakarta Food & Franchise Expo, JIExpo (Sabtu lalu). Ditawarkan: katering makan siang karyawan harian (ciri layanan lain seperti variasi menu atau jam antar belum diberikan pengguna, jadi tidak ditulis sebagai fakta). B2B → sapaan "Bu".
 
 ### Varian 1 — Singkat
 ```
@@ -30,24 +30,24 @@ Hasil script: 239 karakter, 40 kata, asal kontak ✔, opsi keluar ✔, jam 10:00
 ```
 Selamat siang, Bu Maya. Perkenalkan saya Rudi dari Dapur Bu Ratna Catering.
 Saya dapat kontak Ibu dari pameran Jakarta Food & Franchise Expo di JIExpo Sabtu lalu, saat kita sempat mengobrol di booth kami.
-Ibu sempat cerita karyawan mulai bosan dengan menu kantin, dan kami menyediakan katering makan siang harian dengan menu berganti tiap minggu.
+Ibu sempat cerita karyawan mulai bosan dengan menu kantin, dan kami menyediakan katering makan siang harian [isi: ciri layanan Anda, mis. variasi menu].
 Boleh saya kirim contoh menu 2 minggu beserta harganya? Mohon maaf mengganggu, dan boleh diabaikan bila tidak relevan, Bu.
 ```
-Hasil script: 469 karakter, 74 kata, 4 baris, asal kontak ✔, opsi keluar ✔ → **[OK]**
+Hasil script: 480 karakter, 76 kata, 4 baris, asal kontak ✔, opsi keluar ✔ → **[OK]**
 
 ### Varian 3 — Dengan nilai tambah
 ```
 Selamat siang, Bu Maya. Saya Rudi dari Dapur Bu Ratna Catering, dapat kontak Ibu dari pameran Jakarta Food & Franchise Expo di JIExpo Sabtu lalu.
 Waktu itu Ibu cerita karyawan PT Sinar Logistik Nusantara mulai bosan dengan menu kantin.
-Kami menyiapkan makan siang harian untuk 3 pabrik di Cikarang, menu berganti tiap minggu dan diantar sebelum jam istirahat.
+Kami menyiapkan makan siang harian untuk 3 pabrik di Cikarang, [isi: ciri layanan Anda, mis. variasi menu atau jam antar].
 Kalau Ibu terbuka, boleh saya kirim contoh menu 2 minggu dan simulasi harga untuk 120 porsi?
 Boleh diabaikan bila belum relevan, Bu. Terima kasih.
 ```
-Hasil script: 506 karakter, 82 kata → **[PERIKSA DULU] 1 hal:** "Pesan 506 karakter — di atas 500, mungkin perlu scroll di layar HP. Masih boleh, tapi cek dulu." Penilaian agent: masih wajar untuk varian nilai tambah (hanya lewat 6 karakter); draf awal 602 karakter sudah dipangkas.
+Hasil script: 505 karakter, 83 kata → **[PERIKSA DULU] 1 hal:** "Pesan 505 karakter — di atas 500, mungkin perlu scroll di layar HP. Masih boleh, tapi cek dulu." Penilaian agent: masih wajar untuk varian nilai tambah (hanya lewat 5 karakter); draf awal 602 karakter sudah dipangkas.
 
 ### Tautan WhatsApp (varian 2)
 ```
-https://wa.me/6281312345678?text=Selamat%20siang%2C%20Bu%20Maya.%20Perkenalkan%20saya%20Rudi%20dari%20Dapur%20Bu%20Ratna%20Catering.%0ASaya%20dapat%20kontak%20Ibu%20dari%20pameran%20Jakarta%20Food%20%26%20Franchise%20Expo%20di%20JIExpo%20Sabtu%20lalu%2C%20saat%20kita%20sempat%20mengobrol%20di%20booth%20kami.%0AIbu%20sempat%20cerita%20karyawan%20mulai%20bosan%20dengan%20menu%20kantin%2C%20dan%20kami%20menyediakan%20katering%20makan%20siang%20harian%20dengan%20menu%20berganti%20tiap%20minggu.%0ABoleh%20saya%20kirim%20contoh%20menu%202%20minggu%20beserta%20harganya%3F%20Mohon%20maaf%20mengganggu%2C%20dan%20boleh%20diabaikan%20bila%20tidak%20relevan%2C%20Bu.
+https://wa.me/6281312345678?text=Selamat%20siang%2C%20Bu%20Maya.%20Perkenalkan%20saya%20Rudi%20dari%20Dapur%20Bu%20Ratna%20Catering.%0ASaya%20dapat%20kontak%20Ibu%20dari%20pameran%20Jakarta%20Food%20%26%20Franchise%20Expo%20di%20JIExpo%20Sabtu%20lalu%2C%20saat%20kita%20sempat%20mengobrol%20di%20booth%20kami.%0AIbu%20sempat%20cerita%20karyawan%20mulai%20bosan%20dengan%20menu%20kantin%2C%20dan%20kami%20menyediakan%20katering%20makan%20siang%20harian%20%5Bisi%3A%20ciri%20layanan%20Anda%2C%20mis.%20variasi%20menu%5D.%0ABoleh%20saya%20kirim%20contoh%20menu%202%20minggu%20beserta%20harganya%3F%20Mohon%20maaf%20mengganggu%2C%20dan%20boleh%20diabaikan%20bila%20tidak%20relevan%2C%20Bu.
 ```
 Klik tautan ini dari HP/WA Web, periksa teksnya, lalu **tekan kirim sendiri** (tidak dikirim otomatis). Verifikasi penguji: `urllib.parse.parse_qs` mengembalikan teks identik dengan varian 2.
 
@@ -64,6 +64,7 @@ Cikarang = WIB. Rencana jam 10.00 WIB sudah dalam rentang 08.00–20.00. Untuk H
 
 ### Asumsi
 - Nama "Jakarta Food & Franchise Expo JIExpo" dan "Sabtu lalu" dipakai persis dari cerita pengguna.
+- "Menu berganti tiap minggu" dan "diantar sebelum jam istirahat" (ada di draf awal) tidak diberikan pengguna, jadi diganti `[isi: ciri layanan Anda, ...]` (asumsi, ganti dengan data Anda; hapus bila tidak ada).
 - "Simulasi harga untuk 120 porsi" di varian 3 berasal dari angka 120 karyawan yang disebut pengguna; ganti bila tidak semua karyawan ikut.
 
 ---
