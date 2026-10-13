@@ -44,8 +44,9 @@ class TesRevisi103(unittest.TestCase):
     def test_blok_catatan_memuat_dasar_aturan_tanggal_disclaimer(self):
         kode, out = jalan(*ARGV)
         blok = out.split("**Catatan & asumsi**", 1)[1]
-        self.assertIn("PMK 37/2025, berlaku 1 Agustus 2026", blok)
-        self.assertIn("Berlaku per 2026-09-23", blok)
+        self.assertIn("PMK 37/2025; dipungut Shopee, Tokopedia, Lazada, Blibli sejak 1 Oktober 2026", blok)
+        self.assertNotIn("1 Agustus 2026", blok)
+        self.assertIn("Berlaku per 2026-10-13", blok)
         self.assertIn("bukan nasihat pajak", blok)
         kode, out = jalan(*(ARGV + ["--format", "json"]))
         catatan = " ".join(json.loads(out)["catatan"])
