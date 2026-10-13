@@ -39,7 +39,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, getcontext
 
 getcontext().prec = 40
 
-VERSI = "1.0.17"
+VERSI = "1.0.18"
 BATAS_MB = 50            # file lebih besar ditolak kecuali --paksa
 BATAS_BARIS_LAMBAT = 300000
 BATAS_XML_MB = 800       # ukuran XML sheet setelah diekstrak (lindungi dari zip bomb)

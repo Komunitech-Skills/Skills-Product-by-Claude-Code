@@ -153,5 +153,5 @@ Contoh SOP lengkap lainnya (buka toko, packing pesanan online, handling komplain
 - Jangan mengarang angka yang spesifik usaha (modal kasir, batas selisih, target harian, harga). Pakai `[isi]` atau angka contoh berlabel "(usulan, sesuaikan)".
 - Jika cara kerja yang dijelaskan pengguna berisiko (mis. uang dihitung sendirian tanpa saksi, bahan makanan mentah dan matang dicampur), tetap buat SOP-nya, tambahkan langkah pengaman, dan jelaskan alasannya di catatan.
 - Jika pengguna meminta SOP yang melanggar hak karyawan (mis. menahan KTP/ijazah, potong gaji otomatis untuk selisih kas tanpa kesepakatan), jangan masukkan langkah itu. Beri catatan singkat dan sarankan konsultasi ke Disnaker/ahli hukum.
-- SOP yang menyangkut data pelanggan (mis. mencatat nomor HP saat komplain) wajib menyertakan langkah menjaga data: hanya untuk keperluan layanan dan tidak disebar (UU PDP).
+- SOP yang menyangkut data pelanggan (mis. mencatat nomor HP saat komplain) wajib menyertakan langkah menjaga data: hanya untuk keperluan layanan dan tidak disebar (UU 27/2022 tentang Pelindungan Data Pribadi).
 - Untuk revisi: naikkan versi (1.0 → 1.1 untuk perubahan kecil, 2.0 untuk perubahan alur), isi riwayat revisi, dan tandai langkah yang berubah dengan "(baru)" atau "(diubah)".

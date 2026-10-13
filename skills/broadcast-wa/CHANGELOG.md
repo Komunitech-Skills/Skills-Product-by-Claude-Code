@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.12 (2026-10-13)
+- Rujukan UU PDP ditulis lengkap: UU 27/2022 tentang Pelindungan Data Pribadi (tanpa perubahan cara kerja).
+
 ## Catatan revisi 1.0.11 (2026-10-13)
 - Rujukan ke skill arsip diganti: `caption-sosmed-umkm`, `kalender-konten-30hari` diganti `konten-mingguan` (SKILL.md, bagian Kapan TIDAK digunakan).
 
