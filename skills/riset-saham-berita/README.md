@@ -6,7 +6,7 @@
 
 > Skill ini alat riset, **bukan penasihat investasi**. Tidak ada rekomendasi beli/jual, target harga, atau sinyal, dan tidak ada janji untung atau hasil investasi. Keputusan dan risikonya sepenuhnya di tangan Anda.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Hemat waktu riset:** berita, keterbukaan informasi (pengumuman resmi emiten ke bursa), dan jadwal dividen/RUPS/stock split dirangkum jadi satu catatan; setiap fakta diupayakan disertai tautan & tanggal. Pengambilan berita langsung dari situs bursa/media belum diuji langsung (uji memakai angka laporan yang ditempel).

@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH: rekap-penjualan-csv
 
-**Sumber:** `solusi-vip/toko-online/UJI-OPENCLAW.md` (tabel skor skenario 02, bagian "Cacat per skill" dan "Uji ulang 2026-10-01") dengan rincian per skenario di `solusi-vip/toko-online/uji-openclaw/02-rekap-penjualan-csv.md` dan `02-rekap-penjualan-csv-ulang.md`.
+**Sumber (ada di paket VIP):** `solusi-vip/toko-online/UJI-OPENCLAW.md` (tabel skor skenario 02, bagian "Cacat per skill" dan "Uji ulang 2026-10-01") dengan rincian per skenario di `solusi-vip/toko-online/uji-openclaw/02-rekap-penjualan-csv.md` dan `02-rekap-penjualan-csv-ulang.md`.
 **Tanggal uji:** 2026-10-01 (Asia/Jakarta).
 **Versi skill saat uji:** uji pertama kira-kira 1.2.2 (disimpulkan dari riwayat `catalog.csv` sebelum perbaikan pasca-uji; berkas sumber tidak menyebut versi), uji ulang = 1.2.3. Versi di katalog saat ini: 1.2.5.
 **Penguji (agent):** agent penguji independen (bukan pembuat skill); uji ulang oleh penguji independen lain.
@@ -31,6 +31,6 @@ Rata-rata seluruh solusi toko-online (5 skenario, skill berbeda) di uji pertama:
 ## Catatan jujur
 - Sumber menegaskan selisihnya kecil: model tanpa skill sudah hampir sama tepat angkanya, jadi skenario ini **tidak boleh dijual sebagai pembeda besar**. Pembeda utamanya kelengkapan dan konsistensi format, bukan ketepatan angka.
 - Skor 9 adalah skor sisi SESUDAH setelah skill diperbaiki dari temuan uji pertama; sisi SEBELUM tidak dijalankan ulang.
-- Versi 1.2.4 dan 1.2.5 (2 Okt 2026: omzet per status, ringkasan siap tempel, opt-in promo, larangan broadcast) hasil uji gabungan paket toko-online (`reports/2026-10-02-akun-b.md` bagian 11), bukan uji per-skill; skor gabungan itu bukan skor skill ini.
+- Versi 1.2.4 dan 1.2.5 (2 Okt 2026: omzet per status, ringkasan siap tempel, opt-in promo, larangan broadcast) hasil uji gabungan paket toko-online (catatan internal kurator, tidak disertakan dalam paket, bagian 11), bukan uji per-skill; skor gabungan itu bukan skor skill ini.
 - Balasan uji ulang menyapa member "Sol": artefak nama home uji, bukan perilaku skill.
 - Satu skenario, satu file contoh; belum menguji format ekspor lain (Tokopedia, kasir kedai) atau angka berformat campur di OpenClaw.

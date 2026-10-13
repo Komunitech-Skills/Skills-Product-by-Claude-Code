@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di bot Telegram asli: 5,5 → 8,5 dari 10 (pembedanya menolak klaim "menyembuhkan diabetes" dan nomor BPOM karangan, lalu menyusun spesifikasi dengan jalur izin yang benar dan tenggat halal).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Spesifikasi produk (resep/bahan, kemasan, standar mutu, HPP target, yaitu batas modal per produk) dalam satu kalimat perintah.

@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 4,7 → 8,4 dari 10 (tanpa skill ada testimoni bintang 5, harga, dan kode pelacak karangan; dengan skill yang belum ada ditulis `[isian]` dan permintaan menyesatkan ditolak sambil halamannya tetap dibuat).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Halaman jualan (landing page) utuh** dalam satu file web (`index.html`): judul utama, manfaat, penawaran, tanya-jawab (FAQ), dan tombol WhatsApp dengan pesan terisi.

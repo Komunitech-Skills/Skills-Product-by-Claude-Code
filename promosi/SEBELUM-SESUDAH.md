@@ -13,12 +13,12 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 3 | SPT Tahunan Beres Sebelum Buka Coretax (`spt-tahunan-op`) | Keuangan & Akuntansi | 2 → 9 | +7 |
 | 4 | Cek Privasi OpenClaw dalam Bahasa Awam (`cek-privasi-openclaw`) | Produktivitas | 3 → 9 | +6 |
 | 5 | Odoo Usaha: Tanya Lewat Chat (`odoo-usaha`) | Keuangan & Akuntansi | 3 → 8,9 | +5,9 |
-| 6 | Tak Ada Lagi Tagihan Terlupa (`pengingat-follow-up`) | Produktivitas | 3,5 → 9,25 | +5,75 |
+| 6 | Tagihan dan Follow-up Tak Lagi Mudah Terlupa (`pengingat-follow-up`) | Produktivitas | 3,5 → 9,25 | +5,75 |
 | 7 | Pantau Website Toko Sebelum Pelanggan Mengeluh (`pantau-website-toko`) | E-commerce/Marketplace Indonesia | 3 → 8,7 | +5,7 |
 | 8 | Surat Peringatan Karyawan yang Adil dan Rapi (`surat-peringatan-karyawan`) | HR | 3 → 8,6 | +5,6 |
 | 9 | Rapikan Daftar Pelanggan, Tanpa Data Hilang (`rapikan-data-berantakan`) | Data & Analisis | 3,5 → 9 | +5,5 |
-| 10 | Buka Reseller & Agen Tanpa Salah Harga (`katalog-reseller`) | Sales | 3 → 8,5 | +5,5 |
-| 11 | Starter Kit Karyawan AI, Mulai 5 Menit (`karyawan-ai-mulai`) | Produktivitas | 3 → 8,3 | +5,3 |
+| 10 | Buka Reseller & Agen, Harga Terhitung Rapi (`katalog-reseller`) | Sales | 3 → 8,5 | +5,5 |
+| 11 | Starter Kit Karyawan AI, Siap dalam Hitungan Menit (`karyawan-ai-mulai`) | Produktivitas | 3 → 8,3 | +5,3 |
 | 12 | Riset Saham Cepat, Fakta Rapi Bersumber (`riset-saham-berita`) | Data & Analisis | 3,5 → 8,75 | +5,25 |
 | 13 | Rangkaian Pesan Sambutan, Terjadwal, Tanpa Blast (`rangkaian-pesan-pelanggan`) | Marketing & Konten | 3 → 8,25 | +5,25 |
 | 14 | Laporan Bisnis Otomatis ke HP Tiap Pagi (`laporan-otomatis-terjadwal`) | Produktivitas | 3,5 → 8,6 | +5,1 |
@@ -76,14 +76,14 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 66 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
 | 67 | Strategi Konten & Anggaran Iklan (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
 | 68 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
-| 69 | Cek Kesehatan Akun Iklan dalam 15 Menit (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
+| 69 | Cek Kesehatan Akun Iklan dalam Hitungan Menit (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
 | 70 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
 | 71 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
 | 72 | Vikunja Tugas: Manajemen Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
 | 73 | Email Numpuk? Urus yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
 | 74 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
 | 75 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
-| 76 | Laporan Insiden Rapi, 5 Menit (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 76 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
 | 77 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
 | 78 | SOP Usaha Jadi dalam Menit (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
 | 79 | Rapikan Tulisan Tanpa Mengubah Isi (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
@@ -154,7 +154,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Skor skenario kunci 1 -> 8,8; 2 penawaran + 1 faktur dihapus -> 0 perubahan
 - **Catatan jujur:** Diuji dengan server Odoo tiruan (data contoh), sampel 3 sesi; model non-deterministik.
 
-### Tak Ada Lagi Tagihan Terlupa — 3,5 → 9,25
+### Tagihan dan Follow-up Tak Lagi Mudah Terlupa — 3,5 → 9,25
 `pengingat-follow-up` · Produktivitas · versi 1.0.6 · diuji 2026-10-01
 
 - **Permintaan:** Ingatkan: Bu Rina bayar 4,5 jt tgl 3, hubungi Pak Budi Senin, Toko Sinar belum bayar Rp2.750.000. Tagih siapa?
@@ -190,7 +190,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** 28 nomor HP, 3 duplikat persis, 5 sel rusak di baris 14/19/21/28/32 (cocok hitungan independen)
 - **Catatan jujur:** Versi 1.0.0 gagal (nomor baris salah, telepon rumah masuk kolom HP); diperbaiki di 1.0.1. Nama mirip dikelompokkan secara heuristik, keputusan tetap di pengguna.
 
-### Buka Reseller & Agen Tanpa Salah Harga — 3 → 8,5
+### Buka Reseller & Agen, Harga Terhitung Rapi — 3 → 8,5
 `katalog-reseller` · Sales · versi 1.0.4 · diuji 2026-10-01
 
 - **Permintaan:** Bikinin daftar harga, syarat, dan pesan ajakan WA untuk reseller dan agen keripik singkong modal Rp9.500.
@@ -199,7 +199,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Reseller 20 bungkus untung sekitar Rp86.000 (dihitung script)
 - **Catatan jujur:** Syarat kemitraan sempat memuat detail operasional karangan seperti jam potong kirim; wajib dicek pemilik.
 
-### Starter Kit Karyawan AI, Mulai 5 Menit — 3 → 8,3
+### Starter Kit Karyawan AI, Siap dalam Hitungan Menit — 3 → 8,3
 `karyawan-ai-mulai` · Produktivitas · versi 1.1.8 · diuji 2026-10-01
 
 - **Permintaan:** Mulai karyawan AI: pemilik laundry 2 outlet, butuh rekap omzet, balas chat pelanggan, bikin promo, lewat Telegram.
@@ -717,7 +717,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Bio 159-219 karakter (terpotong) -> 142 dari 150
 - **Catatan jujur:** Tagline sebaiknya tidak menyiratkan 'langsing' sebelum izin edar disetujui; satu pasal UU PK hanya untuk pelaku periklanan.
 
-### Cek Kesehatan Akun Iklan dalam 15 Menit — 6 → 8,5
+### Cek Kesehatan Akun Iklan dalam Hitungan Menit — 6 → 8,5
 `audit-akun-iklan` · Marketing & Konten · versi 1.0.5 · diuji 2026-10-01
 
 - **Permintaan:** Audit iklan Shopee toko gamis: anggaran habis jam 2, ROAS 2,3. Juga iklan klinik ditolak, ini login saya.
@@ -777,7 +777,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Potongan telat Rp150.000 dilakukan langsung → ditolak tanpa aturan tertulis; lembur sah Rp182.081
 - **Catatan jujur:** Angka lembur benar di kedua sisi; keunggulan ada di kepatuhan hukum. Setup pertama butuh satu konfirmasi tambahan.
 
-### Laporan Insiden Rapi, 5 Menit — 6,5 → 8,75
+### Laporan Insiden Rapi Segera Setelah Masalah Terjadi — 6,5 → 8,75
 `laporan-insiden-usaha` · Produktivitas · versi 1.0.2 · diuji 2026-10-01
 
 - **Permintaan:** Buat laporan insiden: 18 paket Shopee tertukar karena salah tempel resi, 4 pembeli sudah komplain.

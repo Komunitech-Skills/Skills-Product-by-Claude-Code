@@ -2,18 +2,18 @@
 
 **Nota & struk yang berantakan di HP jadi arsip rapi di komputer sendiri - cukup ngobrol.**
 
-Diuji AI penguji independen di OpenClaw: 5,75 → 8,75 dari 10 (tanpa skill nominal "38,5" dicatat apa adanya dan file asli dipindah ke Trash; dengan skill nominal ditanyakan dulu, nota dobel diblokir, dan file asli tidak dihapus).
+Diuji AI penguji independen di OpenClaw: 5,75 → 8,75 dari 10 (tanpa skill nominal "38.5" dicatat apa adanya dan file asli dipindah ke Trash (tempat sampah); dengan skill nominal ditanyakan dulu, nota dobel diblokir, dan file asli tidak dihapus).
 
 _Versi 1.0.6. Perubahan di 1.0.5 (30 Sep 2026): nominal yang meragukan seperti "1,5" atau "150,50" kini ditanyakan ulang, tidak lagi salah dibaca._
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ File foto/PDF nota diberi nama baku (`2026-09-20_Toko-Sembako-Bu-Yati_150000.jpg`) dan tersusun otomatis per folder tahun/bulan - tidak perlu klik-klik Explorer/Finder satu-satu.
 - ✅ Nota tercatat di satu indeks lokal (daftar catatan di komputer Anda): cari nota vendor tertentu atau rentang tanggal dalam hitungan detik, tanpa scroll ratusan foto.
 - ✅ Ketahuan kalau ada nota yang kebetulan diarsipkan dua kali (isi file sama persis maupun kemungkinan dobel).
-- ✅ Rekap pengeluaran per kategori/vendor sekali ketik, dan bisa diekspor langsung ke buku kas (`kas-umkm`).
-- ✅ Data tersimpan di komputer sendiri, tanpa langganan bulanan dan tanpa upload ke internet. File nota asli **tidak dihapus** oleh skill (mode bawaan menyalin).
+- ✅ Rekap pengeluaran per kategori/vendor sekali ketik, dan bisa diekspor langsung ke skill buku kas Komunitech, `kas-umkm`.
+- ✅ Arsip dan indeks tersimpan di komputer sendiri, tanpa langganan bulanan; skill ini tidak mengunggah apa pun. File nota asli **tidak dihapus** oleh skill (mode bawaan menyalin).
 
 ## Cocok untuk siapa
 - Pemilik UMKM/toko yang notanya menumpuk di galeri HP dan sulit dicari saat butuh (klaim garansi, cek harga beli, laporan pajak).
@@ -56,9 +56,9 @@ Salin folder `arsip-nota` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6; angka dari `examples/00-openclaw-sebelum-sesudah.md`), skor 1–10: tanpa skill **5,75** → dengan skill **8,75** (LULUS). Contoh nominal meragukan "38,5": dengan skill ditanyakan dulu apakah maksudnya Rp38.500 dan nota dobel diblokir (dikenali dari isi file yang sama); tanpa skill file asli dipindah ke Trash (tempat sampah). Terpisah dari uji OpenClaw: **44 dari 44** tes otomatis internal lolos (`examples/HASIL-UJI.md`).
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6; angka dari `examples/00-openclaw-sebelum-sesudah.md`), skor 1–10: tanpa skill **5,75** → dengan skill **8,75** (LULUS). Contoh nominal meragukan "38.5": dengan skill ditanyakan dulu apakah maksudnya Rp38.500 dan nota dobel diblokir (dikenali dari isi file yang sama); tanpa skill file asli dipindah ke Trash (tempat sampah). Catatan jujur: untuk satu struk, AI bisa meminta konfirmasi sampai 3 giliran chat sebelum tersimpan. Terpisah dari uji OpenClaw: **44 dari 44** tes otomatis internal lolos (`examples/HASIL-UJI.md`).
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli. Codex dan Cursor belum uji platform asli. Bukan OCR — nominal dari pengguna/ekstrak-nota-faktur.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli. Codex dan Cursor belum uji platform asli. Skill ini bukan OCR (pembaca teks dari foto): nominal berasal dari Anda atau dari skill `ekstrak-nota-faktur`.
 
 ## FAQ
 **File nota asli saya bisa hilang/terhapus?**
@@ -68,7 +68,7 @@ Tidak. Mode bawaan adalah **salin** — file asli tetap di tempatnya, hanya sali
 Tidak. arsip-nota khusus merapikan file & mencatat data yang sudah ada. Untuk membaca subtotal/PPN/total dari foto, pakai skill `ekstrak-nota-faktur`, lalu hasilnya dapat langsung diarsipkan oleh skill ini.
 
 **Data saya dikirim ke internet?**
-Tidak. Data (foto nota dan indeksnya) tersimpan di file di komputer Anda sendiri (indeksnya berupa satu file basis data SQLite), tidak ada langganan bulanan dan tidak ada yang diunggah.
+Skill ini sendiri tidak mengunggah apa pun: foto nota dan indeksnya tersimpan di komputer Anda sendiri (indeksnya berupa satu file basis data SQLite), tanpa langganan bulanan. Namun teks yang Anda ketik di chat tetap diproses oleh layanan AI yang Anda pakai.
 
 ## Riwayat perubahan
 

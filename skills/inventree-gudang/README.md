@@ -6,7 +6,7 @@ Diuji AI penguji independen di OpenClaw (dengan server InvenTree tiruan): 4,5 �
 
 > Komunitech **tidak berafiliasi** dengan proyek InvenTree. InvenTree adalah software open-source (lisensi MIT) milik komunitas pengembangnya; skill dan panduan ini adalah karya orisinal Komunitech untuk memudahkan pemakaiannya oleh usaha Indonesia.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Inventree (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Software tambahan: Inventree (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tanpa biaya bulanan per gudang/pengguna.** InvenTree gratis dan jalan di komputer/server Anda sendiri; data stok tidak dititipkan ke aplikasi pihak lain.

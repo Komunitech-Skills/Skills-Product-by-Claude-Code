@@ -530,7 +530,7 @@ Catatan jujur: SEBELUM memberi file Word rapi (nilai plus bagi guru), tetapi ada
 
 # Uji ulang v1.0.5 — 2026-10-05
 
-**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), skill dimatikan (SEBELUM) vs aktif (SESUDAH), home bersih per skenario. Dasar: cacat no. 3 & 4 di `koordinasi/telegram-gelombang-6-2026-10-05.md` (jawaban tercetak di lembar siswa, kunci "lihat di atas", format, .docx, rujukan CP). Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-105-*.txt` (ringkasan di bawah; balasan SESUDAH skenario 1 hanya ringkasan 2.287 karakter, isi lengkap ada di file .md/.docx yang ditulis agent).
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), skill dimatikan (SEBELUM) vs aktif (SESUDAH), home bersih per skenario. Dasar: cacat no. 3 & 4 di catatan internal kurator, tidak disertakan dalam paket (jawaban tercetak di lembar siswa, kunci "lihat di atas", format, .docx, rujukan CP). Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-105-*.txt` (ringkasan di bawah; balasan SESUDAH skenario 1 hanya ringkasan 2.287 karakter, isi lengkap ada di file .md/.docx yang ditulis agent).
 
 ## Skenario 1 — Pesan persis gelombang 6
 **Pesan:** "Saya guru Bahasa Inggris kelas 7 SMP, Kurikulum Merdeka. Buatkan modul ajar 1 pertemuan (2x40 menit) materi descriptive text tentang hewan peliharaan. Tulis juga kode dan bunyi CP resminya persis, buat supervisi besok."
@@ -609,7 +609,7 @@ Giliran 1 bertanya sekali (kelas/jenjang; opsi "langsung buatkan"). Giliran 2 (j
 
 # Uji ulang v1.0.7 (konteks Telegram) — 2026-10-05
 
-**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), hanya sisi SESUDAH (skill aktif, `uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan. SEBELUM tetap **5,75** (v1.0.5). Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-107-*.txt`. Dasar: cacat Telegram v1.0.6 (isi lengkap "ada di file", .docx tidak dibuat) di `koordinasi/telegram-gelombang-6-2026-10-05.md`.
+**Cara uji:** OpenClaw 2026.9.6 lokal, model router Komunitech claude-sonnet-5 (sama dengan bot), hanya sisi SESUDAH (skill aktif, `uji-tg.sh` = konteks kanal Telegram, tidak mengirim apa pun), home bersih per percobaan. SEBELUM tetap **5,75** (v1.0.5). Penilaian hanya dari isi balasan chat. Balasan mentah: `scratchpad/openclaw-real/hasil/rencana-pelajaran-guru-107-*.txt`. Dasar: cacat Telegram v1.0.6 (isi lengkap "ada di file", .docx tidak dibuat) di catatan internal kurator (tidak disertakan dalam paket).
 
 ## Skenario 1 — pesan persis gelombang 6 (5 percobaan, 1 selesai)
 Dua percobaan paralel pertama dan dua percobaan ulang lain berakhir **tanpa balasan**: agent berhenti dengan "The model did not produce a response before the model idle timeout" (rc=1) atau timeout 900 dtk (rc=124); log menunjukkan `transient same-model retry ... reason=timeout`. Di beberapa percobaan gagal itu .docx sudah sempat dibuat di /tmp, jadi macet terjadi pada giliran terakhir (menulis balasan utuh yang panjang). Bagi guru di Telegram hasilnya = tidak ada jawaban. Tidak ada percobaan yang saya buang: 1 selesai, 4 gagal tanpa balasan (percobaan tunggal, tanpa paralel, berhasil sekali).

@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH: hitung-hpp
 
-**Sumber:** `solusi-vip/usaha-offline/UJI-OPENCLAW.md` (tabel skor skenario 01, bagian "Cacat per skill", "Uji ulang 2026-10-01 (keuangan)" dan "putaran 2") dengan rincian per skenario di `solusi-vip/usaha-offline/uji-openclaw/01-hpp-harga-jual.md`, `01-hpp-harga-jual-ulang.md`, dan `01-hpp-harga-jual-ulang2.md`.
+**Sumber (ada di paket VIP):** `solusi-vip/usaha-offline/UJI-OPENCLAW.md` (tabel skor skenario 01, bagian "Cacat per skill", "Uji ulang 2026-10-01 (keuangan)" dan "putaran 2") dengan rincian per skenario di `solusi-vip/usaha-offline/uji-openclaw/01-hpp-harga-jual.md`, `01-hpp-harga-jual-ulang.md`, dan `01-hpp-harga-jual-ulang2.md`.
 **Tanggal uji:** 2026-10-01 (Asia/Jakarta).
 **Versi skill saat uji:** uji pertama kira-kira 1.0.2 (disimpulkan dari riwayat `catalog.csv` sebelum perbaikan pasca-uji; berkas sumber tidak menyebut versi), uji ulang 1 = 1.0.3, uji ulang 2 = 1.0.4. Versi di katalog saat ini: 1.0.4.
 **Penguji (agent):** agent penguji independen (bukan pembuat skill); tiap uji ulang oleh penguji independen lain.

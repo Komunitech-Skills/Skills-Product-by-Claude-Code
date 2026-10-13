@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (semua angka rupiah cocok dengan hitung ulang independen; harga dan resi yang belum Anda beri ditandai, tidak dikarang).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Total dihitung, bukan dikira.** Barang × jumlah × harga, diskon, lalu ongkir dihitung otomatis, format rupiah rapi (Rp247.500). Pesanan yang tertempel dua kali hanya dihitung sekali.

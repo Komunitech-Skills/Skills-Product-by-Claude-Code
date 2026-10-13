@@ -6,7 +6,7 @@ Diuji AI penguji independen di OpenClaw (dengan server Odoo tiruan): 3,0 → 8,9
 
 > Komunitech **tidak berafiliasi** dengan Odoo S.A. Odoo adalah software milik Odoo S.A. (edisi Community berlisensi LGPL-3.0). Skill dan panduan ini adalah karya orisinal Komunitech yang memakai **API eksternal resmi** (pintu sambungan data bawaan) Odoo milik Anda sendiri. Odoo tidak disertakan dalam paket.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Odoo (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Software tambahan: Odoo (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tanpa buka banyak menu.** Penjualan hari ini vs kemarin, produk terlaris, faktur terbit, piutang (tagihan yang belum dibayar pelanggan) per umur, dan stok kritis — cukup satu kalimat biasa.

@@ -4,7 +4,7 @@
 
 *Diuji AI penguji independen: 7,5 → 8,25 dari 10 pada 2 skenario (pencocokan mutasi bank 6,5 → 9, selisih dijelaskan seimbang sampai rupiah; pada skenario permintaan login internet banking skill tidak memberi nilai tambah).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Membaca ekspor mutasi BCA, Mandiri, BRI, BNI, dan bank lain (kolom dikonfirmasi dulu supaya kecil kemungkinan salah baca)

@@ -39,16 +39,16 @@ justru yang secara sadar dihindari oleh skill kita).
 Lihat `examples/01-toko-kue-bekasi.md` untuk paket lengkap 6 hari. Cuplikan hari Sabtu (promo 10.10):
 
 ```
-## Sabtu 10 Okt 2026 — Instagram Feed + TikTok/Video pendek (Promo)
+## Sabtu 10 Okt 2026 — Instagram Feed/Foto (Promo)
 Pilar: Promo tanggal kembar  |  Momen: Tanggal kembar 10.10  |  Jam disarankan: 10.00-12.00
-Hook 3 detik: "Cuma hari ini, 10.10 — beli 1 lapis legit gratis 3 nastar"
-Caption: Spesial 10.10! Beli 1 kue lapis legit ukuran standar, langsung dapat bonus 3 pcs nastar
-toples. Berlaku HANYA hari ini, 10 Oktober 2026, selama stok harian masih ada (kami produksi terbatas
-per hari, bukan kelangkaan buatan...)
-Naskah video ±30 detik: [tabel detik-adegan-teks layar-VO lengkap, siap direkam]
-Brief foto/video: kue lapis legit + toples nastar bersanding, properti angka "10.10"...
-Hashtag: #promo1010 #kuelapislegit #kuerumahanbekasi #umkmbekasi #nastartoples
-CTA: WA sebut kode "1010", stok harian terbatas (bukan kelangkaan palsu)
+Hook 3 detik: "Tanggal kembar 10.10, sudah pesan kue untuk akhir pekan?"
+Caption: Selamat tanggal kembar 10.10, Kak! [isian: promo 10.10 yang benar-benar kamu tawarkan — bentuk
+promo, produk yang ikut, syarat, dan sampai kapan berlaku. Hapus baris ini kalau tidak ada promo] Ada acara
+keluarga, arisan, atau kumpul-kumpul di akhir pekan ini? Kue lapis legit, brownies kukus, dan nastar toples
+dari Kue Rumahan Bu Sari bisa kamu pesan lewat WA 0812-0000-1234 atau DM Instagram. ...
+Brief foto/video: ketiga produk bersanding dengan properti angka "10.10"...
+Hashtag: #tanggalkembar #1010 #kuelapislegit #brownieskukus #nastartoples #kuerumahanbekasi #umkmbekasi
+CTA: Chat WA 0812-0000-1234 atau DM Instagram; sebut produk, jumlah, dan tanggal acara
 ```
 
 ## Penilaian
@@ -57,11 +57,11 @@ CTA: WA sebut kode "1010", stok harian terbatas (bukan kelangkaan palsu)
 |---|---|---|
 | Kesiapan pakai (siap tempel) | Tidak — masih ide garis besar | Ya — caption, naskah, brief, hashtag, CTA lengkap per hari |
 | Verifikasi tanggal/momen | Tidak diverifikasi (dari ingatan model) | Dihitung lewat `nomor_minggu.py`, diverifikasi ulang manual |
-| Kepatuhan iklan (klaim, kelangkaan palsu) | Tidak dicek — bahkan berpotensi menyarankan promo generik tanpa basis | Eksplisit dicek: klarifikasi "bukan kelangkaan buatan", tanpa klaim dilarang |
+| Kepatuhan iklan (klaim, kelangkaan palsu) | Tidak dicek — bahkan berpotensi menyarankan promo generik tanpa basis | Eksplisit dicek: promo tidak dikarang (bentuk promo dikosongkan sebagai `[isian]`), tanpa kelangkaan dan tanpa klaim dilarang |
 | Keamanan/ToS | **Bermasalah** — menyarankan follow-unfollow & auto-post | Eksplisit dihindari, sesuai kebijakan pemilik |
-| Variasi pilar/hari | Generik, hampir semua hari "posting + caption menarik" tanpa detail | Bervariasi: edukasi, di balik layar, interaksi, testimoni, tips, promo — masing-masing beda pendekatan |
+| Variasi pilar/hari | Generik, hampir semua hari "posting + caption menarik" tanpa detail | Bervariasi: perkenalan menu, interaksi, edukasi, cara pesan, promo — masing-masing beda pendekatan |
 | Naskah video | Tidak ada | Tabel detik-adegan-teks-VO siap rekam |
-| Arsip & tindak lanjut | Tidak ada | Arsip `konten/minggu-...md`, tawaran otomasi OpenClaw |
+| Arsip & tindak lanjut | Tidak ada | Salinan file `konten/minggu-...md` ditawarkan (ditulis bila diminta), tawaran otomasi OpenClaw |
 
 **Kesimpulan:** Skill memberi nilai tambah **jelas dan besar** — bukan hanya lebih detail, tapi juga
 lebih aman (menghindari saran follow-unfollow/auto-post yang berisiko ToS) dan lebih akurat (tanggal

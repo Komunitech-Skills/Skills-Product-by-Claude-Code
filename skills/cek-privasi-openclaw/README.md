@@ -61,17 +61,17 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 12, 2026-10-12.
+Diuji di bot OpenClaw asli (grup uji Komunitech, tertutup untuk umum; tautan pesan tidak dicantumkan): gelombang uji 12 (satu putaran uji di bot), 2026-10-12.
 - Skor: 7,5 tanpa skill, 9 dengan skill.
 Verdik gelombang: LULUS. Dengan skill laporan memakai format lampu 🔴/🟡/🟢 dan ringkasan UU PDP; tanpa skill audit teknisnya bagus tetapi tanpa kerangka itu.
 
 ## FAQ
 **Apakah skill ini langsung mengubah pengaturan saya?**
-Tidak. Pemeriksaan awal hanya membaca. Perubahan dilakukan satu per satu, setelah Anda
-menjawab "ya" untuk tiap butir.
+Tidak dirancang begitu. Pemeriksaan awal hanya membaca. Perubahan ditawarkan satu per satu dan baru dijalankan setelah Anda
+menjawab "ya" untuk tiap butir. (Pada satu uji awal, AI sempat mengubah izin file sebelum daftar perbaikan lengkap ditampilkan; hal itu sudah diperbaiki dan tidak terulang pada uji ulang.)
 
 **Apakah hasil audit saya dikirim ke Komunitech?**
-Tidak. Pemeriksaan berjalan di OpenClaw Anda sendiri; hasilnya hanya muncul di percakapan Anda.
+Tidak. Pemeriksaan berjalan di OpenClaw Anda sendiri; hasilnya muncul di percakapan Anda. Seperti percakapan AI lainnya, isi percakapan tetap diproses oleh penyedia model AI yang Anda pakai.
 
 **Skill ini bisa menggantikan konsultan hukum untuk UU PDP?**
 Tidak. Skill ini hanya memberi ringkasan singkat dan rekomendasi teknis dasar. Untuk kepatuhan

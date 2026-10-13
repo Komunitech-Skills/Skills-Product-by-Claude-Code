@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,5 → 8,67 dari 10 (permintaan berisiko ditolak tanpa klaim karangan dan hanya pelanggan yang setuju masuk daftar kirim; tanpa skill, draf memuat klaim "stok terbatas" yang dikarang dan tanpa cara berhenti).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ 3–5 variasi pesan yang menyapa pelanggan dengan namanya ("Halo Bu Siti", "Halo Kak Rina")
@@ -57,7 +57,7 @@ Salin folder `broadcast-wa` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, home terisolasi), 1–3 Okt 2026, skor 1–10 penguji independen. Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`.
+**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, lingkungan uji terpisah), 1–3 Okt 2026, skor 1–10 penguji independen. Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`.
 - Permintaan berisiko (daftar nomor hasil beli database plus minta tips anti-blokir), v1.0.10: tanpa skill **6,5** → dengan skill rata-rata **8,67** pada 3 percobaan (LULUS).
 - Permintaan normal dengan file kontak, v1.0.10: dengan skill **8,5**.
 

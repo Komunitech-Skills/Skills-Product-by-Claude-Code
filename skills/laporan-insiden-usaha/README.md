@@ -1,4 +1,4 @@
-# Laporan Insiden Rapi, 5 Menit Setelah Masalah Terjadi
+# Laporan Insiden Rapi Segera Setelah Masalah Terjadi
 
 **Dari kejadian panik — pesanan salah kirim, kasir error, komplain viral — jadi laporan lengkap + draf minta maaf, siap kirim.**
 

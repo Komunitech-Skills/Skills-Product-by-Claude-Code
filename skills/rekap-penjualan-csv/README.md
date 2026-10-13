@@ -2,9 +2,9 @@
 
 **Kirim file penjualan, dapat laporan omzet dan produk terlaris dalam semenit.**
 
-*Diuji AI penguji independen: 7,5 → 9 dari 10 (angka sama-sama benar; dengan skill laporan lebih lengkap: persentase tiap produk, rata-rata harian, dan saran yang bisa dijalankan).*
+*Diuji AI penguji independen di OpenClaw: 7,5 → 9 dari 10 (angka sama-sama benar; dengan skill laporan lebih lengkap: persentase tiap produk, rata-rata harian, dan saran yang bisa dijalankan).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Total omzet, rata-rata harian, dan 5 produk terlaris
@@ -47,7 +47,7 @@ Setelah terpasang, ketik permintaan biasa ke AI agent Anda dan lampirkan file CS
 - "Buatkan ringkasan penjualan minggu ini untuk ditempel di grup tim."
 
 ## Syarat
-File berformat **CSV** yang punya kolom tanggal, nama produk, dan total atau harga. Jika filenya Excel (.xlsx), simpan dulu sebagai CSV. Butuh Python di komputer (biasanya sudah ada di Mac/Linux; di Windows bisa dipasang gratis dari python.org).
+File berformat **CSV** yang punya kolom tanggal, nama produk, dan total atau harga. Jika filenya Excel (.xlsx), simpan dulu sebagai CSV. Sebaiknya ada Python 3 di komputer (biasanya sudah ada di Mac/Linux; di Windows bisa dipasang gratis dari python.org) agar angka dihitung skrip; tanpa Python, AI menghitung manual dan akan memberi tahu bahwa hasilnya belum diverifikasi skrip.
 
 ## Instalasi singkat
 Salin folder `rekap-penjualan-csv` ke folder skills AI agent Anda:
@@ -65,7 +65,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 - **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario ekspor Shopee): skor tanpa skill 7,5 → dengan skill 8,5, lalu 9 setelah perbaikan v1.2.3. Selisihnya kecil dan terutama pada kelengkapan format, bukan ketepatan angka.
 - **Uji simulasi agent (perbandingan tanpa dan dengan skill), 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`): pada file yang rapi, angka agent tanpa skill sama benarnya. Nilai tambahnya ada di format Indonesia yang berantakan: pada file dengan harga `68.500,00`, cara "ambil digit saja" menghasilkan Rp 1.389.910.000 padahal yang benar Rp 13.899.100 (100 kali lipat), tanpa peringatan. Pada ekspor marketplace, bila pesanan batal dan retur ikut dihitung, omzet contoh membengkak menjadi Rp 10.793.000 dari yang seharusnya Rp 9.006.000; dengan skill keduanya benar.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Format ekspor Tokopedia, kasir kedai, dan angka berformat campur belum diuji di OpenClaw.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Format ekspor Tokopedia, kasir kedai, dan angka berformat campur belum diuji di OpenClaw. Bot Telegram asli belum diuji.
 
 ## FAQ
 **Apakah data saya dikirim ke internet?**

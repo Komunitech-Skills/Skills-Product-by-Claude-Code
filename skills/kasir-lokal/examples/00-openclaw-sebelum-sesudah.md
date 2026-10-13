@@ -125,7 +125,7 @@ Tunai Rp 100.000 → **Kembalian Rp 64.900**
 ⚠️ Catatan dari sistem: kasir belum dibuka hari ini (`buka-kasir`). Nota ini tetap tersimpan sah, tapi tidak akan ikut terhitung di tutup-kasir/rekap selisih kas nanti malam kecuali kamu buka kasir dengan jam mundur ke sebelum jam 14:50. Kalau mau, bilang aja kas awalnya berapa, nanti aku bukakan.
 
 Struk sudah dibuat di:
-/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real/homes/s9-kasir-lokal/KomunitechData/kasir/struk/N-261001-0001-58mm.html
+<folder uji sementara>/openclaw-real/homes/s9-kasir-lokal/KomunitechData/kasir/struk/N-261001-0001-58mm.html
 
 Buka file itu di browser → Ctrl+P → pilih printer thermal → margin None → skala 100% untuk cetak.
 ~~~~

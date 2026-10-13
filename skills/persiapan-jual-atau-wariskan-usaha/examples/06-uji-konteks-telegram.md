@@ -15,4 +15,4 @@ Sama dengan skenario 01 di `00-openclaw-sebelum-sesudah.md` (warung Dapur Bu Sri
 - **Verdik pra-cek Telegram:** **OK untuk pilot** — isi utuh di chat, struktur konsisten dengan uji lokal; tidak perlu revisi khusus kanal Telegram untuk panjang jawaban S1.
 
 ## Catatan
-- `uji.sh` / `uji-tg.sh` bawaan gagal `unshare` di VM Cursor; gunakan `run-uji-tg.sh` dari `koordinasi/alat-uji/`.
+- `uji.sh` / `uji-tg.sh` bawaan gagal `unshare` di VM Cursor; gunakan `run-uji-tg.sh` dari folder alat uji internal kurator (tidak disertakan dalam paket).

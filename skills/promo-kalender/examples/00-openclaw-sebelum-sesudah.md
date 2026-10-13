@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — promo-kalender
 
-Sumber: `solusi-vip/toko-online/UJI-OPENCLAW.md` (rincian: `solusi-vip/toko-online/uji-openclaw/05-promo-1111-cek-margin.md` dan `05-promo-1111-cek-margin-ulang.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.3); uji ulang = 1.0.3 (sama dengan versi katalog saat ini). Penguji: agent penguji independen (bukan pembuat skill).
+Sumber (ada di paket VIP): `solusi-vip/toko-online/UJI-OPENCLAW.md` (rincian: `solusi-vip/toko-online/uji-openclaw/05-promo-1111-cek-margin.md` dan `05-promo-1111-cek-margin-ulang.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.3); uji ulang = 1.0.3 (sama dengan versi katalog saat ini). Penguji: agent penguji independen (bukan pembuat skill).
 
 Berkas ini hanya menyalin ringkasan dari catatan uji internal di atas; balasan utuh kedua sisi ada di berkas sumber.
 

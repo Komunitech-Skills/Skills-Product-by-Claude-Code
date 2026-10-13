@@ -9,7 +9,7 @@ Diuji AI penguji independen di OpenClaw: 6,1 → 9,0 dari 10 (pada pertanyaan ib
 > sebelum dipakai klinis (lihat `references/sumber-pedoman.md`). Alat bantu keputusan khusus
 > tenaga kesehatan: bukan diagnosis, bukan pengganti penilaian klinis, tanpa dosis obat.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **HPL & usia kehamilan dihitung skrip, bukan dikira** — Naegele dan HPHT+280 hari, tahun kabisat,

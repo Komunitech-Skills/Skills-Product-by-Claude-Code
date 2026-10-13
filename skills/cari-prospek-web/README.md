@@ -31,8 +31,8 @@ Cuplikan keluaran uji (6 Okt 2026, v1.0.2, dipotong; `examples/01-normal-kemasan
 >
 > **3 prospek prioritas**
 > 1. …
-> 2. **Cita Rasa Catering** — katering dengan kebutuhan kotak makan harian berulang, cocok untuk kontrak pasokan rutin. *Pembuka:* "Selamat siang, saya melihat Cita Rasa Catering di Komplek Taman Holis Indah — kami sediakan kemasan makanan ramah lingkungan untuk box katering, apakah boleh saya kirim info produknya?"
-> 3. **Armor Kopi** — kafe konsep outdoor/alam yang citranya sudah selaras dengan isu ramah lingkungan, jadi pesan jualan lebih mudah diterima. *Pembuka:* "Halo, saya lihat Armor Kopi punya konsep kafe di alam terbuka — mungkin cocok juga pakai kemasan to-go yang ramah lingkungan, boleh saya kirim contohnya?"
+> 2. **Cita Rasa Catering** — terdaftar di direktori sebagai katering di Komplek Taman Holis Indah; kebutuhan kotak makan dan minat pasokan rutin belum diketahui (perlu dicek langsung). *Pembuka:* "Selamat siang, saya melihat Cita Rasa Catering di Komplek Taman Holis Indah — kami sediakan kemasan makanan ramah lingkungan untuk box katering, apakah boleh saya kirim info produknya?"
+> 3. **Armor Kopi** — kafe di kawasan Cimenyan dengan nomor kontak tercantum di direktori; minat pada kemasan ramah lingkungan perlu ditanyakan langsung. *Pembuka:* "Halo, saya lihat Armor Kopi di kawasan Cimenyan — mungkin cocok juga pakai kemasan to-go yang ramah lingkungan, boleh saya kirim contohnya?"
 
 Catatan jujur: skill ini bekerja penuh hanya bila agent Anda punya alat pencarian web yang aktif, dan pencarian yang teliti bisa memakan beberapa menit (di uji bot Telegram sekitar 18 menit). Kontak tetap perlu dicek ulang sebelum dihubungi.
 
@@ -69,4 +69,4 @@ Daftar berisi kontak bisnis dari sumber publik; patuhi UU PDP (UU 27/2022 tentan
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

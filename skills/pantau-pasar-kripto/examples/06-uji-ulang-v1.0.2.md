@@ -1,7 +1,7 @@
 # Uji ulang v1.0.2 — pantau-pasar-kripto (2026-09-24)
 
 - **Penguji:** agent penguji independen (bukan pembuat/perbaikan skill), sesi terpisah.
-- **Lingkungan kerja:** `/tmp/claude-0/-home-user-Skills/c4837769-917a-5ae6-8a30-fbc2c92d2ee9/scratchpad/uji-kripto/` (`kripto/`, `migrasi/`, `pulih/`, `elif/`, `live/`, `home/` untuk OpenClaw). Python 3.11. OpenClaw **2026.9.6 (eb377ac)** (sudah terpasang di `/tmp/uji-openclaw`, dipakai ulang; tidak dipasang ulang). Gateway uji baru dijalankan khusus sesi ini (`--dev --allow-unconfigured --bind loopback`, port 19881, HOME scratchpad sendiri, tanpa model AI/kanal login sungguhan).
+- **Lingkungan kerja:** `<folder uji sementara>/uji-kripto/` (`kripto/`, `migrasi/`, `pulih/`, `elif/`, `live/`, `home/` untuk OpenClaw). Python 3.11. OpenClaw **2026.9.6 (eb377ac)** (sudah terpasang di `/tmp/uji-openclaw`, dipakai ulang; tidak dipasang ulang). Gateway uji baru dijalankan khusus sesi ini (`--dev --allow-unconfigured --bind loopback`, port 19881, HOME scratchpad sendiri, tanpa model AI/kanal login sungguhan).
 - Data harga: **fixture lokal** (`--harga-file`) untuk semua skenario reliabilitas; **1 pemanggilan nyata** ke CoinGecko (batch 1 permintaan, 2 koin) + **1 ke Indodax** untuk memastikan format respons publik belum berubah — tidak lebih.
 
 ## 1. Regresi otomatis

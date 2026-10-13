@@ -4,7 +4,7 @@
 
 *Diuji AI penguji independen: 9 → 9 dari 10 pada rekap kas sekali-jalan (tanpa selisih skor; nilai lebihnya, yaitu buku kas tersimpan, saldo per laci/rekening, dan hitung uang laci, terlihat di perbandingan simulasi di bawah, bukan di skor ini).*
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tanpa aplikasi berlangganan, tanpa akun.** Buku kas tersimpan di satu file di komputer Anda. Tidak ada biaya bulanan, tidak perlu internet.

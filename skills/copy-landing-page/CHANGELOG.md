@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.6 (2026-10-13)
+- SKILL.md Langkah 2: aturan eksplisit anti-karangan atribut produk, bahan, garansi, masa simpan, jumlah pelanggan, dan klaim hasil (yang tidak diberikan pengguna ditulis `[isian: ...]`), setelah pemindaian menemukan contoh uji lama memuat atribut keripik yang tidak diberikan pengguna.
+- `examples/01-keripik-pedas-normal.md` ditulis ulang oleh penguji independen tanpa atribut karangan; tidak ada perubahan skrip.
+
 ## Catatan revisi 1.0.5 (2026-10-13)
 - Rujukan ke skill arsip diganti: `caption-sosmed-umkm` diganti `konten-mingguan` (description dan bagian Kapan TIDAK digunakan di SKILL.md).
 

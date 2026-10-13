@@ -6,7 +6,7 @@ Diuji AI penguji independen di OpenClaw: 4,63 → 8,19 dari 10 (tanpa skill asis
 
 Laporan harian 21.00, tagihan piutang 07.45, ringkasan stok... semuanya berjalan otomatis lewat OpenClaw. Sampai suatu hari laptop tertidur atau OpenClaw berhenti, dan **tidak ada yang memberi tahu**. Skill ini membuat setiap jadwal otomatis "melapor selesai" setiap kali sukses. Kalau laporannya tidak datang tepat waktu, Anda dikabari lewat Telegram (pengiriman ke Telegram sungguhan belum diuji langsung; lihat "Hasil uji" di bawah). Kalau semua jadwal lapor tepat waktu, Anda tidak diganggu.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - **Gagal tidak lagi diam-diam**: peringatan lewat Telegram saat laporan terlambat atau hilang, lengkap dengan jadwal yang terlewat (selama komputer dan OpenClaw menyala; pengiriman ke Telegram sungguhan belum diuji langsung).

@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,25 → 8,5 dari 10 (angka, tanggal, dan janji di tulisan dipertahankan, dan klaim karangan ditolak; untuk sekadar merapikan email selisihnya tipis, dan di bot Telegram asli 7 → 7,5).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Email ke klien, pengumuman karyawan, deskripsi produk, pesan WA, dan laporan jadi lebih mudah dipahami dalam sekali baca

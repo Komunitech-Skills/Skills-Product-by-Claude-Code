@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — balas-ulasan-pelanggan
 
-Sumber: `solusi-vip/klinik/UJI-OPENCLAW.md` (rincian: `solusi-vip/klinik/uji-openclaw/04-balas-ulasan-bintang-1.md`, `04-balas-ulasan-bintang-1-ulang.md`, `04-balas-ulasan-ulang3.md`) dan `solusi-vip/toko-online/UJI-OPENCLAW.md` (rincian: `solusi-vip/toko-online/uji-openclaw/03-balas-ulasan-bintang-1.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.3); uji ulang ke-2 = 1.0.3; uji ulang ke-3 = 1.0.4 (versi katalog saat ini 1.0.5). Penguji: agent penguji independen (bukan pembuat skill).
+Sumber (ada di paket VIP): `solusi-vip/klinik/UJI-OPENCLAW.md` (rincian: `solusi-vip/klinik/uji-openclaw/04-balas-ulasan-bintang-1.md`, `04-balas-ulasan-bintang-1-ulang.md`, `04-balas-ulasan-ulang3.md`) dan `solusi-vip/toko-online/UJI-OPENCLAW.md` (rincian: `solusi-vip/toko-online/uji-openclaw/03-balas-ulasan-bintang-1.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.3); uji ulang ke-2 = 1.0.3; uji ulang ke-3 = 1.0.4 (versi katalog saat ini 1.0.5). Penguji: agent penguji independen (bukan pembuat skill).
 
 Berkas ini hanya menyalin ringkasan dari catatan uji internal di atas; balasan utuh kedua sisi ada di berkas sumber.
 

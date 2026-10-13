@@ -25,20 +25,20 @@ Diuji AI penguji independen: 4,25 → 7,3 dari 10 di OpenClaw (belum mencapai ta
 → Paket 6 hari: tiap hari ada platform, pilar (tema konten), hook, caption siap tempel, naskah video atau arahan foto, hashtag, CTA, dan jam posting saran, plus arsip tersimpan. Cuplikan nyata dari uji (satu hari dari paket; data fiktif):
 ```
 # Paket Konten Minggu 2026-W41 — Kue Rumahan Bu Sari
-Periode: Senin, 05 Okt 2026 s.d. Minggu, 11 Okt 2026  |  Platform: Instagram, TikTok
 …
-## Rabu 07 Okt 2026 — Instagram Story
-Pilar: Interaksi/polling  |  Momen: -  |  Jam disarankan: 11.00-13.00 & 19.00-21.00 (perkiraan umum — cek Insights akun sendiri)
+## Rabu 07 Okt 2026 — Instagram Story (2 slide)
+Pilar: Interaksi/polling  |  Momen: -  |  Jam disarankan: 12.00-13.00 & 20.00-22.00 (perkiraan umum — cek Insights akun sendiri)
 Hook 3 detik: "Nastar toples atau brownies kukus buat cemilan sore ini?"
-Caption: Poll: "Nastar toples 🫙 vs Brownies kukus 🍫 — kamu Team mana?" (stiker poll IG Story)
-Naskah video: - (format foto/Story, tidak perlu naskah)
-Brief foto/video: dua produk berdampingan di meja yang sama, pencahayaan sama rata, kasih ruang kosong
-di tengah untuk stiker poll
-Hashtag: (Story tidak perlu hashtag banyak, cukup 1-2 kalau mau) #kuerumahanbekasi
+Caption: Slide 1: Poll: "Nastar toples 🫙 vs Brownies kukus 🍫 — kamu Team mana?" (stiker poll IG Story)
+Slide 2: "Makasih sudah vote! Mau pesan? DM atau WA 0812-0000-1234."
+Naskah video: - (format Story, tidak perlu naskah)
+Brief foto/video: dua produk berdampingan di meja yang sama, pencahayaan sama rata, sisakan ruang kosong di
+tengah untuk stiker poll
+Hashtag: (Story cukup 1-2) #kuerumahanbekasi
 CTA: Vote di poll, lanjut DM kalau mau pesan
 …
 ⚠️ Ingat: paket ini belum terposting — jadwalkan sendiri lewat Meta Business Suite/TikTok Studio (lihat
-"Cara jadwalkan sendiri" di file arsip), atau aktifkan pengingat harian OpenClaw.
+`references/jadwal-platform.md`), atau aktifkan pengingat harian OpenClaw.
 ```
 
 ## Cara pakai

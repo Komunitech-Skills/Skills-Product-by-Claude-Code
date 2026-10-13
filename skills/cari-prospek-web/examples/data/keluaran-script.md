@@ -99,7 +99,7 @@ Tautan terbaca sebagai `sumber`, 0 tanpa sumber, skor 43 ✓. **Diperbaiki** (1.
 
 ## Penanda DUMMY? (data buatan penguji, 9 baris)
 - Benar ditandai: ManA (+62 812 3456 7890, "No. 123"), Moro (info@domain.com), 0811 1111 111 → skor 0, `DUMMY? [contoh/dummy, bukan kontak nyata]`. prospek.csv: "Katering Ibu Ani Contoh 0812-3456-7890" kini DUMMY?.
-- Benar tidak ditandai: (022) 4230352 "No. 22"; HP 0812-1396-0941 diberi peringatan "nomor HP: pastikan nomor bisnis".
+- Benar tidak ditandai: (022) xxx0352 "No. 22"; HP 08xx-xxxx-0941 diberi peringatan "nomor HP: pastikan nomor bisnis".
 - Dedup domain sendiri benar: "Toko Kue Asli Cabang" (kafeasli.id/cabang) = "Kafe Asli".
 - **Positif palsu (cacat ringan):** alamat nyata "Jl. Merdeka **No. 1**" dan "Jl. Riau **No. 12**" ditandai DUMMY? dengan alasan "alamat 'No. 123'" dan skornya jadi 0; nomor "(022) 2012345" (memuat deret 012345) juga ditandai. Regex `RE_NO_DUMMY` sebaiknya hanya "No. 123"/"No. 1234", dan deret dicek hanya di 6–8 digit terakhir yang seluruhnya deret.
 
@@ -110,7 +110,7 @@ kosong / hanya judul / tanpa kolom nama / tidak ada → pesan Indonesia, kode 2 
 
 - `tests/uji_regresi.py`: **14 tes OK**.
 - `maps.csv` (`--icp kafe,katering,kue --kota Bandung`): 5 masuk, 5 unik (tautan Maps/IG tidak lagi dianggap duplikat). `prospek.csv`: 7 masuk, 6 unik, 1 duplikat (Kopi Senja Contoh Dago), 3 tanpa sumber, 1 `DUMMY?` (0812-3456-7890). `templ.csv`: 2 baris, kolom "Tautan halaman" dikenali. `titikkoma-tidak-rata.csv`: peringatan baris 3, tetap dibaca.
-- Penanda dummy (data buatan penguji): "Jl. Merdeka No. 1, (022) 4230352" → **tidak** ditandai ✓; "Jl. X No. 123" → `DUMMY?` ✓; "No. 45A, info@domain.com" → `DUMMY?` (email contoh) ✓; **"Jl. Asia No. 12, (022) 7012345" → `DUMMY?` (nomor berderet)** — positif palsu tersisa untuk nomor nyata yang kebetulan berakhir "012345".
+- Penanda dummy (data buatan penguji): "Jl. Merdeka No. 1, (022) xxx0352" → **tidak** ditandai ✓; "Jl. X No. 123" → `DUMMY?` ✓; "No. 45A, info@domain.com" → `DUMMY?` (email contoh) ✓; **"Jl. Asia No. 12, (022) 7012345" → `DUMMY?` (nomor berderet)** — positif palsu tersisa untuk nomor nyata yang kebetulan berakhir "012345".
 - Kolom bernama `alamat` tidak dikenali (diabaikan diam-diam, sehingga "No. 123" di kolom itu tidak dicek).
 - Berkas biner: kode keluar 2, pesan masih teknis berbahasa Inggris ("GAGAL: new-line character seen in unquoted field ...").
 - Script tidak dipakai agent di uji OpenClaw (tidak ada CSV dari pengguna).

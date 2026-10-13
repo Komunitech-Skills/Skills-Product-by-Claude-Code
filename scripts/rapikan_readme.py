@@ -44,7 +44,7 @@ for nama,r in sorted(rows.items()):
         pand=sorted({os.path.basename(x) for x in re.findall(r'docs/panduan-[a-z0-9-]+\.md',t+open(f'{d}/SKILL.md').read())})
         sw=[x.replace('panduan-','').replace('.md','').replace('-',' ').title() for x in pand]
         parts=["**Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux."]
-        if py: parts.append("Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI.")
+        if py: parts.append("Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang.")
         if sw: parts.append(f"Software tambahan: {', '.join(sw)} (gratis, open-source; panduan pemasangan disertakan).")
         parts.append("Tidak perlu API key atau akun tambahan dari Komunitech.")
         box='> '+' '.join(parts)

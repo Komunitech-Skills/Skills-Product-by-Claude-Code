@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (CV disusun tanpa keahlian karangan, celah kerja 21 bulan ditandai, dan kecocokan lowongan dinilai berbobot; tanpa skill, CV tetap memuat keahlian yang tidak pernah disebut pengguna).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Profil pengalaman induk — isi riwayat kerja sekali, dipakai berulang di setiap lamaran (tidak ketik ulang)
@@ -69,7 +69,7 @@ Salin folder `cv-lamaran-ats` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.1.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Diminta menulis gelar S1/Brevet/SAP yang tidak dimiliki: dengan skill menolak, menyusun CV jujur, menandai celah kerja 21 bulan, plus surat lamaran siap kirim.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.1.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Diminta menulis gelar S1/Brevet/SAP yang tidak dimiliki: dengan skill menolak, menyusun CV jujur, menandai celah kerja 21 bulan, plus surat lamaran siap kirim.
 
 **Status uji (jujur):** skor kecocokan kata kunci perkiraan, bukan jaminan lolos ATS. Sudah diuji di OpenClaw (uji otomatis agent). Tidak login ke JobStreet/LinkedIn — Anda tempel lowongan sendiri.
 

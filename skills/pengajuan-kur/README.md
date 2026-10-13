@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (tanpa skill menyebut "flat 6%" itu murah dan menyarankan agunan tambahan; dengan skill dijelaskan bahwa "flat 6%" setara ±11% efektif, batas 2 kali akad (perjanjian kredit) KUR (Kredit Usaha Rakyat) Mikro dagang, dan hak tanpa agunan tambahan sampai Rp100 juta).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Simulasi cicilan **anuitas** (bunga dihitung dari sisa pinjaman) **vs flat** (bunga dihitung dari pinjaman awal terus) dengan penjelasan sederhana kenapa flat bisa jauh lebih mahal
@@ -56,7 +56,7 @@ Salin folder `pengajuan-kur` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.2.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh bengkel laba Rp6,5 jt/bulan, KUR Rp75 jt: cicilan anuitas **Rp2.281.645** (=35,1% laba, BERAT), plafon aman ±Rp64 jt; "flat 6%" dijelaskan setara ±11% efektif vs KUR resmi 6% efektif.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.2.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh bengkel laba Rp6,5 jt/bulan, KUR Rp75 jt: cicilan anuitas **Rp2.281.645** (=35,1% laba, BERAT), plafon aman ±Rp64 jt; "flat 6%" dijelaskan setara ±11% efektif vs KUR resmi 6% efektif.
 
 **Status uji (jujur):** tidak menjamin persetujuan bank; angka acuan Permenko 1/2026 — konfirmasi ke bank penyalur. Sudah diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji.
 

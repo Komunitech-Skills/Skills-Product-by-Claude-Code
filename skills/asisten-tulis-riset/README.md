@@ -5,7 +5,7 @@ kutipan yang bisa ditelusuri ulang, bukan angka karangan AI.**
 
 Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada artikel berbasis data resmi (sumber resmi benar-benar dibuka dan dikutip bernomor, klaim tanpa data ditandai `[perlu sumber]`; tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor).
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Angka dan klaim penting diberi kutipan `[1][2]` yang menunjuk sumber yang benar-benar dibuka; yang belum ketemu sumbernya ditandai `[perlu sumber]`, bukan diisi angka karangan. Tetap baca ulang sebelum terbit.

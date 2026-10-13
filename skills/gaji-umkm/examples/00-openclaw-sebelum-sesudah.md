@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH: gaji-umkm
 
-**Sumber:** `solusi-vip/usaha-offline/UJI-OPENCLAW.md` (tabel skor skenario 02, bagian "Cacat per skill", "Cuplikan jualan" dan "Uji ulang 2026-10-01 (keuangan)") dengan rincian per skenario di `solusi-vip/usaha-offline/uji-openclaw/02-gaji-bpjs.md` dan `02-gaji-bpjs-ulang.md`.
+**Sumber (ada di paket VIP):** `solusi-vip/usaha-offline/UJI-OPENCLAW.md` (tabel skor skenario 02, bagian "Cacat per skill", "Cuplikan jualan" dan "Uji ulang 2026-10-01 (keuangan)") dengan rincian per skenario di `solusi-vip/usaha-offline/uji-openclaw/02-gaji-bpjs.md` dan `02-gaji-bpjs-ulang.md`.
 **Tanggal uji:** 2026-10-01 (Asia/Jakarta).
 **Versi skill saat uji:** uji pertama kira-kira 1.0.5 (disimpulkan dari riwayat `catalog.csv` sebelum perbaikan pasca-uji; berkas sumber tidak menyebut versi), uji ulang = 1.0.6. Versi di katalog saat ini: 1.0.11.
 **Penguji (agent):** agent penguji independen (bukan pembuat skill); uji ulang oleh penguji independen lain.
