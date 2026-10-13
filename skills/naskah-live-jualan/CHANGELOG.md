@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.8 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`, `kalender-konten-30hari`) diganti `konten-mingguan` (`SKILL.md`, bagian "Kapan TIDAK digunakan").
+
 ## Catatan revisi 1.0.7 (2026-10-05)
 - Judul tabel kini hanya "Angka promo"; semua label proses internal dihapus dari format dan contoh. Pemeriksaan internal memakai file sementara yang dihapus dan tidak pernah disebut. Klaim "paling banyak diambil"/"stok terbatas"/"laris" dilarang kecuali Anda yang memberi datanya.
 

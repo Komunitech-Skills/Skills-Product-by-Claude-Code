@@ -42,7 +42,7 @@ Ini kebiasaan aturan yang sudah lama berlaku; detail resmi ada di pusat edukasi 
   judul pesaing yang laku, cara pembeli menyebut produk (bahasa sehari-hari, singkatan, typo populer).
 - Shopee dan Tokopedia tidak punya kolom "tag" umum → kata kunci dimasukkan secara alami ke judul
   dan deskripsi, serta dipakai untuk iklan (Iklan Shopee / TopAds) jika pengguna beriklan.
-- TikTok Shop: kata kunci juga berguna untuk caption video & hashtag (arahkan ke skill `caption-sosmed-umkm`).
+- TikTok Shop: kata kunci juga berguna untuk caption video & hashtag (arahkan ke skill `konten-mingguan`).
 - Jenis kata kunci: **utama** (1, volume besar, masuk awal judul), **pendukung** (3–5, spesifik: bahan,
   ukuran, fungsi), **ekor panjang** (3–6 frasa 3–5 kata, mis. "sambal cumi pedas untuk oleh oleh").
 

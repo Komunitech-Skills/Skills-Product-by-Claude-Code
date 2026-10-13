@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.5 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`) diganti `konten-mingguan` (`SKILL.md`).
+
 ## Riwayat versi
 ### Catatan revisi 1.0.4 (2026-10-01)
 - Penjelasan "3 konsonan berturut" kini menyebut huruf dan katanya dengan tepat (mis. 'ncl' di 'Kinclong'), sehingga alasan di jawaban tidak lagi keliru menunjuk huruf. Nilai skor tidak berubah.

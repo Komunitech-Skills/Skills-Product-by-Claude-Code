@@ -1,6 +1,6 @@
 # Panduan Gaya Tulisan Alami — Untuk Dipakai Skill Lain
 
-Skill konten lain di library ini (`konten-mingguan`, `kalender-konten-30hari`, `copy-landing-page`,
+Skill konten lain di library ini (`konten-mingguan`, `copy-landing-page`,
 `pesan-prospek-wa`, `balas-chat-cs`, dan skill konten berikutnya) boleh merujuk file ini di langkah
 terakhir penulisannya, misalnya: *"Sebelum mengirim hasil, cocokkan dengan
 `tulisan-tanpa-kesan-ai/references/panduan-gaya.md` — kalau skill itu terpasang, panggil mode periksa

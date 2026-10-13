@@ -83,7 +83,7 @@ celaka dilaporkan" (arah naik) supaya melapor dihargai.
 | ★ Leads masuk | prospek baru tercatat (chat/form) | lead | naik | M | `crm-wa` (sumber lead), `laporan-iklan-mingguan` |
 | ★ Biaya per lead (CPL) | belanja iklan ÷ lead | Rp | turun | M | `laporan-iklan-mingguan` |
 | ★ ROAS | omzet dari iklan ÷ belanja iklan | x | naik | M | `laporan-iklan-mingguan` |
-| ★ Konten terbit sesuai kalender | konten terbit ÷ konten direncanakan × 100 | % | naik | M | `kalender-konten-30hari`, `konten-mingguan` |
+| ★ Konten terbit sesuai kalender | konten terbit ÷ konten direncanakan × 100 | % | naik | M | `konten-mingguan` |
 | Lead → pelanggan | lead jadi pembeli ÷ lead × 100 | % | naik | B | `crm-wa` |
 
 Hindari "jumlah likes/followers" sebagai KPI utama: mudah naik tanpa menambah penjualan.

@@ -36,7 +36,7 @@ pengguna.
 - Menghitung nominal THR, gaji, pajak, atau potongan → arahkan ke skill `hitung-thr`,
   `pph-final-umkm`, atau skill hitung terkait; skill ini hanya menyusun *teks pengumuman*.
 - Komunikasi ke pelanggan/calon pelanggan (promosi, follow-up, balasan CS) → arahkan ke
-  `caption-sosmed-umkm`, `broadcast-wa`, `balas-chat-cs`, `follow-up-prospek`.
+  `konten-mingguan`, `broadcast-wa`, `balas-chat-cs`, `follow-up-prospek`.
 - Notulen rapat lengkap (siapa hadir, keputusan per agenda) → arahkan ke `notulen-rapat`.
 - Surat resmi ke pihak luar (instansi pemerintah, mitra bisnis, bank) → arahkan ke `surat-resmi`.
 - Perjanjian/kontrak kerja sama → arahkan ke `perjanjian-sederhana`.

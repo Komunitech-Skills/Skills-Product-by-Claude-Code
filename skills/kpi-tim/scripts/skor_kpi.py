@@ -46,7 +46,7 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-VERSI = "1.1.6"
+VERSI = "1.1.7"
 D0 = Decimal(0)
 D100 = Decimal(100)
 
@@ -94,7 +94,7 @@ KATALOG = {
         ("Leads masuk", "lead", "naik", 30, 300, "lead;leads;prospek masuk;chat masuk", "crm-wa (sumber lead) / laporan-iklan-mingguan"),
         ("Biaya per lead", "Rp", "turun", 25, 15000, "cpl;biaya per lead;cost per lead", "laporan-iklan-mingguan"),
         ("ROAS", "x", "naik", 25, 4, "roas", "laporan-iklan-mingguan"),
-        ("Konten terbit sesuai kalender", "%", "naik", 20, 90, "konten;posting;upload", "kalender-konten-30hari / konten-mingguan"),
+        ("Konten terbit sesuai kalender", "%", "naik", 20, 90, "konten;posting;upload", "konten-mingguan"),
     ],
     "admin": [
         ("Tugas selesai tepat waktu", "%", "naik", 40, 90, "tugas;selesai tepat;deadline", "vikunja-tugas / notulen-rapat"),

@@ -73,7 +73,7 @@ diambil dari sumber murni gagasan struktural tingkat tinggi (lihat bawah).
    sekali bukan berulang. Sumber tidak membahas risiko mengarang data sama sekali.
 7. **Rujukan silang ke skill lain di library** untuk hal di luar cakupan (perhitungan THR
    → `hitung-thr`, notulen rapat → `notulen-rapat`, surat resmi ke pihak luar →
-   `surat-resmi`, komunikasi ke pelanggan → `caption-sosmed-umkm`/`broadcast-wa`/
+   `surat-resmi`, komunikasi ke pelanggan → `konten-mingguan`/`broadcast-wa`/
    `balas-chat-cs`/`follow-up-prospek`, kontrak → `perjanjian-sederhana`, surat peringatan
    karyawan → `surat-peringatan-karyawan`) — konsep "skill lain dalam satu perpustakaan"
    tidak relevan untuk sumber yang berdiri sendiri.

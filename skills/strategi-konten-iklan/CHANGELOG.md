@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.7 (2026-10-13) — rujukan ke skill arsip (`kalender-konten-30hari`, skill caption lama) diganti `konten-mingguan` (`SKILL.md`; teks saran di `scripts/alokasi_anggaran.py`). Logika dan angka tidak berubah.
+
 ## Riwayat versi
 - **Catatan revisi 1.0.5 (2026-10-05):** pra-cek Telegram G9: bot menolak klaim "turun 5kg seminggu" tetapi tanpa dasar BPOM/iklan, hanya bertanya AOV, dan kata "script" bocor. Aturan "kerjakan dulu, tanya di akhir" (tolak klaim + dasar aturan, ROAS impas 1/margin langsung, rencana ringkas dengan [isian], jelaskan tidak ada ROAS pasti, maks. 3 pertanyaan), larangan kata proses, dan `references/kepatuhan-klaim-iklan.md` (PERLU REVIEW pasal). Menunggu uji ulang independen.
 - **Catatan revisi 1.0.6 (2026-10-05):** uji ulang Telegram menemukan rujukan PerBPOM 31/2018 (aturan label) dipakai sebagai aturan iklan. Dasar aturan diverifikasi web dan ditulis ulang di `references/kepatuhan-klaim-iklan.md`: Peraturan BPOM 1/2022 (klaim label & iklan pangan olahan), 34/2022 (iklan obat tradisional/suplemen), 25/2023 (registrasi obat bahan alam), UU 8/1999 Pasal 9 & 17, kebijakan TikTok Ads; penjelasan singkat pangan vs obat tradisional untuk teh pelangsing. Menunggu cek penguji.

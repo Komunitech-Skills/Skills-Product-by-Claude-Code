@@ -57,7 +57,7 @@ Indonesia, yang punya ciri sendiri. Nilai tambah besar yang membuat skill ini be
    hanya spasi, hanya emoji) untuk deteksi & skor otomatis — sumber sama sekali tidak menyertakan
    script/kode, hanya instruksi teks.
 5. **`references/panduan-gaya.md`** sebagai panduan gaya bersama yang bisa dirujuk skill konten lain
-   di library (`konten-mingguan`, `kalender-konten-30hari`, `copy-landing-page`, `pesan-prospek-wa`,
+   di library (`konten-mingguan`, `copy-landing-page`, `pesan-prospek-wa`,
    `balas-chat-cs`) — mekanisme integrasi lintas-skill ini tidak ada di sumber.
 6. **Batasan eksplisit**: skill ini secara tegas menolak klaim "membuktikan tulisan bukan AI" atau
    "menjamin lolos AI-detector" — kejelasan batas ini ditulis baru, diperluas dari prinsip "Detect"

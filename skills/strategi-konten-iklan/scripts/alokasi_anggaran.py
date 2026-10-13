@@ -321,7 +321,7 @@ def hitung(a):
     anggaran = parse_rupiah(a.anggaran, "--anggaran")
     if anggaran < 100000:
         raise Gagal("--anggaran di bawah Rp100.000 per bulan terlalu kecil untuk iklan berbayar. "
-                    "Pakai konten organik dulu (lihat skill kalender-konten-30hari).")
+                    "Pakai konten organik dulu (lihat skill konten-mingguan).")
     porsi = parse_tujuan(a.tujuan)
     campuran = len(porsi) > 1
     tujuan = next(iter(porsi)) if not campuran else "campuran: " + " + ".join(f"{t} {p}%" for t, p in porsi.items())

@@ -18,7 +18,7 @@ Membantu pemilik usaha membuat program **"pelanggan mengajak pelanggan"** dan **
 
 ## Kapan TIDAK digunakan (arahkan ke skill lain)
 - Menghitung HPP/margin produk -> **hitung-hpp**; harga dan promo diskon umum -> **strategi-harga-produk**, **promo-kalender**.
-- Rencana marketing menyeluruh -> **rencana-marketing-usaha**; caption/konten -> **caption-sosmed-umkm**; pesan ke prospek -> **pesan-prospek-wa**; catatan kontak pelanggan -> **crm-wa**; kebijakan privasi -> **kebijakan-privasi-pdp**.
+- Rencana marketing menyeluruh -> **rencana-marketing-usaha**; caption/konten -> **konten-mingguan**; pesan ke prospek -> **pesan-prospek-wa**; catatan kontak pelanggan -> **crm-wa**; kebijakan privasi -> **kebijakan-privasi-pdp**.
 - **Ditolak dengan sopan:** kirim pesan massal otomatis/blast ke daftar kontak (skill ini hanya menyiapkan teks yang dikirim pemilik satu per satu ke orang yang pernah berhubungan/setuju), hadiah untuk merekrut anggota bertingkat atau bayar-untuk-ikut (skema piramida/MLM), ulasan/like berbayar yang disamarkan, referral berimbalan/diskon/poin/komisi untuk **layanan kesehatan** (lihat "Fasilitas kesehatan" di bawah), membeli data kontak.
 
 ## Input
