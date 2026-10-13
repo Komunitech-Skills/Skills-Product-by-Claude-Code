@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C C13** — skill berikutnya: `fider-masukan-pelanggan` (setelah laporan-klien-konsultan).
+1. **Akun C C13** — skill berikutnya: `laporan-iklan-mingguan` (uji jadwal Telegram sungguhan).
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
@@ -41,6 +41,11 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~14:06 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 14:06 UTC — merge default; getUpdates 242; C13 laporan-iklan-mingguan | — | — | — |
+| 2026-10-13 ~13:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 78d9c0de | selesai ~13:45 UTC — C13 `siyuan-sop` jadwal TG topik 1380 | jadwal LOLOS, 2 dokumen + HOOK-9922 cocok | LOLOS | ya |
+| 2026-10-13 ~13:36 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 13:36 UTC — merge default; getUpdates 242; C13 siyuan-sop | — | — | — |
+| 2026-10-13 ~13:18 | `cursor/iterasi-otomatis-akun-c-8b42` | 1156e0c3 | selesai ~13:18 UTC — C13 `fider-masukan-pelanggan` jadwal TG topik 1377 | jadwal LOLOS, 28 suara + HOOK-8831 cocok | LOLOS | ya |
+| 2026-10-13 ~13:06 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 13:06 UTC — merge default; getUpdates 242; C13 fider-masukan-pelanggan | — | — | — |
 | 2026-10-13 ~12:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 5a84b24b | selesai ~12:45 UTC — C13 `laporan-klien-konsultan` jadwal TG topik 1374 | jadwal LOLOS, total 5,25 jam + HOOK-7744 cocok | LOLOS | ya |
 | 2026-10-13 ~12:36 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 12:36 UTC — merge default; getUpdates 242; C13 laporan-klien-konsultan topik 1374 | — | — | — |
 | 2026-10-13 ~12:20 | `cursor/iterasi-otomatis-akun-c-8b42` | f0099ca2 | selesai ~12:20 UTC — C13 `konten-mingguan` jadwal TG topik 1371 | jadwal LOLOS, hook 9012 + Rp 45rb cocok | LOLOS | ya |
