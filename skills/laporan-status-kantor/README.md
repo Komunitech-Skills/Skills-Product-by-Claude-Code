@@ -1,14 +1,16 @@
 # Laporan Kantor Rapi dalam Hitungan Detik
 
-**Dari chat berantakan jadi laporan siap kirim ke atasan, tim, atau klien — tanpa ngarang angka.**
+**Dari chat berantakan jadi laporan siap kirim ke atasan, tim, atau klien — angka tidak dikarang, yang kurang ditandai.**
+
+Diuji AI penguji independen: 6,3 → 9,0 dari 10 di OpenClaw (tanpa skill, nominal THR per orang bisa ikut masuk teks pengumuman grup); di bot Telegram asli belum lulus (4,5 → 5 dari 10, lihat bukti uji di bawah).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Ubah catatan chat/poin acak/transkrip voice note jadi laporan 3P (Progres-Rencana-Kendala) yang rapi
-- ✅ Satu skill untuk 9 jenis komunikasi kantor: laporan mingguan, harian, newsletter, pengumuman, FAQ, memo, laporan insiden
+- ✅ Satu skill untuk 9 jenis komunikasi kantor: laporan mingguan, harian, newsletter (buletin internal), pengumuman, FAQ (daftar tanya-jawab karyawan), memo, laporan insiden
 - ✅ Format siap tempel langsung ke WA grup kantor/Telegram (`*tebal*`, bullet pendek) atau email formal
-- ✅ Tidak pernah mengarang progres/angka — info yang kurang ditandai jelas atau ditanyakan
+- ✅ Tidak mengarang progres/angka — info yang kurang ditandai jelas atau ditanyakan (tetap baca ulang sebelum dikirim)
 - ✅ Nada otomatis menyesuaikan: sopan-formal khas kantor Indonesia atau santai-profesional ala startup
 
 ## Cocok untuk siapa
@@ -35,12 +37,8 @@ minggu depan.
 ```
 Siap tempel langsung ke WA grup atau email — tidak perlu dirapikan lagi.
 
-**Hasil uji (angka nyata):** uji di OpenClaw, 2 Okt 2026 (v1.0.7), skor 1-10 dari agen penguji independen: tanpa skill 6,3 → dengan skill 9,0.
-- Tugas: pengumuman libur Natal 2026 untuk grup WA karyawan, lengkap dengan nominal THR. Tanpa skill, AI kadang menghitung THR sendiri (salah Rp 3.333.333 di satu sesi, yang benar Rp 3.000.000 = 9/12 × Rp 4.000.000) dan memuat nominal per orang di teks grup. Dengan skill (dipasang bersama skill `hitung-thr`): THR benar (total 4 karyawan Rp 13.766.667), nominal per orang hanya di blok khusus pemilik/HR, teks grup aman, dan tanggal masuk yang janggal ditandai.
-- Jujur: di bot Telegram asli hasilnya belum lulus (lihat bagian bukti uji di bawah).
-
 ## Cara pakai
-Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Buatkan laporan 3P mingguan untuk tim Marketing dari poin-poin ini: ..."
 - "Rapikan jadi newsletter kantor bulan ini dari chat grup HR"
 - "Buat pengumuman libur Idul Fitri, kantor libur 20-24 Sep"
@@ -51,16 +49,22 @@ Jika info penting kurang (nama tim, periode, penerima), agent akan tanya sekali 
 pesan singkat — bukan bolak-balik tanya jawab.
 
 ## Instalasi singkat
-Salin folder `laporan-status-kantor` ke folder skills AI agent kamu:
+Salin folder `laporan-status-kantor` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
 | OpenClaw | `~/.openclaw/skills/` |
-| Codex | `~/.agents/skills/` |
-| Claude Code | `~/.claude/skills/` |
-| Cursor | `~/.cursor/skills/` |
+| Codex (belum diuji langsung) | `~/.agents/skills/` |
+| Claude Code (belum diuji langsung) | `~/.claude/skills/` |
+| Cursor (belum diuji langsung) | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+## Hasil uji (jujur)
+
+**Hasil uji (angka nyata):** uji di OpenClaw, 2 Okt 2026 (v1.0.7), skor 1-10 dari agen penguji independen: tanpa skill 6,3 → dengan skill 9,0.
+- Tugas: pengumuman libur Natal 2026 untuk grup WA karyawan, lengkap dengan nominal THR. Tanpa skill, AI kadang menghitung THR sendiri (salah Rp 3.333.333 di satu sesi, yang benar Rp 3.000.000 = 9/12 × Rp 4.000.000) dan memuat nominal per orang di teks grup. Dengan skill (dipasang bersama skill Hitung THR, `hitung-thr`, yang menghitung nominal THR): THR benar (total 4 karyawan Rp 13.766.667), nominal per orang hanya di blok khusus pemilik/HR, teks grup aman, dan tanggal masuk yang janggal ditandai.
+- Jujur: di bot Telegram asli hasilnya belum lulus (lihat bagian bukti uji di bawah).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, termasuk bot Telegram asli). Claude Code, Codex, dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
@@ -72,8 +76,8 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk angg
 Verdik gelombang: BELUM — Kedua sisi menolak nominal THR per orang di grup dengan benar, tetapi keduanya tidak memberi teks pengumuman; DENGAN malah menanyakan tanggal cuti bersama yang sudah ada di rujukan skill.
 
 ## Catatan penting
-- Skill ini hanya menyusun teks (draf yang kamu tempel sendiri), **bukan nasihat hukum**. Nominal THR tidak dihitung di sini; gunakan skill `hitung-thr` (dasar Permenaker 6/2016, THR dibayar paling lambat H-7).
-- Tanggal libur nasional dan cuti bersama 2026 mengikuti SKB 3 Menteri (Nomor 1497, 2, dan 5 Tahun 2025, ditandatangani 19 September 2025). Cek kembali ke kalender resmi pemerintah bila ada perubahan.
+- Skill ini hanya menyusun teks (draf yang Anda tempel sendiri), **bukan nasihat hukum**. Nominal THR tidak dihitung di sini; gunakan skill Hitung THR (`hitung-thr`; dasar Permenaker 6/2016, THR dibayar paling lambat 7 hari sebelum hari raya).
+- Tanggal libur nasional dan cuti bersama 2026 mengikuti SKB 3 Menteri (Surat Keputusan Bersama tiga menteri, Nomor 1497, 2, dan 5 Tahun 2025, ditandatangani 19 September 2025). Cek kembali ke kalender resmi pemerintah bila ada perubahan.
 
 ## FAQ
 **Apakah skill ini menghitung nominal THR atau gaji?**
@@ -82,13 +86,13 @@ skill `hitung-thr` atau skill hitung terkait, lalu hasilnya bisa dimasukkan ke p
 
 **Apakah harus punya akses Slack/Google Drive/email seperti versi aslinya (sumber
 internasional)?**
-Tidak perlu. Skill ini dirancang untuk bekerja langsung dari bahan yang kamu berikan
+Tidak perlu. Skill ini dirancang untuk bekerja langsung dari bahan yang Anda berikan
 (tempel chat, ketik poin-poin, atau tempel transkrip voice note) — tanpa integrasi apa pun.
 
 **Bisa untuk kantor yang santai/startup, bukan cuma yang formal?**
 Bisa. Sebut saja "santai" atau "gaya startup" saat minta, atau agent akan mengikuti gaya
-bahan mentah yang kamu berikan. Defaultnya sopan-formal karena mayoritas kantor Indonesia
-lebih aman dengan nada itu, terutama untuk laporan ke atasan/pemilik dan klien.
+bahan mentah yang Anda berikan. Defaultnya sopan-formal karena mayoritas kantor Indonesia
+lebih sesuai dengan nada itu, terutama untuk laporan ke atasan/pemilik dan klien.
 
 ## Riwayat perubahan
 
