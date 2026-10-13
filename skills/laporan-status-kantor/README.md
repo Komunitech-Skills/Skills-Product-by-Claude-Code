@@ -33,6 +33,10 @@ minggu depan.
 ```
 Siap tempel langsung ke WA grup atau email — tidak perlu dirapikan lagi.
 
+**Hasil uji (angka nyata):** uji di OpenClaw, 2 Okt 2026 (v1.0.7), skor 1-10 dari agen penguji independen: tanpa skill 6,3 → dengan skill 9,0.
+- Tugas: pengumuman libur Natal 2026 untuk grup WA karyawan, lengkap dengan nominal THR. Tanpa skill, AI kadang menghitung THR sendiri (salah Rp 3.333.333 di satu sesi, yang benar Rp 3.000.000 = 9/12 × Rp 4.000.000) dan memuat nominal per orang di teks grup. Dengan skill (dipasang bersama skill `hitung-thr`): THR benar (total 4 karyawan Rp 13.766.667), nominal per orang hanya di blok khusus pemilik/HR, teks grup aman, dan tanggal masuk yang janggal ditandai.
+- Jujur: di bot Telegram asli hasilnya belum lulus (lihat bagian bukti uji di bawah).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Buatkan laporan 3P mingguan untuk tim Marketing dari poin-poin ini: ..."
@@ -56,12 +60,18 @@ Salin folder `laporan-status-kantor` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, termasuk bot Telegram asli). Claude Code, Codex, dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05.
 - Tanpa skill: https://t.me/c/4407409583/869/884 — skor 4,5
 - Dengan skill: https://t.me/c/4407409583/870/887 — skor 5
 Verdik gelombang: BELUM — Kedua sisi menolak nominal THR per orang di grup dengan benar, tetapi keduanya tidak memberi teks pengumuman; DENGAN malah menanyakan tanggal cuti bersama yang sudah ada di rujukan skill.
+
+## Catatan penting
+- Skill ini hanya menyusun teks (draf yang kamu tempel sendiri), **bukan nasihat hukum**. Nominal THR tidak dihitung di sini; gunakan skill `hitung-thr` (dasar Permenaker 6/2016, THR dibayar paling lambat H-7).
+- Tanggal libur nasional dan cuti bersama 2026 mengikuti SKB 3 Menteri (Nomor 1497, 2, dan 5 Tahun 2025, ditandatangani 19 September 2025). Cek kembali ke kalender resmi pemerintah bila ada perubahan.
 
 ## FAQ
 **Apakah skill ini menghitung nominal THR atau gaji?**

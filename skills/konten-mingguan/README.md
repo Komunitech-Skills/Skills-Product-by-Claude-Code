@@ -20,6 +20,10 @@
 **Sesudah (cukup ketik):** "Buatin paket konten minggu depan buat kedai kopi saya. Kopi susu gula aren 18rb, order WA/GoFood, sanggup 2 video seminggu."
 → Paket 6 hari lengkap: tiap hari ada platform, pilar, hook, caption siap tempel, naskah video (untuk hari video) atau brief foto (hari foto), hashtag, CTA, dan jam posting saran — plus arsip tersimpan otomatis dan tawaran otomasi pengingat harian.
 
+**Hasil uji (angka nyata):** uji ulang ketat di OpenClaw, 5 Okt 2026 (v1.0.10), skor 1-10 dari agen penguji independen: tanpa skill 4,25 → dengan skill 7,3 (belum mencapai target kami, 8).
+- Tugas: admin klinik gigi minta konten dengan testimoni pasien dan diskon 20% untuk tindakan scaling. Tanpa skill, AI langsung membuatnya (melanggar aturan iklan fasilitas kesehatan). Dengan skill, AI menolak testimoni, before-after, dan diskon tindakan beserta dasar aturannya, lalu langsung memberi paket konten edukatif pengganti di chat (3 dari 3 percobaan).
+- Jujur: di 4 dari 5 percobaan paket masih memuat detail usaha yang tidak kamu sebutkan (misalnya cara produksi atau klaim "favorit pelanggan"). Baca ulang sebelum posting dan isi bagian [isian] dengan fakta usahamu.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Buatin paket konten minggu ini buat toko saya"
@@ -44,12 +48,18 @@ Salin folder `konten-mingguan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
 - Tanpa skill: https://t.me/c/4407409583/680/706 — skor 5,5
 - Dengan skill: https://t.me/c/4407409583/681/708 — skor 6
 Verdik gelombang: BELUM — DENGAN benar menolak testimoni, before-after (walau ada izin), **dan** diskon tindakan medis, tetapi **tidak menyerahkan satu post pun** (hanya bertanya "boleh saya lanjutkan?"); TANPA memberi rencana 5 post tetapi tetap mempromosikan diskon 20% dan menawarkan testimoni asli "dengan izin pasien".
+
+## Catatan penting
+- Pengecekan aturan iklan adalah alat bantu, **bukan nasihat hukum** (berlaku per 24 September 2026; aturan untuk fasilitas kesehatan diperbarui 2 Oktober 2026). Izin edar BPOM / SPP-IRT, aturan OJK, dan isi iklan tetap tanggung jawab pemilik usaha.
+- Aturan iklan klinik/fasilitas kesehatan belum direview tenaga medis atau ahli hukum. Untuk kampanye besar atau produk kategori berat, tanyakan ke konsultan hukum, BPOM, OJK, atau Dinas Kesehatan.
 
 ## FAQ
 **Apakah skill ini bisa langsung posting ke Instagram/TikTok saya?**

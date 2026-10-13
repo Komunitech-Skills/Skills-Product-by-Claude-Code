@@ -1,12 +1,11 @@
-# Ringkas Grup WA, Langsung Tahu Mana yang Perlu Dibalas
+# Ringkas Grup WA, Tahu Mana yang Perlu Dibalas
 
 **Kirim ekspor chat grup, dalam semenit tahu mana yang perlu ditanggapi — tanpa scroll ratusan pesan.**
 
 ## Manfaat
 - ✅ Memilah otomatis: **Perlu Perhatian** (pertanyaan ke Anda, keputusan, tenggat, uang, komplain) vs **Info** vs **Obrolan**.
 - ✅ **Daftar tindakan** siap tindak lanjut: siapa mengerjakan apa, kapan tenggatnya.
-- ✅ **Kutipan asli + jam** untuk tiap poin penting, jadi mudah dicek langsung di grup — tidak ada isi yang dikarang.
-- ✅ Grup ramai (ratusan pesan/hari)? Otomatis dipilah **per hari**.
+- ✅ **Kutipan asli + jam** untuk tiap poin penting, jadi mudah dicek langsung di grup — tidak ada isi yang dikarang. Grup ramai (ratusan pesan/hari)? Otomatis dipilah **per hari**.
 - ✅ Bisa **menyamarkan nama & nomor** anggota kalau isinya sensitif, sebelum diproses AI (upaya terbaik — AI agent Anda akan menyebutkan bila ada kata yang perlu dicek manual sebelum dibagikan).
 - ✅ 100% dari fitur **ekspor chat resmi WhatsApp** — tidak ada nomor bot, tidak ada risiko blokir, tidak ada yang "mendengar" grup Anda diam-diam.
 
@@ -22,6 +21,11 @@
 
 **Sesudah (cukup ketik):** "Ringkas grup toko dari file ekspor ini, yang perlu saya tanggapi aja."
 → Dalam beberapa detik dapat daftar 2 hal yang butuh keputusan Anda (lengkap kutipan & jam), daftar tugas siapa-kapan, dan sisanya cukup dihitung sebagai info/obrolan.
+
+**Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; grup renovasi toko, 99 pesan).
+- Tanpa skill: ringkasan berupa narasi; nominal dibulatkan ("Rp 12 jutaan"), tanpa kutipan atau jam, dan keliru menyimpulkan "keputusan sudah diambil" / "sisanya menyusul" padahal pemilik belum menjawab (sisa pembayaran Rp 6.250.000 dan budget material masih menggantung).
+- Dengan skill: 11 butir Perlu Perhatian dengan kutipan asli + jam, tabel tugas siapa-kapan, statistik dihitung script, dan 2 hal yang belum dijawab pemilik ditandai ⚠️ "belum ada jawaban dari Anda".
+- Skor akhir penguji independen (v1.0.1): 8 dari 10; 68 dari 68 uji otomatis bawaan lulus.
 
 ## Cara pakai
 
@@ -59,6 +63,8 @@ Salin folder `ringkas-grup-wa` ke folder skills AI agent kamu:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
 ## FAQ
 

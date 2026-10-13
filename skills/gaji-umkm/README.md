@@ -21,6 +21,11 @@
 **Sesudah (cukup ketik):** "Gaji September: Sari kasbon 250 ribu, Rina bonus sejuta, lembur ambil dari file absensi ini."
 → AI menunjukkan lembur yang terbaca dari file absensi (Sari alpa 2 hari **tidak** dipotong otomatis). Setelah kamu balas "ya", keluar tabel gaji 4 karyawan: gaji bersih total Rp 22.170.368, setor BPJS Kesehatan Rp 1.012.500, BPJS Ketenagakerjaan Rp 1.811.850, PPh 21 Rp 167.147. Kamu periksa, bilang "kunci". Slip dan file transfer langsung jadi. Semua angka dihitung script, bukan ditebak AI.
 
+**Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (26 Sep 2026; 12 karyawan fiktif; simulasi Claude Code).
+- Tanpa skill: penguji yang sangat teliti butuh ±1 jam untuk mendapat angka yang benar. Agen umum biasanya terjebak, misalnya memakai batas upah JP lama Rp 10.547.400 (berlaku s.d. Februari 2026), PPh 21 Eka kurang potong (Rp 900.000, yang benar Rp 1.092.420), atau Lina yang resign 14 September dihitung biasa (seharusnya kelebihan potong Rp 931.100 dikembalikan). Tidak ada riwayat bulan lalu, slip, atau file transfer.
+- Dengan skill: 12 dari 12 karyawan cocok dengan hitungan independen di semua komponen, dalam ±6 perintah dan kurang dari 1 menit waktu script. Lina dihitung ulang setahun dengan benar, lalu slip dan file transfer langsung jadi.
+- Skor penguji independen: 8 dari 10 pada uji pertama, 9 dari 10 setelah perbaikan; uji ulang terakhir (v1.0.11, 5 Okt 2026) tetap 9 dari 10.
+
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Mulai pakai aplikasi gaji. Ini daftar karyawan saya" (kirim nama, status PTKP, gaji pokok, tunjangan, tanggal masuk)
@@ -48,7 +53,12 @@ Salin folder `gaji-umkm` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows) ada di `docs/instalasi.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+
+## Catatan penting
+- Hitungan PPh 21 DTP (PMK 105/2025) masih menunggu review konsultan pajak. Sampai selesai, cocokkan bagian itu dengan konsultan pajakmu. Dasar aturan lain, tanggal berlaku, dan catatan pembulatan Coretax ada di FAQ pertama di bawah.
 
 ## FAQ
 **Apakah hitungan BPJS dan PPh 21-nya benar?**
