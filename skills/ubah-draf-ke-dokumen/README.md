@@ -66,3 +66,7 @@ Python opsional (hanya untuk file Word otomatis).
 **Bisa PDF?** Buka `.docx` di Word/Google Docs lalu simpan sebagai PDF.
 
 **Apakah kop/logo saya otomatis?** Beri teks kop sekali; skill memakainya di dokumen berikutnya bila Anda sebutkan.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

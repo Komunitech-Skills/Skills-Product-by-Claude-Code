@@ -90,3 +90,7 @@ Tidak oleh skill ini. Buku Anda adalah file di komputer Anda sendiri, dan script
 
 ---
 Komunitech tidak berafiliasi dengan proyek hledger. hledger adalah perangkat lunak terpisah (GPL-3.0) milik pembuatnya; Anda mengunduhnya sendiri dari sumber resmi.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

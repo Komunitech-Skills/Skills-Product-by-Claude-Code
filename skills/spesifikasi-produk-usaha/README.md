@@ -79,3 +79,7 @@ Skill ini menetapkan target modal pokok (HPP) lalu merujuk ke skill Hitung Modal
 Bisa: bagian bahan/kemasan diganti fitur, cerita pengguna, dan kriteria selesai.
 
 *Skill ini memakai ide dari pm-skills (MIT & Apache-2.0); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat aslinya.*
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

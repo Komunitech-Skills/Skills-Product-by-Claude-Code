@@ -81,3 +81,7 @@ sesuai kebijakan agent tersebut.
 ## Lisensi & atribusi
 Diadaptasi dari phuryn/pm-skills (MIT) dan product-on-purpose/pm-skills (Apache-2.0) dengan tambahan besar Komunitech.
 Rincian: `ATTRIBUTION.md`, `NOTICE`, dan file lisensi asli. Tidak berafiliasi dengan pembuat sumber.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -75,3 +75,7 @@ Bisa. Tanpa modal, Anda tetap dapat tabel pesaing dan harga pasaran (terendah, m
 
 **Biaya marketplace saya belum tahu, bagaimana?**
 Bisa dianggap 0% dulu (jualan langsung) dan AI akan menyebut asumsi itu. Untuk angka potongan Shopee/Tokopedia/TikTok Shop yang rinci, pakai skill Komunitech lain untuk harga jual di marketplace (`harga-jual-marketplace`); untuk menghitung modal per produk (HPP), pakai skill hitung modal (`hitung-hpp`).
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

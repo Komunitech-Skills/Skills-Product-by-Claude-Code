@@ -77,3 +77,7 @@ Bisa. Zona WIB, WITA, WIT didukung, dan jadwal otomatis seperti "tanggal 1 tiap 
 
 ## Untuk pengembang / penguji
 `python3 tests/uji_regresi.py` menjalankan uji regresi (parsing jadwal, jatuh tempo lintas hari/bulan, toleransi, status, zona waktu, input rusak).
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -55,3 +55,7 @@ Untuk yang terbiasa dengan terminal: hitung paket lewat `python3 scripts/rencana
 **Apakah harga alat di skill ini sudah final?** Tidak. Harga di `references/pilihan-alat.md` adalah perkiraan bertanggal 2026-09-29; cek halaman resmi.
 
 Skill ini tidak berafiliasi dengan HeyGen, ElevenLabs, CapCut, D-ID, Synthesia, TikTok, YouTube, Meta, atau proyek open-source yang disebut. Bukan nasihat hukum.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

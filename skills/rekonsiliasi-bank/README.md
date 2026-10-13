@@ -75,3 +75,7 @@ Sebaiknya unduh ulang dalam format CSV (file tabel sederhana) atau Excel dari in
 Hasil yang tidak pasti ditandai "perlu dicek", bukan dianggap benar. Menambahkan kolom nomor invoice atau nama pelanggan di catatan membuat hasil jauh lebih akurat.
 
 > **Catatan penting:** alat bantu mencocokkan, bukan audit dan bukan nasihat akuntansi atau keuangan. Pasangan yang ditandai "perlu dicek" harus Anda periksa sendiri sebelum dicatat; "angka seimbang" berarti penjelasan selisihnya cocok secara hitungan, bukan bukti bahwa setiap pasangan pasti benar. Untuk sengketa dengan bank atau pelanggan, gunakan rekening koran resmi dari bank.
+
+## Riwayat perubahan
+
+Versi terkini: **1.2.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -116,3 +116,7 @@ tabel "Pilih skill yang mana?" di `SKILL.md`.
 
 ---
 *Komunitech tidak berafiliasi dengan Grist Labs Inc. "Grist" adalah merek milik pemiliknya.*
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

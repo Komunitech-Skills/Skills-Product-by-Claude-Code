@@ -63,3 +63,7 @@ paket konten mingguan (`konten-mingguan`), kalender promo (`promo-kalender`), ce
 
 ## Asal-usul
 Diadaptasi dan diperluas dari dua skill berlisensi MIT (marketing-plan oleh Corey Haines; gtm-strategy oleh Pawel Huryn); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan para pembuat sumber.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

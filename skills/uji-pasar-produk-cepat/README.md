@@ -84,3 +84,7 @@ Tidak. Ini alat bantu keputusan skala UMKM, bukan penelitian ilmiah. Teman dekat
 
 ## Atribusi
 Diadaptasi dari kerangka open source (product-on-purpose/pm-skills, Apache-2.0; phuryn/pm-skills, MIT) dan ditulis ulang untuk konteks Indonesia. Tidak berafiliasi dengan pembuat sumber. Lihat `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

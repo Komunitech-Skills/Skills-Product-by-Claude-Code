@@ -92,3 +92,7 @@ diekstrak, karena versi browser tidak menyimpan file budget di komputer.
 
 ---
 *Komunitech tidak berafiliasi dengan Actual Budget. "Actual Budget" adalah nama proyek milik pemiliknya.*
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

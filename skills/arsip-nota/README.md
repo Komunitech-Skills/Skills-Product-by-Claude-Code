@@ -69,3 +69,7 @@ Tidak. arsip-nota khusus merapikan file & mencatat data yang sudah ada. Untuk me
 
 **Data saya dikirim ke internet?**
 Tidak. Data (foto nota dan indeksnya) tersimpan di file di komputer Anda sendiri (indeksnya berupa satu file basis data SQLite), tidak ada langganan bulanan dan tidak ada yang diunggah.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

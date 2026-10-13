@@ -70,3 +70,7 @@ Itu menghapus ciri tulisan buatan AI. Skill ini membuat tulisan apa pun lebih je
 
 ## Atribusi
 Prinsip menulis jelas diadaptasi dari kursus *Technical Writing One & Two* oleh Google (https://developers.google.com/tech-writing), lisensi CC BY 4.0, ditulis ulang dan diubah untuk Bahasa Indonesia dengan contoh baru. Google tidak berafiliasi dengan atau mendukung skill ini. Rincian: `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

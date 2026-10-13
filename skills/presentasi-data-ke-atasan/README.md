@@ -86,3 +86,7 @@ jadi pesan siap kirim.
 Presentasi Instan membuat **slide/deck** banyak halaman untuk ditampilkan/dicetak.
 Skill ini fokus ke **satu pesan inti** dalam format pendek (WA/email/1 halaman/skrip
 bicara) — cocok untuk update cepat, bukan deck presentasi penuh.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

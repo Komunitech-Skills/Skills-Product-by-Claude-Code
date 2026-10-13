@@ -73,3 +73,7 @@ Kekurangan ini diperbaiki di versi 1.0.2.
 > PERLU REVIEW perizinan/ahli: bagian perizinan (selain halal dan alergen yang dicek 2026-10-12) belum diverifikasi ulang ke sumber resmi. Bukan nasihat hukum.
 
 Versi 1.0.2 (2026-10-12): perbaikan fakta suhu ayam, alergen santan, dan kewajiban halal setelah uji Telegram gelombang 14.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -89,3 +89,7 @@ Setiap perubahan (opname, terima barang) ditampilkan dulu sebagai pratinjau dan 
 
 **Saya belum pernah pakai InvenTree. Apakah sulit?**
 Pemasangan butuh komputer/mini PC yang menyala terus dan Docker (program pembungkus aplikasi agar mudah dipasang); panduan langkah demi langkah ada di paket, atau Komunitech bisa memasangkan (jasa berbayar). Data awal (daftar barang, lokasi, BOM, supplier) diisi sekali di layar InvenTree atau diimpor dari Excel; setelah itu pekerjaan harian cukup lewat chat.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

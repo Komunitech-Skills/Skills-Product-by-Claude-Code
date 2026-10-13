@@ -68,3 +68,6 @@ Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, ada 
 
 **Bagaimana dengan privasi pelanggan?** Papan Fider bisa dilihat publik. Skill menyamarkan nomor HP, telepon rumah/kantor, dan email otomatis, tetapi nama dan detail pesanan Anda periksa sendiri di pratinjau. Catat hanya usulan, bukan data pelanggan. Detail ada di panduan Fider, bagian 9.
 
+## Riwayat perubahan
+
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -84,3 +84,7 @@ Komunitech tidak berafiliasi dengan listmonk maupun Mailchimp (hanya disebut seb
 
 ## Batasan yang jujur
 **Pengaman ini melindungi dari kelalaian agent, bukan dari orang yang punya akses terminal (jendela perintah) ke komputer Anda.** Gerbang uji-kirim, konfirmasi jumlah penerima, alamat uji, dan saringan sumber persetujuan mencegah agent salah kirim atau lupa menguji. Orang/agent dengan akses terminal (shell) ke komputer Anda tetap bisa memalsukan berkas catatan lokal (`listmonk-uji.json`, alamat uji), memakai terminal palsu, atau memanggil pintu akses (API) listmonk langsung. Catatan uji-kirim diberi tanda keaslian (HMAC) dengan kunci di folder konfigurasi Anda agar suntingan iseng terdeteksi, tetapi itu bukan pengaman terhadap penyerang. Tetap gunakan akun API berperan terbatas dan periksa ringkasan sebelum menjawab "ya".
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

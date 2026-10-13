@@ -76,3 +76,7 @@ Tidak.
 
 ## Catatan
 Bukan nasihat hukum; naskah ini alat bantu bicara, bukan pengganti ahli ketenagakerjaan. Skill ini menyiapkan naskah; Anda yang menyampaikannya. Diadaptasi dan diubah dari ide "Manager's Playbook" karya Kamal Sindi (CC BY 4.0); pembuat asli tidak mendukung hasil adaptasi ini. Lihat `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

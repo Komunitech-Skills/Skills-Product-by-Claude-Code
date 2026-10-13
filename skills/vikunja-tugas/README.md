@@ -102,3 +102,7 @@ Tidak — satu file program kecil yang bisa dijalankan di laptop/PC kantor biasa
 
 **Bisakah AI menghapus tugas atau mengubah tim tanpa sepengetahuan saya?**
 Skill ini sengaja **tidak punya** perintah hapus tugas/proyek atau ubah anggota tim. Menambah tugas dan menandai selesai menunjukkan pratinjau dulu dan baru berjalan setelah Anda menjawab "ya". Sebagai lapis pengaman tambahan, buat kunci akses Vikunja dengan izin seperlunya saja (lihat `docs/panduan-vikunja.md` bagian 6).
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.13**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

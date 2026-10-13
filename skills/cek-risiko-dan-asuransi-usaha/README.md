@@ -63,3 +63,7 @@ Verdik gelombang: LULUS — Tanpa skill menyarankan dana darurat Rp94,8 juta tan
 3. **Apakah klaim pasti cair?** Tidak ada yang bisa menjamin; skill membantu menyiapkan dokumentasi.
 
 Terkait: skill Laporan Insiden Usaha (untuk kejadian yang sudah terjadi) dan skill Kas UMKM (keuangan harian).
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

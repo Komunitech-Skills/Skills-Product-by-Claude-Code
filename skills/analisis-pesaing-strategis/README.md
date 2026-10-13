@@ -82,3 +82,7 @@ Tidak. Skill ini memberi jadwal cek ulang 1-3 bulan (15 menit) dan daftar pemicu
 
 ## Atribusi
 Diadaptasi dari karya berlisensi MIT (Corey Haines, Pawel Huryn), lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan mereka.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

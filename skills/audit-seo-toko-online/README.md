@@ -75,3 +75,7 @@ Tidak. Pengecekan teknis dilakukan dari file HTML yang Anda tempel/kirim linknya
 Tetap bisa diaudit. Ada catatan khusus di hasil audit soal data terstruktur (JSON-LD) yang disisipkan plugin lewat JavaScript — supaya cara Anda mengambil HTML (Simpan Halaman vs Lihat Sumber Halaman) tidak membuat hasilnya salah dibaca.
 
 Skill ini diadaptasi dari struktur marketing skill open-source (MIT, coreyhaines31/marketingskills); teks, contoh Indonesia, dan checklist milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

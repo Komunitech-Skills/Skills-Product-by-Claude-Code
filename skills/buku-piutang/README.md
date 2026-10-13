@@ -97,3 +97,7 @@ Tidak. Simpan sebagai CSV (Excel: *Save As → CSV*), kirim ke agent, lalu perik
 
 **Apakah data pelanggan saya dikirim ke internet?**
 Tidak. Script buku piutang tidak memakai internet sama sekali; semuanya ada di satu file di komputer Anda. Yang keluar hanya ringkasan yang Anda minta dikirim ke Telegram Anda sendiri (lewat OpenClaw) dan pesan yang Anda kirim sendiri lewat WhatsApp.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

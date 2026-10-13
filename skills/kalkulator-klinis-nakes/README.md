@@ -123,3 +123,7 @@ Keduanya ditampilkan agar sesuai kebiasaan praktik Anda, dan catatan menjelaskan
 Skill menanyakan peran penanya. Bila bukan tenaga kesehatan, skill tidak menjalankan skrining
 atau menafsirkan angka — hanya edukasi umum, anjuran konsultasi, dan kalimat tanda bahaya
 (IGD/119).
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

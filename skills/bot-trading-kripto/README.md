@@ -128,3 +128,7 @@ PMK 50/2025 (berlaku 1 Agustus 2025). Untuk pasangan kripto-kripto (mis. BTC/USD
 di sisi beli, karena menurut PMK itu tukar-menukar kripto dikenai PPh atas nilai masing-masing aset. Bursa dalam negeri memotongnya otomatis; bot mencatatnya
 agar untung/rugi Anda bersih. Pembulatan belum dicocokkan dengan Coretax; bukti potong dari
 bursa yang berlaku. Untuk kewajiban pajak pribadi, konsultasikan ke konsultan pajak/DJP.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

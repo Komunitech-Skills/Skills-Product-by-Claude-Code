@@ -87,3 +87,7 @@ Setiap jawaban menyertakan aturan kapan berhenti (mis. menolak dua kali atau tid
 Bukan nasihat hukum. Ringkasan aturan di `references/etika-keberatan.md` membantu menulis dengan lebih hati-hati, bukan pengganti konsultasi hukum.
 
 Skill ini adaptasi (dengan perubahan besar dan penambahan lokal) dari skill `handle-objection` di `anthropics/knowledge-work-plugins` (Apache-2.0). Lihat `ATTRIBUTION.md`, `NOTICE`, dan `LICENSE-APACHE`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

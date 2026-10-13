@@ -90,3 +90,7 @@ Bisa. Pilih struk 80 mm untuk printer 80 mm. Untuk printer biasa (A4), struk tet
 
 **Ada pembeli yang belum bayar (ngutang/bon)?**
 Kasir ini sengaja hanya mencatat penjualan yang sudah dibayar. Kalau ada pelanggan bon, catat di skill **Buku Piutang** — nanti kelihatan siapa berutang berapa, kapan jatuh temponya, dan ada draf pesan tagihan siap kirim. Belum pasang Buku Piutang? Cara lama masih bisa: buat tagihannya dengan skill **Buat Invoice**, lalu kalau sudah lewat jatuh tempo, susun pesan penagihannya dengan skill **Tagih Piutang**.
+
+## Riwayat perubahan
+
+Versi terkini: **1.1.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

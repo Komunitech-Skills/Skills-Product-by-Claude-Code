@@ -94,3 +94,7 @@ Seharusnya tidak. Skill ini hanya berisi perintah baca. Disarankan memakai akun 
 
 **Apakah pakai Umami melanggar UU PDP / perlu spanduk cookie?**
 Menurut dokumentasi Umami, ia tidak memakai cookie dan tidak menyimpan alamat IP atau identitas pengunjung — hanya statistik agregat, di server Anda. Bagian 9 "Privasi: tanpa cookie & UU PDP" di `references/panduan-umami.md` berisi saran kalimat untuk kebijakan privasi website Anda (bukan nasihat hukum).
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

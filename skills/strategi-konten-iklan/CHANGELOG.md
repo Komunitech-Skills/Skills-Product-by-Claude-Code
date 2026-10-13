@@ -2,6 +2,12 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.8 (2026-10-13)
+- Agent kini diminta tidak mengarang atribut produk (mis. "bahan adem", "pengiriman cepat", "beli 3 lebih hemat"), keunggulan, biaya platform, patokan CTR/CPM/ROAS, atau hasil: yang tidak Anda sebutkan ditulis `[isian: ...]` atau ditandai asumsi.
+- Contoh sudut "tahan lama"/"aman untuk anak" diberi catatan: hanya dipakai bila Anda menyebutkannya atau sudah dikonfirmasi.
+- Catatan ROAS dan retur dibuat lebih hati-hati: cek definisi ROAS di dasbor iklan Anda sendiri.
+- Keterangan contoh di SKILL.md diperbarui. Script dan angka tidak berubah.
+
 ## 1.0.7 (2026-10-13) — rujukan ke skill arsip (`kalender-konten-30hari`, skill caption lama) diganti `konten-mingguan` (`SKILL.md`; teks saran di `scripts/alokasi_anggaran.py`). Logika dan angka tidak berubah.
 
 ## Riwayat versi

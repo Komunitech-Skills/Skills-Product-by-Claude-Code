@@ -76,3 +76,7 @@ Bisa. Sebutkan saja polanya, misalnya "nomor urut/HRD/bulan Romawi/tahun".
 
 **Bisa untuk surat dinas instansi pemerintah?**
 Bisa sebagai draf. Instansi pemerintah punya pedoman tata naskah dinas sendiri, jadi sesuaikan kop dan kodenya.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

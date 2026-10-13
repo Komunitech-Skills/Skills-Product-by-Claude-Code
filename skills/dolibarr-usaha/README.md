@@ -83,3 +83,7 @@ Tidak oleh skill ini. Script hanya berbicara dengan Dolibarr di komputer Anda (`
 
 ---
 Komunitech tidak berafiliasi dengan proyek Dolibarr; Dolibarr adalah merek milik pemiliknya.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

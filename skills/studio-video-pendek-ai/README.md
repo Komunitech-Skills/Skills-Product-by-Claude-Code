@@ -68,3 +68,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 **Apakah wajib memberi label AI?** Aturan TikTok, YouTube, dan Meta meminta pengungkapan untuk konten AI yang tampak nyata. Ringkasan bertanggal ada di `references/label-ai.md`; cek halaman resmi platform sebelum unggah karena aturan bisa berubah.
 
 Catatan: perkiraan durasi memakai 150 kata/menit (bisa diubah); ukur ulang dengan rekaman asli. Skill ini bukan nasihat hukum.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
