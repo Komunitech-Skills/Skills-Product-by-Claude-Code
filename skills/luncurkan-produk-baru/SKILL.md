@@ -16,8 +16,8 @@ Mengubah "saya mau launching produk" menjadi **rencana peluncuran satu paket yan
 - Butuh daftar tugas bertanggal dari tanggal peluncuran yang sudah ditentukan.
 
 ## Kapan TIDAK digunakan
-- Belum tahu produk apa yang dijual atau apakah laku: pakai `validasi-ide-produk-baru` atau `brainstorming-ide-usaha` dulu.
-- Hanya ingin caption/iklan/listing satu kali: pakai `caption-sosmed-umkm`, `listing-marketplace`, `copy-landing-page`.
+- Baru punya ide dan belum yakin laku: pakai `validasi-ide-produk-baru` dulu (skill ini butuh produk/ide yang sudah konkret).
+- Hanya ingin caption/iklan/listing satu kali: pakai `konten-mingguan` (caption/konten), `listing-marketplace`, `copy-landing-page`.
 - Peluncuran perangkat lunak/aplikasi/startup (Product Hunt dst.): di luar cakupan.
 - Butuh keputusan hukum/izin: skill ini hanya pengingat (lihat `references/legalitas-label.md`).
 
@@ -71,7 +71,7 @@ Tanggal libur adalah SKB 3 Menteri 2026/2027 (data 2026 dan 2027 sudah dicocokka
 ### 6. Teks siap tempel
 Buat langsung (bukan saran umum), bahasa santai sopan, sesuai kanal yang dipilih:
 - Pesan WA pribadi ke tim pertama; pesan pendaftar daftar tunggu (pembuka soft launch, pengingat H-1, pengumuman hari-H).
-- 3 teaser IG/TikTok + posting hari-H (bisa dilanjutkan dengan `caption-sosmed-umkm`).
+- 3 teaser IG/TikTok + posting hari-H (bisa dilanjutkan dengan `konten-mingguan`).
 - Pesan ke KOL mikro (isi kesepakatan: konten, tanggal, tautan, tanda iklan).
 - Balasan cepat: harga, ongkir, kedaluwarsa, izin/halal, cara simpan, retur.
 Contoh format: `examples/02-pesan-siap-tempel.md`.

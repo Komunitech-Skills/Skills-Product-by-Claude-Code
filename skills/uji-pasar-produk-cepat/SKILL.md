@@ -22,7 +22,7 @@ Skill ini melengkapi `validasi-ide-produk-baru`. Pembagian tugas:
 - "Bikin catatan eksperimen supaya tidak lupa apa yang sudah dicoba."
 
 ## Kapan TIDAK digunakan
-- Belum ada ide konkret -> `brainstorming-ide-usaha`. Baru punya ide dan belum pernah diuji sama sekali -> mulai dari `validasi-ide-produk-baru`.
+- Belum ada ide konkret -> skill ini belum bisa dipakai (butuh satu produk/ide spesifik). Baru punya ide dan belum pernah diuji sama sekali -> mulai dari `validasi-ide-produk-baru`.
 - Hanya butuh hitung modal/HPP/margin -> `hitung-hpp`; strategi harga listing -> `harga-jual-marketplace`.
 - Riset pasar besar (survei ribuan responden, proyeksi multi-tahun) atau uji klinis/keamanan produk. Skill ini hanya uji minat beli skala UMKM.
 - Produk terlarang atau menyesatkan (skema piramida/MLM, klaim obat tanpa izin edar BPOM, investasi tanpa izin OJK, produk ilegal) -> tolak dengan sopan.
