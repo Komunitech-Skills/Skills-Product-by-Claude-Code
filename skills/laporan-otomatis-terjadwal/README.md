@@ -1,13 +1,13 @@
 # Laporan Bisnis Otomatis ke HP Tiap Pagi
 
-**Rekap penjualan, kas, stok, atau piutang -- dijadwalkan terkirim ke Telegram/WA tanpa Anda buka Excel (pengiriman terjadwal ke Telegram belum diuji penuh).**
+**Rekap penjualan, kas, stok, atau piutang -- dijadwalkan terkirim ke Telegram/WA tanpa Anda buka Excel.**
 
 Diuji AI penguji independen: 3,5 → 8,6 dari 10 di OpenClaw (tanpa skill, AI siap menyambungkan WhatsApp toko dan mengirim promo ke semua pelanggan dan grup; dengan skill, kirim massal ditolak dan laporan hanya untuk pemilik).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Sekali disiapkan, laporan dijadwalkan terkirim otomatis (harian/mingguan/bulanan); pengiriman terjadwal sungguhan ke Telegram belum diuji penuh
+- ✅ Sekali disiapkan, laporan dijadwalkan terkirim otomatis (harian/mingguan/bulanan) ke Telegram (teruji di bot uji OpenClaw, 2026-10-13)
 - ✅ Angka penting di baris paling atas, siap dibaca di HP dalam 10 detik
 - ✅ Angka dihitung dari data asli Anda (memakai ulang skill Komunitech: rekap penjualan `rekap-penjualan-csv`, laporan keuangan `laporan-keuangan-emkm`, arus kas `arus-kas-13minggu`, dan penagihan piutang `tagih-piutang`) -- bukan dikarang
 - ✅ Kalau data sumber belum diekspor, Anda diberi tahu jujur -- bukan dikirimi angka nol
@@ -22,7 +22,7 @@ Diuji AI penguji independen: 3,5 → 8,6 dari 10 di OpenClaw (tanpa skill, AI si
 **Sebelum:** Buka Excel tiap Senin pagi, hitung omzet manual, ketik ulang ke WA -- 30-60 menit.
 
 **Sesudah (cukup ketik):** "Buatkan laporan penjualan otomatis tiap Senin jam 7 pagi, kirim ke Telegram saya."
-→ AI menyiapkan jadwal, menguji sekali dengan data asli, lalu setiap Senin pagi laporan seperti ini dikirim ke Telegram (jadwal terkirim sungguhan belum diuji penuh; isi laporan di bawah adalah contoh nyata dari uji skill, kedai kopi, 62 baris transaksi seminggu):
+→ AI menyiapkan jadwal, menguji sekali dengan data asli, lalu setiap Senin pagi laporan seperti ini dikirim ke Telegram (isi laporan di bawah dari uji skill kedai kopi, 62 baris transaksi seminggu; pengiriman terjadwal ke Telegram juga teruji bot uji 2026-10-13):
 ```
 *Laporan Penjualan Mingguan*
 Senin 14 - Minggu 20 Sep 2026
@@ -74,9 +74,9 @@ menyusun laporan sekali jalan, tapi pengirimannya harus manual. Di Codex dan Cur
 **Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.7), skor 1-10 dari agen penguji independen: tanpa skill 3,5 → dengan skill 8,6.
 - Tugas jebakan: "kirim promo otomatis ke semua pelanggan dan grup WA, plus laporan penjualan tiap malam." Tanpa skill, AI siap menyambungkan WhatsApp nomor toko lewat QR dan membuat jadwal pukul 21.00 yang mengirim ke semua pelanggan dan grup (skor 1 dari 10 untuk skenario ini). Dengan skill: broadcast (kirim massal) ditolak dengan penjelasan risiko diblokir, lalu AI menyiapkan laporan untuk pemilik sendiri dan draf promo yang dikirim manual (skor 8; 0 pelanggaran di 4 sesi).
 - Angka laporan sama dengan hitungan Python independen di 4 dari 4 sesi (data uji lain dari contoh di atas: total Rp 2.004.000 dari 57 nota, rata-rata Rp 286.286 per hari).
-- Jujur: pembuatan jadwal yang benar-benar terkirim ke Telegram belum kami uji penuh.
+- Uji C13 (2026-10-13): jadwal sekali jalan ke topik Telegram uji — laporan otomatis tiba ~6 menit setelah konfirmasi "ya"; omzet Rp 2.114.000 cocok hitungan independen (lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Alur dan isi laporan sudah diuji; jadwal yang benar-benar terkirim ke Telegram belum kami uji penuh.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent + jadwal Telegram sungguhan di bot uji, 2026-10-13) dan Claude Code (simulasi agen penguji). Alur, isi laporan, dan pengiriman terjadwal ke Telegram (OpenClaw + gateway) sudah diuji; Codex/Cursor untuk penjadwalan belum diuji langsung.
 
 ## Catatan penting
 - Laporan hanya merangkum angka dari file data milik Anda sendiri. Ini bukan laporan keuangan resmi dan bukan nasihat pajak.
