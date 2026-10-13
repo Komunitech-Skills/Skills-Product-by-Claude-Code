@@ -2,7 +2,7 @@
 
 **Calon pembeli tercatat rapi, tiap pagi tahu siapa yang harus disapa, dan pesan follow-up sudah disiapkan. Data tetap di komputer Anda sendiri.**
 
-Diuji AI penguji independen di OpenClaw: 4,5 → 9,0 dari 10 (draf WhatsApp siap kirim dengan tautan wa.me dan nilai prospek yang dihitung; tanpa skill menyarankan broadcast otomatis yang berisiko). Uji ulang setelah perbaikan: 5,0 → 8,5; uji ringkas terakhir (v1.0.8, satu skenario): 7 → 8.
+Diuji AI penguji independen di OpenClaw: 4,5 → 9,0 dari 10 pada uji pertama (1 Okt 2026; dengan skill: draf WhatsApp siap kirim dengan tautan WhatsApp (wa.me) dan nilai prospek yang dihitung; tanpa skill, AI langsung bersedia menyiapkan broadcast otomatis yang berisiko). Uji ulang setelah perbaikan (v1.0.7, 2 Okt 2026): 5,0 → 8,5; uji ringkas terakhir (v1.0.8, 2 Okt 2026, satu skenario): 7 → 8.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -70,9 +70,9 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - 2 Okt 2026, uji ulang v1.0.7 (dua skenario): **5,0** → **8,5** (LULUS).
 - 2 Okt 2026, uji ulang v1.0.8 (satu skenario): **7** → **8** (LULUS).
 
-Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, total nilai prospek dihitung; tanpa skill: menyarankan broadcast otomatis yang berisiko. Di bot Telegram uji (2026-10-02): selisih positif, draf terstruktur (lihat bagian Bukti uji di bawah).
+Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, total nilai prospek dihitung; tanpa skill: menyarankan broadcast otomatis yang berisiko. Di bot Telegram OpenClaw asli (2 Okt 2026): dua dari tiga giliran percakapan dengan skill lebih baik, satu giliran salah dan sudah diperbaiki (lihat bagian Bukti uji di bawah).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji muat CLI, uji platform otomatis agent, uji sebelum/sesudah 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji muat CLI, uji platform otomatis agent, uji sebelum/sesudah 1–2 Oktober 2026, dan satu uji di bot Telegram OpenClaw asli 2 Oktober 2026) dan Claude Code (simulasi agent). Jadwal otomatis ke Telegram, Codex, dan Cursor belum kami uji langsung.
 
 ## Yang perlu Anda tahu (jujur)
 - **Tidak mengirim pesan sendiri.** Skill hanya menyiapkan draf + tautan wa.me; Anda yang menekan Kirim. Ini disengaja: kiriman otomatis lewat WhatsApp tidak resmi bisa membuat nomor diblokir.
@@ -83,12 +83,12 @@ Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, tota
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-02 (tiga giliran uji bot-ke-bot). Versi skill saat uji: 1.0.6 (versi terkini saat dibaca: lihat baris Versi terkini di bawah).
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor angka tidak dicatat di catatan uji itu
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor angka tidak dicatat di catatan uji itu
-Verdik: DENGAN (giliran 1–2) mendeteksi nama ganda dan mencatat status Deal + DP; TANPA mencatat ke CSV buatan sendiri. Catatan jujur: giliran 3 DENGAN salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
+Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 2 Okt 2026, tiga giliran percakapan: bot penguji mengirim pesan yang sama ke bot tanpa skill dan bot dengan skill. Versi skill saat uji: 1.0.6 (versi terkini saat dibaca: lihat baris Versi terkini di bawah). Skor angka tidak dicatat pada uji ini; penilaiannya berupa verdik.
+- Tanpa skill: mencatat ke file CSV buatan sendiri.
+- Dengan skill: giliran 1–2 mendeteksi nama ganda dan mencatat status Deal + DP.
+- Catatan jujur: giliran 3 dengan skill salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
 
-Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.10), belum diuji ulang di bot Telegram.
+Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.10). Perbaikan ini sudah diuji ulang di OpenClaw lokal (uji ulang v1.0.7 di atas), tetapi belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah data pelanggan saya dikirim ke internet?**

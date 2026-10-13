@@ -1,6 +1,6 @@
 # Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak
 
-*Tagline: peta risiko usaha Anda dan dana darurat yang masuk akal, dalam satu tabel.*
+*Peta risiko usaha Anda dan dana darurat yang masuk akal, dalam satu tabel.*
 
 Diuji AI penguji independen di OpenClaw: 6,6 → 9,0 dari 10 (tanpa skill hanya daftar risiko umum dan rentang dana darurat; dengan skill tiap risiko berskor dengan keputusan asuransinya dan target dana darurat dihitung).
 
@@ -48,13 +48,13 @@ Lihat `docs/instalasi.md` untuk OpenClaw, Codex, Claude Code, dan Cursor. Script
 - Uji isi oleh agent pada contoh toko kelontong di atas (simulasi, bukan uji OpenClaw, 9 Okt 2026, v1.0.1): tanpa skill **6** → dengan skill **8,5**. Bahan: `examples/00-pembanding-tanpa-skill.md`.
 - Hasil di bot Telegram asli ada di bagian berikutnya.
 
-**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji; Claude Code lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji; Claude Code lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama). Rujukan aturan asuransi di skill ini (mis. POJK 23/2023) berasal dari sumber sekunder dan belum direview ahli; cek ulang di situs resmi OJK sebelum bertindak.
 
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
 - Tanpa skill: skor **6,5** — dana darurat hanya rentang kasar tanpa hitung kekurangan.
-- Dengan skill: skor **8,5** (LULUS) — peta risiko berskor, target dana darurat dihitung, tanda perlu asuransi, jalur aduan OJK 157 bila klaim ditolak.
+- Dengan skill: skor **8,5** (LULUS) — peta risiko berskor, target dana darurat dihitung, tanda perlu asuransi, jalur aduan ke OJK (Otoritas Jasa Keuangan, kontak pengaduan 157) bila klaim ditolak. Hasil di bot ini diuji pada skill v1.0.2.
 
 ## FAQ
 1. **Apakah ini nasihat asuransi?** Bukan. Ini alat bantu awam; polis (surat perjanjian asuransi) dibeli lewat perusahaan asuransi berizin OJK dan agen yang terdaftar.

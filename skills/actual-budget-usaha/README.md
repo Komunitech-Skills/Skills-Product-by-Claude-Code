@@ -1,4 +1,4 @@
-# Actual Budget Usaha — anggaran amplop lokal yang dikerjakan AI
+# Actual Budget Usaha — anggaran amplop lokal dikerjakan AI
 
 **Mutasi bank jadi anggaran rapi, tanpa ketik ulang.**
 *Pakai Actual Budget (gratis, data di komputer sendiri); AI yang menyiapkan impor mutasi dan melaporkan sisa anggaran tiap "amplop" (pos per kategori, seperti amplop uang).*
@@ -20,11 +20,11 @@
    langsung dikelompokkan. Tarik tunai, top up GoPay, belanja Tokopedia, atau baris dobel **tidak ditebak**; semuanya
    ditanyakan sekaligus dalam satu pesan. Pada uji, cukup banyak baris tetap perlu Anda pilih karena nama kategori
    di budget Anda bisa berbeda dari usulan.
-3. **Tahu kategori yang jebol dalam hitungan detik.** Tanya "anggaran bulan ini gimana?" dan dapat sisa per kategori,
+3. **Tahu kategori yang jebol dengan satu pertanyaan.** Tanya "anggaran bulan ini gimana?" dan dapat sisa per kategori,
    kategori yang minus, uang yang siap dianggarkan (To Budget), dan 5 pengeluaran terbesar. Pada data contoh, angkanya
    sama dengan hitungan Actual sendiri.
 4. **Hati-hati dengan data Anda.** Skill hanya membaca file budget dan tidak menulis ke dalamnya (pada uji, isi file
-   tidak berubah). Tidak memakai internet, akun, atau kunci akses (API key).
+   tidak berubah). Skrip pendukungnya tidak memakai internet, akun, atau kunci akses (API key).
 5. **Laporan datang sendiri.** Bisa dijadwalkan tiap Senin pagi ke Telegram Anda lewat OpenClaw (jadwal otomatis ini
    belum diuji langsung).
 
@@ -36,7 +36,7 @@
   biaya bulanan.
 
 ## Sebelum / sesudah
-**Tanpa skill:** mutasi BCA dibuka di Excel, kolom disusun ulang manual, angka `"1,500,000.00"` dan tanggal `'01/09`
+**Tanpa skill** (gambaran dari uji pembanding awal 26 Sep 2026; pada uji OpenClaw 2 Okt, AI modern sudah menandai tarik tunai sebagai pindah dana, jadi unggulnya ada di cek saldo, top up e-wallet, dan keamanan data): mutasi BCA dibuka di Excel, kolom disusun ulang manual, angka `"1,500,000.00"` dan tanggal `'01/09`
 dibetulkan satu per satu. Tarik tunai ikut terhitung pengeluaran sehingga anggaran terlihat jebol padahal tidak.
 Sisa anggaran hanya bisa dilihat dengan membuka aplikasi.
 
@@ -75,13 +75,13 @@ Ketik kalimat biasa ke agent, misalnya:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Butuh Python 3.8+ (umumnya sudah ada). Tidak ada paket tambahan yang perlu dipasang.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **5,5** → dengan skill **8,25** (LULUS). Contoh: menolak mengedit file budget (`db.sqlite`) langsung dan menahan pengiriman ringkasan ke grup WA; konversi mutasi BCA dengan **Cek saldo bank: COCOK** (saldo akhir Rp9.708.250,32); ringkasan September To Budget Rp1.010.000, 2 kategori jebol. Catatan jujur: pada konversi mutasi sendiri unggulnya tipis (7 → 7,5); keunggulan besar ada di keamanan data (4 → 9). Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Cuplikan "Dengan skill" di atas berasal dari `examples/01-konversi-mutasi-bca.md` dan `examples/02-ringkasan-bulanan.md` (hasil skrip pada data fiktif), bukan dari uji OpenClaw.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 2 Okt 2026 (skill v1.0.5), skor 1–10: tanpa skill **5,5** → dengan skill **8,25** (LULUS). Contoh: menolak mengedit file budget (`db.sqlite`) langsung dan menahan pengiriman ringkasan ke grup WA; konversi mutasi BCA dengan **Cek saldo bank: COCOK** (saldo akhir Rp9.708.250,32); ringkasan September To Budget Rp1.010.000, 2 kategori jebol. Catatan jujur: pada konversi mutasi sendiri unggulnya tipis (7 → 7,5); keunggulan besar ada di keamanan data (4 → 9). Temuan uji itu (usulan kategori kurang cocok dengan budget, 11 pertanyaan sekaligus) sudah diperbaiki di v1.0.6 dan belum diuji ulang di OpenClaw. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Cuplikan "Dengan skill" di atas berasal dari `examples/01-konversi-mutasi-bca.md` dan `examples/02-ringkasan-bulanan.md` (hasil skrip pada data fiktif), bukan dari uji OpenClaw.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI). Aplikasi Actual desktop tidak dijalankan saat uji; yang dipakai hanya file budget fiktif yang dibuat lewat API resmi Actual versi 26.9.0, jadi impor ke layar Actual dan jadwal Telegram belum diuji langsung. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Ringkasan alat bantu anggaran, bukan laporan akuntansi/pajak.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02). Aplikasi Actual desktop tidak dijalankan saat uji; yang dipakai hanya file budget fiktif yang dibuat lewat API resmi Actual versi 26.9.0, jadi impor ke layar Actual dan jadwal Telegram belum diuji langsung. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Ringkasan alat bantu anggaran, bukan laporan akuntansi/pajak.
 
 ## FAQ
 **1. Apakah data keuangan saya dikirim ke Komunitech atau internet?**
-Tidak. Script bekerja di komputer Anda, tanpa koneksi internet. File budget Actual hanya dibaca, tidak diubah.
+Skrip pendukung bekerja di komputer Anda, tanpa koneksi internet, dan tidak mengirim apa pun ke Komunitech. File budget Actual hanya dibaca, tidak diubah. Yang perlu Anda ketahui: hasil skrip dibaca oleh AI agent Anda, sehingga isi yang tampil di chat diproses oleh layanan AI yang Anda pakai sesuai kebijakan penyedianya.
 
 **2. Bank saya mengirim mutasi PDF, bisa?**
 Belum. Unduh versi CSV atau Excel dari internet banking. File Excel cukup disimpan ulang sebagai CSV.

@@ -2,13 +2,13 @@
 
 **Daftar harga bertingkat, syarat kemitraan, dan pesan rekrut yang jujur, dengan hitungan yang membantu Anda dan reseller Anda sama-sama untung.**
 
-Diuji AI penguji independen di OpenClaw: 3,0 → 8,5 dari 10 (tanpa skill menyusun skema bonus rekrut berjenjang dan mengabaikan potongan Shopee; dengan skill skema itu ditolak dan harga tiap tingkat dihitung dari modal serta untung mitra).
+Diuji AI penguji independen di OpenClaw: 3,0 → 8,5 dari 10 (1 Okt 2026, v1.0.4, dua skenario). Tanpa skill: menyusun skema bonus rekrut berjenjang dan mengabaikan potongan Shopee. Dengan skill: skema itu ditolak dan harga tiap tingkat dihitung dari modal serta untung mitra.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Harga dropshipper (penjual tanpa stok sendiri), reseller, dan agen dihitung otomatis dari modal atau harga eceran, bukan kira-kira
-- ✅ Langsung ketahuan kalau untung reseller Anda terlalu tipis (penyebab utama reseller banting harga atau berhenti)
+- ✅ Langsung ketahuan kalau untung reseller Anda terlalu tipis (salah satu penyebab reseller banting harga atau berhenti)
 - ✅ Dua versi daftar harga: versi internal (dengan margin Anda) dan versi siap kirim ke reseller (tanpa modal)
 - ✅ Syarat & ketentuan siap tempel: minimal order, pembayaran, retur, harga minimum, penggunaan foto
 - ✅ Pesan ajakan jadi reseller untuk WA dan Instagram dengan contoh untung yang jujur, tanpa skema piramida
@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 3,0 → 8,5 dari 10 (tanpa skill menyus
 
 **Sesudah (cukup ketik):** "Aku roasting kopi bubuk robusta 250 gr, modal 32rb + kemasan & label 2rb, jual eceran 79rb. Mau buka dropshipper, reseller min 10, agen min 50. Rencananya diskon 15%, 25%, 35%. Reseller2 biasanya jualan di Shopee/TikTok, potongannya katanya sekitar 10%. Ongkir ke reseller rata2 1.500/bungkus mereka yang tanggung. Boleh diskon ke konsumen maks 5%. Bikinin price list, S&K, sama pesan rekrutnya ya." (S&K = syarat dan ketentuan)
 
-Cuplikan hasil (contoh dengan data fiktif; dipotong dari `examples/01-kopi-bubuk-3-tier.md`):
+Cuplikan hasil (dipotong; dari uji simulasi Claude Code oleh penguji independen, 23 Sep 2026, data fiktif, `examples/01-kopi-bubuk-3-tier.md`):
 > **Kenapa diperbaiki:** dengan diskon 15%, dropshipper hanya untung Rp 2.500–4.000 per bungkus setelah potongan marketplace. Mitra seperti ini biasanya cepat berhenti atau banting harga. …
 >
 > | Produk | Harga eceran anjuran | Dropshipper (1 pcs) | Reseller (≥ 10 pcs) | Agen (≥ 50 pcs) |
@@ -59,9 +59,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 3 Okt 2026.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
+Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 3 Okt 2026: bot penguji mengirim pesan yang sama ke bot tanpa skill dan bot dengan skill.
+- Tanpa skill: skor 5
+- Dengan skill: skor 8,5
 Verdik uji bot: LULUS — DENGAN menghitung harga dari diskon atas harga eceran + untung mitra setelah biaya Shopee dan tidak menyuruh reseller jual di bawah harga eceran sendiri; TANPA menyarankan reseller jual Rp20–22 rb (merusak harga eceran Rp25 rb) tanpa memperhitungkan potongan Shopee.
 
 ## FAQ

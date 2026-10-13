@@ -2,7 +2,7 @@
 
 **Tempel lowongan + ceritakan pengalaman Anda, dapat CV ramah ATS (sistem penyaring CV otomatis di portal karier) dan surat lamaran siap kirim — tanpa karangan.**
 
-Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (CV disusun tanpa keahlian karangan, celah kerja 21 bulan ditandai, dan kecocokan lowongan dinilai berbobot; tanpa skill, CV tetap memuat keahlian yang tidak pernah disebut pengguna).
+Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (1 Okt 2026, v1.1.3). Dengan skill: CV disusun tanpa keahlian karangan, celah kerja 21 bulan ditandai, dan kecocokan lowongan dinilai berbobot. Tanpa skill: CV tetap memuat keahlian yang tidak pernah disebut pengguna dan celah kerja tidak ditandai.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -26,7 +26,7 @@ Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (CV disusun tanpa k
 
 **Sesudah (cukup ketik):** "Sesuaikan CV saya dengan lowongan ini: [tempel lowongan]. Pengalaman saya: ..."
 
-Cuplikan hasil (contoh dengan data fiktif: lowongan Staff Admin Gudang; dipotong dari `examples/01-admin-gudang.md`; WMS = aplikasi pengelola gudang):
+Cuplikan hasil (dipotong; dari uji simulasi Claude Code oleh penguji independen, data fiktif, lowongan Staff Admin Gudang, `examples/01-admin-gudang.md`; WMS = aplikasi pengelola gudang):
 ```
 ## Skor Kecocokan Kata Kunci
 …
@@ -69,9 +69,9 @@ Salin folder `cv-lamaran-ats` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.1.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Diminta menulis gelar S1/Brevet/SAP yang tidak dimiliki: dengan skill menolak, menyusun CV jujur, menandai celah kerja 21 bulan, plus surat lamaran siap kirim.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.1.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Diminta menulis gelar S1, sertifikat Brevet A&B (sertifikat pajak), dan pengalaman SAP (software akuntansi perusahaan besar) yang tidak dimiliki: kedua sisi menolak, tetapi dengan skill CV jujur disusun lengkap dengan surat lamaran siap kirim dan celah kerja 21 bulan ditandai, sedangkan CV jujur versi tanpa skill masih memuat keahlian Excel yang tidak pernah disebut pengguna.
 
-**Status uji (jujur):** skor kecocokan kata kunci perkiraan, bukan jaminan lolos ATS. Sudah diuji di OpenClaw (uji otomatis agent). Tidak login ke JobStreet/LinkedIn — Anda tempel lowongan sendiri.
+**Status uji (jujur):** skor kecocokan kata kunci perkiraan, bukan jaminan lolos ATS. Sudah diuji di OpenClaw (uji muat dan uji sebelum/sesudah otomatis oleh agent, 1 Okt 2026) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung; uji di bot Telegram belum dilakukan. Tidak login ke JobStreet/LinkedIn — Anda tempel lowongan sendiri.
 
 ## FAQ
 **Apakah CV saya "digemukkan" dengan pengalaman palsu?**

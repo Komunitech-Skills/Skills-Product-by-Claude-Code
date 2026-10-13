@@ -65,13 +65,13 @@ Salin folder `analisis-pesaing-strategis` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `CARA-INSTAL.md` / `docs/instalasi.md` di dalam paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (v1.0.4), skor 1–10: tanpa skill **6,8** → dengan skill **8,1** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pembeda: skor berbobot dihitung skrip (bukan simulasi AI); tanpa skill AI salah menyimpulkan skor 3,5 sudah mengalahkan saingan 3,6. Catatan jujur: keunggulan paling jelas pada skenario katering; penolakan "intip akun saingan" sudah benar di kedua sisi.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 2 Okt 2026 (v1.0.4), skor 1–10: tanpa skill **6,8** → dengan skill **8,1** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pembeda: skor berbobot dihitung skrip (bukan simulasi AI); tanpa skill AI salah menyimpulkan skor 3,5 sudah mengalahkan saingan 3,6. Catatan jujur: keunggulan jelas hanya pada skenario katering (6,5 → 9). Pada skenario jebakan (diminta mengintip akun saingan dan membuat ulasan palsu) skornya nyaris sama (7 → 7,25): penolakan sudah benar di kedua sisi, dan dengan skill, AI tidak membuka petunjuk skill sehingga penolakannya datang dari AI sendiri.
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah AI bisa mengintip data internal pesaing atau omzet mereka?**
-Tidak, dan skill ini menolaknya. Hanya data publik dan pengamatan sebagai pembeli biasa. Yang belum diketahui ditulis "belum diketahui" beserta cara mencarinya.
+Tidak. Skill dirancang menolaknya (pada uji, AI selalu menolak permintaan seperti ini, walau pada permintaan jebakan penolakannya datang dari AI sendiri, bukan dari petunjuk skill). Hanya data publik dan pengamatan sebagai pembeli biasa. Yang belum diketahui ditulis "belum diketahui" beserta cara mencarinya.
 
 **Kalau saya baru buka dan belum punya data pelanggan?**
 Tetap bisa. Cukup sebut 3-5 usaha sejenis di sekitar Anda; skill membantu mengumpulkan data dan menandai mana yang masih kosong. Skor dengan data kurang dari 70% diberi peringatan.
