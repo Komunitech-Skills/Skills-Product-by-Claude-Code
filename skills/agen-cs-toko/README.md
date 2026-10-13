@@ -2,48 +2,50 @@
 
 **Draf balasan pelanggan siap tempel dalam hitungan detik — Anda tetap yang memutuskan dan mengirim.**
 
+*Diuji AI penguji independen: 6,0 → 8,75 dari 10 (tanpa skill, AI menawarkan memasang balas-otomatis di WhatsApp pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan dan mode Copilot).*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Basis pengetahuan toko (harga, stok, ongkir, retur, FAQ) ditulis sekali, dipakai berulang — jawaban konsisten, tidak beda-beda tiap admin.
+- ✅ Basis pengetahuan toko (kumpulan harga, stok, ongkir, retur, FAQ yang Anda tulis sekali) dipakai berulang — jawaban konsisten, tidak beda-beda tiap admin.
 - ✅ Draf balasan lengkap dengan **tingkat keyakinan** dan **daftar yang perlu dicek**, jadi Anda tahu kapan harus konfirmasi manual.
-- ✅ Aturan eskalasi otomatis: komplain berat, refund, ancaman, data sensitif, dan pertanyaan medis/hukum langsung ditandai untuk Anda tangani sendiri.
-- ✅ Aman: tidak pernah mengarang harga/stok, dan tidak pernah mengirim pesan sendiri ke pelanggan lewat WhatsApp Web — 100% mode Copilot.
-- ✅ Rekap harian pertanyaan terbanyak & pertanyaan yang belum ada jawabannya, jadi FAQ Anda makin lengkap dari hari ke hari.
+- ✅ Aturan eskalasi (diteruskan ke Anda): komplain berat, refund, ancaman, data sensitif, dan pertanyaan medis/hukum ditandai untuk Anda tangani sendiri.
+- ✅ Dirancang hati-hati: tidak mengarang harga/stok (yang belum ada datanya ditandai "perlu dicek admin") dan tidak mengirim pesan sendiri ke pelanggan lewat WhatsApp Web (cara memakai WhatsApp dari komputer yang bukan jalur resmi untuk bot) — mode Copilot: AI menyiapkan draf, Anda yang kirim.
+- ✅ Rekap harian pertanyaan terbanyak & pertanyaan yang belum ada jawabannya, jadi FAQ Anda makin lengkap dari hari ke hari (jadwal otomatis ke Telegram belum diuji langsung).
 
 ## Cocok untuk siapa
 - Pemilik toko online/offline dengan chat pelanggan yang sering menumpuk (WhatsApp, Shopee, Tokopedia).
 - Klinik/praktik kecil yang ingin membalas pertanyaan jadwal & info umum lebih cepat, dengan aturan tegas: tidak memberi saran medis (aturan medisnya belum direview tenaga medis).
-- Siapa pun yang sudah pakai OpenClaw dan ingin laporan CS otomatis dikirim ke Telegram tiap hari.
+- Siapa pun yang sudah pakai OpenClaw dan ingin laporan CS dikirim ke Telegram tiap hari (jadwal otomatis ini belum diuji langsung).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** Admin membaca ulang daftar harga tiap kali ada pertanyaan, kadang lupa update stok, balasan beda gaya antar admin, dan komplain berat kadang dibalas buru-buru tanpa dicek dulu ke pemilik.
 
-**Sesudah (cukup ketik):** "Ini chat pelanggan: 'Kak espresso 250ml sama americano beda harga gak? Bisa COD area Bintaro?'"
-→
+**Sesudah (cukup ketik):** "bikinin CS buat toko hijab saya dong, namanya Hijab Sakinah. harga: pashmina ceruti 89rb (8 warna), ... ini ada chat masuk: 'kak pashmina ceruti ready warna dusty pink? kalo ambil 3 bisa lebih murah gak? ongkir ke bekasi berapa'" Cuplikan hasil (`examples/01-toko-hijab-basis-pengetahuan-dan-draf.md`):
 ```
-**Keyakinan:** Tinggi
+**Keyakinan:** Sedang
 **Eskalasi:** Tidak
 
 **Draf 1:**
-Halo Kak! Beda ya — espresso 250ml Rp 22.000, americano 250ml Rp 20.000 🙏
-Untuk COD, area Bintaro termasuk yang kami layani. Mau pesan berapa cup, Kak?
-
+Halo Kak, terima kasih sudah mampir ke Hijab Sakinah 🤍
+Pashmina Ceruti harganya Rp 89.000/pcs. Kalau ambil 3, ada Paket 3 Pashmina jadi Rp 240.000
+(boleh campur warna), lebih hemat Rp 27.000 dibanding beli satuan 😊
+Untuk warna dusty pink, saya cek dulu stoknya ya Kak.
+...
 **Perlu dicek admin sebelum kirim:**
-- (tidak ada — semua fakta ada di basis pengetahuan)
+- Stok warna **dusty pink** (belum ada di basis pengetahuan).
+- Ongkir ke Bekasi untuk belanja Rp 240.000 (di bawah batas gratis ongkir Rp 300.000; tarif per kota belum ada).
 ```
-Tinggal tempel ke WhatsApp/marketplace, kirim.
-
-**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** rata-rata nilai 6,0 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (membangun CS toko hijab; komplain dengan ancaman, data KTP/rekening, dan permintaan bot WA auto-reply). Tanpa skill, agent menawarkan memasang auto-reply di nomor WA pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan, mode Copilot, eskalasi ke pemilik, dan draf penahan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+Stok warna yang belum Anda isi tidak dikarang, hanya ditandai "perlu dicek admin". Tinggal tempel ke WhatsApp/marketplace dan kirim sendiri.
 
 ## Cara pakai
-Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Siapkan asisten CS toko saya, ini daftar harganya..."
 - "Ini chat pelanggan, buatkan draf balasannya."
 - "Buatkan rekap harian pertanyaan CS ke Telegram saya tiap jam 8 malam."
 
 ## Instalasi singkat
-Salin folder `agen-cs-toko` ke folder skills AI agent kamu:
+Salin folder `agen-cs-toko` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -53,6 +55,13 @@ Salin folder `agen-cs-toko` ke folder skills AI agent kamu:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Hasil uji (jujur):**
+- **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (membangun CS toko hijab; komplain dengan ancaman, data KTP/rekening, dan permintaan bot WA auto-reply). Tanpa skill, agent menawarkan memasang auto-reply di nomor WA pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan, mode Copilot, eskalasi ke pemilik, dan draf penahan.
+- **Uji ulang dengan konteks kanal Telegram (tanpa mengirim ke Telegram), v1.0.11:** rata-rata 8,0, lulus 2 dari 3 percobaan (file yang sama). Uji di bot Telegram asli ada di bagian berikutnya.
+- Catatan jujur dari uji: kadang masih muncul kalimat seperti "ready ya" pada template stok sebelum stok dicek, jadi periksa draf sebelum dikirim.
+
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent dan bot Telegram asli) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal rekap otomatis ke Telegram belum diuji langsung.
 
 ## Bukti uji di bot Telegram
 
@@ -66,10 +75,10 @@ Verdik gelombang: LULUS — DENGAN menolak auto-balas WA dengan alasan yang bena
 Tidak. Skill ini bekerja mode **Copilot**: bot menyiapkan draf, Anda yang menempel dan mengirim. Ini sengaja, karena WhatsApp Web bukan kanal resmi dan berisiko nomor diblokir bila dipakai kirim otomatis.
 
 **Apakah bot bisa mengarang harga atau stok kalau saya belum isi datanya?**
-Tidak. Jika info belum ada di basis pengetahuan, draf akan menandai bagian itu "perlu dicek admin" — tidak pernah mengira-ngira.
+Skill dirancang agar tidak. Jika info belum ada di basis pengetahuan, draf menandai bagian itu "perlu dicek admin" daripada mengira-ngira; tetap baca draf sebelum mengirim.
 
 **Bisa dipakai untuk klinik/praktik dokter?**
-Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot **tidak akan** memberi diagnosis, saran dosis, atau triase — pertanyaan medis selalu diarahkan ke dokter. Batas medis ini belum direview tenaga medis, jadi draf untuk pasien tetap dicek staf atau dokter sebelum dikirim.
+Bisa, untuk info jadwal, cara daftar, dan edukasi umum. Bot dirancang **tidak** memberi diagnosis, saran dosis, atau triase — pertanyaan medis diarahkan ke dokter. Draf untuk pasien tetap dicek staf atau dokter sebelum dikirim.
 
 ## Riwayat perubahan
 

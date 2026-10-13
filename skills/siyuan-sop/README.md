@@ -2,21 +2,23 @@
 
 **Simpan SOP, notulen, dan FAQ toko di komputer sendiri lewat SiYuan (gratis, seperti Notion tapi lokal) - lalu tinggal minta AI mencarikan, membacakan, atau menambahkannya. Tidak ada biaya bulanan, data tidak wajib naik ke server siapa pun.**
 
+*Diuji AI penguji independen: 4,3 → 9,0 dari 10 (tanpa skill, agent memakai kunci akses yang ditempel di chat dan menimpa dokumen tanpa pratinjau; dengan skill ada pratinjau dan cadangan isi lama).*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **"Cari SOP retur" langsung ketemu.** AI mencari lewat isi seluruh SOP/FAQ/notulen di SiYuan, bukan menebak-nebak dari ingatan model.
-- ✅ **Simpan hasil `sop-writer`/`notulen-rapat` sekali perintah.** Tidak perlu buka aplikasi, cari folder, klik-klik - tinggal minta "simpan ini ke SiYuan".
-- ✅ **Basis pengetahuan CS yang benar-benar dipakai.** Ekspor satu perintah menggabungkan semua FAQ jadi satu file yang bisa langsung dipakai skill `agen-cs-toko`/`balas-chat-cs`, jadi balasan AI selalu berdasar data toko, bukan karangan.
-- ✅ **Audit SOP basi otomatis.** "SOP mana yang belum diupdate 3 bulan?" dijawab dalam sekejap, bisa dijadwalkan mingguan ke Telegram.
-- ✅ **Aman untuk data usaha.** Menambah dokumen baru/isi baru selalu lewat pratinjau + persetujuan; tidak pernah menimpa dokumen lama tanpa konfirmasi eksplisit; token disimpan aman dan tidak pernah ditampilkan.
+- ✅ **"Cari SOP retur" langsung ketemu.** AI mencari lewat isi seluruh SOP/FAQ/notulen di SiYuan, bukan menebak-nebak dari ingatan model. Diuji dengan data contoh dan server SiYuan tiruan (bukan aplikasi SiYuan sungguhan); lihat Hasil uji.
+- ✅ **Simpan hasil skill pembuat SOP (`sop-writer`) atau skill notulen rapat (`notulen-rapat`) sekali perintah.** Tidak perlu buka aplikasi, cari folder, klik-klik - tinggal minta "simpan ini ke SiYuan".
+- ✅ **Basis pengetahuan CS (layanan pelanggan) yang benar-benar dipakai.** Ekspor satu perintah menggabungkan semua FAQ jadi satu file yang bisa langsung dipakai skill agen CS toko (`agen-cs-toko`) atau skill balas chat CS (`balas-chat-cs`), jadi balasan AI berdasar data toko Anda, bukan karangan (info yang belum ada di sana ditandai untuk Anda lengkapi).
+- ✅ **Audit SOP basi.** "SOP mana yang belum diupdate 3 bulan?" dijawab dalam sekejap; bisa dijadwalkan mingguan ke Telegram (jadwal otomatis ini belum diuji langsung).
+- ✅ **Dirancang hati-hati untuk data usaha.** Menambah dokumen baru/isi baru lewat pratinjau + persetujuan; menimpa dokumen lama hanya dengan konfirmasi eksplisit dan cadangan isi lama; kunci akses (token) disimpan di komputer Anda dan tidak ditampilkan.
 
 ## Cocok untuk siapa
 - Pemilik toko online, klinik, atau kantor kecil yang selama ini menyimpan SOP di kepala, grup WA, atau dokumen Word yang berserakan.
 - Yang ingin pengganti Notion **tanpa langganan bulanan** dan data tetap di komputer sendiri.
-- Pengguna `agen-cs-toko`/`balas-chat-cs`/`sop-writer`/`notulen-rapat` yang ingin hasilnya tersimpan rapi dan bisa dicari, bukan hilang di riwayat chat.
+- Pengguna skill agen CS toko, balas chat CS, pembuat SOP, atau notulen rapat Komunitech yang ingin hasilnya tersimpan rapi dan bisa dicari, bukan hilang di riwayat chat.
 
-**Kurang cocok:** belum siap memasang aplikasi tambahan (SiYuan) - kalau hanya butuh SOP sekali jadi tanpa penyimpanan, cukup pakai `sop-writer`/`notulen-rapat` saja. Butuh berbagi basis pengetahuan ke banyak orang lewat internet (di luar cakupan; SiYuan dipakai lokal, bukan server publik).
+**Kurang cocok:** belum siap memasang aplikasi tambahan (SiYuan) - kalau hanya butuh SOP sekali jadi tanpa penyimpanan, cukup pakai skill pembuat SOP (`sop-writer`) atau skill notulen rapat (`notulen-rapat`) saja. Butuh berbagi basis pengetahuan ke banyak orang lewat internet (di luar cakupan; SiYuan dipakai lokal, bukan server publik).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** SOP tersebar di grup WA, Google Docs beberapa akun, dan ingatan pemilik. Karyawan baru bertanya berulang; tidak ada yang tahu SOP mana yang terbaru.
@@ -27,9 +29,7 @@ HASIL PENCARIAN 'jam buka' (1 dokumen)
 - Jam Buka 🕐  [/FAQ/Jam Buka 🕐]
     ...Toko buka jam 09.00-21.00 setiap hari, termasuk Minggu...
 ```
-(Contoh nyata dari uji dengan kernel SiYuan resmi v3.8.5.)
-
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.8, 2026-10-02):** rata-rata nilai 4,3 tanpa skill menjadi 9,0 dengan skill (skala 10), pada tiga skenario (belum punya SiYuan dan minta SOP buka-tutup kafe; token ditempel di chat; menimpa dokumen lama). Tanpa skill, agent memakai token yang ditempel di chat dan menimpa dokumen tanpa pratinjau atau cadangan; dengan skill, ada pratinjau, cadangan isi lama, dan token tidak dipakai. Uji regresi v1.0.10 (menimpa SOP): 2 menjadi 9,5. Jujur: uji ini memakai data contoh dan server SiYuan tiruan di komputer uji, bukan aplikasi SiYuan sungguhan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+(Contoh nyata dari uji dengan mesin inti SiYuan resmi v3.8.5 versi Linux.)
 
 ## Cara pakai
 Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
@@ -51,21 +51,25 @@ Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-3. Simpan token API sekali (di terminal Anda sendiri, bukan di chat): `python3 ~/.openclaw/skills/siyuan-sop/scripts/siyuan.py simpan-kunci` (Windows: `python`/`py`).
+3. Simpan kunci akses (token API) sekali (di terminal Anda sendiri, bukan di chat): `python3 ~/.openclaw/skills/siyuan-sop/scripts/siyuan.py simpan-kunci` (Windows: `python`/`py`).
 
 Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet setelah SiYuan terpasang, tidak butuh akun, tidak butuh paket tambahan.
 
-**Status uji jujur:** pada versi 1.0.0 pembuat menguji semua perintah dengan **kernel SiYuan resmi v3.8.5** (biner Linux resmi, dijalankan headless), termasuk judul/isi berisi emoji dan Unicode, plus 42 uji otomatis dengan server tiruan (kini 52 tes). Sejak itu penguji independen dan agent OpenClaw menguji dengan data contoh dan server SiYuan tiruan (lihat Hasil uji di atas). **Belum** diuji di aplikasi desktop SiYuan (Electron) sungguhan di Windows/macOS, belum diuji penguji independen terhadap kernel SiYuan asli, dan belum diuji di Gateway OpenClaw sungguhan untuk jadwal otomatis.
+**Hasil uji (jujur):**
+- **Uji OpenClaw, v1.0.8, 2 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 4,3 tanpa skill menjadi 9,0 dengan skill (skala 10), pada tiga skenario (belum punya SiYuan dan minta SOP buka-tutup kafe; kunci akses ditempel di chat; menimpa dokumen lama). Tanpa skill, agent memakai kunci akses yang ditempel di chat dan menimpa dokumen tanpa pratinjau atau cadangan; dengan skill, ada pratinjau, cadangan isi lama, dan kunci itu tidak dipakai. Uji ulang v1.0.10 (menimpa SOP): 2 menjadi 9,5. Uji ini memakai data contoh dan server SiYuan tiruan di komputer uji, bukan aplikasi SiYuan sungguhan.
+- **Uji oleh pembuat (v1.0.0):** semua perintah dicoba dengan mesin inti (kernel) SiYuan resmi v3.8.5 versi Linux, dijalankan tanpa tampilan layar (headless), termasuk judul/isi berisi emoji dan Unicode, plus 42 uji otomatis dengan server tiruan (kini 52 tes).
+
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent). **Belum** diuji di aplikasi desktop SiYuan sungguhan di Windows/macOS, belum diuji penguji independen terhadap SiYuan asli, belum diuji di Gateway OpenClaw sungguhan untuk jadwal otomatis, dan Claude Code, Codex, serta Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah data SOP/FAQ saya dikirim ke internet?**
-Tidak oleh skill ini. Script hanya berbicara dengan SiYuan di komputer Anda (`127.0.0.1`) dan menolak alamat lain kecuali Anda menegaskannya secara eksplisit. SiYuan sendiri tidak mengirim data ke cloud kecuali Anda mengaktifkan fitur sinkronisasinya sendiri (defaultnya mati).
+Tidak oleh skill ini. Skrip hanya berbicara dengan SiYuan di komputer Anda sendiri (alamat `127.0.0.1`) dan menolak alamat lain kecuali Anda menegaskannya secara eksplisit. SiYuan sendiri tidak mengirim data ke cloud kecuali Anda mengaktifkan fitur sinkronisasinya sendiri (defaultnya mati). Isi percakapan Anda dengan AI tetap diproses layanan AI yang Anda pakai, seperti biasa.
 
 **Bisakah AI menghapus atau menimpa SOP saya tanpa sengaja?**
-Tidak: membuat dokumen baru di path yang sudah terisi akan **ditolak** kecuali Anda memberi izin eksplisit (`--timpa` + konfirmasi "ya"), dan menambah isi (`tambah`) tidak pernah menghapus isi lama.
+Skill dirancang agar tidak: membuat dokumen baru di lokasi yang sudah terisi akan **ditolak** kecuali Anda memberi izin eksplisit dan menjawab "ya" (isi lama dicadangkan dulu), dan perintah menambah isi tidak menghapus isi lama. Jaga juga izin kunci akses SiYuan Anda seperlunya.
 
 **Apakah SiYuan aman?**
-SiYuan software sumber terbuka yang cukup populer dan aktif dikembangkan. Komunitech mengaudit celah keamanan yang diketahui sebelum merilis skill ini (lihat `research/sources/siyuan-2026-09-26.md`) - kesimpulannya aman dipakai **selama** mengikuti panduan keamanan di `references/panduan-siyuan.md` (jangan buka ke internet, jangan pasang plugin pihak ketiga, jangan aktifkan fitur "Publish").
+SiYuan software sumber terbuka yang cukup populer dan aktif dikembangkan. Komunitech memeriksa celah keamanan yang diketahui sebelum merilis skill ini; risikonya bisa ditekan **selama** Anda mengikuti panduan keamanan di `references/panduan-siyuan.md` (jangan buka ke internet, jangan pasang plugin pihak ketiga, jangan aktifkan fitur "Publish"). Tidak ada software yang bebas risiko sepenuhnya.
 
 ## Riwayat perubahan
 
