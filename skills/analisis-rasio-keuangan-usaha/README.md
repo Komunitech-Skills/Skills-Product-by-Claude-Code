@@ -1,8 +1,8 @@
-# Cek Kesehatan Keuangan Usaha dalam Hitungan Menit
+# Cek Kesehatan Keuangan Usaha Anda
 
 **Kirim neraca & laba rugi, AI langsung menjawab: usaha Anda sehat, waspada, atau bahaya, dan apa yang harus diperbaiki dulu.**
 
-*Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada uji ulang v1.0.5 (13 Okt 2026, skenario sama dengan uji pertama; uji pertama 8 → 9). Pembedanya: kas dibandingkan langsung dengan utang bank yang jatuh tempo, risiko likuiditas ditandai SEDANG, dan saran pertama mengurus perpanjangan utang; tanpa skill laporan menyimpulkan "aman jangka pendek".*
+*Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada uji ulang v1.0.5 (13 Okt 2026, skenario sama dengan uji sebelumnya; uji 1 Okt 2026 seri 8 → 8, lalu 8 → 9 setelah perbaikan v1.0.4). Pembedanya: kas dibandingkan langsung dengan utang bank yang jatuh tempo, risiko likuiditas (kemampuan membayar utang yang segera jatuh tempo) ditandai SEDANG, dan saran pertama mengurus perpanjangan utang; tanpa skill laporan menyimpulkan "aman jangka pendek".*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -23,7 +23,7 @@
 **Sebelum:** Pemilik laundry melihat omzet naik 20% tapi uang terasa seret. Neraca ada, tapi tidak tahu harus melihat angka yang mana.
 
 **Sesudah (cukup ketik):** "Ini angka laundry saya 2024 dan 2025, kenapa uang seret padahal omzet naik?"
-Cuplikan hasil (rasio lancar = kemampuan membayar tagihan jangka pendek; DER = perbandingan utang dengan modal sendiri; prive = uang usaha yang diambil pemilik untuk pribadi; contoh lengkap di `examples/02-laundry-tren-dua-tahun.md`):
+Cuplikan hasil (rasio lancar = kemampuan membayar tagihan jangka pendek; DER = perbandingan utang dengan modal sendiri; prive = uang usaha yang diambil pemilik untuk pribadi; contoh buatan pembuat skill, hasil asli skrip dengan data fiktif, selengkapnya di `examples/02-laundry-tren-dua-tahun.md`):
 ```
 Pada 2025, usaha UNTUNG Rp 23.760.000 (11,0% dari penjualan). Dari 10 rasio yang dinilai terhadap ambang usaha jasa: 4 baik, 5 waspada, 1 bahaya. Paling mendesak: Rasio lancar 0,89x.
 ...

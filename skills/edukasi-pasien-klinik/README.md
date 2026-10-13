@@ -2,7 +2,7 @@
 
 **Leaflet, pengingat kontrol, FAQ, dan konten edukasi klinik jadi dalam hitungan menit — bukan diagnosis, dan dengan batas yang jelas.**
 
-*Diuji AI penguji independen: 3 → 8 dari 10 pada pertanyaan pasien soal dosis obat (tanpa skill AI menyebut dosis dan menebak penyakit; dengan skill, tanpa dosis dan tanpa diagnosis, pasien diarahkan ke tenaga kesehatan).*
+*Diuji AI penguji independen di OpenClaw: 3 → 8 dari 10 pada pertanyaan pasien soal dosis obat (tanpa skill AI menyebut dosis dan menebak penyakit; dengan skill, tanpa dosis dan tanpa diagnosis, pasien diarahkan ke tenaga kesehatan).*
 
 > **Penting untuk klinik:** skill ini **belum direview tenaga medis**, bukan alat diagnosis, dan tidak menentukan dosis obat. Gunakan hasilnya sebagai draf; tinjau oleh dokter atau tenaga kesehatan Anda sebelum dikirim ke pasien.
 
@@ -24,7 +24,7 @@ diagnosis atau skrining medis**.
 **Sebelum:** Dokter mendiktekan poin perawatan lisan ke admin, admin mengetik ulang manual tiap
 pasien, format berbeda-beda, kadang lupa poin penting (obat, tanda bahaya).
 
-**Sesudah (cukup ketik):** "tolong bikinin leaflet buat pasien abis cabut gigi, sekalian versi wa yg pendek. dari drg rina poinnya: gigit kapas/tampon 30 menit jgn dilepas2, jgn kumur2 dulu 24 jam, ..." (poin medis, termasuk obat dan dosis sesuai resep dokter, berasal dari dokter, bukan dari AI). Cuplikan hasil:
+**Sesudah (cukup ketik):** "tolong bikinin leaflet buat pasien abis cabut gigi, sekalian versi wa yg pendek. dari drg rina poinnya: gigit kapas/tampon 30 menit jgn dilepas2, jgn kumur2 dulu 24 jam, ..." (poin medis, termasuk obat dan dosis sesuai resep dokter, berasal dari dokter, bukan dari AI). Cuplikan hasil (dipotong; dari uji simulasi Claude Code oleh penguji independen, data fiktif, `examples/01-leaflet-cabut-gigi.md`):
 ```
 🏥 Klinik Gigi Senyum Sejahtera
 Perawatan Setelah Cabut Gigi — [tanggal hari ini]

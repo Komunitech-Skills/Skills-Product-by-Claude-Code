@@ -1,8 +1,8 @@
-# Balas Chat Pelanggan Cepat, Ramah, Minim Salah Janji
+# Balas Chat Pelanggan Ramah, Minim Salah Janji
 
 **Tempel chat pelanggan, dapat balasan siap kirim yang menenangkan dan menyelesaikan masalah.**
 
-*Diuji AI penguji independen di OpenClaw: 6,4 → 8,8 dari 10 pada uji ulang v1.0.5 (13 Okt 2026; uji pertama 6,5 → 8,25; skenario klinik gigi 5,9 → 9,0) (pembedanya: tanpa skill AI mengarang voucher dan diskon yang tidak pernah Anda tawarkan dan mengabaikan kata "mau balikin"; dengan skill balasan hanya memakai kebijakan toko yang Anda berikan dan permintaan refund pembeli ditanggapi).*
+*Diuji AI penguji independen di OpenClaw: 6,4 → 8,8 dari 10 pada uji ulang v1.0.5 (13 Okt 2026); uji sebelumnya 6,5 → 8,25 (1 Okt 2026); skenario klinik gigi 5,9 → 9,0. Pembedanya: tanpa skill AI mengarang voucher dan diskon yang tidak pernah Anda tawarkan dan mengabaikan kata "mau balikin"; dengan skill balasan hanya memakai kebijakan toko yang Anda berikan dan permintaan refund pembeli ditanggapi.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
