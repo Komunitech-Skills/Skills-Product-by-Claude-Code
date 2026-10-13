@@ -163,3 +163,10 @@ Diterima = gaji − iuran karyawan − PPh dipotong + DTP tunai + kelebihan dike
 **Total selisih: 0 dari 7 karyawan + 5 kunci total (DB baru & lama).**
 
 **Skor: 9/10. Verdik: LULUS** (tetap PERLU REVIEW konsultan pajak; pembulatan belum dicocokkan dengan Coretax).
+
+## Uji ulang OpenClaw sebelum/sesudah v1.0.11 (2026-10-13, penguji independen)
+- Skenario 02 (gaji September untuk 2 karyawan warung di Solo, data fiktif). OpenClaw 2026.10.2 lokal, model router Komunitech. **Kedua sisi dijalankan ulang** (2 sampel per sisi); SESUDAH hanya memuat `gaji-umkm` 1.0.11. Rincian ada di `examples/00-openclaw-sebelum-sesudah.md`.
+- Skor: tanpa skill 7 / 7 → dengan skill 9 / 9 (rata-rata 7 → 9, **selisih 2,0**). **Verdik: LULUS** (acuan: sesudah ≥ 8 dan selisih ≥ 1,5). Skor SEBELUM 8 pada uji 2026-10-01 tidak terulang.
+- Angka di kedua sisi benar: transfer 3.164.150 / 2.544.000, setor BPJS 818.800 (Kesehatan 287.500 + Ketenagakerjaan 531.300), PPh 21 = 0. Keluaran mesin skill cocok 100% dengan hitungan `Decimal` independen di setiap kolom (bruto pajak 3.428.890 / 2.770.310, biaya perusahaan 6.526.950).
+- Pembeda: dengan skill ada dasar aturan + disclaimer, setoran dipisah per lembaga, asumsi bernomor, dan tidak ada klaim UMK. Tanpa skill tidak ada dasar aturan maupun disclaimer, dan 1 dari 2 sampel mengklaim "di atas UMK Solo, aman" tanpa angka.
+- Sisa kecil SESUDAH: CSV sementara dan slip ditulis di folder kerja tanpa menyebut lokasinya; tenggat setor (tgl 10/15) belum disebut di balasan pertama.
