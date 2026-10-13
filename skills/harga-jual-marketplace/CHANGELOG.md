@@ -5,6 +5,7 @@ Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 ## Catatan revisi 1.0.6 (2026-10-13)
 - Koreksi tanggal PPh 22 marketplace: bukan "berlaku 1 Agustus 2026" melainkan **dipungut sejak 1 Oktober 2026** oleh Shopee, Tokopedia, Lazada, Blibli (Siaran Pers DJP SP-23/2026, 1 Okt 2026; rencana 1 Agustus 2026 ditunda lewat PENG-46/PJ.09/2026, lalu penunjukan ulang 24 Sep 2026). Diperbarui di catatan script, SKILL.md, README, `references/regulasi.md`, dan tes. `TANGGAL_ATURAN` → 2026-10-13.
 - `references/regulasi.md`: judul lengkap & tanggal PMK 37/2025, riwayat jadwal, sumber resmi DJP. Dasar pungutan setelah voucher toko ditandai PERLU REVIEW (definisi peredaran bruto PMK 37/2025 disebut "sebelum dikurangi potongan penjualan").
+- Dasar pemungutan PPh 22 sebelum/sesudah voucher: sumber resmi tidak tegas (PMK 37/2025 Pasal 1 angka 10 "sebelum dikurangi potongan penjualan" vs FAQ DJP v2.0 "setelah penyesuaian keperluan pemasaran penjual semata"; voucher marketplace tidak dibahas). Hitungan **tidak diubah**; catatan jujur ditambahkan di README, SKILL.md (Batasan), dan `references/regulasi.md`.
 - Contoh di `examples/` adalah rekaman uji 2026-09-23/10-01 dan sengaja tidak diubah (masih memuat tanggal lama).
 
 ## Catatan revisi 1.0.3 (2026-10-01)
