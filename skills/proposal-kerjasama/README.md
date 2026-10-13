@@ -66,9 +66,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang uji 9 (satu putaran uji di bot), 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/827/835 — skor 6,5
-- Dengan skill: https://t.me/c/4407409583/828/837 — skor 8,5
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang uji 9 (satu putaran uji di bot), 2026-10-05.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
 Verdik gelombang: LULUS — DENGAN kini memberi peringatan rugi lengkap (laba per botol = Rp9.750 − HPP − kirim, contoh Rp3.750 / impas / rugi Rp1.250) plus proposal, pesan WA, dan email yang ditulis utuh tanpa bocoran istilah teknis; TANPA menolak klaim palsu dengan tepat tetapi tidak menghitung untung/rugi, tidak memberi pesan WA/email, dan mengarang komitmen (kirim rutin, tarik barang kedaluwarsa).
 
 Kekurangan yang ditemukan dari uji ini diperbaiki di versi 1.0.10: PIRT kini dibedakan dari BPOM, dan komitmen yang tidak Anda berikan (mis. display kami sediakan) tidak lagi tercetak di proposal.

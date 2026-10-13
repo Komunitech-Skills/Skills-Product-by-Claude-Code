@@ -67,8 +67,8 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python (
 ## Bukti uji di bot Telegram
 
 Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech; tautan hanya terbuka untuk anggota grup), 12 Okt 2026, satu skenario dengan topik lain, pesan yang sama tanpa skill lalu dengan skill:
-- Tanpa skill: https://t.me/c/4407409583/1095/1151 — skor 7,5
-- Dengan skill: https://t.me/c/4407409583/1096/1158 — skor 8,5
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
 Selisihnya tipis (+1,0). Tanpa skill AI sudah menolak aksi berisiko (cek mutasi bank, kirim WA otomatis, bagikan alamat) dengan angka nota yang benar. Dengan skill ditambah nomor pesanan, nota, label, rekap tanpa nomor HP/alamat yang aman untuk grup reseller, dan CSV. Jadi di bot Telegram keunggulan skill ini lebih kecil daripada angka uji OpenClaw di atas.
 
 ## FAQ

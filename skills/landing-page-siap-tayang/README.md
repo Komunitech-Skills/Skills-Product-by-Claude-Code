@@ -62,9 +62,9 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python t
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1248/1254 — skor 4
-- Dengan skill: https://t.me/c/4407409583/1249/1258 — skor 8
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 15, 2026-10-12.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 4
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8
 Verdik gelombang: LULUS — Tanpa skill halaman hanya disimpan sebagai file di komputer bot dan chat tidak berisi halamannya; dengan skill HTML utuh tersedia di chat, siap tempel, tanpa testimoni palsu, klaim "terbaik", atau pixel diam-diam, plus langkah tayang gratis.
 
 ## FAQ

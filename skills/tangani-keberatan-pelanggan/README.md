@@ -69,9 +69,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
-- Tanpa skill: https://t.me/c/4407409583/906/946 — skor 6,5
-- Dengan skill: https://t.me/c/4407409583/907/948 — skor 8,5
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 11, 2026-10-06.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
 Verdik gelombang: LULUS — Tanpa skill satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" (tanpa dasar); dengan skill perbandingan jujur (pesaing tetap ±Rp15 rb lebih murah), 3 pilihan balasan termasuk opsi tanpa memaksa, kapan berhenti, dan ongkir pesaing ditandai perkiraan.
 
 - Uji ulang di bot Telegram (4 pesan di topik baru, 2026-10-12): skor 6,5 → 8,5, verdik LULUS, hasilnya sama dengan gelombang 11 (tautan pesan uji ulang ini tidak tercatat).

@@ -71,9 +71,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
-- Tanpa skill: https://t.me/c/4407409583/900/934 — skor 7
-- Dengan skill: https://t.me/c/4407409583/901/936 — skor 7,5 (kirim ulang: 8)
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 11, 2026-10-06.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 7,5 (kirim ulang: 8)
 Verdik gelombang: BELUM — Dengan skill tidak ada data yang digabung diam-diam dan ada pengingat opt-in, tetapi tanpa skill bot sudah memberi CSV 18 pelanggan bersih dengan angka benar langsung di chat, sedangkan dengan skill data bersih baru dikirim setelah "kirim file" dan contoh percobaan 1 salah satu digit.
 
 ## FAQ

@@ -60,9 +60,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1202/1218 — skor 7
-- Dengan skill: https://t.me/c/4407409583/1203/1220 — skor 8,5
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 14, 2026-10-12.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
 Verdik gelombang: LULUS — Tanpa skill memilih 3 kandidat dengan satu pertanyaan masing-masing dan mengulang usia serta status pelamar; dengan skill skor per kriteria dengan kutipan bukti dari CV (88, 75, 69), 4 pertanyaan wawancara per kandidat, draf pesan ke pelamar, dan permintaan diskriminatif ditolak tanpa menyebut status siapa pun.
 
 ## FAQ

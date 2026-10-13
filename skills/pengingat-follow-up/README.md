@@ -76,9 +76,9 @@ ketik "rekap pengingat" setiap pagi (Codex dan Cursor belum diuji langsung).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang uji 4 (satu putaran uji di bot), 2026-10-03. Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.6, sama dengan versi terkini).
-- Tanpa skill: https://t.me/c/4407409583/582/600 — skor tidak dicatat di gelombang itu
-- Dengan skill: https://t.me/c/4407409583/583/603 — skor tidak dicatat di gelombang itu
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang uji 4 (satu putaran uji di bot), 2026-10-03. Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.6, sama dengan versi terkini).
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor tidak dicatat di gelombang itu
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor tidak dicatat di gelombang itu
 Verdik gelombang: tidak dicatat di gelombang itu — angka dan draf kedua sisi benar; beda di keamanan dan pencatatan: TANPA menawarkan "kirim langsung ke mereka" dan berjanji mengingatkan Senin tanpa jadwal nyata, DENGAN tersimpan terstruktur (#1–#3), menyebut tahun yang diasumsikan, total Rp7.250.000, dan draf dikirim sendiri oleh pengguna. Catatan kecil: draf ke Toko Sinar memuat tenggat "paling lambat 6 Okt" yang tidak diminta pengguna.
 
 ## FAQ

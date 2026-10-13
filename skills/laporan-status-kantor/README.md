@@ -78,9 +78,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 10, 2026-10-05 (v1.0.7).
-- Tanpa skill: https://t.me/c/4407409583/869/884 — skor 4,5
-- Dengan skill: https://t.me/c/4407409583/870/887 — skor 5
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 10, 2026-10-05 (v1.0.7).
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 4,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 5
 Verdik gelombang: BELUM — Kedua sisi menolak nominal THR per orang di grup dengan benar, tetapi keduanya tidak memberi teks pengumuman; DENGAN malah menanyakan tanggal cuti bersama yang sudah ada di rujukan skill.
 
 ## Catatan penting
