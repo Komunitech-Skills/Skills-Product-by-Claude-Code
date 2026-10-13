@@ -42,6 +42,8 @@ Cek: Aset = Utang + Modal (Rp 17.200.000). SEIMBANG.
 ```
 (Contoh nyata dari uji dengan hledger 1.52.4. Angkanya sama dengan hitungan hledger sendiri dan dengan skill Laporan Keuangan EMKM.)
 
+**Hasil uji (OpenClaw, uji otomatis agent dengan hledger 1.30.1 dan data contoh, 2 Oktober 2026):** rata-rata nilai 5,25 tanpa skill menjadi 9,0 dengan skill (skala 10); uji pertama sebelum perbaikan sempat belum lulus (7,25). Pada jurnal kecil, angka laporan tanpa skill juga bisa dihitung; pembedanya ada di keamanan data dan pajak. Tanpa skill, agent langsung mengubah file pembukuan tanpa bertanya, dan potongan "PPh 23" atas penjualan kopi dicatat sebagai kredit pajak dengan piutang dinyatakan lunas. Dengan skill entri ditampilkan dulu, disimpan setelah Anda bilang "ya" (dengan cadangan otomatis), laba bersih September Rp 7.865.500, neraca seimbang Rp 21.515.500, dan sisa Rp 40.000 tetap tercatat sebagai piutang. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 - "Mulai pembukuan untuk usaha saya, nama Kopi Sari, rekening BCA"
 - "Catat: jual 1,25 juta tunai, bayar listrik 350rb, beli susu 1,5 juta belum dibayar ke CV Susu Segar"
@@ -63,9 +65,9 @@ Cek: Aset = Utang + Modal (Rp 17.200.000). SEIMBANG.
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh akun, internet, atau paket tambahan.
+Panduan pemasangan skill lengkap: lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Butuh **Python 3.8+** (gratis di python.org). Tidak butuh akun, internet, atau paket tambahan.
 
-**Status uji jujur (versi 1.0.5):** diuji pembuat dan penguji independen dengan hledger **1.52.4 asli** di Linux dan tanpa hledger; versi 1.0.5 juga lulus 51 uji otomatis dengan hledger **1.30.1** (versi lama dari paket Ubuntu/Debian) - hledger yang terlalu lama/tidak cocok otomatis diganti pembaca bawaan. 1.0.5 juga: file pembukuan di folder kerja dikenali (tidak membuat buku baru tanpa konfirmasi), dan potongan "PPh 23" atas penjualan barang dicatat sebagai sisa piutang + draf pesan klarifikasi (perlakuan pajaknya PERLU REVIEW konsultan). Sebelumnya 45 uji otomatis lulus, termasuk pencocokan angka dengan `hledger is/bs/cf` dan dengan skill Laporan Keuangan EMKM. Versi 1.0.1 menambah pencatatan pembayaran pelanggan yang dipotong PPh 23, pengingat penjualan tunai yang tidak ada di mutasi bank, dan penolakan tegas pembukuan ganda. Versi 1.0.2: pengingat penjualan tunai di laporan laba rugi tetap muncul walau mutasi berisi tarik tunai ATM/setor tunai, dan potongan PPh 23 ditolak untuk penjualan barang. Versi 1.0.3: potongan PPh 23 juga ditolak saat pelanggan melunasi piutang dari penjualan barang (`terima-piutang`); piutang campuran barang+jasa atau dari saldo awal diberi peringatan. Versi 1.0.4: asal piutang dikenali dari jenis catatannya (jual/jasa), bukan dari nama akun; pelunasan piutang yang tidak tercatat di buku diberi peringatan agar tagihan/saldo awalnya dicatat dulu. **Belum** diuji di Windows/Mac, dan jadwal laporan OpenClaw belum dicoba di Gateway sungguhan.
+**Status uji jujur (versi 1.0.5):** diuji pembuat dan penguji independen dengan hledger **1.52.4 asli** di Linux dan tanpa hledger; versi 1.0.5 juga lulus 51 uji otomatis dengan hledger **1.30.1** (versi lama dari paket Ubuntu/Debian) - hledger yang terlalu lama/tidak cocok otomatis diganti pembaca bawaan. 1.0.5 juga: file pembukuan di folder kerja dikenali (tidak membuat buku baru tanpa konfirmasi), dan potongan "PPh 23" atas penjualan barang dicatat sebagai sisa piutang + draf pesan klarifikasi (perlakuan pajaknya PERLU REVIEW konsultan). Sebelumnya 45 uji otomatis lulus, termasuk pencocokan angka dengan `hledger is/bs/cf` dan dengan skill Laporan Keuangan EMKM. Versi 1.0.1 menambah pencatatan pembayaran pelanggan yang dipotong PPh 23, pengingat penjualan tunai yang tidak ada di mutasi bank, dan penolakan tegas pembukuan ganda. Versi 1.0.2: pengingat penjualan tunai di laporan laba rugi tetap muncul walau mutasi berisi tarik tunai ATM/setor tunai, dan potongan PPh 23 ditolak untuk penjualan barang. Versi 1.0.3: potongan PPh 23 juga ditolak saat pelanggan melunasi piutang dari penjualan barang (`terima-piutang`); piutang campuran barang+jasa atau dari saldo awal diberi peringatan. Versi 1.0.4: asal piutang dikenali dari jenis catatannya (jual/jasa), bukan dari nama akun; pelunasan piutang yang tidak tercatat di buku diberi peringatan agar tagihan/saldo awalnya dicatat dulu. **Belum** diuji di Windows/Mac, jadwal laporan OpenClaw belum dicoba di Gateway sungguhan, dan ekspor CSV asli BRI, BNI, serta bank digital belum diuji (hasil impor selalu dipratinjau dulu sebelum disimpan).
 
 ## FAQ
 **Apakah saya harus paham akuntansi?**
@@ -76,6 +78,8 @@ Setiap penyimpanan membuat cadangan versi sebelumnya dan memeriksa ulang buku. B
 
 **Apakah data saya dikirim ke internet?**
 Tidak oleh skill ini. Buku Anda adalah file di komputer Anda sendiri, dan script tidak membuka koneksi internet. Tampilan web hledger-web (opsional) hanya bisa dibuka dari komputer itu sendiri.
+
+> **Catatan penting:** alat bantu pembukuan, bukan nasihat akuntansi atau pajak. Laporan dihitung dari transaksi yang Anda setujui; sebelum dipakai untuk pengajuan KUR/bank atau laporan pajak, sebaiknya diperiksa akuntan. Perlakuan pajak atas potongan PPh 23 PERLU REVIEW konsultan pajak, dan pembulatan belum dicocokkan dengan Coretax. Skill menolak pembukuan ganda (dua versi laporan).
 
 ---
 Komunitech tidak berafiliasi dengan proyek hledger. hledger adalah perangkat lunak terpisah (GPL-3.0) milik pembuatnya; Anda mengunduhnya sendiri dari sumber resmi.

@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Kas saya 20 juta, jualan 12 juta seminggu, gaji 18 juta tiap tanggal 25, sewa 6,5 juta tiap tanggal 1, bahan 7 juta/minggu, PT Sinar bayar 15 juta awal Desember. Aman nggak sampai akhir tahun?"
 → Tabel 13 minggu dengan tanda 🟢🟡🔴, penjelasan bahwa minggu 23–29 November kas tinggal Rp 0, dan pilihan tindakan seperti "minta PT Sinar bayar 2 minggu lebih awal" beserta hasil hitungannya, plus file Excel.
 
+**Hasil uji A/B (simulasi agent, 23 September 2026):** usaha katering dengan kas Rp 35 juta. Jawaban tanpa skill per bulan: "aman, saldo terendah sekitar Rp 14,9 juta". Padahal di minggu ke-6 (2–8 November) saldo tinggal Rp 6.300.000 karena freezer, sewa, dan bahan jatuh di minggu yang sama. Dengan skill titik kritis itu ketemu, lengkap dengan 5 opsi tindakan berangka; saldo 13 minggu cocok dengan hitungan independen (13 dari 13 minggu). Rincian: `examples/00-pembanding-tanpa-skill.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Buatkan proyeksi arus kas 13 minggu dari data ini: …"
@@ -36,7 +38,7 @@ Salin folder `arus-kas-13minggu` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Saya tidak punya data rapi, hanya perkiraan. Bisa?**
@@ -47,6 +49,8 @@ Sebaiknya ada (gratis, biasanya sudah ada di Mac/Linux; di Windows pasang dari p
 
 **Apakah data keuangan saya dikirim ke internet?**
 Script berjalan di komputermu sendiri tanpa internet. Isi percakapan tetap dibaca oleh AI agent yang kamu pakai.
+
+> **Catatan penting:** proyeksi dari angka dan jadwal yang kamu berikan, bukan ramalan, bukan jaminan, dan bukan nasihat keuangan profesional. Pos yang belum kamu sebut (mis. BPJS atau PPh 21) ditulis "Belum termasuk", dan kewajiban yang jatuh setelah minggu ke-13 diperingatkan terpisah. Untuk keputusan besar (PHK, jual aset, restrukturisasi utang) diskusikan dengan akuntan atau konsultan.
 
 ## Catatan revisi 1.0.3 (2026-10-01)
 Perbaikan dari uji OpenClaw asli (arus kas 13 minggu, info kurang lalu dilengkapi):

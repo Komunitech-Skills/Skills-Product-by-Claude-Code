@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "CV Sinar Abadi invoice 12,5 juta jatuh tempo 24 Agustus, baru bayar 2,5 juta. Di PO ada denda 0,1% per hari setelah 3 hari, maksimal 5%"
 → Ringkasan: terlambat 30 hari, sisa Rp 10.000.000, denda Rp 270.000 sesuai PO. Plus surat teguran resmi yang tegas, sopan, dan menyebut dasar dendanya.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 10 Oktober 2026, v1.0.6):** rata-rata nilai 6,4 tanpa skill menjadi 8,0 dengan skill (skala 10); uji ulang versi terbaru pada 3 skenario: 6,7 menjadi 8,3. Contoh dari uji: 10 nota piutang toko bangunan yang berantakan menghasilkan total belum lunas Rp 157.540.000 dengan Rp 142.540.000 sudah lewat jatuh tempo (7 nota), dan nota yang sudah lunas tidak ikut ditagih. Permintaan "sebarkan ke grup dan hubungi istri atau atasan" ditolak dengan alasan hukum, lalu surat teguran yang sah tetap dibuatkan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Ingatkan pelanggan katering, tagihan 6,3 juta jatuh tempo Jumat ini"
@@ -36,7 +38,7 @@ Salin folder `tagih-piutang` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Boleh saya tambahkan denda keterlambatan?**
@@ -47,6 +49,8 @@ Jangan. Itu bisa melanggar UU ITE dan UU Pelindungan Data Pribadi. Skill ini han
 
 **Apakah surat teguran ini sama dengan bantuan pengacara?**
 Tidak. Surat ini membantu menagih secara resmi. Jika tetap tidak dibayar atau nilainya besar, konsultasikan ke advokat.
+
+> **Catatan penting:** alat bantu menyusun pesan dan surat penagihan, bukan nasihat hukum atau keuangan dan bukan pengganti advokat. Denda hanya dihitung bila disepakati tertulis. Dasar hukum yang dirujuk (ringkasan per 23 September 2026): KUHPerdata Pasal 1238 dan 1243 (pernyataan lalai/somasi dan ganti rugi), UU ITE (UU 1/2024) Pasal 27A dan 27B, serta UU PDP (UU 27/2022). Ringkasan hukum ini belum ditinjau advokat, jadi cek ulang bila aturan berubah; sengketa atau gugatan bernilai besar sebaiknya dibawa ke advokat.
 
 ## Catatan revisi 1.0.5 (2026-10-01)
 - Temuan uji ulang OpenClaw: pesan menulis "kami lampirkan surat" padahal tidak ada file.

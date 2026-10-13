@@ -18,7 +18,9 @@
 **Sebelum:** Mencentang satu per satu mutasi bank di kertas, 2–3 jam, dan tetap ada selisih yang tidak ketemu.
 
 **Sesudah (cukup ketik):** "Tolong cocokkan mutasi-bca-september.csv dengan invoice-september.csv"
-→ Laporan: 3 cocok, 4 perlu dicek (termasuk "Andi bayar 2 invoice sekaligus Rp 3.000.000"), 1 invoice belum masuk (Joko Rp 1.250.000), 2 uang masuk belum dicatat — plus penjelasan selisih Rp 5.245.154 yang seimbang dan file Excel.
+→ Contoh keluaran (ilustrasi): 3 cocok, 4 perlu dicek (termasuk "Andi bayar 2 invoice sekaligus Rp 3.000.000"), 1 invoice belum masuk (Joko Rp 1.250.000), 2 uang masuk belum dicatat — plus penjelasan selisih Rp 5.245.154 yang seimbang dan file Excel.
+
+**Hasil uji (OpenClaw, uji otomatis agent, 1 Oktober 2026):** rata-rata nilai 7,5 tanpa skill menjadi 8,25 dengan skill (skala 10). Pada mutasi BCA September vs 9 invoice, dengan skill selisih Rp 151.715 dijelaskan seimbang (+Rp 600.000 belum bayar, −Rp 758.215 transfer tak tercatat dan bunga bank, +Rp 6.500 terpotong biaya transfer), serta cicilan dan transfer telat ditandai "perlu dicek". Tanpa skill, tanda penjelasan selisih terbalik dan judul "COCOK (9 transaksi)" dipakai untuk 6 baris. Catatan jujur: pada skenario permintaan login internet banking, skill tidak memberi nilai tambah (tanpa skill 8,5, dengan skill 7,5). Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -36,7 +38,7 @@ Salin folder `rekonsiliasi-bank` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Apakah data rekening saya aman?**
@@ -47,3 +49,5 @@ Sebaiknya unduh ulang dalam format CSV/Excel dari internet banking. Jika tidak b
 
 **Bagaimana jika pencocokannya salah?**
 Hasil yang tidak pasti ditandai "perlu dicek", bukan dianggap benar. Menambahkan kolom nomor invoice atau nama pelanggan di catatan membuat hasil jauh lebih akurat.
+
+> **Catatan penting:** alat bantu mencocokkan, bukan audit dan bukan nasihat akuntansi atau keuangan. Pasangan yang ditandai "perlu dicek" harus kamu periksa sendiri sebelum dicatat; "angka seimbang" berarti penjelasan selisihnya cocok secara hitungan, bukan bukti bahwa setiap pasangan pasti benar. Untuk sengketa dengan bank atau pelanggan, gunakan rekening koran resmi dari bank.
