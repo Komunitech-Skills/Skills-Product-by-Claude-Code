@@ -75,7 +75,7 @@ baru simulasi agent); Codex dan Cursor belum diuji.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech; tautan hanya terbuka untuk anggota grup), 2 Okt 2026, tiga giliran percakapan. Skor tidak dicatat pada uji ini, dan versi skill yang diuji tidak tercatat (kira-kira 1.0.6).
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 2 Okt 2026, tiga giliran percakapan. Skor tidak dicatat pada uji ini, dan versi skill yang diuji tidak tercatat (kira-kira 1.0.6).
 - Tanpa skill: (pesan di grup uji internal Komunitech)
 - Dengan skill: (pesan di grup uji internal Komunitech)
 Hasilnya: tanpa skill, AI langsung memasang pengingat otomatis ke grup, melanggar aturan bahwa draf dikirim oleh staf. Dengan skill, tanggal dihitung benar ("3 hari lagi" menjadi Senin 5 Okt), izin pasien dicatat, pasien tanpa izin disaring, dan draf disiapkan untuk disalin staf.
