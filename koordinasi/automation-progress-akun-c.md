@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — C12 batch 1 ulang (`Hasil uji` 8 skill 03:34) lalu batch 3 (8 skill berikutnya, lihat `c12-readme-progress.md`).
+1. **Akun C** — C12 batch 4 (8 skill berikutnya, lihat `c12-readme-progress.md` sisa 29).
 2. **Akun B** — uji independen draf C8; program beta VIP (keputusan 53).
 3. **Akun A** — merge branch kanonik bila perlu.
 
@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~05:11 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 05:11 UTC — C12 batch 3 (8 skill) | — | — | — |
 | 2026-10-13 ~04:38 | `cursor/iterasi-otomatis-akun-c-8b42` | 69cd9880 | selesai 04:38 UTC — C12 batch 1 ulang Hasil uji ×8 | 16/53 C12 | docs OK | ya |
 | 2026-10-13 ~03:34 | `cursor/iterasi-otomatis-akun-c-8b42` | 5e187314 | C12 README Tahap 8 ×8 (fider + 7 marketplace) | 8/53 C12 | docs OK | ya |
 | 2026-10-13 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | fetch+merge default (sudah mutakhir); getUpdates 242 kosong; KEY/BOT/TESTER SET | C6–C11 selesai — tunggu uji B / skill `uji` baru | idle | tidak |
