@@ -71,7 +71,17 @@ Selalu berikan dalam urutan ini:
 7. **Asumsi yang dipakai** (bila ada default yang dipakai karena input awal kurang lengkap).
 
 ## Contoh
-Lihat [examples/uji-pembuat-01-keripik-pedas.md](examples/uji-pembuat-01-keripik-pedas.md) untuk contoh lengkap dari permintaan "buatkan landing page untuk keripik pedas saya, harga 25 ribu" sampai ke output siap tempel (dibuat oleh pembuat skill, bukan pengganti pengujian independen Tahap 6).
+Permintaan: "Buatkan landing page untuk keripik pedas saya, harga 25 ribu." Pengguna hanya menyebut nama usaha (Keripik Setan Mak Iyem), WA, area kirim, cara bayar, dan belum punya testimoni. Hanya itu yang boleh jadi fakta di halaman; sisanya `[isian: ...]`. Cuplikan hasil (data fiktif):
+```
+### Keripik Setan Mak Iyem — Rp25.000 [isian: per bungkus/ukuran]. Kirim ke Jabodetabek dan luar kota, bayar transfer atau QRIS.
+- Rasa dan tingkat pedas: [isian: varian rasa/level pedas yang tersedia sesuai produkmu].
+## Kata Mereka yang Sudah Coba
+[ISI TESTIMONI ASLI — nama & kota pembeli. Hapus bagian ini sampai ada testimoni asli.]
+## Garansi
+[isi: garansi/retur, hanya yang benar-benar kamu berlakukan.]
+**Tahan berapa lama?** [isian: masa simpan sesuai label kemasan]
+```
+Contoh lengkap (tanya sekali, tautan WA, meta, ceklis kepatuhan): [examples/01-keripik-pedas-normal.md](examples/01-keripik-pedas-normal.md).
 
 ## Batasan & Penanganan Error
 - **Tidak pernah mengarang** testimoni, jumlah pelanggan, rating, angka "terjual", atau hitung mundur/stok palsu. Kosongkan dengan placeholder daripada mengisi angka rekaan.

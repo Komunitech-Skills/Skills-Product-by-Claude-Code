@@ -11,7 +11,7 @@
 - SKILL.md/references: tidak ada prompt injection. Larangan imbalan untuk ubah ulasan, pembukaan data pembeli, dan ajakan keluar platform eksplisit. **Aman.**
 
 ## Verifikasi (independen)
-- Panjang balasan: 358, 175 (S1); 496, 249 (S2); 175, 218, 295 (S3); 311 (S5) — cocok dengan hitungan independen.
+- Panjang balasan: 294, 175 (S1); 496, 249 (S2); 175, 218, 295 (S3); 311 (S5) — cocok dengan hitungan independen.
 - Deteksi yang benar: nomor HP, email, `INV/…`, kode resi `JP1234567890`, deretan angka ≥ 10 digit, "Jl./No. 5/RT 03", "WA" di marketplace (GAGAL),
   "ubah bintang", "bintang 5 … voucher" (GAGAL), "seharusnya kakak baca deskripsi", "pembeli lain tidak", janji "pasti/dijamin/100%" (CEK),
   tidak ada terima kasih/maaf/eskalasi (SARAN), platform tidak dikenal & teks kosong (ERROR) ✔.

@@ -41,7 +41,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 NOL = Decimal(0)
 SERATUS = Decimal(100)
 TIER_DEFAULT = {"diskon": ["Dropshipper:1:20", "Reseller:12:25", "Agen:60:35"],

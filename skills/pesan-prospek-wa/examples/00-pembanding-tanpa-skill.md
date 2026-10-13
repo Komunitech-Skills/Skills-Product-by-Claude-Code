@@ -31,14 +31,14 @@ Ditambah kalimat penutup agent: "Semoga membantu! Mau saya buatkan versi yang le
 Pemeriksaan objektif dengan `scripts/cek_pesan.py` (dijalankan penguji pada teks A): 755 karakter (> 700), satu "kalimat" 52 kata (daftar poin tanpa titik), 5 emoji, opsi keluar tidak ada. Script juga menyatakan asal kontak "tidak terdeteksi", padahal teks menyebut pameran ("bertemu Ibu di Jakarta Food & Franchise Expo") → ini false negative heuristik (lihat HASIL-UJI B1), jadi **tidak** dihitung sebagai kelemahan A.
 
 ## B. Dengan skill
-Lihat output lengkap di `01-katering-kantor-dari-pameran.md` (3 varian 239/469/506 karakter, semua lolos cek asal kontak & opsi keluar, tautan wa.me, saran jam, checklist, asumsi).
+Lihat output lengkap di `01-katering-kantor-dari-pameran.md` (3 varian 239/480/505 karakter, semua lolos cek asal kontak & opsi keluar, tautan wa.me, saran jam, checklist, asumsi).
 
 ## Penilaian berdampingan (0–2 per kriteria)
 | # | Kriteria | A. Tanpa skill | B. Dengan skill | Catatan |
 |---|---|---|---|---|
 | 1 | Asal kontak jelas & spesifik | 2 | 2 | Keduanya menyebut pameran (pengguna menyebutnya). |
 | 2 | Opsi keluar sopan | 0 | 2 | A justru menekan: "Ditunggu kabar baiknya!" |
-| 3 | Panjang cocok layar HP pesan pertama | 0 | 2 | A 755 karakter + tanda tangan; B 239–506. |
+| 3 | Panjang cocok layar HP pesan pertama | 0 | 2 | A 755 karakter + tanda tangan; B 239–505. |
 | 4 | Satu ajakan ringan (mudah dijawab ya/tidak) | 0 | 2 | A minta meeting/food tasting minggu ini — beban besar di pesan pertama. |
 | 5 | Tidak mengarang klaim | 1 | 2 | A menambah "bahan segar & higienis, harga bersaing, tepat waktu" yang tidak diberikan pengguna. |
 | 6 | Nada & sapaan lokal, tidak terkesan template/spam | 1 | 2 | A: 5 emoji + daftar centang ala broadcast promo. |

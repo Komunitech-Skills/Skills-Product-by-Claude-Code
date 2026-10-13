@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.11 (2026-10-13)
+- Pemindaian contoh uji: contoh pengingat imunisasi menulis "Yang perlu dibawa: buku KIA / kartu vaksinasi, KTP orang tua" padahal klinik tidak menyebutnya. Kini ditulis `[isi dari klinik ...]`; templat `templates/pengingat-kontrol.md` diperbaiki dengan cara yang sama.
+- Ditambah satu kalimat anti-karangan di Batasan SKILL.md: atribut/angka/fakta yang tidak diberikan pengguna ditulis `[isi: ...]` atau ditandai asumsi; jadwal/usia imunisasi hanya dari klinik atau jadwal resmi IDAI/Kemenkes beserta tahunnya, bila tidak ada sumber tulis "cek jadwal resmi terbaru"; tanpa dosis obat. **PERLU REVIEW tenaga medis** tetap berlaku. Script tidak berubah.
+
 ## Catatan revisi 1.0.10 (2026-10-02)
 - Temuan uji ulang paket klinik: chat sakit gigi dewasa dijawab dengan daftar tanda bahaya demam anak. Kini "Templat balasan aman" punya dua versi: **A** demam anak/bayi dan **B** umum (dewasa/anak, gigi, nyeri) yang mengarahkan ke dokter/dokter gigi/apoteker, tanpa dosis, dengan tanda bahaya umum bersumber Kemenkes (SeGeRa Ke RS 2023; nyeri dada, diakses 2026), NHS "Dental abscess" (2026), dan WHO IMCI (2014). **PERLU REVIEW tenaga medis** sebelum rilis. Script tidak berubah.
 

@@ -39,28 +39,28 @@ keuangan, meski pemahamannya belum tentu tumbuh secepat itu [1].
 Survei yang sama mencatat kelompok dengan literasi dan inklusi lebih rendah meliputi: penduduk
 perdesaan, perempuan, kelompok usia 15–17 tahun dan 51–79 tahun, orang dengan pendidikan SD ke bawah,
 serta petani/pekerja informal [1]. Kelompok-kelompok ini relevan langsung dengan sebagian anggota
-koperasi kita — terutama anggota di sektor informal dan usia lanjut.
+koperasi kita — [isian: sebutkan kelompok anggota koperasi Anda yang termasuk di sini, mis. sektor informal atau usia lanjut; tulis hanya bila benar].
 
 ## Apa Artinya Bagi Koperasi Kita?
 
-Menurut pengamatan pengurus, data ini menguatkan alasan mengapa program pendampingan keuangan koperasi
-tetap penting, bukan sekadar pelengkap. Beberapa langkah yang sedang/akan kami jalankan bulan depan:
+Menurut kami, data ini menguatkan alasan mengapa program pendampingan keuangan koperasi tetap penting,
+bukan sekadar pelengkap. Langkah yang sedang/akan dijalankan koperasi bulan depan
+[isian: ganti dengan program koperasi Anda yang sebenarnya; contoh di bawah hanya usulan, bukan fakta]:
 
-- Sesi edukasi singkat "Kenali Produk Simpanan Koperasi" untuk anggota lanjut usia, disampaikan tatap
-  muka (bukan hanya lewat pesan WhatsApp) mengingat kelompok usia ini tercatat literasinya lebih rendah
-  [1].
-- Materi sederhana bergambar untuk anggota dengan pendidikan dasar, menjelaskan bunga, simpanan wajib,
-  dan SHU (Sisa Hasil Usaha) dengan bahasa sehari-hari.
-- Pendampingan khusus untuk anggota perempuan pelaku usaha kecil, sejalan dengan catatan survei bahwa
-  perempuan termasuk kelompok dengan literasi lebih rendah dibanding rata-rata nasional [1].
+- [isian: program untuk anggota lanjut usia, mis. sesi edukasi singkat tatap muka (bukan hanya lewat
+  pesan WhatsApp) — mengingat kelompok usia ini tercatat literasinya lebih rendah [1]].
+- [isian: program untuk anggota berpendidikan dasar, mis. materi sederhana bergambar tentang bunga,
+  simpanan wajib, dan SHU (Sisa Hasil Usaha) dengan bahasa sehari-hari].
+- [isian: program untuk anggota perempuan pelaku usaha kecil — sejalan dengan catatan survei bahwa
+  perempuan termasuk kelompok dengan literasi lebih rendah dibanding rata-rata nasional [1]].
 
-Ini adalah rencana kerja pengurus berdasarkan data di atas, bukan bagian dari hasil survei itu sendiri.
+Rencana kerja di atas adalah usulan pengurus berdasarkan data survei, bukan bagian dari hasil survei itu sendiri.
 
 ## Ajakan
 
-Kami mengundang anggota yang ingin ikut sesi edukasi bulan depan untuk mendaftar lewat pengurus cabang
-masing-masing. Info jadwal lengkap akan dibagikan lewat grup WhatsApp koperasi dan papan pengumuman
-kantor cabang.
+Kami mengundang anggota yang ingin ikut sesi edukasi bulan depan untuk mendaftar lewat
+[isian: cara pendaftaran, mis. pengurus]. Info jadwal lengkap akan dibagikan lewat
+[isian: kanal koperasi yang benar-benar ada, mis. grup WhatsApp atau papan pengumuman].
 
 Terima kasih atas kepercayaan Anda pada koperasi kita.
 
@@ -69,7 +69,7 @@ Pengurus Koperasi
 
 ---
 *Newsletter ini bertujuan edukasi umum, bukan nasihat keuangan personal. Untuk kebutuhan spesifik,
-silakan konsultasi langsung dengan pengurus atau bagian simpan pinjam koperasi.*
+silakan konsultasi langsung dengan pengurus koperasi [isian: atau bagian simpan pinjam, bila ada].*
 
 ## Daftar Pustaka
 [1] Siaran Pers Bersama: Indeks Literasi dan Inklusi Keuangan Masyarakat Meningkat, OJK dan BPS Umumkan Hasil Survei Nasional Literasi Dan Inklusi Keuangan (SNLIK) Tahun 2025. Otoritas Jasa Keuangan. 2 Mei 2025. https://ojk.go.id/id/berita-dan-kegiatan/siaran-pers/Pages/OJK-dan-BPS-Umumkan-Hasil-Survei-Nasional-Literasi-Dan-Inklusi-Keuangan-SNLIK-Tahun-2025.aspx . Diakses 24 September 2026.

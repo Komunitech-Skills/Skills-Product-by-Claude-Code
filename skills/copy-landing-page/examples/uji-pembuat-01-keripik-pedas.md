@@ -1,3 +1,5 @@
+> **Catatan 2026-10-13:** contoh ini dari uji pembuat versi 1.0.0 dan memuat atribut produk yang tidak diberikan pengguna (renyah 3 bulan, tanpa pengawet, 200 g, garansi); sejak 1.0.6 atribut seperti itu wajib ditulis `[isian: ...]`. Acuan contoh yang benar: `01-keripik-pedas-normal.md`.
+
 # Contoh 1 — "Buatkan landing page untuk keripik pedas saya, harga 25 ribu"
 
 > Dibuat oleh pembuat skill sebagai contoh cara pakai dan pengecekan awal. **Ini bukan pengganti uji A/B, uji banding pesaing, atau pengujian independen Tahap 6** — itu dilakukan terpisah oleh penguji lain dan disimpan di `HASIL-UJI.md`.

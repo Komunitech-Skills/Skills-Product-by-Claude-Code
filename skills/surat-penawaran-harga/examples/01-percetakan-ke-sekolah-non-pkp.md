@@ -8,7 +8,7 @@
 **Perintah script yang dijalankan:**
 ```bash
 python3 scripts/hitung_sph.py \
-  --item "Buku tulis custom logo sekolah (38 lbr)|500|pcs|7.500" \
+  --item "Buku tulis custom logo sekolah|500|pcs|7.500" \
   --item "Banner 3x1 m|20|lembar|150rb" \
   --item "Kartu pelajar PVC|1000|pcs|12rb" \
   --diskon-total 5% --nomor-urut 45 --kode "SPH/PSJ" --tanggal 2026-09-23 --format teks
@@ -40,7 +40,7 @@ Menindaklanjuti kebutuhan perlengkapan sekolah yang Ibu sampaikan, bersama ini k
 
 | No | Uraian | Qty | Satuan | Harga Satuan | Diskon | Jumlah |
 |---|---|---|---|---|---|---|
-| 1 | Buku tulis custom logo sekolah (38 lbr) | 500 | pcs | Rp 7.500 | - | Rp 3.750.000 |
+| 1 | Buku tulis custom logo sekolah | 500 | pcs | Rp 7.500 | - | Rp 3.750.000 |
 | 2 | Banner 3x1 m | 20 | lembar | Rp 150.000 | - | Rp 3.000.000 |
 | 3 | Kartu pelajar PVC | 1.000 | pcs | Rp 12.000 | - | Rp 12.000.000 |
 

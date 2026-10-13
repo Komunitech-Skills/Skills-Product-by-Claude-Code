@@ -48,16 +48,17 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 - Bulan/tahun dokumen berganti dari nomor terakhir → script mengganti periode dan mulai lagi dari `0001` (`INV/2026/09/0012` + tanggal Oktober → `INV/2026/10/0001`). Jika usaha pengguna melanjutkan nomor lintas bulan, tambah `--urut-lanjut` (→ `INV/2026/10/0013`). Bila tidak jelas, sebutkan aturan yang dipakai.
 - Format lain dikenali: `012/INV/IX/2026` (bulan Romawi, urut di depan), `INV-2026-0012` (nomor tahunan).
 - Tanggal dokumen lebih lama dari periode nomor terakhir → script menolak (nomor mundur); tanyakan ke pengguna.
+- **Cegah nomor dobel:** selalu tambahkan `--counter-file nomor-invoice.json` di folder kerja yang disepakati (path yang sama setiap kali, sebut lokasinya ke pengguna). Script mencatat setiap nomor + nama pembeli. Invoice kedua dst. dalam percakapan yang sama: `--nomor-terakhir` = nomor yang **baru dibuat script**, bukan nomor dari pesan awal pengguna. Bila script mencetak `PERHATIAN: Nomor ... sudah dipakai untuk ...`, pakai nomor yang tercetak di dokumen dan sampaikan ke pengguna; nomor yang sama untuk pembeli yang sama = revisi (nomor tetap).
 
 ## Langkah kerja
 1. Susun data ke file JSON di folder kerja pengguna mengikuti `templates/contoh-invoice.json` (penjelasan kolom: `references/format-input.md`).
    - PPh 23: `"pph23": true` (default 2% × subtotal setelah diskon, tanpa PPN & ongkir) atau `{"tanpa_npwp": true}` (4%) / `{"dasar": "<nilai jasa saja>"}` bila invoice juga berisi barang. Ini **info** "estimasi diterima bersih"; total tagihan tidak berubah. Penjual PPh final 0,5% yang sudah memberi Surat Keterangan PP 55 ke klien → jangan diaktifkan.
 2. Jalankan script. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
-   python3 <folder-skill-ini>/scripts/buat_invoice.py --file invoice.json --html invoice-INV-0008.html --nomor-terakhir INV/2026/09/0007
+   python3 <folder-skill-ini>/scripts/buat_invoice.py --file invoice.json --html invoice-INV-0008.html --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
    ```
    - `--nomor-terakhir` → nomor terakhir + 1 (aturan ganti bulan/tahun di atas; `--urut-lanjut` bila nomor tidak di-reset).
-   - `--counter-file nomor-invoice.json` → nomor urut per bulan disimpan di file itu (jalankan sekali per dokumen final).
+   - `--counter-file nomor-invoice.json` → mencatat nomor yang sudah dibuat (+ nama pembeli) dan nomor urut per bulan; tanpa `--nomor-terakhir`, nomor diambil dari file ini. Nomor yang sudah dipakai pembeli lain tidak pernah dipakai ulang.
    - `--html <file>` → versi HTML siap cetak (buka di browser → Cetak → Simpan sebagai PDF).
    - `--format json` → angka mentah.
    - Kuitansi DP/cicilan: isi `pembayaran` dengan uang yang diterima sekarang; kuitansi menampilkan uang diterima, baris diterima & sisa belum dibayar, dan **satu** terbilang untuk uang yang diterima.
@@ -118,14 +119,14 @@ Catatan ke pengguna: DP Rp3.000.000 tidak melewati Rp5 juta, jadi meterai tidak 
 - [ ] Invoice lengkap ditulis di chat; file HTML dilampirkan bila bisa (bukan hanya path).
 - [ ] PPN hanya muncul bila penjual PKP; tidak ada PPN untuk non-PKP.
 - [ ] Pengguna menyebut PKP → PPN 12% (DPP nilai lain 11/12) langsung dipakai tanpa bertanya, asumsi disebut; tidak ada tulisan "PPN 11%".
-- [ ] Nomor = nomor terakhir dari pengguna + 1 (cek baris "Nomor terakhir dibaca"); jatuh tempo tidak lebih awal dari tanggal dokumen.
+- [ ] Nomor = nomor terakhir dari pengguna + 1 (cek baris "Nomor terakhir dibaca"), tidak dobel dengan invoice lain (`--counter-file` dipakai, PERHATIAN nomor disampaikan); jatuh tempo tidak lebih awal dari tanggal dokumen.
 - [ ] Tidak ada data karangan: kota/penanda tangan yang tidak disebut tetap `[isi ...]` dan disampaikan ke pengguna.
 - [ ] Penanda meterai sesuai (> Rp5.000.000 penerimaan uang).
 - [ ] Rekening & nama penerima benar; tidak ada data pribadi yang tidak diminta.
 - [ ] Bagian "Info untuk penjual" tidak ikut dikirim ke pembeli.
 
 ## Batasan & penanganan error
-- Script keluar kode 2 + `ERROR: ...` bila: PPN diaktifkan tetapi penjual bukan PKP, item kosong, qty ≤ 0, harga/diskon bukan angka, diskon melebihi nilai, diskon persen > 100%, total persen termin ≠ 100%, jumlah termin ≠ total, tanggal tidak valid, jatuh tempo sebelum tanggal dokumen, nomor terakhir tanpa angka urut, tanggal dokumen lebih lama dari periode nomor terakhir, atau JSON rusak. Jelaskan dengan bahasa sederhana dan perbaiki datanya.
+- Script keluar kode 2 + `ERROR: ...` bila: PPN diaktifkan tetapi penjual bukan PKP, item kosong, qty ≤ 0, harga/diskon bukan angka, diskon melebihi nilai, diskon persen > 100%, total persen termin ≠ 100%, jumlah termin ≠ total, tanggal tidak valid, jatuh tempo sebelum tanggal dokumen, nomor terakhir tanpa angka urut, tanggal dokumen lebih lama dari periode nomor terakhir, nomor manual yang sudah dipakai pembeli lain (tercatat di file counter), file counter rusak, atau JSON rusak. Jelaskan dengan bahasa sederhana dan perbaiki datanya.
 - Pembayaran melebihi total → tetap dibuat dengan peringatan "lebih bayar".
 - Satu jenis PPN per invoice (umum atau mewah). Barang dengan PPN khusus/dibebaskan, PPnBM, dan faktur pajak di luar cakupan → arahkan ke konsultan/DJP.
 - Script hanya menulis file HTML/counter ke path yang diberikan pengguna; tidak ada akses internet.
