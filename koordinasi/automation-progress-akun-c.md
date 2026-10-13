@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~22:02 UTC — LANGKAH NOL OK (>25 mnt sejak selesai 21:35); fast-forward merge default (+10 commit Akun B); getUpdates 242 kosong; antrean C6–C16 selesai, idle | — | idle | tidak |
+| 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b4b5132b | selesai ~22:02 UTC — LANGKAH NOL OK (>25 mnt sejak selesai 21:35); fast-forward merge default (+10 commit Akun B); getUpdates 242 kosong; antrean C6–C16 selesai, idle | — | idle | tidak |
 | 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 22:00 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru di papan | — | — | — |
 | 2026-10-13 ~21:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 12421b0b | selesai ~21:35 UTC — C16 uji panduan beta (3 skill, tanda berhasil OK); docs c16-uji-panduan-beta.md; TG 242 ya | simulasi | docs | ya |
 | 2026-10-13 ~21:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 21:30 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C16 | — | — | — |
