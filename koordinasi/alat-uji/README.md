@@ -44,3 +44,7 @@ VM Cursor ulang dari snapshot tiap run: riwayat sesi bot, topik, dan hasil uji d
 
 ## Bot uji kedua untuk Akun B (2026-10-12)
 Pemilik menambah secret `bot_testing2` (token bot OpenClaw uji kedua). Di sesi Akun B: jalankan gateway dengan `bot_token="$bot_testing2" bash gw-cek.sh` (gw-cek/oc-tg membaca `bot_token`), HOME terpisah dari bot Cursor, grup uji sama. Bot ini harus menjadi **admin grup dengan hak kelola topik** agar `mktopics-*.py` bisa membuat topik. Mention di pesan gelombang memakai username bot kedua. Jangan pernah mencetak nilai token.
+
+## Pelajaran gelombang 16 (2026-10-13): sinkronkan skill ke home bot uji sebelum gelombang
+
+Home bot kedua (`$SCRATCHPAD/openclaw-real/home/.openclaw/skills/`) adalah SALINAN repo, bukan tautan; skill yang dibuat setelah salinan (6 skill per 13 Okt) tidak ada di bot, sehingga sisi DENGAN gelombang 16 pertama tidak sahih (bot memakai skill lain). **Wajib sebelum tiap gelombang:** salin ulang skill yang akan diuji (`cp -r skills/<nama> .../home/.openclaw/skills/`, hapus `__pycache__`/`tests`), cek `ls .../home/.openclaw/skills | grep <nama>`, lalu restart gateway per PID. Pra-cek `uji-tg.sh` memakai HOME terpisah, jadi tidak mendeteksi masalah ini.

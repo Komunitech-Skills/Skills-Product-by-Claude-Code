@@ -53,6 +53,10 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam ZIP bernama `C
 
 **Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,75 tanpa skill menjadi 8,5 dengan skill (skala 10), dari empat skenario: SOP kasir menjadi 21 kartu (di konteks Telegram), kosakata Inggris, permintaan kurang lengkap, dan jebakan bocoran UTBK. Tanpa skill, kartu hanya disimpan sebagai berkas dan tidak sampai ke chat Telegram; dengan skill isi kartu, jadwal belajar, dan cara impor tampil utuh di chat. Catatan jujur: model biasa pun sudah membuat kartu yang akurat; pembeda skill ini adalah kartu yang benar-benar sampai ke chat, rencana belajar berangka, dan format yang konsisten. Format impor Anki hanya diperiksa dengan skrip, belum dicoba di aplikasi Anki sungguhan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 13 Okt 2026): tanpa skill skor **7,5** → dengan skill skor **8** (selisih kecil, BELUM lolos acuan 1,5). Dengan skill: 16 kartu utuh di chat, pratinjau, rencana belajar 5 hari dari skrip, cara impor; tanpa skill bot juga sudah membuat 10 kartu plus file CSV. Catatan jujur: tab pemisah kartu hilang saat teks lewat Telegram, jadi salin-tempel langsung tidak bisa diimpor — minta bot mengirim berkas TSV/CSV.
+
 ## FAQ
 
 **Apakah Anki wajib?**  

@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .DS_Store
 draf-tugas-*.json
+
+# log mentah alat uji Telegram (tidak di-commit)
+koordinasi/alat-uji/pilot/updates-*.jsonl
+koordinasi/alat-uji/pilot/sent-*.jsonl
+koordinasi/alat-uji/pilot/*.log
