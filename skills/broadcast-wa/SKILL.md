@@ -128,7 +128,7 @@ pakai default dan sebutkan asumsinya di akhir.
 ### Hasil pengolahan kontak (jika ada file)
 Siap kirim: <n> | Dilewati: <rincian alasan> | File: <nama file>
 
-### Sebelum kirim (UU PDP)
+### Sebelum kirim (UU 27/2022 tentang Pelindungan Data Pribadi)
 - [ ] Semua penerima sudah setuju menerima info promo
 - [ ] Yang membalas STOP dicatat & tidak dikirimi lagi
 - [ ] File kontak disimpan aman, tidak dibagikan

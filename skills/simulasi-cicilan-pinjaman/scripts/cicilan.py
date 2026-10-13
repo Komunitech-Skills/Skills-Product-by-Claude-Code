@@ -37,11 +37,11 @@ BATAS_PINJOL_HARIAN = {"konsumtif": D("0.1"), "produktif": D("0.067")}
 RUJUKAN_PINJOL = ("SEOJK No. 19/SEOJK.06/2023 (batas turun bertahap; untuk 2026 tercatat 0,1%/hari "
                   "konsumtif, 0,067%/hari produktif untuk tenor lebih dari 6 bulan; sejak akhir 2024 batas "
                   "dibedakan menurut tenor) - cek aturan OJK terbaru di ojk.go.id")
-# Ilustrasi bila bunga belum diketahui (asumsi umum kisaran pasar, bukan data lembaga tertentu).
+# Bunga ilustrasi bila bunga belum diketahui (bunga ilustrasi, bukan acuan pasar dan bukan data lembaga tertentu).
 ILUSTRASI = {
-    "hp": ("kredit HP/elektronik lewat pembiayaan atau paylater, biasanya flat",
+    "hp": ("kredit HP/elektronik lewat pembiayaan atau paylater, dihitung flat",
            "1,5%/bulan flat;2%/bulan flat;3%/bulan flat"),
-    "motor": ("kredit motor, biasanya flat", "0,8%/bulan flat;1,2%/bulan flat;1,5%/bulan flat"),
+    "motor": ("kredit motor, dihitung flat", "0,8%/bulan flat;1,2%/bulan flat;1,5%/bulan flat"),
     "kpr": ("KPR, efektif/anuitas", "5%/tahun efektif;8%/tahun efektif;12%/tahun efektif"),
 }
 
@@ -582,7 +582,7 @@ def hitung_kemampuan(a):
     return {"penghasilan_bersih": gaji, "cicilan_lain": lain, "batas_persen": batas, "batas_atas_persen": batas_atas,
             "cicilan_maksimal_aman": max(NOL, bulat(gaji * batas / SERATUS) - lain),
             "cicilan_maksimal_batas_atas": max(NOL, bulat(gaji * batas_atas / SERATUS) - lain),
-            "catatan": f"Patokan umum: semua cicilan maks. {pct(batas, 0)}-{pct(batas_atas, 0)} dari penghasilan bersih "
+            "catatan": f"Patokan hati-hati (bukan aturan resmi): semua cicilan maks. {pct(batas, 0)}-{pct(batas_atas, 0)} dari penghasilan bersih "
                        f"(asumsi; bisa disesuaikan dengan kebutuhan rumah tangga)."}
 
 
@@ -734,7 +734,8 @@ def teks(h):
                          + (f"  ({r['catatan']})" if r.get("catatan") else ""))
     if h.get("bandingkan_bunga"):
         L.append("Cicilan pada beberapa angka bunga (ilustrasi, bukan tawaran"
-                 + (f"; kisaran umum {h['ilustrasi_untuk']}" if h.get("ilustrasi_untuk") else "") + "):")
+                 + (f"; {h['ilustrasi_untuk']}; bunga ilustrasi, bukan acuan pasar - masukkan bunga dari penawaran Anda"
+                    if h.get("ilustrasi_untuk") else "") + "):")
         for r in h["bandingkan_bunga"]:
             label = (f"flat {pct(r['bunga_per_bulan_persen'], 2)}/bulan" if r["jenis"] == "flat"
                      else f"efektif {pct(r['bunga_per_tahun_persen'], 1)}/tahun")
@@ -785,7 +786,7 @@ def main(argv=None):
     p.add_argument("--batas", default="30", help="batas aman rasio cicilan (%% penghasilan bersih), default 30")
     p.add_argument("--batas-atas", default="35", help="batas atas rasio cicilan, default 35")
     p.add_argument("--bandingkan-bunga", help="ilustrasi cicilan pada beberapa bunga efektif, mis. \"10;15;20\"")
-    p.add_argument("--ilustrasi", choices=sorted(ILUSTRASI), help="bunga belum diketahui: ilustrasi kisaran per jenis kredit")
+    p.add_argument("--ilustrasi", choices=sorted(ILUSTRASI), help="bunga belum diketahui: bunga ilustrasi per jenis kredit (bukan acuan pasar)")
     p.add_argument("--jadwal-lengkap", action="store_true", help="tampilkan semua baris jadwal")
     p.add_argument("--format", choices=["json", "teks"], default="json")
     a = p.parse_args(argv)
@@ -808,8 +809,8 @@ def main(argv=None):
                 raise Galat("--bandingkan-bunga hanya untuk tenor bulanan", "Contoh: --tenor 24")
             h = {"mode": "ilustrasi", "input_terbaca": {"pokok_yang_dicicil": pokok, "pokok_pinjaman": pokok, "tenor": n,
                                                         "satuan_tenor": "bulan"},
-                 "asumsi": ["Bunga belum diketahui: angka bunga di tabel hanyalah ilustrasi kisaran umum, bukan tawaran "
-                            "lembaga mana pun; bunga sebenarnya bisa lebih rendah atau lebih tinggi."],
+                 "asumsi": ["Bunga belum diketahui: angka bunga di tabel adalah bunga ilustrasi, bukan acuan pasar dan bukan "
+                            "tawaran lembaga mana pun; masukkan bunga dari penawaran Anda untuk hasil sebenarnya."],
                  "peringatan": []}
             if a.penghasilan:
                 h["kemampuan_bayar"] = hitung_kemampuan(a)

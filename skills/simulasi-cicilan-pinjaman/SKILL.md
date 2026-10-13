@@ -14,7 +14,7 @@ Membuat orang awam paham **berapa sebenarnya harga sebuah pinjaman** sebelum tan
 
 ## Kerjakan dulu, tanya di akhir (utama)
 Selama ada **pokok/harga + tenor + (bunga ATAU cicilan)**, langsung hitung dan tulis hasil lengkap dengan asumsi yang disebut. Tutup dengan **maks. 3 pertanyaan** yang paling mengubah hasil (mis. "bunganya flat atau efektif?", "ada biaya admin/asuransi di muka?", "berapa penghasilan bersih per bulan?"). Jangan menanyakan hal yang sudah disebut pengguna (mis. jangan tanya "benar flat?" bila pengguna sudah menulis "flat").
-- Hanya pokok + tenor (bunga & cicilan belum tahu) → tampilkan **ilustrasi berjenjang sesuai jenis kredit** (sebut "ilustrasi kisaran umum, bukan tawaran; bunga sebenarnya bisa lebih rendah atau lebih tinggi"), lalu minta bunga sebenarnya dari penawaran (maks. 3 pertanyaan):
+- Hanya pokok + tenor (bunga & cicilan belum tahu) → tampilkan **ilustrasi berjenjang sesuai jenis kredit** (sebut "bunga ilustrasi, bukan acuan pasar atau tawaran; masukkan bunga dari penawaran Anda"), lalu minta bunga sebenarnya dari penawaran (maks. 3 pertanyaan):
   - HP/elektronik/gadget lewat pembiayaan atau paylater → `--ilustrasi hp` (flat 1,5%; 2%; 3% per bulan ≈ efektif ±30–60%/tahun).
   - Motor → `--ilustrasi motor` (flat 0,8%; 1,2%; 1,5% per bulan).
   - KPR → `--ilustrasi kpr` (efektif 5%; 8%; 12% per tahun).
@@ -144,7 +144,7 @@ Catatan: simulasi, bukan penawaran atau nasihat keuangan; angka final mengikuti 
 - [ ] Tidak ada merek bank/leasing/aplikasi, tidak ada rekomendasi produk, nada netral.
 - [ ] Tidak ada kata proses/file/path; label "UNTUK AGENT SAJA" tidak dikutip.
 - [ ] Brosur/penawaran: kalimat pertama penolakan baku (bila ada unsur menyembunyikan), lalu draf brosur transparan utuh — tidak berhenti di penolakan.
-- [ ] Ilustrasi bunga sesuai jenis kredit, berlabel "ilustrasi, bukan tawaran", tanpa kata "wajar"/"normal".
+- [ ] Ilustrasi bunga sesuai jenis kredit, berlabel "bunga ilustrasi, bukan acuan pasar atau tawaran", tanpa kata "wajar"/"normal"/"umum".
 - [ ] KPR bertahap: bulan 1–36 fixed, 37 dst floating (tidak ada keterangan karangan di jadwal).
 - [ ] Disclaimer di setiap balasan (termasuk penolakan dan balasan bertanya). Pertanyaan maks. 3, di akhir.
 

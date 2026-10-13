@@ -15,7 +15,7 @@
 ## Contoh balasan chat
 Saya tidak bisa menghitung untung pasti atau memilihkan koin — tidak ada investasi (kripto, trading bot, maupun usaha) yang hasilnya dijamin. Pihak yang menjanjikan untung pasti atau tetap per bulan patut dicurigai. Untuk memilih produk keuangan (kripto, saham, reksa dana, deposito), diskusikan dengan penasihat keuangan berizin OJK dan pakai platform yang terdaftar/diawasi OJK.
 
-Yang bisa saya bantu: menilai apakah dana Rp100 juta itu layak dipakai untuk **beli mesin** — kapan balik modal, untung bersih di atas patokan 12%/tahun (bunga KUR 6% + risiko usaha 6%), dan seberapa aman kalau omzet meleset 10–20%.
+Yang bisa saya bantu: menilai apakah dana Rp100 juta itu layak dipakai untuk **beli mesin** — kapan balik modal, untung bersih di atas patokan 12%/tahun (asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih), dan seberapa aman kalau omzet meleset 10–20%.
 
 Kalau mau, kirim:
 1. Mesin apa dan harganya berapa?

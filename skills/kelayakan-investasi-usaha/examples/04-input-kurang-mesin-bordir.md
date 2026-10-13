@@ -21,7 +21,7 @@ Belum bisa saya putuskan layak atau tidak, karena perkiraan tambahan pemasukanny
 
 "Uang bersih" = tambahan omzet bordir − benang/bahan − listrik, servis, operator − pajak. Jadi kalau mesin ini menambah uang bersih **di atas ±Rp2 juta per bulan**, kemungkinan besar layak.
 
-**Asumsi:** masa 5 tahun, patokan 12%/tahun (bunga KUR 6% + risiko usaha 6%, bisa diganti), mesin dianggap tidak bernilai jual di akhir (hati-hati).
+**Asumsi:** masa 5 tahun, patokan 12%/tahun (asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih), mesin dianggap tidak bernilai jual di akhir (hati-hati).
 Catatan: bukan nasihat keuangan; hasil tergantung asumsi.
 
 Jawab 3 hal ini, nanti saya hitung lengkap (balik modal, NPV, IRR, dan kalau omzet meleset):

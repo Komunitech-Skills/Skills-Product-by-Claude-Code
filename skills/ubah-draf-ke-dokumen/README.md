@@ -28,7 +28,7 @@ Diuji AI penguji independen di OpenClaw: 5,63 → 8,28 dari 10 (isi dokumen tamp
 ```
 KOPI SEDUH NUSANTARA
 Jl. Dago Asri No. 12, Bandung 40135
-Telp 0812-3456-7890 · Email halo@kopiseduh-nusantara.example
+Telp 08xx-xxxx-xxxx (nomor fiktif) · Email halo@kopiseduh-nusantara.example
 ────────────────────────────────────────────────
 Bandung, 12 Oktober 2026
 Perihal: Pemberitahuan Penyesuaian Harga Biji Kopi

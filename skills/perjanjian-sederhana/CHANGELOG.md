@@ -14,3 +14,6 @@ Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 ## Catatan revisi 1.0.6 (2026-10-03)
 - Pasal pengakhiran sewa tempat & sewa alat kini memakai jalur yang sah: teguran tertulis, tenggat, lalu musyawarah atau pengadilan. Tidak ada lagi pengosongan/pengambilan paksa sebagai bawaan.
 - Bila kamu sendiri meminta klausul pengosongan sepihak, skill menampilkannya sebagai opsi dengan peringatan risiko hukumnya. Pemeriksa draf menandai klausul seperti ini.
+
+## Catatan revisi 1.0.7 (2026-10-13)
+- Rujukan "UU PDP" di checklist tanda tangan kini ditulis lengkap: UU 27/2022 tentang Pelindungan Data Pribadi. Tidak ada perubahan perilaku.

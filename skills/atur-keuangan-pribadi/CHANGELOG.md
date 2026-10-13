@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.13 (2026-10-13)
+- Perbaikan teks (audit penguji independen): saat defisit (setoran dana darurat dari gaji Rp0), RINGKASAN SIAP TEMPEL menulis "tercapai tidak tercapai dengan setoran Rp0/bulan"; kini "tidak tercapai dengan setoran Rp0/bulan" (dan "sudah tercapai" tanpa kata "tercapai" ganda). Hanya label; angka tidak berubah — keluaran perintah contoh `01` dan `03` dijalankan ulang dan identik.
+- Tes regresi kasus defisit ditambah (`TesRevisi1013LabelDefisit`, total 101 tes).
+
 ## Catatan revisi 1.0.12 (2026-10-13)
 - Dari audit contoh uji (folder `examples/` ikut dikirim ke pembeli). SKILL.md: satu aturan di Batasan — angka hanya dari output script/input pengguna; batas aturan disebut dengan dasar + tahun sesuai `references/utang-dan-pinjol.md`, atau "(patokan skill ini, bukan aturan resmi)" bila dasarnya tidak tercantum. Script dan angka hitungan tidak berubah.
 - Contoh `01` dan `03` disinkronkan dengan keluaran script sekarang (basis gaji rutin, THR/bonus disetor sekaligus saat cair): contoh 01 rasio cicilan 31,8% → 34,4% dari gaji rutin, setoran dana darurat Rp1.371.666 → Rp330.000/bulan (sisa gaji rutin); contoh 03 setoran DP Rp1.383.333 → Rp550.000/bulan. Contoh `02`: "batas OJK 2026"/"batas maksimum BI" kini menyebut dasar dari references.

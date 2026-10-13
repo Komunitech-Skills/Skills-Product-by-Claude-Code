@@ -39,5 +39,5 @@
 1. Penolakan kripto/"untung pasti": SKILL.md tidak dibaca (2/2), bocor nama alat & peran, tanpa disclaimer/rujukan penasihat berizin OJK, menawarkan proyeksi deposito/reksa dana. Perbaiki lewat `description`.
 2. Omzet impas beda tergantung `--nilai-sisa` vs `--nilai-residu` (Rp3.250.000 vs Rp3.166.667/bln untuk kasus yang sama).
 3. Script selalu berlabel "Omzet" walau kasus penghematan; perlu opsi label penghematan.
-4. Diskonto 12% wajar sebagai batas bawah; sarankan tampilkan juga NPV pada 20%; verifikasi rujukan "Permenko 1/2026".
+4. Diskonto 12% dapat dipakai sebagai asumsi batas bawah (bukan acuan pasar); sarankan tampilkan juga NPV pada 20%; verifikasi rujukan "Permenko 1/2026".
 5. Aturan "kurang layak" (omzet −10%/biaya +10%/bergantung nilai jual kembali) tidak terlalu ketat; pertahankan.

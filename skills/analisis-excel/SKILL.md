@@ -223,7 +223,7 @@ Contoh lengkap nyata: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.
   mengira, perbaiki dengan `--tipe "Kolom=kode"` atau `--tipe "Kolom=angka"`.
 - **Korelasi ≠ sebab.** Tulis "naik bersamaan", bukan "menyebabkan". Saran harus dari data
   (hindari saran generik).
-- **Data pribadi (UU PDP):** script menyamarkan NIK/No HP/email/rekening di tabel (`3201•••…408`).
+- **Data pribadi (UU 27/2022 tentang Pelindungan Data Pribadi):** script menyamarkan NIK/No HP/email/rekening di tabel (`3201•••…408`).
   Salin apa adanya; **jangan** menambah `--tampilkan-pribadi` kecuali pengguna pemilik data sendiri
   memintanya secara tegas, dan ingatkan agar hasilnya tidak dibagikan. Bila script memperingatkan
   "data SENSITIF" (mis. gaji per orang), sampaikan peringatannya dan tawarkan agregat per

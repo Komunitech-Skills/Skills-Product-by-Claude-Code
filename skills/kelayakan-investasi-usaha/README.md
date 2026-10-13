@@ -74,11 +74,11 @@ Verdik gelombang: LULUS — Keduanya benar soal payback ±1 th 1 bln, tetapi han
 Tidak. Hasil tergantung perkiraan omzet dan biaya yang Anda masukkan. Karena itu skill menampilkan skenario "kalau meleset" dan batas aman. Ini alat bantu, bukan nasihat keuangan.
 
 **Kenapa patokannya 12% per tahun?**
-Itu asumsi awal: bunga KUR 6% efektif ditambah tambahan risiko usaha 6%. Anda bisa menggantinya dengan bunga pinjaman Anda sendiri atau hasil minimal yang Anda inginkan, dan skill akan menghitung ulang.
+Itu asumsi awal, bukan acuan pasar: bunga KUR Mikro/Kecil sektor produksi 6% efektif per tahun (Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44; konfirmasi ke bank penyalur) ditambah premi risiko usaha 6% yang kami pilih sebagai contoh. Anda bisa menggantinya dengan bunga pinjaman Anda sendiri atau hasil minimal yang Anda inginkan, dan skill akan menghitung ulang.
 
 **Bisa untuk menilai saham, kripto, atau reksa dana?**
 Tidak. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, renovasi). Kalau Anda bertanya "pasti untung berapa kalau di kripto?", AI diarahkan menolak janji untung dengan sopan, menyarankan penasihat keuangan berizin OJK, lalu menawarkan hitungan rencana usaha Anda.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

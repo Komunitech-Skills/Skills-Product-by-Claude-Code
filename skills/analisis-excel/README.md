@@ -131,4 +131,4 @@ perbandingan). Untuk prediksi/statistik lanjut, gunakan jasa analis data.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.17**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.18**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

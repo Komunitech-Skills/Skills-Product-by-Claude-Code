@@ -1429,5 +1429,25 @@ class TesRevisi1011TebakanKelompok(unittest.TestCase):
         self.assertIn("| 9 | Rp550.000 | Rp600.000 |", r.stdout)
 
 
+
+class TesRevisi1013LabelDefisit(unittest.TestCase):
+    """v1.0.13 (audit 2026-10-13): saat defisit (setoran dana darurat Rp0) ringkasan dulu menulis
+    "tercapai tidak tercapai". Label diperbaiki; angka tidak berubah."""
+
+    def test_defisit_label_tidak_ganda(self):
+        r = jalankan("anggaran", "--pemasukan", "Gaji=5jt", "--pos", "Kontrakan=1,5jt", "--pos", "Makan=2,8jt",
+                     "--pos", "Listrik=300rb", "--pos", "Arisan RT=500rb:tabungan", "--status", "lajang")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        ring = r.stdout.split("# Anggaran Bulanan")[0]
+        # independen: keluar 1,5jt+2,8jt+300rb+500rb = 5,1jt > gaji 5jt -> defisit 100rb; pokok 4,6jt x 3 = 13,8jt
+        defisit = F(1500000 + 2800000 + 300000 + 500000) - 5000000
+        target3 = F(1500000 + 2800000 + 300000) * 3
+        self.assertEqual((defisit, target3), (100000, 13800000))
+        self.assertIn("-> DEFISIT Rp100.000/bulan", ring)
+        self.assertIn("3 bulan: kurang Rp13.800.000 (progres 0%), tidak tercapai dengan setoran Rp0/bulan", ring)
+        self.assertNotIn("tercapai tidak tercapai", r.stdout)
+        self.assertNotIn("tercapai sudah tercapai", r.stdout)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

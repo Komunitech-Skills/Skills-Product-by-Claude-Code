@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.7 (2026-10-13)
+- Rujukan contoh 02 di SKILL.md disamakan dengan hasil contoh yang dihitung ulang sesuai aturan DP (BELUM BISA DINILAI), tanpa perubahan cara kerja.
+
 ## Catatan revisi 1.0.6 (2026-10-13)
 - Batasan di SKILL.md: aturan eksplisit anti-karangan (jangan mengarang angka/kebijakan/tindakan yang tidak diberikan pengguna; tulis `[isian: ...]` atau tandai asumsi). Temuan audit contoh: angka hasil uji pasar di `examples/01` dan `examples/02` kini ditandai sebagai data fiktif yang dimasukkan pengguna (input lanjutan). Logika dan skrip tidak berubah.
 

@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.5 (2026-10-13)
+- Rujukan UU PDP ditulis lengkap: UU 27/2022 tentang Pelindungan Data Pribadi (tanpa perubahan cara kerja).
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 - SOP lengkap (semua bagian, termasuk checklist harian) **wajib tampil di balasan chat**, siap salin — tidak lagi hanya disimpan ke file dengan ringkasan di chat. File hanya tambahan bila diminta/di folder proyek. Penting untuk pengguna Telegram/WhatsApp.
 

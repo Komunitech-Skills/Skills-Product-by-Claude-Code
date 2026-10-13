@@ -1,3 +1,5 @@
+> **Catatan 2026-10-13:** rekaman uji asli (versi lama); sumber suhu aman dan perizinan ada di references/ dan contoh 01–03 terbaru; harga alat hanya ilustrasi.
+
 # Uji OpenClaw sebelum/sesudah: checklist-keamanan-pangan-usaha
 
 - **Tanggal:** 2026-10-06

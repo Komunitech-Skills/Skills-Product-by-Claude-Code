@@ -37,7 +37,7 @@ Bila pengguna minta untung pasti/dijamin, membandingkan dana usaha dengan kripto
 1. **Tolak janji untung:** "Saya tidak bisa menghitung untung pasti — tidak ada investasi (kripto, trading bot, maupun usaha) yang hasilnya dijamin. Pihak yang menjanjikan untung pasti atau tetap per bulan patut dicurigai."
 2. **Bukan nasihat investasi:** "Untuk memilih produk keuangan (kripto, saham, reksa dana, deposito), diskusikan dengan penasihat keuangan berizin OJK dan pakai platform yang terdaftar/diawasi OJK."
 3. **Jangan tawarkan** hitungan, simulasi, atau "rentang hasil historis" deposito/reksa dana/kripto/saham; jangan sebut koin/produk; jangan membandingkan dengan imbal hasil karangan.
-4. **Kembali ke usaha:** "Yang bisa saya bantu: menilai apakah dana Rp... itu layak dipakai untuk usaha — kapan balik modal, untung bersih di atas patokan 12%/tahun (bunga KUR 6% + risiko usaha 6%), dan seberapa aman bila omzet meleset." Data rencana usaha sudah ada di percakapan (investasi + omzet/penghematan) → **langsung hitung** dan tampilkan hasil lengkap (format di bawah) di balasan yang sama. Belum ada → maks. 3 pertanyaan (alat/rencana & harganya, tambahan omzet per bulan, biaya per bulan).
+4. **Kembali ke usaha:** "Yang bisa saya bantu: menilai apakah dana Rp... itu layak dipakai untuk usaha — kapan balik modal, untung bersih di atas patokan 12%/tahun (asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih), dan seberapa aman bila omzet meleset." Data rencana usaha sudah ada di percakapan (investasi + omzet/penghematan) → **langsung hitung** dan tampilkan hasil lengkap (format di bawah) di balasan yang sama. Belum ada → maks. 3 pertanyaan (alat/rencana & harganya, tambahan omzet per bulan, biaya per bulan).
 5. **Baris terakhir:** "Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untung."
 Jangan menyebut nama alat, peran, atau kata "tool"/skill/script/file/path, dan jangan menjelaskan cara kerja di balik layar.
 
@@ -100,7 +100,7 @@ Satu kalimat arti uji ketat: "Bila hasil minimal yang diminta dinaikkan ke 20%/t
 **Kalau meleset** (NPV): omzet −10% → Rp...; omzet −20% → Rp...; biaya +10% → Rp...
 **Syarat agar tetap layak:** omzet tidak turun > ...%; biaya tidak naik > ...%; omzet minimal ±Rp.../bulan.
 **Arus kas per tahun** (opsional bila diminta "rinci"): tabel Tahun | Uang bersih | Kumulatif.
-**Asumsi:** diskonto 12% (bunga KUR 6% + risiko 6%, bisa diganti), masa ... tahun, nilai sisa ..., pajak ....
+**Asumsi:** diskonto 12%/tahun (asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih), masa ... tahun, nilai sisa ..., pajak ....
 Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untung.
 [Maks. 3 pertanyaan untuk mempertajam hitungan + tawaran hitung ulang.]
 ```
@@ -118,7 +118,7 @@ Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untu
 ## Checklist sebelum mengirim
 - [ ] Kesimpulan layak/kurang layak/tidak layak sesuai `kesimpulan.status`, dengan alasan berangka dan syarat.
 - [ ] Semua angka dari hasil hitungan (atau fallback manual yang disebut); tidak ada angka pasar/industri karangan.
-- [ ] Asumsi disebut: diskonto 12% + asal-usulnya (bisa diubah, bukan rekomendasi), masa, nilai sisa (garis lurus/perkiraan), pajak dihitung atau belum, biaya dianggap tetap bila tidak dipisah.
+- [ ] Asumsi disebut: diskonto 12% sebagai asumsi contoh (bisa diganti dengan bunga pinjaman pengguna + premi risiko; bila menyebut bunga KUR, sertakan dasar aturannya; bukan rekomendasi), masa, nilai sisa (garis lurus/perkiraan), pajak dihitung atau belum, biaya dianggap tetap bila tidak dipisah.
 - [ ] NPV pada patokan 12% dan uji ketat 20% ditampilkan + satu kalimat artinya.
 - [ ] Sensitivitas omzet −10%, −20%, biaya +10% ditampilkan (kasus penghematan: kata "penghematan").
 - [ ] Tabel ≤ 3 kolom; tidak ada kata proses/file/path; label "UNTUK AGENT SAJA" tidak dikutip.

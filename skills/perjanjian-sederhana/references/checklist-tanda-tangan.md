@@ -26,6 +26,6 @@ Sertakan versi ringkas (8–12 poin yang relevan) di akhir setiap draf.
 
 ## Setelah tanda tangan
 - [ ] Simpan dokumen asli di tempat aman dan buat salinan/scan.
-- [ ] Jaga salinan KTP dan data pribadi pihak lain. Jangan disebar (UU PDP).
+- [ ] Jaga salinan KTP dan data pribadi pihak lain. Jangan disebar (UU 27/2022 tentang Pelindungan Data Pribadi).
 - [ ] Catat tanggal penting (jatuh tempo bayar, akhir kontrak, batas pemberitahuan perpanjangan).
 - [ ] Setiap perubahan dibuat tertulis sebagai addendum yang ditandatangani kedua pihak.

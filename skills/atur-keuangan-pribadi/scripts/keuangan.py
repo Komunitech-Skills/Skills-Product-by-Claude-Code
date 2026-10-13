@@ -995,8 +995,9 @@ def ringkasan_siap_tempel(h, a, pos, musiman, args, saldo):
                 continue
             lama = (0 if kurang == 0 else (int((kurang / setoran).to_integral_value(rounding=ROUND_CEILING))
                                             if setoran > 0 else None))
-            teks = "{} bulan: kurang {} (progres {}), tercapai {} dengan setoran {}/bulan".format(
-                b, rp(kurang), prog, _fmt_lama(lama), rp(setoran))
+            # v1.0.13: label lama tanpa kata "tercapai" ganda ("tercapai tidak tercapai" saat defisit/setoran Rp0)
+            teks = "{} bulan: kurang {} (progres {}), {}{} dengan setoran {}/bulan".format(
+                b, rp(kurang), prog, "tercapai " if lama else "", _fmt_lama(lama), rp(setoran))
             if sekaligus > 0:
                 teks += ", atau {} bila {} {} juga disetor tiap cair (cair pertama bulan ke-{}{})".format(
                     _fmt_lama(lama_dengan_musiman(kurang, setoran, sekaligus, args.bulan_cair_int)),

@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.18 (2026-10-13)
+- Rujukan UU PDP ditulis lengkap: UU 27/2022 tentang Pelindungan Data Pribadi (tanpa perubahan cara kerja).
+
 ## Catatan revisi 1.0.17 (2026-10-01)
 - Dari uji OpenClaw sebelum/sesudah: AI sempat menulis dua persen hasil hitungan sendiri yang salah ("65,6% dari transport September", seharusnya 83,8%; "Kurir 26%", seharusnya 27,4%) dan melewatkan bagian "Perlu dicek". Kini:
   - Semua persen/porsi wajib diambil dari script. Baru: `--nilai "Gaji Pokok+Tunjangan"` menjumlah beberapa kolom per kelompok, lengkap dengan rincian tiap kolom dan "% dari total"; `banding` per kelompok menampilkan "% dari total" periode kedua dan berapa persen kenaikan yang disumbang kelompok terbesar.
