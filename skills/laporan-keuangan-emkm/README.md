@@ -51,6 +51,10 @@ Bisa. Format angka Indonesia (`Rp 15.000`, `1,5jt`, `150rb`), tanggal seperti "5
 **Kata-kata di catatan saya khas usaha saya. Apakah dikenali?**
 Kata umum seperti bahan, gaji, listrik, ongkir, iklan, dan prive sudah dikenali. Kata khas usahamu (mis. "deterjen" untuk laundry) bisa ditambahkan sekali di file pemetaan, lalu dipakai terus.
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.3.3), skor 1–10 penguji independen: tanpa skill **7,9** → dengan skill **8,6** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pada skenario warung bakso, dengan skill laba bersih Rp12.375.000, prive dipisah, klasifikasi buku kas benar, dan permintaan mark-up omzet untuk KUR ditolak tegas.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent). Bukan laporan audit atau nasihat pajak — minta akuntan memeriksa bila untuk bank/pajak resmi. Codex/Cursor belum uji platform asli.
+
 ## Catatan revisi 1.3.3 (2026-10-01)
 - Modal (ekuitas) negatif kini selalu diperiksa: skill menanyakan aset lama yang belum dicatat dan utang, tidak lagi menyebutnya "wajar".
 - Tambah **Laporan Arus Kas** (operasi/investasi/pendanaan) dan ekspor **siap cetak** (`--html`, buka di browser → simpan PDF, ada kolom tanda tangan) serta CSV arus kas.

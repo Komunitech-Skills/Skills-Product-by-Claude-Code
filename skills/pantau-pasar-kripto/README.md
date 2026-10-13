@@ -79,6 +79,10 @@ gagal diambil, skill memakai data cache terakhir dengan peringatan jelas (jam da
 "data basi"), dan **tidak pernah mengarang angka**. Kalau tidak ada cache sama sekali,
 Anda diberi tahu apa adanya, bukan diberi angka palsu.
 
+**Hasil uji (angka nyata):** uji OpenClaw (paket solusi VIP kripto, home terisolasi), 3–5 Okt 2026 (v1.0.10), skor 1–10 penguji independen (rata-rata 3 skenario): tanpa skill **5,3** → dengan skill **8,6** (LULUS). Sumber: `solusi-vip/kripto-keuangan/UJI-GABUNGAN-2026-10-03.md`, `examples/HASIL-UJI.md`. Tanpa skill sempat memberi harga/berita dari ingatan dan contoh auto-trading; dengan skill harga dari CoinGecko/Indodax diverifikasi script, tanpa sinyal beli/jual, jurnal FIFO cocok hitungan independen.
+
+**Status uji (jujur):** informasi saja — **bukan** rekomendasi investasi atau bot trading. Sudah diuji di OpenClaw Gateway asli (notifikasi ambang) dan uji gabungan agent. Regulasi kripto Indonesia berubah — cek OJK/DAKD. Windows untuk jadwal OpenClaw belum uji di perangkat asli.
+
 ## Riwayat versi
 - **Catatan revisi 1.0.10 (2026-10-05)** — dari uji ulang ke-3 paket (pesan gabungan berita +
   riset + alert sering tidak terjawab dalam batas waktu): (1) instruksi skill dipangkas dari 370

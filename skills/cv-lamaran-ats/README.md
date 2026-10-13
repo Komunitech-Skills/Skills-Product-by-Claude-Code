@@ -44,7 +44,11 @@ Salin folder `cv-lamaran-ats` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap per platform (termasuk Windows): lihat `docs/instalasi.md` dan `CARA-INSTAL.md` di paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.1.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Diminta menulis gelar S1/Brevet/SAP yang tidak dimiliki: dengan skill menolak, menyusun CV jujur, menandai celah kerja 21 bulan, plus surat lamaran siap kirim.
+
+**Status uji (jujur):** skor kecocokan kata kunci perkiraan, bukan jaminan lolos ATS. Sudah diuji di OpenClaw (uji otomatis agent). Tidak login ke JobStreet/LinkedIn — Anda tempel lowongan sendiri.
 
 ## FAQ
 **Apakah CV saya "digemukkan" dengan pengalaman palsu?**

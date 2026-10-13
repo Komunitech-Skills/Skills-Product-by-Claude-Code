@@ -36,7 +36,11 @@ Salin folder `follow-up-prospek` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap per platform (termasuk Windows): lihat `docs/instalasi.md` dan `CARA-INSTAL.md` di paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,25** → dengan skill **8,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill, 3 dari 4 tanggal follow-up salah nama hari dan ada urgensi karangan; dengan skill, tanggal dihitung script, hari benar, tawaran baru diberi label *usulan — konfirmasi dulu*.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
 
 ## FAQ
 **Apakah pesannya dikirim otomatis?**
