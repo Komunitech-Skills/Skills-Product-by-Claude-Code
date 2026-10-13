@@ -2,20 +2,22 @@
 
 **Tempel tulisan yang kepanjangan atau berbelit; dapat versi jelas, pendek, siap kirim, lengkap dengan angka sebelum dan sesudah.**
 
+Diuji AI penguji independen: 6,25 → 8,5 dari 10 (angka, tanggal, dan janji di tulisan dipertahankan, dan klaim karangan ditolak).
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Email ke klien, pengumuman karyawan, deskripsi produk, pesan WA, dan laporan jadi mudah dipahami dalam sekali baca
+- ✅ Email ke klien, pengumuman karyawan, deskripsi produk, pesan WA, dan laporan jadi lebih mudah dipahami dalam sekali baca
 - ✅ Inti tulisan pindah ke depan; kalimat 70 kata dipecah jadi kalimat yang masuk akal
 - ✅ Kata pengisi dan jargon ("dalam rangka", "sosialisasi", "optimalisasi") diganti bahasa sehari-hari
-- ✅ **Fakta tidak diubah**: angka, tanggal, harga, nama, dan janji dicocokkan satu per satu; yang meragukan diberi tanda `[cek: ...]`
-- ✅ Hasil disertai angka nyata: jumlah kata, rata-rata kata per kalimat, kalimat terlalu panjang
+- ✅ **Fakta dijaga**: angka, tanggal, harga, nama, dan janji dicocokkan satu per satu; yang meragukan diberi tanda `[cek: ...]` (tetap baca hasilnya sebelum dikirim)
+- ✅ Hasil disertai angka ukuran: jumlah kata, rata-rata kata per kalimat, kalimat terlalu panjang (dihitung program kecil bawaan; periksa bila ada angka yang tampak janggal)
 
 ## Cocok untuk siapa
 - Pemilik usaha dan admin yang menulis email, pengumuman, atau pesan ke pelanggan dan karyawan
 - Tim yang menulis panduan kerja atau laporan ke atasan
 - Penjual online yang ingin deskripsi produk lebih rapi dan tidak muluk
-- **Bukan untuk:** membuat surat resmi lengkap berkop (pakai `surat-resmi`), SOP dari nol (`sop-writer`), menghapus "bau AI" (`tulisan-tanpa-kesan-ai`), atau menambah klaim yang tidak ada buktinya
+- **Bukan untuk:** membuat surat resmi lengkap berkop (pakai skill Surat Resmi, `surat-resmi`), panduan kerja (SOP) dari nol (skill SOP Writer, `sop-writer`), menghapus "bau AI" (skill Hilangkan Bau AI, `tulisan-tanpa-kesan-ai`), atau menambah klaim yang tidak ada buktinya
 
 ## Contoh sebelum & sesudah
 **Sebelum (72 kata dalam satu kalimat, dari contoh email ke klien):** "Sehubungan dengan adanya pesanan kemasan kardus Bapak sebanyak 5.000 pcs ..., dengan ini kami ingin menyampaikan bahwa pada dasarnya proses produksi yang sedianya dijadwalkan selesai pada tanggal 10 Oktober 2026 dikarenakan adanya keterlambatan pengiriman bahan kertas dari pihak supplier kami maka pengerjaannya akan mengalami penyesuaian jadwal ..."
@@ -24,8 +26,6 @@
 
 Ukuran pada contoh itu: **165 kata menjadi 97**, kalimat lebih dari 25 kata **3 menjadi 0**, kata pengisi/jargon **11 menjadi 0**, semua angka dan tanggal utuh. Lima contoh lengkap ada di folder `examples/`.
 
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.0):** rata-rata nilai 6,25 tanpa skill menjadi 8,5 dengan skill (skala 10). Catatan jujur: tanpa skill pun model sudah merapikan email dengan baik; nilai jual skill ini adalah isi tetap utuh (angka, tanggal, janji) dan penolakan klaim karangan. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
-
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa lalu tempel tulisannya:
 - "Tolong perjelas pengumuman ini, karyawan saya banyak yang bingung."
@@ -33,10 +33,10 @@ Setelah terpasang, ketik permintaan biasa lalu tempel tulisannya:
 - "Sunting email ini ke klien, tapi jangan ubah angkanya."
 - "Edit for clarity: ..."
 
-Kamu tidak perlu mengisi apa pun dulu. Pembaca dianggap pelanggan/karyawan awam dan nadanya sopan sehari-hari; kalau meleset, ketik koreksinya. Maksimal tiga pertanyaan singkat diajukan setelah hasil muncul.
+Anda tidak perlu mengisi apa pun dulu. Pembaca dianggap pelanggan/karyawan awam dan nadanya sopan sehari-hari; kalau meleset, ketik koreksinya. Maksimal tiga pertanyaan singkat diajukan setelah hasil muncul.
 
 ## Instalasi singkat
-Salin folder `sunting-tulisan-jelas` ke folder skills AI agent kamu:
+Salin folder `sunting-tulisan-jelas` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -47,6 +47,8 @@ Salin folder `sunting-tulisan-jelas` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Angka keterbacaan memakai Python 3 biasa (tanpa instalasi tambahan); kalau Python tidak ada, skill tetap menyunting dan menghitung perkiraan.
 
+**Hasil uji (OpenClaw, uji otomatis agent, diuji pada v1.0.0; versi terkini 1.0.1):** rata-rata nilai 6,25 tanpa skill menjadi 8,5 dengan skill (skala 10), dari dua skenario: email klien yang bertele-tele (juga di konteks Telegram) dan permintaan yang menjebak untuk menambah klaim produk karangan. Catatan jujur: tanpa skill pun model sudah merapikan email dengan baik (selisih pada skenario email hanya sekitar 1,5 poin); nilai jual skill ini adalah isi tetap utuh (angka, tanggal, janji) dan penolakan klaim karangan. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
@@ -56,12 +58,12 @@ Verdik gelombang: BELUM — Kedua sisi sama-sama merapikan dan menolak klaim BPO
 
 ## FAQ
 **Apakah isi tulisan saya akan berubah?**
-Tidak. Yang berubah susunan dan pilihan kata. Angka, tanggal, harga, nama, dan janji dicocokkan ulang; kalau ada yang meragukan atau kurang, kamu ditanya, bukan ditebak.
+Pada dasarnya tidak: yang berubah susunan dan pilihan kata. Angka, tanggal, harga, nama, dan janji dicocokkan ulang; kalau ada yang meragukan atau kurang, Anda ditanya, bukan ditebak. Tetap baca hasilnya sebelum dikirim.
 
 **Bisa dipakai untuk membuat tulisan lebih meyakinkan dengan menambah klaim?**
-Tidak untuk klaim yang tidak ada buktinya (jumlah pelanggan, sertifikat, testimoni karangan). Skill ini memperjelas fakta yang kamu punya. Kalau kamu punya bukti, tambahkan, dan akan dimasukkan dengan rapi.
+Tidak untuk klaim yang tidak ada buktinya (jumlah pelanggan, sertifikat, testimoni karangan). Skill ini memperjelas fakta yang Anda punya. Kalau Anda punya bukti, tambahkan, dan akan dimasukkan dengan rapi.
 
-**Apa bedanya dengan skill "tulisan-tanpa-kesan-ai"?**
+**Apa bedanya dengan skill "Hilangkan Bau AI" (`tulisan-tanpa-kesan-ai`)?**
 Itu menghapus ciri tulisan buatan AI. Skill ini membuat tulisan apa pun lebih jelas dan ringkas. Keduanya bisa dipakai berurutan.
 
 ## Atribusi

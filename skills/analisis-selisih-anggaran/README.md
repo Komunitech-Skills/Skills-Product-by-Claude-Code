@@ -1,13 +1,15 @@
 # Tahu Kenapa Laba Meleset dari Rencana
 
-**Tempel anggaran vs realisasi, dapatkan penyebab selisih per pos, apa yang perlu dicek, dan pesan siap kirim ke tim, dengan angka yang dihitung pasti.**
+**Tempel anggaran vs realisasi, dapatkan penyebab selisih per pos, apa yang perlu dicek, dan pesan siap kirim ke tim, dengan angka yang dihitung langsung dari data Anda.**
+
+Diuji AI penguji independen: 5,75 → 8,5 dari 10 (selisih dipecah "karena harga" atau "karena jumlah", dan permintaan menggeser angka untuk investor ditolak).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Rekap 1 layar:** laba meleset berapa, pos mana penyebab terbesarnya, urut dari rupiah terbesar
-- ✅ Bedakan **"karena harga" atau "karena jumlah"**: penjualan dipecah jadi efek harga, volume, dan campuran produk; lembur/bahan dipecah jadi efek tarif vs jam/pemakaian
-- ✅ Arah selalu benar: pendapatan naik = bagus, biaya naik = merugikan; biaya bahan/komisi disesuaikan dengan naik-turunnya penjualan, jadi tahu mana kenaikan yang wajar
+- ✅ Bedakan **"karena harga" atau "karena jumlah"**: penjualan dipecah jadi efek harga, jumlah terjual, dan campuran produk; lembur/bahan dipecah jadi efek tarif vs jam/pemakaian
+- ✅ Arah dinilai sesuai jenis pos: pendapatan naik = bagus, biaya naik = merugikan; biaya bahan (HPP)/komisi disesuaikan dengan naik-turunnya penjualan, jadi tahu mana kenaikan yang wajar
 - ✅ Daftar **yang perlu dicek** (sebagai pertanyaan, bukan tuduhan) + tindakan bulan depan
 - ✅ **Pesan WA/Telegram singkat ke tim** siap kirim, tanpa menyalahkan siapa pun
 
@@ -20,22 +22,36 @@
 **Sebelum:** "Laba Juli turun 6 juta, kayaknya karena sepi." Tidak jelas pos mana, berapa, dan apa yang harus dibenahi.
 
 **Sesudah (cukup tempel tabel atau ketik):** "Anggaran penjualan minuman 62 jt realisasi 57,4 jt, makanan 18 jt jadi 21,3 jt, HPP 24 jt jadi 25,9 jt, iklan 1,5 jt jadi 3,2 jt, ... kok laba turun?"
-→ **Laba Rp23.750.000 vs rencana Rp30.000.000 (−20,8%).** Penyebab terbesar: minuman −Rp4,6 jt, bahan +Rp1,9 jt (padahal penjualan turun, jadi kelebihan wajarnya Rp2,29 jt), iklan +Rp1,7 jt (+113%). Lalu 5 hal yang perlu dicek, 4 tindakan, dan pesan 3 baris untuk tim.
+Cuplikan keluarannya (contoh dengan data fiktif, dari `examples/01-kafe-bulanan-8-pos.md`; HPP = modal bahan yang terpakai):
+
+```
+**Rekap Juli 2026: laba Rp23.750.000 vs rencana Rp30.000.000 (−Rp6.250.000, −20,8%)**
+Pendapatan hanya kurang Rp1,3 jt (−1,6%), tapi biaya naik Rp4,95 jt (+9,9%). Penyebab terbesar: penjualan minuman turun Rp4,6 jt (sebagian tertutup makanan +Rp3,3 jt), lalu HPP bahan +Rp1,9 jt dan iklan +Rp1,7 jt.
+
+| Pos | Selisih | Keterangan |
+|---|---|---|
+| Penjualan minuman | −Rp4.600.000 (−7,4%) | merugikan; terbesar |
+| Penjualan makanan | +Rp3.300.000 (+18,3%) | menguntungkan |
+| HPP bahan baku | +Rp1.900.000 (+7,9%) | merugikan; padahal penjualan turun |
+| Iklan & promosi | +Rp1.700.000 (+113,3%) | merugikan; lebih dari 2× rencana |
+…
+| **Laba** | **−Rp6.250.000 (−20,8%)** | margin 37,5% → 30,2% |
+```
+
+Disusul penjelasan HPP, 5 hal yang perlu dicek (dalam bentuk pertanyaan), 4 tindakan bulan depan, dan pesan 3 baris untuk tim.
 
 Contoh lain di `examples/`: toko hijab online per kuartal (barang terjual naik tapi laba turun karena harga pashmina turun dan campuran produk bergeser ke yang murah) dan jasa kebersihan (lembur naik Rp7,1 jt: Rp6,5 jt karena jam, Rp615 rb karena tarif).
 
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,75 tanpa skill menjadi 8,5 dengan skill (skala 10). Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
-
 ## Cara pakai
-Ketik permintaan biasa ke AI agent kamu, misalnya:
-- "Ini anggaran vs realisasi bulan ini, kenapa biaya over budget?" (tempel tabel atau lampirkan CSV/ekspor Excel)
+Ketik permintaan biasa ke AI agent Anda, misalnya:
+- "Ini anggaran vs realisasi bulan ini, kenapa biaya over budget?" (tempel tabel atau lampirkan file ekspor dari Excel/aplikasi kasir)
 - "Penjualan naik tapi untung turun, salahnya di mana? Ini unit dan harga tiap produk."
 - "Lembur bengkak, karena jamnya atau tarifnya?"
 
 Tabel cukup berisi kolom pos, anggaran, realisasi. Kalau ada jumlah unit/harga atau jam lembur, hasilnya lebih tajam.
 
 ## Instalasi singkat
-Salin folder `analisis-selisih-anggaran` ke folder skills AI agent kamu:
+Salin folder `analisis-selisih-anggaran` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -44,7 +60,9 @@ Salin folder `analisis-selisih-anggaran` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputermu.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
+
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 5,75 tanpa skill menjadi 8,5 dengan skill (skala 10), dari dua skenario: anggaran kafe 8 pos (juga di konteks Telegram) dan permintaan menggeser angka agar laporan investor tampak sesuai target. Semua angka dicocokkan dengan hitung ulang independen. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
 
 ## Bukti uji di bot Telegram
 
@@ -55,10 +73,10 @@ Verdik gelombang: BELUM — Tanpa skill sudah benar angkanya dan menolak memoles
 
 ## FAQ
 **Apakah AI akan memastikan siapa/apa penyebab selisihnya?**
-Tidak. Angka hanya menunjukkan di mana dan berapa selisihnya, dan apakah karena harga atau jumlah. Penyebab pastinya ditulis sebagai daftar pemeriksaan yang kamu cek ke nota, rekening, dan catatan stok. AI tidak menuduh karyawan atau pemasok.
+Tidak. Angka hanya menunjukkan di mana dan berapa selisihnya, dan apakah karena harga atau jumlah. Penyebab pastinya ditulis sebagai daftar pemeriksaan yang Anda cek ke nota, rekening, dan catatan stok. AI tidak menuduh karyawan atau pemasok.
 
 **Apa arti "material"?**
-Selisih yang layak dibahas. Default-nya selisih minimal Rp500 ribu atau 5% dari anggaran. Kamu bisa mengubahnya, misalnya Rp1 juta dan 10% untuk usaha yang lebih besar.
+Selisih yang layak dibahas. Default-nya selisih minimal Rp500 ribu atau 5% dari anggaran. Anda bisa mengubahnya, misalnya Rp1 juta dan 10% untuk usaha yang lebih besar.
 
 **Bisa dipakai untuk membuat laporan ke investor terlihat sesuai target?**
 Tidak. Skill ini menolak mengubah atau menggeser angka realisasi. Sebagai gantinya ia membantu menyusun penjelasan jujur + rencana perbaikan berangka, yang justru lebih dipercaya investor dan bank.

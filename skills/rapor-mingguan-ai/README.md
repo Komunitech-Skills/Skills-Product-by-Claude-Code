@@ -1,26 +1,43 @@
 # Rapor Mingguan untuk Karyawan AI Anda
 
-**Karyawan AI tumbuh dari "bayi" jadi andal kalau dikoreksi tiap minggu. Tempel contoh percakapan, dapatkan rapor satu layar dan PR minggu ini yang tinggal ditempel.**
+**Karyawan AI tumbuh dari "bayi" jadi andal kalau dikoreksi tiap minggu. Tempel contoh percakapan, dapatkan rapor satu layar dan "PR" (pekerjaan rumah) minggu ini yang tinggal ditempel.**
+
+Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (tanpa skill hanya daftar masalah dan saran umum; dengan skill nilai per kriteria dan teks perbaikan siap tempel).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Tahu bot Anda sebenarnya bagus atau tidak**, bukan sekadar perasaan: 8 kriteria tetap (fakta, nyambung, ingat konteks, panjang, nada brand, janji berlebihan, data bocor, kata teknis), nilai A-D, dan persen lolos yang dihitung.
-- ✅ **Tahu apa yang harus diajarkan minggu ini:** maksimal 3 "PR" berupa teks siap tempel ke AGENTS.md atau catatan bot (contoh jawaban benar, aturan nada, FAQ baru), bukan saran umum.
+- ✅ **Tahu seberapa baik bot Anda**, bukan sekadar perasaan: 8 kriteria tetap (fakta, nyambung, ingat konteks, panjang, nada brand, janji berlebihan, data bocor, kata teknis), nilai A-D, dan persen lolos yang dihitung dari contoh percakapan yang Anda tempel.
+- ✅ **Tahu apa yang harus diajarkan minggu ini:** maksimal 3 "PR" berupa teks siap tempel ke catatan bot (di OpenClaw: berkas AGENTS.md, tempat aturan kerja bot): contoh jawaban benar, aturan nada, atau tanya-jawab (FAQ) baru, bukan saran umum.
 - ✅ **Terlihat naik atau turun:** tempel angka rapor minggu lalu, dapatkan tren per kriteria.
-- ✅ **Ekspektasi yang adil:** bot minggu pertama dinilai beda dari bot bulan kedua; tetapi data bocor dan janji berlebihan tidak pernah dimaafkan.
-- ✅ **Aman:** nama dan nomor pelanggan disamarkan di rapor; tidak membuka database atau kunci bot Anda; tidak membantu membuat bot berbohong.
+- ✅ **Ekspektasi yang adil:** bot minggu pertama dinilai beda dari bot bulan kedua; tetapi data bocor dan janji berlebihan tetap dihitung sebagai kesalahan serius di tahap mana pun.
+- ✅ **Hati-hati dengan data:** nama dan nomor pelanggan disamarkan di rapor (tetap periksa sebelum dibagikan); skill tidak membuka database atau kunci bot Anda dan menolak membantu membuat bot berbohong.
 
 ## Cocok untuk siapa
-- Member VIP yang sudah punya bot OpenClaw (CS toko, admin klinik, asisten konsultan, dan lainnya) dan ingin merawatnya rutin.
+- Member VIP yang sudah punya bot OpenClaw (layanan pelanggan toko, admin klinik, asisten konsultan, dan lainnya) dan ingin merawatnya rutin.
 - Pemilik usaha yang tidak sempat membaca semua chat bot, tetapi khawatir bot salah jawab.
 - Siapa pun yang baru memasang bot dan ingin tahu apa yang perlu diajarkan lebih dulu.
-- **Bukan untuk:** memasang bot dari nol (`karyawan-ai-mulai`), memeriksa keamanan pengaturan (`cek-privasi-openclaw`), atau laporan penjualan otomatis (`laporan-otomatis-terjadwal`).
+- **Bukan untuk:** memasang bot dari nol (pakai skill Karyawan AI Mulai), memeriksa keamanan pengaturan (skill Cek Privasi OpenClaw), atau laporan penjualan otomatis (skill Laporan Otomatis Terjadwal).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** "Bot saya kayaknya oke-oke saja." Dua minggu kemudian pelanggan mengeluh: bot menyebut harga yang salah, menjanjikan "pasti sembuh", dan sekali memberikan nomor pelanggan lain.
 
-**Sesudah (tempel 10-20 percakapan tiap Senin):** rapor satu layar: nilai umum C karena tiga kesalahan serius; kesalahan itu ditemukan di minggu pertama, lengkap dengan 3 teks siap tempel untuk memperbaikinya, dan daftar keputusan yang harus Anda ambil. Contoh lengkap: `examples/01-skincare-minggu2.md`, `examples/02-klinik-bulan2-rapor-lama.md`, `examples/03-konsultan-minggu1.md`.
+**Sesudah (tempel 10-20 percakapan tiap Senin):** rapor satu layar, lengkap dengan 3 teks siap tempel untuk memperbaiki kesalahan teratas dan daftar keputusan yang harus Anda ambil. Cuplikan keluaran nyata dari uji OpenClaw (12 percakapan fiktif toko skincare, dipotong; `examples/00-openclaw-sebelum-sesudah.md`):
+
+> **12 percakapan dinilai minggu ini (tidak ada yang dilewati).** Nilai umum **C** — dasar-dasarnya sudah oke (bot nyambung dan ingat konteks 100%), tapi ada kesalahan fakta soal kebijakan toko, satu janji hasil berlebihan, dan satu kebocoran data pelanggan lain yang harus segera dibenahi.
+>
+> | Kriteria | Lolos | Nilai |
+> |---|---|---|
+> | Fakta (sesuai info toko) | 83,3% (10 dari 12) | D |
+> | Nyambung dengan pertanyaan | 100% (12 dari 12) | A |
+> | Ingat konteks | 100% (12 dari 12) | A |
+> | Panjang pas (3-4 kalimat) | 83,3% (10 dari 12) | B |
+> | Nada sesuai brand | 83,3% (10 dari 12) | B |
+> | Tidak janji hasil berlebihan | 91,7% (11 dari 12) | C |
+> | Data pribadi aman | 91,7% (11 dari 12) | C |
+> | Bebas kata teknis | 91,7% (11 dari 12) | A |
+
+Contoh lengkap lain: `examples/01-skincare-minggu2.md`, `examples/02-klinik-bulan2-rapor-lama.md`, `examples/03-konsultan-minggu1.md`.
 
 ## Cara pakai
 Setiap minggu, salin 10-20 percakapan terbaru antara bot dan pelanggan dari chat (teks biasa; hapus nomor kartu dan data sensitif), lalu katakan misalnya:
@@ -31,7 +48,7 @@ Setiap minggu, salin 10-20 percakapan terbaru antara bot dan pelanggan dari chat
 Tidak perlu lengkap: info yang kurang ditanyakan maksimal tiga hal di akhir. Rapor ini memeriksa contoh yang Anda tempel; tetap baca beberapa chat bot sendiri tiap minggu, terutama pelanggan bernilai besar. Skill ini tidak mengubah pengaturan bot: teks perbaikan Anda tempel sendiri.
 
 ## Instalasi singkat
-Salin folder `rapor-mingguan-ai` ke folder skills AI agent kamu:
+Salin folder `rapor-mingguan-ai` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -57,7 +74,7 @@ Tidak. Anda yang menempelkan contoh percakapan. Skill ini tidak membuka database
 10-20 per minggu, campur yang mudah dan yang sulit. Kurang dari 10 tetap dinilai, tetapi ditandai "indikatif".
 
 **Apakah skill ini yang memperbaiki botnya?**
-Skill ini memberi teks perbaikan yang siap Anda tempel ke AGENTS.md atau catatan bot. Anda yang menempel dan memutuskan; kesalahan serius (data bocor, janji, saran medis) selalu masuk daftar keputusan Anda.
+Skill ini memberi teks perbaikan yang siap Anda tempel ke catatan bot (berkas AGENTS.md di OpenClaw). Anda yang menempel dan memutuskan; kesalahan serius (data bocor, janji, saran medis) dimasukkan ke daftar keputusan Anda.
 
 ## Catatan
 Bukan nasihat hukum, medis, atau keuangan. Penilaian bergantung pada percakapan dan info usaha yang Anda berikan. OpenClaw adalah produk pihak ketiga; skill ini tidak berafiliasi dengan pembuatnya.
