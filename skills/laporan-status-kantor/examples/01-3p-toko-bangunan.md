@@ -22,13 +22,16 @@ untuk PO ke supplier. Selain itu, tim gudang kekurangan 1 orang sejak Kamis kare
 staf yang izin sakit, sehingga proses bongkar-muat sedikit lebih lambat dari biasanya.
 
 _Asumsi: periode laporan minggu berjalan (Senin–Jumat, 21–25 Sep 2026) karena tidak
-disebutkan tanggal pasti. Ganti jika perlu._
+disebutkan tanggal pasti. Dampak "bongkar-muat sedikit lebih lambat" adalah perkiraan
+penulis, tidak ada di catatan Anda — hapus bila tidak sesuai. Ganti jika perlu._
 ```
 
 ## Catatan penguji
 
 **Bagus:**
-- Semua angka (Rp45 juta) dan fakta persis dari bahan mentah, tidak ada yang dikarang.
+- Semua angka (Rp45 juta) dan fakta persis dari bahan mentah, tidak ada yang dikarang
+  (satu-satunya tambahan, dampak "bongkar-muat sedikit lebih lambat", kini ditandai
+  sebagai asumsi di baris Asumsi).
 - Kendala dipilah tepat sesuai aturan template "ke atasan/pemilik": hanya yang butuh
   keputusan (restok semen) yang ditonjolkan; catatan kekurangan staf disertakan karena
   berdampak operasional, ditulis sebagai fakta bukan tuduhan.

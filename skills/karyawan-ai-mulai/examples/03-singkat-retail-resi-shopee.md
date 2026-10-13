@@ -57,17 +57,16 @@ komputer menyala terus dan file ekspor ditaruh di satu folder. Bisa dibahas sete
 ## Hasil Tugas Pertama: 4 balasan chat soal resi (siap tempel)
 1. **"Kak resi saya kok belum update?"**
    Halo Kak, mohon maaf menunggu 🙏 Paket Kakak sudah kami serahkan ke kurir hari ini. Nomor resi
-   biasanya aktif 1×24 jam setelah kurir memindai paket. Kalau besok siang belum berubah, kabari
+   [isian: kebijakan toko Anda — berapa lama nomor resi aktif setelah kurir memindai paket]. Kalau besok siang belum berubah, kabari
    kami ya Kak, kami bantu cek langsung ke kurir.
 2. **"Paket belum sampai padahal estimasi kemarin"**
    Halo Kak, maaf atas keterlambatannya 🙏 Kami sudah cek, paket masih di hub kurir [kota]. Kami
    pantau terus dan kabari Kakak paling lambat besok. Terima kasih sudah sabar menunggu.
 3. **"Barang yang datang salah"**
    Mohon maaf sekali Kak, ini kesalahan kami 🙏 Boleh kirim foto barang + label paketnya? Setelah
-   kami cek, kami kirim barang yang benar dan ongkir retur kami tanggung.
+   kami cek, kami kirim barang yang benar dan [isian: kebijakan toko Anda — ongkir retur ditanggung siapa].
 4. **"Kapan dikirim?"**
-   Halo Kak, pesanan yang masuk sebelum jam 15.00 kami kirim di hari yang sama. Setelah jam 15.00
-   dikirim besok pagi. Nomor resi otomatis muncul di aplikasi Shopee.
+   Halo Kak, [isian: kebijakan toko Anda — jam batas pesanan dikirim di hari yang sama dan jadwal kirim setelahnya]. Nomor resi otomatis muncul di aplikasi Shopee.
 
 ## Rencana 7 Hari
 | Hari | Kebiasaan baru | Skill |

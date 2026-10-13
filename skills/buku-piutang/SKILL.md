@@ -144,3 +144,4 @@ Contoh sesi lengkap: `examples/contoh-sesi-toko-sembako.md`.
 - Posisi `--per` tanggal lampau menghitung ulang dari transaksi bertanggal ≤ tanggal itu; nota yang sudah dibatalkan tidak ikut dihitung.
 - Zona waktu mengikuti pengaturan (WIB default), bukan jam komputer/VPS; `info` memperingatkan bila berbeda.
 - **Python tidak bisa dijalankan:** ikuti `references/tanpa-python.md` (tabel manual + rumus) dan beri tahu pengguna "dihitung manual, mohon dicek".
+- **Sumber tarif & angka:** setiap tarif/aturan yang disebut wajib disertai dasar aturan + tahunnya; angka hanya dari keluaran script atau input pengguna; nilai yang tidak diberikan pengguna (default, ilustrasi, patokan) ditandai sebagai asumsi, tanpa label "wajar/umum/lazim" yang tidak bersumber.

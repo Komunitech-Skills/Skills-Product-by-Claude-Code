@@ -57,7 +57,7 @@ Saldo awal Rp 60.000.000 · Batas aman Rp 20.000.000 (angka dari Anda)
 ### Saran menjaga kas (karena tidak ada minggu bermasalah)
 1. **Kunci pembayaran CV Bangun Fiktif.** Kalau pembayaran mundur ke setelah minggu 13, saldo terendah tetap Rp 36.500.000 (minggu 9) karena uangnya baru masuk di minggu 10. Namun saldo akhir turun ke Rp 27.250.000, tinggal Rp 7.250.000 di atas batas aman. Minta konfirmasi tertulis tanggal bayarnya.
 2. **DP pick-up di minggu 5 aman**, jadi tidak perlu ditunda. Kalau ada pilihan, geser ke minggu 6 (8–14 Feb) yang tidak ada pembayaran distributor/sewa, supaya saldo tidak turun ke titik yang sama dengan pembayaran rutin.
-3. **Sisihkan dana cadangan** untuk THR Lebaran 2027 (perkiraan pertengahan Maret; tanggal resmi menunggu pengumuman pemerintah). THR 4 karyawan ≈ 1 bulan gaji = Rp 16.000.000 belum masuk tabel ini. Kalau THR dibayar di minggu 10, saldo minggu 10 menjadi Rp 90.500.000, jadi masih aman. Mau saya tambahkan ke rencana?
+3. **Sisihkan dana cadangan** untuk THR Lebaran 2027 (tanggal Idulfitri 2027 menurut kalender resmi; isi sendiri). THR = 1 bulan upah untuk karyawan dengan masa kerja ≥ 12 bulan; masa kerja < 12 bulan dihitung proporsional (Permenaker 6/2016). Bila keempat karyawan sudah bekerja ≥ 12 bulan, THR = 1 bulan gaji = Rp 16.000.000, belum masuk tabel ini. Kalau THR dibayar di minggu 10, saldo minggu 10 menjadi Rp 90.500.000, jadi masih aman. Mau saya tambahkan ke rencana?
 
 ### File Excel
 `proyeksi-kas-13-minggu.csv` (pemisah `;`, untuk Excel berbahasa Indonesia).
@@ -67,6 +67,6 @@ Catatan: proyeksi berdasarkan perkiraan Anda. Perbarui tiap minggu dengan angka 
 
 ## Catatan penguji
 - **Diverifikasi independen**: 13/13 minggu cocok. Penempatan `tgl:31` dan `tgl:30` → 28 Feb 2027 (minggu 8), `setiap 2 mulai 3` → 3, 5, 7, 9, 11, 13, serta sewa 1 Jan yang dikecualikan dan sewa 1 Apr di minggu 13 semuanya benar. Tahun kabisat juga diuji terpisah: 2028, `tgl:29/30/31` → 29 Feb (minggu yang benar).
-- Angka "tanpa CV Bangun" dan "THR di minggu 10" dihitung ulang dengan CSV yang diubah: saldo akhir 72.250.000 − 45.000.000 = 27.250.000. Saldo minggu 10 tanpa piutang = 61.500.000; dengan THR = 106.500.000 − 16.000.000 = 90.500.000.
+- Angka "tanpa CV Bangun" dan "THR di minggu 10" dihitung ulang dengan CSV yang diubah (THR di minggu 10 dicek ulang skrip 2026-10-13: baris `10;keluar;THR karyawan;16.000.000` → saldo minggu 10 Rp 90.500.000): saldo akhir 72.250.000 − 45.000.000 = 27.250.000. Saldo minggu 10 tanpa piutang = 61.500.000; dengan THR = 106.500.000 − 16.000.000 = 90.500.000.
 - Bagus: SKILL.md punya aturan "jika semua minggu aman … jangan mengarang masalah", dan output mengikutinya.
 - Kurang (ringan): SKILL.md tidak meminta agent menjelaskan penempatan tanggal kepada pengguna (terutama bulan pendek dan pos yang jatuh sebelum minggu 1), padahal itu sumber salah paham paling umum. Penjelasan di sini ditambahkan oleh agent.

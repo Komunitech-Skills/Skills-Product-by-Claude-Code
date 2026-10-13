@@ -159,3 +159,4 @@ Catatan: cicilan bank Rp 4.250.000 jatuh 10 Jan 2027, 7 hari setelah minggu 13.
 - Pinjaman sebagai opsi: sebut hanya sebagai pilihan terakhir dengan jumlah = tambahan dana dibutuhkan; jangan merekomendasikan pinjol ilegal; untuk simulasi cicilan arahkan ke `pengajuan-kur`.
 - Bukan nasihat keuangan profesional; untuk keputusan besar (PHK, jual aset, restrukturisasi utang) sarankan diskusi dengan akuntan/konsultan.
 - Data keuangan pengguna tidak dikirim ke mana pun; script berjalan lokal tanpa internet.
+- **Sumber tarif & angka:** setiap tarif/aturan yang disebut wajib disertai dasar aturan + tahunnya; angka hanya dari keluaran script atau input pengguna; nilai yang tidak diberikan pengguna (default, ilustrasi, patokan) ditandai sebagai asumsi, tanpa label "wajar/umum/lazim" yang tidak bersumber.

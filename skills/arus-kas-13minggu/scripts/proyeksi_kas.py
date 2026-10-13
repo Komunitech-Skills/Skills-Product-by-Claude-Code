@@ -5,7 +5,7 @@ Membaca rencana penerimaan & pengeluaran dari CSV, menghitung saldo akhir per mi
 menandai minggu kas negatif / di bawah batas aman, dan mensimulasikan beberapa opsi
 tindakan (percepat tagihan piutang, mundurkan bayar supplier, tunda belanja non-kritis).
 
-Hanya library standar Python 3.8+. Tidak ada akses jaringan. Versi 1.0.3 (2026-10-01).
+Hanya library standar Python 3.8+. Tidak ada akses jaringan. Versi 1.0.4 (2026-10-13).
 
 Format CSV input (pemisah , ; tab atau | dideteksi otomatis; judul kolom boleh variasi):
     minggu;jenis;kategori;nominal;keterangan;kritis

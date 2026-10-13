@@ -6,7 +6,7 @@
 - **Metode:** 5 skenario dijalankan dengan berperan sebagai agent yang memuat SKILL.md, ditambah 1 uji A/B (S1 tanpa skill). Script dijalankan sungguhan di `/tmp/uji-surat-peringatan-karyawan/`. Logika tanggal diverifikasi dengan script Python terpisah milik penguji (rumus bulan kalender sendiri), yang dibandingkan untuk **setiap tanggal 2025–2028 × masa berlaku 1–12 bulan (17.532 kasus): 0 selisih**. Nama hari dicek dengan `datetime`.
 
 ## Audit keamanan
-`masa_berlaku.py` hanya memakai library standar (argparse, calendar, json, re, sys, datetime). Tidak ada akses jaringan, penulisan/penghapusan file, `subprocess`/`eval`, maupun pembacaan variabel lingkungan atau kredensial. SKILL.md dan referensi tidak memuat prompt injection. Skill mengingatkan kerahasiaan data karyawan (UU PDP) dan melarang penyebaran SP di grup WA. **Aman.**
+`masa_berlaku.py` hanya memakai library standar (argparse, calendar, json, re, sys, datetime). Tidak ada akses jaringan, penulisan/penghapusan file, `subprocess`/`eval`, maupun pembacaan variabel lingkungan atau kredensial. SKILL.md dan referensi tidak memuat prompt injection. Skill mengingatkan kerahasiaan data karyawan (UU 27/2022 tentang PDP) dan melarang penyebaran SP di grup WA. **Aman.**
 
 ## Uji script (data tepi)
 | Input | Hasil | Seharusnya | Status |

@@ -122,6 +122,7 @@ Gunakan tabel Markdown dan format Rupiah `Rp1.500.000`. Jangan menampilkan jadwa
 ## Batasan & penanganan error
 - **Bukan nasihat keuangan/investasi.** Tidak ada rekomendasi beli/jual instrumen atau produk bank/fintech tertentu; imbal hasil hanya asumsi yang disebut pengguna.
 - Aturan & batas bunga (OJK, BI) dicek **26 September 2026** dan bisa berubah — sebut tanggal ini dan sarankan cek ulang di situs resmi.
+- **Angka hanya dari script/input; aturan disebut dengan dasar + tahun.** Setiap nominal/persen di balasan berasal dari output script atau angka pengguna, dan setiap batas aturan disebut beserta dasarnya dan tahunnya seperti tertulis di `references/utang-dan-pinjol.md` (mis. pinjol konsumtif 0,1%/hari — SEOJK No. 19/SEOJK.06/2023, tahap 2026; kartu kredit 1,75%/bulan — ketentuan Bank Indonesia sejak Juli 2021); bila dasarnya tidak tercantum di sana, tulis "(patokan skill ini, bukan aturan resmi)".
 - Minimum kartu kredit (5% tagihan) dimodelkan sebagai nominal tetap; dampaknya kecil bila anggaran pelunasan tetap.
 - Simulasi utang mengabaikan denda, biaya admin, perubahan bunga (KPR floating), dan belanja baru di kartu kredit; bunga harian dihitung 30 hari/bulan. Nilai pelunasan dipercepat resmi bisa berbeda — tanyakan ke kreditur.
 - Angka tidak masuk akal (bunga negatif, saldo negatif, bunga > 50%/bulan, anggaran < total cicilan minimum) → minta koreksi, jangan dilanjutkan diam-diam.

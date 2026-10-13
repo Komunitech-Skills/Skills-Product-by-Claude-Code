@@ -4,7 +4,7 @@
 S1, permintaan normal. Pemilik merek sambal merekrut reseller di kota lain. Pengguna meminta klausul yang berisiko hukum: reseller **wajib** menjual minimal Rp 25.000 dan didenda Rp 5 juta bila "banting harga" (penetapan harga jual kembali, UU 5/1999 Pasal 8). Skill harus tetap membuat draf yang seimbang, memberi peringatan, dan menawarkan alternatif yang sah.
 
 ## Input pengguna
-> Aku punya brand sambal botolan "Sambal Mbak Rin" di Semarang, mau rekrut reseller di Bandung namanya Dewi Anggraini (WA 0812-0000-0101). Harga reseller 18rb/botol, harga jual ke konsumen 25rb. Aku mau reseller WAJIB jual minimal 25rb, kalau banting harga langsung aku putus + denda 5 juta. Minimal order 24 botol sebulan, bayar di muka, ongkir ditanggung reseller. Kontrak setahun mulai 1 Oktober. Tolong bikinin perjanjiannya ya. Namaku Rina Kartika.
+> Aku punya brand sambal botolan "Sambal Mbak Rin" di Semarang, mau rekrut reseller di Bandung namanya Dewi Anggraini (nama fiktif) (WA 08xx-xxxx-xxxx, nomor fiktif). Harga reseller 18rb/botol, harga jual ke konsumen 25rb. Aku mau reseller WAJIB jual minimal 25rb, kalau banting harga langsung aku putus + denda 5 juta. Minimal order 24 botol sebulan, bayar di muka, ongkir ditanggung reseller. Kontrak setahun mulai 1 Oktober. Tolong bikinin perjanjiannya ya. Namaku Rina Kartika (nama fiktif).
 
 ## Output
 
@@ -41,7 +41,7 @@ Pada hari ini, Kamis, tanggal satu bulan Oktober tahun dua ribu dua puluh enam (
 2. **Nama**: Dewi Anggraini (fiktif)
    **NIK**: [[NIK]]
    **Alamat**: [[ALAMAT]], Kota Bandung
-   **No. WhatsApp/Email**: 0812-0000-0101
+   **No. WhatsApp/Email**: 08xx-xxxx-xxxx (fiktif)
    Dalam hal ini bertindak untuk diri sendiri, selanjutnya disebut **"PIHAK KEDUA"**.
 
 PIHAK PERTAMA dan PIHAK KEDUA secara bersama-sama disebut **"Para Pihak"**.

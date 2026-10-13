@@ -113,7 +113,7 @@ Pihak perusahaan,          Karyawan,               Saksi,
 **CATATAN PROSES (untuk kamu, jangan dicetak)**
 1. Panggil Dedi dulu secara pribadi dengan 1 saksi. Tunjukkan rekaman CCTV, dengarkan penjelasannya, dan catat di berita acara. Setelah itu baru serahkan SP.
 2. Pastikan ada **area merokok yang jelas** dan tanda "Dilarang Merokok" di area bahan bakar. Tanpa itu, dasar SP lemah.
-3. Jika bengkel belum punya Peraturan Perusahaan (umumnya wajib bila karyawan ≥ 10 orang), buat tata tertib tertulis yang ditandatangani semua karyawan. Cantumkan larangan merokok di area bahan bakar sebagai pelanggaran berat supaya ke depan jelas tingkat sanksinya.
+3. Jika bengkel belum punya Peraturan Perusahaan (umumnya wajib bila karyawan ≥ 10 orang — UU 13/2003 Pasal 108), buat tata tertib tertulis yang ditandatangani semua karyawan. Cantumkan larangan merokok di area bahan bakar sebagai pelanggaran berat supaya ke depan jelas tingkat sanksinya.
 4. Minta tanda tangan penerimaan. Jika Dedi menolak, tulis "menolak menandatangani" dan minta saksi tanda tangan.
 5. Isi nama lengkap, nama bengkel, pasal tata tertib, dan nama saksi.
 

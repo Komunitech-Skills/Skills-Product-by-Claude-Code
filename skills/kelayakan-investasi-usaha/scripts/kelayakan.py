@@ -26,7 +26,7 @@ import sys
 from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 DISKONTO_DEFAULT = Decimal("12")
 DISKONTO_KETAT = Decimal("20")
 LABEL_MANFAAT = {"omzet": "Omzet", "penghematan": "Penghematan", "pemasukan": "Pemasukan tambahan"}

@@ -29,14 +29,14 @@ Disusun: 2026-09-29 | Data terbaru yang dipakai: LK 6M2026 (per 30-06-2026, lewa
 
 ## 1. Ringkasan fakta
 - Penjualan neto semester I 2026 Rp41,86 T, naik 11,33% dari Rp37,60 T (Sumber: Databoks Katadata, 14-08-2026; Kontan via TradingView, Agustus 2026, diakses 2026-09-29).
-- Laba bersih yang dapat diatribusikan ke entitas induk Rp3,70 T, turun 33,21% dari Rp5,54 T (Sumber: Databoks Katadata 14-08-2026; Infobanknews 02-08-2026).
+- Laba bersih yang dapat diatribusikan ke entitas induk Rp3,70 T, turun 33,21% (dihitung ulang dari angka laporan yang dikutip) dari Rp5,54 T (Sumber: Databoks Katadata 14-08-2026; Infobanknews 02-08-2026).
 - Laba usaha naik 8% menjadi Rp9,15 T; beban keuangan naik 216% menjadi Rp4,09 T, termasuk rugi selisih kurs Rp2,9 T (Sumber: IDX Channel, 01-08-2026).
 - Total aset Rp143,99 T, liabilitas Rp68,71 T, ekuitas Rp75,27 T per 30-06-2026 (Sumber: Databoks Katadata, 14-08-2026).
 
 ## 2. Berita & pengumuman terbaru
 | Tanggal | Isi singkat | Sumber |
 |---|---|---|
-| 14-08-2026 (berita lama) | Penjualan semester I tertinggi 2021-2026; laba induk turun 33,12% | databoks.katadata.co.id, diakses 2026-09-29 |
+| 14-08-2026 (berita lama) | Penjualan semester I tertinggi 2021-2026; laba induk turun 33,21% (dihitung ulang dari angka laporan yang dikutip) | databoks.katadata.co.id, diakses 2026-09-29 |
 | 02-08-2026 (berita lama) | Laba bersih Rp3,70 T vs Rp5,54 T; core profit Rp5,40 T | infobanknews.com, diakses 2026-09-29 |
 | 01-08-2026 (berita lama) | Laba turun karena rugi kurs belum terealisasi; arus kas disebut menguat | idxchannel.com, diakses 2026-09-29 |
 | 26-06-2026 (berita lama) | RUPST menetapkan dividen tunai TB 2025 Rp265/saham (naik 6% dari Rp250) | idxchannel.com, diakses 2026-09-29 |

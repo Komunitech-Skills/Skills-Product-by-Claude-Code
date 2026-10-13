@@ -546,6 +546,15 @@ class TesStrukturSkill(unittest.TestCase):
         self.assertIn("157", ref)
         self.assertIn("081-157-157-157", ref)
 
+    def test_aturan_angka_dan_dasar_aturan(self):
+        """v1.0.12 (audit contoh 2026-10-13): angka hanya dari script/input; aturan disebut dengan dasar + tahun."""
+        teks = (FOLDER / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Angka hanya dari script/input; aturan disebut dengan dasar + tahun", teks)
+        self.assertIn("SEOJK No. 19/SEOJK.06/2023", teks)
+        contoh = (FOLDER / "examples" / "02-karyawan-4-utang-avalanche-snowball.md").read_text(encoding="utf-8")
+        self.assertNotIn("batas OJK 2026", contoh)
+        self.assertNotIn("batas maksimum BI", contoh)
+
 
 # ---------------------------------------------------------------------------
 # v1.0.1 — regresi per temuan HASIL-UJI (T-1 satuan bunga, T-2 nominal kecil, T-5, T-6)

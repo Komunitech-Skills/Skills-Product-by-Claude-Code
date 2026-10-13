@@ -2,6 +2,7 @@
 
 - **Tanggal uji:** 2026-10-12 (versi 1.0.1; OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
 - **Data pesan:** `data/pesan-2-notulen.txt`
+- **Data fiktif:** Pak Hendra, Bu Ratna, Dimas, Sinta, dan Wulan (nama fiktif), serta CV Maju Sentosa dan angka-angkanya hanya contoh.
 
 ## Input (pesan pengguna)
 

@@ -3,6 +3,12 @@
 **Input pengguna:**
 > "Saya mau buka jasa laundry sepatu di rumah, worth it enggak ya sebelum saya sewa tempat & beli alat lengkap? Saya punya IG dengan sekitar 400 follower (rata-rata story dilihat 120-an), dan ada warung fotokopi teman deket kampus yang mau dititipi flyer."
 
+**Jawaban pengguna atas pertanyaan harga** *(data fiktif yang dimasukkan pengguna untuk contoh)*:
+> "Rencana harga Rp35.000 per pasang."
+
+**Input lanjutan pengguna setelah 7 hari** *(data fiktif yang dimasukkan pengguna untuk contoh)*:
+> "Story dilihat 118 orang, 9 vote 'Ya, mau!' tapi hanya 6 yang lanjut DM serius. Warung fotokopi: ±35 orang lewat (estimasi pemilik warung), 2 DM masuk dari flyer. Yang jawab 'nanti dulu' bilang 'Rp35rb kemahalan buat cuci sepatu sendiri, biasanya cuma perlu sikat cepat' dan 'gak tahu berapa lama prosesnya'."
+
 ## 1. Hipotesis
 > "Kami percaya **mahasiswa/anak kos di sekitar kampus yang sepatunya kotor tapi malas cuci sendiri** mau membayar **Rp35.000/pasang** untuk **jasa cuci sepatu (ambil-antar area kampus)** karena bisa **hemat waktu & sepatu jadi bersih tanpa ribet**. Kami akan tahu ini benar jika minimal 15% dari yang ditawari benar-benar order dalam 7 hari."
 
@@ -26,7 +32,7 @@ Kalau ada, kamu bakal pakai? [Ya, mau! / Nanti dulu]
 Flyer di warung fotokopi memakai pitch titip warung yang disesuaikan jadi ajakan DM IG.
 
 ## 5. Hasil setelah 7 hari
-Story dilihat 118 orang, 9 vote "Ya, mau!" tapi hanya 6 yang lanjut DM serius. Warung fotokopi: ~35 orang lewat (estimasi pemilik warung), 2 DM masuk dari flyer. Total ditawari = 118 + 35 = 153, total pre-order (DM serius) = 6 + 2 = 8.
+*(Angka dari input lanjutan di atas: data fiktif untuk contoh.)* Story dilihat 118 orang, 9 vote "Ya, mau!" tapi hanya 6 yang lanjut DM serius. Warung fotokopi: ~35 orang lewat (estimasi pemilik warung), 2 DM masuk dari flyer. Total ditawari = 118 + 35 = 153, total pre-order (DM serius) = 6 + 2 = 8.
 
 ```
 $ python3 scripts/hitung_validasi.py --ditawari 153 --preorder 8 --harga 35000

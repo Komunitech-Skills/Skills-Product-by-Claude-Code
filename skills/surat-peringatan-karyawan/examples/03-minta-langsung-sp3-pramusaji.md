@@ -116,7 +116,7 @@ Hasanuddin                 Andi Saputra            [Nama]
 1. Tunggu sampai emosimu reda sebelum memanggil Andi. Panggil secara pribadi, jangan di depan karyawan lain atau pelanggan.
 2. Dengarkan versinya: mungkin sedang ramai, ada masalah pribadi, atau pelanggan juga kasar. Catat apa adanya di berita acara.
 3. Minta 2 saksi menulis keterangan singkat bertanda tangan. Simpan video sebagai bukti.
-4. **Jangan** membahas atau menyebar kasus ini di grup WA karyawan maupun media sosial. SP bersifat rahasia (UU PDP).
+4. **Jangan** membahas atau menyebar kasus ini di grup WA karyawan maupun media sosial. SP bersifat rahasia (UU 27/2022 tentang PDP).
 5. Untuk video yang viral, tangani terpisah: balas dengan permintaan maaf resmi dari warung, tanpa menyebut nama karyawan.
 6. Serahkan SP rangkap 2 dan minta tanda tangan. Jika Andi menolak, tulis "menolak menandatangani" dan minta saksi tanda tangan.
 

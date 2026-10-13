@@ -15,7 +15,7 @@
 
 **Asumsi**
 - HPP Rp22.000 per botol sudah termasuk botol dan stiker. Angka ini belum memasukkan kenaikan gula aren.
-- Target margin minimum 40%, default untuk minuman.
+- Target margin minimum 40%, default untuk minuman (default skill, bisa diubah).
 - Penjualan langsung tanpa potongan marketplace.
 - Non-PKP.
 
