@@ -1,75 +1,173 @@
+> **Sumber keluaran:** penguji independen Akun B, 2026-10-13, Claude Code (simulasi agent), data fiktif; menggantikan contoh lama yang memuat atribut/klaim tanpa sumber.
+
 # Skenario 01 (Normal) — "Buatkan landing page untuk keripik pedas saya, harga 25 ribu"
 
-> Dijalankan oleh **penguji independen** (agent yang hanya membaca folder skill `copy-landing-page/` dan mengikutinya, tidak membaca `examples/uji-pembuat-01-keripik-pedas.md` sebelum menulis output ini agar hasilnya benar-benar independen). Nama usaha & detail sengaja dibuat berbeda dari contoh pembuat skill supaya perbandingan adil.
+Dijalankan oleh agent yang hanya membaca folder skill `copy-landing-page/` (termasuk `references/` dan
+`scripts/`) dan mengikuti `SKILL.md` apa adanya. Nama usaha & detail sengaja dibuat berbeda dari contoh
+pembuat skill. Fokus ulang uji ini: atribut produk yang tidak diberikan pengguna tidak boleh ditulis sebagai
+fakta, melainkan `[isian: ...]`.
 
-## Permintaan pengguna
+## Input pengguna (giliran 1)
 > "Buatkan landing page untuk keripik pedas saya, harga 25 ribu."
 
-## Langkah 1 — info kurang → satu pertanyaan (sesuai SKILL.md Input & Langkah kerja)
-Info ada: produk (keripik pedas), harga (Rp25.000). Belum ada: nama usaha, WA, ongkir, metode bayar, testimoni, nada. Agent bertanya **satu kali**:
+## Output (giliran 1) — info kurang → satu pertanyaan (sesuai SKILL.md Input & Langkah kerja)
+Info ada: produk (keripik pedas), harga (Rp25.000). Belum ada: nama usaha, target pembeli, detail produk, WA,
+ongkir, metode bayar, garansi, testimoni, nada. Agent bertanya **satu kali**:
 
-> "Siap, sebelum saya buatkan boleh dilengkapi (jawab yang kamu tahu saja, sisanya saya pakai default):
-> 1. Nama usaha/produknya apa?
-> 2. Nomor WhatsApp untuk tombol pesan?
-> 3. Kirim area mana saja & ongkirnya bagaimana?
-> 4. Metode bayar apa saja (transfer/QRIS/COD)?
-> 5. Ada testimoni pelanggan asli yang mau ditampilkan?
-> 6. Mau nada santai, profesional, atau 'bahasa ibu-ibu'?
+> "Siap, sebelum saya buatkan boleh dilengkapi (jawab yang kamu tahu saja; sisanya saya pakai default atau
+> saya tandai [isian] supaya kamu yang mengisi):
+> 1. Nama usahanya apa, dan detail apa yang mau ditonjolkan (bahan, ukuran/isi, varian rasa atau level pedas,
+>    masa simpan, izin PIRT/BPOM bila ada)?
+> 2. Target pembelinya siapa?
+> 3. Nomor WhatsApp untuk tombol pesan?
+> 4. Kirim ke area mana saja & ongkirnya bagaimana? Bayar lewat apa saja (transfer/QRIS/COD)?
+> 5. Ada garansi/retur yang benar-benar kamu berlakukan?
+> 6. Ada testimoni pelanggan asli yang mau ditampilkan?
+> 7. Mau nada santai, profesional, atau 'bahasa ibu-ibu'? Mau landing page lengkap saja, atau sekalian
+>    versi pendek untuk link-in-bio?
 >
-> Kalau mau cepat, saya pakai default: nada santai-profesional, bayar transfer & QRIS, tanpa testimoni dulu (biar tidak mengarang)."
+> Detail produk yang tidak kamu sebut tidak akan saya tebak. Kalau mau cepat, saya pakai default: nada
+> santai-profesional, bayar transfer & QRIS, nomor WA placeholder, tanpa testimoni."
 
-## Jawaban pengguna (dibuat untuk uji)
+## Input pengguna (giliran 2, dibuat untuk uji)
 > "Namanya Keripik Setan Mak Iyem, WA 0812-3456-7890, kirim se-Jabodetabek pakai ojol/kurir sendiri kalau dekat, luar kota pakai ekspedisi, bayar transfer/QRIS, belum ada testimoni tertulis, nada santai aja."
 
-## Langkah 5 & 7 — jalankan script (dijalankan penguji, bukan disalin dari contoh pembuat)
+Fakta yang boleh dipakai: nama usaha, produk keripik pedas, harga Rp25.000, WA 0812-3456-7890, pengiriman
+(Jabodetabek: ojol/kurir sendiri bila dekat; luar kota: ekspedisi), bayar transfer/QRIS, tanpa testimoni,
+nada santai. **Tidak diberikan:** bahan, jenis keripik, ukuran/isi, satuan harga, varian/level pedas, masa
+simpan, pengawet, izin edar, garansi, ongkir, estimasi waktu kirim, target pembeli.
+
+## Langkah 5 & 7 — script dijalankan (bukan dikira-kira)
 ```
 $ python3 scripts/bangun_tautan_wa.py wa --nomor "0812-3456-7890" --pesan "Halo, saya mau pesan Keripik Setan Mak Iyem dari halaman ini"
 https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini
 
-$ python3 scripts/bangun_tautan_wa.py meta --title "Keripik Setan Mak Iyem - Pedas Nampol, Renyah 3 Bulan" --desc "Keripik singkong pedas level 1-5, tanpa pengawet, renyah tahan 3 bulan. Kirim Jabodetabek & luar kota. Pesan lewat WhatsApp, bayar transfer/QRIS."
-[OK] Meta title: 54/60 karakter
-[OK] Meta description: 152/155 karakter
+$ python3 scripts/bangun_tautan_wa.py meta --title "Keripik Setan Mak Iyem - Keripik Pedas Rp25.000, Pesan WA" --desc "Keripik Setan Mak Iyem: keripik pedas Rp25.000. Pesan lewat WhatsApp, kirim ke Jabodetabek & luar kota, bayar transfer atau QRIS."
+[OK] Meta title: 57/60 karakter
+[OK] Meta description: 129/155 karakter
 ```
-**Verifikasi independen (bukan salin output script):** decode manual `urllib.parse.unquote` atas string `%2C`,`%20` di atas menghasilkan persis "Halo, saya mau pesan Keripik Setan Mak Iyem dari halaman ini" — tautan wa.me valid dan bisa dibuka. Hitung `len()` manual meta title = 54, meta description = 152 — cocok dengan angka script.
+Percobaan pertama meta title "... Pesan via WA" menghasilkan 61/60 (PERINGATAN), lalu dipersingkat menjadi
+"Pesan WA" (57/60). Verifikasi independen: `urllib.parse.unquote` atas `%2C`/`%20` menghasilkan persis
+"Halo, saya mau pesan Keripik Setan Mak Iyem dari halaman ini"; `len()` manual title = 57, description = 129.
+Nomor rusak (`--nomor abc`) ditolak script dengan pesan jelas dan exit code 1.
 
-## Output ke pengguna (ringkas — struktur penuh sesuai Format Output SKILL.md)
+## Output (giliran 2) — ke pengguna, utuh
+````
+⚠️ Pengingat izin edar: keripik adalah pangan olahan, jadi izin edar (PIRT/SPP-IRT atau BPOM) wajib ada
+SEBELUM dijual dan dipromosikan. Kamu belum menyebut punya izin, jadi halaman ini tidak memuat klaim izin
+apa pun.
 
-### 1. Versi Lengkap (Landing Page)
-**# Pedas Nampol, Bikin Nagih Tanpa Takut Melempem**
-### Keripik Setan Mak Iyem — renyah tahan 3 bulan, kirim Jabodetabek & luar kota.
+## 1. Versi Lengkap (Landing Page)
+
+# Pesan Keripik Pedas Mak Iyem Lewat WhatsApp, Dikirim ke Rumahmu
+### Keripik Setan Mak Iyem — Rp25.000 [isian: per bungkus/ukuran]. Kirim ke Jabodetabek dan luar kota, bayar transfer atau QRIS.
 
 **[Pesan Sekarang lewat WhatsApp →](https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini)**
 
-**Masalahnya:** Keripik pedas enak gampang dicari, yang susah dicari itu yang beneran renyah sampai habis, bukan yang melempem di hari ketiga.
+## Masalahnya
+Lagi pengen ngemil pedas, tapi malas keluar rumah buat nyari? Atau sudah ketemu yang enak, tapi bingung
+cara pesannya dan bayarnya gimana? Di sini cukup chat lewat WhatsApp, bayar transfer atau QRIS, lalu
+pesananmu dikirim.
 
-**Kenapa Cocok Buat Kamu:** Level pedas 1–5 · Tanpa pengawet, renyah 3 bulan di suhu ruang · Kemasan tebal aman kirim luar kota · Cocok stok cemilan atau dijual lagi.
+## Kenapa Keripik Setan Mak Iyem Cocok Buat Kamu
+- **Pesan tinggal chat:** semua lewat WhatsApp, tanpa ribet.
+- **Bisa dikirim ke rumahmu:** Jabodetabek lewat ojol atau kurir sendiri (untuk lokasi yang dekat), luar kota lewat ekspedisi.
+- **Bayar sesuai kebiasaanmu:** transfer atau QRIS.
+- **Harga jelas di awal:** Rp25.000 [isian: per bungkus/ukuran, isi berapa gram].
+- **Rasa dan tingkat pedas:** [isian: varian rasa/level pedas yang tersedia dan deskripsi rasa sesuai produkmu].
 
-**Cara Pesan:** 1) Chat WA di tombol ini 2) Sebutkan level & jumlah 3) Bayar transfer/QRIS 4) Dikirim ojol (Jabodetabek) atau ekspedisi (luar kota).
+## Cara Pesan
+1. Klik tombol WhatsApp di halaman ini.
+2. Tulis jumlah pesananmu [isian: dan varian/level pedas bila ada] serta alamat pengiriman.
+3. Bayar lewat transfer atau QRIS.
+4. Pesananmu dikirim: Jabodetabek lewat ojol atau kurir sendiri (bila lokasimu dekat), luar kota lewat ekspedisi. Estimasi waktu: [isian: estimasi waktu kirim].
 
-**Kata Mereka yang Sudah Coba:** [ISI TESTIMONI ASLI — nama & kota pembeli. Hapus bagian ini sampai ada testimoni asli.]
+## Kata Mereka yang Sudah Coba
+[ISI TESTIMONI ASLI — nama & kota pembeli. Hapus bagian ini sampai ada testimoni asli.]
 
-**Penawaran:** Rp25.000/bungkus (200gr) · Kirim Jabodetabek (ojol/kurir) & luar kota (ekspedisi, ongkir menyesuaikan) · Bayar transfer/QRIS.
+## Penawaran
+- Harga: Rp25.000 [isian: per bungkus/ukuran]
+- Yang kamu dapat: [isian: isi/ukuran kemasan dan varian yang tersedia]
+- Pengiriman: Jabodetabek (ojol atau kurir sendiri bila dekat), luar kota (ekspedisi). Ongkir: [isian: ongkir atau cara menghitung ongkir]
+- Cara bayar: transfer atau QRIS
 
-**Garansi:** Kalau diterima remuk/rusak karena pengiriman, kirim foto ke WA maks. 1x24 jam — diganti atau refund.
+## Garansi
+[isi: garansi/retur Keripik Setan Mak Iyem, hanya yang benar-benar kamu berlakukan. Hapus bagian ini bila belum ada kebijakan.]
 
-**FAQ:** (3 pertanyaan: tahan berapa lama setelah dibuka, bisa campur level pedas, ongkir luar Jabodetabek berapa — dijawab jujur, ongkir "menyesuaikan ekspedisi, diinfokan saat konfirmasi").
+## Pertanyaan yang Sering Ditanyakan
+**Cara pesannya bagaimana?**
+Klik tombol WhatsApp, tulis jumlah pesanan dan alamat pengiriman, lalu bayar lewat transfer atau QRIS.
 
-**Penutup + CTA WA diulang.**
+**Bayarnya pakai apa?**
+Transfer atau QRIS.
 
-### 2–4. Versi Pendek, 3 Variasi Headline, Meta Title/Desc
-Sesuai contoh script di atas — semua tautan/angka identik dengan hasil script (tidak ditulis manual).
+**Dikirim ke mana saja?**
+Jabodetabek lewat ojol atau kurir sendiri (untuk lokasi yang dekat), luar kota lewat ekspedisi. Ongkir: [isian: ongkir atau cara menghitung ongkir].
 
-### 5. Tautan WhatsApp
-`https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini` + teks asli sebelum encode.
+**Ada varian atau level pedas apa saja?**
+[isian: daftar varian/level pedas yang benar-benar tersedia]
 
-### 6. Ceklis Kepatuhan
-- Tidak ada klaim kesehatan/BPOM/halal (produk belum disebut bersertifikat → kata "halal" sengaja tidak dipakai, sesuai Batasan SKILL.md).
-- Tidak ada testimoni/rating/angka penjualan karangan — placeholder dipakai.
-- Tidak ada harga coret/hitung mundur palsu.
-- **Perlu dicek pengguna:** klaim "renyah 3 bulan" dan "tanpa pengawet" harus sesuai kondisi produk sebenarnya.
+**Tahan berapa lama?**
+[isian: masa simpan sesuai yang tertulis di label kemasan]
 
-### 7. Asumsi
-Nada: santai (sesuai jawaban). Ongkir luar kota: umum ("menyesuaikan ekspedisi") karena rincian belum diberikan.
+## Siap Ngemil Pedas?
+Pesan Keripik Setan Mak Iyem sekarang, cukup lewat WhatsApp.
 
-## Penilaian
-**Lulus.** Alur satu-pertanyaan, struktur lengkap, script dijalankan (bukan dikira-kira), tautan WA & meta tervalidasi ulang manual dan cocok 100%, tidak ada bukti sosial dikarang, ceklis kepatuhan tampil sesuai `references/dasar-hukum-klaim.md`. Tidak ada cacat pada skenario ini.
+**[Pesan Sekarang lewat WhatsApp →](https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini)**
+
+## 2. Versi Pendek (Link-in-Bio / 1 Layar HP)
+
+# Pesan Keripik Setan Mak Iyem Lewat WhatsApp
+Rp25.000 [isian: per bungkus/ukuran]. Dikirim ke Jabodetabek dan luar kota, bayar transfer atau QRIS.
+
+**[Pesan Sekarang lewat WhatsApp →](https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini)**
+
+## 3. Variasi Headline (untuk dites bergantian)
+1. **Hasil:** Pesan Keripik Pedas Mak Iyem Lewat WhatsApp, Dikirim ke Rumahmu
+2. **Pertanyaan:** Lagi Pengen Ngemil Pedas? Chat Mak Iyem Sekarang
+3. **Sebelum → Sesudah:** Dari "Pengen yang Pedas-Pedas" Jadi Tinggal Satu Chat WhatsApp
+
+## 4. Meta Title & Meta Description
+- Meta title: Keripik Setan Mak Iyem - Keripik Pedas Rp25.000, Pesan WA (57/60 karakter) ✅
+- Meta description: Keripik Setan Mak Iyem: keripik pedas Rp25.000. Pesan lewat WhatsApp, kirim ke Jabodetabek & luar kota, bayar transfer atau QRIS. (129/155 karakter) ✅
+
+## 5. Tautan WhatsApp
+- Tautan: https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini
+- Pesan asli (belum di-encode): Halo, saya mau pesan Keripik Setan Mak Iyem dari halaman ini
+
+## 6. Ceklis Kepatuhan
+- Izin edar (PIRT/SPP-IRT atau BPOM): belum kamu sebut → tidak ada klaim izin di halaman. Pastikan ada sebelum dijual dan dipromosikan.
+- Kata "halal" tidak dipakai (belum ada sertifikat yang kamu sebut). Info dari `references/dasar-hukum-klaim.md`: UMK makanan-minuman wajib bersertifikat halal mulai 18 Okt 2026 — cek status usahamu.
+- Tidak ada klaim kesehatan, testimoni, rating, angka penjualan, harga coret, hitung mundur, atau stok terbatas.
+- Atribut produk (bahan, jenis keripik, ukuran, tingkat pedas, masa simpan, "tanpa pengawet") tidak ditulis karena kamu belum menyebutnya; isi hanya dengan fakta dan label kemasan yang sebenarnya.
+- Janji layanan: hanya pengiriman dan cara bayar dari jawabanmu. Garansi, ongkir, dan estimasi waktu masih [isian].
+- Mohon konfirmasi: nomor WA 0812-3456-7890 benar, dan kalimat "ojol atau kurir sendiri (bila lokasi dekat)" sesuai maksudmu.
+
+## 7. Asumsi
+Nada santai (sesuai jawabanmu). Satuan harga (per bungkus/ukuran) tidak diketahui → [isian]. Target pembeli
+tidak disebut → halaman ditulis umum untuk pencinta camilan pedas. Ganti semua [isian] dan bagian
+testimoni sebelum halaman dipublikasikan.
+````
+
+## Catatan penguji
+**Karangan di contoh lama (sudah dihapus; tidak ada di input pengguna):** "keripik singkong" (meta
+description), "level pedas 1–5", "tanpa pengawet", "renyah 3 bulan di suhu ruang" (headline, sub-headline,
+meta title, manfaat, dan ceklis), "200gr", "kemasan tebal aman kirim luar kota", "cocok stok atau dijual
+lagi", garansi "diganti atau refund maks. 1x24 jam", serta jawaban FAQ ("tahan berapa lama setelah dibuka",
+"bisa campur level pedas"). Contoh lama juga meringkas bagian halaman ("Penutup + CTA diulang", "sesuai
+contoh di atas") padahal SKILL.md mewajibkan seluruh isi halaman tampil di chat, dan tidak memuat pengingat
+izin edar untuk pangan olahan.
+
+**Cara menanganinya sekarang:** halaman hanya memakai fakta dari pengguna (nama, produk, harga, WA,
+pengiriman, bayar, tanpa testimoni). Bahan, ukuran/satuan, varian/level pedas, masa simpan, garansi, ongkir,
+dan estimasi kirim ditulis `[isian: ...]` dan dimasukkan ke FAQ/penawaran sebagai tempat mengisi. Manfaat
+memakai hal yang memang diketahui (pesan lewat chat, pengiriman, cara bayar, harga jelas). Tidak ada angka
+atau klaim eksternal.
+
+**Sengaja tidak diklaim:** rasa/kerenyahan, masa simpan, bahan, pengawet, halal/izin edar, kecepatan kirim,
+jumlah pelanggan, garansi.
+
+**Diverifikasi:** tautan wa.me dan panjang meta dari script lalu dicek ulang manual (lihat atas). Semua
+tautan/angka di output identik dengan hasil script. Trade-off: halaman lebih "tipis" untuk keunggulan produk
+dan butuh 5 isian dari pemilik (varian, ukuran/satuan, masa simpan, ongkir/estimasi, garansi) sebelum
+dipublikasikan.
