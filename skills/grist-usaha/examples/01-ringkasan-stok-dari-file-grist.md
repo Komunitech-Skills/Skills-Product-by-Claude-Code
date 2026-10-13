@@ -2,7 +2,7 @@
 
 **Konteks uji:** file `.grist` TIRUAN dibuat dengan `tests/fixtures/buat_fixture.py`
 (`buat_dokumen_contoh`), skemanya disusun sama persis dengan kode sumber resmi `grist-core`
-v1.7.19 (lihat `research/sources/grist-2026-09-26.md`). **Bukan** ekspor Grist sungguhan.
+v1.7.19 (lihat (riset internal kurator, tidak disertakan dalam paket)). **Bukan** ekspor Grist sungguhan.
 
 ## Percakapan
 

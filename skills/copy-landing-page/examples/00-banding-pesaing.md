@@ -20,7 +20,7 @@ Dibaca langsung dari GitHub.
 - **Kelebihan:** struktur 7 bagian rapi dengan catatan visual & variasi uji per bagian; prinsip bukti sosial spesifik-terukur bagus ("Kami kurangi onboarding dari 2 minggu jadi 4 hari" vs generik); tegas soal tidak boleh mengarang data ("jika metrik hilang, cantumkan kesenjangan, jangan estimasi").
 - **Tidak ada:** Bahasa Indonesia, CTA WhatsApp, Rupiah, konteks UMKM Indonesia, aturan hukum lokal, script pembantu. Konteksnya B2B SaaS (istilah "trial", "onboarding") — tidak relevan untuk warung/UMKM.
 
-## Pesaing 4 — `RamaAditya49/rama-copywriting` (sudah pernah ditinjau tim, `research/sources/kurasi-rama-copywriting.md`, Apache-2.0)
+## Pesaing 4 — `RamaAditya49/rama-copywriting` (sudah pernah ditinjau tim, (riset internal kurator, tidak disertakan dalam paket), Apache-2.0)
 Bukan skill landing page khusus, tapi copywriting umum ID/EN dengan "claim ledger" (Verified/Attributed/Qualified/Unverified) — kerangka kejujuran klaim yang **lebih formal** dari `copy-landing-page` (yang memakai pendekatan lebih sederhana: tulis/jangan tulis + placeholder).
 - **Kelebihan pesaing ini:** claim ledger eksplisit memaksa setiap klaim dikategorikan sebelum ditulis — lebih sistematis untuk klaim non-hukum (mis. "produk kami lebih cepat") yang `copy-landing-page` tidak punya mekanisme setara (skill kita baru menyaring klaim yang eksplisit disebut di daftar `dasar-hukum-klaim.md`, belum mekanisme umum untuk SEMUA jenis klaim tak berbukti di luar daftar itu).
 - **Kekurangan pesaing ini untuk kasus ini:** Bahasa Inggris/generik, tidak spesifik landing page (fokus copywriting umum), tidak ada CTA WhatsApp/wa.me, tidak ada aturan BPOM/halal Indonesia, referensinya panjang untuk pembeli awam.

@@ -64,7 +64,7 @@ dan berbasis git, dicatat sebagai temuan tapi tidak sebanding). Tidak memicu bat
   "matter-of-fact", "megaphone", "1000+ people", dst.); yang cocok hanya kutipan dalam
   konteks perbandingan/atribusi (`ATTRIBUTION.md`, `examples/00-banding-pesaing.md`), yang
   memang wajar dan bukan pelanggaran.
-- `research/sources/kurasi-internal-comms-2026-09-24.md` **lengkap**: mencantumkan nama,
+- (riset internal kurator, tidak disertakan dalam paket) **lengkap**: mencantumkan nama,
   URL, pembuat, commit, tanggal, lisensi, hasil audit keamanan, penilaian sinyal bukti, dan
   keputusan — sesuai format Tahap 2 CLAUDE.md.
 - Catatan: skor sinyal bukti kurasi (Tahap 2) sendiri diakui pembuat "≈2-3 dari 5" (di

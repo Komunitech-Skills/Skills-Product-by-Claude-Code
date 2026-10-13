@@ -3,7 +3,7 @@
 Tanggal: 2026-09-23 · Penguji: agent penguji independen (simulasi, Claude Code)
 
 ## Pencarian
-- GitHub code search `filename:SKILL.md PPh 21 TER` (1.392 hasil, disaring yang relevan), repo search `pph21 ter calculator`, kurasi internal `research/sources/kurasi-indonesian-business-agent-skills.md`.
+- GitHub code search `filename:SKILL.md PPh 21 TER` (1.392 hasil, disaring yang relevan), repo search `pph21 ter calculator`, kurasi internal (riset internal kurator, tidak disertakan dalam paket).
 - Juga dicek sesuai brief: github.com/anthropics/skills, VoltAgent/awesome-openclaw-skills, ClawHub/skills.sh, manairalabs/bicara-skills, alvinindra/bahasa-skills → tidak ada skill PPh 21/payroll Indonesia.
 - Pesaing relevan yang ditemukan dan dibaca (tidak ada script pihak ketiga yang dijalankan; logika mesin mereka dibaca lalu ditiru di Python penguji hanya untuk membandingkan angka):
 
