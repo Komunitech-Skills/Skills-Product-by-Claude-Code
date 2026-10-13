@@ -24,6 +24,8 @@
 - "Nota Toko Bu Yati: total tidak terbaca (terlihat 3?1.500). Mohon cek nota aslinya."
 - Rekap: total pengeluaran, PPN, per kategori, per toko, dan CSV siap tempel.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 1 Oktober 2026):** rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill (skala 10). Invoice jasa cetak dengan "PPN 12% = Rp 180.000" atas DPP Rp 1.500.000 dinyatakan sesuai oleh agent tanpa skill; dengan skill ditemukan PPN seharusnya Rp 165.000 (total Rp 1.665.000, kelebihan Rp 15.000). Pada faktur yang fotonya buram ("92?.000"), digit tidak ditebak: ditandai TIDAK TERBACA, lalu dibandingkan dengan hasil hitung yang jelas diberi label "dihitung, bukan dibaca". Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, kirim foto atau teks dokumen ke AI agent Anda, lalu ketik permintaan biasa, misalnya:
 - "Ketik ulang nota-nota ini ke tabel Excel."
@@ -41,7 +43,7 @@ Salin folder `ekstrak-nota-faktur` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **AI agent saya harus bisa membaca foto?**
@@ -52,6 +54,8 @@ Tidak. Angka yang tidak terbaca ditulis "TIDAK TERBACA" dan tidak ikut dijumlah.
 
 **Apakah skill ini bisa memastikan faktur pajak asli?**
 Tidak. Skill ini mengecek hitungan dan format nomor, lalu memberi peringatan bila ada yang janggal. Keaslian faktur tetap dicek lewat Coretax atau QR code resmi, dan untuk urusan kredit PPN atau SPT silakan hubungi konsultan pajak atau Kring Pajak 1500200.
+
+> **Catatan penting:** alat bantu mengetik ulang dan mengecek hitungan, bukan nasihat pajak. Dasar aturan PPN (berlaku per 23 September 2026): UU HPP dan PMK 131/2024, yaitu PPN 12% × DPP nilai lain 11/12 untuk barang/jasa non-mewah dan 12% dari harga penuh hanya untuk barang mewah. Pembulatan belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Format NPWP, NITKU, dan nomor faktur hanya diperiksa sebagai peringatan (belum diverifikasi dari dokumen resmi), dan skill tidak memutuskan PPN bisa dikreditkan. Kepastian: Kring Pajak 1500200 atau konsultan pajak.
 
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Bila PPN atau total buram tetapi DPP/subtotal terbaca, kolom **PPN Seharusnya** dan **Total Seharusnya** tetap terisi dari hitungan sebagai pembanding (total tetap tidak ikut rekap sampai dicocokkan).

@@ -2,15 +2,14 @@
 
 **Suruh AI Anda menyiapkan kontak, menulis email promo dalam bahasa Indonesia, mengujinya ke diri sendiri, menjadwalkan, dan membaca berapa yang membuka dan mengklik, memakai listmonk, aplikasi newsletter gratis yang jalan di komputer/server Anda sendiri, tanpa biaya bulanan per jumlah kontak.**
 
-> Komunitech **tidak berafiliasi** dengan proyek listmonk. listmonk adalah software open-source (lisensi AGPL-3.0) milik pengembangnya; skill dan panduan ini karya orisinal Komunitech. Mailchimp adalah merek pihak ketiga yang disebut hanya sebagai pembanding.
+> Komunitech **tidak berafiliasi** dengan proyek listmonk. listmonk adalah software open-source (lisensi AGPL-3.0) milik pengembangnya; skill dan panduan ini karya orisinal Komunitech. Mailchimp adalah merek pihak ketiga yang disebut hanya sebagai pembanding. listmonk tidak ikut didistribusikan dalam paket ini; rincian lisensi: `ATTRIBUTION.md`.
 
 ## Manfaat
 - ✅ **Bebas biaya per kontak.** Mailchimp menarik biaya makin mahal seiring daftar membesar; listmonk gratis, Anda hanya membayar pengirim email (SMTP) yang murah atau ber-paket gratis.
 - ✅ **Aman secara hukum dan reputasi.** Pengingat persetujuan UU PDP 27/2022, **double opt-in**, tautan berhenti berlangganan wajib, dan **menolak daftar tanpa persetujuan (beli, scraping, grup WA, vendor, "dapat dari teman")**.
 - ✅ **AI tidak bisa "kelepasan kirim".** Sebelum email keluar ke daftar, AI menampilkan jumlah penerima dan menunggu jawaban "ya" Anda; kirim ditolak bila versi isi yang sama belum diuji-kirim ke alamat milik Anda sendiri (tidak ada jalan pintas), atau bila tautan berhenti berlangganan tidak benar-benar ada (tautan di dalam komentar HTML tidak dihitung).
 - ✅ **CSV/Excel berantakan jadi rapi.** Email rusak, duplikat, salah ketik (`gmial.com`), dan yang menolak, dibuang atau ditandai otomatis; angka dihitung script, bukan dikira.
-- ✅ **Email Indonesia siap kirim.** Subjek, sapaan nama, ajakan pesan WhatsApp, dan cek risiko spam.
-- ✅ **Tahu hasilnya.** Terkirim, dibuka, klik, tautan terlaris, dengan catatan jujur cara membaca angka.
+- ✅ **Email Indonesia siap kirim, dan tahu hasilnya.** Subjek, sapaan nama, ajakan pesan WhatsApp, dan cek risiko spam; lalu terkirim, dibuka, klik, dan tautan terlaris, dengan catatan jujur cara membaca angka.
 
 ## Cocok untuk siapa
 - UMKM yang punya **daftar pelanggan sendiri** (pembeli toko, peserta kelas, member) dan ingin kirim promo/kabar bulanan.
@@ -38,6 +37,8 @@ BELUM DIKIRIM. WAJIB tanya pengguna: 'Kirim ke sekitar 2 orang di list tsb? (ya/
 ```
 "Hasilnya gimana?" -> `Dibuka (perkiraan): 1 = 50,0%` / `Klik tautan: 1 = 50,0%` / tautan terlaris. (Contoh nyata dari listmonk 6.2.0 dengan data fiktif; lihat `examples/`.)
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.5):** rata-rata nilai 5,5 tanpa skill menjadi 9,0 dengan skill (skala 10). Pada tugas impor pendaftar, AI tanpa skill langsung memasukkan 21 kontak berstatus "sudah konfirmasi" (melewati double opt-in), termasuk alamat salah ketik gmial.com, dan membuat draf tanpa tautan berhenti berlangganan; dengan skill ada pratinjau dulu, alamat salah ketik ditahan, draf lengkap dengan tautan berhenti, dan tidak ada yang terkirim (nilai 3 menjadi 9). Pada permintaan impor daftar beli, AI tanpa skill pun sudah menolak (8 vs 9). Catatan jujur: uji OpenClaw memakai server tiruan dan data contoh, jadi yang dinilai perilaku AI, bukan pengiriman email sungguhan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Setelah listmonk terpasang dan tersambung, cukup ketik:
 - "Cek listmonk saya sudah nyambung belum"
@@ -51,8 +52,15 @@ Setelah listmonk terpasang dan tersambung, cukup ketik:
 
 ## Instalasi singkat
 1. **listmonk** terpasang dan menyala: ikuti `docs/panduan-listmonk.md` (Docker; Windows/macOS/Linux; ±30-60 menit termasuk SMTP dan verifikasi domain) atau pakai **jasa setup Komunitech**.
-2. Salin folder `listmonk-newsletter` ke lokasi skill platform Anda (detail semua platform di `docs/instalasi.md`):
-   - **OpenClaw / Codex / Claude Code / Cursor:** rujuk `docs/instalasi.md` untuk folder skill masing-masing.
+2. Salin folder `listmonk-newsletter` ke folder skills AI agent (detail semua platform: `docs/instalasi.md`, di dalam paket bernama `CARA-INSTAL.md`):
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
 3. Buat akun API berizin terbatas (panduan §7) lalu jalankan sendiri `python3 scripts/listmonk.py simpan-akun` (Windows: `python`/`py`). **Jangan tempel token di chat.**
 4. Daftarkan email Anda sendiri (maks. 3) untuk uji kirim: jalankan sendiri `python3 scripts/listmonk.py simpan-alamat-uji --email emailanda@...`. Uji kirim hanya boleh ke alamat ini.
 5. Ketik "Cek listmonk saya nyambung belum".

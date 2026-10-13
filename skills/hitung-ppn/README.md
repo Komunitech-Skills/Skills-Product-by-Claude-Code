@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Harga 7,5 juta sudah termasuk PPN, PPN-nya berapa? Saya PKP."
 → DPP Rp 6.756.757, DPP nilai lain Rp 6.193.693,92, PPN Rp 743.243, total Rp 7.500.000, lengkap dengan cara hitungnya.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 1 Oktober 2026):** rata-rata nilai 7,75 tanpa skill menjadi 9,0 dengan skill (skala 10). Catatan jujur: untuk hitungan PPN sederhana, model AI polos sudah menghasilkan angka yang benar (di uji ini PPN Rp 577.500 dan total Rp 5.827.500). Bedanya, tanpa skill penawaran memakai label "PPN 11%" yang sudah tidak sesuai aturan 2025 dan tanpa dasar aturan; dengan skill labelnya "PPN 12% × DPP nilai lain 11/12", lengkap dengan cara hitung, pembulatan, dasar PMK 131/2024, tanggal berlaku, dan disclaimer, tanpa perlu mencari di internet. Tagihan supplier kertas yang memakai "12% penuh" langsung ditandai kelebihan Rp 20.000. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "PPN dari harga 2,5 juta berapa?"
@@ -36,7 +38,7 @@ Salin folder `hitung-ppn` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Kenapa PPN-nya 11%, bukan 12%?**
@@ -47,6 +49,8 @@ Boleh untuk simulasi, misalnya mengecek tagihan supplier. Tapi kamu tidak boleh 
 
 **Apakah ini menggantikan faktur pajak?**
 Tidak. Faktur pajak resmi tetap dibuat di Coretax. Skill ini membantu menghitung dan mengecek angkanya.
+
+> **Catatan penting:** alat bantu hitung, bukan nasihat pajak. Dasar aturan (berlaku per 23 September 2026): UU HPP dan PMK 131/2024, yaitu tarif 12% dengan DPP nilai lain 11/12 untuk barang/jasa non-mewah (berlaku 1 Januari 2025) dan 12% dari harga penuh untuk barang mewah (sejak 1 Februari 2025). PPN dihitung dari DPP lalu dibulatkan ke bawah sekali; pembulatan ini belum dicocokkan dengan Coretax, jadi bila Coretax menampilkan angka berbeda, ikuti Coretax. Kasus khusus: hubungi DJP (Kring Pajak 1500200) atau konsultan pajak.
 
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Hasil hitung kini menyertakan **teks siap tempel** untuk penawaran/chat yang selalu memuat baris "DPP nilai lain (11/12)", agar pembaca tidak mengira "PPN 12%" salah hitung.

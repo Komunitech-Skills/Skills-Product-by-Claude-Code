@@ -32,6 +32,8 @@ Akar masalah: Tidak ada internet/pembayaran cadangan saat provider utama bermasa
 ```
 Plus draf minta maaf & ringkasan WA — lihat contoh lengkap di `examples/`.
 
+**Hasil uji (OpenClaw, uji otomatis agent, uji ulang v1.0.2):** rata-rata nilai 6,5 tanpa skill menjadi 8,75 dengan skill (skala 10). Tanpa skill, laporan menyebut nama admin sebagai akar masalah dan menulis tindakan yang belum terjadi seolah sudah dilakukan. Dengan skill, akar masalah mengarah ke proses, pembeli terdampak yang belum komplain ikut dihubungi, dan tenggat pemberitahuan kebocoran data (3×24 jam) dihitung tepat. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ceritakan kejadiannya seperti chat biasa ke AI agent kamu, misalnya:
 - "Buatin laporan insiden, kemarin 40 pesanan salah alamat pas promo 9.9..."
@@ -40,8 +42,17 @@ Setelah terpasang, cukup ceritakan kejadiannya seperti chat biasa ke AI agent ka
 
 Jika info penting (tanggal, jumlah terdampak) belum disebut, skill akan menanyakan sekali dalam satu pesan — bukan berulang-ulang.
 
-### Instalasi
-Ikuti panduan instalasi per platform (OpenClaw, Claude Code, Codex, Cursor) di `docs/instalasi.md` pada paket pembelian.
+### Instalasi singkat
+Salin folder `laporan-insiden-usaha` ke folder skills AI agent kamu:
+
+| Platform | Folder tujuan |
+|---|---|
+| OpenClaw | `~/.openclaw/skills/` |
+| Codex | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| Cursor | `~/.cursor/skills/` |
+
+Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## FAQ
 **1. Apakah skill ini bisa dipakai untuk kebocoran data pelanggan?**

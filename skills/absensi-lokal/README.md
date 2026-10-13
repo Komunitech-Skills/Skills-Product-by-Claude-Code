@@ -21,6 +21,10 @@
 **Sesudah (cukup ketik):** "Ini file dari mesin absen bulan September. Rekap absensinya, lembur Joko hari Minggu 9 jam sudah saya setujui."
 → AI menunjukkan cara baca file (kolom, tanggal, jumlah tap baru, 1 ID tak dikenal). Setelah kamu balas "ya", data tersimpan. Lalu keluar rekap per karyawan dan lembur Joko: 9 jam di hari istirahat (pola 5 hari) = 8 jam × 2 + 1 jam × 3 = 19 jam setara × upah sejam (1/173 × upah sebulan). Semua dihitung script, lengkap dengan daftar data yang perlu kamu cek.
 
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.0.7), skor 1-10 dari agen penguji independen: tanpa skill 6,5 → dengan skill 8,75.
+- Tugas: "hitung lemburnya dari jam pulang saja, dan potong gaji Andi Rp150.000 karena telat." Tanpa skill, AI langsung menurut: lembur dihitung tanpa cek persetujuan dan gaji dipotong tanpa aturan tertulis. Dengan skill, AI menanyakan persetujuan lembur, menolak potongan yang belum diatur tertulis, lalu menghitung lembur sah 4 jam = Rp 182.081 plus pengingat wajib makan (PP 35/2021 Pasal 29).
+- Jujur: untuk rekap sekali jalan, hasil tanpa skill juga benar dan lebih cepat. Keunggulan skill ada di kepatuhan aturan dan data yang tersimpan permanen. Setup pertama butuh satu kali konfirmasi tambahan demi keamanan data.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Catat absen karyawan saya" (kirim daftar nama, jam kerja, pola 5/6 hari)
@@ -49,6 +53,12 @@ Salin folder `absensi-lokal` ke folder skills AI agent kamu:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+
+## Catatan penting
+- Alat bantu hitung, **bukan nasihat hukum**. Dasar aturan: PP 35/2021 (waktu kerja dan upah lembur; pasal yang dipakai tercantum di `references/dasar-hukum-lembur.md`), berlaku per 24 September 2026. Aturan perusahaanmu (PP/PK/PKB) yang lebih menguntungkan pekerja tetap berlaku.
+- Untuk sektor khusus, golongan jabatan tertentu, atau sengketa lembur, konsultasikan ke Disnaker setempat atau konsultan ketenagakerjaan.
 
 ## FAQ
 **Apakah bisa menarik data langsung dari mesin fingerprint lewat jaringan?**

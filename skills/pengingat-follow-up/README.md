@@ -31,6 +31,8 @@ Selamat pagi Bu Rina, kami mengingatkan pembayaran INV-012 sebesar Rp 4.500.000 
 ```
 Sudah dibayar? Balas "Bu Rina sudah bayar", dan item itu tidak muncul lagi.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 1 Oktober 2026):** rata-rata nilai 3,5 tanpa skill menjadi 9,25 dengan skill (skala 10). Tanpa skill, agent menebak nominal, menyimpan nomor HP pihak ketiga, mengubah konfigurasi tanpa izin, dan berniat mengirim tagihan otomatis ke pelanggan. Dengan skill, nominal ambigu ("5m") dan tanggal mustahil (31/9) ditanyakan dulu, daftar tersimpan rapi bernomor, dan draf pesan dikirim sendiri oleh Anda. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Ingatkan saya tagih CV Maju 12,5 jt tanggal 20 Oktober, invoice INV-0788."
@@ -54,11 +56,11 @@ Salin folder `pengingat-follow-up` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 Rekap otomatis tiap pagi hanya tersedia di **OpenClaw**, dan komputer yang menjalankan OpenClaw harus menyala
 pada jam tersebut. Di Claude Code, Codex, atau Cursor, skill ini berfungsi sebagai daftar pantauan manual:
-ketik "rekap pengingat" setiap pagi.
+ketik "rekap pengingat" setiap pagi (Codex dan Cursor belum diuji langsung).
 
 ## Bukti uji di bot Telegram
 

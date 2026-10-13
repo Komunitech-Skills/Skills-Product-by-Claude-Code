@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Omzet saya Jan 45jt, Feb 60jt, Mar 80jt, Apr 120jt, Mei 150jt, Jun 90jt. Pajaknya berapa?"
 → Tabel per bulan: Januari–Mei Rp0 (masih dalam Rp500 juta), Juni hanya Rp45 juta yang kena pajak → PPh Rp225.000, setor paling lambat 15 Juli.
 
+**Hasil uji A/B (simulasi agent, 23 September 2026):** olshop perorangan dengan omzet Januari–Agustus 2026 sebesar Rp551.000.000. Angka inti sama-sama benar (Januari–Juli Rp0, Agustus Rp255.000), tetapi tanpa skill tidak ada tabel per bulan dan tanggal setor, dan jawabannya menyatakan pasti bahwa tarif 0,5% "maksimal 7 tahun", padahal batas itu mungkin berubah oleh PP 20/2026 dan belum terverifikasi. Dengan skill status aturan itu disebut jujur dan kamu diarahkan ke DJP. Angka skill juga cocok dengan hitungan independen pada 400 kasus acak (0 selisih). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/HASIL-UJI.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Hitung PPh final UMKM saya dari file omzet-2026.csv."
@@ -36,7 +38,7 @@ Salin folder `pph-final-umkm` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Apakah hasil ini bisa langsung dipakai untuk setor pajak?**
@@ -47,6 +49,8 @@ Aturan baru (PP 20/2026) mengeluarkan CV, firma, dan PT biasa dari skema ini den
 
 **PPh 22 yang dipotong Shopee/Tokopedia mengurangi pajak saya?**
 Pungutan itu dicatat di tabel sebagai informasi. Cara memperhitungkannya dengan PPh final perlu ditanyakan ke DJP atau konsultan, jadi skill tidak menguranginya otomatis.
+
+> **Catatan penting:** alat bantu hitung, bukan nasihat pajak. Dasar aturan (berlaku per 23 September 2026): PP 55/2022 sebagaimana diubah PP 20/2026 (PPh final 0,5%; omzet Rp500 juta pertama bebas untuk orang pribadi; batas omzet Rp4,8 miliar); batas setor tanggal 15 bulan berikutnya dan digeser ke hari kerja bila libur (PMK 81/2024 Pasal 94 dan 100); PPh 22 marketplace PMK 37/2025 (berlaku 1 Agustus 2026). Batas jangka waktu tarif 0,5% dan masa transisi CV/firma/PT belum terverifikasi, jadi tidak disampaikan sebagai kepastian. PPh dibulatkan ke bawah dan pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Kepastian: DJP (Kring Pajak 1500200) atau konsultan pajak.
 
 ## Catatan revisi 1.0.3 (2026-10-01)
 - Batas setor yang jatuh di hari libur (Sabtu, Minggu, libur nasional, cuti bersama 2026–2027) kini otomatis digeser ke hari kerja berikutnya sesuai PMK 81/2024 Pasal 100, dan wajib disebut AI di balasan (temuan uji OpenClaw: 15 Nov 2026 hari Minggu tidak disebut).

@@ -1,11 +1,10 @@
-# Dasbor Lokal: Satu Layar untuk Semua Data Usaha Anda
+# Dasbor Lokal: Satu Layar untuk Semua Data Usaha
 
-**Ketik "buka dasbor toko saya" atau "stok apa yang menipis?" — AI Anda langsung membaca semua alat lokal Komunitech (kasir, stok, CRM, absensi, piutang, kas) dan menjawab, atau menyiapkan dasbor di browser komputer sendiri. Tanpa biaya bulanan, tanpa data keluar dari komputer Anda.**
+**Tanya "stok apa yang menipis?" dan AI Anda langsung membaca semua alat lokal Komunitech (kasir, stok, CRM, absensi, piutang, kas) lalu menjawab dari data asli, atau menyiapkan dasbor di browser komputer sendiri. Tanpa biaya bulanan, tanpa data keluar dari komputer Anda.**
 
 ## Manfaat
 - ✅ **Satu jawaban, bukan enam aplikasi.** "Penjualan hari ini berapa, stok apa yang tinggal sedikit, siapa yang piutangnya lewat jatuh tempo?" — semua dijawab langsung dari database asli, dihitung ulang, bukan dikira-kira.
-- ✅ **Dasbor beneran di browser (opsional).** Lewat Datasette (perangkat lunak gratis terpisah), buka `http://127.0.0.1:8001` dan lihat, sortir, klik-klik tabel data toko Anda sendiri seperti dasbor BI berbayar — tanpa kirim satu baris pun ke internet.
-- ✅ **Tetap jalan tanpa instalasi apa pun.** Tidak mau pasang Datasette? Skill ini tetap menjawab pertanyaan lewat Python bawaan, langsung dari terminal/chat.
+- ✅ **Dasbor beneran di browser (opsional).** Lewat Datasette (perangkat lunak gratis terpisah), buka `http://127.0.0.1:8001` dan lihat, sortir, klik-klik tabel data toko Anda sendiri seperti dasbor BI berbayar — tanpa kirim satu baris pun ke internet. Tidak mau pasang Datasette? Skill ini tetap menjawab pertanyaan lewat Python bawaan, langsung dari terminal/chat, tanpa instalasi apa pun.
 - ✅ **Aman by design.** Semua database dibuka **baca-saja/immutable** — apa pun yang diketik atau diklik, data asli tidak bisa berubah lewat skill ini. Dasbor hanya bisa dibuka dari komputer sendiri (`127.0.0.1`), tidak pernah ke internet.
 - ✅ **Dasbor KPI tim (v1.0.2).** Alat ke-7, `kpi-tim`: skor perusahaan → divisi → orang, tren per periode, dan daftar KPI merah, dari `kpi.db` yang dibuat `kpi-tim` (`ekspor-db`). Ada mode anonim di sisi `kpi-tim` bila layar dilihat orang lain.
 - ✅ **Query yang benar-benar berguna**, bukan generik: stok menipis (dengan yang paling parah di atas), penjualan per hari (nota yang dibatalkan otomatis dikeluarkan), piutang jatuh tempo, kehadiran karyawan, prospek per tahap pipeline, saldo kas per akun.
@@ -39,6 +38,11 @@ Warung Jaya | PB-0003 | 2026-09-15  | Rp 800.000
 ```
 (Contoh nyata dari uji dengan data fiktif — lihat `examples/`.)
 
+**Hasil uji (angka nyata):**
+- Uji di OpenClaw, 1 Okt 2026 (v1.0.4), skor 1-10 dari agen penguji independen: tanpa skill 7 → dengan skill 8,75. Tugas: stok menipis, penjualan seminggu, dan piutang lewat jatuh tempo. Tanpa skill, rata-rata per nota salah (Rp 731.500, nota yang sudah dibatalkan ikut dihitung) dan produk nonaktif dianggap aktif. Dengan skill: penjualan 7 hari Rp 7.315.000 dari 9 nota (nota batal dikeluarkan) dan rata-rata per nota Rp 812.778. Saat diminta membuka dasbor ke HP lewat ngrok, skill menolak dengan alasan yang jelas.
+- Uji independen terpisah (26 Sep 2026): 6 dari 6 query dihitung ulang dari data mentah dan cocok persis; file database tidak berubah (hash sama sebelum dan sesudah); skor 9 dari 10.
+- Jujur: pada jebakan ngrok, AI tanpa skill sudah cukup baik (8 vs 8,5). Keunggulan skill terutama di ketepatan angka.
+
 ## Cara pakai
 Cukup ketik permintaan biasa:
 - "Database toko saya di mana saja?" → `cari`
@@ -67,7 +71,7 @@ Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+
 
 **Versi 1.0.2:** menambah alat `kpi-tim` (5 query, blok `kpi` di `templates/metadata.yml`); diuji dengan Datasette 0.65.5 di virtualenv terpisah (`--immutable`, `127.0.0.1`, hash database sama sebelum/sesudah) dan uji regresi 25/25.
 
-**Status uji jujur (versi 1.0.0):** diuji pembuat dengan database fiktif hasil menjalankan langsung skill `buku-stok`, `kasir-lokal`, `crm-wa`, `absensi-lokal`, `buku-piutang`, dan `kas-umkm`, ditambah uji regresi otomatis (`tests/uji_regresi.py`, 18 skenario termasuk database rusak/tidak ada/tabel salah). Datasette 0.65.5 dari PyPI resmi dicoba di virtualenv terpisah (tidak dipasang ke sistem) dan hasil canned query dicocokkan manual — **cocok**, dan hash file database sebelum/sesudah **sama persis** (tidak berubah). **Belum** diuji oleh penguji independen, belum diuji di OpenClaw/Codex/Cursor sungguhan, dan belum diuji dengan data usaha nyata dalam jumlah besar.
+**Status uji jujur (versi 1.0.0):** diuji pembuat dengan database fiktif hasil menjalankan langsung skill `buku-stok`, `kasir-lokal`, `crm-wa`, `absensi-lokal`, `buku-piutang`, dan `kas-umkm`, ditambah uji regresi otomatis (`tests/uji_regresi.py`, 18 skenario termasuk database rusak/tidak ada/tabel salah). Datasette 0.65.5 dari PyPI resmi dicoba di virtualenv terpisah (tidak dipasang ke sistem) dan hasil canned query dicocokkan manual — **cocok**, dan hash file database sebelum/sesudah **sama persis** (tidak berubah). Sesudah itu sudah diuji oleh penguji independen (26 Sep 2026) dan di OpenClaw (uji otomatis oleh agen AI, 1 Okt 2026). **Belum** diuji di Codex dan Cursor, belum diuji manusia di komputer pembeli sungguhan, dan belum diuji dengan data usaha nyata dalam jumlah besar.
 
 ## FAQ
 **Apakah skill ini bisa mengubah data toko saya secara tidak sengaja?**

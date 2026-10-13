@@ -45,6 +45,8 @@ Naik paling besar: Transport — naik 310,7% (Rp 1.595.000 → Rp 6.550.000).
 ```
 (Contoh lengkap: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.)
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.17):** rata-rata nilai 7,25 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (laporan biaya `.xlsx` dan CSV gaji yang berisi baris subtotal serta data pribadi). Pembeda: semua persen diambil dari script (bukan dikira AI), bagian "Perlu dicek" selalu ikut dilaporkan, dan data pribadi diingatkan. Tanpa skill, agent memasang paket tambahan tanpa bertanya dan tidak mengingatkan soal data pribadi di file gaji. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Kirim/sebutkan lokasi file ke AI agent Anda, lalu tanya seperti biasa:
 - "Tolong analisis file Excel ini, ada yang aneh nggak?"

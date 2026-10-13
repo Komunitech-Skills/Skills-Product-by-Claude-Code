@@ -1,4 +1,4 @@
-# Luncurkan Produk Baru: Rencana Bertanggal dari T-30 sampai T+30
+# Luncurkan Produk Baru: Rencana T-30 sampai T+30
 
 **Dari "mau launching" ke jadwal, teks, dan hitungan stok yang siap dijalankan.**
 
@@ -9,7 +9,7 @@
 - Stok dan margin promo dihitung dengan rumus, bukan dikira.
 - Pengingat halal/BPOM/PIRT/label dengan tautan situs resmi.
 
-## Cocok untuk
+## Cocok untuk siapa
 - Pemilik usaha makanan/minuman, fashion, kriya, kosmetik, dan jasa yang akan merilis produk baru.
 - Admin/marketing UMKM yang butuh rencana rapi tanpa tim besar.
 - Penjual marketplace yang mau menambah varian besar.
@@ -20,6 +20,8 @@ Tidak cocok: peluncuran aplikasi/startup teknologi, atau kebutuhan nasihat hukum
 
 **Sesudah (cukup ketik):** "Bantu rencana peluncuran sambal botol 180 g, tanggal 14 November, stok 150, kontak WA 120, IG 800, anggaran promo 500 ribu."
 -> asumsi, 43 tugas bertanggal (mulai 15 Okt; pesan kemasan dan cek label sebelum akhir pekan), pesan WA/IG siap tempel, stok awal dihitung, Go/No-Go H-1, dan pengingat halal/BPOM. Lihat `examples/`.
+
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.4):** rata-rata nilai 5,5 tanpa skill menjadi 9,0 dengan skill (skala 10). Pada rencana launching kosmetik pencerah yang izin BPOM-nya belum terbit (kandidat peluncuran 12 Oktober 2026), AI tanpa skill menolak dua klaim terlarang tetapi masih menjadwalkan pre-order 10 Oktober; dengan skill penjualan, pre-order, dan promo ditunda sampai izin terbit, hanya daftar tunggu tanpa uang yang dibuka, dan Go/No-Go otomatis No-Go. Pada rencana nastar 20 November, stok awal dihitung rumus: (40 + 20) x 1,3 = 78 toples. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram ada di bagian "Bukti uji di bot Telegram" di bawah. Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Cara pakai
 Ketik permintaan biasa, misalnya:

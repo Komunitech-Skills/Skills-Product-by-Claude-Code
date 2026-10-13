@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Buat slip gaji September: Budi K/1 gapok 5 juta, tunjangan 500 ribu, uang makan 600 ribu, lembur 2+3 jam dan 8 jam hari Minggu, kasbon 100 ribu. UMK 5.396.761."
 → Slip siap cetak: lembur Rp 794.798, BPJS Rp 220.000, PPh 21 Rp 53.707, take home pay Rp 6.521.091, biaya perusahaan Rp 7.474.498 — plus file rekap CSV.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 1 Oktober 2026):** rata-rata nilai 5,0 tanpa skill menjadi 9,0 dengan skill (skala 10). Pada slip Desember Budi (K/1, gaji pokok Rp 7.500.000), tanpa skill PPh 21 Desember dihitung Rp 165.000 (premi BPJS yang dibayar perusahaan tidak masuk bruto pajak, kurang Rp 156.595) dan gaji bersih Rp 7.035.000. Dengan skill script menghitung ulang setahun: PPh 21 Desember Rp 321.595, gaji bersih Rp 6.878.405, plus biaya perusahaan dan file slip. Asumsi uji: gaji Januari–November dianggap sama tiap bulan. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Buatkan slip gaji bulan ini dari file karyawan.csv."
@@ -36,7 +38,7 @@ Salin folder `slip-gaji-bpjs` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## Bukti uji di bot Telegram
 
@@ -54,6 +56,8 @@ Desember pajaknya dihitung ulang setahun, jadi skill akan meminta total penghasi
 
 **Apakah data gaji karyawan dikirim ke internet?**
 Tidak. Hitungan berjalan di komputer kamu dan file slip disimpan di folder yang kamu tentukan.
+
+> **Catatan penting:** alat bantu hitung, bukan nasihat pajak, hukum, atau ketenagakerjaan. Dasar aturan (berlaku per 23 September 2026): BPJS Kesehatan Perpres 64/2020; BPJS Ketenagakerjaan PP 44/2015 (JKK, JKM), PP 46/2015 (JHT), dan PP 45/2015 (JP) dengan batas upah JP Rp 11.086.300 mulai 1 Maret 2026; lembur PP 35/2021; PPh 21 TER PP 58/2023 dan PMK 168/2023; PPh 21 DTP PMK 105/2025. Batas upah JP dan UMK berubah tiap tahun, jadi cek ulang. Pembulatan iuran dan lembur (ke rupiah terdekat) serta PPh 21 (ke bawah) belum dicocokkan dengan aplikasi BPJS maupun Coretax. Bagian PPh 21 DTP PERLU REVIEW konsultan pajak.
 
 ## Catatan revisi 1.0.7 (2026-10-12)
 - Di Telegram/WhatsApp, slip gaji kini **tampil langsung di chat** (teks rapi tanpa tabel): semua slip untuk 1–3 karyawan, atau 3 slip pertama + rekap total bila lebih dari 3. File siap cetak dilampirkan bila bisa; bila tidak, cukup balas "kirim file". Rumus dan angka tidak berubah.

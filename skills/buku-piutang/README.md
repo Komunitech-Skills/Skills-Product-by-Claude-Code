@@ -45,6 +45,8 @@ Terima kasih atas perhatiannya.
 ```
 (Contoh lengkap dengan data fiktif: `examples/contoh-sesi-toko-sembako.md`.)
 
+**Hasil uji (OpenClaw, uji otomatis agent, 1 Oktober 2026):** rata-rata nilai 5,75 tanpa skill menjadi 8,75 dengan skill (skala 10). Untuk mencatat bon dan mengecek yang telat, kedua sisi sama-sama benar (7 vs 8,5). Pembeda besarnya di keamanan dan pembukuan: tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis (berisiko nomor diblokir) dan salah mengganti nama pelanggan; dengan skill ia menolak kirim otomatis, menyiapkan draf dan tautan untuk dikirim sendiri, dan kelebihan bayar tidak ditebak (ditanyakan dulu, lalu piutang Rp 0 dan deposit Rp 50.000). Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
 - "Pakai buku piutang untuk toko saya, nama tokonya Toko Sembako Berkah, rekening BCA ..." (sekali di awal)
@@ -66,7 +68,7 @@ Salin folder `buku-piutang` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/piutang/` di komputer Anda, dengan cadangan otomatis di `KomunitechData/piutang/backup-piutang/`. Tanpa Python pun skill tetap membantu dengan tabel piutang manual di Excel.
 
@@ -77,7 +79,8 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - **Bukan pembukuan lengkap.** Tidak ada jurnal, laba rugi, atau hutang ke pemasok.
 - **Satu komputer, satu database.** Jangan buka file yang sama dari dua komputer lewat Google Drive/Dropbox.
 - **Data pribadi pelanggan.** Nama, nomor HP, dan utang pelanggan hanya tersimpan di komputer Anda. Ringkasan ke Telegram disarankan versi disamarkan (nama jadi inisial).
-- Ringkasan terjadwal hanya berjalan saat komputer/Gateway OpenClaw menyala.
+- Ringkasan terjadwal hanya berjalan saat komputer/Gateway OpenClaw menyala. Jadwal otomatis ke Telegram ini belum diuji di Gateway OpenClaw sungguhan.
+- Alat bantu pencatatan dan penagihan, bukan nasihat keuangan, pajak, atau hukum. Sengketa utang yang besar sebaiknya dibawa ke advokat.
 
 ## FAQ
 **Kalau pelanggan membayar lebih dari utangnya, bagaimana?**

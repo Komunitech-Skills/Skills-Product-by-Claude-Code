@@ -19,6 +19,8 @@
 **Sebelum:** "Aku mau produksi 200 pack dimsum mentai. Kayaknya laku sih."
 **Sesudah:** "Kirim penawaran ke 80 kontak, target 15% bayar DP dalam 5 hari." Hasil: 14 dari 80 (17,5%, rentang wajar 10,7%-27,3%) -> LANJUT BERTAHAP: produksi 40 pack dulu, bukan 200, lalu uji pengiriman beku. Modal terlindungi.
 
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.4):** rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill (skala 10). Pada kasus brownies matcha yang ditawarkan ke 12 orang (5 bilang mau, 0 transfer), skill memisahkan minat lisan 41,7% dari konversi nyata 0/12 = 0% (rentang wajar 95%: 0%-24%), memutuskan tegas ULANGI UJI, meminta DP kecil Rp10-20 ribu, dan menambah sampel minimal 30 sebelum modal Rp15 juta keluar. Catatan jujur: tanpa skill, logikanya sudah sehat (minat bukan pembelian, sampel kecil), tetapi tanpa angka rentang, tanpa keputusan tegas, dan ada satu perbandingan yang salah hitung. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram ada di bagian "Bukti uji di bot Telegram" di bawah. Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Cukup tulis dalam bahasa biasa:
 - "Aku mau tes varian mentai untuk dimsum beku, mulai dari mana?"
@@ -37,7 +39,7 @@ Salin folder `uji-pasar-produk-cepat` ke folder skills agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap: lihat `docs/instalasi.md` di dalam paket pembelian.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## Bukti uji di bot Telegram
 

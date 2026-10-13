@@ -20,6 +20,11 @@
 **Sesudah (cukup ketik):** "Balasin ulasan bintang 1: paket nyampe 6 hari, botol sambal bocor. Kami mau ganti kalau ada video unboxing."
 → Balasan publik yang minta maaf dan mengajak ke chat toko, versi singkat, pesan chat pribadi yang meminta video unboxing, dan hasil pengecekan.
 
+**Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; ulasan Shopee bintang 1 "gamis ukuran L yang datang M").
+- Tanpa skill: balasan memuat 2 pelanggaran kebijakan marketplace sekaligus, yaitu mengajak ke WhatsApp lengkap dengan nomor dan meminta pembeli mengubah rating. Alasan keterlambatan ("lonjakan pesanan") dikarang dan janji ongkir retur ditulis di depan umum.
+- Dengan skill: 0 pelanggaran; balasan publik 358 dari batas 500 karakter dan mengarah ke chat toko, ditambah pesan chat pribadi siap kirim dan urutan "chat pribadi dulu, baru posting balasan publik".
+- Skor penguji independen: 8 dari 10 (lulus uji).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Bantu balas review Google Maps ini: <tempel ulasan>"
@@ -37,6 +42,8 @@ Salin folder `balas-ulasan-pelanggan` ke folder skills AI agent kamu:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
 ## FAQ
 **Bolehkah menawarkan voucher supaya pembeli mengubah bintangnya?**

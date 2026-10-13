@@ -21,7 +21,7 @@ langsung dapat draf siap tinjau — email, WA/Telegram, dan Markdown, jam dihitu
   profesional lain yang menangani beberapa klien sekaligus dan harus rutin lapor progres.
 - Anda yang selama ini menulis laporan klien dari ingatan atau menggali ulang chat WA lama.
 - Member VIP komunitech.com yang sudah pakai OpenClaw — draf ini bisa dijadwalkan otomatis muncul
-  di Telegram Anda tiap Jumat sore (panduan ada di dalam paket; tetap Anda yang mengirim ke klien).
+  di Telegram Anda tiap Jumat sore (panduan ada di dalam paket; tetap Anda yang mengirim ke klien). Jadwal otomatis memakai pola OpenClaw yang sudah terbukti di skill lain; kombinasi dengan skill ini belum diuji di Gateway sungguhan.
 
 **Kurang cocok:** ingin laporan otomatis langsung terkirim ke klien tanpa ditinjau (skill ini
 sengaja tidak melakukan itu), atau butuh laporan internal ke atasan/tim sendiri (pakai skill
@@ -30,7 +30,7 @@ sengaja tidak melakukan itu), atau butuh laporan internal ke atasan/tim sendiri 
 ## Contoh sebelum & sesudah
 **Sebelum:** akhir minggu baru mulai mengingat-ingat apa saja yang dikerjakan untuk tiap klien,
 menghitung jam manual dari catatan berserakan, dan menulis ulang format laporan dari nol setiap
-kali — 20-30 menit per klien.
+kali.
 
 **Sesudah (cukup ketik sepanjang minggu, lalu minta laporannya):**
 "Catat: kelarin rekonsiliasi bank buat PT Maju Jaya, 2,5 jam." → "Buatkan laporan mingguan untuk
@@ -54,6 +54,8 @@ Total jam tercatat: 4 jam.
 - Faktur pajak masukan Oktober belum dikirim
 ```
 (Contoh lengkap tiga versi + Markdown: `examples/uji-pembuat-01-konsultan-pajak.md`.)
+
+**Hasil uji:** skor kualitas 9/10 pada uji penguji independen (simulasi agent). Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Di OpenClaw 2026.9.6 (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/UJI-PLATFORM.md`. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
@@ -81,7 +83,7 @@ Salin folder `laporan-klien-konsultan` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Data pekerjaan klien saya dikirim ke internet?**

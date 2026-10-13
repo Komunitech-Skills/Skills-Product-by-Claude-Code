@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Pembeli komplain pashmina dusty pink yang datang malah mocca, mau dipakai kondangan Sabtu. Kita bisa tukar, ongkir kita tanggung"
 → Balasan yang meminta maaf dengan tulus, meminta foto, menawarkan tukar dengan ongkir ditanggung, dan menjanjikan kabar resi jam 17.00, plus catatan hal yang perlu dicek admin.
 
+**Hasil uji (OpenClaw, uji otomatis agent, uji ulang v1.0.3, 2026-10-01):** rata-rata nilai 6,5 tanpa skill menjadi 8,25 dengan skill (skala 10). Tanpa skill, AI mengarang voucher toko, gratis ongkir, dan diskon yang tidak pernah Anda tawarkan; dengan skill, balasan hanya memakai kebijakan toko yang Anda berikan, menanggapi permintaan refund pembeli, dan menandai bagian yang perlu Anda konfirmasi. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Balas chat ini: 'kak paketku udah 5 hari belum sampe'"

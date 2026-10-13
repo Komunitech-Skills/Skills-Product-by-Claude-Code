@@ -36,7 +36,7 @@ Salin folder `harga-jual-marketplace` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Kenapa saya harus mengisi sendiri persentase biaya admin?**

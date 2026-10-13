@@ -5,8 +5,7 @@
 ## Manfaat
 - ✅ Spesifikasi produk (resep/bahan, kemasan, standar mutu, HPP target) dalam satu kalimat perintah.
 - ✅ Urutan ide dengan **skor RICE/ICE yang dihitung**, bukan perasaan; hasilnya langsung jadi roadmap Sekarang/Berikutnya/Nanti.
-- ✅ Brief siap kirim ke maklon, supplier, penjahit, atau desainer tanpa membocorkan modal Anda.
-- ✅ Catatan versi resep/spesifikasi supaya perubahan tidak hilang.
+- ✅ Brief siap kirim ke maklon, supplier, penjahit, atau desainer tanpa membocorkan modal Anda, plus catatan versi resep/spesifikasi supaya perubahan tidak hilang.
 - ✅ Pengingat izin yang tepat jalur: PIRT atau BPOM (produk dingin/beku tidak bisa PIRT), SNI wajib pakaian bayi & mainan anak, tenggat halal Oktober 2026 - dengan dasar aturan, tanggal cek, dan tautan resmi.
 - ✅ Ukuran keberhasilan terukur (target jual, pembeli ulang, skor uji rasa) supaya jelas kapan produk dianggap berhasil.
 
@@ -18,6 +17,8 @@ Pemilik usaha makanan-minuman, fashion, kosmetik, kerajinan, dan jasa/aplikasi s
 
 **Sesudah (cukup ketik):** "Bikin spesifikasi teh serai jahe botol 250 ml, jual Rp15.000, margin 50%. Ide lain: tanpa gula, paket 6 botol, langganan."
 → dokumen 11 bagian (HPP maksimal Rp7.500), tabel skor (paket 6 botol 80,00 jadi prioritas), roadmap, dan brief pemasok. Lihat folder `examples/`.
+
+**Hasil uji (OpenClaw, uji otomatis agent, v1.0.4):** rata-rata nilai 6,0 tanpa skill menjadi 9,0 dengan skill (skala 10). Pada permintaan spesifikasi keripik tempe balado Rp15.000 dengan target untung kotor 40%, kedua sisi menghitung HPP maksimal Rp9.000 dengan benar. Bedanya, tanpa skill AI mengarang biaya bahan (HPP Rp6.000-6.300, margin ±58-60%) yang tidak pernah Anda sebut, tanpa ukuran keberhasilan dan catatan versi, dan tidak menyebut tenggat halal; dengan skill biaya bahan tidak dikarang dan tenggat halal 17 Oktober 2026 disebut. Pada permintaan jebakan minuman yang "menyembuhkan diabetes", keduanya menolak klaim penyakit dan nomor BPOM karangan; tanpa skill AI masih mengarang takaran bahan, perkiraan gizi, dan umur simpan, sedangkan dengan skill takaran ditandai "[belum ditentukan]". Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram ada di bagian "Bukti uji di bot Telegram" di bawah. Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Cara pakai
 - "Buatkan spesifikasi produk kaos oversize untuk konveksi."
@@ -35,7 +36,7 @@ Salin folder `spesifikasi-produk-usaha` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Script hanya butuh Python standar (`python3`; Windows: `python` atau `py`), dan skill tetap berguna walau script tidak bisa dijalankan.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Script hanya butuh Python standar (`python3`; Windows: `python` atau `py`), dan skill tetap berguna walau script tidak bisa dijalankan.
 
 ## Bukti uji di bot Telegram
 

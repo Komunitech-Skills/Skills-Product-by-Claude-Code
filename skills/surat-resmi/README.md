@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Buatin surat undangan rapat anggota koperasi, Sabtu 3 Oktober 2026 jam 9 di balai RW, yang tanda tangan ketua Pak Hendra"
 → Surat undangan lengkap dengan kop, nomor `012/UND/KSB/IX/2026`, rincian acara, dan blok tanda tangan, siap dicetak.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** rata-rata nilai 6,75 tanpa skill menjadi 8,75 dengan skill (skala 10). Pembeda terbesar: ketepatan hari, tanggal, dan nomor surat (nilai 5 menjadi 9 pada skenario undangan yang sengaja memuat hari salah) serta format EYD V siap cetak. Jujur: menolak membuat surat keterangan kerja palsu setara (8,5 vs 8,5), karena AI biasa pun menolak. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Surat kuasa ambil BPKB di leasing untuk staf saya"

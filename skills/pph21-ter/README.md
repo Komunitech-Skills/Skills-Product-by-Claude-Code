@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Karyawan K/0 gaji 10 juta, iuran pensiun 100 ribu, PPh 21 setahun berapa?"
 → Tabel Januari–Desember: Rp 200.000 per bulan (TER 2%), Desember Rp 515.000, lengkap dengan rincian biaya jabatan, PTKP, dan PKP — sama persis dengan contoh resmi pemerintah.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 5 Oktober 2026, v1.0.5):** rata-rata nilai 7,25 tanpa skill menjadi 8,9 dengan skill (skala 10). Catatan jujur: selisihnya tipis karena angka TER tanpa skill juga benar di uji ini. Pembeda skill: menanyakan sektor/KLU dulu sebelum menyimpulkan PPh 21 DTP 2026 (gaji Rp 6.000.000, TK/0: PPh dipotong Rp 45.000, DTP dibayar tunai Rp 45.000, setoran ke negara Rp 0, uang diterima Rp 6.000.000), dan hitungan Desember plus THR selesai dalam sekitar 40 detik oleh script (tanpa skill sekitar 11 menit dengan 12 pencarian web). Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "PPh 21 gaji 8,5 juta status TK/0 berapa?"
@@ -37,7 +39,7 @@ Salin folder `pph21-ter` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## Bukti uji di bot Telegram
 
@@ -55,6 +57,8 @@ Tarif dan rumusnya sama dengan aturan resmi dan sudah dicocokkan dengan contoh r
 
 **Perusahaan saya di industri tekstil, apakah dapat PPh 21 DTP?**
 Skill akan menanyakan sektor dan mengecek syarat gaji (maks. Rp 10 juta). Kepastian KLU perusahaan tetap perlu dicek di data pajak perusahaan (Coretax) atau ke kantor pajak. Bila berhak, PPh 21 karyawan tetap dipotong lalu nilai yang sama **wajib Anda bayarkan tunai** kembali ke karyawan bersama gaji, dan bagian itu tidak perlu disetor ke negara. Hasilnya karyawan menerima gaji tanpa berkurang pajak (mis. gaji Rp 6.000.000 − PPh Rp 45.000 + DTP Rp 45.000 = diterima Rp 6.000.000; setoran Rp 0). Skill menuliskan angka ini dari hitungan script.
+
+> **Catatan penting:** alat bantu hitung, bukan nasihat pajak. Dasar aturan (berlaku per 23 September 2026): PP 58/2023 (tabel TER, berlaku sejak 1 Januari 2024), PMK 168/2023, UU HPP (tarif Pasal 17), dan PMK 105/2025 untuk PPh 21 ditanggung pemerintah Masa Pajak Januari–Desember 2026. PPh dibulatkan ke bawah dan pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Bagian PPh 21 DTP PERLU REVIEW konsultan pajak. Kasus khusus: Kring Pajak 1500200 atau konsultan pajak.
 
 ## Catatan revisi 1.0.5 (2026-10-05)
 - **Koreksi PPh 21 DTP (PMK 105/2025):** versi 1.0.4 menulis "PPh 21 dipotong Rp 0" dan "uang diterima = gaji + DTP" (contoh Rp 6.045.000). Setelah teks resmi dibaca ulang (Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B), mekanisme yang benar: PPh 21 tetap dipotong, DTP dengan nilai sama dibayar tunai ke pegawai, sehingga pegawai menerima **Rp 6.000.000** (gaji tidak berkurang pajak), dan setoran ke negara untuk bagian DTP Rp 0. Script kini mencetak empat baris: PPh dipotong, DTP tunai, setoran ke negara, uang diterima. Ringkasan dasar hukum: `references/dtp-pmk105.md`. **PERLU REVIEW konsultan pajak.**

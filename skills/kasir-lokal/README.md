@@ -31,6 +31,10 @@ Simpan? Balas "ya".
 ```
 Malamnya: "tutup kasir, uang di laci 225 ribu, setor 125 ribu" → "Seharusnya Rp 225.900, dihitung Rp 225.000, SELISIH KURANG Rp 900."
 
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.7), skor 1-10 dari agen penguji independen: tanpa skill 6,5 → dengan skill 8,5.
+- Tugas: "2 kopi susu dan 1 roti bakar, diskon 10%, bayar tunai 100 ribu, buatkan struknya" (harga menu di uji ini berbeda dari contoh di atas). Tanpa skill, angkanya benar tetapi pajak resto 10% disebut PPN (jenis pajaknya salah) dan catatannya tidak terstruktur. Dengan skill: total Rp 35.100, kembalian Rp 64.900, nota bernomor urut tersimpan di komputer Anda, struk 58 mm siap cetak, dan pajak resto diluruskan sebagai PBJT, bukan PPN.
+- Jujur: untuk satu transaksi saja, hasil tanpa skill juga benar. Nilai tambahnya ada di database, nomor nota urut, tutup kasir, rekap, dan pajak yang benar.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Pakai kasir untuk toko saya, ini daftar produknya" (kirim file Excel/CSV)
@@ -57,6 +61,8 @@ Salin folder `kasir-lokal` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di `KomunitechData/kasir/` di folder pengguna Anda; backup otomatis dibuat saat tutup kasir.
 
 ## Yang perlu Anda tahu (jujur)
@@ -64,6 +70,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - **Satu outlet, satu komputer.** Jangan membuka file database yang sama dari dua komputer (mis. lewat Google Drive).
 - **Pajak:** restoran/kafe/warung makan yang sudah terdaftar di Bapenda memungut **PBJT** (pajak daerah, UU 1/2022), bukan PPN — kasir bisa menghitung dan mencetaknya, tetapi **tarifnya Anda isi sendiri** sesuai Perda daerah (paling tinggi 10%), dan penyetoran/pelaporan tetap Anda lakukan ke Bapenda. PPN hanya untuk toko non-kuliner yang sudah **PKP**. Pembulatan PBJT belum dicocokkan dengan sistem Bapenda. PPh final 0,5% tidak dicetak di struk; kasir menyiapkan omzetnya dan skill **PPh Final UMKM** yang menghitung. Pembulatan PPN belum dicocokkan dengan Coretax. Ini alat bantu catat, bukan nasihat pajak.
 - Kecepatan: setiap transaksi dikonfirmasi dulu lewat chat, jadi cocok untuk toko dengan antrean santai, bukan kasir supermarket yang memindai barcode tiap detik.
+- **Dasar aturan & tanggal berlaku:** PBJT mengikuti UU 1/2022 (HKPD); PPN 12% dengan DPP nilai lain 11/12 mengikuti UU HPP dan PMK 131/2024; PPh final 0,5% mengikuti PP 55/2022 jo. PP 20/2026. Semuanya berlaku per 24 September 2026. Aturan pajak bisa berubah, jadi cek ke DJP (Kring Pajak 1500200), Bapenda, atau konsultan pajak untuk kasus khusus.
 
 ## FAQ
 **Apakah data saya dikirim ke internet?**

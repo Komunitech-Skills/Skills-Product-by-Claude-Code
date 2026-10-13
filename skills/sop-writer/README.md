@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Bikinin SOP closing kasir minimarket saya, 2 shift, ada QRIS dan tunai"
 → SOP 13 langkah (siapkan, hitung, serah terima), tabel penanganan selisih kas, indikator keberhasilan, dan checklist per shift siap cetak.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** rata-rata nilai 7,0 tanpa skill menjadi 8,5 dengan skill (skala 10); uji ulang v1.0.4 untuk SOP closing kasir laundry: 6,5 tanpa skill menjadi 8,5 sampai 9 dengan skill. Pembeda: SOP lengkap langsung tampil di chat dan siap cetak (kontrol dokumen, langkah kritis ⚠️ beserta alasannya, tabel "jika … maka …", indikator, checklist berparaf), sedangkan tanpa skill SOP ditulis ke file dan tidak tampil di chat. Jujur: untuk aturan dapur yang berisiko, AI biasa sudah menolak praktik berbahaya. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Buat SOP packing pesanan Shopee untuk olshop baju saya"

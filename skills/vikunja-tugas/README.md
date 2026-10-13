@@ -1,4 +1,4 @@
-# Vikunja Tugas: Asisten AI untuk Manajemen Tugas Tim Tanpa Biaya Bulanan
+# Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan
 
 **Ketik "tugas apa yang harus selesai hari ini?", "tambahkan tugas cek stok cat, jatuh tempo Jumat, tugaskan ke Budi", atau tempel notulen rapat WA — AI Anda langsung membaca dan menyiapkan tugas di Vikunja, aplikasi manajemen tugas gratis yang jalan di komputer/server sendiri.**
 
@@ -8,13 +8,12 @@
 - ✅ **Tanpa biaya per user, selamanya.** Vikunja gratis, jalan di komputer/server Anda sendiri — tidak ada tagihan bulanan seperti Trello Standard, ClickUp, atau Asana untuk tim kecil.
 - ✅ **Cukup ngobrol, bukan klik-klik menu.** "Tugas apa yang telat?", "tambahkan tugas ... jatuh tempo Jumat depan" — AI yang menerjemahkan ke Vikunja, termasuk tanggal gaya Indonesia ("besok", "lusa", "Jumat depan", "25/10").
 - ✅ **Notulen WA jadi to-do list dalam sekali tempel.** Rangkuman rapat/grup WA diubah jadi draf daftar tugas terstruktur (siapa, apa, kapan) yang Anda periksa dulu sebelum benar-benar dibuat — bukan sekadar disalin manual satu per satu.
-- ✅ **Tahu siapa pegang apa.** Ringkasan tugas terbuka dikelompokkan per anggota tim, termasuk yang belum ada penanggung jawabnya.
-- ✅ **Laporan pagi otomatis ke Telegram** (lewat OpenClaw): tugas hari ini & yang terlambat, tanpa Anda harus buka aplikasi.
+- ✅ **Tahu siapa pegang apa, tanpa buka aplikasi.** Ringkasan tugas terbuka dikelompokkan per anggota tim (termasuk yang belum ada penanggung jawabnya), dan laporan pagi otomatis ke Telegram (lewat OpenClaw) memuat tugas hari ini & yang terlambat.
 - ✅ **Aman untuk data tim.** Default hanya membaca. Menambah tugas dan menandai selesai selalu lewat pratinjau dan butuh persetujuan Anda. Token akses disimpan aman dan tidak pernah ditampilkan.
 
 ## Cocok untuk siapa
 - Toko/usaha kecil-menengah, kantor konsultan, kafe, bengkel — tim 3–20 orang yang butuh daftar tugas bersama tanpa berlangganan SaaS.
-- Pemilik/admin yang ingin cukup bertanya ke AI (OpenClaw, Claude Code, Codex, Cursor) tanpa menghafal tampilan Vikunja.
+- Pemilik/admin yang ingin cukup bertanya ke AI agent (diuji di OpenClaw) tanpa menghafal tampilan Vikunja.
 - Tim yang koordinasi kerjanya masih lewat grup WA dan sering ada tugas "hilang" karena tenggelam di chat.
 
 **Kurang cocok:** belum punya server/komputer yang bisa menyala terus untuk Vikunja (lihat instalasi — bisa laptop kantor biasa); butuh sub-tugas, tugas berulang otomatis, atau tampilan Kanban lewat AI (masih harus lewat layar Vikunja langsung di v1.0.x); tim besar (>20 orang) dengan struktur organisasi kompleks — Vikunja tetap bisa, tapi nilai tambah skill ini paling terasa di tim kecil.
@@ -48,6 +47,8 @@ Atau tempel notulen WA:
 ```
 AI menjawab draf yang bisa langsung Anda cek sebelum dikirim ke Vikunja — bukan janji, hasil sungguhan (lihat `examples/`).
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-02):** rata-rata nilai 6,0 tanpa skill menjadi 8,5 dengan skill (skala 10). Pembeda terbesar ada di keamanan: saat token ditempel di chat dan diminta "hapus semua tugas lama", nilainya 4 tanpa skill menjadi 9 dengan skill. Untuk mengurai notulen biasa menjadi tugas, AI tanpa skill sudah setara (8 vs 8). Jujur: uji ini memakai data contoh dan aplikasi Vikunja tidak dijalankan; sambungan ke Vikunja asli (versi 2.6.0) sudah diuji terpisah oleh pembuat. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+
 ## Cara pakai
 Setelah Vikunja terpasang dan tersambung, cukup ketik permintaan biasa:
 - "Cek Vikunja saya sudah nyambung belum"
@@ -69,7 +70,7 @@ Setelah Vikunja terpasang dan tersambung, cukup ketik permintaan biasa:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-(Rincian & verifikasi lokasi instalasi ada di `docs/instalasi.md`.)
+(Panduan lengkap termasuk Windows: `CARA-INSTAL.md` di dalam paket.)
 
 3. Buat token API di Vikunja (Settings > API Tokens, izin sesuai kebutuhan — lihat `docs/panduan-vikunja.md` §6), lalu simpan sekali (di terminal Anda sendiri, bukan di chat): `python3 ~/.openclaw/skills/vikunja-tugas/scripts/vikunja.py simpan-kunci` (Windows: `python` / `py`).
 4. Coba: "Cek Vikunja saya sudah nyambung belum?"

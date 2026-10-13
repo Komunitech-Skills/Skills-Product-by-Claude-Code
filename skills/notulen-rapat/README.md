@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** "Rapikan jadi notulen: rapat tim toko kue, hadir Ayu, Dimas, Sari, Fajar. PO hampers dibuka 1 Okt, deal. Sari bikin poster Jumat depan..."
 → Notulen lengkap dengan tabel tugas (Sari: poster PO, Jumat 2 Oktober 2026), daftar hal yang perlu dikonfirmasi, dan pesan WA siap kirim.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-01):** pada skenario notulen dari catatan rapat berantakan, nilai 6 tanpa skill menjadi 8,5 dengan skill (skala 10); uji ulang setelah perbaikan v1.0.3 bernilai 9. Tanpa skill, "sales sept 2,1M" salah ditulis Rp2,1 juta, tanggal relatif tidak diubah menjadi tanggal nyata, dan ada satu tugas yang dikarang. Dengan skill, tanggal dihitung script (mis. "Sebelum Rabu, 7 Oktober 2026") dan satuan "M" yang belum jelas ditandai untuk dikonfirmasi. Satu skenario, bagian dari uji paket Kantor & Manajemen (catatan uji internal Komunitech).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Buatkan notulen dari transkrip meeting ini: [tempel]"

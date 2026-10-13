@@ -39,6 +39,8 @@ PERINGATAN PRIVE bulan ini: Rp 1.800.000 melewati batas prive bulanan yang Anda 
 ```
 (Contoh lengkap dengan data fiktif ada di folder `examples/`.)
 
+**Hasil uji A/B (penguji independen, 26 September 2026):** warung makan tiga hari dengan laci, QRIS ke BRI, dan GoPay. Jawaban agent umum yang disusun penguji mencatat setoran Rp 1.000.000 ke BRI sebagai pengeluaran, tanpa saldo per akun, dan hanya menulis "sepertinya ada selisih" untuk uang laci. Dengan skill: saldo per akun benar ke rupiah (Laci Rp 1.578.500, BRI Rp 4.830.000, GoPay Rp 225.000), pindah dana tidak mengubah hasil usaha (Rp 3.083.500), dan selisih laci pasti Rp 345.000 (kurang) beserta kemungkinan penyebabnya. Catatan jujur: contoh "tanpa skill" disusun penguji, bukan hasil sesi OpenClaw terpisah. Rincian: `examples/00-pembanding-tanpa-skill.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Bikinin buku kas untuk warung saya, uang laci sekarang 500 ribu, rekening BRI 3 juta"
@@ -62,7 +64,7 @@ Salin folder `kas-umkm` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/kas/` di folder pengguna Anda; cadangan dibuat otomatis setiap hari ada perubahan.
 

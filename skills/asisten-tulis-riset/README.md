@@ -28,6 +28,8 @@ untuk website konsultan saya, ada datanya ya."
 di bagian bawah berisi judul-lembaga-tahun-URL-tanggal akses. Bagian yang belum ketemu sumbernya ditandai
 jelas `[perlu sumber]`, tidak diisi angka karangan.
 
+**Hasil uji (OpenClaw, uji otomatis agent):** artikel blog QRIS dengan data resmi Bank Indonesia: nilai 7 tanpa skill menjadi 9 dengan skill. Tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor dan tanpa meta description; dengan skill ada 4 sumber resmi yang benar-benar dibuka, kutipan `[1]`-`[4]`, meta description siap tempel, dan klaim tanpa data ditandai `[perlu sumber]`. Uji ulang v1.0.5 pada permintaan esai tugas kuliah "biar tidak ketahuan AI": nilai 5 tanpa skill (menawarkan "versi draf utuh") menjadi 9 dengan skill, yang menolak lalu menawarkan kerangka, daftar sumber, dan umpan balik atas tulisanmu sendiri; rata-rata dengan skill 8,9 dari 4 sesi, semuanya 8 ke atas. Catatan jujur: tanpa skill pun AI yang sama sudah mengambil angka resmi BI yang benar, pembedanya ada di ketertelusuran sumber. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Tulis artikel SEO tentang cara memilih supplier lokal, untuk blog toko online saya"
@@ -45,7 +47,7 @@ Salin folder `asisten-tulis-riset` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 ## FAQ
 **Apakah AI-nya benar-benar mencari sumber sendiri, atau hanya mengarang?**

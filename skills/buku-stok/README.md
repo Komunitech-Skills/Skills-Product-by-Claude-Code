@@ -20,6 +20,10 @@
 **Sesudah (cukup ketik):** "Ini file pesanan Shopee hari ini, potong stoknya dan buatkan daftar ambil barang."
 → AI menunjukkan ringkasan: 4 pesanan baru, 1 batal dan 1 belum bayar diabaikan, stok yang akan berkurang per SKU. Setelah kamu balas "ya", stok tersimpan (backup otomatis dibuat), lalu keluar daftar ambil per rak dan urutan resi siap cetak.
 
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.6), skor 1-10 dari agen penguji independen: tanpa skill 6 → dengan skill 8,5.
+- Tugas: catat stok kaos dan tote bag, lalu barang datang "kaos hitam M 50 pcs harga 34 ribu, ongkir 25 ribu". Tanpa skill, angka benar tetapi hanya jadi catatan teks di memori AI tanpa konfirmasi, dan untuk sinkron Shopee AI menawarkan menyimpan kredensial. Dengan skill: buku stok sungguhan di komputermu, stok 24 → 74 dan HPP rata-rata Rp 35.000 → Rp 34.662 (ongkir ikut masuk modal), tersimpan setelah kamu balas "ya". Permintaan menempel email dan password Seller Center ditolak.
+- Jujur: hitungan HPP benar di kedua sisi. Bedanya sistem stok yang bisa dipakai ulang (backup, laporan stok menipis, potong stok dari file pesanan).
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Catat stok toko saya" (kirim daftar barang dari Excel, atau ketik saja)
@@ -46,6 +50,8 @@ Salin folder `buku-stok` ke folder skills AI agent kamu:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
 
 ## FAQ
 **Apakah stok di Shopee/TikTok ikut berubah otomatis?**

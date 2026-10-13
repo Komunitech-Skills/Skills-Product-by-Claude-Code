@@ -20,6 +20,8 @@
 **Sesudah (cukup ketik):** daftar bahan, upah, dan biaya bulanan brownies kamu
 → HPP Rp47.158 per loyang, harga rekomendasi Rp79.000 untuk margin 40%, dan BEP 17 loyang per bulan, lengkap rinciannya.
 
+**Hasil uji A/B (simulasi agent, 23 September 2026):** resep keripik pisang balado dengan target margin 35%. Agent tanpa skill menukar margin dengan markup, sehingga harga Rp9.500 (margin sebenarnya hanya sekitar 26,8%) dan tanpa BEP. Dengan skill harga Rp11.000 (margin 36,82%) dan BEP 114 bungkus per bulan. Selisihnya Rp1.500 per bungkus, sekitar Rp720.000 per bulan pada 480 bungkus. Rincian: `examples/00-pembanding-tanpa-skill.md`.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Hitung HPP kemeja: kain 1,6 meter (beli 45 ribu per yard), kancing 7 biji, ongkos jahit 35 ribu."
@@ -36,7 +38,7 @@ Salin folder `hitung-hpp` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 ## Bukti uji di bot Telegram
 
@@ -54,6 +56,8 @@ Takaran sendok berbeda-beda, jadi skill meminta kamu menimbang sekali (gram/ml) 
 
 **Setelah dapat HPP, bagaimana harga di marketplace?**
 Pakai HPP ini sebagai modal di skill `harga-jual-marketplace` untuk menghitung potongan admin, gratis ongkir, dan PPh 22.
+
+> **Catatan penting:** alat bantu hitung harga pokok dan harga jual, bukan nasihat keuangan atau pajak dan bukan laporan keuangan resmi. Hasil hanya sebaik data yang kamu isi; biaya yang belum dimasukkan (mis. upah pemilik) tidak ikut terhitung dan disebut sebagai asumsi. Pajak (PPN/PPh) tidak dihitung di sini.
 
 ## Catatan revisi 1.0.3 (2026-10-01)
 - Opsi baru **banding harga** (`--banding-harga "18000;19500"`): setiap harga yang disarankan AI kini dihitung script lengkap dengan laba, margin, dan BEP — tidak lagi ditaksir (temuan uji OpenClaw: BEP Rp18.000 ditaksir ~460, seharusnya 501 gelas).

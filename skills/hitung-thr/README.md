@@ -20,6 +20,11 @@
 **Sesudah (cukup ketik):** "Lebaran 10 Maret 2027. Rina kontrak gaji 4,8 juta, masuk 15 Juni 2026, TK/0."
 → Masa kerja 8 bulan → THR 8/12 × Rp 4.800.000 = Rp 3.200.000, tambahan PPh 21 Rp 120.000, batas bayar Rabu, 3 Maret 2027, plus draf pengumuman.
 
+**Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; 4 karyawan: tetap, kontrak, harian lepas, dan yang di-PHK).
+- Tanpa skill: bila masa kerja Rina dihitung per bulan kalender, THR-nya kelebihan Rp 400.000 (yang benar 8 bulan penuh = Rp 3.200.000); Joko (harian lepas) hanya "sekitar Rp 3 juta" (yang benar rata-rata 12 bulan = Rp 3.008.333); Wati yang di-PHK 20 Februari 2027 sering dianggap tidak berhak padahal berhak Rp 5.200.000; pajak tidak dihitung.
+- Dengan skill: semua angka di atas benar, lengkap dengan batas bayar Rabu, 3 Maret 2027, tambahan PPh 21 per orang, dan pengumuman tanpa nominal pribadi.
+- Skor penguji independen: 9 dari 10 (v1.0.1; 4.000 kasus acak dibandingkan dengan kalkulator terpisah, selisih 0). Uji ulang di OpenClaw (1 Okt 2026, hanya dengan skill): 8,5 dari 10.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 - "Hitung THR Lebaran untuk karyawan di file karyawan.csv, Lebaran tanggal 10 Maret 2027."
@@ -37,6 +42,13 @@ Salin folder `hitung-thr` ke folder skills AI agent kamu:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
+
+## Catatan penting
+- Alat bantu hitung, **bukan nasihat hukum atau pajak**. Dasar aturan: Permenaker 6/2016, SE Menaker M/3/HK.04.00/III/2026 (SE Menaker THR 2026), serta PP 58/2023 dan PMK 168/2023 (PPh 21 tarif TER); berlaku per 23 September 2026. Untuk hari raya tahun berikutnya, cek SE Menaker THR yang terbit menjelang hari raya.
+- Pembulatan PPh 21 belum dicocokkan dengan Coretax. Bagian PPh 21 DTP (PMK 105/2025) masih menunggu review konsultan pajak.
+- Untuk sengketa atau kasus khusus, hubungi Disnaker setempat, Posko THR (poskothr.kemnaker.go.id), Kring Pajak 1500200, atau konsultan.
 
 ## FAQ
 **Uang makan dan transport ikut dihitung THR?**

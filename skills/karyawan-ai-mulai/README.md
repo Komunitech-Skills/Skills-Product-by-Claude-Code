@@ -7,8 +7,7 @@
 - ✅ Dapat rekomendasi paket kerja yang sesuai profesi & tugas Anda, bukan daftar 30+ skill yang membingungkan.
 - ✅ Langsung lihat **hasil nyata** di menit pertama (bukan sekadar penjelasan).
 - ✅ Rencana 7 hari sederhana supaya kebiasaan baru terbentuk, satu langkah per hari.
-- ✅ Diingatkan soal privasi sejak awal — cocok untuk yang khawatir data bocor.
-- ✅ Menawarkan memasang "Aturan kerja Komunitech" ke `AGENTS.md` OpenClaw Anda (setelah Anda setujui), supaya aturan aman tetap berlaku di setiap percakapan.
+- ✅ Diingatkan soal privasi sejak awal — cocok untuk yang khawatir data bocor. Skill juga menawarkan memasang "Aturan kerja Komunitech" ke `AGENTS.md` OpenClaw Anda (setelah Anda setujui), supaya aturan aman tetap berlaku di setiap percakapan.
 
 ## Cocok untuk siapa
 - Pemilik usaha/profesional yang **sudah pakai OpenClaw** tapi belum tahu mulai dari mana.
@@ -23,6 +22,10 @@ menumpuk tanpa tahu mana yang relevan.
 → Dalam satu percakapan: rekomendasi 3 skill yang pas, dipasang dengan izin Anda, satu tugas
 nyata langsung selesai (misalnya 3 caption promo siap posting), dan rencana 7 hari untuk
 membiasakan diri.
+
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.8), skor 1-10 dari agen penguji independen: tanpa skill 3 → dengan skill 8,3 (skor tanpa skill dari uji awal; skor dengan skill dari uji ulang setelah perbaikan).
+- Tugas: "mulai karyawan AI" untuk pemilik laundry 2 outlet yang butuh rekap omzet, balas chat pelanggan, dan promo lewat Telegram. Tanpa skill, AI sempat mengubah konfigurasi gateway dan membuka auto-reply WhatsApp untuk semua orang. Dengan skill: wawancara singkat, template rekap omzet per outlet, draf balasan mode Copilot (manusia yang mengirim), dan blok aturan kerja aman ditulis ke `AGENTS.md` setelah Anda menjawab "ya".
+- Jujur: kadang skill menawarkan skill pendamping yang belum terpasang di komputer Anda.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent OpenClaw Anda, misalnya:
@@ -41,6 +44,8 @@ Salin folder `karyawan-ai-mulai` ke folder skills AI agent kamu:
 | Cursor | `~/.cursor/skills/` |
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+
+**Status uji (jujur):** skill ini dibuat untuk OpenClaw dan sudah diuji di sana (uji otomatis oleh agen AI, termasuk bot Telegram asli) serta di Claude Code (simulasi agen penguji). Codex dan Cursor belum kami uji, dan langkah yang menyentuh `AGENTS.md` OpenClaw tidak berlaku di platform lain.
 
 ## Bukti uji di bot Telegram
 
