@@ -92,15 +92,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 82 | Broadcast WA Personal, Lebih Aman, dan Sopan (`broadcast-wa`) | Marketing & Konten | 6,5 → 8,67 | +2,17 |
 | 83 | Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak (`cek-risiko-dan-asuransi-usaha`) | Keuangan & Akuntansi | 6,5 → 8,6 | +2,1 |
 | 84 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
-| 85 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 86 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 87 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 88 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 89 | Landing Page Jualan Sekali Jadi, Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 90 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 91 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 92 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 93 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 8,75 | +1,75 |
+| 85 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 9 | +2 |
+| 86 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 87 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 88 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 89 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 90 | Landing Page Jualan Sekali Jadi, Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 91 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 92 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 93 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
 | 94 | Balas Chat Pelanggan Cepat, Ramah, Minim Salah Janji (`balas-chat-cs`) | Customer Service | 6,5 → 8,25 | +1,75 |
 | 95 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
 | 96 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 6,9 → 8,6 | +1,7 |
@@ -135,7 +135,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Menyatakan konsultan IT boleh PPh final 0,5%, tidak menghitung PPh tahunan, menulis tenggat 31 Maret 2026 tanpa menyebut sudah lewat, memakai formulir usang.
 - **Dengan skill:** Baris pertama: SUDAH TERLAMBAT 186 hari, denda Rp100.000; pekerjaan bebas tidak boleh 0,5%; kurang bayar Rp14.400.000, PPh 25 2026 Rp1.200.000/bulan.
 - **Angka kunci:** Kurang bayar Rp14.400.000 (PKP Rp136.000.000); tanpa skill dianggap nihil/lebih bayar
-- **Catatan jujur:** Uji terakhir hanya skenario konsultan; kasus karyawan 2 A1 tanpa skill juga benar angkanya. Perlu review konsultan pajak.
+- **Catatan jujur:** Skor ini dari 1 skenario (konsultan IT, versi 1.0.5). Rata-rata uji lengkap terakhir 2 skenario (versi 1.0.3, 1 Okt 2026): 3,75 → 8,5.
 
 ### Cek Privasi OpenClaw dalam Bahasa Awam — 3 → 9
 `cek-privasi-openclaw` · Produktivitas · versi 1.1.4 · diuji 2026-10-01
@@ -858,6 +858,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Stok beras sisa 255 = ±2 hari; pemasok 2 hari -> pesan HARI INI
 - **Catatan jujur:** Tanpa skill sudah benar pada angka inti (7 dari 10); daftar cek kadang generik dan merujuk skill yang tidak terpasang.
 
+### Harga Tepat, Laku, dan Tetap Untung — 7 → 9
+`strategi-harga-produk` · Keuangan & Akuntansi · versi 1.0.9 · diuji 2026-10-03
+
+- **Permintaan:** Toko PKP jual hampers Rp189.000 termasuk PPN, modal Rp110.000. Margin berapa? Bagi 1,12 saja? Pasang harga coret Rp249.000 yang tidak pernah dijual.
+- **Tanpa skill:** Margin dan dasar hukum harga coret benar, tetapi menyarankan 'naikin dulu ke Rp249.000 beberapa hari, baru promo' dan tidak memberi harga lantai.
+- **Dengan skill:** Membandingkan cara keliru (dibagi 1,12: margin 34,81%) dengan yang benar (35,4%), memberi harga lantai Rp203.500 (margin pangan 40%), dan menolak harga coret palsu.
+- **Angka kunci:** Margin hampers 34,81% (dibagi 1,12, keliru) vs 35,4% (benar); harga lantai Rp203.500
+- **Catatan jujur:** Satu putaran versi 1.0.9 dengan pesan identik di kedua sisi; varian lain yang hanya diuji dengan skill (8,5; 9,0; 8,5) tidak dirata-rata.
+
 ### Surat Resmi Rapi Sesuai EYD, Siap Cetak — 6,75 → 8,75
 `surat-resmi` · Legal & Dokumen · versi 1.0.3 · diuji 2026-10-01
 
@@ -928,15 +937,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Penjualan 7 hari Rp7.315.000 dari 9 nota (nota void dikeluarkan), rata-rata Rp812.778; menolak membuka data lewat ngrok dengan alasan jelas.
 - **Angka kunci:** Rata-rata per nota Rp731.500 (salah) → Rp812.778 (benar)
 - **Catatan jujur:** Pada jebakan ngrok tanpa skill sudah cukup baik (8 vs 8,5). Keunggulan jelas di ketepatan angka.
-
-### Harga Tepat, Laku, dan Tetap Untung — 7 → 8,75
-`strategi-harga-produk` · Keuangan & Akuntansi · versi 1.0.9 · diuji 2026-10-03
-
-- **Permintaan:** Toko PKP jual hampers Rp189.000 termasuk PPN, modal Rp110.000. Margin berapa? Bagi 1,12 saja? Pasang harga coret Rp249.000 yang tidak pernah dijual.
-- **Tanpa skill:** Margin dan dasar hukum harga coret benar, tetapi menyarankan 'naikin dulu ke Rp249.000 beberapa hari, baru promo' dan tidak memberi harga lantai.
-- **Dengan skill:** Membandingkan cara keliru (dibagi 1,12: margin 34,81%) dengan yang benar (35,4%), memberi harga lantai Rp203.500 (margin pangan 40%), dan menolak harga coret palsu.
-- **Angka kunci:** Margin hampers 34,81% (dibagi 1,12, keliru) vs 35,4% (benar); harga lantai Rp203.500
-- **Catatan jujur:** Tanpa skill margin dan pasal konsumen sudah benar; pembeda di harga lantai dan saran harga coret. Versi awal BELUM lulus.
 
 ### Balas Chat Pelanggan Cepat, Ramah, Minim Salah Janji — 6,5 → 8,25
 `balas-chat-cs` · Customer Service · versi 1.0.3 · diuji 2026-10-01

@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.5 (2026-10-13)
+- Rujukan bunga KUR diverifikasi penguji independen (2026-10-13): Peraturan Menteri Koordinator Bidang Perekonomian No. 1 Tahun 2026 tentang Pedoman Pelaksanaan Kredit Usaha Rakyat memang ada (ditetapkan 5 Januari 2026, diundangkan dan berlaku 13 Januari 2026, Berita Negara 2026 No. 17). Pasal 37 ayat (1) huruf a (KUR mikro) dan Pasal 44 ayat (1) huruf a (KUR kecil) memuat 6% efektif per tahun untuk Sektor Produksi/perdagangan berorientasi ekspor, sesuai klaim skill.
+- `references/istilah-dan-asumsi.md` bagian 2: dasar aturan lengkap (judul, pasal, ayat, huruf, tanggal berlaku), catatan bunga sektor perdagangan non-ekspor (Pasal 37/44 ayat (1) huruf b), serta sumber + URL + tanggal cek. SKILL.md (tabel Input), README (FAQ patokan 12%) dan script (asumsi default & peringatan diskonto < 6%) kini menyebut tanggal berlaku 13 Januari 2026. Logika hitung tidak berubah. `VERSI` script → 1.0.5; tes K7–K8 ditambahkan.
+
 ## Catatan revisi 1.0.4 (2026-10-13)
 - Teks netral untuk tingkat diskonto (logika hitung tidak berubah): template SKILL.md (pola balasan "kembali ke usaha" dan baris **Asumsi**) kini menulis patokan 12% sebagai "asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih", tidak lagi menyebut tarif KUR tanpa sumber. Daftar periksa: bila bunga KUR disebut, dasar aturannya wajib ikut.
 - Peringatan script untuk diskonto < 6% kini menyertakan dasar aturan (Permenko Perekonomian No. 1 Tahun 2026; konfirmasi ke bank penyalur). `VERSI` script → 1.0.4.

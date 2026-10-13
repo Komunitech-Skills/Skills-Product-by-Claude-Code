@@ -26,12 +26,13 @@ import sys
 from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 DISKONTO_DEFAULT = Decimal("12")
 DISKONTO_KETAT = Decimal("20")
 LABEL_MANFAAT = {"omzet": "Omzet", "penghematan": "Penghematan", "pemasukan": "Pemasukan tambahan"}
 ASAL_DISKONTO = ("bunga KUR Mikro/Kecil sektor produksi 6% efektif/tahun (acuan Permenko Perekonomian "
-                 "No. 1 Tahun 2026 Pasal 37 & 44; konfirmasi ke bank penyalur) + tambahan risiko usaha 6%")
+                 "No. 1 Tahun 2026 Pasal 37 & 44, berlaku 13 Januari 2026; konfirmasi ke bank penyalur) + "
+                 "tambahan risiko usaha 6%")
 SENS_DEFAULT = "omzet-10;omzet-20;biaya+10"
 LABEL_AGENT = "[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, tanpa menyebut script/file/proses]"
 DISCLAIMER = ("Bukan nasihat keuangan. Hasil sepenuhnya tergantung asumsi (omzet, biaya, umur, tingkat "
@@ -488,7 +489,8 @@ def siapkan(a):
     p["diskonto"] = d
     if d < 6:
         peringatan.append("Tingkat diskonto di bawah 6%/tahun (bunga KUR produksi menurut Permenko Perekonomian "
-                          "No. 1 Tahun 2026; konfirmasi ke bank penyalur) - hasil bisa terlalu optimis.")
+                          "No. 1 Tahun 2026 Pasal 37 & 44, berlaku 13 Januari 2026; konfirmasi ke bank penyalur) "
+                          "- hasil bisa terlalu optimis.")
     if d > 30:
         peringatan.append("Tingkat diskonto di atas 30%/tahun - pastikan memang disengaja.")
 
