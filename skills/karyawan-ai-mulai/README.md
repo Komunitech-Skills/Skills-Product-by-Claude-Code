@@ -85,4 +85,4 @@ Tidak. Skill ini berjalan di OpenClaw milik Anda sendiri dan tidak mengirim data
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

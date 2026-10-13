@@ -71,7 +71,7 @@ openclaw skills install ./<path-folder-skill> --global
   untuk pembeli, bukan untuk dibagikan gratis.
 
 Contoh dialog persetujuan sebelum memasang:
-> "Saya akan pasang skill `rekap-penjualan-csv`, `balas-chat-cs`, dan `caption-sosmed-umkm` dari
+> "Saya akan pasang skill `rekap-penjualan-csv`, `balas-chat-cs`, dan `konten-mingguan` dari
 > `~/Downloads/<folder-paket>/` ke folder skill global OpenClaw Anda (`~/.openclaw/skills`).
 > Lanjut? (ya/tidak)"
 

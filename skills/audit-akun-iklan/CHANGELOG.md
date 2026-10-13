@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.6 (2026-10-13)
+- Rujukan ke skill arsip diganti: `caption-sosmed-umkm` diganti `konten-mingguan` (SKILL.md, bagian Kapan TIDAK digunakan); konstanta VERSI skrip disamakan.
+
 ## Catatan revisi 1.0.5 (2026-10-01)
 - Keamanan: bila Anda tidak sengaja menempel password/OTP/token di chat, AI tidak akan mengulang, menyimpan, atau memakainya — Anda akan diminta segera mengganti password dan mengaktifkan verifikasi 2 langkah, lalu audit lanjut dari ekspor data/screenshot saja.
 - Script kini otomatis menyamarkan pola password/OTP/token/nomor kartu di catatan audit menjadi `[DISAMARKAN]`.

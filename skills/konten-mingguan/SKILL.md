@@ -1,6 +1,6 @@
 ---
 name: konten-mingguan
-description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari: platform, pilar, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar). ATURAN PERTAMA: SELURUH paket post (semua hari, caption lengkap) WAJIB ditulis di balasan chat; file hanya salinan opsional. Dilarang mengarang fakta usaha (promo, harga, kelangkaan, proses, durasi, pengiriman, jam/hari libur, kepopuleran, sterilisasi, sertifikat) yang tidak diberikan pengguna: pakai [isian]. TIDAK memposting otomatis. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Pakai untuk paket konten minggu ini/depan, weekly content plan/pack (sebulan: kalender-konten-30hari).
+description: Menyusun paket konten media sosial 1 minggu (5-7 hari) untuk UMKM/usaha kecil maupun profesional/B2B — per hari: platform, pilar, hook 3 detik, caption siap tempel, naskah video singkat, brief foto/video, hashtag, CTA, dan jam posting — dari profil usaha yang disimpan sekali dan momen minggu itu (gajian, tanggal kembar, hari besar). ATURAN PERTAMA: SELURUH paket post (semua hari, caption lengkap) WAJIB ditulis di balasan chat; file hanya salinan opsional. Dilarang mengarang fakta usaha (promo, harga, kelangkaan, proses, durasi, pengiriman, jam/hari libur, kepopuleran, sterilisasi, sertifikat) yang tidak diberikan pengguna: pakai [isian]. TIDAK memposting otomatis. Bila sebagian permintaan dilarang (testimoni pasien, before-after, diskon tindakan medis klinik): tolak bagian itu (1-2 kalimat + dasar aturan) lalu LANGSUNG serahkan paket pengganti lengkap di balasan yang sama, tanpa tanya izin. Pakai untuk paket konten minggu ini/depan, weekly content plan/pack (sebulan: minta per minggu, 4 paket berurutan).
 ---
 
 # Konten Mingguan
@@ -24,8 +24,8 @@ aplikasi resmi tiap platform.
 - Sudah ada `konten/PROFIL.md` dan pengguna minta "lanjutkan minggu berikutnya"
 
 ## Kapan TIDAK digunakan
-- Rencana sebulan penuh (30 hari) → `kalender-konten-30hari`
-- Hanya satu caption untuk satu posting → `caption-sosmed-umkm`
+- Rencana sebulan penuh (30 hari) sekaligus → kerjakan per minggu: paket minggu ke-1, lalu "lanjutkan minggu berikutnya"
+- Hanya satu caption untuk satu posting → tidak perlu paket mingguan; tulis langsung satu caption dengan aturan di `references/gaya-caption.md`
 - Rencana kampanye promo (mekanisme diskon, cek margin) → `promo-kalender`
 - Shot list foto/video detail per produk → `foto-produk-brief`
 - Naskah live selling → `naskah-live-jualan`
@@ -72,7 +72,7 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
    hari bermomen (gajian, tanggal kembar, hari besar relevan produk) untuk pilar promo; hari peringatan
    (mis. Hari Pahlawan, G30S) **tidak** diberi pilar promo/hard-selling — isi edukasi/apresiasi.
 4. **Tentukan pilar & platform per hari.** Campur pilar (jangan promo setiap hari — target ±20-30%
-   seperti di `kalender-konten-30hari`/`promo-kalender`) dan format sesuai platform aktif di `PROFIL.md`
+   seperti di `promo-kalender`) dan format sesuai platform aktif di `PROFIL.md`
    (Reels/TikTok untuk video pendek, Feed untuk foto rapi, Story/WA Status untuk info cepat/promo harian,
    **LinkedIn Post/Carousel** untuk konten profesional/B2B, **X/Twitter** untuk update singkat/thread).
 5. **Isi tiap hari** dengan `templates/paket-mingguan.md` sebagai kerangka:
@@ -80,9 +80,7 @@ hasil dan minta pengguna melengkapinya sebelum dipakai — jangan mengarang angk
      gajian + hari peringatan bersamaan) — jangan memilih sebagian, karena kombinasinya menentukan
      apakah hari itu boleh dipakai untuk pilar promo (lihat langkah 3).
    - **Hook 3 detik**: kalimat/pertanyaan pembuka, ≤ 12 kata, spesifik untuk produk (bukan generik).
-   - **Caption siap tempel**: ikuti gaya & aturan panjang `caption-sosmed-umkm` (bila skill itu terpasang,
-     rujuk untuk variasi tambahan; bila tidak, tulis sendiri dengan aturan yang sama — lihat tabel di
-     `references/gaya-caption.md`).
+   - **Caption siap tempel**: ikuti gaya & aturan panjang di tabel `references/gaya-caption.md`.
    - **Naskah video ±30 detik**: tabel detik-adegan-teks layar-VO, hanya untuk hari berformat video.
    - **Brief foto/video singkat**: 2-4 baris (sudut, cahaya, properti) — versi ringkas; untuk brief detail
      per produk, tawarkan `foto-produk-brief`.

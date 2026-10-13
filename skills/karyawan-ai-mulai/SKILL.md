@@ -179,7 +179,7 @@ pelanggan, dan rekap penjualan mingguan — semua lewat WhatsApp. Laptop tidak s
 jadi laporan otomatis terjadwal belum cocok dulu untuk Anda.
 
 ## Rekomendasi Paket Kerja Pertama
-1. **caption-sosmed-umkm** — caption siap tempel tiap hari, hemat waktu bikin konten.
+1. **konten-mingguan** — paket konten seminggu dengan caption siap tempel, hemat waktu bikin konten.
 2. **balas-chat-cs** — draf balasan chat pelanggan dari FAQ sampai komplain.
 3. **rekap-penjualan-csv** — kirim file penjualan mingguan, langsung dapat rekap omzet & tren.
 
@@ -188,7 +188,7 @@ tapi perlu komputer menyala terus — bisa dibahas nanti.
 
 ## Status Pemasangan
 - Sudah terpasang: belum ada
-- Perlu dipasang: caption-sosmed-umkm, balas-chat-cs, rekap-penjualan-csv (folder ditemukan di
+- Perlu dipasang: konten-mingguan, balas-chat-cs, rekap-penjualan-csv (folder ditemukan di
   ~/Downloads/<folder-paket>/) → boleh saya pasang sekarang ke folder skill global OpenClaw
   Anda (~/.openclaw/skills)? (ya/tidak)
 
@@ -199,10 +199,10 @@ pengguna — tidak menunggu "ya" pemasangan>
 ## Rencana 7 Hari
 | Hari | Kebiasaan baru | Skill |
 |---|---|---|
-| 1 | Minta 1 caption pagi sebelum buka toko | caption-sosmed-umkm |
+| 1 | Minta paket konten untuk minggu ini | konten-mingguan |
 | 2 | Coba draf balasan untuk 3 chat pelanggan | balas-chat-cs |
 | 3 | Kirim file penjualan kemarin, minta rekap singkat | rekap-penjualan-csv |
-| 4 | Minta caption untuk promo mingguan | caption-sosmed-umkm |
+| 4 | Minta caption tambahan untuk promo mingguan | konten-mingguan |
 | 5 | Balas 5 chat pelanggan pakai draf AI | balas-chat-cs |
 | 6 | Review rekap penjualan minggu ini | rekap-penjualan-csv |
 | 7 | Evaluasi: skill mana paling membantu, lanjut paket berikutnya? | — |

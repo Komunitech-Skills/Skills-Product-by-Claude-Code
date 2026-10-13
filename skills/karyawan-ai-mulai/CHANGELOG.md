@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.1.9 (2026-10-13)
+- Rujukan ke skill arsip diganti: `caption-sosmed-umkm`, `kalender-konten-30hari` diganti `konten-mingguan` di SKILL.md (contoh rekomendasi dan rencana 7 hari), references/peta-skill.md, references/openclaw.md, dan peta kata kunci di scripts/peta_kebutuhan.py (hanya nama skill; logika dan kasus uji tidak berubah selain nama yang diharapkan).
+
 ## Catatan revisi 1.1.8 (2026-10-01)
 
 - Uji OpenClaw 2026-10-01: (a) "Hasil Tugas Pertama" kini wajib di balasan yang sama dengan rekomendasi, tanpa menunggu pemasangan skill; (b) blok Aturan kerja ditampilkan utuh kata per kata sebelum minta "ya" (tidak diringkas); (c) folder skill hanya dicari di Unduhan/folder yang disebut pengguna, path sumber disebut sebelum minta izin, tidak menyalin dari `/tmp`/instalasi OpenClaw lain; (d) istilah jujur — "Starter Kit/paket Anda" hanya untuk folder unduhan yang benar-benar ditemukan; (e) tidak ada placeholder klaim hasil untuk kosmetik di tugas pertama.
