@@ -1,0 +1,18 @@
+[
+ {
+  "skill": "ubah-draf-ke-dokumen",
+  "sisi": "sesudah",
+  "topic": 1420,
+  "text": "@KTclaude2bot Tolong rapikan draf WA ini jadi surat resmi siap kirim ke pelanggan, pakai kop usaha saya (Kopi Seduh Nusantara, Jl. Dago Asri No. 12, Bandung), dan buatkan file Word-nya juga ya:\n\n\"halo kak, mau kasih tau mulai 1 nov harga biji kopi arabika kita naik dr 85rb jadi 92rb per 250gr krn harga dari petani naik. yg robusta tetep 60rb. buat pelanggan tetap yg order sebelum 31 okt masih pake harga lama utk 1 kali order, maks 5 bungkus. makasih ya udah setia sama kita. salam, Dimas\"",
+  "gel": 16,
+  "note": "ulang: skill belum terpasang di bot saat kirim pertama (topik 1404/1406 tidak sahih)"
+ },
+ {
+  "skill": "kartu-belajar-anki",
+  "sisi": "sesudah",
+  "topic": 1421,
+  "text": "@KTclaude2bot Bikinin kartu belajar Anki dari SOP kasir toko kami buat karyawan baru ya. Mereka mulai kerja minggu depan, jadi belajarnya 5 hari. SOP-nya:\n1. Sapa pelanggan dalam 5 detik setelah sampai di kasir: \"Selamat siang/sore, Kak\".\n2. Scan semua barang dulu, baru sebutkan total belanja.\n3. Tanyakan apakah punya kartu member; kalau ada, scan sebelum pembayaran.\n4. Metode bayar yang diterima: tunai, QRIS, debit. Kartu kredit tidak diterima.\n5. Untuk uang tunai di atas Rp100.000, cek keaslian dengan lampu UV.\n6. Struk selalu diserahkan ke pelanggan, kecuali pelanggan menolak.\n7. Retur barang hanya dalam 3 hari dengan struk, dan harus disetujui supervisor.\n8. Tutup shift: hitung uang laci bersama supervisor, catat selisih di buku kas.",
+  "gel": 16,
+  "note": "ulang: skill belum terpasang di bot saat kirim pertama (topik 1404/1406 tidak sahih)"
+ }
+]
