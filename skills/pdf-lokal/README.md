@@ -1,22 +1,24 @@
 # PDF Lokal: Olah PDF di Komputer Sendiri, Tanpa Upload
 
-**Gabung, kompres, OCR, kunci, dan rapikan PDF - di laptopmu sendiri, bukan situs online. Belum pasang Stirling-PDF? Tugas umum tetap jalan dengan alat PDF yang sudah ada di komputermu.**
+**Gabung, kompres, OCR (baca teks dari hasil scan), kunci, dan rapikan PDF - di laptop Anda sendiri, bukan situs online. Belum pasang Stirling-PDF? Tugas umum tetap jalan dengan alat PDF yang sudah ada di komputer Anda, bila alat itu terpasang.**
+
+Diuji AI penguji independen di OpenClaw: 8,75 → 9,0 dari 10 (gabung dan kompres sama-sama benar bila alat PDF sudah ada; pembedanya perilaku hati-hati yang konsisten: tanpa unggah, tanpa memasang paket sendiri, file asli tidak ditimpa).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Privasi terjaga** - script ini hanya bicara ke Stirling-PDF di komputer sendiri
-  (`localhost`), tidak pernah mengunggah file ke situs "PDF online" mana pun. Untuk
-  dokumen sensitif (slip gaji, KTP, kontrak), skill ini tidak akan menyarankan upload
-  ke situs online mana pun sebagai jalan pintas, sekalipun Stirling-PDF belum terpasang.
+- ✅ **Privasi terjaga** - skrip ini hanya bicara ke **Stirling-PDF** (aplikasi PDF gratis
+  yang jalan di komputer Anda sendiri, alamat `localhost`) dan tidak mengunggah file ke situs
+  "PDF online". Untuk dokumen sensitif (slip gaji, KTP, kontrak), skill ini tidak menyarankan
+  upload ke situs online sebagai jalan pintas, sekalipun Stirling-PDF belum terpasang.
 - ✅ **Tanpa langganan** - Stirling-PDF gratis (inti open-source), tidak seperti Adobe
   Acrobat Pro (±USD20/bulan) atau situs kompres PDF berlangganan.
 - ✅ **Cukup ngomong biasa** - "gabungin nota-nota ini" atau "kompres biar muat WA",
   AI agent yang urus perintah teknisnya.
 - ✅ **Untuk kebutuhan usaha nyata**: kompres biar muat batas upload marketplace,
-  rapikan resi biar hemat kertas print, OCR nota scan biar bisa dicari, kunci PDF
-  slip gaji biar tidak sembarangan dibuka.
-- ✅ **File asli aman** - hasil selalu file baru, file asli tidak pernah ditimpa.
+  rapikan resi biar hemat kertas print, OCR nota scan (teksnya jadi bisa dicari), kunci PDF
+  slip gaji dengan kata sandi.
+- ✅ **File asli dijaga** - hasil disimpan sebagai file baru, file asli tidak ditimpa (sudah diuji).
 
 ## Cocok untuk siapa
 - Pemilik toko online yang cetak banyak resi Shopee/Tokopedia setiap hari.
@@ -30,14 +32,14 @@ was-was data ikut ke server orang, hasil kadang ada watermark iklan situsnya.
 
 **Sesudah (cukup ketik):** "Kompres PDF laporan-keuangan.pdf ini biar bisa dikirim WA"
 → AI agent menjalankan skill ini, PDF diproses **di komputer sendiri** lewat
-Stirling-PDF, hasil langsung ada di folder yang sama:
+Stirling-PDF, hasil langsung ada di folder yang sama (contoh dengan data fiktif):
 ```
 Berhasil dikompres: 4200 KB -> 850 KB
   -> /Users/sari/Dokumen/laporan-keuangan-kompres.pdf
 ```
 
 ## Cara pakai
-Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Gabungin nota-nota supplier ini jadi satu PDF"
 - "Kompres PDF ini biar bisa diupload ke marketplace"
 - "PDF hasil scan ini teksnya nggak bisa dicari, tolong OCR"
@@ -48,12 +50,12 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
 **Syarat:** paling lengkap dengan aplikasi gratis **Stirling-PDF** yang menyala di komputer
 yang sama (panduan ringkas: `references/pasang-stirling.md` di folder skill ini).
 **Belum ada Stirling-PDF?** Untuk gabung, pisah, kompres, putar, dan kunci/buka sandi,
-AI agent otomatis memakai alat PDF yang **sudah** terpasang di komputermu (qpdf,
+AI agent otomatis memakai alat PDF gratis yang **sudah** terpasang di komputer Anda (qpdf,
 Ghostscript, atau pdftk - umum ada di Linux/macOS dan sebagian Windows), tanpa memasang
 apa pun. OCR, watermark, foto ke PDF, dan rapikan resi tetap butuh Stirling-PDF.
 
 ## Instalasi singkat
-Salin folder `pdf-lokal` ke folder skills AI agent kamu:
+Salin folder `pdf-lokal` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -62,28 +64,28 @@ Salin folder `pdf-lokal` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap memasang skill (termasuk Windows): `docs/instalasi.md` di ZIP paket.
+Panduan lengkap memasang skill (termasuk Windows): `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 Cara memasang Stirling-PDF: `references/pasang-stirling.md` di dalam folder skill ini.
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi, qpdf/Ghostscript tersedia), 1 Okt 2026 (v1.0.5), skor 1–10 penguji independen: tanpa skill **8,75** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pembeda bukan “mustahil tanpa skill”, melainkan konsistensi aman: tanpa pip install, tanpa unggah PDF sensitif, file asli tidak ditimpa, verifikasi ukuran/hasil. Script juga diuji ke Stirling-PDF 2.14.3 & 3.0.0 (Docker) — detail di `examples/HASIL-UJI.md` (16/16 regresi tiruan).
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah; qpdf dan Ghostscript tersedia), 1 Okt 2026 (v1.0.5), skor 1–10 penguji independen: tanpa skill **8,75** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Pembeda bukan “mustahil tanpa skill”, melainkan konsistensi perilaku hati-hati: tanpa memasang paket Python sendiri, tanpa unggah PDF sensitif, file asli tidak ditimpa, ukuran dan hasil diperiksa. Terpisah dari uji OpenClaw: skrip diuji ke Stirling-PDF 2.14.3 dan 3.0.0 (dijalankan lewat Docker, yaitu wadah aplikasi) dengan 16 dari 16 tes regresi tiruan lulus; detail di `examples/HASIL-UJI.md`.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Belum uji manusia di installer desktop Stirling-PDF (.msi/.dmg). Codex dan Cursor belum uji platform asli.
 
 ## FAQ
-**Apakah file PDF-ku dikirim ke internet?**
+**Apakah file PDF saya dikirim ke internet?**
 Tidak. Skill ini hanya berbicara ke `http://localhost:8080` - alamat Stirling-PDF di
-komputermu sendiri. Tidak ada data yang keluar dari komputer kamu, selama kamu tidak
+komputer Anda sendiri. Tidak ada data yang keluar dari komputer Anda, selama Anda tidak
 sengaja mengarahkannya ke server lain.
 
 **Stirling-PDF itu apa, harus bayar tidak?**
 Aplikasi PDF gratis & open-source yang jalan di komputer sendiri (bukan situs web).
-Fitur yang dipakai skill ini semuanya gratis (bagian inti/MIT). Ada fitur tambahan
+Fitur yang dipakai skill ini gratis (bagian inti, berlisensi MIT). Ada fitur tambahan
 berbayar milik Stirling-Tools sendiri (tanda tangan sertifikat, SSO, tim) yang **tidak**
 dipakai/dibutuhkan skill ini.
 
 **Kalau saya belum pasang Stirling-PDF, skill ini percuma?**
 Tidak. Gabung, pisah, kompres, putar, dan kunci sandi tetap dikerjakan dengan alat PDF
-yang sudah ada di komputermu (qpdf/Ghostscript/pdftk), tanpa memasang apa pun. Kalau alat
+yang sudah ada di komputer Anda (qpdf/Ghostscript/pdftk), tanpa memasang apa pun. Kalau alat
 itu juga tidak ada, AI memandu cara manual (Preview di Mac, "Microsoft Print to PDF" di
 Windows) dan `references/pasang-stirling.md` menuntun pemasangan Stirling-PDF (gratis).
 
