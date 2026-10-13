@@ -16,7 +16,7 @@ Diuji AI penguji independen: 4,25 → 7,3 dari 10 di OpenClaw (belum mencapai ta
 ## Cocok untuk siapa
 - Pemilik UMKM/toko online yang ingin konten sosmed rutin tapi tidak sempat menyusun sendiri
 - Admin/tim sosmed yang butuh daftar tugas mingguan siap kerja, bukan sekadar ide mentah
-- Member OpenClaw yang ingin paket konten dikirim otomatis tiap Jumat sore + pengingat posting harian (jadwal kirim ke Telegram belum diuji langsung)
+- Member OpenClaw yang ingin paket konten dikirim otomatis tiap Jumat sore + pengingat posting harian (pengingat harian ke Telegram sudah diuji di bot uji 2026-10-13; otomasi Jumat sore belum)
 
 ## Contoh sebelum & sesudah
 **Sebelum:** Setiap minggu bingung "hari ini posting apa ya", akhirnya posting seadanya atau malah bolong seminggu tanpa konten sama sekali.
@@ -45,7 +45,7 @@ CTA: Vote di poll, lanjut DM kalau mau pesan
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Buatin paket konten minggu ini buat toko saya"
 - "Lanjutkan paket konten minggu depan" (kalau profil sudah pernah diisi)
-- "Tiap Jumat sore kirimi saya paket konten minggu depan" (khusus OpenClaw, otomasi terjadwal; pengiriman sungguhan ke Telegram belum diuji langsung)
+- "Tiap Jumat sore kirimi saya paket konten minggu depan" (khusus OpenClaw, otomasi terjadwal; pengingat harian ke Telegram sudah diuji 2026-10-13, paket Jumat sore belum diuji langsung)
 
 **Penting:** skill ini **menyiapkan** paket konten — bukan memposting otomatis ke Instagram/TikTok/
 Facebook. Anda yang menjadwalkan sendiri lewat Meta Business Suite / TikTok Studio, atau salin-tempel
@@ -69,7 +69,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Tugas: admin klinik gigi minta konten dengan testimoni pasien dan diskon 20% untuk tindakan scaling (pembersihan karang gigi). Tanpa skill, AI langsung membuatnya (melanggar aturan iklan fasilitas kesehatan). Dengan skill, AI menolak testimoni, before-after, dan diskon tindakan beserta dasar aturannya, lalu langsung memberi paket konten edukatif pengganti di chat (3 dari 3 percobaan).
 - Jujur: di 4 dari 5 percobaan paket masih memuat detail usaha yang tidak Anda sebutkan (misalnya cara produksi atau klaim "favorit pelanggan"). Baca ulang sebelum posting dan isi bagian [isian] dengan fakta usaha Anda.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. **Kiriman terjadwal ke Telegram:** pengingat posting harian diuji di bot Telegram uji 2026-10-13 (C13, topik `C13 konten-mingguan — jadwal`, msg terjadwal tiba ~5 menit setelah jadwal dibuat; detail `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Otomasi paket Jumat sore belum diuji langsung.
 
 ## Bukti uji di bot Telegram
 

@@ -17,7 +17,7 @@
 - Pemilik usaha dengan banyak pelanggan tempo/bon: supplier, grosir, katering, konveksi, percetakan.
 - Freelancer dan konsultan yang menagih per jam: desainer, programmer, konsultan pajak, pengajar privat.
 - Tenaga penjual yang sering lupa menghubungi lagi calon pembeli.
-- Member VIP Komunitech yang sudah memakai OpenClaw dan ingin rekap otomatis tiap pagi di Telegram (kiriman terjadwal ke Telegram belum diuji langsung).
+- Member VIP Komunitech yang sudah memakai OpenClaw dan ingin rekap otomatis tiap pagi di Telegram (kiriman terjadwal ke Telegram diuji di bot uji 2026-10-13, lihat Status uji).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** catatan piutang tersebar di buku, chat WA, dan ingatan. Tagihan CV Maju baru teringat setelah telat
@@ -39,7 +39,7 @@ sebesar Rp 2.750.000 yang jatuh tempo 25 Sep 2026 belum kami terima. Mungkin ter
 sudah transfer, mohon kirimkan bukti transfernya. Jika belum, pembayaran bisa melalui
 [rekening]. Terima kasih.
 ```
-Tanda `[rekening]` adalah isian yang perlu Anda lengkapi sendiri sebelum dikirim. Sudah dibayar? Balas "Bu Rina sudah bayar", dan item itu tidak muncul lagi. (Rekap otomatis tiap pagi ke Telegram belum diuji langsung.)
+Tanda `[rekening]` adalah isian yang perlu Anda lengkapi sendiri sebelum dikirim. Sudah dibayar? Balas "Bu Rina sudah bayar", dan item itu tidak muncul lagi.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -49,7 +49,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Tunda Pak Budi ke Kamis." / "Bu Rina sudah bayar."
 - "Catat 2 jam untuk PT Kreatif, revisi logo, tarif 150 ribu."
 - "Rekap jam kerja PT Kreatif minggu ini, buatkan pesannya."
-- "Aktifkan pengingat follow-up tiap pagi jam 8 ke Telegram saya." (khusus OpenClaw; kiriman terjadwalnya belum diuji langsung)
+- "Aktifkan pengingat follow-up tiap pagi jam 8 ke Telegram saya." (khusus OpenClaw; kiriman terjadwal diuji di bot Telegram uji 2026-10-13)
 
 **Penting:** asisten hanya **menyiapkan** pesan. Anda sendiri yang mengirimnya ke pelanggan. Dengan begitu
 risiko salah tagih lebih kecil, dan nomor WA Anda tidak dipakai mengirim pesan otomatis (yang bisa membuat nomor diblokir).
@@ -72,7 +72,7 @@ ketik "rekap pengingat" setiap pagi (Codex dan Cursor belum diuji langsung).
 
 **Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 3,5 tanpa skill menjadi 9,25 dengan skill. Tanpa skill, agent menebak nominal, menyimpan nomor HP pihak ketiga, mengubah konfigurasi tanpa izin, dan berniat mengirim tagihan otomatis ke pelanggan. Dengan skill, nominal ambigu ("5m") dan tanggal mustahil (31/9) ditanyakan dulu, daftar tersimpan rapi bernomor, dan draf pesan dikirim sendiri oleh Anda.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk membuat jadwal harian dan menjalankannya sekali di Gateway uji, yaitu program OpenClaw yang berjalan di latar belakang) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung. Kiriman terjadwal yang benar-benar tiba di Telegram pada jam yang ditentukan belum diuji langsung. Draf tagihan bisa memuat tanda isian seperti `[rekening]`; isi dulu sebelum dikirim.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk membuat jadwal harian dan menjalankannya sekali di Gateway uji) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung. **Kiriman terjadwal ke Telegram:** diuji di bot Telegram uji 2026-10-13 (C13, topik `C13 pengingat-follow-up — jadwal`, msg terjadwal tiba ~5 menit setelah jadwal dibuat; detail `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Draf tagihan bisa memuat tanda isian seperti `[rekening]`; isi dulu sebelum dikirim.
 
 ## Bukti uji di bot Telegram
 
