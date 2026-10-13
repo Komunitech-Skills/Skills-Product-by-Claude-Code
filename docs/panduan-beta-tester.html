@@ -70,7 +70,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color
 <header class="hero">
   <div class="eyebrow">Komunitech Skills · Program Beta VIP</div>
   <h1>Panduan Beta Tester Komunitech Skills</h1>
-  <p class="meta">Versi 13 Oktober 2026 · Masa uji 13–19 Oktober 2026, masukan paling lambat 20 Oktober · Untuk Anda yang bukan orang teknis: ikuti hari demi hari.</p>
+  <p class="meta">Versi 13 Oktober 2026 (revisi malam, setelah uji jalan panduan) · Masa uji 13–19 Oktober 2026, masukan paling lambat 20 Oktober · Untuk Anda yang bukan orang teknis: ikuti hari demi hari.</p>
   <div class="timeline">
     <a href="#alur-7-hari-hari-1-pasang-dan-coba-1-skill"><b>Hari 1 · 13 Okt</b><span>Pasang satu skill, coba satu kalimat, catat.</span></a>
     <a href="#alur-7-hari-hari-2-6-pakai-untuk-pekerjaan-nyata"><b>Hari 2–6</b><span>Minimal 3 skill, masing-masing 3 pekerjaan nyata.</span></a>
@@ -112,7 +112,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color
 </section>
 <section id="cara-pasang-singkat"><h2>3. Cara pasang singkat</h2>
 <p>Skill adalah folder berisi <code>SKILL.md</code>. Memasangnya = menyalin folder skill ke folder "skills" milik AI agent Anda, lalu minta tolong seperti biasa; AI memakai skill otomatis bila relevan. Platform = aplikasi AI yang Anda pakai: OpenClaw (umumnya member VIP), Claude Code, OpenAI Codex, atau Cursor.</p>
-<p><strong>Buka ZIP dulu:</strong> Windows klik kanan ZIP → Extract All; Mac klik dua kali ZIP. Yang disalin nanti adalah <strong>folder skill-nya</strong> (yang langsung berisi <code>SKILL.md</code>), bukan folder pembungkus hasil ekstrak. Biarkan <code>LISENSI.txt</code> dan <code>CARA-INSTAL.md</code> tetap di folder hasil ekstrak; keduanya tidak perlu disalin ke folder skills.</p>
+<p><strong>Buka ZIP dulu:</strong> Windows klik kanan ZIP → Extract All; Mac klik dua kali ZIP. Yang disalin nanti adalah <strong>folder skill-nya</strong> (yang langsung berisi <code>SKILL.md</code>), bukan folder pembungkus hasil ekstrak. Di dalam hasil ekstrak juga ada folder <code>docs</code>, <code>solusi-vip</code>, dan <code>templates</code> yang letaknya sejajar dengan folder skill: <strong>jangan diseret ke folder skills</strong>, cukup dibaca bila perlu. Biarkan <code>LISENSI.txt</code> dan <code>CARA-INSTAL.md</code> tetap di folder hasil ekstrak; keduanya tidak perlu disalin ke folder skills.</p>
 <p><strong>Cara termudah menyalin folder</strong> (tanpa Terminal):</p>
 <p>Windows:</p>
 <ol>
@@ -231,7 +231,7 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color
 </article>
 <article class="skill" id="skill-tangani-keberatan-pelanggan"><div class="skill-head"><span class="skill-no">9</span><div><h3 class="skill-title">Jawab &quot;Mahal&quot; dan &quot;Mikir Dulu&quot; Tanpa Memaksa</h3><code class="skill-name">tangani-keberatan-pelanggan</code></div></div><p class="skill-desc">2–3 balasan WA siap kirim untuk keberatan "mahal", "mikir dulu", "tanya suami/bos", "takut tipu", "pesaing lebih murah", plus satu pertanyaan lanjutan. Tugas 7 hari: balas 3 keberatan harga/pesaing sungguhan; Anda yang mengirim balasan satu per satu. Bila Anda belum menyebut data produk, bot menulis tanda <code>[isian: ...]</code> di balasannya; ganti tanda itu dengan data Anda sebelum dikirim ke pelanggan. Perlu: Python opsional (untuk hitungan harga per hari dan cicilan).</p>
 <ul>
-<li class="cmd"><code id="c17">Pelanggan bilang 'kemahalan kak'. Aku jual [produk] Rp[harga].</code><button class="copy" type="button" data-copy="c17" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c17">Pelanggan bilang 'kemahalan kak'. Aku jual [produk] Rp[harga].</code><button class="copy" type="button" data-copy="c17" aria-label="Salin kalimat">Salin</button><span class="note">(ganti isinya, contoh lengkap: <code>Pelanggan bilang 'kemahalan kak'. Aku jual kopi susu Rp35.000.</code>)</span></li>
 <li class="cmd"><code id="c18">Klien jawab 'saya pikir-pikir dulu'. Gimana balasnya?</code><button class="copy" type="button" data-copy="c18" aria-label="Salin kalimat">Salin</button></li>
 </ul>
 </article>

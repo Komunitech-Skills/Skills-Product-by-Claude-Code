@@ -1,6 +1,6 @@
 # Panduan Beta Tester Komunitech Skills
 
-Versi 13 Oktober 2026
+Versi 13 Oktober 2026 (revisi malam, setelah uji jalan panduan)
 
 Terima kasih sudah bersedia menjadi beta tester. Panduan ini ditulis untuk Anda yang bukan orang teknis: ikuti hari demi hari, satu langkah sekali waktu. Setiap langkah punya **tanda berhasil** supaya Anda yakin sudah di jalur yang benar.
 
@@ -46,7 +46,7 @@ Paket ini **khusus untuk Anda**: diberi tanda (watermark) berupa nama dan kode l
 
 Skill adalah folder berisi `SKILL.md`. Memasangnya = menyalin folder skill ke folder "skills" milik AI agent Anda, lalu minta tolong seperti biasa; AI memakai skill otomatis bila relevan. Platform = aplikasi AI yang Anda pakai: OpenClaw (umumnya member VIP), Claude Code, OpenAI Codex, atau Cursor.
 
-**Buka ZIP dulu:** Windows klik kanan ZIP → Extract All; Mac klik dua kali ZIP. Yang disalin nanti adalah **folder skill-nya** (yang langsung berisi `SKILL.md`), bukan folder pembungkus hasil ekstrak. Biarkan `LISENSI.txt` dan `CARA-INSTAL.md` tetap di folder hasil ekstrak; keduanya tidak perlu disalin ke folder skills.
+**Buka ZIP dulu:** Windows klik kanan ZIP → Extract All; Mac klik dua kali ZIP. Yang disalin nanti adalah **folder skill-nya** (yang langsung berisi `SKILL.md`), bukan folder pembungkus hasil ekstrak. Di dalam hasil ekstrak juga ada folder `docs`, `solusi-vip`, dan `templates` yang letaknya sejajar dengan folder skill: **jangan diseret ke folder skills**, cukup dibaca bila perlu. Biarkan `LISENSI.txt` dan `CARA-INSTAL.md` tetap di folder hasil ekstrak; keduanya tidak perlu disalin ke folder skills.
 
 **Cara termudah menyalin folder** (tanpa Terminal):
 
@@ -156,7 +156,7 @@ Tempel kalimat di bawah apa adanya ke chat bot Anda, lalu ganti angka dan nama s
 - `Buatkan agenda obrolan empat mata 30 menit dengan staf gudang saya.`
 
 **9. `tangani-keberatan-pelanggan` — Jawab "Mahal" dan "Mikir Dulu" Tanpa Memaksa.** 2–3 balasan WA siap kirim untuk keberatan "mahal", "mikir dulu", "tanya suami/bos", "takut tipu", "pesaing lebih murah", plus satu pertanyaan lanjutan. Tugas 7 hari: balas 3 keberatan harga/pesaing sungguhan; Anda yang mengirim balasan satu per satu. Bila Anda belum menyebut data produk, bot menulis tanda `[isian: ...]` di balasannya; ganti tanda itu dengan data Anda sebelum dikirim ke pelanggan. Perlu: Python opsional (untuk hitungan harga per hari dan cicilan).
-- `Pelanggan bilang 'kemahalan kak'. Aku jual [produk] Rp[harga].`
+- `Pelanggan bilang 'kemahalan kak'. Aku jual [produk] Rp[harga].` (ganti isinya, contoh lengkap: `Pelanggan bilang 'kemahalan kak'. Aku jual kopi susu Rp35.000.`)
 - `Klien jawab 'saya pikir-pikir dulu'. Gimana balasnya?`
 
 **10. `landing-page-siap-tayang` — Landing Page Jadi dan Tayang Hari Ini.** Satu file web `index.html` utuh (tampil rapi di HP, tombol WhatsApp dengan pesan terisi, FAQ). Plus panduan langkah demi langkah menayangkannya gratis lewat layanan seperti Netlify Drop, GitHub Pages, atau Cloudflare Pages (hosting = tempat menyimpan halaman agar bisa dibuka orang lewat internet) dan cara memasang nama domain (alamat web Anda, mis. tokoanda.com). Tugas 7 hari: buat 1 halaman promo produk, lalu tayangkan. Ganti bagian bertanda `[isian: ...]` (mis. `[isian: harga]`) sebelum tayang; versi file bisa diminta dengan membalas "kirim file". Perlu: Anda sendiri yang mengunggah file ke hosting; Python tidak wajib.
