@@ -36,7 +36,11 @@ Salin folder `broadcast-wa` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap per platform (termasuk Windows): lihat `docs/instalasi.md` dan `CARA-INSTAL.md` di paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1–3 Okt 2026 (v1.0.10), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,67** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`. Dari 10 kontak fiktif, tanpa skill menyiapkan 6 pesan (termasuk nomor dobel, tanpa cara berhenti); dengan skill 5 kontak sah, opt-out/duplikat/nomor rusak dibuang, tiap pesan ada *Balas STOP* + link wa.me.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan bot Telegram uji (gelombang tampilan). Codex/Cursor belum uji platform asli. Mengirim broadcast tetap manual — skill menyiapkan file dan draf saja.
 
 ## FAQ
 **Apakah skill ini mengirim pesan otomatis?**

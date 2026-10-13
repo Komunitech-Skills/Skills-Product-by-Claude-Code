@@ -37,7 +37,11 @@ Salin folder `perjanjian-sederhana` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap per platform (termasuk Windows): lihat `docs/instalasi.md` dan `CARA-INSTAL.md` di paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1–3 Okt 2026 (v1.0.6), skor 1–10 penguji independen: tanpa skill **4,25** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill menuliskan klausul jaminan BPKB yang batal demi hukum; dengan skill menjelaskan Pasal 33 UU Fidusia dan menyiapkan draf sewa/utang lengkap dengan meterai.
+
+**Status uji (jujur):** draf bukan nasihat hukum. Sudah diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji. PERLU REVIEW pemilik untuk kasus nilai besar — konsultasikan notaris/pengacara.
 
 ## Bukti uji di bot Telegram
 

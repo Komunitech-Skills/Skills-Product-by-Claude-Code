@@ -38,6 +38,10 @@ Salin folder `katalog-reseller` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **3,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill menyarankan reseller jual di bawah harga eceran tanpa potongan marketplace; dengan skill menghitung tier dropship/reseller/agen dari HPP + untung mitra setelah biaya Shopee.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan bot Telegram uji. Bonus dari merekrut downline (piramida) sengaja ditolak — hanya skema reseller sah.
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 5, 2026-10-03.

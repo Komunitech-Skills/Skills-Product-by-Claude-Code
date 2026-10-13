@@ -41,7 +41,11 @@ Salin folder `pengajuan-kur` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap per platform (termasuk Windows): lihat `docs/instalasi.md` dan `CARA-INSTAL.md` di paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.2.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh bengkel laba Rp6,5 jt/bulan, KUR Rp75 jt: cicilan anuitas **Rp2.281.645** (=35,1% laba, BERAT), plafon aman ±Rp64 jt; "flat 6%" dijelaskan setara ±11% efektif vs KUR resmi 6% efektif.
+
+**Status uji (jujur):** tidak menjamin persetujuan bank; angka acuan Permenko 1/2026 — konfirmasi ke bank penyalur. Sudah diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji.
 
 ## Bukti uji di bot Telegram
 
