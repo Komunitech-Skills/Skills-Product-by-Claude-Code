@@ -2,7 +2,7 @@
 
 **Tempel catatan atau transkrip rapat, dapat notulen lengkap dan pesan ringkas siap kirim ke grup WA.**
 
-*Diuji AI penguji independen di OpenClaw: 6 → 9 dari 10 (satu skenario; uji pertama 6 → 8,5, lalu 9 setelah perbaikan. Tanggal seperti "Jumat depan" dihitung jadi tanggal nyata, dan angka yang tidak jelas ditandai, bukan ditebak).*
+*Diuji AI penguji independen di OpenClaw: 6 → 9 dari 10 pada uji ulang v1.0.4 (13 Okt 2026, skenario sama dengan uji pertama; uji pertama 6 → 8,5, lalu 9). Tanggal seperti "Jumat depan" dihitung jadi tanggal nyata atau ditandai ambigu, angka yang tidak jelas ditandai (bukan ditebak), dan tidak ada tugas karangan.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -60,9 +60,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario notulen dari catatan rapat berantakan): nilai 6 tanpa skill menjadi 8,5 dengan skill (skala 10); uji ulang setelah perbaikan v1.0.3 bernilai 9. Tanpa skill, "sales sept 2,1M" langsung ditulis Rp2,1 juta tanpa konfirmasi padahal satuan "M" belum jelas, tanggal relatif tidak diubah menjadi tanggal nyata, dan ada satu tugas yang dikarang. Dengan skill, tanggal dihitung program kecil (skrip) (mis. "Sebelum Rabu, 7 Oktober 2026") dan satuan "M" yang belum jelas ditandai untuk dikonfirmasi.
-- Pada uji ulang v1.0.3 masih muncul satu tugas tambahan yang melampaui catatan (diberi peringatan, tetapi tetap tampil). Perbaikannya ada di v1.0.4 dan belum diuji ulang di OpenClaw.
+- Uji ulang v1.0.4 (13 Okt 2026, OpenClaw 2026.10.2, penguji independen, pesan identik dengan uji pertama, kalender dicek ulang dengan Python): tanpa skill **6** → dengan skill **9** (LULUS). Tugas tambahan karangan yang muncul di v1.0.3 tidak muncul lagi; tanggal relatif dihitung script, "Jumat depan" ditandai ambigu (2 atau 9 Okt), satuan "2,1M" diberi tanda cek; tanpa skill "2,1M" berubah jadi Rp2,1 juta dan "forklift 2" dibaca 2 unit.
 
-**Status uji (jujur):** diuji di OpenClaw (satu skenario) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw (satu skenario, terakhir 13 Okt 2026 pada v1.0.4) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Bagaimana kalau catatan saya campur bahasa Jawa atau Inggris?**

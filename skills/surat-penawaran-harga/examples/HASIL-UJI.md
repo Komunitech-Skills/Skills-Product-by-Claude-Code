@@ -50,3 +50,10 @@ Uji A/B: hasil dengan skill jelas lebih baik (kalimat PPN non-PKP yang benar, ma
 8. Ongkir gratis/0 tidak punya pola tampilan; script tidak mencetak baris ongkir. **Saran:** di Format output tambahkan "Jika ongkir gratis, tulis 'Ongkos kirim: Gratis' atau 'Harga franco …' di syarat".
 9. Rujukan ke `buat-invoice`, `hitung-ppn`, `hitung-hpp` tanpa kalimat cadangan bila skill itu tidak dimiliki pembeli. **Saran:** tambah satu kalimat di "Kapan TIDAK digunakan".
 10. `references/regulasi.md` bagian "Bea meterai": ambang Rp5.000.000 menurut UU 10/2020 Pasal 3 ayat (2) huruf g berlaku untuk dokumen **penerimaan uang** atau pengakuan bahwa utang **telah dilunasi**, bukan "pengakuan utang" secara umum; surat perjanjian/pernyataan dikenai meterai tanpa ambang nilai. **Saran:** ubah kalimat menjadi "…dan untuk dokumen yang menyebut penerimaan uang/pelunasan utang bernilai > Rp5.000.000".
+
+---
+## Uji ulang v1.0.5 (2026-10-13, penguji independen, OpenClaw sebelum/sesudah)
+- OpenClaw 2026.10.2 lokal dengan skenario dua giliran yang sama (SPH jasa desain, bukan PKP, diskon 10%, DP 50%, pesan identik). SEBELUM tanpa skill, SESUDAH hanya skill ini. Rincian ada di `00-openclaw-sebelum-sesudah.md`.
+- Skor tanpa skill **6** → dengan skill **8,5** (selisih +2,5), jadi **LULUS** acuan (sesudah ≥ 8 dan selisih ≥ 1,5). Angka di kedua sisi benar (total Rp8.370.000, DP Rp4.185.000, PPN Rp0, berlaku s.d. 28 Okt 2026), dicek ulang dengan Python.
+- Perbaikan v1.0.5 terbukti: kota tidak lagi ditebak (`[isi: kota]` di giliran 1, Bandung setelah member menyebutnya). Pembeda: surat lengkap + teks WA tampil di chat dengan kalimat bukan-PKP yang benar.
+- Sisa temuan: kop menambah kata "DESIGN" pada nama penjual; giliran 2 menambah syarat default tanpa daftar asumsi; agent sempat memakai `find /` untuk mencari folder skill (dilarang SKILL.md) karena alat baca skill tidak tersedia. Giliran 1 sisi SESUDAH perlu diulang sekali karena router mengembalikan panggilan alat rusak.

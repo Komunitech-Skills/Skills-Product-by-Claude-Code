@@ -2,7 +2,7 @@
 
 **Kirim neraca & laba rugi, AI langsung menjawab: usaha Anda sehat, waspada, atau bahaya, dan apa yang harus diperbaiki dulu.**
 
-*Diuji AI penguji independen di OpenClaw: 8 → 9 dari 10 (satu skenario, setelah perbaikan; uji pertama seri 8 → 8. Selisih tipis karena AI biasa sudah pandai rasio dasar; pembedanya patokan sesuai jenis usaha, angka dari skrip, dan bahasa awam).*
+*Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada uji ulang v1.0.5 (13 Okt 2026, skenario sama dengan uji pertama; uji pertama 8 → 9). Pembedanya: kas dibandingkan langsung dengan utang bank yang jatuh tempo, risiko likuiditas ditandai SEDANG, dan saran pertama mengurus perpanjangan utang; tanpa skill laporan menyimpulkan "aman jangka pendek".*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -61,9 +61,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario rasio keuangan untuk bahan rapat komisaris, bagian dari uji paket Kantor & Manajemen): nilai tanpa skill 8 dan dengan skill 8, jadi seri: untuk laporan yang rapi, AI biasa sudah pandai menghitung rasio dasar. Setelah perbaikan v1.0.4, uji ulang dengan skill bernilai 9 (skala 10): skill menandai bahwa utang bank jatuh tempo ≤ 12 bulan (Rp900 juta) lebih besar dari kas (Rp420 juta), dengan seluruh angka dari skrip. Pembeda skill ada di angka yang dihitung skrip, patokan sesuai jenis dan skala usaha, serta bahasa awam.
-- Perbaikan sesudah uji itu (v1.0.5, jenis usaha yang diasumsikan diberi label) belum diuji ulang di OpenClaw.
+- Uji ulang v1.0.5 (13 Okt 2026, OpenClaw 2026.10.2, penguji independen, pesan identik dengan uji pertama, angka dicek ulang dengan Python): tanpa skill **7** → dengan skill **9** (LULUS). Pembeda: kas Rp420 juta dibandingkan dengan utang bank jatuh tempo Rp900 juta → risiko likuiditas SEDANG; tanpa skill "aman jangka pendek". Asumsi jenis usaha kini tertulis jelas.
 
-**Status uji (jujur):** diuji di OpenClaw (satu skenario) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw (satu skenario, terakhir 13 Okt 2026 pada v1.0.5) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah patokan "wajar" ini standar resmi bank/OJK?**
