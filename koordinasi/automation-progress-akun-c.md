@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — idle (C6–C16 selesai, 2026-10-13); tunggu baris tugas baru di papan atau keputusan pemilik di topik 242.
+1. **Akun C** — idle (C6–C17 selesai, 2026-10-13); tunggu baris tugas baru di papan atau keputusan pemilik di topik 242.
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default (branch sudah disinkronkan fast-forward dari default di run 22:00 UTC).
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~22:40 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~22:52 UTC — C17 uji panduan beta run 2 (3 skill OK); C17 selesai; idle | simulasi | docs | ya |
+| 2026-10-13 ~22:40 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 22:40 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C17 | — | — | — |
 | 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b4b5132b | selesai ~22:02 UTC — LANGKAH NOL OK (>25 mnt sejak selesai 21:35); fast-forward merge default (+10 commit Akun B); getUpdates 242 kosong; antrean C6–C16 selesai, idle | — | idle | tidak |
 | 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 22:00 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru di papan | — | — | — |
 | 2026-10-13 ~21:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 12421b0b | selesai ~21:35 UTC — C16 uji panduan beta (3 skill, tanda berhasil OK); docs c16-uji-panduan-beta.md; TG 242 ya | simulasi | docs | ya |
