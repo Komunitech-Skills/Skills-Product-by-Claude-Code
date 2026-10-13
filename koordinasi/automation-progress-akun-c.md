@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — C12 batch 5 (8 skill berikutnya, lihat `c12-readme-progress.md` sisa 21).
+1. **Akun C** — C12 batch 6 (8 skill berikutnya, lihat `c12-readme-progress.md` sisa 13).
 2. **Akun B** — uji independen draf C8; program beta VIP (keputusan 53).
 3. **Akun A** — merge branch kanonik bila perlu.
 
@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~06:20 | `cursor/iterasi-otomatis-akun-c-8b42` | a202e574 | selesai 06:20 UTC — C12 batch 5 README ×8 | 40/53 C12 | docs OK | ya |
 | 2026-10-13 ~05:43 | `cursor/iterasi-otomatis-akun-c-8b42` | dc79bb54 | selesai 05:43 UTC — C12 batch 4 README ×8 | 32/53 C12 | docs OK | ya |
 | 2026-10-13 ~05:11 | `cursor/iterasi-otomatis-akun-c-8b42` | 356c86d0 | selesai 05:11 UTC — C12 batch 3 README ×8 | 24/53 C12 | docs OK | ya |
 | 2026-10-13 ~04:38 | `cursor/iterasi-otomatis-akun-c-8b42` | 69cd9880 | selesai 04:38 UTC — C12 batch 1 ulang Hasil uji ×8 | 16/53 C12 | docs OK | ya |
