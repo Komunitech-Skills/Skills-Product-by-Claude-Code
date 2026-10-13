@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.6 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`) diganti `konten-mingguan` (`SKILL.md`). Script tidak berubah.
+
 ## Riwayat versi
 - **1.0.5 (2026-10-02):** temuan uji gabungan paket klinik (S3): pengecualian faskes kini menyebut eksplisit merchandise, voucher, dan layanan gratis (mis. "cek tensi gratis") sebagai imbalan rujukan yang tidak dirancang. Script tidak berubah. Tetap PERLU REVIEW tenaga medis/hukum.
 - **1.0.2 (2026-09-30):** temuan uji ulang: kartu info klinik kini untuk pasien sendiri; klinik tidak meminta/mendorong pasien membagikannya (KODEKGI 2020 Pasal 3 butir 1.2.4 & Pasal 5, KODEKI Pasal 3). Tetap PERLU REVIEW tenaga medis/hukum.

@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.11 (2026-10-13)
+- Rujukan ke skill arsip diganti: `kalender-konten-30hari`, `caption-sosmed-umkm` tidak lagi dirujuk (SKILL.md, references/gaya-caption.md): sebulan penuh = 4 paket mingguan berurutan; satu caption saja ditulis langsung dengan aturan di references/gaya-caption.md.
+
 ## Catatan revisi 1.0.10 (2026-10-05)
 - Uji ulang independen v1.0.9: promo/kelangkaan karangan sudah hilang, tetapi fakta usaha lain masih dikarang (sterilisasi, durasi tindakan, "pasien kami", "dibuat sesuai pesanan", "favorit pelanggan", "per loyang", antar, tips simpan). Kini ada aturan tegas: semua fakta usaha hanya dari pengguna atau `[isian]`, dengan contoh boleh/tidak boleh; semua asumsi (hari libur, satuan harga, jam tayang) wajib masuk daftar asumsi; checklist cek ejaan hashtag. Menunggu uji ulang independen.
 

@@ -81,7 +81,7 @@ biasa).
 | HariMenuju | H- | Int | **ya** | `rumus_hari_menuju` — rumus-umum.md #5 |
 
 **Kapan dipakai:** kalender konten sederhana untuk usaha yang mengelola sosmed sendiri. Bukan
-pengganti `caption-sosmed-umkm` (yang menulis isi captionnya) — tabel ini hanya menjadwalkan.
+pengganti `konten-mingguan` (yang menulis isi captionnya) — tabel ini hanya menjadwalkan.
 
 ## Cara merancang dari kalimat bebas pengguna (langkah agent)
 

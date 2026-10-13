@@ -1,7 +1,7 @@
 # Gaya Caption & Jam Posting per Platform
 
-Dipakai saat mengisi paket mingguan. Aturan panjang & nada sama dengan skill `caption-sosmed-umkm` —
-bila skill itu terpasang, boleh dipanggil langsung untuk variasi caption tambahan per hari.
+Dipakai saat mengisi paket mingguan. Aturan panjang & nada di bawah berlaku untuk semua caption dalam paket,
+termasuk variasi caption tambahan per hari bila diminta.
 
 ## Panjang & format caption
 

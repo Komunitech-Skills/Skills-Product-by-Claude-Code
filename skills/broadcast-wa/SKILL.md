@@ -25,7 +25,7 @@ aturan: hanya ke pelanggan yang setuju, selalu ada cara berhenti, dikirim bertah
 ## Kapan TIDAK digunakan
 - Membalas chat/komplain satu pelanggan → `balas-chat-cs`; menagih pembayaran → `tagih-piutang`
 - Menindaklanjuti calon klien B2B satu per satu → `follow-up-prospek`
-- Caption WA Status → `caption-sosmed-umkm`; rencana konten bulanan → `kalender-konten-30hari`
+- Caption WA Status dan rencana konten → `konten-mingguan`
 - Mengirim ke nomor yang tidak memberi izin (database beli, nomor dari grup), atau meminta cara
   mengakali sistem anti-spam/alat blast tidak resmi → **tolak dengan sopan**, jelaskan risikonya
   (UU PDP, nomor diblokir), dan tawarkan cara mengumpulkan persetujuan.

@@ -20,8 +20,7 @@ alasan.
 | Balas chat pelanggan (WA/marketplace; juga: "bales wa", "balas wa") | `balas-chat-cs` | Draf balasan CS dari FAQ sampai komplain — **mode Copilot**: AI menyiapkan draf, manusia yang mengirim (lihat "Aturan pemilik" di SKILL.md) |
 | Balas ulasan/review publik | `balas-ulasan-pelanggan` | Balasan ulasan Shopee/Tokopedia/Google Maps |
 | Baca/rekap banyak ulasan sekaligus | `analisis-ulasan` | Ringkas ratusan ulasan jadi tema & prioritas perbaikan |
-| Bikin caption/konten sosmed harian (juga: "bikin konten", "posting ig/instagram/tiktok") | `caption-sosmed-umkm` | Caption siap tempel IG/TikTok/FB/WA Status — skill menyiapkan teksnya, posting tetap manual oleh Anda (OpenClaw tidak punya kanal posting IG/TikTok resmi) |
-| Rencana konten sebulan | `kalender-konten-30hari` | Kalender 30 hari dengan momen lokal Indonesia |
+| Bikin caption/konten sosmed (juga: "bikin konten", "posting ig/instagram/tiktok", "kalender konten", "jadwal posting") | `konten-mingguan` | Paket konten 1 minggu dengan caption siap tempel IG/TikTok/FB/WA Status + momen lokal Indonesia (sebulan = 4 paket berurutan) — skill menyiapkan teksnya, posting tetap manual oleh Anda (OpenClaw tidak punya kanal posting IG/TikTok resmi) |
 | Rencana promo (diskon, flash sale) | `promo-kalender` | Rencana kampanye + cek margin aman |
 | Follow-up calon pembeli yang belum deal | `follow-up-prospek` | Urutan pesan follow-up H+1/3/7/14 |
 | Tagih pelanggan yang telat bayar | `tagih-piutang` | Pesan penagihan bertahap sampai somasi |
@@ -57,7 +56,7 @@ sesuai §"Batasan & penanganan error" di `SKILL.md`, dan tawarkan alternatif ama
 
 | Industri/peran | 3 skill prioritas | 1 otomasi awal |
 |---|---|---|
-| Toko/retail/F&B (owner/kasir; termasuk restoran, rumah makan, warung, kafe) | `rekap-penjualan-csv`, `balas-chat-cs`, `caption-sosmed-umkm` | Laporan omzet mingguan lewat `laporan-otomatis-terjadwal` (default kanal **Telegram**, lihat §"Otomasi" di SKILL.md) |
+| Toko/retail/F&B (owner/kasir; termasuk restoran, rumah makan, warung, kafe) | `rekap-penjualan-csv`, `balas-chat-cs`, `konten-mingguan` | Laporan omzet mingguan lewat `laporan-otomatis-terjadwal` (default kanal **Telegram**, lihat §"Otomasi" di SKILL.md) |
 | Jasa/konsultasi/freelancer/bengkel | `surat-penawaran-harga`, `follow-up-prospek`, `buat-invoice` | Pengingat follow-up harian |
 | Kantor/admin/manager | `notulen-rapat`, `surat-resmi`, `sop-writer` | Pengingat tugas dari notulen |
 | Keuangan/akuntansi | `laporan-keuangan-emkm`, `rekonsiliasi-bank`, `arus-kas-13minggu` | Laporan kas mingguan |

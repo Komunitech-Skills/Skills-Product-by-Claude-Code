@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.6 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`) diganti `konten-mingguan` (`SKILL.md`).
+
 ## Catatan revisi 1.0.5 (2026-10-01)
 - Rujukan UU Perlindungan Konsumen dirapikan: untuk penjual/produsen kini dipakai Pasal 8, 9, dan 10 (Pasal 17 tidak lagi dikutip karena mengatur pelaku usaha periklanan).
 - Tagline, bio, dan nama paket tidak lagi menyiratkan khasiat atau hasil (mis. "langsing", "detoks") tanpa izin edar BPOM dan bukti; diganti pembeda netral seperti "teh herbal harian".

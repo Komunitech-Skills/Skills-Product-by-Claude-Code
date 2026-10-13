@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Cek-silang hasil tulisan (caption/naskah/proposal) terhadap FAKTA DARI PENGGUNA.
-(Disalin dari skill caption-sosmed-umkm, milik Komunitech; dipakai untuk naskah video pendek: menangkap fakta/klaim
+(Modul cek fakta milik Komunitech; dipakai untuk naskah video pendek: menangkap fakta/klaim
 produk yang dikarang dan tidak disebut pengguna.)
 Diadaptasi dari pola skill naskah-live-jualan. Teks di bawah ini deskripsi asli (klaim kesehatan pangan/jamu/kosmetik
 yang dilarang aturan iklan BPOM: meredakan, mengatasi, pengganti obat, detox, melangsingkan, dst.)

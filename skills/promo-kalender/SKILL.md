@@ -1,6 +1,6 @@
 ---
 name: promo-kalender
-description: Menyusun rencana kampanye promo momen belanja Indonesia (gajian, 9.9, 10.10, 11.11, 12.12 Harbolnas, tahun baru, Ramadan-Lebaran, back to school) — mekanisme diskon/flash sale/bundling/voucher/gratis ongkir, target, anggaran, linimasa bertanggal, S&K promo, dengan WAJIB cek margin setelah promo via script (peringatan rugi/tipis). Gunakan saat diminta rencana promo, diskon aman, campaign plan, sale planning. Jadwal konten harian pakai kalender-konten-30hari; biaya marketplace pakai harga-jual-marketplace.
+description: Menyusun rencana kampanye promo momen belanja Indonesia (gajian, 9.9, 10.10, 11.11, 12.12 Harbolnas, tahun baru, Ramadan-Lebaran, back to school) — mekanisme diskon/flash sale/bundling/voucher/gratis ongkir, target, anggaran, linimasa bertanggal, S&K promo, dengan WAJIB cek margin setelah promo via script (peringatan rugi/tipis). Gunakan saat diminta rencana promo, diskon aman, campaign plan, sale planning. Jadwal konten pakai konten-mingguan; biaya marketplace pakai harga-jual-marketplace.
 ---
 
 # Rencana Promo Momen Belanja
@@ -16,7 +16,7 @@ Membuat rencana promo yang **tetap untung**: mekanisme dipilih berdasarkan hitun
 - Mengecek apakah promo yang sudah direncanakan (diskon, bundling, gratis ongkir) masih untung.
 
 ## Kapan TIDAK digunakan
-- Jadwal posting konten harian/bulanan → `kalender-konten-30hari`.
+- Jadwal posting konten → `konten-mingguan`.
 - Menentukan harga jual normal & menghitung potongan marketplace detail → `harga-jual-marketplace`.
 - Menghitung HPP dari bahan → `hitung-hpp` (hasilnya dipakai di sini).
 - Menulis naskah live jualan → `naskah-live-jualan`; menulis pesan broadcast → `broadcast-wa`.

@@ -30,7 +30,7 @@ Sumber berbahasa Inggris dan ditulis untuk konsultan/agency SEO profesional yang
 5. **Larangan tegas teknik terlarang** (keyword stuffing, beli backlink, ulasan/rating palsu, cloaking) dan **tanpa janji peringkat #1** dengan bahasa eksplisit — sumber menyebut prinsip serupa secara implisit (E-E-A-T, hindari thin content) tapi tidak melarang taktik ini secara eksplisit dan gamblang untuk audiens awam.
 6. **Larangan mengarang angka volume pencarian** — sumber tidak membahas isu ini sama sekali (mengasumsikan pembaca punya akses tool riset kata kunci berbayar).
 7. **Daftar perbaikan diurutkan dampak × kemudahan** dengan teks perbaikan **siap tempel** (title, meta description, H1, alt gambar, contoh JSON-LD terisi) — sumber memberi format laporan (Issue/Impact/Evidence/Fix/Priority) yang diadaptasi strukturnya, tapi tidak pernah menuliskan teks pengganti siap pakai, hanya rekomendasi umum.
-8. **Batasan tegas dengan skill lain di katalog kita** (`listing-marketplace`, `copy-landing-page`, `caption-sosmed-umkm`) — tidak relevan untuk sumber yang berdiri sendiri sebagai satu skill generik.
+8. **Batasan tegas dengan skill lain di katalog kita** (`listing-marketplace`, `copy-landing-page`, `konten-mingguan`) — tidak relevan untuk sumber yang berdiri sendiri sebagai satu skill generik.
 9. **Contoh kasus lokal & dokumentasi pembeli** (`README.md`, `examples/`) — tidak ada di repo sumber (repo sumber adalah instruksi untuk agent coding, bukan produk untuk dijual ke pembeli awam).
 
 ## Pembagian lisensi bagian ini

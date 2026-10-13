@@ -129,6 +129,7 @@ Output (potongan): Asumsi: 30 dtk, jualan, rekam HP, santai. Hook rekomendasi: "
 - Info ini bukan nasihat hukum; aturan platform dan UU (mis. perlindungan data pribadi, hak cipta) bisa berubah.
 
 ## Riwayat versi
+- **1.0.4** (2026-10-13): rujukan ke skill arsip dihapus dari catatan asal `scripts/cek_fakta.py` (hanya komentar).
 - **1.0.3** (2026-10-02): Aturan Fakta (hanya fakta dari pengguna, placeholder, dilarang "sesuai yang Kakak sebut"), `scripts/cek_fakta.py`, durasi sulih suara wajib dalam ±10% target, aplikasi edit hanya contoh pilihan.
 - **1.0.2** (2026-09-29): path script `<folder-skill-ini>/scripts/durasi_naskah.py` (tanpa mencari ke seluruh komputer); tidak menambah keunggulan produk yang tidak disebut pengguna; aturan kerja standar (hasil uji OpenClaw 2026.9.6).
 - **1.0.1** (2026-09-29): script memperingatkan adegan tanpa kata/hanya emoji dan `[jeda abc]` (bukan angka), memperingatkan `--wpm` di luar 80-220 dan menolak di luar 40-400, kolom tabel tidak melebur untuk angka besar, pesan "KEPENDEKAN" lebih ramah; Mode Ringkas untuk video 15 dtk; `references/label-ai.md` dicocokkan ke halaman resmi (TikTok newsroom, YouTube Help, Meta) per 2026-09-29. Uji regresi 17.

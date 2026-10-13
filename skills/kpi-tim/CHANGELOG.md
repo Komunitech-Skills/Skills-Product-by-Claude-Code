@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.1.7 (2026-10-13) — rujukan ke skill arsip (`kalender-konten-30hari`) dihapus; saran skill untuk KPI "Konten terbit sesuai kalender" kini hanya `konten-mingguan` (`references/katalog-kpi.md`, teks saran di `scripts/skor_kpi.py`). Logika dan skor tidak berubah.
+
 ## Catatan revisi 1.1.6 (2026-10-01)
 - Setiap kali AI membuat file (mis. draf realisasi dari rekap grup WA), balasannya kini menyebut lokasi lengkap file itu di folder kerja Anda, termasuk saat masih menunggu konfirmasi draf. Tes regresi bertambah menjadi 52.
 

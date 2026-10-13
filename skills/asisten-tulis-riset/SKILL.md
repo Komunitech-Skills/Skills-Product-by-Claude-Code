@@ -26,7 +26,7 @@ laporan yang perlu terlihat kredibel dan berdasar data.
 - Artikel SEO untuk website bisnis yang butuh struktur H2/H3 & kata kunci lokal
 
 ## Kapan TIDAK digunakan
-- Caption medsos singkat / kalender posting → `caption-sosmed-umkm` atau `kalender-konten-30hari`.
+- Caption medsos singkat / kalender posting → `konten-mingguan`.
 - Tugas kuliah, skripsi, esai ujian, atau laporan akademik yang akan **diserahkan sebagai karya sendiri
   pengguna** → skill ini **menolak** dan mengarahkan ke pendampingan/penyuntingan (baca §Etika di bawah).
 - Perlu data real-time terbaru (harga saham menit ini, hasil pertandingan) → sebutkan keterbatasan akses

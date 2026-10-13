@@ -77,4 +77,4 @@ Pelanggan berhak berhenti menerima promo kapan saja. Dengan cara berhenti yang j
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

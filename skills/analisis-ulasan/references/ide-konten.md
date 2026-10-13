@@ -28,4 +28,4 @@ keluhan rasa pedas → "panduan level pedas". Jangan membantah pembeli di konten
 
 ## Format per ide
 `<nomor>. <format + platform> — Hook: "<kalimat 3 detik pertama>" — Kutipan: "<kutipan asli>" — CTA: "<ajakan>"`
-Untuk rencana posting sebulan penuh, arahkan ke skill `kalender-konten-30hari`; untuk menulis caption lengkap → `caption-sosmed-umkm`.
+Untuk jadwal posting dan caption lengkap seminggu → `konten-mingguan`.

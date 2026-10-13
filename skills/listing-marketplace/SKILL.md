@@ -1,6 +1,6 @@
 ---
 name: listing-marketplace
-description: Membuat listing produk siap tempel untuk Shopee, Tokopedia, dan TikTok Shop — judul sesuai batas karakter tiap platform, poin keunggulan, deskripsi lengkap, dan daftar kata kunci — plus cek otomatis panjang teks, info kontak terlarang, dan klaim berisiko. Gunakan saat pengguna minta judul produk, deskripsi produk, optimasi listing/SEO marketplace, atau upload produk ke toko online (product listing, product title, product description, marketplace SEO). Bukan untuk caption posting sosmed (pakai caption-sosmed-umkm).
+description: Membuat listing produk siap tempel untuk Shopee, Tokopedia, dan TikTok Shop — judul sesuai batas karakter tiap platform, poin keunggulan, deskripsi lengkap, dan daftar kata kunci — plus cek otomatis panjang teks, info kontak terlarang, dan klaim berisiko. Gunakan saat pengguna minta judul produk, deskripsi produk, optimasi listing/SEO marketplace, atau upload produk ke toko online (product listing, product title, product description, marketplace SEO). Bukan untuk caption posting sosmed (pakai konten-mingguan).
 ---
 
 # Listing Marketplace (Shopee, Tokopedia, TikTok Shop)
@@ -17,7 +17,7 @@ pembeli, dan aman dari pelanggaran aturan (teks terpotong, kontak di luar platfo
 - Mencari kata kunci untuk judul/iklan marketplace
 
 ## Kapan TIDAK digunakan
-- Caption posting Instagram/TikTok/WA Status → skill `caption-sosmed-umkm`
+- Caption posting Instagram/TikTok/WA Status → skill `konten-mingguan`
 - Naskah live jualan → `naskah-live-jualan`; menentukan harga jual & potongan admin → `harga-jual-marketplace`
 - Membalas ulasan pembeli → `balas-ulasan-pelanggan`
 - Produk tiruan (KW/replika) atau produk terlarang → tolak dengan sopan dan jelaskan alasannya

@@ -21,7 +21,7 @@ Mengubah "jualan ke semua orang" menjadi pilihan yang jelas: **siapa** yang dila
 - Mencari daftar calon pelanggan B2B dan skor prospek -> `riset-calon-pelanggan`.
 - Membaca banyak ulasan/keluhan untuk mencari tema -> `analisis-ulasan` (hasilnya boleh dijadikan bahan skill ini).
 - Menghitung harga jual/HPP -> `hitung-hpp`, `harga-jual-marketplace`.
-- Menulis halaman jualan lengkap -> `copy-landing-page`; caption harian -> `caption-sosmed-umkm`.
+- Menulis halaman jualan lengkap -> `copy-landing-page`; caption harian -> `konten-mingguan`.
 - Riset harga pesaing -> `riset-harga-kompetitor`. Validasi ide produk yang belum ada -> `validasi-ide-produk-baru`.
 - Klaim kesehatan/medis, hukum, atau data pribadi konsumen yang identitasnya nyata: tidak diproses di sini (lihat Batasan).
 

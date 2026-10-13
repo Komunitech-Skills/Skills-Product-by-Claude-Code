@@ -89,4 +89,4 @@ Target di katalog hanya contoh. Target yang adil berasal dari data 3 bulan terak
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

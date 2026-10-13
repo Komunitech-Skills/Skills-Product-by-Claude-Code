@@ -1,6 +1,6 @@
 ---
 name: copy-landing-page
-description: Membuat teks halaman jualan berbahasa Indonesia untuk landing page, link-in-bio, dan halaman produk di website/toko online sendiri — headline, masalah, manfaat, bukti sosial, penawaran, garansi, FAQ, dan CTA WhatsApp — lengkap versi panjang, versi pendek satu layar HP, 3 variasi headline, meta title/description SEO, dan tautan wa.me siap pakai. Gunakan saat pengguna minta landing page, sales page, halaman penjualan, page produk, link in bio, atau copy website (landing page copy, sales page copy, product page copy, website sales copy). Bukan untuk caption media sosial (pakai caption-sosmed-umkm), judul/deskripsi Shopee/Tokopedia/TikTok Shop (pakai listing-marketplace), atau pesan broadcast WhatsApp (pakai broadcast-wa).
+description: Membuat teks halaman jualan berbahasa Indonesia untuk landing page, link-in-bio, dan halaman produk di website/toko online sendiri — headline, masalah, manfaat, bukti sosial, penawaran, garansi, FAQ, dan CTA WhatsApp — lengkap versi panjang, versi pendek satu layar HP, 3 variasi headline, meta title/description SEO, dan tautan wa.me siap pakai. Gunakan saat pengguna minta landing page, sales page, halaman penjualan, page produk, link in bio, atau copy website (landing page copy, sales page copy, product page copy, website sales copy). Bukan untuk caption media sosial (pakai konten-mingguan), judul/deskripsi Shopee/Tokopedia/TikTok Shop (pakai listing-marketplace), atau pesan broadcast WhatsApp (pakai broadcast-wa).
 ---
 
 # Copy Landing Page
@@ -16,7 +16,7 @@ Mengubah info produk seadanya menjadi teks halaman jualan yang lengkap, jujur, d
 - Memperbaiki landing page lama yang sepi pembeli atau CTA-nya tidak jelas.
 
 ## Kapan TIDAK digunakan
-- Caption Instagram/TikTok/Facebook/WA Status → pakai skill `caption-sosmed-umkm`.
+- Caption Instagram/TikTok/Facebook/WA Status → pakai skill `konten-mingguan`.
 - Judul & deskripsi produk Shopee/Tokopedia/TikTok Shop → pakai skill `listing-marketplace`.
 - Pesan broadcast WhatsApp ke daftar kontak → pakai skill `broadcast-wa`.
 - Proposal kerja sama/kemitraan B2B → pakai skill `proposal-kerjasama`.

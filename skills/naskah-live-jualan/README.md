@@ -88,4 +88,4 @@ Skill tetap jalan. AI agent menghitung manual dengan rumus yang sama dan memberi
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

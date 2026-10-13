@@ -74,4 +74,4 @@ Foto boleh dibuat terang dan rapi, tapi warna, ukuran, dan isi harus sesuai bara
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -96,4 +96,4 @@ lebih sesuai dengan nada itu, terutama untuk laporan ke atasan/pemilik dan klien
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

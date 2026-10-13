@@ -18,7 +18,7 @@ Dua hasil siap pakai: (A) **nama** usaha/produk yang mudah diucap, aman dari art
 
 ## Kapan TIDAK digunakan
 - Menentukan target pasar dan positioning -> `positioning-persona-usaha` (kerjakan dulu bila belum jelas siapa pembelinya).
-- Jadwal dan teks peluncuran -> `luncurkan-produk-baru`. Caption harian -> `caption-sosmed-umkm`. Halaman jualan panjang -> `copy-landing-page`.
+- Jadwal dan teks peluncuran -> `luncurkan-produk-baru`. Caption harian -> `konten-mingguan`. Halaman jualan panjang -> `copy-landing-page`.
 - Harga jual dan HPP -> `hitung-hpp`, `harga-jual-marketplace` (skill ini hanya memakai angka yang diberikan).
 - **Nasihat hukum merek** (boleh/tidak didaftarkan, sengketa, somasi, lisensi): tidak dijawab. Lihat Batasan.
 - Logo, desain kemasan, dan jingle: di luar cakupan (boleh beri brief singkat).

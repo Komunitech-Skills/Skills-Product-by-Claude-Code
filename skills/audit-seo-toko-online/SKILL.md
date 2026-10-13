@@ -19,7 +19,7 @@ Mengecek dasar-dasar SEO website/toko online milik sendiri dan Google Business P
 ## Kapan TIDAK digunakan
 - Menulis judul & deskripsi produk untuk Shopee/Tokopedia/TikTok Shop → pakai skill `listing-marketplace`.
 - Menulis teks halaman jualan/landing page dari nol → pakai skill `copy-landing-page` (skill ini bisa dipakai SETELAH itu, untuk mengaudit hasilnya).
-- Caption media sosial → pakai skill `caption-sosmed-umkm`.
+- Caption media sosial → pakai skill `konten-mingguan`.
 - Membangun banyak halaman sekaligus untuk menyasar banyak kata kunci/kota (programmatic SEO) — di luar cakupan, arahkan ke jasa/ahli SEO khusus kalau memang butuh skala besar.
 - Riset volume pencarian kata kunci dengan angka pasti, audit backlink, atau audit kompetitor mendalam — skill ini tidak mengarang angka yang tidak dimiliki (lihat Batasan).
 - Permintaan menaikkan ranking lewat cara terlarang (beli backlink, beli ulasan, keyword stuffing, cloaking) → tolak dengan sopan dan jelaskan risikonya (akun/website bisa kena penalti Google).

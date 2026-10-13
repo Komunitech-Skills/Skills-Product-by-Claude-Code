@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.5 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`) diganti `konten-mingguan` (`SKILL.md` termasuk deskripsi, `references/batas-platform.md`).
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Temuan uji ulang OpenClaw: panjang deskripsi yang dilaporkan (505) beda dengan teks yang ditampilkan (515).
 - Kini angka panjang wajib diambil dari run script terakhir pada teks final yang persis sama dengan yang ditampilkan.

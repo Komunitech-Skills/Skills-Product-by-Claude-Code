@@ -18,8 +18,8 @@ atau urgensi palsu.
 - Menyiapkan jawaban cepat untuk pertanyaan penonton yang sering muncul
 
 ## Kapan TIDAK digunakan
-- Caption posting/video pendek → `caption-sosmed-umkm`; judul & deskripsi produk → `listing-marketplace`
-- Rencana konten sebulan → `kalender-konten-30hari`; menentukan harga jual & margin → `harga-jual-marketplace`
+- Caption posting/video pendek dan rencana konten → `konten-mingguan`; judul & deskripsi produk → `listing-marketplace`
+- Menentukan harga jual & margin → `harga-jual-marketplace`
 - Membalas chat pembeli setelah live → `balas-chat-cs`
 
 ## Input

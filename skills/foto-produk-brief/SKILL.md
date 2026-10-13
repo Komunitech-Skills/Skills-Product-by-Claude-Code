@@ -18,8 +18,8 @@ Memberi pengguna (atau staf/fotografer freelance) **satu lembar kerja siap eksek
 - Konsep foto/video produk kosmetik, skincare, serum, obat, suplemen, atau jamu — termasuk permintaan foto before-after, foto yang diedit, atau logo BPOM/halal di foto (ikuti aturan "Produk wajib izin edar" di Batasan).
 
 ## Kapan TIDAK digunakan
-- Menulis judul/deskripsi/SEO produk → `listing-marketplace`; caption posting → `caption-sosmed-umkm`.
-- Naskah live jualan → `naskah-live-jualan`; jadwal konten sebulan → `kalender-konten-30hari`.
+- Menulis judul/deskripsi/SEO produk → `listing-marketplace`; caption posting dan jadwal konten → `konten-mingguan`.
+- Naskah live jualan → `naskah-live-jualan`.
 - Mengedit/menghasilkan gambar secara langsung: skill ini membuat brief, bukan mengolah file foto.
 
 ## Input

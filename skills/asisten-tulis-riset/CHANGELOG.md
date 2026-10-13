@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.6 (2026-10-13)
+- Rujukan ke skill arsip diganti: `caption-sosmed-umkm`, `kalender-konten-30hari` diganti `konten-mingguan` (SKILL.md, bagian Kapan TIDAK digunakan).
+
 ## Catatan revisi 1.0.5 (2026-10-03)
 
 dari uji ulang OpenClaw: `description` kini memuat penolakan tugas kuliah/skripsi/esai dan aturan sumber (bertanggal, tanggal akses, data terbaru, [perlu sumber]); "ATURAN WAJIB" ditambahkan di awal SKILL.md.

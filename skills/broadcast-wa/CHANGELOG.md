@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.11 (2026-10-13)
+- Rujukan ke skill arsip diganti: `caption-sosmed-umkm`, `kalender-konten-30hari` diganti `konten-mingguan` (SKILL.md, bagian Kapan TIDAK digunakan).
+
 ## Catatan revisi 1.0.10 (2026-10-03)
 - ATURAN WAJIB baru: draf teks pada jalur penolakan (tanpa file kontak) juga wajib lolos `cek_fakta.py`; klaim/urgensi karangan ("Hari ini ada promo", "Khusus hari ini", "sebelum kehabisan") dilarang.
 - `cek_fakta.py` menambah deteksi "hari ini ada promo", "promo hari ini", "mumpung promo"; tes regresi ditambah.

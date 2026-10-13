@@ -7,7 +7,7 @@ description: Audit kesehatan pengaturan & struktur akun iklan Meta/Facebook/Inst
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
-Versi 1.0.5 (2026-10-01) — lihat "Riwayat versi" di bawah.
+Versi 1.0.6 (2026-10-13) — lihat "Riwayat versi" di bawah.
 
 ## Tujuan
 Pemilik UMKM atau agensi kecil tahu **apa yang salah di pengaturan akun iklannya** dan **apa yang
@@ -23,7 +23,7 @@ rencana 7 hari yang realistis (±1–2 jam kerja per hari).
 ## Kapan TIDAK digunakan
 - Laporan angka mingguan (total belanja, CPC, ROAS, vs minggu lalu) → **`laporan-iklan-mingguan`**.
   Skill ini hanya memakai angka seperlunya untuk menilai cek.
-- Menulis caption/naskah iklan → `caption-sosmed-umkm` / skill konten lain.
+- Menulis caption/naskah iklan → `konten-mingguan` / skill konten lain.
 - Menentukan harga jual → `harga-jual-marketplace` (skill ini hanya menghitung ROAS impas).
 - Meminta agent login, memakai token API, scraping, atau mengubah iklan langsung → **tidak didukung**.
   Semua perubahan dilakukan pemilik sendiri di aplikasinya.
@@ -154,6 +154,7 @@ Contoh lain: `examples/uji-pembuat-02-klinik-kecantikan-meta.md`, `examples/uji-
 - Klinik: jangan meminta/menyimpan data pasien. Screenshot sebaiknya disamarkan.
 
 ## Riwayat versi
+- **1.0.6** (2026-10-13): rujukan ke skill arsip diganti `konten-mingguan` (bagian Kapan TIDAK digunakan).
 - **1.0.5** (2026-10-01): uji ulang OpenClaw — aturan keamanan password/OTP/token dinaikkan ke awal
   Langkah kerja (jangan diulang/disimpan/dipakai; minta ganti password + 2FA; audit dari ekspor/screenshot);
   script menyamarkan pola kredensial di `catatan`/`--usaha` + tes.
