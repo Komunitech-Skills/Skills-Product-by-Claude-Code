@@ -2,14 +2,16 @@
 
 **Isi log harian sederhana, AI memberi tahu angka mana yang mulai tidak normal, seberapa gawat, dan apa yang perlu dicek hari ini.**
 
+*Diuji AI penguji independen di OpenClaw: 7,0 → 9,0 dari 10 (pembeda: laporan 1 halaman dihitung skrip dan tanpa nama karyawan, sedangkan AI biasa menawarkan mengirimnya ke grup WA karyawan; memakai data contoh).*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Peringatan berwarna yang jelas:** 🔴 bahaya, 🟠 waspada, 🟡 perhatikan, masing-masing dengan alasan berangka ("reject naik 3 hari berturut-turut, 6,8σ di atas rata-rata, lewat target maks 50"). Oranye/merah hanya untuk lonjakan jelas atau yang bertahan, jadi tidak bikin "kebal alarm"; keluhan/kecelakaan yang biasanya nol langsung ditandai begitu muncul
-- ✅ **Stok tidak habis mendadak:** sisa stok diubah jadi "cukup ±3,2 hari, perkiraan habis Jumat", dibandingkan dengan lama pemasok mengirim
-- ✅ **Langsung tahu apa yang dicek:** daftar pertanyaan akar masalah (bahan, mesin, orang, cara kerja) + pancingan 5 kenapa, tanpa mencari kambing hitam
-- ✅ **Angka dihitung, bukan dikira:** rata-rata 7 hari, tren, banding target, banding hari yang sama 4 minggu lalu, dan batas kendali dihitung script. Angka kosong tidak diisi tebakan
-- ✅ **Otomatis tiap malam:** bisa dijadwalkan di OpenClaw, laporan 1 halaman (hanya angka, tanpa nama orang) masuk ke Telegram
+- ✅ **Peringatan berwarna yang jelas:** 🔴 bahaya, 🟠 waspada, 🟡 perhatikan, masing-masing dengan alasan berangka ("reject (barang cacat) naik 3 hari berturut-turut, 6,8σ di atas rata-rata, lewat target maks 50"; σ = ukuran seberapa jauh angka menyimpang dari kebiasaan). Dirancang agar oranye/merah muncul hanya untuk lonjakan jelas atau yang bertahan, supaya Anda tidak "kebal alarm"; keluhan/kecelakaan yang biasanya nol ditandai begitu muncul
+- ✅ **Tahu lebih awal kalau stok akan habis:** sisa stok diubah jadi "cukup ±3,2 hari, perkiraan habis Jumat", dibandingkan dengan lama pemasok mengirim
+- ✅ **Langsung tahu apa yang dicek:** daftar pertanyaan akar masalah (bahan, mesin, orang, cara kerja) + pancingan "5 kenapa" (bertanya "kenapa" berulang sampai ketemu akar masalah), tanpa mencari kambing hitam
+- ✅ **Angka dihitung, bukan dikira:** rata-rata 7 hari, tren, banding target, banding hari yang sama 4 minggu lalu, dan batas kendali (batas wajar naik-turun angka) dihitung skrip. Angka kosong tidak diisi tebakan
+- ✅ **Otomatis tiap malam:** bisa dijadwalkan di OpenClaw, laporan 1 halaman (hanya angka, tanpa nama orang) masuk ke Telegram (jadwal otomatis ini belum diuji langsung)
 
 ## Cocok untuk siapa
 - Pemilik & manajer pabrik kecil-menengah, konveksi, percetakan
@@ -21,19 +23,34 @@
 **Sebelum:** Tiap hari mengisi Excel produksi. Reject naik pelan-pelan 30 → 34 → 39 → 46 dan tidak ada yang sadar, sampai hari ke-5 reject 63 roti dan tepung ternyata tinggal cukup 3 hari. Baru ketahuan saat pelanggan komplain dan produksi hampir berhenti.
 
 **Sesudah (cukup ketik):** "Ini log produksi 30 hari. Ada yang perlu diwaspadai? Pemasok tepung butuh 2 hari."
-→ Satu pesan: 🔴 Reject 63 (6,8σ di atas rata-rata, +112% dibanding Selasa biasanya, lewat target maks 50) · 🟠 Stok tepung cukup ±3,2 hari, habis Jumat, segera pesan · 🟡 Penjualan turun 3 hari. Plus 6 pertanyaan cek untuk tim.
+```
+🚨 PERINGATAN DINI OPERASIONAL
+Roti Bu Ratna (fiktif) — Sel, 29 Sep 2026
+Data 31 Agu–29 Sep (29 hari tercatat)
+Ringkas: 2 🔴 · 1 🟠 · 1 🟡 · 4 normal
+…
+🔴 Reject (pcs): 63 hari ini (kemarin 46)
+   6,8σ di atas rata-rata 27 hari sebelumnya (31,15) -- lewat batas bahaya 3σ (2 dari 3 hari terakhir); melewati target maks 50 (+26%); naik 3 hari berturut-turut.
+🟠 Stok tepung (kg): sisa 169 = ±3,2 hari pemakaian (rata-rata 52,29/hari) -> cukup sampai Jum, 2 Okt, mulai kurang Sab, 3 Okt; pemasok butuh 2 hari -- siapkan pesanan
+🟡 Penjualan (Rp): Rp 8.644.500 hari ini (kemarin Rp 8.730.000)
+   turun 3 hari berturut-turut; di bawah target min Rp 9.000.000 (-4%); 2 dari 7 hari terakhir di bawah target.
+✅ Normal: Output (pcs), Keluhan, Telat kirim, Absen
+❓ Cek hari ini (cari akar masalah, bukan cari kambing hitam):
+…
+```
+(Contoh dengan data fiktif dari `examples/01-pabrik-roti-30-hari.md`, dipotong.) Lengkapnya juga memuat pertanyaan cek untuk tim.
 
 ## Cara pakai
-Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
-- "Cek log produksi ini, ada yang aneh nggak?" (lampirkan file CSV/Excel atau tempel tabel)
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
+- "Cek log produksi ini, ada yang aneh nggak?" (lampirkan file CSV, yaitu tabel sederhana, atau Excel; atau tempel tabelnya)
 - "Reject minggu ini kok naik terus? Target saya maksimal 50 sehari."
 - "Stok bahan saya cukup berapa hari lagi? Pemasok kirim 3 hari setelah pesan."
-- "Tiap malam jam 8 kirimi saya peringatan dini ke Telegram."
+- "Tiap malam jam 8 kirimi saya peringatan dini ke Telegram." (jadwal otomatis ini belum diuji langsung)
 
-Belum punya log? Pakai `templates/log-harian-template.csv`: satu baris per hari, kolom boleh ditambah/dihapus (mis. pesanan, retur, downtime_menit). Minimal 7 hari data; hasil paling tajam setelah 4–5 minggu.
+Belum punya log? Pakai `templates/log-harian-template.csv`: satu baris per hari, kolom boleh ditambah/dihapus (mis. pesanan, retur, downtime_menit, yaitu menit mesin berhenti). Minimal 7 hari data; hasil paling tajam setelah 4–5 minggu.
 
 ## Instalasi singkat
-Salin folder `peringatan-dini-operasional` ke folder skills AI agent kamu:
+Salin folder `peringatan-dini-operasional` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -42,18 +59,18 @@ Salin folder `peringatan-dini-operasional` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan). Jadwal otomatis hanya tersedia di OpenClaw dan butuh komputer yang menyala di jam kirim.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan). Jadwal otomatis hanya tersedia di OpenClaw (belum diuji langsung) dan butuh komputer yang menyala di jam kirim.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **7,0** → dengan skill **9,0** (LULUS). Contoh log dapur 4 minggu: stok beras sisa **255 kg = ±2 hari** pemakaian, pemasok butuh 2 hari → **pesan HARI INI**; tanpa nama karyawan. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (diuji pada v1.0.5; versi terbaru 1.0.7), skor 1–10: tanpa skill **7,0** → dengan skill **9,0** (LULUS). Contoh log dapur 4 minggu: stok beras sisa **255 kg = ±2 hari** pemakaian, pemasok butuh 2 hari → **pesan HARI INI**; tanpa nama karyawan. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Contoh "Sesudah" di atas (pabrik roti fiktif) adalah hasil skrip dari pembuat skill, bukan dari uji OpenClaw.
 
-**Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-02). Claude Code/Codex/Cursor belum uji platform asli. Perkiraan stok/hari = estimasi kasar, bukan ramalan pasti.
+**Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-02). Claude Code/Codex/Cursor belum uji platform asli. Jadwal otomatis ke Telegram belum diuji langsung. Perkiraan stok/hari = estimasi kasar, bukan ramalan pasti.
 
 ## FAQ
 **Apakah ini bisa meramal masalah dengan pasti?**
-Tidak. Ini peringatan dini statistik: memberi tahu angka yang "tidak biasa" dibanding pola usahamu sendiri, supaya dicek lebih awal. Perkiraan (mis. "±4 hari lagi melewati target", "stok habis Jumat") selalu ditandai sebagai perkiraan kasar. Penyebab tetap dicari bersama tim lewat pertanyaan cek dan 5 kenapa.
+Tidak. Ini peringatan dini statistik: memberi tahu angka yang "tidak biasa" dibanding pola usaha Anda sendiri, supaya dicek lebih awal. Perkiraan (mis. "±4 hari lagi melewati target", "stok habis Jumat") ditandai sebagai perkiraan kasar. Penyebab tetap dicari bersama tim lewat pertanyaan cek dan 5 kenapa.
 
 **Data saya baru seminggu, bisa dipakai?**
-Bisa, tapi terbatas: yang jalan baru banding target, naik/turun beruntun, dan sisa stok. Batas kendali (σ) butuh ±15 hari, banding hari yang sama butuh 2 minggu. Laporan akan menyebut ini terus terang, dan hasilnya makin tajam tiap minggu kamu mengisi log.
+Bisa, tapi terbatas: yang jalan baru banding target, naik/turun beruntun, dan sisa stok. Batas kendali (σ) butuh ±15 hari, banding hari yang sama butuh 2 minggu. Laporan akan menyebut ini terus terang, dan hasilnya makin tajam tiap minggu Anda mengisi log.
 
 **Angka saya ditulis macam-macam (1.250, 1,2rb, Rp 9 jt) dan ada hari libur. Masalah?**
 Tidak. Format angka Indonesia dibaca otomatis; hari libur/kosong dilewati (tidak diisi tebakan), baris rusak dilaporkan. Hari luar biasa seperti Lebaran atau bazar bisa dikecualikan supaya tidak mengacaukan rata-rata.

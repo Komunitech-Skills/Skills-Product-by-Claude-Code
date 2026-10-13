@@ -52,7 +52,7 @@ Salin folder `kalender-pajak` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Script memakai Python standar (tanpa instal paket apa pun); tanpa Python pun skill tetap bisa menyusun jadwal dari tabel aturan.
 
-**Hasil uji (angka nyata):** satu sumber, uji independen oleh agent penguji, Sep 2026 (v1.0.7; `examples/HASIL-UJI.md`; ini bukan skor sebelum/sesudah OpenClaw). **108 tenggat** Okt 2026–Des 2027 dengan **0 selisih** dari verifikasi manual; uji A/B skenario warung perorangan (OP) — tanpa skill **13/20** tanggal benar → dengan skill **20/20**. Skor penguji: **8/10**, LULUS (setelah perbaikan batas unggah faktur tanggal 20).
+**Hasil uji (angka nyata):** satu sumber, uji independen oleh agent penguji, Sep 2026 (v1.0.7; `examples/HASIL-UJI.md`; ini bukan skor sebelum/sesudah OpenClaw). **108 tenggat** Okt 2026–Des 2027 dengan **0 selisih** dari verifikasi manual; uji A/B skenario warung perorangan (OP) — tanpa skill **13/20** tanggal benar → dengan skill **20/20**. Skor penguji: **8/10**, LULUS (setelah perbaikan batas unggah faktur tanggal 20). Uji OpenClaw 2026-10-01 (paket konsultan, satu skenario): skor tanpa skill **5** → dengan skill **7**, lalu **8,5** setelah perbaikan v1.0.7 (hanya sisi dengan skill yang diulang; lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). **Belum** uji bot Telegram asli untuk skill ini. Codex dan Cursor belum uji platform asli. PERLU REVIEW: beberapa pasal PMK dari sumber sekunder.
 

@@ -286,7 +286,7 @@ def main():
         saran = "Ada minat tapi belum kuat — UBAH satu hal dulu (harga, penawaran/kemasan, atau target pembeli), lalu uji ulang 7 hari dengan hipotesis baru."
     else:
         klasifikasi = "GAGAL"
-        saran = "Data belum mendukung ide ini dalam bentuk sekarang — pertimbangkan HENTIKAN atau pivot besar. Kumpulkan alasan penolakan dari form pencatatan sebagai bahan ide berikutnya (brainstorming-ide-usaha)."
+        saran = "Data belum mendukung ide ini dalam bentuk sekarang — pertimbangkan HENTIKAN atau pivot besar. Kumpulkan alasan penolakan dari form pencatatan sebagai bahan ide berikutnya."
 
     nama_komit = ", ".join(k["nama"] for k in komit) if len(kanal) > 1 else None
     print(f"Ditawari       : {ditawari:g} orang/tampilan" + (f"  (kanal pesanan: {nama_komit})" if nama_komit else ""))

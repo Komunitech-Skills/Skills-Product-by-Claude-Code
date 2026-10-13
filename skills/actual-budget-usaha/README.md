@@ -1,31 +1,39 @@
 # Actual Budget Usaha — anggaran amplop lokal yang dikerjakan AI
 
 **Mutasi bank jadi anggaran rapi, tanpa ketik ulang.**
-*Pakai Actual Budget (gratis, data di komputer sendiri); AI yang mengimpor mutasi dan melaporkan sisa anggaran.*
+*Pakai Actual Budget (gratis, data di komputer sendiri); AI yang menyiapkan impor mutasi dan melaporkan sisa anggaran tiap "amplop" (pos per kategori, seperti amplop uang).*
+
+*Diuji AI penguji independen di OpenClaw: 5,5 → 8,25 dari 10 (pembeda terbesar: menolak mengedit file budget langsung dan menahan laporan keuangan dari grup karyawan; di konversi mutasi sendiri unggulnya tipis; memakai data contoh).*
 
 > **Skill ini membantu Anda memakai Actual Budget, bukan menggantikannya.** Actual Budget adalah aplikasi
-> open-source (lisensi MIT) yang Anda unduh sendiri dari https://actualbudget.org/download. Komunitech **tidak
+> open-source (kode sumbernya terbuka, lisensi MIT) yang Anda unduh sendiri dari https://actualbudget.org/download. Komunitech **tidak
 > berafiliasi dengan Actual Budget**; nama dipakai hanya untuk menjelaskan kompatibilitas.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-1. **Tidak perlu ketik transaksi satu per satu.** Mutasi CSV BCA, BRI, Mandiri, atau BNI langsung jadi file siap
-   impor ke Actual. Angka format Indonesia (`1.500.000,00`) dan format Inggris (`1,500,000.00`) sama-sama terbaca
-   persis sampai sen.
-2. **Kategori terisi otomatis, yang ragu ditanyakan.** PLN, Telkomsel, Pertamina, Meta Ads, dan biaya admin
+1. **Tidak perlu ketik transaksi satu per satu.** Mutasi bank BCA, BRI, Mandiri, atau BNI (file CSV, yaitu tabel
+   yang diunduh dari internet banking) diubah jadi file siap impor ke Actual. Angka format Indonesia
+   (`1.500.000,00`) dan format Inggris (`1,500,000.00`) sama-sama terbaca sampai sen. Langkah impor di layar
+   Actual sendiri belum diuji langsung.
+2. **Kategori diusulkan otomatis, yang ragu ditanyakan.** PLN, Telkomsel, Pertamina, Meta Ads, dan biaya admin
    langsung dikelompokkan. Tarik tunai, top up GoPay, belanja Tokopedia, atau baris dobel **tidak ditebak**; semuanya
-   ditanyakan sekaligus dalam satu pesan.
-3. **Tahu kategori yang jebol dalam 5 detik.** Tanya "anggaran bulan ini gimana?" dan dapat sisa per kategori,
-   kategori yang minus, uang yang siap dianggarkan, dan 5 pengeluaran terbesar. Angkanya sama dengan hitungan Actual.
-4. **Aman untuk data Anda.** File budget hanya dibaca, tidak pernah diubah. Tidak ada internet, akun, atau API key.
-5. **Laporan datang sendiri.** Bisa dijadwalkan tiap Senin pagi ke Telegram Anda lewat OpenClaw.
+   ditanyakan sekaligus dalam satu pesan. Pada uji, cukup banyak baris tetap perlu Anda pilih karena nama kategori
+   di budget Anda bisa berbeda dari usulan.
+3. **Tahu kategori yang jebol dalam hitungan detik.** Tanya "anggaran bulan ini gimana?" dan dapat sisa per kategori,
+   kategori yang minus, uang yang siap dianggarkan (To Budget), dan 5 pengeluaran terbesar. Pada data contoh, angkanya
+   sama dengan hitungan Actual sendiri.
+4. **Hati-hati dengan data Anda.** Skill hanya membaca file budget dan tidak menulis ke dalamnya (pada uji, isi file
+   tidak berubah). Tidak memakai internet, akun, atau kunci akses (API key).
+5. **Laporan datang sendiri.** Bisa dijadwalkan tiap Senin pagi ke Telegram Anda lewat OpenClaw (jadwal otomatis ini
+   belum diuji langsung).
 
 ## Cocok untuk siapa
 - **Freelancer & profesional** (desainer, konsultan, fotografer) yang penghasilannya naik turun dan butuh anggaran
   per kategori supaya uang proyek tidak "hilang".
 - **Usaha kecil** yang ingin mengendalikan biaya (sewa, iklan, bahan, ongkir) tanpa aplikasi akuntansi berbayar.
-- Pengguna YNAB atau aplikasi anggaran berbayar yang ingin pindah ke alat gratis tanpa biaya bulanan.
+- Pengguna YNAB (aplikasi anggaran amplop berbayar) atau aplikasi sejenis yang ingin pindah ke alat gratis tanpa
+  biaya bulanan.
 
 ## Sebelum / sesudah
 **Tanpa skill:** mutasi BCA dibuka di Excel, kolom disusun ulang manual, angka `"1,500,000.00"` dan tanggal `'01/09`
@@ -44,7 +52,7 @@ KATEGORI JEBOL (2):
 ## Actual Budget Usaha atau Kas UMKM?
 - **Actual Budget Usaha** (skill ini): Anda memakai aplikasi Actual dan ingin **anggaran per kategori**: jatah iklan
   berapa, sisa berapa, mana yang jebol, uang yang belum diberi tugas.
-- **Kas UMKM**: Anda cukup ingin **buku kas harian** lewat chat (uang masuk/keluar, saldo laci, hitung uang laci,
+- **Kas UMKM** (skill Komunitech terpisah): Anda cukup ingin **buku kas harian** lewat chat (uang masuk/keluar, saldo laci, hitung uang laci,
   prive) tanpa memasang aplikasi apa pun.
 Keduanya bisa membaca mutasi bank. Bila ragu, agent akan bertanya sekali.
 
@@ -52,7 +60,7 @@ Keduanya bisa membaca mutasi bank. Bila ragu, agent akan bertanya sekali.
 Ketik kalimat biasa ke agent, misalnya:
 - "Ini mutasi BCA September, masukkan ke Actual."
 - "Sisa anggaran saya bulan ini berapa? Ada yang jebol?"
-- "Kirim ringkasan anggaran ke Telegram saya tiap Senin pagi."
+- "Kirim ringkasan anggaran ke Telegram saya tiap Senin pagi." (jadwal otomatis ini belum diuji langsung)
 
 ## Instalasi singkat
 1. Pasang aplikasi **Actual Budget desktop** (gratis): https://actualbudget.org/download. Buat budget dan rekening Anda.
@@ -67,13 +75,13 @@ Ketik kalimat biasa ke agent, misalnya:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Butuh Python 3.8+ (umumnya sudah ada). Tidak ada paket tambahan yang perlu dipasang.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **5,5** → dengan skill **8,25** (LULUS). Contoh: menolak edit `db.sqlite` langsung dan kirim ringkasan ke grup WA; konversi mutasi BCA dengan **Cek saldo bank: COCOK** (saldo akhir Rp9.708.250,32); ringkasan September To Budget Rp1.010.000, 2 kategori jebol. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **5,5** → dengan skill **8,25** (LULUS). Contoh: menolak mengedit file budget (`db.sqlite`) langsung dan menahan pengiriman ringkasan ke grup WA; konversi mutasi BCA dengan **Cek saldo bank: COCOK** (saldo akhir Rp9.708.250,32); ringkasan September To Budget Rp1.010.000, 2 kategori jebol. Catatan jujur: pada konversi mutasi sendiri unggulnya tipis (7 → 7,5); keunggulan besar ada di keamanan data (4 → 9). Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Cuplikan "Dengan skill" di atas berasal dari `examples/01-konversi-mutasi-bca.md` dan `examples/02-ringkasan-bulanan.md` (hasil skrip pada data fiktif), bukan dari uji OpenClaw.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI). Aplikasi Actual desktop tidak berjalan saat uji — hanya data budget fiktif + API 26.9.0. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Ringkasan alat bantu anggaran, bukan laporan akuntansi/pajak.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI). Aplikasi Actual desktop tidak dijalankan saat uji; yang dipakai hanya file budget fiktif yang dibuat lewat API resmi Actual versi 26.9.0, jadi impor ke layar Actual dan jadwal Telegram belum diuji langsung. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Ringkasan alat bantu anggaran, bukan laporan akuntansi/pajak.
 
 ## FAQ
 **1. Apakah data keuangan saya dikirim ke Komunitech atau internet?**
-Tidak. Script bekerja di komputer Anda, tanpa koneksi internet. File budget Actual hanya dibaca (read-only).
+Tidak. Script bekerja di komputer Anda, tanpa koneksi internet. File budget Actual hanya dibaca, tidak diubah.
 
 **2. Bank saya mengirim mutasi PDF, bisa?**
 Belum. Unduh versi CSV atau Excel dari internet banking. File Excel cukup disimpan ulang sebagai CSV.

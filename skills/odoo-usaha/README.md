@@ -1,28 +1,28 @@
-# Odoo Usaha: Tanya Odoo Lewat Chat, Laporan Tiap Malam
+# Odoo Usaha: Tanya Odoo Lewat Chat, Laporan Harian Siap Pakai
 
-**Tanya "penjualan hari ini berapa?", "siapa yang belum bayar?", atau "stok apa yang mau habis?" — AI Anda langsung membaca Odoo milik usaha Anda dan menjawab dengan angka yang dihitung, bukan dikira. Laporan harian bisa dikirim otomatis ke Telegram pemilik, dan penawaran (quotation) bisa disiapkan sebagai draf tanpa membuka menu Odoo.**
+**Tanya "penjualan hari ini berapa?", "siapa yang belum bayar?", atau "stok apa yang mau habis?" — AI Anda langsung membaca Odoo milik usaha Anda dan menjawab dengan angka yang dihitung, bukan dikira. Laporan harian bisa dikirim otomatis ke Telegram pemilik (jadwal otomatis belum diuji langsung), dan penawaran (quotation) bisa disiapkan sebagai draf tanpa membuka menu Odoo.**
 
-> Komunitech **tidak berafiliasi** dengan Odoo S.A. Odoo adalah software milik Odoo S.A. (edisi Community berlisensi LGPL-3.0). Skill dan panduan ini adalah karya orisinal Komunitech yang memakai **API eksternal resmi** Odoo milik Anda sendiri. Odoo tidak disertakan dalam paket.
+Diuji AI penguji independen di OpenClaw (dengan server Odoo tiruan): 3,0 → 8,9 dari 10 (pada jebakan kunci admin ditempel di chat + "hapus penawaran", AI tanpa skill langsung menghapus dan membatalkan lewat kunci itu; dengan skill tidak ada satu pun permintaan ke Odoo, dan angka penjualan tepat).
 
-> **Status jujur (v1.0.1, 30 Sep 2026):** sudah diuji ke **Odoo Community 18 & 19 asli** (dijalankan lokal dengan data uji fiktif) oleh penguji independen, plus 51 uji otomatis. **Belum** diuji ke Odoo Online (*.odoo.com), Enterprise, atau Odoo 16/17/20, maupun data usaha sungguhan. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda. Bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
+> Komunitech **tidak berafiliasi** dengan Odoo S.A. Odoo adalah software milik Odoo S.A. (edisi Community berlisensi LGPL-3.0). Skill dan panduan ini adalah karya orisinal Komunitech yang memakai **API eksternal resmi** (pintu sambungan data bawaan) Odoo milik Anda sendiri. Odoo tidak disertakan dalam paket.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Odoo (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Tanpa buka banyak menu.** Penjualan hari ini vs kemarin, produk terlaris, faktur terbit, piutang per umur, dan stok kritis — cukup satu kalimat biasa.
+- ✅ **Tanpa buka banyak menu.** Penjualan hari ini vs kemarin, produk terlaris, faktur terbit, piutang (tagihan yang belum dibayar pelanggan) per umur, dan stok kritis — cukup satu kalimat biasa.
 - ✅ **Tahu siapa yang harus ditagih hari ini.** Piutang dikelompokkan (belum jatuh tempo, 1–30, 31–60, 61–90, >90 hari), faktur terlama di atas, nota kredit yang belum dipakai ikut diingatkan.
 - ✅ **Belanja stok tepat jumlah.** Memakai aturan stok minimum Odoo Anda sendiri: mana yang minus/habis/menipis dan berapa saran jumlah pesannya.
-- ✅ **Laporan tiap malam di Telegram** (lewat OpenClaw), dengan **nama pelanggan disamarkan** — aman walau HP dipinjam orang.
-- ✅ **Penawaran cepat tapi tetap aman.** AI menyiapkan **draf** quotation, menunjukkan pratinjau dan hitungan PPN (standar 12% × DPP 11/12), baru menyimpan setelah Anda jawab "ya". Mengirim/mengonfirmasi tetap Anda yang klik.
+- ✅ **Laporan tiap malam di Telegram** (lewat OpenClaw; jadwal otomatis ke Telegram belum diuji langsung), dengan **nama pelanggan disamarkan** — lebih terjaga bila HP dipinjam orang.
+- ✅ **Penawaran cepat, tetap lewat persetujuan Anda.** AI menyiapkan **draf** quotation (penawaran harga), menunjukkan pratinjau dan hitungan PPN (standar 12% × DPP, yaitu harga sebelum PPN, 11/12), baru menyimpan setelah Anda jawab "ya". Mengirim/mengonfirmasi tetap Anda yang klik.
 
 ## Cocok untuk siapa
-- Usaha **mapan** (distributor, grosir, F&B multi-cabang, manufaktur ringan, jasa B2B) yang **sudah memakai Odoo** — self-host di server kantor/VPS, atau **Odoo Online paket Custom**.
+- Usaha **mapan** (distributor, grosir, F&B multi-cabang, manufaktur ringan, jasa B2B) yang **sudah memakai Odoo** — dipasang di server kantor atau server sewaan (VPS), atau **Odoo Online paket Custom** (belum diuji langsung).
 - Pemilik yang ingin ringkasan harian tanpa login ke Odoo, dan admin penjualan yang sering membuat penawaran.
 
-**Kurang cocok:** belum punya Odoo (pakai `dolibarr-usaha` atau `frappe-books-usaha` yang lebih ringan, atau minta **jasa setup Komunitech**); **Odoo Online paket One App Free/Standard** (Odoo tidak membuka API di paket itu); yang ingin AI mengonfirmasi pesanan, memposting faktur, atau menagih pelanggan otomatis (sengaja tidak didukung).
+**Kurang cocok:** belum punya Odoo (pakai skill Komunitech `dolibarr-usaha` atau `frappe-books-usaha`, aplikasi akuntansi yang lebih ringan, atau minta **jasa setup Komunitech**); **Odoo Online paket One App Free/Standard** (Odoo tidak membuka API di paket itu); yang ingin AI mengonfirmasi pesanan, memposting faktur, atau menagih pelanggan otomatis (sengaja tidak didukung).
 
 ## Contoh sebelum & sesudah
-**Sebelum (tanpa skill):** AI hanya bisa menjelaskan cara membuka menu laporan Odoo, atau menulis kode API yang harus Anda jalankan sendiri — tanpa membaca data Anda, tanpa pengaman sebelum menulis.
+**Sebelum (tanpa skill):** AI hanya bisa menjelaskan cara membuka menu laporan Odoo, atau menulis kode sambungan data (API) yang harus Anda jalankan sendiri — tanpa membaca data Anda, tanpa pengaman sebelum menulis.
 
 **Sesudah:** ketik *"Laporan harian Odoo"*
 ```
@@ -58,10 +58,10 @@ Setelah tersambung, cukup ketik:
 - "Siapa yang belum bayar? Yang paling telat siapa?"
 - "Stok apa yang perlu dibeli?"
 - "Buatkan penawaran untuk [pelanggan]: [barang] [jumlah] ..."
-- "Kirim laporan harian Odoo ke Telegram saya tiap jam 9 malam" (OpenClaw)
+- "Kirim laporan harian Odoo ke Telegram saya tiap jam 9 malam" (OpenClaw; belum diuji langsung)
 
 ## Instalasi singkat
-1. **Odoo** sudah berjalan (versi 16–20; self-host atau Odoo Online paket Custom). Buat **pengguna khusus** untuk AI + **kunci API** — langkah lengkap di `docs/panduan-odoo.md` (atau pakai **jasa setup Komunitech**).
+1. **Odoo** sudah berjalan (versi 16–20; di server sendiri atau Odoo Online paket Custom; yang sudah diuji: Community 18 dan 19). Buat **pengguna khusus** untuk AI + **kunci API** (kunci akses khusus untuk AI) — langkah lengkap di `docs/panduan-odoo.md` (atau pakai **jasa setup Komunitech**).
 2. Salin folder `odoo-usaha` ke folder skills AI agent:
 
 | Platform | Folder tujuan |
@@ -78,19 +78,19 @@ Setelah tersambung, cukup ketik:
    `python3 ~/.openclaw/skills/odoo-usaha/scripts/odoo.py simpan-kunci` (Windows: `python` / `py`).
 4. Coba: "Cek Odoo saya sudah nyambung belum?"
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **3,0** → dengan skill **8,9** (LULUS). Jebakan kunci admin + hapus penawaran/faktur: dengan skill **0 permintaan** ke Odoo; draf penawaran pratinjau DPP/PPN cocok server tiruan. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **3,0** → dengan skill **8,9** (LULUS). Jebakan kunci admin + hapus penawaran/faktur: dengan skill **0 permintaan** ke Odoo; draf penawaran pratinjau DPP/PPN cocok server tiruan. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 
-**Status uji (jujur):** diuji OpenClaw sebelum/sesudah dengan **server Odoo tiruan** + data contoh (2026-10-02). Odoo Online/self-host asli belum uji manusia penuh di semua versi. Codex/Cursor belum uji platform asli.
+**Status uji (jujur):** dua sumber. (1) **Odoo Community 18 dan 19 asli** (dijalankan lokal, data uji fiktif): diuji penguji independen 30 Sep 2026 pada v1.0.0–1.0.1, plus 51 uji otomatis pada versi itu; perbaikan dari hasilnya sudah ada di versi sekarang. (2) **OpenClaw sebelum/sesudah** (2 Okt 2026, v1.0.5): memakai **server Odoo tiruan** + data contoh. **Belum** diuji: Odoo Online (*.odoo.com), Enterprise, Odoo 16/17/20, data usaha sungguhan, jadwal laporan ke Telegram, Windows/Mac sungguhan, dan Codex/Cursor. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda; bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
 
 ## FAQ
 **Apakah data usaha saya dikirim ke Komunitech?**
-Tidak. Script hanya menghubungi Odoo **milik Anda** (komputer ini, `*.odoo.com`, atau server yang Anda daftarkan sendiri). Tidak ada data ke Komunitech; laporan ke Telegram hanya bila Anda sendiri mengaturnya. Kunci API disimpan di komputer Anda dengan izin khusus pemilik dan tidak pernah ditampilkan.
+Tidak. Skrip hanya menghubungi Odoo **milik Anda** (komputer ini, `*.odoo.com`, atau server yang Anda daftarkan sendiri). Tidak ada data ke Komunitech; laporan ke Telegram hanya bila Anda sendiri mengaturnya. Kunci API disimpan di komputer Anda dengan izin khusus pemilik dan tidak ditampilkan.
 
 **Bisakah AI salah mengubah atau menghapus data Odoo saya?**
-Skill ini hanya membaca, dan satu-satunya yang bisa ditulis adalah **draf penawaran** — itu pun selalu pratinjau dulu dan menunggu jawaban "ya". Tidak ada perintah hapus, konfirmasi pesanan, posting faktur, atau pembayaran; script menolak semua itu bahkan bila kuncinya milik administrator (sudah diuji). Catatan jujur: Odoo sendiri tidak punya peran Penjualan yang "hanya bisa melihat", jadi pakai pengguna khusus AI dengan hak secukupnya (bukan administrator) agar kerusakan terbatas bila kunci bocor — lihat `docs/panduan-odoo.md` §5.
+Skill ini hanya membaca, dan satu-satunya yang bisa ditulis adalah **draf penawaran** — itu pun pratinjau dulu dan menunggu jawaban "ya". Tidak ada perintah hapus, konfirmasi pesanan, posting faktur, atau pembayaran; skrip menolak semua itu bahkan bila kuncinya milik administrator (sudah diuji). Catatan jujur: Odoo sendiri tidak punya peran Penjualan yang "hanya bisa melihat", jadi pakai pengguna khusus AI dengan hak secukupnya (bukan administrator) agar kerusakan terbatas bila kunci bocor — lihat `docs/panduan-odoo.md` §5.
 
 **Odoo saya versi baru/lama, apakah jalan?**
-Dirancang untuk Odoo 16–20: Odoo 19 ke atas memakai API JSON-2 yang baru, Odoo 16–18 memakai XML-RPC (dipilih otomatis). Sudah diuji ke Odoo Community 18 & 19; versi lain dan Odoo Online (harus **paket Custom** agar API aktif) belum diuji, jadi cocokkan angka pertama kali dengan layar Odoo Anda.
+Dirancang untuk Odoo 16–20; jenis sambungan data (API) yang cocok dipilih otomatis. Sudah diuji ke Odoo Community 18 & 19; versi lain dan Odoo Online (harus **paket Custom** agar API aktif) belum diuji, jadi cocokkan angka pertama kali dengan layar Odoo Anda.
 
 ## Riwayat perubahan
 

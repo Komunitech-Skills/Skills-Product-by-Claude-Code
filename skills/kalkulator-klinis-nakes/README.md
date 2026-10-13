@@ -1,17 +1,18 @@
-# Kalkulator Klinis Nakes: Hitung Pasti, Bersumber Jelas
+# Kalkulator Klinis Nakes: Hitungan Jelas, Bersumber Jelas
 
-**HPL, usia kehamilan, skrining preeklampsia, IMT, dan skor kognitif — dihitung script, lengkap
+**HPL, usia kehamilan, skrining preeklampsia, IMT, dan skor kognitif — dihitung skrip, lengkap
 dengan kutipan pedoman. Untuk dokter, bidan, dan perawat.**
 
-> ⚠️ **Status: PERLU REVIEW tenaga medis — belum untuk dijual.** Ambang & kalimat tindak lanjut
-> wajib ditinjau dokter/bidan sebelum rilis (lihat `references/sumber-pedoman.md`, bagian
-> "Status verifikasi"). Alat bantu keputusan untuk tenaga kesehatan, **bukan** pengganti
-> penilaian klinis, **bukan** alat diagnosis, dan **tidak memberi dosis obat**.
+Diuji AI penguji independen di OpenClaw: 6,1 → 9,0 dari 10 (pada pertanyaan ibu hamil awam yang minta dosis aspirin, jawaban AI tanpa skill berubah-ubah dan sekali menyebut dosis; dengan skill konsisten tanpa nama obat atau dosis, dan mengarahkan ke bidan/IGD/119).
+
+> ⚠️ **Belum direview tenaga medis.** Ambang dan kalimat tindak lanjut perlu ditinjau dokter/bidan
+> sebelum dipakai klinis (lihat `references/sumber-pedoman.md`). Alat bantu keputusan khusus
+> tenaga kesehatan: bukan diagnosis, bukan pengganti penilaian klinis, tanpa dosis obat.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **HPL & usia kehamilan tanpa salah hitung** — Naegele dan HPHT+280 hari, tahun kabisat,
+- ✅ **HPL & usia kehamilan dihitung skrip, bukan dikira** — Naegele dan HPHT+280 hari, tahun kabisat,
   siklus ≠ 28 hari, plus cek otomatis "perlu penanggalan ulang dengan USG?" (ACOG 2017).
 - ✅ **Skrining preeklampsia sesuai Buku KIA terbaru (cetakan 2025)** — isi faktor dengan
   bahasa biasa, MAP dihitung tepat tanpa dibulatkan dulu (110/80 = 90,0 → memenuhi ambang
@@ -19,9 +20,9 @@ dengan kutipan pedoman. Untuk dokter, bidan, dan perawat.**
   aturan yang disebut sumbernya — tidak dicampur.
 - ✅ **Tanda bahaya diperiksa lebih dulu** — TD ≥ 160/110 atau gejala bahaya langsung
   ditandai "SEGERA evaluasi/rujuk sesuai protokol fasilitas"; TD ≥ 140/90 "evaluasi/rujuk hari
-  ini". Tidak pernah keluar saran "ANC rutin" untuk kasus seperti ini.
+  ini". Pada kasus seperti ini hasil tidak diarahkan ke "ANC rutin".
 - ✅ **IMT & kenaikan BB hamil** — kategori Asia-Pasifik **dan** Kemenkes sekaligus, lingkar
-  perut, rekomendasi IOM 2009 (termasuk kembar), plus mode banyak pasien dari CSV (posbindu).
+  perut, rekomendasi IOM 2009 (termasuk kembar), plus mode banyak pasien dari tabel CSV (file Excel yang disimpan sebagai .csv) untuk posbindu (pos pembinaan terpadu).
 - ✅ **Tafsir skor total kognitif (MMSE / MoCA / AMT)** yang Anda masukkan — alat tidak memuat
   formulir atau butir tes.
 - ✅ **Catatan sesi stimulasi kognitif** rapi, siap tempel ke rekam medis — tanpa label
@@ -38,13 +39,28 @@ menyarankan konsultasi.
 dihitung kalkulator HP dan dibulatkan sebelum dibandingkan; faktor risiko preeklampsia dicentang
 dari ingatan; sumber tidak tercatat.
 
-**Sesudah (cukup ketik):** "Saya bidan. Bu R, G1, 36 th, hamil 14 minggu, TD 120/80, IMT 31,
-ibunya dulu preeklampsia. Skrining preeklampsia."
-→ MAP 93,3; **5 faktor sedang** (nullipara, usia ≥ 35, riwayat keluarga, IMT > 30, MAP ≥ 90) →
-**BERISIKO PREEKLAMPSIA — Buku KIA: ANC/persalinan/nifas di RS, rujukan terencana**; daftar faktor yang
-belum ditanyakan; sumber + penafian. Siap disalin ke rekam medis.
-Bila TD 170/115: hasil diawali **‼️ TANDA BAHAYA — segera evaluasi/rujuk sesuai protokol
-fasilitas** (sumber NICE NG133/ACOG), bukan "ANC rutin".
+**Sesudah (cukup ketik):** "Saya bidan. Bu R, G1P0A0, 36 th, hamil 14 minggu, TD 120/80, IMT sebelum hamil 31, ibunya dulu preeklampsia. Skrining preeklampsia ya."
+
+Cuplikan balasan (dipotong; contoh dengan data fiktif dari `examples/01-skrining-preeklampsia.md`):
+```
+🩺 Skrining faktor risiko preeklampsia — Bu R — 29 September 2026
+
+Tanda bahaya: tidak ada (TD 120/80 < 140/90; …)
+
+Hasil:
+- MAP 93,3 mmHg (≥ 90)
+- Kategori (Buku KIA cetakan 2025): BERISIKO PREEKLAMPSIA — perlu rujukan terencana
+  (≥ 2 faktor risiko sedang)
+  Faktor sedang (5): nullipara; usia ≥ 35 tahun; riwayat preeklampsia pada ibu;
+  obesitas pra-hamil (IMT > 30); MAP ≥ 90. Faktor tinggi: tidak ada.
+- Belum ditanyakan: diabetes, penyakit ginjal, autoimun/APS, proteinuria — mohon dilengkapi
+  bila belum diperiksa.
+…
+⚠️ Alat bantu untuk tenaga kesehatan, bukan pengganti penilaian klinis. Keputusan klinis tetap
+pada dokter/bidan yang memeriksa.
+```
+Bila TD 170/115: hasil diawali **TANDA BAHAYA — segera evaluasi/rujuk sesuai protokol
+fasilitas** (sumber NICE NG133/ACOG), bukan "ANC rutin". Siap disalin ke rekam medis.
 
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa, misalnya:
@@ -55,21 +71,17 @@ Setelah terpasang, ketik permintaan biasa, misalnya:
 - "Skor MoCA-Ina 24, pendidikan 9 tahun. Interpretasinya?"
 - "Buatkan catatan sesi stimulasi kognitif untuk peserta L-07 hari ini: ..."
 
-Butuh Python 3 untuk perhitungan (sudah ada di kebanyakan komputer; Windows: `python`/`py`).
-Tanpa Python, agent menghitung manual dengan rumus di `references/` dan memberi tanda
-"verifikasi ulang".
-
-## Batasan yang jujur perlu kamu tahu
-- **Belum ditinjau dokter/bidan** (PERLU REVIEW). Lembar preeklampsia Buku KIA cetakan 2025
+## Batasan yang perlu Anda tahu (jujur)
+- **Verifikasi sumber:** lembar preeklampsia Buku KIA cetakan 2025
   sudah dicocokkan dengan naskah resmi; rentang AMT Permenkes 67/2015, tabel IMT Kemenkes, dan
   WPRO 2000 baru dikonfirmasi lewat sumber sekunder — rinciannya di
   `references/sumber-pedoman.md`. Cocokkan dengan cetakan Buku KIA yang dipakai fasilitas Anda.
 - **Tanpa dosis obat** apa pun, termasuk aspirin/kalsium pencegahan preeklampsia.
 - **Tanpa diagnosis** — hasil berupa kategori risiko/hasil skrining.
-- **Alat ini hanya menafsirkan skor total MMSE/MoCA yang kamu masukkan** — tidak memuat,
+- **Alat ini hanya menafsirkan skor total MMSE/MoCA yang Anda masukkan** — tidak memuat,
   mereproduksi, atau memandu formulir, butir, maupun instruksinya. Memakai formulir **MoCA**
-  memerlukan lisensi/izin dan pelatihan-sertifikasi milikmu sendiri dari MoCA Cognition;
-  formulir **MMSE** memerlukan lisensi milikmu sendiri dari PAR Inc. Nama instrumen hanya
+  memerlukan lisensi/izin dan pelatihan-sertifikasi milik Anda sendiri dari MoCA Cognition;
+  formulir **MMSE** memerlukan lisensi milik Anda sendiri dari PAR Inc. Nama instrumen hanya
   penyebut; Komunitech tidak berafiliasi dengan pemegang hak cipta. (PERLU REVIEW legal.)
 - **MoCA-Ina:** studi validasi 2010 belum menetapkan titik potong khusus Indonesia; alat memakai
   batas asli 26 dan menyebutkannya.
@@ -79,7 +91,7 @@ Tanpa Python, agent menghitung manual dengan rumus di `references/` dan memberi 
 - Data minimal: cukup inisial/ID pasien. Skill tidak menyimpan data apa pun.
 
 ## Instalasi singkat
-Salin folder `kalkulator-klinis-nakes` ke folder skills AI agent kamu:
+Salin folder `kalkulator-klinis-nakes` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -88,11 +100,15 @@ Salin folder `kalkulator-klinis-nakes` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **6,1** → dengan skill **9,0** (LULUS). Contoh bidan TD 128/86: **MAP 100,0**, 5 faktor sedang Buku KIA 2025, **HPL 19 Maret 2027**, tanpa dosis obat. Bot Telegram gelombang 8 (2026-10-05): tanpa **6** → dengan **8,5**. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+Butuh Python 3 untuk perhitungan (sudah ada di kebanyakan komputer; Windows: `python`/`py`).
+Tanpa Python, agent menghitung manual dengan rumus di `references/` dan memberi tanda
+"verifikasi ulang".
 
-**Status uji (jujur):** **PERLU REVIEW tenaga medis** sebelum diandalkan klinis. Sudah uji OpenClaw otomatis + bot asli (gelombang 8). MoCA/MMSE hanya tafsir skor total (lisensi formulir milik pengguna). Codex/Cursor belum uji platform asli.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **6,1** → dengan skill **9,0** (verdik uji LULUS). Contoh bidan TD 128/86: **MAP 100,0**, 5 faktor sedang Buku KIA 2025, **HPL 19 Maret 2027**, tanpa dosis obat. Bot Telegram gelombang 8 (2026-10-05): tanpa **6** → dengan **8,5**. Sumber: skor OpenClaw dari `examples/00-openclaw-sebelum-sesudah.md`; skor Telegram dari uji bot asli gelombang 8.
+
+**Status uji (jujur):** sudah uji OpenClaw otomatis + bot asli (gelombang 8). MoCA/MMSE hanya tafsir skor total (lisensi formulir milik pengguna). Codex/Cursor belum uji platform asli.
 
 ## FAQ
 **Apakah hasilnya bisa langsung jadi dasar rujukan?**
@@ -101,9 +117,9 @@ rujukan dan tata laksana tetap penilaian klinis dokter/bidan yang memeriksa.
 
 **Kenapa HPL Naegele dan HPHT+280 hari bisa beda 1–3 hari?**
 Naegele memakai bulan kalender yang panjangnya berbeda-beda; +280 hari menghitung hari persis.
-Keduanya ditampilkan agar sesuai kebiasaan praktikmu, dan catatan menjelaskan selisihnya.
+Keduanya ditampilkan agar sesuai kebiasaan praktik Anda, dan catatan menjelaskan selisihnya.
 
 **Pasien saya bertanya langsung ke agent, apa yang terjadi?**
-Skill memastikan peran penanya. Bila bukan tenaga kesehatan, skill tidak menjalankan skrining
+Skill menanyakan peran penanya. Bila bukan tenaga kesehatan, skill tidak menjalankan skrining
 atau menafsirkan angka — hanya edukasi umum, anjuran konsultasi, dan kalimat tanda bahaya
 (IGD/119).
