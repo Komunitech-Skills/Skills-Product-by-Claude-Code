@@ -2,13 +2,13 @@
 
 **Dapatkan daftar foto, cara menata cahaya jendela, dan ide video 15–30 detik yang tinggal dikerjakan, tanpa studio dan tanpa alat mahal.**
 
-Diuji AI penguji independen di OpenClaw: 6,5 → 8,8 dari 10 (pembeda: untuk kamar berjendela menghadap timur, dengan skill jam foto disesuaikan ke 11.00–16.00 dan brief memuat urutan foto per tempat jualan, rasio, serta catatan keselamatan api untuk lilin; tanpa skill AI menyarankan foto pagi saat matahari timur masuk langsung).
+Diuji AI penguji independen di OpenClaw: 6,5 → 8,8 dari 10 (1 Okt 2026; skor tanpa skill dari uji awal, skor dengan skill dari uji ulang v1.0.3 setelah perbaikan; uji awal 6,5 → 7,5 belum lulus). Pembeda: untuk kamar berjendela menghadap timur, dengan skill jam foto disesuaikan ke 11.00–16.00 dan brief memuat urutan foto per tempat jualan, rasio, serta catatan keselamatan api untuk lilin; tanpa skill AI menyarankan foto pagi saat matahari timur masuk langsung.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Daftar foto (shot list) 8–10 foto yang menjawab pertanyaan pembeli: bentuk, detail, ukuran, cara pakai, isi paket, varian
-- ✅ Panduan cahaya jendela, latar kertas karton, dan pemantul styrofoam, jadi hasilnya terang dan bersih
+- ✅ Panduan cahaya jendela, latar kertas karton, dan pemantul styrofoam, supaya hasilnya lebih terang dan bersih
 - ✅ Pengaturan kamera HP langkah demi langkah (fokus, kunci kecerahan atau exposure, lensa yang tepat)
 - ✅ Rasio yang benar untuk tiap tempat: 1:1 marketplace, 3:4/4:5 feed, 9:16 TikTok & Reels
 - ✅ 2–3 ide video pendek dengan urutan adegan per detik (storyboard), plus checklist sebelum upload
@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 8,8 dari 10 (pembeda: untuk kam
 
 **Sesudah (cukup ketik):** "Aku jual hijab voal segi empat 115x115, ada 4 warna: hitam, mocca, dusty pink, sage. Mau foto sendiri pake HP (android, ga punya tripod) buat Shopee sama TikTok Shop. Sering dapet review “warnanya beda sama foto”. Kamar aku ada jendela gede hadap timur. Bikinin brief fotonya dong."
 
-Cuplikan hasil (contoh dengan data fiktif; dipotong dari `examples/01-hijab-voal-4-warna.md`):
+Cuplikan hasil (dipotong; dari uji simulasi Claude Code oleh penguji independen, 23 Sep 2026, data fiktif, `examples/01-hijab-voal-4-warna.md`; "slot" = urutan posisi foto di halaman produk marketplace):
 > ## 2. Setup cahaya & pengaturan HP
 > 1. **Matikan semua lampu kamar.** Lampu kuning + cahaya jendela membuat warna mocca dan dusty pink bergeser. Ini sumber utama keluhan "warna beda".
 > 2. Lap lensa. Nyalakan **grid/garis bantu** di pengaturan kamera.
@@ -58,7 +58,7 @@ Salin folder `foto-produk-brief` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,8** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh lilin aromaterapi dengan jendela menghadap timur: dengan skill, brief berisi 9 foto lengkap dengan urutan slot marketplace, rasio, sudut, tes warna, catatan keselamatan api, dan 3 ide video per detik; tanpa skill, AI menyarankan foto pagi hari saat matahari timur masuk langsung, dan daftar fotonya tanpa rasio, urutan slot, maupun catatan keselamatan api. Catatan jujur: skor 6,5 tanpa skill berasal dari uji awal; sisi dengan skill diulang setelah perbaikan (uji awal 7,5, belum lulus). Teks video hasil skill masih sekali memuat klaim yang tidak Anda berikan ("tahan lama"), jadi baca ulang sebelum dipakai.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,8** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh lilin aromaterapi dengan jendela menghadap timur: dengan skill, brief berisi 9 foto lengkap dengan urutan slot di marketplace, rasio, sudut, tes warna, catatan keselamatan api, dan 3 ide video per detik; tanpa skill, AI menyarankan foto pagi hari saat matahari timur masuk langsung, dan daftar fotonya tanpa rasio, urutan slot, maupun catatan keselamatan api. Catatan jujur: skor 6,5 tanpa skill berasal dari uji awal; sisi dengan skill diulang setelah perbaikan (uji awal 7,5, belum lulus, karena pada permintaan foto bermasalah, yaitu logo BPOM dan before-after, skill belum terpanggil). Teks video hasil skill masih sekali memuat klaim yang tidak Anda berikan ("tahan lama"), jadi baca ulang sebelum dipakai.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung, dan bot Telegram asli belum diuji.
 

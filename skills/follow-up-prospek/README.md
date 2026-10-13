@@ -2,14 +2,14 @@
 
 **Calon pembeli diam setelah ditawari? Dapat 4 pesan follow-up sopan lengkap dengan tanggal kirimnya.**
 
-Diuji AI penguji independen di OpenClaw: 6,25 → 8,0 dari 10 (tanggal kirim dihitung dengan skrip sehingga nama harinya benar dan tawaran baru diberi label usulan; tanpa skill 3 dari 4 tanggal salah nama hari dan ada kesan mendesak yang dikarang).
+Diuji AI penguji independen di OpenClaw: 6,25 → 8,0 dari 10 pada uji ulang v1.0.4 (1 Okt 2026; uji pertama 6,25 → 7,75 belum lulus). Dengan skill: tanggal kirim dihitung dengan skrip (program hitung kecil) sehingga nama harinya benar dan tawaran baru diberi label usulan. Tanpa skill: 3 dari 4 tanggal salah nama hari dan ada kesan mendesak yang dikarang.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Urutan pesan WhatsApp dan email hari ke-1, 3, 7, dan 14 yang sudah siap salin-kirim
 - ✅ Beda situasi, beda pesan: setelah kirim penawaran, setelah demo, setelah dijawab "nanti dulu", atau setelah tanya harga lalu hilang
-- ✅ Tanggal kirim dihitung otomatis, digeser dari akhir pekan dan dari hari libur yang Anda sebutkan, tanpa membuat pesan menumpuk
+- ✅ Tanggal kirim dihitung otomatis, digeser dari akhir pekan dan dari hari libur yang Anda sebutkan, dengan jarak antar-pesan dijaga agar tidak menumpuk
 - ✅ Setiap pesan dirancang membawa alasan baru untuk membalas, bukan sekadar "gimana, Kak?"
 - ✅ Dilengkapi cara menjawab keberatan umum seperti "mahal" atau "tanya atasan dulu"
 
@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 6,25 → 8,0 dari 10 (tanggal kirim dih
 
 **Sesudah (cukup ketik):** "Kemarin (22 Sept) saya demo aplikasi kasir KasirPintar Fiktif ke Pak Joni, pemilik Resto Padang Rasa Minang Fiktif di Depok. Paket 199rb/bulan, gratis setup. Dia bilang bagus, tapi mau diskusi dulu sama istrinya yang pegang keuangan. Dia sempat nanya apakah bisa cetak struk ke printer lama mereka (Epson TM-U220) — jawabannya bisa. Nama saya Rudi. Bikinin follow-up WA ya."
 
-Cuplikan hasil (contoh dengan data fiktif; dipotong dari `examples/01-setelah-demo-aplikasi-kasir.md`; H+1 = 1 hari setelah kontak terakhir):
+Cuplikan hasil (dipotong; dari uji simulasi Claude Code oleh penguji independen, 23 Sep 2026, data fiktif, `examples/01-setelah-demo-aplikasi-kasir.md`; H+1 = 1 hari setelah kontak terakhir):
 > ### Jadwal follow-up – Pak Joni, Resto Padang Rasa Minang Fiktif (setelah demo)
 > Kontak terakhir (H+0): Selasa, 22 September 2026
 >
@@ -59,7 +59,7 @@ Salin folder `follow-up-prospek` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,25** → dengan skill **8,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill, 3 dari 4 tanggal follow-up salah nama hari dan ada kesan mendesak yang dikarang; dengan skill, tanggal dihitung script, hari benar, tawaran baru diberi label *usulan — konfirmasi dulu*. Catatan jujur: uji pertama (sebelum perbaikan) 6,25 → 7,75 belum lulus, angka di atas dari uji ulang. Pada skenario prospek yang minta tidak dihubungi, kedua sisi sama-sama menolak dengan benar (7 vs 7,5) dan skill tidak dibaca oleh AI.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,25** → dengan skill **8,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill, 3 dari 4 tanggal follow-up salah nama hari dan ada kesan mendesak yang dikarang; dengan skill, tanggal dihitung skrip, hari benar, tawaran baru diberi label *usulan — konfirmasi dulu*. Catatan jujur: uji pertama (sebelum perbaikan) 6,25 → 7,75 belum lulus, angka di atas dari uji ulang. Pada skenario prospek yang minta tidak dihubungi, kedua sisi sama-sama menolak dengan benar (tanpa skill 7, dengan skill 7,5) dan skill tidak dibaca oleh AI.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor memakai format skill yang sama; belum uji platform asli di kedua platform itu. Bot Telegram asli belum diuji.
 

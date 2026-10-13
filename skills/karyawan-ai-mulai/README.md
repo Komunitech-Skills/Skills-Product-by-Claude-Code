@@ -2,7 +2,7 @@
 
 **Cukup ketik "mulai", AI langsung wawancara singkat lalu kerjakan tugas pertama Anda.**
 
-Diuji AI penguji independen di OpenClaw: 3 → 8,3 dari 10 (tanpa skill, AI sempat membuka balasan otomatis WhatsApp untuk semua orang; dengan skill, ada wawancara singkat dan aturan kerja tertulis).
+Diuji AI penguji independen di OpenClaw: 3 → 8,3 dari 10 pada satu skenario (pemilik laundry, uji ulang v1.1.8, 1 Okt 2026; uji pertama dua skenario 2,0 → 7,5 belum lulus). Dengan skill: ada wawancara singkat dan aturan kerja tertulis. Tanpa skill: AI meminta token bot ditempel di chat dan mengubah pengaturan inti OpenClaw; pada skenario toko skincare di uji pertama, AI bahkan memasang balasan otomatis WhatsApp untuk semua orang.
 
 > **Yang Anda butuhkan:** AI agent OpenClaw (skill ini dibuat untuk OpenClaw; di Claude Code, Codex, atau Cursor langkah yang menyentuh `AGENTS.md` tidak berlaku — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 8,3 dari 10 (tanpa skill, AI semp
 menumpuk tanpa tahu mana yang relevan.
 
 **Sesudah (cukup ketik):** "mulai karyawan AI dong. saya punya rumah makan 2 cabang (kemang & bekasi), karyawan 55 orang. yang paling nyita waktu: bikin laporan penjualan harian, laporan keuangan bulanan buat bank, sama ngecek stok bahan baku. saya biasa pakai telegram, laptop kantor nyala terus. data karyawan jangan sampai kemana2 ya"
-→ Dalam satu percakapan: rekomendasi 3 skill yang pas, dipasang dengan izin Anda, satu tugas nyata dikerjakan (di contoh ini rekap penjualan dari data contoh), dan rencana 7 hari. Cuplikan nyata dari uji (awal jawaban; data fiktif):
+→ Dalam satu percakapan: rekomendasi 3 skill yang pas, dipasang dengan izin Anda, satu tugas nyata dikerjakan (di contoh ini rekap penjualan dari data contoh), dan rencana 7 hari. Cuplikan dari uji simulasi Claude Code (awal jawaban; data fiktif; `examples/01-owner-resto-50-karyawan-laporan.md`):
 ```
 ## Ringkasan Anda
 Bapak/Ibu pemilik rumah makan (F&B) dengan 2 cabang (Kemang & Bekasi) dan 55 karyawan. Tiga
@@ -67,10 +67,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 5 Okt 2026.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik uji bot: LULUS — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv = rekap omzet dari file kasir, balas-chat-cs mode draf = draf balasan chat pelanggan yang Anda kirim sendiri, promo-kalender = rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan.
+Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 5 Okt 2026: bot penguji mengirim pesan yang sama ke bot tanpa skill dan bot dengan skill.
+- Tanpa skill: skor 6,5
+- Dengan skill: skor 8,5
+Verdik uji bot: LULUS — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv = rekap omzet dari file kasir, balas-chat-cs mode draf = draf balasan chat pelanggan yang Anda kirim sendiri, promo-kalender = rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan. Catatan jujur: jawaban dengan skill cukup panjang (±60 baris) untuk pengguna awam.
 
 ## FAQ
 **Apakah AI langsung memasang skill lain tanpa izin saya?**

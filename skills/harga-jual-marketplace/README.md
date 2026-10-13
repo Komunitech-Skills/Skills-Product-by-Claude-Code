@@ -2,7 +2,7 @@
 
 **Tahu harga tayang yang pas di Shopee, Tokopedia, dan TikTok Shop supaya masih untung setelah potongan yang Anda masukkan.**
 
-*Diuji AI penguji independen (simulasi Claude Code): 8 dari 10; pembedanya: PPh 22 marketplace 0,5% ikut dihitung (AI tanpa skill melewatkannya) dan harga impas (batas rugi) diberikan.*
+*Diuji AI penguji independen (simulasi Claude Code, 23 Sep 2026): 8 dari 10; pembeda pada satu skenario banding tanpa vs dengan skill: dengan skill PPh 22 marketplace 0,5% ikut dihitung dan harga impas (batas rugi) diberikan; tanpa skill, PPh 22 terlewat dan harga impas tidak ada.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -23,13 +23,11 @@
 
 **Sesudah (cukup ketik):** "Aku jual hijab voal, modal 28 ribu udah sama packing. Di Shopee admin aku 8,25%, ikut gratis ongkir xtra 4% maks 20 ribu, biaya proses 1.250 per pesanan. Mau untung 25% dari harga jual. Harga jualnya berapa? Aku belum nyerahin surat pernyataan omzet ke Shopee."
 
-Cuplikan hasil (dari uji simulasi Claude Code, data fiktif; dipotong dari `examples/01-hijab-shopee-target-margin.md`; HPP = modal per barang):
+Cuplikan hasil (dipotong; dari uji simulasi Claude Code oleh penguji independen, 23 Sep 2026, data fiktif, `examples/01-hijab-shopee-target-margin.md`; HPP = modal per barang):
 > ### Shopee - target margin 25% dari harga setelah voucher
 > - Harga minimal agar tidak rugi: **Rp 33.525**
-> - Harga tepat sesuai target: Rp 46.988
+> …
 > - **Harga rekomendasi (dibulatkan ke atas kelipatan Rp 500): Rp 47.000**
->
-> Rincian pada harga rekomendasi:
 >
 > | Komponen | Nilai |
 > |---|---:|
@@ -60,7 +58,7 @@ Salin folder `harga-jual-marketplace` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat → harga/laba salah; dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka dicek ulang secara independen pada 300 kasus acak, tanpa selisih). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah otomatis OpenClaw 2026-10-01 sudah dijalankan, tetapi skor angkanya belum didokumentasikan di folder `examples/`.
+**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 23 Sep 2026, pada versi awal skill; 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat, jadi laba per barang tampak Rp11.992 (yang benar Rp11.758) dan harga impas tidak diberikan (harga tayang akhirnya sama, Rp47.000); dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka dicek ulang secara independen pada 300 kasus acak, tanpa selisih). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah otomatis OpenClaw 2026-10-01 sudah dijalankan, tetapi skor angkanya belum didokumentasikan di folder `examples/`.
 
 **Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat CLI + uji sebelum/sesudah otomatis 2026-10-01). Codex dan Cursor belum kami uji langsung.
 
@@ -69,7 +67,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 Biaya marketplace berbeda per kategori dan program, dan sering berubah. Supaya hasilnya akurat, ambil angka terbaru dari Seller Center Anda. Kalau cuma ingin gambaran, skill bisa memakai angka contoh yang diberi label jelas.
 
 **Apa itu PPh 22 0,5% yang ikut dipotong?**
-Sejak 1 Agustus 2026 marketplace yang ditunjuk memungut PPh 22 sebesar 0,5% dari omzet penjual. Penjual perorangan dengan omzet setahun sampai Rp500 juta bisa dikecualikan jika sudah menyerahkan surat pernyataan ke marketplace.
+Menurut PMK 37/2025 (dasar aturan kami cek per 23 September 2026; cek ulang bila ada perubahan), marketplace yang ditunjuk memungut PPh 22 sebesar 0,5% dari omzet penjual mulai 1 Agustus 2026. Penjual perorangan dengan omzet setahun sampai Rp500 juta bisa dikecualikan jika sudah menyerahkan surat pernyataan ke marketplace. Status TikTok Shop sebagai pemungut belum kami verifikasi; skill tetap memasukkan PPh 22 sebagai perkiraan hati-hati, dan Anda bisa minta hitung ulang tanpa PPh 22 bila toko Anda tidak dipotong.
 
 **Modal saya belum tahu pasti, bagaimana?**
 Hitung dulu dengan skill Komunitech lain, `hitung-hpp` (menghitung modal per produk dari bahan, tenaga kerja, kemasan, dll.), lalu pakai hasilnya sebagai modal di sini.
