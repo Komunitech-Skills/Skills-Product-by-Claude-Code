@@ -119,4 +119,4 @@ tabel "Pilih skill yang mana?" di `SKILL.md`.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

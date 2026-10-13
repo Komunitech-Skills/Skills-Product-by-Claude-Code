@@ -35,7 +35,7 @@ tidak ada di sumber (lihat "Apa yang diubah/ditambahkan").
   diadaptasi** — di luar cakupan skill ini.
 - Tidak ditemukan API key, token, atau data pribadi tertanam di bagian yang diadaptasi.
 - Sinyal bukti pemakaian nyata (Tahap 2 CLAUDE.md): repo aktif dirawat, ★11,3k/Fork 775 (dicatat di
-  `research/sources/instagram-repo-2026-09-26.md` #15), instruksi spesifik & teruji (dilengkapi
+  catatan riset internal kurator (tidak disertakan dalam paket) #15), instruksi spesifik & teruji (dilengkapi
   `eval.md` sebagai checklist verifikasi), dipakai lintas platform (ChatGPT/Claude/Codex sesuai
   README sumber). Lolos ambang kurasi.
 - Kesimpulan: **lolos audit**, aman diadaptasi.

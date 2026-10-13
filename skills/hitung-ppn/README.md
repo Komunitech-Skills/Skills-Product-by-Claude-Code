@@ -74,4 +74,4 @@ Tidak. Faktur pajak resmi tetap dibuat di Coretax (sistem pajak online milik Dir
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

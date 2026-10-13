@@ -21,7 +21,7 @@ sys.path.insert(0, FOLDER)
 import ter_core as tc  # noqa: E402
 import pph21  # noqa: E402
 
-# SHA-256 ter_tabel.json = research/sources/pph21-ter-tabel.json (terverifikasi dari Lampiran PP 58/2023)
+# SHA-256 ter_tabel.json = salinan tabel resmi di catatan riset internal kurator (terverifikasi dari Lampiran PP 58/2023)
 SHA256_TABEL = "26edfe89bda74169a5280317da194cec3194e8c48c661a8e6860ff8b48d5da72"
 SUMBER_REPO = os.path.normpath(os.path.join(FOLDER, "..", "..", "..", "research", "sources", "pph21-ter-tabel.json"))
 

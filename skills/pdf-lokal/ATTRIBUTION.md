@@ -31,7 +31,7 @@ pengguna** di komputernya (lihat `references/pasang-stirling.md`). Stirling-PDF:
 
 Bila Stirling-PDF mengganti lisensi intinya di kemudian hari (sudah pernah terjadi
 pada beberapa proyek open-core lain), skill ini perlu ditinjau ulang - lihat
-`research/software-pengganti-saas-2026-09-23.md` poin risiko lisensi.
+catatan riset internal kurator (tidak disertakan dalam paket) poin risiko lisensi.
 
 ## Alat lokal jalur cadangan (v1.0.5)
 

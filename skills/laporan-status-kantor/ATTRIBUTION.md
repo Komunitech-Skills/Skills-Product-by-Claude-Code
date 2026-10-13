@@ -104,7 +104,7 @@ diambil dari sumber murni gagasan struktural tingkat tinggi (lihat bawah).
   user" — nihil kecocokan di kelima file).
 - Tidak ditemukan API key, token, atau data pribadi tertanam.
 - **Hasil: LULUS audit keamanan**, sesuai catatan awal di
-  `research/sources/kurasi-terbukti-2026-09-23.md` §4.
+  catatan riset internal kurator (tidak disertakan dalam paket) §4.
 
 ## Teks lisensi asli (Apache License, Version 2.0)
 

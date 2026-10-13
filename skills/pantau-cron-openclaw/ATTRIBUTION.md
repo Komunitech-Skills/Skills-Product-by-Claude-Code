@@ -7,6 +7,6 @@ Konsep "dead man's switch" untuk job terjadwal -- tiap job mengirim *ping* saat 
 
 Opsi lanjutan (ping ke layanan Healthchecks milik pengguna) hanya memanggil alamat ping yang dimiliki pengguna sendiri; Komunitech tidak berafiliasi dengan proyek atau layanan Healthchecks. Nama "Healthchecks" disebut sebagai penyebut produk.
 
-Catatan audit: `research/sources/healthchecks-2026-10-12.md`.
+Catatan audit: catatan riset internal kurator (tidak disertakan dalam paket).
 
 Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian.

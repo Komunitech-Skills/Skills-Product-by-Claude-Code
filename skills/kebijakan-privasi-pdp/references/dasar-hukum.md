@@ -79,7 +79,7 @@ Sumber (dicek via pencarian 2026-09-25):
 - Justisio (LN No. 88, 12 bab — sekunder): https://justisio.com/regulation/indonesia/dbwgcly3epltypka7sebq61yx · depositobpr.id: https://depositobpr.id/blog/pp-33-2026-aturan-turunan-uu-pelindungan-data-pribadi
 - UU 35/2014 Ps. 1 angka 1 (definisi anak): https://bphn.go.id/data/documents/14uu035.pdf · Kompas (Ps. 25 UU PDP): https://nasional.kompas.com/read/2022/09/20/13013871/uu-pdp-pemrosesan-data-anak-dan-penyandang-disabilitas-diatur-khusus (dicek 25 Sep 2026)
 - Katadata (data anak): https://katadata.co.id/finansial/makro/6a9979b7c5745/pp-pelindungan-data-pribadi-berlaku-januari-2027-ini-aturan-baru-data-anak
-- Catatan riset internal sebelumnya: `research/sources/verifikasi-regulasi-2026-09-23.md` #31
+- Catatan riset internal kurator sebelumnya: verifikasi regulasi 2026-09-23, butir #31 (PP 33/2026); tidak disertakan dalam paket
 
 ## 3. Lembaga pengawas PDP (Perpres) — ⚠️ BELUM TERBENTUK per 26 September 2026 (dicek ulang lewat pemberitaan; tidak ada Perpres yang ditemukan di pencarian 2026-09-26; situs komdigi/BPK 403)
 - UU PDP Ps. 58: lembaga ditetapkan Presiden, diatur Perpres.

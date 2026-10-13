@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.6 (2026-10-13)
+- `references/openclaw-jadwal.md`: dua rujukan ke aturan pengujian internal diganti kalimat yang berdiri sendiri (pengujian independen oleh kurator Komunitech); konstanta VERSI skrip dan penanda versi di SKILL.md disamakan; cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.5 (2026-10-01)
 Perbaikan dari uji OpenClaw asli 2026-10-01 (skenario laporan progres dari file CSV):
 - **Jam tidak lagi dibulatkan 1 desimal.** 3,25 jam tampil "3,25 jam" (sebelumnya "3,2"), total

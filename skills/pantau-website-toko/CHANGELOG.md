@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.10 (2026-10-13)
+
+- `SKILL.md`: rujukan ke catatan riset internal diganti kalimat yang berdiri sendiri; konstanta VERSI skrip dan penanda versi di SKILL.md disamakan; cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.9 (2026-10-03)
 
 - Description melarang eksplisit tawaran balik "aku setup/aktifkan pemantauan/alert/cek tiap jam"; pemicu ditambah ("pantau tiap jam", "cek otomatis", "kabari kalau down").

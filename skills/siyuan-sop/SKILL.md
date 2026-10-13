@@ -16,8 +16,7 @@ notulen, dan FAQ toko/klinik, cukup meminta dengan kalimat biasa, dan agent menj
 komputer pengguna. Python standar saja, tanpa instalasi paket, tanpa MCP komunitas.
 
 **Status uji (rilis awal 1.0.0):** diuji dengan **kernel SiYuan resmi v3.8.5** (biner Linux resmi dari
-GitHub Releases, dijalankan headless di sandbox pembuat - lihat `research/sources/siyuan-2026-09-26.md`
-untuk hasil lengkap) + 49 uji otomatis dengan server tiruan (`tests/`). **Belum** diuji di Windows/macOS
+GitHub Releases, dijalankan headless di sandbox pembuat; hasil lengkapnya ada di riset internal kurator, tidak disertakan dalam paket) + 49 uji otomatis dengan server tiruan (`tests/`). **Belum** diuji di Windows/macOS
 sungguhan maupun di aplikasi desktop SiYuan (Electron) - baru kernel headlessnya.
 
 ## Kapan digunakan
@@ -157,7 +156,7 @@ kantor konsultan, input tidak lengkap, di luar cakupan).
   Kalau `cari` tidak menemukan dokumen yang baru saja dibuat, coba lagi sebentar sebelum
   menyimpulkan datanya hilang.
 - **Jangan pernah** meminta atau menampilkan token API di percakapan; script menyamarkannya di semua keluaran.
-- **Jangan** memasang plugin pihak ketiga SiYuan atau mengaktifkan fitur "Publish" untuk workspace basis pengetahuan ini (alasan keamanan, lihat `references/panduan-siyuan.md` §3 & `research/sources/siyuan-2026-09-26.md`).
+- **Jangan** memasang plugin pihak ketiga SiYuan atau mengaktifkan fitur "Publish" untuk workspace basis pengetahuan ini (alasan keamanan, lihat `references/panduan-siyuan.md` §3).
 - Uji otomatis (`tests/`) hanya ada di repo pengembang Komunitech, tidak ikut paket pembeli.
 
 ## Checklist sebelum menjawab

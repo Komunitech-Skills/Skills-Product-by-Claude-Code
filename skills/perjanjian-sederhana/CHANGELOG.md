@@ -17,3 +17,6 @@ Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
 ## Catatan revisi 1.0.7 (2026-10-13)
 - Rujukan "UU PDP" di checklist tanda tangan kini ditulis lengkap: UU 27/2022 tentang Pelindungan Data Pribadi. Tidak ada perubahan perilaku.
+
+## Catatan revisi 1.0.8 (2026-10-13)
+- `references/regulasi.md`: rujukan ke catatan riset internal diganti kalimat yang berdiri sendiri. Tidak ada perubahan perilaku.

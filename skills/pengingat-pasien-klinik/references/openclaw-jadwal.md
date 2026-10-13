@@ -6,7 +6,7 @@
 --channel telegram --to ...` di bawah disalin dari pola yang sama yang sudah dijalankan sungguhan
 di Gateway OpenClaw untuk `crm-wa` dan `pengingat-follow-up`
 (`skills/crm-wa/references/openclaw-jadwal.md`, `skills/pengingat-follow-up/references/openclaw-jadwal.md`)
-dan untuk paket klinik (`solusi-vip/klinik/jadwal-openclaw.md`). **Tidak ada flag baru yang
+dan untuk paket klinik (`solusi-vip/klinik/jadwal-openclaw.md`, hanya di paket VIP). **Tidak ada flag baru yang
 ditebak di sini.** Kombinasi utuh khusus skill `pengingat-pasien-klinik` **belum diuji** di
 Gateway sungguhan — tandai 📖 (flag terverifikasi di skill lain, kombinasi ini belum dicoba)
 sampai diuji ulang saat Tahap 6.

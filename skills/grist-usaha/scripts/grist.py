@@ -34,7 +34,7 @@ Contoh:
   python3 grist.py ringkasan "Data Usaha Saya.grist" Pelanggan
   python3 grist.py ekspor-csv "Data Usaha Saya.grist" Pelanggan --keluaran pelanggan.csv
 
-Referensi endpoint & format: `research/sources/grist-2026-09-26.md` (dikonfirmasi langsung
+Referensi endpoint & format: catatan riset internal kurator (dikonfirmasi langsung
 dari kode sumber resmi `grist-core` v1.7.19 - app/server/lib/DocApi.ts, app/gen-server/ApiServer.ts,
 app/server/lib/DocStorage.ts, sandbox/grist/schema.py). Endpoint REST **belum** diuji terhadap
 server Grist yang sungguhan menyala (lihat catatan kejujuran di README.md skill ini); baca .grist
@@ -56,7 +56,7 @@ import urllib.request
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.9"
+VERSI = "1.0.10"
 APLIKASI = "grist-usaha"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1"}
 FILE_KUNCI_DEFAULT = Path.home() / ".komunitech" / "grist-kunci.txt"

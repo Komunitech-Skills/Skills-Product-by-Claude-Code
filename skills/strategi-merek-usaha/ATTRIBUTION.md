@@ -18,7 +18,7 @@ Bagian yang dipelajari (struktur/alur saja):
 - Seluruh `SKILL.md` dan `references/` yang diadaptasi dibaca penuh. Skill `offers` dan `product-name` tidak memiliki folder `scripts/`; tidak ada kode dari sumber yang dijalankan atau disalin.
 - Pencarian pola berbahaya (curl/wget/eval/exec/base64, kredensial, token, instruksi "abaikan") pada file terpilih: tidak ditemukan. Tidak ada prompt injection tersembunyi, permintaan mengirim file, atau menonaktifkan konfirmasi.
 - Tidak ada API key/token/data pribadi tertanam.
-- Kesimpulan: **lolos audit**. Sinyal sumber: marketingskills ±52 rb bintang, ±7,8 rb fork; pm-skills ±26,7 rb bintang, ±2,8 rb fork (GitHub, dicek 2026-09-30); dirawat aktif; pembuat individu (lihat `research/sources/branding-naming-2026-09-30.md`).
+- Kesimpulan: **lolos audit**. Sinyal sumber: marketingskills ±52 rb bintang, ±7,8 rb fork; pm-skills ±26,7 rb bintang, ±2,8 rb fork (GitHub, dicek 2026-09-30); dirawat aktif; pembuat individu (lihat catatan riset internal kurator (tidak disertakan dalam paket)).
 
 ## Apa yang diubah/ditambahkan (file telah diubah dari sumber)
 Sumber berbahasa Inggris dan berorientasi kursus/info-produk/SaaS dan pasar global. Perubahan besar:

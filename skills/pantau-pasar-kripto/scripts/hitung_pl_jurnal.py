@@ -35,7 +35,7 @@ menebak sebabnya; `cek_biaya_beli_vs_jual` menandai bila median biaya jual vs be
 punya transaksi (header saja) BUKAN error -- keluar status "ok" dengan hasil kosong.
 
 Pembulatan: semua angka Rupiah pada hasil akhir (proceeds, cost basis, P/L) dibulatkan ke
-rupiah terdekat (pembulatan matematis biasa), sesuai standar CLAUDE.md. Jumlah koin TIDAK
+rupiah terdekat (pembulatan matematis biasa), sesuai standar library Komunitech. Jumlah koin TIDAK
 dibulatkan (presisi desimal dipertahankan apa adanya).
 
 Filter periode (opsional, `--periode bulan-ini|tahun-ini|semua` atau `--dari`/`--sampai`

@@ -6,12 +6,12 @@ Sumber pola: `skills/pengingat-follow-up/references/openclaw-jadwal.md` — doku
 verifikasinya di seluruh library (diuji sungguhan di OpenClaw **2026.9.5 (ec9c1a1)** dan **2026.9.6
 (eb377ac)** terhadap Gateway lokal `gateway run --dev --allow-unconfigured --bind loopback`).
 Salinan pola yang sama juga sudah dipakai di `skills/crm-wa/references/openclaw-jadwal.md` dan
-`solusi-vip/konsultan/jadwal-openclaw.md`. Flag di bawah **tidak diarang baru** — semuanya persis
+`solusi-vip/konsultan/jadwal-openclaw.md` (hanya di paket VIP). Flag di bawah **tidak diarang baru** — semuanya persis
 flag yang sudah terbukti diterima `openclaw automations add`.
 
 Legenda: ✅ = pola **dijalankan sungguhan** untuk skill lain (job terbentuk & terverifikasi dari
-JSON hasilnya). ⚠️ = kombinasi khusus dengan `laporan_klien.py` **belum diuji** di Gateway oleh tim
-kurasi (Tahap 6 CLAUDE.md tetap wajib sebelum status `lulus`).
+JSON hasilnya). ⚠️ = kombinasi yang belum dijalankan sungguhan di Gateway oleh tim kurasi. Pola §2 dengan
+`laporan_klien.py` sudah dijalankan sungguhan dan laporannya tiba di Telegram (13 Oktober 2026).
 
 **Jadwal ini hanya mengirim draf ke Telegram/WhatsApp PEMILIK/KONSULTAN sendiri — tidak pernah
 langsung ke klien.** Draf yang diterima wajib ditinjau lalu disalin manual ke email/WA klien.
@@ -86,7 +86,7 @@ telegram <KODE>` (berlaku 1 jam). Cara mencari ID chat: lihat
 ## 7. Yang belum diverifikasi ⚠️
 - Kombinasi persis `openclaw automations add` dengan `laporan_klien.py` (§1-§3 di atas) — pola
   cron/flag sudah terbukti untuk skill lain, tapi belum dicoba sungguhan di Gateway untuk skill
-  ini. **Wajib** diuji (Tahap 6 CLAUDE.md, `automations run <id> --wait`) sebelum status `lulus`.
+  ini. **Wajib** diuji (pengujian independen oleh kurator Komunitech, `automations run <id> --wait`) sebelum status `lulus`.
 - Pengiriman nyata ke Telegram/WhatsApp (uji internal tidak memakai token bot/nomor asli).
 - Membuat jadwal ini langsung dari chat ("aktifkan draf laporan tiap Jumat") — kombinasi persis
   belum dicoba tim kami. Kalau gagal/aneh, jalankan perintah dari terminal/Control UI.

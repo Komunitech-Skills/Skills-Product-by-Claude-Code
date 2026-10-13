@@ -16,9 +16,8 @@ permintaan biasa, dan agent membantu: merancang struktur tabel, menuliskan rumus
 membersihkan & mengimpor data CSV, serta membaca file `.grist` (SQLite) untuk membuat ringkasan/
 laporan. Semua lewat `scripts/grist.py`, Python standar saja, tanpa instalasi paket.
 
-**Versi 1.0.3. Status uji:** dibuat & diuji dengan **file `.grist` (SQLite) TIRUAN** (skemanya
-disusun sama persis dengan kode sumber resmi `grist-core` v1.7.19, dibaca langsung dari GitHub —
-lihat `research/sources/grist-2026-09-26.md`) dan **server REST API TIRUAN** yang meniru bentuk
+**Status uji (sejak versi 1.0.3):** dibuat & diuji dengan **file `.grist` (SQLite) TIRUAN** (skemanya
+disusun sama persis dengan kode sumber resmi `grist-core` v1.7.19, dibaca langsung dari GitHub) dan **server REST API TIRUAN** yang meniru bentuk
 respons resmi. **Belum diuji** terhadap Grist Desktop atau `grist-core`/Docker yang sungguhan
 menyala (lingkungan pembuatan skill ini tidak bisa menjalankan Docker/GUI) — lihat
 `examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md` untuk rincian kejujuran ini. Status katalog: **draft**.

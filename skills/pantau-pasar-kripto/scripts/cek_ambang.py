@@ -110,7 +110,7 @@ def bulat_setengah_ke_atas(nilai, digit=0):
     """Pembulatan matematis biasa (0,5 ke atas), BUKAN pembulatan genap Python.
 
     Dipakai untuk semua angka Rupiah yang ditampilkan (dibulatkan ke rupiah terdekat,
-    sesuai standar CLAUDE.md), dan untuk persentase (dibulatkan 2 desimal untuk tampilan).
+    sesuai standar library Komunitech), dan untuk persentase (dibulatkan 2 desimal untuk tampilan).
     """
     if nilai is None:
         return None

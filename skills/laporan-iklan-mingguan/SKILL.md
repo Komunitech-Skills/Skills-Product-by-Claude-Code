@@ -155,7 +155,7 @@ catatan "wajar lebih mahal per hasil, nilai juga dari CPC & CTR".
 TERBAIK = biaya per hasil termurah; PERLU PERHATIAN = tanpa hasil (biaya terbesar dulu) lalu
 biaya per hasil termahal; keduanya **tidak pernah beririsan**. Saran "matikan" = biaya per hasil
 > 2× rata-rata; "naikkan" = ≤ ½ rata-rata; di bawah 5 hasil diberi catatan "sampel kecil".
-**Pembulatan (sama untuk seluruh library, lihat `CLAUDE.md`):** skill ini tidak menghitung PPN;
+**Pembulatan (standar yang sama untuk seluruh library Komunitech):** skill ini tidak menghitung PPN;
 nominal Rupiah dibulatkan ke rupiah terdekat, 0,5 menjauhi nol (mis. Rp100,5 → Rp101). Persen & ROAS dibulatkan 1 desimal,
 0,05 menjauhi nol (mis. 91,65% → 91,7%). Perbandingan minggu lalu memakai rumus yang sama seperti
 `laporan-harian-usaha`: `(sekarang − lalu) ÷ lalu × 100`; pembanding Rp0 → "naik dari Rp 0 (persen

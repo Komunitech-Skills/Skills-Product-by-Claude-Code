@@ -16,7 +16,7 @@ Lisensi: **Proprietary Komunitech** - penggunaan tunduk pada `LISENSI.txt` dalam
   verifikasi).
 - Templat SOP/FAQ (`references/template-sop-faq.md`) dan seluruh panduan instalasi/keamanan
   (`docs/panduan-siyuan.md`) ditulis dari nol oleh Komunitech berdasarkan riset & pengujian
-  langsung (`research/sources/siyuan-2026-09-26.md`), bukan salinan dokumentasi SiYuan.
+  langsung (catatan riset internal kurator (tidak disertakan dalam paket)), bukan salinan dokumentasi SiYuan.
 - "SiYuan" dan "b3log" adalah nama/merek milik pemiliknya. **Komunitech tidak berafiliasi dengan
   proyek SiYuan atau b3log**; nama dipakai hanya untuk menjelaskan kompatibilitas.
 

@@ -102,4 +102,4 @@ Bisa. Minta rentang waktu tertentu (mis. "3 hari terakhir" atau "sejak kemarin s
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

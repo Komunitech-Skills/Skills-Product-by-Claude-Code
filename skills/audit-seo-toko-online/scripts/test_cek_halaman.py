@@ -2,7 +2,7 @@
 """Tes mandiri untuk cek_halaman.py. Jalankan: python3 test_cek_halaman.py
 Tidak memakai framework eksternal (hanya pustaka standar) supaya bisa jalan
 di mana saja. Mencakup HTML normal, rusak, kosong, dan encoding aneh sesuai
-Tahap 6 CLAUDE.md.
+pengujian independen kurator Komunitech.
 """
 import sys
 import tempfile

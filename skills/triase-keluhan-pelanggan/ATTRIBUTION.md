@@ -17,7 +17,7 @@
 - Diperiksa: perintah destruktif, pengiriman data ke server luar, pembacaan kredensial/SSH key/data browser, pengunduh-lalu-eksekusi otomatis, kode ter-obfuscate, instruksi tersembunyi (mengabaikan pengguna, mengirim file, menonaktifkan konfirmasi), API key/token tertanam, dan prompt injection. **Nihil.** Yang ada hanya penanda konektor (`~~support platform`, `~~CRM`) dan tawaran langkah lanjutan; keduanya tidak dibawa.
 - Catatan: kedua frontmatter sumber memuat `argument-hint` (tidak dibawa; frontmatter di sini hanya `name` dan `description`). Bagian yang tidak dibawa tidak memengaruhi keamanan.
 - Kesimpulan: **lolos audit**, aman diadaptasi.
-- Lihat juga `research/sources/knowledge-work-plugins-2026-10-05.md` (bagian skill ini) di repo kurator.
+- Lihat juga catatan riset internal kurator (tidak disertakan dalam paket) (bagian skill ini) di repo kurator.
 
 ## Pernyataan perubahan (Apache-2.0 bagian 4b: berkas telah diubah)
 Materi asal **telah diubah** oleh Komunitech:

@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.9 (2026-10-13)
+- `references/openclaw-jadwal.md`: rujukan ke panduan jadwal paket klinik diberi keterangan "hanya di paket VIP" agar pembeli ecer tidak mencari berkas yang tidak ada. Script dan cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.8 (2026-10-02)
 - Temuan uji ulang paket klinik (1B): agent salah menyebut skill untuk laporan mingguan klinik. Kini rujukan dipertegas: laporan mingguan 3P → `laporan-status-kantor`; rekap dari file CSV kunjungan → `edukasi-pasien-klinik`; skill ini hanya ringkasan pengingat harian. Script tidak berubah.
 

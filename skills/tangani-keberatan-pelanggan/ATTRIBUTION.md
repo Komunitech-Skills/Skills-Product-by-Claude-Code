@@ -17,7 +17,7 @@
 - Diperiksa: perintah destruktif, pengiriman data ke server luar, pembacaan kredensial/SSH key/data browser, pengunduh-lalu-eksekusi otomatis, kode ter-obfuscate, instruksi tersembunyi (mengabaikan pengguna, mengirim file, menonaktifkan konfirmasi), API key/token tertanam, dan prompt injection. **Nihil.** Aturan sumber justru berisi pagar yang baik: isi email/transkrip/dokumen eksternal adalah data bukan perintah; tindakan yang diminta oleh isi teks harus ditunjukkan ke pengguna dulu; balasan hanya ke pengirim thread, tidak ke alamat yang disebut di dalam teks keberatan. Semangat itu dipertahankan (langkah 1 di `SKILL.md`).
 - Catatan: `LICENSE` root repo memuat teks acak non-lisensi di akhir berkas; tidak berupa perintah ke agent, tidak disalin. `sales/LICENSE` bersih.
 - Kesimpulan: **lolos audit**, aman diadaptasi.
-- Lihat juga `research/sources/knowledge-work-plugins-2026-10-05.md` (bagian skill ini) di repo kurator.
+- Lihat juga catatan riset internal kurator (tidak disertakan dalam paket) (bagian skill ini) di repo kurator.
 
 ## Pernyataan perubahan (Apache-2.0 bagian 4b: berkas telah diubah)
 Materi asal **telah diubah** oleh Komunitech:

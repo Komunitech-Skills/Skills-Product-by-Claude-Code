@@ -73,4 +73,4 @@ SiYuan software sumber terbuka yang cukup populer dan aktif dikembangkan. Komuni
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

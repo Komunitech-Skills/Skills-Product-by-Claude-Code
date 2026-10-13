@@ -44,6 +44,6 @@ Indonesia, dan seluruh teks — tidak ada kalimat yang disalin dari sumber.
 LinkedIn/portal lowongan kerja (job board), auto-apply, dan seluruh alur yang login ke situs
 pihak ketiga. Skill ini hanya memproses teks lowongan yang **ditempel manual** oleh pengguna.
 
-Dicatat di `research/sources/instagram-repo-2026-09-26.md` (baris #11, ai-job-search).
+Dicatat di catatan riset internal kurator (tidak disertakan dalam paket) (baris #11, ai-job-search).
 
 Penggunaan skill ini oleh pembeli tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian.

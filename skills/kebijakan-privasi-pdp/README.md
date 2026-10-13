@@ -93,4 +93,4 @@ Untuk menyusun kebijakan, Anda tidak perlu menempel data pelanggan asli. Cukup c
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

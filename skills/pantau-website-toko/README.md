@@ -93,4 +93,4 @@ Bisa — pakai cek cepat kapan saja tanpa instalasi apa pun. Untuk pemantauan ot
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

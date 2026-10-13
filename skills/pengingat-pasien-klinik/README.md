@@ -98,4 +98,4 @@ sesuai hak pasien menurut UU PDP 27/2022. Salinan cadangan atau berkas yang Anda
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

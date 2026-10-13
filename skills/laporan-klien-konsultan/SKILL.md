@@ -14,7 +14,7 @@ klien cukup **mencatat pekerjaan sekali jalan** saat selesai dikerjakan, lalu ti
 nol tiap minggu dan tanpa menghitung jam secara manual. Semua angka (total jam, jumlah pekerjaan)
 dihitung `scripts/laporan_klien.py`, bukan diperkirakan.
 
-**Versi 1.0.5** (revisi uji OpenClaw 2026-10-01): jam tampil sampai 2 desimal (3,25 jam, bukan
+**Versi 1.0.6** (2026-10-13: hanya rujukan dokumen internal diganti kalimat yang berdiri sendiri; cara kerja sama dengan 1.0.5, revisi uji OpenClaw 2026-10-01): jam tampil sampai 2 desimal (3,25 jam, bukan
 3,2) dan total = jumlah persis jam per baris; file catatan CSV milik pengguna bisa langsung
 dibaca (`--file`); "Rencana berikutnya" tidak lagi mengulang judul tugas. Uji regresi 45/45.
 

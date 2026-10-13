@@ -6,8 +6,7 @@ Excel) — kolom lain diakses lewat `$NamaKolom`, fungsi bawaan Excel-style sepe
 **terakhir** adalah nilai yang dikembalikan (mirip menjalankan beberapa baris di konsol Python).
 
 **Kejujuran soal pengujian:** rumus di bawah ditulis mengikuti daftar fungsi resmi Grist yang
-dikonfirmasi langsung dari kode sumber `grist-core` (`sandbox/grist/functions/*.py` — lihat
-`research/sources/grist-2026-09-26.md`), **bukan** hasil menjalankan langsung di dokumen Grist
+dikonfirmasi langsung dari kode sumber `grist-core` (`sandbox/grist/functions/*.py`), **bukan** hasil menjalankan langsung di dokumen Grist
 sungguhan (lingkungan pembuatan skill ini tidak bisa menjalankan Grist). Grist menampilkan
 galat rumus secara langsung di kotak formula (kotak berubah merah + pesan error) — kalau ada
 rumus di bawah yang tidak persis cocok dengan versi Grist Anda, perbaiki sedikit mengikuti

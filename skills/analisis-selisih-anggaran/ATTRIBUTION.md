@@ -15,7 +15,7 @@
 ## Audit keamanan (Tahap 3 CLAUDE.md), 2026-10-05
 - Dibaca penuh: `SKILL.md` sumber (266 baris) dan `finance/LICENSE`. Folder skill sumber tidak berisi script; tidak ada yang dijalankan.
 - Diperiksa (manual + pencarian pola curl/wget/eval/base64/rm/ssh/token/api key/password/secret/ignore): perintah destruktif, pengiriman data ke luar, pembacaan kredensial, kode ter-obfuscate, instruksi tersembunyi/prompt injection, API key tertanam. **Nihil.** Sumber memuat disclaimer "bukan nasihat keuangan, perlu ditinjau profesional" — semangatnya dipertahankan.
-- Kesimpulan: **lolos audit**. Catatan lengkap: `research/sources/knowledge-work-plugins-2026-10-05.md` (bagian skill ini) di repo kurator.
+- Kesimpulan: **lolos audit**. Catatan lengkap: catatan riset internal kurator (tidak disertakan dalam paket) (bagian skill ini) di repo kurator.
 
 ## Pernyataan perubahan (Apache-2.0 bagian 4b: berkas telah diubah)
 Materi asal **telah diubah** oleh Komunitech:
