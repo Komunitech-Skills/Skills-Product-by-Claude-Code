@@ -1,18 +1,20 @@
 # Cek Kesehatan Akun Iklan dalam 15 Menit
 
-**Tahu persis kenapa iklan Anda boros — dan apa yang dibenahi dulu minggu ini.**
+**Cari tahu kenapa iklan Anda boros — dan apa yang dibenahi dulu minggu ini.**
 
 Untuk Meta (Facebook/Instagram) Ads, TikTok Ads, Google Ads, Shopee Ads, dan iklan TikTok Shop/Tokopedia.
-Tanpa memberi password, tanpa login, tanpa API: cukup screenshot, file ekspor, atau menjawab beberapa pertanyaan.
+Tanpa memberi password, tanpa login, tanpa sambungan teknis (API): cukup screenshot, file ekspor, atau menjawab beberapa pertanyaan.
+
+*Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (pembeda terbesar: skill menolak login/password akun iklan dan mengikuti aturan iklan klinik, sedangkan AI biasa menawarkan login dan menyarankan testimoni pasien; hitungan titik impas iklan (ROAS impas) sudah benar di kedua sisi).*
 
 Versi 1.0.5.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Skor kesehatan 0–100 yang bisa dipertanggungjawabkan** — dihitung script dengan bobot jelas, bukan "feeling" AI.
-- ✅ **81 titik cek khusus pasar Indonesia**: iklan klik-ke-WhatsApp, target ROAS Shopee vs titik impas, anggaran habis sebelum jam ramai malam, tanggal kembar, kata kunci "gratis/pdf" di Google.
-- ✅ **Urutan perbaikan paling masuk akal** — dampak × kemudahan, lengkap dengan "skor naik berapa kalau ini beres".
+- ✅ **Skor kesehatan 0–100 dengan bobot yang jelas** — dihitung skrip, bukan "feeling" AI (skor tetap perkiraan dari bukti yang Anda berikan; makin sedikit bukti, makin ditandai "sementara").
+- ✅ **81 titik cek khusus pasar Indonesia**: iklan klik-ke-WhatsApp, target ROAS (omzet iklan per Rp1 biaya iklan) Shopee vs titik impas, anggaran habis sebelum jam ramai malam, tanggal kembar, kata kunci "gratis/pdf" di Google.
+- ✅ **Urutan perbaikan berdasarkan dampak dan kemudahan**, lengkap dengan "skor naik berapa kalau ini beres".
 - ✅ **Rencana 7 hari siap jalan**, ±1–2 jam per hari, termasuk hari "jangan diutak-atik" agar iklan sempat belajar.
 - ✅ **Hitung ROAS impas per produk** — berapa biaya iklan maksimal per pesanan sebelum Anda rugi.
 
@@ -20,18 +22,27 @@ Versi 1.0.5.
 - Pemilik toko online (Shopee, TikTok Shop, Tokopedia) yang beriklan sendiri.
 - Klinik, salon, kursus, jasa lokal yang beriklan ke WhatsApp atau website.
 - Agensi/freelancer iklan kecil yang butuh checklist audit rapi untuk klien baru.
-- Tidak cocok bila Anda butuh laporan angka mingguan → pakai **Laporan Iklan Mingguan** (skill pasangan).
+- Tidak cocok bila Anda butuh laporan angka mingguan → pakai **Laporan Iklan Mingguan** (skill Komunitech lain yang merangkum angka iklan tiap minggu).
 
 ## Contoh sebelum & sesudah
 **Sebelum (AI tanpa skill):** "Coba optimalkan target audiens, perbaiki materi iklan, dan pantau ROAS secara berkala."
 Saran umum, tidak ada angka, tidak tahu harus mulai dari mana.
 
 **Sesudah (cukup ketik):** "Tolong audit iklan Shopee toko gamis saya, anggaran 50rb/hari tapi ROAS jelek."
-→ Skor **41,3/100 (Kritis)**, bukti 97%. Tiga masalah terbesar:
-1. Target ROAS 2, padahal titik impas gamis Anda **2,92** — iklan laku tapi rugi per pesanan.
-2. Anggaran habis **jam 14.00**, iklan mati saat pembeli ramai malam hari.
-3. Kata kunci "gamis murah" menghabiskan **Rp212rb tanpa satu pesanan**.
-Plus rencana Senin–Minggu apa yang dikerjakan tiap hari.
+```
+Skor gabungan: 41,3 / 100 (Kritis) - FINAL; bobot: satu platform
+PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
+1. [S06] Target ROAS/bid di atas ROAS impas - Shopee Ads; tinggi, mudah; prioritas 9; skor platform naik +10,0 bila beres
+   Catatan audit: Target ROAS 2, padahal ROAS impas 2,92 (biaya Shopee 12% + kemas Rp2.000)
+2. [S07] Anggaran tidak habis sebelum jam ramai - Shopee Ads; tinggi, mudah; prioritas 9; skor platform naik +10,0 bila beres
+   Catatan audit: Anggaran Rp50rb/hari habis jam 14.00
+3. [S14] Kata kunci/iklan boros dihentikan - Shopee Ads; tinggi, mudah; prioritas 9; skor platform naik +10,0 bila beres
+   Catatan audit: Kata kunci "gamis murah" habis Rp212rb, 0 pesanan
+…
+Hari 6 (Sabtu, 3 Okt 2026):
+  - Jangan ubah pengaturan besar; biarkan iklan belajar setelah perbaikan. Catat biaya & hasil harian.
+```
+(Contoh dengan data fiktif dari `examples/uji-pembuat-01-toko-fashion-shopee.md`, dipotong; harga gamis Rp149.000, modal Rp78.000. AI lalu menjelaskan tiga masalah terbesar dengan bahasa sehari-hari.)
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -54,13 +65,13 @@ Salin folder `audit-akun-iklan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Shopee gamis: ROAS impas **2,66** — target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854. Menolak login/password klinik dan testimoni pasien (Permenkes). Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Data uji OpenClaw berbeda dari contoh di atas (gamis harga Rp189.000, modal Rp95.000): ROAS impas **2,66** — target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854. Menolak login/password klinik dan testimoni pasien (Permenkes). Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`; contoh "Sesudah" di atas berasal dari simulasi pembuat skill, bukan dari uji OpenClaw.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (AgriciDaniel/claude-ads) — lihat `ATTRIBUTION.md`. Skor bukan jaminan penjualan naik; patokan frekuensi/ROAS adalah heuristik awal.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (AgriciDaniel/claude-ads) — lihat `ATTRIBUTION.md`. Skor bukan jaminan penjualan naik; patokan frekuensi (berapa kali orang yang sama melihat iklan) dan ROAS adalah patokan awal berdasarkan kebiasaan umum.
 
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**
-Tidak. Skill ini sengaja tidak login dan tidak memakai API. Semua perubahan tetap Anda lakukan sendiri. Jangan pernah mengirim password/OTP ke chat.
+Tidak. Skill ini sengaja tidak login dan tidak memakai API (sambungan teknis ke akun iklan). Semua perubahan tetap Anda lakukan sendiri. Jangan mengirim password/OTP ke chat.
 
 **Apakah skor ini dijamin membuat penjualan naik?**
 Tidak ada yang bisa menjamin itu. Skor adalah alat untuk menentukan apa yang dibenahi dulu. Patokan angka (mis. frekuensi maksimal 3) adalah patokan awal, bukan aturan resmi platform, dan nama menu di aplikasi iklan bisa berubah.
