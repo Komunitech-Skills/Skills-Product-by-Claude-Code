@@ -42,6 +42,10 @@ Salin folder `analisis-ulasan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen: tanpa skill **7,0** → dengan skill **8,25** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: persentase keluhan/pujian, prioritas terukur, username disamarkan; tanpa skill: wawasan benar tapi tanpa sebaran dan membocorkan username.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
+
 ## FAQ
 **Apakah nama pembeli ikut muncul di laporan?**
 Tidak. Kolom nama/username diabaikan, dan nomor HP, email, nomor pesanan, serta sapaan nama di dalam ulasan disamarkan otomatis.

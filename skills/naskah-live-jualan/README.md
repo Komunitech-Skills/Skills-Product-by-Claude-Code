@@ -40,6 +40,10 @@ Salin folder `naskah-live-jualan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.7), skor 1–10 penguji independen: tanpa skill **6,17** → dengan skill **8,83** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: run-of-show + cue stok/harga, cek silang fakta, tanpa kebocoran kata internal; tanpa skill: naskah generik tanpa timing live.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 9, 2026-10-05.

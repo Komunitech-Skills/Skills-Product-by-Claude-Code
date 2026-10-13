@@ -51,6 +51,10 @@ Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (
 
 **Tidak mau repot?** Ada **jasa setup berbayar Komunitech**: komputer/VPS, domain + HTTPS, Fider + database, email pengirim, kunci API, tag awal, dan jadwal ringkasan Telegram. Hubungi admin komunitech.com.
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi, server Fider tiruan + Fider v0.38.0 asli), 2026-10-02 (v1.0.7), skor 1–10 penguji independen: tanpa skill **4,5** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, pratinjau + `--ya`, data disensor, duplikat digabung.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Windows/macOS Fider, jadwal Telegram, dan HTTPS VPS sungguhan belum diverifikasi end-to-end.
+
 ## FAQ
 **Apakah Fider dan biayanya gratis?** Fider gratis (AGPL-3.0) bila dipasang sendiri. Anda hanya membayar listrik/VPS dan email pengirim (banyak penyedia punya paket gratis kecil). Paket ini berisi skill, script, dan panduan Komunitech; Fider diunduh dari sumber resminya.
 
@@ -58,5 +62,3 @@ Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (
 
 **Bagaimana dengan privasi pelanggan?** Papan Fider bisa dilihat publik. Skill menyamarkan nomor HP, telepon rumah/kantor, dan email otomatis, tetapi nama dan detail pesanan Anda periksa sendiri di pratinjau. Catat hanya usulan, bukan data pelanggan. Detail ada di panduan §9.
 
-## Status jujur
-Versi 1.0.9, status uji. Diuji pada Fider **v0.38.0 asli** (Docker + PostgreSQL 17, Linux; Administrator dan Collaborator) plus 43 uji otomatis. **Belum diuji:** Windows/macOS, jadwal OpenClaw/Telegram, HTTPS di VPS sungguhan. Uji banding oleh penguji independen dan uji platform asli menyusul.

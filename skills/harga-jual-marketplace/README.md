@@ -40,6 +40,10 @@ Salin folder `harga-jual-marketplace` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
+**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat → harga/laba salah; dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka diverifikasi script). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah OpenClaw 2026-10-01 tercatat di katalog; berkas skor numerik OpenClaw belum ada di `examples/`.
+
+**Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat CLI + uji sebelum/sesudah otomatis 2026-10-01). Codex dan Cursor belum kami uji langsung.
+
 ## FAQ
 **Kenapa saya harus mengisi sendiri persentase biaya admin?**
 Biaya marketplace berbeda per kategori dan program, dan sering berubah. Supaya hasilnya akurat, ambil angka terbaru dari Seller Center kamu. Kalau cuma ingin gambaran, skill bisa memakai angka contoh yang diberi label jelas.

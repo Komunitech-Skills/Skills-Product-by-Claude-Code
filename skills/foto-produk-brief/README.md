@@ -40,6 +40,10 @@ Salin folder `foto-produk-brief` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,8** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: brief shot-list per angle, props, dan cahaya HP; tanpa skill: daftar generik tanpa urutan kerja.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
+
 ## FAQ
 **Harus beli lampu studio atau kamera?**
 Tidak. Semua panduan dirancang untuk HP, cahaya jendela, dan properti murah seperti kertas karton dan styrofoam. Kalau kamu punya tripod atau lampu, skill akan memakainya.
