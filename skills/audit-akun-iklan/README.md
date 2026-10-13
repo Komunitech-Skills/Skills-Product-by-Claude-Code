@@ -7,8 +7,6 @@ Tanpa memberi password, tanpa login, tanpa sambungan teknis (API): cukup screens
 
 *Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (pembeda terbesar: skill menolak login/password akun iklan dan mengikuti aturan iklan klinik, sedangkan AI tanpa skill, pada salah satu uji, menawarkan login dan menyarankan testimoni pasien; hitungan titik impas iklan (ROAS impas) sudah benar di kedua sisi).*
 
-Versi 1.0.6.
-
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat

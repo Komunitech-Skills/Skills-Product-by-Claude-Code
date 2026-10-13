@@ -81,6 +81,8 @@ Sisa 36 skill aktif (bukan set A–F Akun B, bukan G–J C14), urut abjad, 10 sk
 |-----|--------|
 | K | actual-budget-usaha, agen-cs-toko, aktifkan-kembali-pelanggan, analisis-excel, analisis-pesaing-strategis, analisis-selisih-anggaran, atur-keuangan-pribadi, cari-prospek-web, cek-risiko-dan-asuransi-usaha, checklist-keamanan-pangan-usaha |
 | L | crm-wa, cv-lamaran-ats, edukasi-pasien-klinik, ekstrak-nota-faktur, follow-up-prospek, foto-produk-brief, frappe-books-usaha, gaji-umkm, harga-jual-marketplace, hitung-ppn |
+| M | hledger-usaha, inventree-gudang, iterasi-dari-masukan-pelanggan, kalender-pajak, kartu-belajar-anki, karyawan-ai-mulai, kas-umkm, katalog-reseller, kebijakan-privasi-pdp, kelayakan-investasi-usaha |
+| N | analisis-rasio-keuangan-usaha, analisis-ulasan, arsip-nota, audit-akun-iklan, audit-seo-toko-online, balas-chat-cs |
 
 ## Set K (2026-10-13 ~19:30 UTC)
 
@@ -111,3 +113,31 @@ Sisa 36 skill aktif (bukan set A–F Akun B, bukan G–J C14), urut abjad, 10 sk
 | gaji-umkm | subjudul ganda Hasil uji (jujur) | hapus duplikat, satu blok angka nyata |
 | harga-jual-marketplace | sudah memenuhi checklist | — |
 | hitung-ppn | sudah memenuhi checklist | — |
+
+## Set M (2026-10-13 ~20:30 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| hledger-usaha | sudah memenuhi checklist | — |
+| inventree-gudang | sudah memenuhi checklist | — |
+| iterasi-dari-masukan-pelanggan | sudah memenuhi checklist | — |
+| kalender-pajak | rujukan "topik uji jadwal" di Status uji | bahasa awam + tanggal |
+| kartu-belajar-anki | blok Hasil uji nonstandar; tanpa Status uji | blok **Hasil uji (angka nyata):** + Status uji |
+| karyawan-ai-mulai | "gelombang 6" di Bukti Telegram | tanggal uji bot asli |
+| kas-umkm | rujukan topik forum grup uji | bahasa awam + rujukan examples |
+| katalog-reseller | "gelombang 5" di Bukti Telegram | tanggal uji bot asli |
+| kebijakan-privasi-pdp | "gelombang 5" di Hasil uji & Status | tanggal saja |
+| kelayakan-investasi-usaha | "topik baru bot" di Bukti Telegram | bahasa awam |
+
+## Set N (2026-10-13 ~21:00 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| analisis-rasio-keuangan-usaha | sudah memenuhi checklist | — |
+| analisis-ulasan | sudah memenuhi checklist | — |
+| arsip-nota | baris versi/changelog di atas kotak prasyarat | hapus duplikat (versi hanya di Riwayat) |
+| audit-akun-iklan | baris "Versi 1.0.6" di atas kotak prasyarat | hapus duplikat |
+| audit-seo-toko-online | sudah memenuhi checklist | — |
+| balas-chat-cs | rujukan instalasi tidak konsisten | selaraskan ke `docs/instalasi.md` |
+
+C15 set K–N selesai (36/36). C15 selesai.
