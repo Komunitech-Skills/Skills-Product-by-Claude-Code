@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — idle (C15 selesai 36/36); tunggu tugas baru di papan atau keputusan pemilik.
+1. **Akun C** — idle (C16 selesai); tunggu tugas baru di papan atau keputusan pemilik.
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~21:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 12421b0b | selesai ~21:35 UTC — C16 uji panduan beta (3 skill, tanda berhasil OK); docs c16-uji-panduan-beta.md; TG 242 ya | simulasi | docs | ya |
+| 2026-10-13 ~21:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 21:30 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C16 | — | — | — |
 | 2026-10-13 ~21:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 49598a2f | selesai ~21:15 UTC — C15 set N (3 README diperbaiki, 3 OK); C15 36/36 selesai; validate+rapikan 0/0; TG 242 ya | — | docs | ya |
 | 2026-10-13 ~21:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 21:00 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C15 set N (6 skill) | — | — | — |
 | 2026-10-13 ~20:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 590d3990 | selesai ~20:45 UTC — C15 set M (7 README diperbaiki, 3 OK); validate+rapikan 0/0; TG 242 ya | — | docs | ya |
