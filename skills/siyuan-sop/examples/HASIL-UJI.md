@@ -18,7 +18,7 @@ skill; banding pesaing menunjukkan keunggulan pada keamanan SQL dan lokalisasi. 
 
 Tidak diberi 9-10 karena: (1) skill **belum pernah** diuji terhadap kernel SiYuan asli oleh penguji
 independen manapun selain pembuatnya sendiri (Tahap 6 mensyaratkan penguji terpisah; hasil pembuat di
-`examples/01-03` + `research/sources/` adalah satu-satunya bukti terhadap kernel asli sejauh ini) —
+`examples/01-03` + (riset internal kurator, tidak disertakan dalam paket) adalah satu-satunya bukti terhadap kernel asli sejauh ini) —
 ini bukan salah pembuat/skill, tapi risiko nyata yang belum tertutup independen. (2) beberapa temuan
 minor di bawah.
 

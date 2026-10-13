@@ -20,7 +20,7 @@ Pemilik UMKM, kreator, konsultan, dan profesional yang ingin tampil rutin di Tik
 ## Contoh sebelum/sesudah
 **Sebelum:** "Harus dandan, cari cahaya, rekam 20 kali; akhirnya seminggu tidak posting." Tanpa skill, AI memberi saran alat dan harga terkini, tetapi tanpa persetujuan tertulis, tanpa hitungan revisi, dan label AI dianggap opsional.
 
-**Sesudah (cukup ketik):** "Halo kak, saya pemilik toko skincare kecil. Mau bikin video ngomong ke kamera pakai wajah dan suara AI saya sendiri biar nggak perlu syuting terus. Kira2 12 video sebulan, tiap video 45 detik, budget maks Rp600.000 per bulan. Tayang di TikTok sama Reels."
+**Sesudah (cukup ketik):** "Halo kak, saya pemilik toko skincare kecil. Mau bikin video ngomong ke kamera pakai wajah dan suara AI saya sendiri biar nggak perlu syuting terus. Kira2 12 video sebulan, tiap video 45 detik, budget maks Rp600.000 per bulan. Tayang di TikTok sama Reels. Alat apa yang cocok dan gimana langkahnya?"
 
 Cuplikan balasan (dipotong; contoh dengan data fiktif dari uji OpenClaw, `examples/00-openclaw-sebelum-sesudah.md`; harga alat perkiraan per 2026-09-29):
 ```
@@ -35,7 +35,7 @@ Termurah yang mencukupi: HeyGen Creator (Rp478.500/bulan)
 Label AI (wajib dicentang + taruh di caption)
 "Video ini dibuat dengan bantuan AI. Avatar dan suara adalah tiruan digital saya sendiri."
 ```
-Kolom Butuh/Batas adalah kredit paket; angka kredit per menit di contoh ini hanya ilustrasi, cek di akun Anda. Hasil lengkapnya juga memuat rencana rekam sampel, kalender konten, dan peringatan keamanan. Contoh lain: `examples/01-toko-hijab-12-video.md`; perbandingan tanpa skill vs dengan skill: `examples/00-pembanding-tanpa-skill.md`.
+Kolom Butuh/Batas memakai satuan tiap paket (kredit untuk HeyGen, menit untuk Synthesia); angka kredit per menit di contoh ini hanya ilustrasi, cek di akun Anda. HeyGen dan Synthesia adalah layanan pembuat video avatar berbayar; "render" artinya proses jadinya video. Hasil lengkapnya juga memuat rencana rekam sampel, kalender konten, dan peringatan keamanan. Contoh lain: `examples/01-toko-hijab-12-video.md`; perbandingan tanpa skill vs dengan skill: `examples/00-pembanding-tanpa-skill.md`.
 
 ## Cara pakai
 Ketik: "Saya mau bikin avatar AI diri sendiri untuk [usaha], [jumlah] video/bulan, anggaran Rp[...]." Skill bertanya sekali bila info kurang.
@@ -50,9 +50,9 @@ Untuk yang terbiasa dengan terminal: hitung paket lewat `python3 scripts/rencana
 **Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-02). Harga alat = perkiraan bertanggal (cek situs resmi). Tidak merender video; Codex/Cursor belum uji platform asli.
 
 ## FAQ
-**Apakah skill membuat klon atau video?** Tidak. Skill memandu keputusan, persetujuan, rekam sampel, dan hitungan; render (proses membuat videonya) dilakukan di alat pilihan Anda, dan unggah dilakukan manual oleh Anda.
+**Apakah skill membuat klon atau video?** Skill tidak membuatnya sendiri; skill memandu keputusan, persetujuan, rekam sampel, dan hitungan; render (proses membuat videonya) dilakukan di alat pilihan Anda, dan unggah dilakukan manual oleh Anda.
 **Boleh klon wajah/suara karyawan atau artis?** Karyawan/talent hanya dengan persetujuan tertulis (formulir tersedia). Artis/tokoh atau siapa pun tanpa izin: tidak.
-**Apakah harga alat di skill ini sudah final?** Tidak. Harga di `references/pilihan-alat.md` adalah perkiraan bertanggal 2026-09-29; cek halaman resmi.
+**Apakah harga alat di skill ini sudah final?** Belum final. Harga di `references/pilihan-alat.md` adalah perkiraan bertanggal 2026-09-29; cek halaman resmi.
 
 Skill ini tidak berafiliasi dengan HeyGen, ElevenLabs, CapCut, D-ID, Synthesia, TikTok, YouTube, Meta, atau proyek open-source yang disebut. Bukan nasihat hukum.
 

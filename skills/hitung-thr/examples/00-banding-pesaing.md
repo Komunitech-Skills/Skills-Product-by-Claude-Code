@@ -3,7 +3,7 @@
 Tanggal: 2026-09-23 · Penguji: agent penguji independen (simulasi, Claude Code)
 
 ## Pencarian
-- GitHub code search `filename:SKILL.md "Tunjangan Hari Raya"` (3 hasil: openaccountants — hanya menyebut THR sebagai penghasilan kena PPh 21; rancapoly/vault — benchmarking kompensasi, tidak relevan), `filename:SKILL.md PPh 21 TER`, kurasi internal `research/sources/kurasi-indonesian-business-agent-skills.md`.
+- GitHub code search `filename:SKILL.md "Tunjangan Hari Raya"` (3 hasil: openaccountants — hanya menyebut THR sebagai penghasilan kena PPh 21; rancapoly/vault — benchmarking kompensasi, tidak relevan), `filename:SKILL.md PPh 21 TER`, kurasi internal (riset internal kurator, tidak disertakan dalam paket).
 - Dicek juga anthropics/skills, VoltAgent/awesome-openclaw-skills, ClawHub/skills.sh, manairalabs/bicara-skills, alvinindra/bahasa-skills: tidak ada skill THR.
 - Pesaing relevan: **adamriofc/indonesian-business-agent-skills — `hr-id/skills/thr-calculator` + `engines/thr-calculator.js`** — https://github.com/adamriofc/indonesian-business-agent-skills — lisensi **MIT**. Script tidak dijalankan; logikanya (47 baris) dibaca dan ditiru di Python penguji.
 

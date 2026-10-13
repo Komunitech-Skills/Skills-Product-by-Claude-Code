@@ -128,7 +128,7 @@ Alasan:
 - (+) Kedua cacat v1.0.1 (N2 sedang, N1 sedang-rendah) dan tiga kosmetik terbukti beres di Dolibarr asli, termasuk repro asli N2; tidak ada opsi umum yang diabaikan di posisi berbeda, kunci tidak pernah tertimpa/bocor.
 - (+) Angka tetap 0 beda di semua hitung ulang independen; keamanan inti utuh; 70 tes regresi; lolos uji muat OpenClaw.
 - (−) B1 membuat jaring pengaman "draf dobel" tidak bekerja pada kasus umum (diskon/harga bersen) — bertentangan dengan tabel galat SKILL.md; B2 bisa diam-diam memakai kunci lain dari yang diminta.
-- **Kesimpulan:** **siap uji platform asli** (pemilik/tim, DoliWamp Windows sesuai `docs/uji-platform.md`) lalu beta. Disarankan memperbaiki B1 (toleransi < Rp 1 atau bandingkan dengan total versi Dolibarr) dan B2 (utamakan `--kunci-file` atau beri CATATAN) di v1.0.3 sebelum/selama beta; keduanya tidak menghalangi status `lulus`.
+- **Kesimpulan:** **siap uji platform asli** (pemilik/tim, DoliWamp Windows sesuai panduan uji platform internal (tidak disertakan dalam paket)) lalu beta. Disarankan memperbaiki B1 (toleransi < Rp 1 atau bandingkan dengan total versi Dolibarr) dan B2 (utamakan `--kunci-file` atau beri CATATAN) di v1.0.3 sebelum/selama beta; keduanya tidak menghalangi status `lulus`.
 
 ---
 

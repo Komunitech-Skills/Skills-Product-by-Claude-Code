@@ -1,11 +1,11 @@
-# Cek Kesehatan Akun Iklan dalam Hitungan Menit
+# Cek Kesehatan Akun Iklan, Tanpa Login
 
 **Cari tahu kenapa iklan Anda boros — dan apa yang dibenahi dulu minggu ini.**
 
 Untuk Meta (Facebook/Instagram) Ads, TikTok Ads, Google Ads, Shopee Ads, dan iklan TikTok Shop/Tokopedia.
 Tanpa memberi password, tanpa login, tanpa sambungan teknis (API): cukup screenshot, file ekspor, atau menjawab beberapa pertanyaan.
 
-*Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (pembeda terbesar: skill menolak login/password akun iklan dan mengikuti aturan iklan klinik, sedangkan AI biasa menawarkan login dan menyarankan testimoni pasien; hitungan titik impas iklan (ROAS impas) sudah benar di kedua sisi).*
+*Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 (pembeda terbesar: skill menolak login/password akun iklan dan mengikuti aturan iklan klinik, sedangkan AI tanpa skill, pada salah satu uji, menawarkan login dan menyarankan testimoni pasien; hitungan titik impas iklan (ROAS impas) sudah benar di kedua sisi).*
 
 Versi 1.0.6.
 
@@ -28,7 +28,7 @@ Versi 1.0.6.
 **Sebelum (AI tanpa skill):** "Coba optimalkan target audiens, perbaiki materi iklan, dan pantau ROAS secara berkala."
 Saran umum, tidak ada angka, tidak tahu harus mulai dari mana.
 
-**Sesudah (cukup ketik):** "Tolong audit iklan Shopee toko gamis saya, anggaran 50rb/hari tapi ROAS jelek."
+**Sesudah (cukup ketik):** "Tolong audit iklan Shopee toko gamis saya. Anggaran 50rb/hari tapi ROAS jelek, kayaknya boros."
 ```
 Skor gabungan: 41,3 / 100 (Kritis) - FINAL; bobot: satu platform
 PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
@@ -42,7 +42,7 @@ PRIORITAS PERBAIKAN (dampak x kemudahan; skor tertinggi dikerjakan dulu)
 Hari 6 (Sabtu, 3 Okt 2026):
   - Jangan ubah pengaturan besar; biarkan iklan belajar setelah perbaikan. Catat biaya & hasil harian.
 ```
-(Contoh dengan data fiktif dari `examples/uji-pembuat-01-toko-fashion-shopee.md`, dipotong; harga gamis Rp149.000, modal Rp78.000. AI lalu menjelaskan tiga masalah terbesar dengan bahasa sehari-hari.)
+(Cuplikan simulasi pembuat skill, bukan uji independen; data fiktif dari `examples/uji-pembuat-01-toko-fashion-shopee.md`, dipotong; harga gamis Rp149.000, modal Rp78.000. AI lalu menjelaskan tiga masalah terbesar dengan bahasa sehari-hari.)
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -71,7 +71,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**
-Tidak. Skill ini sengaja tidak login dan tidak memakai API (sambungan teknis ke akun iklan). Semua perubahan tetap Anda lakukan sendiri. Jangan mengirim password/OTP ke chat.
+Tidak perlu. Skill ini sengaja tidak login dan tidak memakai API (sambungan teknis ke akun iklan). Semua perubahan tetap Anda lakukan sendiri. Jangan mengirim password/OTP ke chat.
 
 **Apakah skor ini dijamin membuat penjualan naik?**
 Tidak ada yang bisa menjamin itu. Skor adalah alat untuk menentukan apa yang dibenahi dulu. Patokan angka (mis. frekuensi maksimal 3) adalah patokan awal, bukan aturan resmi platform, dan nama menu di aplikasi iklan bisa berubah.

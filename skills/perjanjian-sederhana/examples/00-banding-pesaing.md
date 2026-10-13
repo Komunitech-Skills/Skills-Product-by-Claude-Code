@@ -4,7 +4,7 @@
 | Sumber | Kata kunci / cara | Hasil |
 |---|---|---|
 | GitHub/web search | `SKILL.md contract drafting agreement template skill`, `perjanjian kerja sama skill SKILL.md` | stokebuilder/yc-saas-drafting-skill (SaaS AS), borghei/Claude-Skills `contract-and-proposal-writer` (AS/UE/UK/DACH, lisensi MIT + Commons Clause), evolsb/claude-legal-skill (review), claude-office-skills `contract-template` (skills.sh), open-agreements |
-| github.com/adamriofc/indonesian-business-agent-skills (dikurasi di `research/sources/kurasi-indonesian-business-agent-skills.md`) | clone read-only, folder `legal-id` | **`spk-generator`** (perjanjian jasa/kemitraan, KUHPerdata), `nda-indonesia`, `contract-reviewer`: satu-satunya pesaing berkonteks Indonesia |
+| github.com/adamriofc/indonesian-business-agent-skills (dikurasi di (riset internal kurator, tidak disertakan dalam paket)) | clone read-only, folder `legal-id` | **`spk-generator`** (perjanjian jasa/kemitraan, KUHPerdata), `nda-indonesia`, `contract-reviewer`: satu-satunya pesaing berkonteks Indonesia |
 | github.com/VoltAgent/awesome-openclaw-skills | grep `contract`, `agreement`, `legal`, `indonesia` | Tidak ada skill perjanjian berbahasa/berhukum Indonesia |
 | github.com/anthropics/skills | daftar skill | Tidak ada skill penyusunan perjanjian (hanya docx/pdf umum) |
 | manairalabs/bicara-skills, alvinindra/bahasa-skills | daftar skill | Hanya bahasa/penulisan/WA/invoice. Tidak ada perjanjian |

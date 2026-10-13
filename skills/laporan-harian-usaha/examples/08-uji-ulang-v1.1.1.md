@@ -118,7 +118,7 @@ sha256 seluruh `*.db` (kasir, stok, absensi, crm) sebelum vs sesudah 4 laporan (
 
 ## Perintah otomatis
 - `python3 tests/uji_regresi.py` (salinan scratchpad, identik dengan repo) → **Ran 53 tests … OK**.
-- `python3 scripts/validate.py --skill laporan-harian-usaha` (dari `/home/user/Skills`) → "✅ 1 skill valid, 72 baris
+- `python3 scripts/validate.py --skill laporan-harian-usaha` (dari `<folder repo>`) → "✅ 1 skill valid, 72 baris
   katalog sesuai."
 
 ## Temuan terbuka setelah uji ini

@@ -5,7 +5,7 @@
 - Folder kerja: `/tmp/uji-pph21-ter/`, `/tmp/uji-pph/` (tidak ada file repo lain yang diubah)
 
 ## Verifikasi independen angka (wajib)
-Kalkulator penguji ditulis sendiri (tidak mengimpor script skill) langsung dari PDF resmi di `research/sources/dokumen/`:
+Kalkulator penguji ditulis sendiri (tidak mengimpor script skill) langsung dari PDF resmi di (riset internal kurator, tidak disertakan dalam paket):
 1. **Tabel TER**: teks PDF PP 58/2023 (hasil pindai/OCR) diurai dua cara — angka `Rp…` dengan perbaikan OCR dan terbilang "(lima juta empat ratus ribu rupiah)" — lalu dicocokkan silang. Hasil: A 44 baris, B 40, C 41, harian 2; **identik** dengan `scripts/ter_tabel.json`.
 2. **Aturan** dari teks PMK 168/2023 (Pasal 8–10, 12, 15–16, Lampiran I.2) dan PMK 105/2025 (Pasal 2–5, Lampiran B).
 3. **Contoh resmi** dihitung ulang dengan kalkulator penguji: Penjelasan PP 58 (Rp 515.000), Tuan A (Rp 14.595.000), B (−Rp 2.975.000), C (Rp 580.000, disetahunkan), D (−Rp 3.620.000; PT AB −Rp 4.395.000), E (Rp 1.200.000), F (K/3 Rp 3.300.000), K/L/M/Z (harian), N (Rp 870.000), PMK 105 Tuan A/B/C — **semua cocok**. Catatan: tabel ringkas PMK 105/2025 Lampiran B contoh Tuan C mencantumkan total Rp 1.822.500, padahal hitungannya sendiri Rp 1.812.500 (salah ketik di PMK; skill & penguji sama-sama Rp 1.812.500).

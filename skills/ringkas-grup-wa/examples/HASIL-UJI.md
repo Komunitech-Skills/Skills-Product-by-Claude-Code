@@ -273,7 +273,7 @@ Recall grup padat naik ke 100% lewat mekanisme checklist baru. Tidak ditemukan c
 fixture baru, keduanya dengan skrip terpisah dari kode skill).
 
 **Rekomendasi:** skill ini **LULUS** dan layak naik status dari `draft`/`uji` ke tahap berikutnya
-(uji platform asli oleh manusia sesuai `docs/uji-platform.md`, lalu program beta) — cacat berat
+(uji platform asli oleh manusia sesuai panduan uji platform internal (tidak disertakan dalam paket), lalu program beta) — cacat berat
 yang menahan rilis sebelumnya sudah tuntas. Catatan sedang #1 di atas sebaiknya tetap
 ditindaklanjuti sebelum rilis penuh, tapi tidak menghalangi kelanjutan ke tahap uji platform.
 

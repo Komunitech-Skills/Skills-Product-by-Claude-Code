@@ -5,8 +5,8 @@
 - **Lingkungan:** Linux, Python 3.11.15. Skill disalin ke `.../scratchpad/uji-clp/copy-landing-page/`. Data uji fiktif.
 - **Uji regresi bawaan:** `python3 scripts/test_bangun_tautan_wa.py -v` → 18 tes OK (dijalankan ulang di salinan).
 - **Uji tambahan (data rusak):** nomor kosong, nomor huruf, kode negara asing (+1 AS), title/desc kosong keduanya, pesan berisi emoji/simbol — semua ditangani dengan pesan error jelas (exit 1) atau encoding UTF-8 benar (diverifikasi ulang lewat `urllib.parse.unquote` independen).
-- **Uji `scripts/validate.py`** (dari `/home/user/Skills`, bukan salinan): `✅ 1 skill valid, 58 baris katalog sesuai.`
-- **Uji `scripts/uji_openclaw.sh`** (dari `/home/user/Skills`): OpenClaw **2026.9.6** — `copy-landing-page` ada di `eligible` 58/58, `modelVisible` 58/58, `commandVisible` 58/58.
+- **Uji `scripts/validate.py`** (dari `<folder repo>`, bukan salinan): `✅ 1 skill valid, 58 baris katalog sesuai.`
+- **Uji `scripts/uji_openclaw.sh`** (dari `<folder repo>`): OpenClaw **2026.9.6** — `copy-landing-page` ada di `eligible` 58/58, `modelVisible` 58/58, `commandVisible` 58/58.
 - **Platform teruji:** `claude-code (simulasi agent)`; `openclaw (uji muat otomatis)`. Perilaku agent sungguhan di OpenClaw/Codex/Cursor **tidak** diuji penguji ini (Tahap 6 butir 10).
 
 ## Audit lisensi MIT (Tahap 2)

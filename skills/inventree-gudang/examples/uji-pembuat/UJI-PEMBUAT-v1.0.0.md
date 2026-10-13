@@ -4,7 +4,7 @@
 **Catatan peran:** ini uji oleh **pembuat sendiri**, bukan uji independen. Uji independen (5 skenario, A/B tanpa skill, banding pesaing, `HASIL-UJI.md`) **belum** dikerjakan — status katalog `uji`.
 
 ## 1. InvenTree ASLI yang dipakai
-- **InvenTree 1.5.6** (API 530), tag resmi `1.5.6` commit `284a670413cc` (rilis 26 Sep 2026), dipasang manual: Python 3.12 venv + `pip install --require-hashes -r src/backend/requirements.txt` (Django 5.2.16, DRF 3.17.1), SQLite, `manage.py migrate`, gunicorn terikat **127.0.0.1:8000**, plugin dimatikan. `tasks.py` tidak dijalankan (audit: `research/sources/inventree-2026-09-29.md` §3).
+- **InvenTree 1.5.6** (API 530), tag resmi `1.5.6` commit `284a670413cc` (rilis 26 Sep 2026), dipasang manual: Python 3.12 venv + `pip install --require-hashes -r src/backend/requirements.txt` (Django 5.2.16, DRF 3.17.1), SQLite, `manage.py migrate`, gunicorn terikat **127.0.0.1:8000**, plugin dimatikan. `tasks.py` tidak dijalankan (audit: (riset internal kurator, tidak disertakan dalam paket) §3).
 - Data **fiktif** "UD Sumber Rasa" (pabrik keripik): lokasi Gudang Utama/Rak A/Rak B, Ruang Produksi, Toko Depan; bahan baku (kg/L), kemasan, 2 produk rakitan + BOM, 2 pemasok fiktif, PO-0001 & PO-0002 (Placed), BO-0001.
 - Akun: `agen-baca` (grup Agen Baca: view) dan `agen-gudang` (grup Agen Gudang: + add/change Stock Items & Purchase Orders), token masing-masing (tidak disimpan di repo).
 

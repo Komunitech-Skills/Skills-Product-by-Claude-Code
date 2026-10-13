@@ -8,8 +8,7 @@ Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (tanpa ski
 
 ## Manfaat
 - ✅ Langsung dapat **2-3 balasan WA siap kirim**, pendek dan sopan, beda arah (ringan, menggali, menawarkan opsi). Tinggal salin.
-- ✅ Keberatan **dikenali jenisnya**: harga, waktu, kepercayaan, kebutuhan, "tanya suami/istri/bos dulu", atau pesaing, jadi jawabannya tepat sasaran, bukan satu kalimat untuk semua.
-- ✅ Alur tiga langkah yang sederhana: **akui perasaannya, tanya alasan sebenarnya, tawarkan opsi**, supaya pelanggan tidak merasa didesak.
+- ✅ Keberatan **dikenali jenisnya**: harga, waktu, kepercayaan, kebutuhan, "tanya suami/istri/bos dulu", atau pesaing, lalu dijawab dengan tiga langkah sederhana: **akui perasaannya, tanya alasan sebenarnya, tawarkan opsi**, supaya pelanggan tidak merasa didesak.
 - ✅ **Jujur dan hati-hati**: skill dirancang tidak mengarang stok/diskon/testimoni dan tidak menjelekkan pesaing. Data produk yang belum Anda berikan ditandai `[isian: ...]`, bukan dikarang.
 - ✅ Ada **pertanyaan lanjutan** dan aturan **kapan berhenti menghubungi ulang (follow-up)**, supaya Anda tidak mengejar pelanggan terlalu lama.
 - ✅ Angka dihitung, bukan dikira: harga per hari/pemakaian, perbandingan dengan pesaing (termasuk ongkir), cicilan bila Anda menyediakannya. Bila harga Anda memang lebih mahal, skill ini jujur mengatakannya dan membantu menjawab dengan nilai lain.
@@ -24,9 +23,9 @@ Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (tanpa ski
 ## Contoh sebelum & sesudah
 **Sebelum:** Pelanggan: "Wah mahal ya kak, di toko sebelah 85 ribu". Penjual langsung membalas "Ini kualitasnya beda kak, harga segini sudah murah, stok tinggal sedikit lho!" Pelanggan merasa ditekan dan menghilang.
 
-**Sesudah (cukup ketik):** "Calon pembeli bilang 'mahal, di toko sebelah 85 ribu'. Tas saya Rp129.000, kulit sintetis tebal, jahitan double."
+**Sesudah (cukup ketik):** "Calon pembeli di WA bilang: 'Wah mahal ya kak, di toko sebelah cuma 85 ribu'. Aku jual tas selempang Rp129.000, kulit sintetis tebal, jahitan double. Teman-teman yang beli bilang awet sampai setahun lebih. Balasnya gimana?"
 
-Cuplikan dari contoh (kasus fiktif, dipotong; `examples/01-toko-online-tas-mahal.md`):
+Cuplikan dari contoh buatan pembuat skill (kasus fiktif, bukan hasil uji independen; dipotong; `examples/01-toko-online-tas-mahal.md`):
 
 ```
 Balasan 1 - ringan
@@ -64,6 +63,10 @@ Salin folder `tangani-keberatan-pelanggan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (v1.0.0), skor 1–10 dari penguji independen, 2 tugas: tanpa skill **6,0** → dengan skill **8,75** (LULUS). Tugas "kemahalan, di toko sebelah 150 ribu" (hoodie Rp185.000 sudah termasuk ongkir): selisih Rp15.000 (8,1%), sekitar Rp253 per hari selama 2 tahun. Tanpa skill, AI menyebut barang toko sebelah "gampang rusak" tanpa bukti; dengan skill ada 3 balasan siap kirim berbeda arah, pertanyaan lanjutan, dan batas kapan berhenti. Tugas "stok tinggal 2" dan diskon coret palsu: kedua sisi menolak, tetapi tanpa skill AI mengarang janji "bisa tukar kok" yang tidak pernah Anda tawarkan; dengan skill ada dasar UU 8/1999 Pasal 9 dan 10 serta 3 pesan jujur. Jujur: hitungan selisih sudah benar juga tanpa skill, jadi pembedanya ada di cara membalas, bukan di angka. Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`. Hasil di bot Telegram asli ada di bagian berikut.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk konteks kanal Telegram) dan di bot Telegram OpenClaw asli. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
@@ -71,14 +74,14 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk angg
 - Dengan skill: https://t.me/c/4407409583/907/948 — skor 8,5
 Verdik gelombang: LULUS — Tanpa skill satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" (tanpa dasar); dengan skill perbandingan jujur (pesaing tetap ±Rp15 rb lebih murah), 3 pilihan balasan termasuk opsi tanpa memaksa, kapan berhenti, dan ongkir pesaing ditandai perkiraan.
 
-- Pilot 26 (kirim ulang 4 pesan di topik baru, 2026-10-12, dijalankan Akun C): skor 6,5 → 8,5, verdik LULUS — hasil sama dengan gelombang 11 dan 11b (`koordinasi/telegram-gelombang-11b-pilot-2026-10-12.md`; tautan pesan tidak tercatat di log).
+- Uji ulang di bot Telegram (4 pesan di topik baru, 2026-10-12): skor 6,5 → 8,5, verdik LULUS, hasilnya sama dengan gelombang 11 (tautan pesan uji ulang ini tidak tercatat).
 
 ## FAQ
 **Apakah skill ini bisa membuat pelanggan "takut kehabisan" supaya cepat beli?**
-Tidak. Stok, hitung mundur, diskon, atau testimoni yang tidak nyata berisiko melanggar UU Perlindungan Konsumen dan merusak kepercayaan. Skill ini menawarkan alternatif jujur: info stok/promo yang benar-benar nyata, atau ajakan tanpa tekanan.
+Hanya dengan informasi yang nyata, bukan urgensi palsu. Stok, hitung mundur, diskon, atau testimoni yang tidak nyata berisiko melanggar UU Perlindungan Konsumen dan merusak kepercayaan. Skill ini menawarkan alternatif jujur: info stok/promo yang benar-benar nyata, atau ajakan tanpa tekanan.
 
 **Apakah skill ini yang mengirim pesan ke pelanggan?**
-Tidak. Skill ini menyiapkan balasan; Anda yang membaca dan mengirimnya satu per satu. Untuk promo ke banyak orang, pakai skill Broadcast WA dengan persetujuan penerima.
+Bukan. Skill ini menyiapkan balasan; Anda yang membaca dan mengirimnya satu per satu. Untuk promo ke banyak orang, pakai skill Broadcast WA dengan persetujuan penerima.
 
 **Bagaimana kalau pelanggan terus menolak?**
 Setiap jawaban menyertakan aturan kapan berhenti (mis. menolak dua kali atau tidak membalas setelah dua pesan). Hormati itu; pelanggan yang dihormati lebih mungkin kembali.

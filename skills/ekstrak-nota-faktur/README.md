@@ -2,14 +2,14 @@
 
 **Kirim foto nota, struk, atau faktur pajak. Dapat tabel rapi, hitungan yang sudah dicek, dan rekap pengeluaran.**
 
-*Diuji AI penguji independen: 6,0 → 9,0 dari 10 (kesalahan PPN di faktur supplier ketahuan, dan foto buram tidak ditebak).*
+*Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (pembedanya: PPN 12% penuh pada invoice jasa cetak ketahuan, padahal AI tanpa skill menyatakan "sesuai"; digit yang buram ditandai TIDAK TERBACA, bukan ditebak).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Tidak perlu mengetik ulang nota satu per satu. Hasilnya tabel dan file CSV (tabel sederhana yang bisa dibuka di Excel) yang bisa langsung ditempel ke Excel atau Google Sheets
 - ✅ Hitungan dicek otomatis: harga × jumlah, subtotal, PPN, total, sampai terbilang. Selisih hitungan ditandai
-- ✅ Sesuai aturan PPN terbaru (12% dihitung dari "DPP nilai lain", yaitu 11/12 dari harga sebelum PPN). Faktur yang menagih PPN terlalu besar ditandai sebagai peringatan
+- ✅ Sesuai aturan PPN yang berlaku per 23 September 2026 (12% dihitung dari "DPP nilai lain", yaitu 11/12 dari harga sebelum PPN). Faktur yang menagih PPN terlalu besar ditandai sebagai peringatan
 - ✅ Foto buram tidak ditebak. Kolom yang tidak terbaca ditandai jelas supaya Anda cek sendiri
 - ✅ Banyak nota sekaligus jadi rekap pengeluaran per kategori, per toko, dan per bulan
 
@@ -19,11 +19,11 @@
 - Karyawan yang mengurus reimburse, dan freelancer yang mencatat pengeluaran
 
 ## Contoh sebelum & sesudah
-**Sebelum:** Mengetik 30 nota ke Excel butuh 1–2 jam. Kesalahan PPN di faktur supplier sering lolos karena tidak ada yang menghitung ulang.
+**Sebelum:** Mengetik puluhan nota ke Excel satu per satu memakan waktu lama. Kesalahan PPN di faktur supplier sering lolos karena tidak ada yang menghitung ulang.
 
 **Sesudah (cukup ketik):** "Mbak/Mas, tolong cek 2 faktur pajak dari PT Kemas Jaya ini. PPN-nya udah bener belum? Yang satu faktur bulan ini, satunya faktur lama Desember 2024 yang baru ketemu di laci. [2 PDF terlampir]"
 
-*Cuplikan hasil nyata dari `examples/02-cek-faktur-pajak-ppn-12-penuh.md` (sisa temuan, rekap pengeluaran, dan CSV dipotong):*
+*Cuplikan dari uji simulasi Claude Code (data fiktif), `examples/02-cek-faktur-pajak-ppn-12-penuh.md`; sisa temuan, rekap pengeluaran, dan CSV dipotong:*
 ```
 **Hasil baca & cek 2 dokumen**
 
@@ -66,10 +66,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 Ya, untuk foto dibutuhkan AI agent yang bisa melihat gambar (kebanyakan agent sekarang bisa). Jika tidak, Anda bisa menempelkan teks nota atau hasil scan PDF.
 
 **Kalau fotonya buram, apakah angkanya dikira-kira?**
-Tidak. Dalam uji, angka yang tidak terbaca ditulis "TIDAK TERBACA" dan tidak ikut dijumlah. Anda akan diberi tahu bagian mana yang perlu dicek atau difoto ulang.
+Seharusnya tidak. Dalam uji, angka yang tidak terbaca ditulis "TIDAK TERBACA" dan tidak ikut dijumlah. Anda akan diberi tahu bagian mana yang perlu dicek atau difoto ulang.
 
 **Apakah skill ini bisa memastikan faktur pajak asli?**
-Tidak. Skill ini mengecek hitungan dan format nomor, lalu memberi peringatan bila ada yang janggal. Keaslian faktur tetap dicek lewat Coretax (sistem pajak online milik DJP) atau QR code resmi, dan untuk urusan pengkreditan PPN (mengurangi PPN yang harus disetor dengan PPN dari supplier) atau SPT (laporan pajak tahunan) silakan hubungi konsultan pajak atau Kring Pajak 1500200.
+Belum bisa. Skill ini mengecek hitungan dan format nomor, lalu memberi peringatan bila ada yang janggal. Keaslian faktur tetap dicek lewat Coretax (sistem pajak online milik DJP) atau QR code resmi, dan untuk urusan pengkreditan PPN (mengurangi PPN yang harus disetor dengan PPN dari supplier) atau SPT (laporan pajak tahunan) silakan hubungi konsultan pajak atau Kring Pajak 1500200.
 
 > **Catatan penting:** alat bantu mengetik ulang dan mengecek hitungan, bukan nasihat pajak. Dasar aturan PPN (berlaku per 23 September 2026): UU HPP dan PMK 131/2024, yaitu PPN 12% × DPP nilai lain 11/12 untuk barang/jasa non-mewah dan 12% dari harga penuh hanya untuk barang mewah. Pembulatan belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Format NPWP, NITKU (nomor identitas tempat kegiatan usaha), dan nomor faktur hanya diperiksa sebagai peringatan (belum diverifikasi dari dokumen resmi), dan skill tidak memutuskan PPN bisa dikreditkan. Kepastian: Kring Pajak 1500200 atau konsultan pajak.
 

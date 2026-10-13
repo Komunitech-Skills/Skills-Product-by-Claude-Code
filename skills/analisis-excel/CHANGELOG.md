@@ -4,6 +4,7 @@ Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
 ## Catatan revisi 1.0.18 (2026-10-13)
 - Rujukan UU PDP ditulis lengkap: UU 27/2022 tentang Pelindungan Data Pribadi (tanpa perubahan cara kerja).
+- Tes kinerja 50 rb baris: batas waktu dilonggarkan 10 → 30 detik karena mesin uji bersama (skrip tidak berubah, 50 rb baris ±16 detik di mesin uji).
 
 ## Catatan revisi 1.0.17 (2026-10-01)
 - Dari uji OpenClaw sebelum/sesudah: AI sempat menulis dua persen hasil hitungan sendiri yang salah ("65,6% dari transport September", seharusnya 83,8%; "Kurir 26%", seharusnya 27,4%) dan melewatkan bagian "Perlu dicek". Kini:

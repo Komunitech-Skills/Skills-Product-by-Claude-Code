@@ -1,7 +1,7 @@
 # HASIL UJI INDEPENDEN — bot-trading-kripto v1.0.0
 
 - **Penguji:** agent independen (bukan pembuat), 2026-09-29. Hanya membaca folder skill, CLAUDE.md, dan
-  `research/sources/bot-trading-2026-09-29.md`. SKILL.md & scripts **tidak diubah**.
+  (riset internal kurator, tidak disertakan dalam paket). SKILL.md & scripts **tidak diubah**.
 - **Lingkungan:** salinan skill di scratchpad (di luar repo git), Python 3 standar, Linux. Tanpa uang/kunci asli;
   order live hanya ke server tiruan lokal dengan contoh kunci publik dari dokumentasi resmi.
 - **Script penguji** (scratchpad `uji-bot/`): `verif_independen.py` (mesin Decimal dari spesifikasi, tidak

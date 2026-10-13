@@ -40,7 +40,7 @@ $ find data -name "*.db" -exec sha256sum {} \; | sort -k2 > hash-sesudah.txt
 $ diff hash-sebelum.txt hash-sesudah.txt && echo "TIDAK ADA PERUBAHAN"
 TIDAK ADA PERUBAHAN
 ```
-(File `.db` di sini adalah data fiktif hasil menjalankan skill asli — bukan disertakan di repo, hanya prosedurnya yang didokumentasikan di sini dan di `research/sources/datasette-2026-09-26.md`.)
+(File `.db` di sini adalah data fiktif hasil menjalankan skill asli — bukan disertakan di repo, hanya prosedurnya yang didokumentasikan di sini dan di (riset internal kurator, tidak disertakan dalam paket).)
 
 ## Audit keamanan (oleh pembuat)
 - Hanya pustaka standar (`argparse`, `json`, `sqlite3`, `shutil`, `datetime`, `pathlib`). Tidak ada `subprocess`, `eval`, `exec`, akses jaringan, atau penulisan file apa pun.

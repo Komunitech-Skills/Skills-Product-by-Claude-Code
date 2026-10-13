@@ -1,6 +1,6 @@
 # Hasil Uji Independen — `pantau-website-toko` v1.0.0 (Uji Akun B)
 
-**Penguji:** sesi terpisah dari pembuat skill; hanya membaca folder `skills/pantau-website-toko/` + `docs/panduan-uptime-kuma.md` + `research/sources/uptime-kuma-2026-09-26.md`. Tidak mengubah `SKILL.md`/`README.md`/`scripts/`/`docs/`/`catalog.csv`.
+**Penguji:** sesi terpisah dari pembuat skill; hanya membaca folder `skills/pantau-website-toko/` + `docs/panduan-uptime-kuma.md` + (riset internal kurator, tidak disertakan dalam paket). Tidak mengubah `SKILL.md`/`README.md`/`scripts/`/`docs/`/`catalog.csv`.
 
 ## Skor kualitas: **9/10**
 

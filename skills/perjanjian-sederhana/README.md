@@ -1,8 +1,8 @@
-# Draf Surat Perjanjian Usaha dalam Hitungan Menit
+# Draf Surat Perjanjian Usaha Berpasal Lengkap
 
 **Ceritakan kesepakatan Anda, dapat draf perjanjian berpasal lengkap, angka dan terbilang sudah dicek, plus checklist sebelum tanda tangan.**
 
-Diuji AI penguji independen di OpenClaw: 4,25 → 9,0 dari 10 (tanpa skill menuliskan klausul jaminan BPKB yang batal demi hukum; dengan skill dijelaskan Pasal 33 UU Fidusia dan draf sewa/utang dilengkapi meterai).
+Diuji AI penguji independen di OpenClaw: 4,25 → 9,0 dari 10 (pembedanya: tanpa skill menuliskan klausul jaminan BPKB, yaitu surat kepemilikan motor, yang batal demi hukum; dengan skill dijelaskan Pasal 33 UU Fidusia, aturan jaminan atas barang bergerak seperti kendaraan, dan draf sewa/utang dilengkapi meterai).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -24,7 +24,7 @@ Diuji AI penguji independen di OpenClaw: 4,25 → 9,0 dari 10 (tanpa skill menul
 
 **Sesudah (cukup ketik):** "bikinin dong surat perjanjian freelance, aku desain feed IG buat klien kafe 3 bulan, 4,5jt. cepet ya"
 
-Cuplikan hasil (contoh dengan data fiktif; dipotong dari `examples/03-bikinin-dong-freelance-feed-ig.md`):
+Cuplikan hasil (dari uji simulasi Claude Code, data fiktif; dipotong dari `examples/03-bikinin-dong-freelance-feed-ig.md`):
 > **⚠ Draf ini bukan nasihat hukum.** Kontrak jasa desain feed Instagram 3 bulan, Rp 4.500.000. …
 >
 > …
@@ -63,7 +63,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1–3 Okt 2026 (v1.0.6), skor 1–10 penguji independen: tanpa skill **4,25** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill menuliskan klausul jaminan BPKB yang batal demi hukum; dengan skill menjelaskan Pasal 33 UU Fidusia dan menyiapkan draf sewa/utang lengkap dengan meterai.
 
-**Status uji (jujur):** draf bukan nasihat hukum. Sudah diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji. Untuk kasus bernilai besar, PERLU REVIEW notaris/pengacara sebelum dipakai.
+**Status uji (jujur):** draf bukan nasihat hukum. Sudah diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji; Codex dan Cursor belum diuji langsung (format skill-nya sama). Untuk kasus bernilai besar, PERLU REVIEW notaris/pengacara sebelum dipakai.
 
 ## Bukti uji di bot Telegram
 
@@ -72,17 +72,17 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk angg
 - Dengan skill: https://t.me/c/4407409583/634/661 — skor 6,5
 Verdik gelombang: BELUM — DENGAN lebih benar isinya (jadwal 4 cicilan, total Rp36 jt, peringatan status hak pakai kios pasar, meterai), tetapi **file perjanjian lengkap gagal terkirim** sehingga pengguna hanya menerima ringkasan; TANPA memberi naskah utuh siap cetak meski lebih tipis.
 
-Kekurangan ini diperbaiki di versi 1.0.5–1.0.6 (naskah utuh tampil di chat, biaya dicek konsisten, tanpa pengosongan sepihak sebagai bawaan; versi terkini 1.0.6); sudah diuji ulang di OpenClaw lokal, belum diuji ulang di bot Telegram.
+Kekurangan ini diperbaiki di versi 1.0.5–1.0.6 (naskah utuh tampil di chat, biaya dicek konsisten, tanpa pengosongan sepihak sebagai bawaan); sudah diuji ulang di OpenClaw lokal, belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah perjanjian ini sah secara hukum?**
 Perjanjian sah jika memenuhi 4 syarat Pasal 1320 KUHPerdata: sepakat, cakap, objek jelas, dan sebab yang halal. Skill ini membantu agar keempatnya tertulis jelas. Hasilnya tetap draf, bukan nasihat hukum. Untuk nilai besar atau kasus rumit, mintalah pengacara meninjaunya.
 
 **Tanpa meterai, perjanjiannya tidak sah?**
-Tetap sah. Meterai Rp10.000 adalah pajak atas dokumen (UU 10/2020), bukan syarat sah perjanjian. Tapi surat perjanjian memang wajib bermeterai, dan meterai dibutuhkan bila dokumen dipakai sebagai bukti di pengadilan. Skill ini menyiapkan tempat meterai pada draf (periksa lagi sebelum dicetak).
+Umumnya tetap sah, asalkan keempat syarat di atas terpenuhi. Meterai Rp10.000 adalah pajak atas dokumen (UU 10/2020), bukan syarat sah perjanjian. Tapi surat perjanjian memang wajib bermeterai, dan meterai dibutuhkan bila dokumen dipakai sebagai bukti di pengadilan. Skill ini menyiapkan tempat meterai pada draf (periksa lagi sebelum dicetak).
 
 **Bisa untuk jual beli tanah atau perjanjian dengan investor asing?**
-Tidak. Transaksi seperti jual beli tanah, investasi atau saham, kerja sama dengan pihak asing, pinjaman dengan jaminan, dan kontrak karyawan harus ditangani notaris, PPAT, atau pengacara. Untuk kasus seperti ini, skill akan menjelaskan alasannya, lalu membantu menyiapkan daftar dokumen dan pertanyaan untuk dibawa saat konsultasi.
+Sebaiknya jangan. Transaksi seperti jual beli tanah, investasi atau saham, kerja sama dengan pihak asing, pinjaman dengan jaminan, dan kontrak karyawan harus ditangani notaris, PPAT (pejabat pembuat akta tanah), atau pengacara. Untuk kasus seperti ini, skill akan menjelaskan alasannya, lalu membantu menyiapkan daftar dokumen dan pertanyaan untuk dibawa saat konsultasi.
 
 ## Riwayat perubahan
 

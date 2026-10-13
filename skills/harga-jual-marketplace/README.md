@@ -2,6 +2,8 @@
 
 **Tahu harga tayang yang pas di Shopee, Tokopedia, dan TikTok Shop supaya masih untung setelah potongan yang Anda masukkan.**
 
+*Diuji AI penguji independen (simulasi Claude Code): 8 dari 10; pembedanya: PPh 22 marketplace 0,5% ikut dihitung (AI tanpa skill melewatkannya) dan harga impas (batas rugi) diberikan.*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
@@ -17,11 +19,11 @@
 - Reseller dan dropshipper yang marginnya tipis
 
 ## Contoh sebelum & sesudah
-**Sebelum:** Pasang harga Rp50.000 karena "modal 35 ribu, untung 15 ribu", ternyata setelah potongan marketplace untungnya tinggal separuh.
+**Sebelum:** Pasang harga Rp50.000 karena "modal 35 ribu, untung 15 ribu", setelah potongan marketplace untungnya bisa tinggal separuh.
 
 **Sesudah (cukup ketik):** "Aku jual hijab voal, modal 28 ribu udah sama packing. Di Shopee admin aku 8,25%, ikut gratis ongkir xtra 4% maks 20 ribu, biaya proses 1.250 per pesanan. Mau untung 25% dari harga jual. Harga jualnya berapa? Aku belum nyerahin surat pernyataan omzet ke Shopee."
 
-Cuplikan hasil (contoh dengan data fiktif; dipotong dari `examples/01-hijab-shopee-target-margin.md`; HPP = modal per barang):
+Cuplikan hasil (dari uji simulasi Claude Code, data fiktif; dipotong dari `examples/01-hijab-shopee-target-margin.md`; HPP = modal per barang):
 > ### Shopee - target margin 25% dari harga setelah voucher
 > - Harga minimal agar tidak rugi: **Rp 33.525**
 > - Harga tepat sesuai target: Rp 46.988
@@ -58,7 +60,7 @@ Salin folder `harga-jual-marketplace` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat → harga/laba salah; dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka diverifikasi script). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah otomatis OpenClaw 2026-10-01 sudah dijalankan, tetapi skor angkanya belum didokumentasikan di folder `examples/`.
+**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat → harga/laba salah; dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka dicek ulang secara independen pada 300 kasus acak, tanpa selisih). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah otomatis OpenClaw 2026-10-01 sudah dijalankan, tetapi skor angkanya belum didokumentasikan di folder `examples/`.
 
 **Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat CLI + uji sebelum/sesudah otomatis 2026-10-01). Codex dan Cursor belum kami uji langsung.
 

@@ -152,7 +152,7 @@ lihat bagian 7.
 | R2: fallback bila `ekstrak-nota-faktur` tak terpasang | **Benar, sudah ada** di SKILL.md |
 | R3: dokumen sensitif dilarang diunggah ke situs online | **Benar, sudah ada**, tegas & tanpa pengecualian |
 
-## 8. Uji pendukung (dari root repo `/home/user/Skills`)
+## 8. Uji pendukung (dari root repo `<folder repo>`)
 - `python3 skills/pdf-lokal/tests/uji_regresi.py` → **15/15 lulus** (naik dari 12/12 di
   v1.0.0 — 3 skenario baru soal 401 ditambahkan pembuat).
 - `python3 scripts/validate.py` → **57 skill valid, 57 baris katalog sesuai.**

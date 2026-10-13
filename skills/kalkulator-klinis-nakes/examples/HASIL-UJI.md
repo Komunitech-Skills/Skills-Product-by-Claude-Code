@@ -73,7 +73,7 @@ rutin" untuk TD rentang berat. Keduanya menyentuh keselamatan pasien → di bawa
   < 20 mg) & rujuk; TD ≥ 160/110 → "Tangani/rujuk segera sesuai protokol kegawatdaruratan".
 - **T4 — Lisensi MoCA untuk produk komersial.** Halaman izin MoCA melarang pengembangan materi
   elektronik terkait MoCA tanpa lisensi dan mewajibkan izin tertulis bagi entitas komersial.
-  Komunitech menjual skill ini (tier usulan VIP Rp149.000). Perlu keputusan pemilik: minta izin
+  Komunitech menjual skill ini secara komersial. Catatan kurator (internal): minta izin
   tertulis MoCA Cognition, atau ubah menjadi penafsir generik ("skor total 0–30, ambang yang
   dimasukkan pemeriksa") tanpa nama/merek MoCA di nama fitur & materi jualan. PERLU REVIEW legal.
 

@@ -18,8 +18,8 @@
   | Encoding UTF-16 tanpa deklarasi charset | Tidak crash, peringatan encoding tampil, tapi tag tidak terbaca (byte null UTF-16 tidak cocok pola tag) — kasus sangat jarang untuk situs UMKM Indonesia, sudah diberi peringatan jujur |
 - **Verifikasi independen angka:** panjang title/meta description untuk ketiga skenario normal (16, 9, 26, 48, 124, 142 karakter, dst.) dihitung ulang manual dengan `len()` Python **terpisah dari skrip** — cocok 100%. JSON-LD valid/tidak valid diverifikasi ulang dengan `json.loads()` manual — pesan error identik. Jumlah H1/lompatan heading/gambar tanpa alt diverifikasi ulang dengan regex independen — cocok 100%. Lihat detail di tiap file `01`–`03`.
 - **Audit keamanan (script):** `cek_halaman.py` hanya mengimpor `argparse, json, re, sys, html.parser, pathlib` (dicek dengan `ast.parse` + `ast.walk`, bukan sekadar `grep`) — **tidak ada akses jaringan** (`socket`, `urllib`, `requests`, `subprocess` semuanya nihil). Tidak ada `eval`/`exec`/`base64`/kode ter-obfuskasi. `SKILL.md` dan seluruh `references/` dibaca penuh: tidak ada instruksi tersembunyi yang menyuruh mengabaikan pengguna/mengirim data/menonaktifkan konfirmasi. Tidak ada API key/token/data pribadi tertanam. **Lulus.**
-- **Uji `scripts/validate.py`** (dari `/home/user/Skills`): `✅ 59 skill valid, 59 baris katalog sesuai.`
-- **Uji `scripts/uji_openclaw.sh`** (dari `/home/user/Skills`): OpenClaw **2026.9.6** — `audit-seo-toko-online` ada di `eligible` 59/59, `modelVisible` 59/59, `commandVisible` 59/59.
+- **Uji `scripts/validate.py`** (dari `<folder repo>`): `✅ 59 skill valid, 59 baris katalog sesuai.`
+- **Uji `scripts/uji_openclaw.sh`** (dari `<folder repo>`): OpenClaw **2026.9.6** — `audit-seo-toko-online` ada di `eligible` 59/59, `modelVisible` 59/59, `commandVisible` 59/59.
 - **Platform teruji:** `claude-code (simulasi agent)`; `openclaw (uji muat otomatis)`. Perilaku agent sungguhan di OpenClaw/Codex/Cursor **tidak** diuji penguji ini (Tahap 6 butir 10 CLAUDE.md).
 
 ## Audit lisensi MIT (Tahap 2)

@@ -1,7 +1,7 @@
 # HASIL UJI INDEPENDEN — odoo-usaha v1.0.0
 
 - **Tanggal:** 30 September 2026
-- **Penguji:** agent penguji independen (bukan pembuat); hanya membaca folder skill, `docs/panduan-odoo.md`, `research/sources/odoo-2026-09-30.md`. Server tiruan pembuat (`tests/`) **tidak dipakai**.
+- **Penguji:** agent penguji independen (bukan pembuat); hanya membaca folder skill, `docs/panduan-odoo.md`, (riset internal kurator, tidak disertakan dalam paket). Server tiruan pembuat (`tests/`) **tidak dipakai**.
 - **Lingkungan:** salinan skill di scratchpad. **Odoo Community ASLI** dijalankan lokal dari image Docker resmi `odoo:18.0` (18.0-20260926, XML-RPC) dan `odoo:19.0` (19.0-20260926, JSON-2) + `postgres:16`, modul Sales + Inventory + Invoicing, tanpa data demo. Data fiktif diisi penguji lewat API admin (7 SO termasuk kasus tepi zona waktu, 11 faktur/nota kredit termasuk bayar sebagian/lunas/draf, 3 aturan stok minimum, stok minus). Pengguna API: `bot-laporan` (Sales All Documents, Accounting Read-only, Inventory User), `bot-own` (Sales Own Documents), `bot-draf`, `admin`; kunci API asli dibuat di Odoo.
 - **Belum diuji:** Odoo 16, 17, 20; Enterprise; Odoo Online (*.odoo.com, paket Custom); server via https/reverse proxy; multi-perusahaan; data besar (> 10.000 baris); OpenClaw/Telegram sungguhan (jadwal). Keluaran agent di skenario 10 adalah simulasi agent.
 

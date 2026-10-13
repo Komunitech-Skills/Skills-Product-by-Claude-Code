@@ -59,7 +59,7 @@ $ python3 scripts/validate.py --skill pdf-lokal
 ✅ 1 skill valid, 68 baris katalog sesuai.
 ```
 
-Kedua perintah lulus tanpa error, dijalankan dari root repo `/home/user/Skills`.
+Kedua perintah lulus tanpa error, dijalankan dari root repo `<folder repo>`.
 
 ## Kesimpulan
 

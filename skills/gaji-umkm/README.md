@@ -2,12 +2,12 @@
 
 **Hitung gaji semua karyawan, BPJS, PPh 21, dan slip cukup lewat chat. Data disimpan di komputer Anda, tanpa biaya bulanan.**
 
-Diuji AI penguji independen: 8 → 9 dari 10 di OpenClaw (selisih skor kecil; pembedanya: riwayat bulan lalu, slip, dan file transfer ikut dibuat, serta PPh 21 Desember dihitung ulang setahun).
+Diuji AI penguji independen di OpenClaw: 8 → 9 dari 10 (selisih kecil: angka gaji kedua sisi sama-sama benar, dan skor 8 tanpa skill tidak diuji ulang; pembedanya: data tersimpan di komputer Anda untuk bulan depan, slip dan file transfer ikut ditawarkan, serta tidak menyebut "di atas upah minimum" tanpa angka).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Tutup gaji sebulan dalam beberapa menit.** Tulis bonus, kasbon, dan lembur bulan ini, lalu AI menghitung gaji semua karyawan sekaligus: gaji kotor, potongan BPJS karyawan, iuran BPJS perusahaan, PPh 21, dan gaji bersih.
+- ✅ **Tutup gaji sebulan lewat chat.** Tulis bonus, kasbon, dan lembur bulan ini, lalu AI menghitung gaji semua karyawan sekaligus: gaji kotor, potongan BPJS karyawan, iuran BPJS perusahaan, PPh 21, dan gaji bersih.
 - ✅ **Tahu berapa yang harus dibayar.** Setiap bulan keluar ringkasan "Yang harus dibayar/disetor": total transfer gaji, setoran BPJS Kesehatan, BPJS Ketenagakerjaan, PPh 21, dan total biaya gaji perusahaan.
 - ✅ **Desember dan karyawan resign tidak bikin pusing.** PPh 21 bulan terakhir wajib dihitung ulang setahun. Aplikasi mengambil sendiri data Januari sampai bulan lalu dari riwayatnya, lalu mengecek ulang hasilnya dengan kalkulator PPh 21 terpisah sebagai bahan bukti potong.
 - ✅ **Gaji yang sudah final tidak bisa diubah diam-diam.** Setelah dikunci, perubahan hanya lewat revisi dengan alasan tertulis. Selisih per karyawan tercatat, dan file transfer revisi hanya berisi kekurangannya.
@@ -23,7 +23,7 @@ Diuji AI penguji independen: 8 → 9 dari 10 di OpenClaw (selisih skor kecil; pe
 **Sebelum:** Setiap tanggal 25 admin menyalin file Excel bulan lalu, mengubah bonus dan kasbon, menghitung lembur dan BPJS dengan rumus sendiri, lalu menebak tarif PPh 21. Di bulan Desember, PPh 21 sering kacau karena data Januari–November tercecer. Slip dibuat satu per satu, dan transfer diketik manual.
 
 **Sesudah (cukup ketik):** "Gaji September: Sari kasbon 250 ribu, Rina bonus sejuta, lembur ambil dari file absensi ini."
-→ AI menunjukkan dulu lembur yang terbaca dari file absensi (Sari alpa 2 hari **tidak** dipotong otomatis). Setelah Anda balas "ya", keluar rekap gaji. Anda periksa, bilang "kunci", lalu slip dan file transfer langsung jadi. Cuplikan nyata dari contoh sesi pembuat skill (data fiktif, toko bangunan 4 karyawan; bukan hasil uji independen):
+→ AI menunjukkan dulu lembur yang terbaca dari file absensi (Sari alpa 2 hari **tidak** dipotong otomatis). Setelah Anda balas "ya", keluar rekap gaji. Anda periksa, bilang "kunci", lalu slip dan file transfer langsung jadi. Cuplikan dari contoh sesi pembuat skill (`examples/contoh-sesi-toko-bangunan.md`; skrip dijalankan sungguhan, data fiktif, toko bangunan 4 karyawan; bukan hasil uji independen):
 ```
 REKAP GAJI SEPTEMBER 2026 - Toko Bangunan Sumber Rejeki (fiktif)
 Status: DRAF (belum final) | 4 karyawan
@@ -40,6 +40,7 @@ Yang harus dibayar/disetor:
 - Setor PPh 21: Rp 167.147
 - Total biaya gaji perusahaan: Rp 25.411.865
 ```
+(BPJS Ketenagakerjaan: JHT = jaminan hari tua, JKK = kecelakaan kerja, JKM = kematian, JP = pensiun.)
 
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -78,14 +79,14 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Skor penguji independen: 8 dari 10 pada uji pertama, 9 dari 10 setelah perbaikan; uji ulang terakhir (v1.0.11, 5 Okt 2026) tetap 9 dari 10.
 - Sumber lain, uji OpenClaw 1 Okt 2026: skor tanpa skill 8 → dengan skill 8 pada uji pertama (seri), lalu 9 setelah perbaikan v1.0.6 (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: perintah jadwalnya sudah dicocokkan dengan OpenClaw asli, tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: panduan perintah jadwalnya ada di dalam skill (khusus OpenClaw), tetapi pengiriman sungguhan ke bot Telegram belum kami uji untuk skill ini.
 
 ## Catatan penting
 - Hitungan PPh 21 DTP (PPh 21 ditanggung pemerintah, PMK 105/2025) masih menunggu review konsultan pajak. Sampai selesai, cocokkan bagian itu dengan konsultan pajak Anda. Dasar aturan lain, tanggal berlaku, dan catatan pembulatan Coretax ada di FAQ pertama di bawah.
 
 ## FAQ
 **Apakah hitungan BPJS dan PPh 21-nya benar?**
-Angkanya dihitung oleh script (program kecil) dari skill Komunitech yang sudah diuji, yaitu Slip Gaji & BPJS (`slip-gaji-bpjs`), PPh 21 TER (`pph21-ter`), dan Hitung THR (`hitung-thr`), dengan dasar Perpres 64/2020, PP 44–46/2015, PP 35/2021, PP 58/2023, PMK 168/2023, dan Permenaker 6/2016 (berlaku per 23 September 2026). Pembulatan belum dicocokkan dengan Coretax (sistem pajak DJP) atau aplikasi BPJS; bila berbeda, ikuti sistem resmi. Ini alat bantu hitung, bukan nasihat pajak. Untuk kasus khusus, tanyakan ke konsultan pajak.
+Angkanya dihitung oleh script (program kecil) dari skill Komunitech yang sudah diuji, yaitu Slip Gaji & BPJS (`slip-gaji-bpjs`, menghitung BPJS dan membuat slip), PPh 21 TER (`pph21-ter`, menghitung pajak penghasilan karyawan per bulan), dan Hitung THR (`hitung-thr`, tunjangan hari raya), dengan dasar Perpres 64/2020, PP 44–46/2015, PP 35/2021, PP 58/2023, PMK 168/2023, dan Permenaker 6/2016 (berlaku per 23 September 2026). Pembulatan belum dicocokkan dengan Coretax (sistem pajak DJP) atau aplikasi BPJS; bila berbeda, ikuti sistem resmi. Ini alat bantu hitung, bukan nasihat pajak. Untuk kasus khusus, tanyakan ke konsultan pajak.
 
 **Karyawan masuk atau keluar di tengah bulan, gajinya diprorata (dihitung sesuai jumlah hari kerja)?**
 Tidak otomatis, karena cara prorata tergantung perjanjian kerja masing-masing usaha. Aplikasi akan mengingatkan, lalu Anda cukup menyebutkan nominal yang dibayar. PPh 21 bulan keluar tetap dihitung ulang setahun sesuai aturan.

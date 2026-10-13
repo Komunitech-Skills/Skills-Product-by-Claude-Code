@@ -9,7 +9,7 @@
   2. **Uji integrasi NYATA** dengan **kernel SiYuan resmi v3.8.5** (biner Linux resmi diunduh dari
      GitHub Releases, dijalankan headless `SiYuan-Kernel serve` di sandbox terisolasi, tanpa
      internet keluar). Rincian unduhan, checksum, dan hasil lengkap ada di
-     `research/sources/siyuan-2026-09-26.md` §D.
+     (riset internal kurator, tidak disertakan dalam paket) §D.
 
 ## Cakupan uji integrasi nyata
 Semua 8 perintah dijalankan sungguhan terhadap kernel resmi: `cek`, `daftar-buku`, `cari`, `baca`
@@ -32,7 +32,7 @@ kantor konsultan - lihat `examples/01`-`03`) dijalankan end-to-end dari nol.
    header `Authorization` sama sekali berhasil diproses kernel (termasuk yang menulis), berbeda dari
    token yang salah (ditolak). Mengatur `accessAuthCode` tidak mengubah ini untuk permintaan tanpa
    header `Origin`; permintaan dengan `Origin` asing barulah ditolak. Dituliskan lengkap di
-   `research/sources/siyuan-2026-09-26.md` §D6 dan diteruskan ke pembeli lewat
+   (riset internal kurator, tidak disertakan dalam paket) §D6 dan diteruskan ke pembeli lewat
    `docs/panduan-siyuan.md` §3.5 (pembatas keamanan sesungguhnya = kernel hanya boleh dijangkau dari
    komputer sendiri, bukan hanya token). Skill sendiri **selalu** mengirim token yang benar di
    setiap permintaan sebagai disiplin baku, terlepas dari temuan ini.

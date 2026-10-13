@@ -3,7 +3,7 @@
 Tanggal: 2026-09-23 · Penguji: agent penguji independen (simulasi, Claude Code)
 
 ## Pencarian
-GitHub code search `filename:SKILL.md PPh 21 TER`, `SKILL.md BPJS payroll`, repo search `pph21 ter calculator`; kurasi internal `research/sources/kurasi-indonesian-business-agent-skills.md`; dicek juga anthropics/skills, VoltAgent/awesome-openclaw-skills, ClawHub/skills.sh, manairalabs/bicara-skills, alvinindra/bahasa-skills (tidak ada skill slip gaji Indonesia). Script pihak ketiga **tidak dijalankan**; logika dibaca lalu ditiru di Python penguji untuk membandingkan angka.
+GitHub code search `filename:SKILL.md PPh 21 TER`, `SKILL.md BPJS payroll`, repo search `pph21 ter calculator`; kurasi internal (riset internal kurator, tidak disertakan dalam paket); dicek juga anthropics/skills, VoltAgent/awesome-openclaw-skills, ClawHub/skills.sh, manairalabs/bicara-skills, alvinindra/bahasa-skills (tidak ada skill slip gaji Indonesia). Script pihak ketiga **tidak dijalankan**; logika dibaca lalu ditiru di Python penguji untuk membandingkan angka.
 
 | Pesaing | URL | Lisensi |
 |---|---|---|

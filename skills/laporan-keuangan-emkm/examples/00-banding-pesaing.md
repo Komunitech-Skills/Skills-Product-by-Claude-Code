@@ -4,7 +4,7 @@
 | Sumber | Kata kunci / cara | Hasil |
 |---|---|---|
 | GitHub (web search) | `SKILL.md "financial statements" balance sheet income statement`, `laporan keuangan SAK EMKM skill` | openaccountant/skills, borghei/Claude-Skills (financial-analyst), insight68/Skills (finance-reconcile, audit), GAJETOso/financeskills (IFRS/GAAP) |
-| github.com/adamriofc/indonesian-business-agent-skills (sudah dikurasi di `research/sources/kurasi-indonesian-business-agent-skills.md`) | clone read-only, cari `laporan`, `keuangan`, `psak` | **`tax-id/skills/laporan-keuangan-psak/SKILL.md`**, satu-satunya pesaing berbahasa/berkonteks Indonesia yang ditemukan |
+| github.com/adamriofc/indonesian-business-agent-skills (sudah dikurasi di (riset internal kurator, tidak disertakan dalam paket)) | clone read-only, cari `laporan`, `keuangan`, `psak` | **`tax-id/skills/laporan-keuangan-psak/SKILL.md`**, satu-satunya pesaing berbahasa/berkonteks Indonesia yang ditemukan |
 | github.com/VoltAgent/awesome-openclaw-skills | grep `accounting`, `bookkeep`, `financial statement`, `indonesia` | accounting-workflows (Yunani), accountsos (UK), bookkeeping-basics (umum). Tidak ada yang untuk Indonesia/SAK EMKM |
 | github.com/anthropics/skills | daftar skill | Tidak ada skill laporan keuangan (hanya xlsx/pdf/docx umum) |
 | manairalabs/bicara-skills, alvinindra/bahasa-skills | daftar skill | Hanya bahasa/penulisan/WA/invoice-extract. Tidak ada laporan keuangan |
