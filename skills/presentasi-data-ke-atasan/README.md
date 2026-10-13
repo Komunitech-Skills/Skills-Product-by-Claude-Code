@@ -2,7 +2,7 @@
 
 **Kirim data/analisis, dapat 4 format siap kirim: WA, email, 1 halaman eksekutif, dan skrip bicara.**
 
-*Diuji AI penguji independen: 7,5 → 8,75 dari 10 (pembedanya pesan inti "jadi bagaimana?" yang siap kirim, bukan daftar angka; untuk menolak memoles angka, AI biasa sudah sama baiknya).*
+*Diuji AI penguji independen di OpenClaw: 7,5 → 8,75 dari 10 (pembedanya: tanpa skill AI memberi daftar angka tanpa kalimat inti dan tanpa rekomendasi, dengan skill ada pesan inti "jadi bagaimana?" yang siap kirim; untuk menolak memoles angka, AI biasa sudah sama baiknya).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -27,20 +27,19 @@
 **Sebelum:** "Omzet September 24.500.000, Agustus 32.000.000, biaya iklan naik dari
 4 juta ke 5,6 juta..." — dikirim apa adanya ke atasan, tidak jelas kesimpulannya apa.
 
-**Sesudah (cukup ketik):** "Tolong buatkan ringkasan untuk owner dari data ini: omzet
-Agustus 32 juta, September 24,5 juta; biaya iklan Agustus 4 juta, September 5,6 juta"
-→
+**Sesudah (cukup ketik):** "Tolong buatkan ringkasan buat owner. Omzet Agustus Rp32.000.000, September (bulan puasa) Rp24.500.000. Biaya iklan Agustus Rp4.000.000, September Rp5.600.000. Ini untuk owner, tujuannya lapor kondisi terkini dan minta persetujuan turunkan budget iklan."
+→ Cuplikan ringkasan WA (contoh uji simulasi, data fiktif; dari `examples/01-omzet-turun-bulan-puasa.md`):
 ```
 📊 *Kinerja September 2026*
-Omzet turun 23% (bulan puasa), tapi biaya iklan naik 40% — rasio
-biaya/omzet melonjak dari 12% ke 23%.
-• Omzet: Rp32 juta → Rp24,5 juta (-23%)
-• Biaya iklan: Rp4 juta → Rp5,6 juta (+40%)
-• Rasio biaya iklan/omzet: 12% → 23%
+Omzet turun 23% (bulan puasa), tapi biaya iklan justru naik 40% —
+efisiensi iklan menurun tajam.
+• Omzet: Rp32.000.000 → Rp24.500.000 (-23%)
+• Biaya iklan: Rp4.000.000 → Rp5.600.000 (+40%)
+• Rasio biaya iklan/omzet: 12,5% → 22,9%
 👉 Usul turunkan budget iklan [isian: kanal iklan] sebesar [isian: nominal]/bulan
-mulai minggu depan sambil evaluasi materi iklan.
+mulai minggu depan sambil evaluasi materi iklan. Mohon persetujuan Bapak/Ibu.
 ```
-(Cuplikan diringkas dan angkanya dibulatkan; versi lengkap dengan angka rinci ada di `examples/01-omzet-turun-bulan-puasa.md`.) Plus versi email formal, 1 halaman eksekutif, dan skrip bicara — semua memakai angka yang sama.
+Bagian `[isian: ...]` sengaja dikosongkan karena kanal iklan dan nominalnya tidak Anda sebutkan; tinggal Anda isi. Hasil aslinya juga memuat versi email formal, 1 halaman eksekutif, dan skrip bicara, semuanya memakai angka yang sama.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -66,7 +65,7 @@ Salin folder `presentasi-data-ke-atasan` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **Hasil uji (angka nyata):**
-- **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario): rata-rata nilai 7,5 tanpa skill menjadi 8,75 dengan skill (skala 10). Pembeda nyata ada di skenario normal: dengan skill Anda langsung mendapat pesan inti "jadi bagaimana?" yang siap kirim, bukan sekadar daftar angka.
+- **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario): rata-rata nilai 7,5 tanpa skill menjadi 8,75 dengan skill (skala 10): skenario laporan omzet/iklan/pesanan 3 bulan 6,5 → 8,5, skenario diminta memoles penurunan omzet 8,5 → 9. Pembeda nyata ada di skenario normal: dengan skill Anda langsung mendapat pesan inti "jadi bagaimana?" yang siap kirim, bukan sekadar daftar angka.
 - Jujur: saat diminta menulis penurunan omzet 19,2% sebagai "sekitar 10%", AI tanpa skill pun menolak dan memakai angka asli, jadi itu bukan pembeda. Pada uji yang sama, skrip bicara "2 menit" baru ±179 kata (sasaran ±280–320 kata), dan rekomendasi masih umum bila penyebab turunnya omzet tidak Anda sebutkan.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).

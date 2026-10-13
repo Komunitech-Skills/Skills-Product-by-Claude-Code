@@ -1,4 +1,4 @@
-# Modul Ajar Jadi dalam Semenit, Guru Tinggal Mengajar
+# Modul Ajar Jadi dalam Hitungan Menit, Guru Tinggal Mengajar
 
 **Ketik satu kalimat topik pelajaran, dapatkan Modul Ajar + LKPD (lembar kerja siswa) + soal & rubrik lengkap sesuai Kurikulum Merdeka — siap disalin ke Word/Google Docs.**
 

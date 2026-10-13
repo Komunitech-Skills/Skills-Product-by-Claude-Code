@@ -2,14 +2,14 @@
 
 **Tempel chat pesanan pelanggan, dapatkan total yang dihitung rinci, pesan konfirmasi, nota, label paket, dan daftar serah-terima kurir dalam satu balasan.**
 
-Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (semua angka rupiah cocok dengan hitung ulang independen; harga dan resi yang belum Anda beri ditandai, tidak dikarang).
+Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (semua angka rupiah cocok dengan hitung ulang independen; pembedanya: tanpa skill AI mengarang harga untuk warna yang tidak ada dan mau membagikan alamat pelanggan ke grup reseller, dengan skill harga dan resi yang belum Anda beri ditandai, tidak dikarang).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Total dihitung, bukan dikira.** Barang × jumlah × harga, diskon, lalu ongkir dihitung otomatis, format rupiah rapi (Rp247.500). Pesanan yang tertempel dua kali hanya dihitung sekali.
 - ✅ **Pesan untuk pelanggan siap kirim:** konfirmasi + cara bayar, pengingat bayar yang sopan, dan kabar "pesanan dikirim + resi". Data yang kurang (alamat, kode pos, HP) langsung ditanyakan di pesan yang sama.
-- ✅ **Label paket & daftar serah-terima kurir** per JNE, J&T, SiCepat, AnterAja, Pos, GoSend/Grab, lengkap dengan penanda COD/non-COD.
+- ✅ **Label paket & daftar serah-terima kurir** per JNE, J&T, SiCepat, AnterAja, Pos, GoSend/Grab, lengkap dengan penanda COD (bayar di tempat) atau bukan.
 - ✅ **Rekap harian sekali lihat:** jumlah pesanan, omzet, barang terlaris, siapa yang belum bayar, plus tabel CSV (teks yang bisa ditempel ke Excel/Google Sheets).
 - ✅ **Jujur dan menjaga privasi:** harga, ongkir, dan resi yang belum Anda berikan ditandai `[isian]`, tidak dikarang. Nomor HP & alamat pelanggan hanya dimasukkan ke label, tidak ke rekap harian atau CSV.
 
@@ -22,7 +22,7 @@ Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (semua angka rupiah
 ## Contoh sebelum & sesudah
 **Sebelum** (uji OpenClaw tanpa skill, 2026-10-06): AI mengarang harga untuk warna yang tidak ada di katalog, mau membagikan alamat pelanggan ke grup reseller, dan menawarkan menghubungkan WhatsApp untuk mengirim sendiri.
 
-**Sesudah:** satu tempelan chat 6 pelanggan (satu kirim dobel) langsung jadi konfirmasi, nota, label, daftar serah-terima per kurir, rekap harian (omzet Rp782.000, belum bayar Rp399.000) dan tabel CSV; semua angka cocok dengan hitung ulang, HP/alamat tidak masuk rekap. Cuplikan salah satu pesan konfirmasi (contoh dengan data fiktif, dari `examples/01-normal-6-pelanggan.md`):
+**Sesudah:** satu tempelan chat 6 pelanggan (satu kirim dobel) langsung jadi konfirmasi, nota, label, daftar serah-terima per kurir, rekap harian (omzet Rp782.000, belum bayar Rp399.000) dan tabel CSV; semua angka cocok dengan hitung ulang, HP/alamat tidak masuk rekap. Cuplikan salah satu pesan konfirmasi (dipotong; hasil asli uji OpenClaw otomatis, 6 Okt 2026, data fiktif, dari `examples/01-normal-6-pelanggan.md`):
 
 ```
 Halo Kak Rina, terima kasih sudah order di Nayla Hijab 🙏
@@ -62,14 +62,14 @@ Salin folder `proses-pesanan-wa` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python (bawaan Mac/Linux) membuat hitungan otomatis; tanpa Python hitungan tetap ditunjukkan rinci per baris.
 
-**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-06):** rata-rata nilai 5,5 tanpa skill menjadi 8,4 dengan skill (skala 10), dari empat skenario: tempelan chat 6 pelanggan (dijalankan dua kali, lokal dan konteks Telegram), diskon + DP + pengingat bayar, pesan kurang lengkap, dan jebakan (kirim otomatis dari WA, cek m-banking, bagikan alamat ke reseller). Semua angka rupiah di jawaban dengan skill dicocokkan dengan hitung ulang independen. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 6 Okt 2026 (v1.0.0), penguji independen: rata-rata nilai 5,5 tanpa skill menjadi 8,4 dengan skill (skala 10), dari empat skenario (lima kali uji): tempelan chat 6 pelanggan (dijalankan dua kali: biasa dan dengan pengaturan seperti bot Telegram), diskon + DP + pengingat bayar, pesan kurang lengkap, dan jebakan (kirim otomatis dari WA, cek m-banking, bagikan alamat ke reseller). Semua angka rupiah di jawaban dengan skill dicocokkan dengan hitung ulang independen. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Pada uji dengan pengaturan Telegram (5,5 → 7,5), nota pesanan ke-2 dan seterusnya sempat disingkat "sama format di atas"; ini diperbaiki di v1.0.1. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech; tautan hanya terbuka untuk anggota grup), 12 Okt 2026, satu skenario dengan topik lain, pesan yang sama tanpa skill lalu dengan skill:
 - Tanpa skill: https://t.me/c/4407409583/1095/1151 — skor 7,5
 - Dengan skill: https://t.me/c/4407409583/1096/1158 — skor 8,5
-Verdik gelombang: BELUM — Tanpa skill sudah menolak aksi berisiko (mutasi bank, kirim WA otomatis, bagikan alamat) dengan angka nota benar; dengan skill ditambah nomor pesanan, nota, label, rekap tanpa HP/alamat yang aman untuk grup reseller, dan CSV, tetapi selisihnya belum mencapai acuan 1,5.
+Selisihnya tipis (+1,0). Tanpa skill AI sudah menolak aksi berisiko (cek mutasi bank, kirim WA otomatis, bagikan alamat) dengan angka nota yang benar. Dengan skill ditambah nomor pesanan, nota, label, rekap tanpa nomor HP/alamat yang aman untuk grup reseller, dan CSV. Jadi di bot Telegram keunggulan skill ini lebih kecil daripada angka uji OpenClaw di atas.
 
 ## FAQ
 **Bisakah langsung mengirim konfirmasi ke semua pelanggan dari WhatsApp saya?**

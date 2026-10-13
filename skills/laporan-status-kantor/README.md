@@ -1,4 +1,4 @@
-# Laporan Kantor Rapi dalam Hitungan Detik
+# Laporan Kantor Rapi, Tinggal Kirim
 
 **Dari chat berantakan jadi laporan siap kirim ke atasan, tim, atau klien — info yang kurang ditandai, bukan dikarang.**
 

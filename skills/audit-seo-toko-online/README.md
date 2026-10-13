@@ -1,17 +1,17 @@
-# Cek Kenapa Toko Online Anda Tidak Muncul di Google
+# Kenapa Toko Online Anda Tidak Muncul di Google
 
-**Kirim link atau tempel halaman toko online Anda, langsung dapat skor per bagian, daftar perbaikan urut prioritas, dan teks pengganti siap tempel — bukan sekadar saran umum "perbaiki SEO-nya".**
+**Kirim link atau tempel halaman toko online Anda, langsung dapat skor per bagian, daftar perbaikan urut prioritas, dan teks pengganti siap tempel — bukan sekadar saran umum "perbaiki SEO-nya" (SEO = membenahi website agar mudah ditemukan di Google).**
 
-Diuji AI penguji independen di OpenClaw: 7,0 → 8,75 dari 10 (temuan inti benar di kedua sisi; pembedanya prioritas perbaikan yang jelas dan teks pengganti siap tempel yang hanya memakai data Anda, tanpa fakta karangan).
+Diuji AI penguji independen di OpenClaw: 7,0 → 8,75 dari 10 (temuan inti benar di kedua sisi; pembedanya: tanpa skill AI menulis ulang halaman Anda dengan fakta yang tidak pernah Anda sebut, dengan skill teks pengganti siap tempel hanya memakai data Anda dan ada skor per bagian).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Angka dihitung, bukan dikira: panjang judul halaman (title) & deskripsi Google (meta description) dihitung persis lewat skrip, bukan tebak-tebakan "kayaknya kepanjangan"
 - ✅ Cek data terstruktur (JSON-LD, kode tersembunyi yang membantu Google memahami toko Anda) yang sering dilewatkan — termasuk cek khusus `LocalBusiness`/`Product` dengan format alamat Indonesia, plus contoh JSON-LD siap isi
-- ✅ Daftar perbaikan diurutkan **dampak × kemudahan**, jadi tahu mana yang dikerjakan duluan, bukan daftar panjang tanpa prioritas
+- ✅ Daftar perbaikan diurutkan **dampak × kemudahan**, jadi tahu mana yang dikerjakan duluan
 - ✅ Termasuk cek konsistensi NAP (Nama-Alamat-Telepon) untuk Google Business Profile/Maps — penting untuk warung, bengkel, klinik, dan usaha lokal lain
-- ✅ Jujur soal batasan: tidak mengarang angka volume pencarian, skor kecepatan, atau janji ranking #1, dan tidak menyarankan cara curang (beli backlink/ulasan, keyword stuffing)
+- ✅ Jujur soal batasan: tidak mengarang angka volume pencarian, skor kecepatan, atau janji ranking #1, dan tidak menyarankan cara curang (beli backlink = tautan murah dari situs lain, beli ulasan, keyword stuffing = menjejalkan kata kunci berlebihan)
 
 ## Cocok untuk siapa
 - Pemilik toko online (WooCommerce/WordPress, Shopify, situs buatan sendiri) yang merasa "sudah bikin website tapi kok sepi dari Google"
@@ -24,7 +24,7 @@ Diuji AI penguji independen di OpenClaw: 7,0 → 8,75 dari 10 (temuan inti benar
 
 **Sesudah (cukup ketik):** "Tolong audit SEO website warung ayam geprek saya. Saya tempel isi halamannya ya. Kata kunci yang saya mau ditarget: 'ayam geprek Cibiru'…"
 
-Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/uji-pembuat-01-warung-ayam-geprek.md`):
+Cuplikan hasil (dipotong; uji simulasi oleh pembuat skill, 25 Sep 2026, data fiktif — dari `examples/uji-pembuat-01-warung-ayam-geprek.md`):
 ```
 # Laporan Audit SEO: Ayam Geprek Bu Sri
 | Bagian | Skor | Catatan singkat |
@@ -60,16 +60,16 @@ Salin folder `audit-seo-toko-online` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 2 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **7,0** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill ada daftar periksa SEO terstruktur, prioritas perbaikan, dan batasan jujur (tidak menjanjikan peringkat 1). Catatan jujur: pada skenario jebakan (beli backlink atau ulasan palsu) AI tanpa skill sudah menolak dengan baik; keunggulan skill jelas pada audit halaman nyata.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 2 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **7,0** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dua skenario: audit halaman produk nyata (tanpa skill 6 → dengan skill 9) dan jebakan beli backlink/ulasan palsu (8 → 8,5). Pada audit halaman, AI tanpa skill menulis ulang file Anda dan menambahkan fakta yang tidak pernah Anda sebut (mis. "masa simpan 3 bulan"); dengan skill teks siap tempel memakai data Anda saja, sisanya ditandai `[isi: ...]`, plus skor per bagian. Catatan jujur: pada skenario jebakan AI tanpa skill sudah menolak dengan baik; keunggulan skill jelas pada audit halaman nyata.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
 
 ## FAQ
 **Apakah ini menjamin toko saya jadi peringkat 1 di Google?**
-Tidak. Tidak ada yang bisa menjamin itu — peringkat Google dipengaruhi banyak faktor di luar satu halaman (persaingan, waktu, faktor lain). Skill ini fokus membenahi hal-hal dasar yang benar-benar dalam kendali Anda dan bisa dicek, dengan jujur menyebutkan kalau ada data yang tidak tersedia.
+Tidak, dan tidak ada yang bisa menjamin itu — peringkat Google dipengaruhi banyak faktor di luar satu halaman (persaingan, waktu, faktor lain). Skill ini fokus membenahi hal-hal dasar yang benar-benar dalam kendali Anda dan bisa dicek, dengan jujur menyebutkan kalau ada data yang tidak tersedia.
 
 **Harus punya akun Google Search Console atau tools SEO berbayar?**
-Tidak. Pengecekan teknis dilakukan dari file HTML yang Anda tempel/kirim linknya, tanpa akun atau API key apa pun. Untuk kecepatan halaman & Google Business Profile, Anda cukup jawab beberapa pertanyaan singkat — skill ini tidak butuh login ke akun mana pun.
+Tidak wajib. Pengecekan teknis dilakukan dari file HTML yang Anda tempel/kirim linknya, tanpa akun atau API key. Untuk kecepatan halaman & Google Business Profile, Anda cukup jawab beberapa pertanyaan singkat — skill ini tidak butuh login ke akun mana pun.
 
 **Bagaimana kalau website saya WordPress dan pakai plugin SEO (Yoast/RankMath)?**
 Tetap bisa diaudit. Ada catatan khusus di hasil audit soal data terstruktur (JSON-LD) yang disisipkan plugin lewat JavaScript — supaya cara Anda mengambil HTML (Simpan Halaman vs Lihat Sumber Halaman) tidak membuat hasilnya salah dibaca.

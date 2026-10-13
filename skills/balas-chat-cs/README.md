@@ -2,16 +2,16 @@
 
 **Tempel chat pelanggan, dapat balasan siap kirim yang menenangkan dan menyelesaikan masalah.**
 
-*Diuji AI penguji independen: 6,5 → 8,25 dari 10 (balasan hanya memakai kebijakan toko yang Anda berikan, tanpa voucher atau diskon karangan, dan permintaan refund pembeli ditanggapi).*
+*Diuji AI penguji independen di OpenClaw: 6,5 → 8,25 dari 10 (pembedanya: tanpa skill AI mengarang voucher dan diskon yang tidak pernah Anda tawarkan dan mengabaikan kata "mau balikin"; dengan skill balasan hanya memakai kebijakan toko yang Anda berikan dan permintaan refund pembeli ditanggapi).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Balasan pertanyaan stok, ongkir, cara order, dan pembayaran dalam hitungan detik
+- ✅ Balasan pertanyaan stok, ongkir, cara order, dan pembayaran langsung dibuatkan, tinggal Anda baca dan kirim
 - ✅ Komplain barang rusak, telat, atau salah kirim ditangani dengan alur minta maaf, beri solusi, lalu tindak lanjut
 - ✅ Bisa membuat "bank jawaban" 15–30 template balasan cepat (quick reply) dari info toko Anda
 - ✅ Nada menyesuaikan brand: santai, ramah, atau formal
-- ✅ Dirancang hati-hati: tidak mengarang stok, ongkir, atau kebijakan retur, dan tidak menjanjikan hal yang belum Anda setujui (bagian yang belum diketahui ditandai `[isi ...]`)
+- ✅ Dirancang agar tidak mengarang stok, ongkir, atau kebijakan retur dan tidak menjanjikan hal yang belum Anda setujui (bagian yang belum diketahui ditandai `[isi ...]`). Tetap baca draf sebelum mengirim; pada uji masih ada satu kalimat atas nama toko yang lolos
 
 ## Cocok untuk siapa
 - Pemilik online shop dan admin CS di WhatsApp, Shopee, Tokopedia, atau TikTok Shop
@@ -22,7 +22,7 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Pembeli kecewa karena barang tidak sesuai, admin panik dan membalas "maaf kak, nanti dicek". Atau AI biasa menjawab rapi, tetapi mengabaikan kata "mau balikin" dan menjanjikan hal yang tidak pernah Anda tawarkan.
 
-**Sesudah (cukup ketik):** "Tolong bikinin balesan chat buat toko sepatu anak aku "Langkah Kecil" di Shopee. Pembeli chat: "Min sepatu ukuran 28 yg dateng kekecilan, padahal udah ikutin size chart!! Kecewa bgt, mau balikin aja." Kita bisa tukar ukuran, tapi ongkir tukarnya ditanggung pembeli." Cuplikan jawaban asli dari uji di OpenClaw:
+**Sesudah (cukup ketik):** "Tolong bikinin balesan chat buat toko sepatu anak aku "Langkah Kecil" di Shopee. Pembeli chat: "Min sepatu ukuran 28 yg dateng kekecilan, padahal udah ikutin size chart!! Kecewa bgt, mau balikin aja." Kita bisa tukar ukuran, tapi ongkir tukarnya ditanggung pembeli." Cuplikan jawaban asli (dipotong) dari uji otomatis di OpenClaw, 1 Okt 2026:
 ```
 **Balasan (siap kirim):**
 Hai Kak, mohon maaf banget ukuran 28 yang sampai ternyata kekecilan, padahal sudah ikutin size chart ya 🙏 Pasti bikin kecewa, kami ngerti.
@@ -60,10 +60,10 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## FAQ
 **Apa bedanya dengan skill balas ulasan?**
-Skill ini untuk chat pribadi dengan pelanggan (WA atau chat marketplace). Untuk membalas ulasan bintang yang tampil publik, pakai skill Balas Ulasan Pelanggan.
+Skill ini untuk chat pribadi dengan pelanggan (WA atau chat marketplace). Untuk membalas ulasan bintang yang tampil publik, pakai skill `balas-ulasan-pelanggan` (khusus balasan ulasan).
 
 **Apakah bisa langsung terhubung ke WhatsApp atau Shopee saya?**
-Tidak. Anda menempelkan chat-nya, lalu menyalin balasan yang dibuat. Skill ini tidak mengirim data toko Anda ke mana pun (isi chat yang Anda tempel tetap diproses layanan AI yang Anda pakai, seperti biasa).
+Tidak terhubung otomatis. Anda menempelkan chat-nya, lalu menyalin balasan yang dibuat. Skill ini tidak mengirim data toko Anda ke mana pun (isi chat yang Anda tempel tetap diproses layanan AI yang Anda pakai, seperti biasa).
 
 **Bagaimana kalau info toko saya belum lengkap?**
 Balasan tetap dibuat, dengan bagian `[isi ...]` yang tinggal Anda lengkapi, misalnya estimasi restok atau nomor rekening.

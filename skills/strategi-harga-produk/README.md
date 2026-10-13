@@ -2,12 +2,12 @@
 
 **Tentukan harga eceran, reseller, paket, dan promo dengan hitungan yang jelas, bukan feeling.**
 
-Diuji AI penguji independen di OpenClaw: 7,0 → 8,75 dari 10 (margin dan pasal harga coret sudah benar di kedua sisi; pembedanya harga lantai Rp203.500 untuk margin pangan 40% yang tidak diberikan AI tanpa skill).
+Diuji AI penguji independen di OpenClaw: 7,0 → 8,75 dari 10 (tanpa skill dinilai pada 1 skenario, dengan skill pada 4 skenario; margin dan pasal harga coret sudah benar di kedua sisi; pembedanya harga lantai Rp203.500 (harga terendah yang masih memenuhi margin minimum 40% untuk makanan) yang tidak diberikan AI tanpa skill).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Harga yang disarankan dihitung agar **tidak di bawah batas untung** Anda (dari modal + potongan + margin minimum yang Anda tetapkan)
+- ✅ Harga yang disarankan dihitung agar **tidak di bawah batas untung** Anda (dari modal + potongan + margin minimum, yaitu untung dibagi harga jual, yang Anda tetapkan)
 - ✅ Daftar harga reseller/grosir/agen siap kirim ke WA, lengkap untung Anda dan untung reseller per level (harga anjuran reseller dijaga sama dengan harga toko)
 - ✅ Tahu dulu sebelum promo: "diskon 20% berarti penjualan harus naik 51% agar untung sama", plus alternatif promo yang lebih aman
 - ✅ Paket hemat & hampers dicek: pembeli hemat berapa, Anda untung berapa
@@ -24,7 +24,7 @@ Diuji AI penguji independen di OpenClaw: 7,0 → 8,75 dari 10 (margin dan pasal 
 
 **Sesudah (cukup ketik):** "Roti sobek saya jual 28 ribu, modal 11.500, sewa+gaji 6,5 juta, laku 600 sebulan. Mau buka reseller dan promo 20%."
 
-Cuplikan balasan (dipotong; contoh fiktif dari `examples/contoh-01-roti-sobek-reseller-dan-promo.md`):
+Cuplikan balasan (dipotong; contoh buatan pembuat skill, bukan hasil uji independen; data fiktif, angka dari skrip hitung; dari `examples/contoh-01-roti-sobek-reseller-dan-promo.md`):
 ```
 Ringkasan
 - Harga eceran Rp28.000 dipertahankan (berbasis nilai: roti rumahan tanpa pengawet, margin 58,93%).
@@ -65,7 +65,7 @@ Salin folder `strategi-harga-produk` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu API key, akun, atau instalasi tambahan. Hitungan memakai Python bawaan; bila Python tidak tersedia, AI menghitung manual dengan rumus yang ditampilkan.
 
 **Hasil uji (angka nyata):** satu sumber, skor 1–10.
-- **Uji OpenClaw, uji otomatis agent, v1.0.9** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,0 tanpa skill menjadi 8,75 dengan skill (skala 10), tanpa satu pun angka harga, diskon, atau margin yang salah di empat balasan. Pada hampers PKP Rp189.000 (modal Rp110.000; PKP = Pengusaha Kena Pajak), skill membandingkan cara keliru (dibagi 1,12: margin 34,81%) dengan yang benar (DPP, yaitu harga sebelum PPN, Rp170.271, margin 35,4%), memberi harga lantai Rp203.500 untuk margin pangan 40%, dan menolak harga coret palsu. Catatan jujur: tanpa skill, margin dan pasal harga coret sudah benar, tetapi AI menyarankan "naikin dulu ke Rp249.000 beberapa hari, baru promo" dan tidak memberi harga lantai.
+- **Uji OpenClaw, uji otomatis agent, v1.0.9** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): nilai 7,0 tanpa skill menjadi 9,0 dengan skill pada skenario hampers toko PKP (Pengusaha Kena Pajak); tiga varian lain (frozen food, nastar + diskon 15%, kopi bubuk + diskon 10%) hanya dinilai dengan skill: 8,5, 9,0, dan 8,5, sehingga rata-rata dengan skill 8,75 (skala 10). Tidak ada angka harga, diskon, atau margin yang salah di keempat balasan; masih ada beberapa ungkapan longgar seperti "~28–29%" yang tidak salah. Pada hampers Rp189.000 (modal Rp110.000), skill membandingkan cara keliru (dibagi 1,12: margin 34,81%) dengan yang benar (DPP, yaitu harga sebelum PPN, Rp170.271, margin 35,4%), memberi harga lantai Rp203.500 untuk margin pangan 40%, dan menolak harga coret palsu (harga "asli" yang dicoret agar tampak diskon padahal tidak pernah dijual). Catatan jujur: tanpa skill, margin dan pasal harga coret sudah benar, tetapi AI menyarankan "naikin dulu ke Rp249.000 beberapa hari, baru promo" dan tidak memberi harga lantai.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 

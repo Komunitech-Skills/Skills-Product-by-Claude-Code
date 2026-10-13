@@ -1,8 +1,8 @@
 # Siapkan Usaha Anda Siap Dijual atau Diwariskan
 
-**Dari "usaha ini kira-kira dihargai berapa?" sampai rencana serah terima 12 bulan, tanpa janji palsu dan tanpa tebakan angka pasar.**
+**Dari "usaha ini kira-kira dihargai berapa?" sampai rencana serah terima 12 bulan, tanpa janji laku dan tanpa angka pasar karangan.**
 
-Diuji AI penguji independen di OpenClaw: 6,1 → 8,7 dari 10 (nilai usaha disajikan sebagai rentang hitungan dari angka dan asumsi Anda, bukan harga pasti).
+Diuji AI penguji independen di OpenClaw: 6,1 → 8,7 dari 10 (uji penuh, 5 skenario; tanpa skill umumnya tidak ada daftar periksa berstatus, rencana serah terima per bulan, dan daftar pertanyaan untuk notaris/konsultan pajak; dengan skill ketiganya ada, dan nilai usaha dihitung skrip sebagai rentang dari angka dan asumsi Anda, bukan harga pasti).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -18,8 +18,8 @@ Pemilik warung, toko, kafe, bengkel, jasa, atau toko online yang ingin menjual, 
 
 ## Contoh sebelum/sesudah
 Kasus warung makan Bu Sri (laba 2023-2025 Rp96 juta/Rp118 juta/Rp134 juta, sisa KUR (kredit usaha rakyat) Rp45 juta, kebutuhan pensiun Rp8 juta/bulan selama 2 tahun):
-- **Tanpa skill:** memakai rumus rata-rata buatan sendiri dan menyimpulkan "realistis laku di kisaran 190-280 jt" seolah angka pasar; persiapan hanya berupa saran singkat, tanpa daftar periksa berstatus, rencana transisi per bulan, atau daftar pertanyaan notaris/konsultan pajak.
-- **Dengan skill (v1.0.1):** laba disesuaikan dengan gaji manajer pengganti dan potongan karena resep masih di kepala pemilik, lalu nilai usaha, biaya 5%, pelunasan KUR, dan hasil bersih dipisah jelas serta dibandingkan dengan kebutuhan pensiun (bisa kurang Rp69.040.000 di harga rendah). Plus daftar periksa, rencana transisi, dan pertanyaan untuk notaris/konsultan pajak. Cuplikan keluarannya (contoh dengan data fiktif, dari `examples/data/pjs-tg-s1-01-sesudah.txt`):
+- **Tanpa skill:** AI juga menyesuaikan gaji manajer dan potongan resep, tetapi dengan rumus rata-rata tertimbang buatan sendiri, lalu menyimpulkan "realistis laku di kisaran 190-280 jt" (walau disebut bukan penilaian resmi); ada 8 saran persiapan, tetapi tanpa daftar periksa berstatus, rencana transisi per bulan, atau daftar pertanyaan khusus untuk notaris/konsultan pajak.
+- **Dengan skill (v1.0.1):** laba disesuaikan dengan gaji manajer pengganti dan potongan karena resep masih di kepala pemilik, lalu nilai usaha, biaya 5%, pelunasan KUR, dan hasil bersih dipisah jelas serta dibandingkan dengan kebutuhan pensiun (bisa kurang Rp69.040.000 di harga rendah). Plus daftar periksa, rencana transisi, dan pertanyaan untuk notaris/konsultan pajak. Cuplikan keluarannya (keluaran asli uji OpenClaw otomatis dalam konteks kanal Telegram, v1.0.1, 10 Okt 2026, data fiktif; `examples/data/pjs-tg-s1-01-sesudah.txt`). Istilah: kelipatan laba = berapa kali laba setahun dipakai sebagai patokan harga (di sini 2-3 kali, kata perantara); laba normalisasi = laba setelah disesuaikan:
 
 ```
 ## 4) Perkiraan rentang nilai
@@ -48,14 +48,14 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam ZIP bernama `C
 
 **Cara pakai:** cukup ketik, misalnya: "Saya mau oper kafe saya tahun depan, bantu siapkan." Data yang kurang ditanyakan sekali, dan angka yang belum Anda berikan tidak dikarang.
 
-**Hasil uji (OpenClaw, uji otomatis agent):** uji penuh v1.0.0 (5 skenario, 2026-10-10): rata-rata nilai 6,1 tanpa skill menjadi 8,7 dengan skill (skala 10); rincian di `examples/HASIL-UJI.md`. Uji ulang setelah perbaikan v1.0.1 (6 skenario, 10-11 Oktober 2026): 5,92 menjadi 8,83; rincian di `examples/HASIL-UJI-v1.0.1-openclaw-2026-10-10.md`. Skenario: jual warung makan Bu Sri, wariskan bengkel cat, jual laundry tanpa angka, jebakan akta dan "pasti laku Rp500 juta", dan jual 30% saham bengkel las; uji ulang menambah warung bakso dengan renovasi dan beli bagian sekutu 40%. Contoh Bu Sri di atas berasal dari v1.0.1. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+**Hasil uji (OpenClaw, uji otomatis agent):** uji penuh v1.0.0 (5 skenario, 10 Okt 2026): rata-rata nilai 6,1 tanpa skill menjadi 8,7 dengan skill (skala 10); rincian di `examples/HASIL-UJI.md`. Uji ulang setelah perbaikan v1.0.1 (6 skenario, 10-11 Oktober 2026): 5,92 menjadi 8,83; rincian di `examples/HASIL-UJI-v1.0.1-openclaw-2026-10-10.md`. Skenario: jual warung makan Bu Sri, wariskan bengkel cat, jual laundry tanpa angka, jebakan akta dan "pasti laku Rp500 juta", dan jual 30% saham bengkel las; uji ulang menambah warung bakso dengan renovasi dan beli bagian sekutu 40%. Contoh Bu Sri di atas berasal dari v1.0.1. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1099/1171 — skor 7
-- Dengan skill: https://t.me/c/4407409583/1100/1176 — skor 7,5
-Verdik gelombang: BELUM — Tanpa skill ringkas dan tegas bahwa Rp500 juta di atas kisaran wajar; dengan skill lebih lengkap (daftar periksa, rencana 12 bulan, dokumen untuk pembeli, pertanyaan ke notaris) tetapi panjang dan ada kalimat koreksi diri, sehingga selisih belum mencapai acuan 1,5.
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 12 Okt 2026, satu skenario yang menyangkut harga jual Rp500 juta, tanpa dan dengan skill:
+- Tanpa skill: skor 7 dari 10.
+- Dengan skill: skor 7,5 dari 10.
+Selisihnya tipis. Tanpa skill, jawabannya ringkas dan tegas bahwa Rp500 juta di atas kisaran wajar. Dengan skill, jawabannya lebih lengkap (daftar periksa, rencana 12 bulan, dokumen untuk pembeli, pertanyaan ke notaris) tetapi panjang dan ada kalimat koreksi diri. Jadi di skenario ini, keunggulan skill ada di kelengkapan, bukan di jawabannya yang lebih benar.
 
 ## FAQ
 **Apakah ini menggantikan notaris?** Tidak. Skill menyiapkan bahan dan pertanyaan; akta dan keputusan hukum tetap lewat notaris.

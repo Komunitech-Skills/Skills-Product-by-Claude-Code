@@ -66,7 +66,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup), dua gelombang. Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.2).
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup), dua gelombang. Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.2).
 
 **Gelombang 11, 2026-10-06**
 - Tanpa skill: https://t.me/c/4407409583/902/938 — skor 7
@@ -74,7 +74,7 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk angg
 Verdik gelombang: BELUM DAPAT DINILAI — Tanpa skill sudah memberi segmen, hari senyap yang benar & 3 template WA (tanpa opsi "stop"/opt-in, tanpa jadwal); jawaban lengkap dengan skill tidak terekam di transkrip.
 
 **Gelombang 11b (kirim ulang, topik berbeda), 2026-10-10 — verdik terakhir**
-- Skor: 7 → 8 (selisih +1,0). Tautan pesan tidak tercatat di catatan gelombang.
+- Skor: 7 → 8 (selisih +1,0). Tautan pesan tidak tercatat di catatan uji.
 Verdik gelombang: BELUM — DENGAN memberi segmen A/B/C, angka pasif, dan template WA terstruktur; TANPA sudah cukup lengkap tetapi tanpa opsi stop/opt-in dan ada dua balasan berurutan (termasuk rujukan "sama persis").
 
 ## FAQ
