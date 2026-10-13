@@ -90,4 +90,4 @@ Bisa. Minta saja "versi bahasa Inggris".
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

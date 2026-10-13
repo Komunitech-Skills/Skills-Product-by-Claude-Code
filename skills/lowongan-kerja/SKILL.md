@@ -161,5 +161,5 @@ Contoh lebih lengkap (kurir, barista, staf gudang, sales) ada di `references/con
 - Jangan menjanjikan benefit (BPJS, THR, bonus, jenjang karier) yang tidak disebut pengguna. Boleh diberi saran: "Jika ada BPJS, sebutkan: pelamar lebih tertarik."
 - Jika pengguna meminta syarat yang jelas melanggar hukum atau merendahkan (mis. "bukan dari suku X", "belum menikah dan tidak akan hamil"), tolak syarat itu dengan sopan, jelaskan singkat, dan tetap berikan lowongan yang layak.
 - Jika lowongan terlihat seperti modus penipuan (pelamar diminta bayar biaya seragam/pelatihan), beri peringatan dan jangan tulis syarat pembayaran.
-- Data pelamar (CV, nomor HP) adalah data pribadi: sarankan hanya dipakai untuk rekrutmen dan dihapus bila tidak lolos (UU PDP). Lihat `references/anti-diskriminasi.md`.
+- Data pelamar (CV, nomor HP) adalah data pribadi: sarankan hanya dipakai untuk rekrutmen dan dihapus bila tidak lolos (UU 27/2022 tentang Pelindungan Data Pribadi). Lihat `references/anti-diskriminasi.md`.
 - Dasar aturan dan tanggal berlaku ada di `references/anti-diskriminasi.md`. Ini bukan nasihat hukum; untuk sengketa rekrutmen, konsultasikan ke Disnaker atau ahli hukum ketenagakerjaan.
