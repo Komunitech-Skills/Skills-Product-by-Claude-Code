@@ -88,14 +88,11 @@ Salin folder `kalkulator-klinis-nakes` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **6,1** → dengan skill **9,0** (LULUS). Contoh bidan TD 128/86: **MAP 100,0**, 5 faktor sedang Buku KIA 2025, **HPL 19 Maret 2027**, tanpa dosis obat. Bot Telegram gelombang 8 (2026-10-05): tanpa **6** → dengan **8,5**. Sumber: `examples/00-openclaw-sebelum-sesudah.md`, `promosi/sebelum-sesudah.jsonl`.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 8, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/790/813 — skor 6
-- Dengan skill: https://t.me/c/4407409583/791/816 — skor 8,5
-Verdik gelombang: LULUS — DENGAN menghitung MAP 100,0 dan mengklasifikasi pasien BERISIKO PREEKLAMPSIA (2 faktor sedang: usia ≥35 + MAP ≥90 → rujukan terencana sesuai Buku KIA); TANPA tidak menghitung MAP sehingga hanya menemukan 1 faktor dan menyimpulkan "pantau", padahal menurut Buku KIA pasien memenuhi kriteria rujukan terencana. Belum direview tenaga medis.
+**Status uji (jujur):** **PERLU REVIEW tenaga medis** sebelum diandalkan klinis. Sudah uji OpenClaw otomatis + bot asli (gelombang 8). MoCA/MMSE hanya tafsir skor total (lisensi formulir milik pengguna). Codex/Cursor belum uji platform asli.
 
 ## FAQ
 **Apakah hasilnya bisa langsung jadi dasar rujukan?**
