@@ -111,7 +111,39 @@
 
 ---
 
+## Run 2 (C17) — 2026-10-13 ~22:40 UTC
+
+**Skill:** `rapor-mingguan-ai`, `landing-page-siap-tayang`, `cek-risiko-dan-asuransi-usaha`  
+**HOME uji:** `c17-beta` (3 skill, `run-uji.sh`, tanpa Telegram)  
+**Paket:** skill disalin dari repo workspace (setara isi ZIP beta; tidak rebuild `dist/`).
+
+### Hasil kalimat uji (tanda berhasil panduan)
+
+| Skill | Perintah (FIKSI) | Tanda berhasil | Waktu agent (perkiraan) | Catatan |
+|-------|------------------|----------------|-------------------------|---------|
+| `cek-risiko-dan-asuransi-usaha` | Kafe ruko dekat sungai, 3 karyawan — risiko & asuransi | Tabel risiko + skor + langkah murah + jenis asuransi + disclaimer | ~66 s | Script `exec`; dana darurat minta input lanjutan (sesuai skill) |
+| `landing-page-siap-tayang` | Landing jasa servis AC, WA 0812-3456-7890 | `index.html` utuh di chat, `wa.me/6281234567890`, panduan Netlify, FAQ | ~173 s (retry 1× karena lock DB saat uji paralel) | `[isian: …]` masih ada — sesuai panduan |
+| `rapor-mingguan-ai` | Rapor minggu ini + 7 percakapan FIKSI | Nilai A–D per kriteria, kesalahan tersering, PR siap tempel | ~106 s (attempt 3; attempt 2 timeout router) | Attempt 1 tanpa percakapan → agent minta tempel ulang (benar) |
+
+### Friksi / temuan panduan
+
+| # | Temuan | Usulan |
+|---|--------|--------|
+| 1 | Uji 2 skill paralel ke HOME sama → `openclaw.sqlite` busy | Catat di C16/C17: uji beta **serial** per HOME |
+| 2 | `rapor-mingguan-ai` butuh percakapan panjang; timeout model bila prompt terlalu berat | Tester awam: tempel percakapan dulu, baru minta rapor (sudah implisit di panduan) |
+| 3 | Landing page jawaban panjang (2 bagian HTML) — wajar untuk Telegram | OK |
+
+### Formulir masukan SIMULASI (§7) — Run 2
+
+**rapor-mingguan-ai:** Platform OpenClaw lokal Linux simulasi; instal Ya; 1× uji; kegunaan 4; Sering; tanpa skill ~45 mnt manual vs ~2 mnt; tidak aneh; suka rubrik A–D + PR; perbaiki ingatkan min. 10 percakapan; harga Rp99rb; testimoni Tidak (simulasi).
+
+**landing-page-siap-tayang:** sama; kegunaan 5; Sering setelah isi `[isian]`; tanpa skill ~2 jam vs ~3 mnt + edit; suka HTML mobile-first + WA; perbaiki —; harga Rp99rb; testimoni Tidak (simulasi).
+
+**cek-risiko-dan-asuransi-usaha:** sama; kegunaan 5; Sering; tanpa skill ~1 jam vs ~2 mnt; suka tabel + disclaimer; perbaiki —; harga Rp99rb; testimoni Tidak (simulasi).
+
+---
+
 ## Run berikutnya
 
-- Opsional: uji 3 skill beta lain (mis. `rapor-mingguan-ai`, `landing-page-siap-tayang`) dengan metode sama untuk melengkapi formulir.
+- **C17 selesai** — idle menunggu baris tugas baru di papan atau keputusan 242.
 - `pantau-cron-openclaw` butuh gateway + Telegram nyata — delegasi ke tester VIP atau run manual terpisah, bukan automation 30 menit.
