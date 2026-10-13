@@ -2,7 +2,7 @@
 
 **Dari "mau launching" ke jadwal, teks, dan hitungan stok yang siap dijalankan.**
 
-Diuji AI penguji independen di bot Telegram asli: 5,5 → 8,5 dari 10 (pembedanya untuk produk yang izin BPOM-nya belum terbit: tanpa skill, AI masih menyarankan pre-order dan harga promo; dengan skill semua jalur jual ditutup sampai izin terbit dan jadwal digeser).
+Diuji AI penguji independen di OpenClaw: 5,5 → 9,0 dari 10; di bot Telegram asli 5,5 → 8,5 (pembedanya untuk produk yang izin BPOM-nya belum terbit: tanpa skill, AI masih menyarankan pre-order dan harga promo; dalam uji ini dengan skill semua jalur jual ditutup sampai izin terbit dan jadwal digeser).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -62,13 +62,13 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket (`docs
 Skrip jadwal (opsional): `python3 scripts/jadwal_peluncuran.py --tanggal 2026-11-14 --produk "Nama" --jenis pangan` (Windows: `python` atau `py`).
 
 ## Skill pelengkap
-hitung modal & harga jual (`hitung-hpp`), harga jual marketplace (`harga-jual-marketplace`), paket konten mingguan dengan caption siap tempel (`konten-mingguan`), listing marketplace (`listing-marketplace`), naskah live jualan (`naskah-live-jualan`), laporan iklan mingguan (`laporan-iklan-mingguan`), KPI tim (`kpi-tim`), dan kalender promo (`promo-kalender`).
+hitung modal & harga jual (`hitung-hpp`), harga jual marketplace (`harga-jual-marketplace`), paket konten mingguan dengan caption siap tempel (`konten-mingguan`), listing marketplace (`listing-marketplace`), naskah live jualan (`naskah-live-jualan`), laporan iklan mingguan (`laporan-iklan-mingguan`), target kinerja tim/KPI (`kpi-tim`), dan kalender promo (`promo-kalender`).
 
 **Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,5 tanpa skill menjadi 9,0 dengan skill. Pada rencana launching kosmetik pencerah yang izin BPOM-nya belum terbit (kandidat peluncuran 12 Oktober 2026), AI tanpa skill menolak dua klaim terlarang tetapi masih menjadwalkan pre-order 10 Oktober; dengan skill penjualan, pre-order, dan promo ditunda sampai izin terbit, hanya daftar tunggu tanpa uang yang dibuka, dan Go/No-Go otomatis No-Go. Pada rencana nastar 20 November, stok awal dihitung rumus: (40 + 20) x 1,3 = 78 toples.
 - **Uji di bot Telegram asli:** angkanya ada di bagian berikutnya.
 
-**Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent, termasuk bot Telegram asli); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
@@ -85,7 +85,7 @@ Bisa. Tugas yang sudah lewat ditandai dan skill menyarankan cara memadatkan jadw
 Tidak. Ia hanya mengingatkan hal yang perlu dicek dan menautkan situs resmi (oss.go.id, halal.go.id, cekbpom.pom.go.id). Keputusan ada di instansi berwenang.
 
 **Seberapa tepat daftar libur nasionalnya?**
-Berasal dari SKB 3 Menteri (surat keputusan bersama tentang hari libur dan cuti bersama) 2026 dan 2027 (sudah dicocokkan dengan lampiran resmi per 2026-09-29). Pemerintah dapat mengubahnya; cocokkan dengan pengumuman terbaru atau tambahkan lewat `--libur-tambahan`.
+Berasal dari SKB 3 Menteri (surat keputusan bersama tentang hari libur dan cuti bersama) 2026 dan 2027 (sudah dicocokkan dengan lampiran resmi per 2026-09-29). Pemerintah dapat mengubahnya; cocokkan dengan pengumuman terbaru atau tambahkan tanggalnya lewat opsi `--libur-tambahan` pada skrip.
 
 Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
 

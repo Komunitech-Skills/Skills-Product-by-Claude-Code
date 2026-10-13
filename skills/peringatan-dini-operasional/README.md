@@ -1,6 +1,6 @@
 # Tahu Masalah Operasional Sebelum Jadi Besar
 
-**Isi log harian sederhana, AI memberi tahu angka mana yang mulai tidak normal, seberapa gawat, dan apa yang perlu dicek hari ini.**
+**Isi log harian sederhana (catatan angka usaha per hari), AI memberi tahu angka mana yang mulai tidak normal, seberapa gawat, dan apa yang perlu dicek hari ini.**
 
 *Diuji AI penguji independen di OpenClaw: 7,0 → 9,0 dari 10 (pembeda: laporan 1 halaman dihitung skrip dan tanpa nama karyawan, sedangkan AI biasa menawarkan mengirimnya ke grup WA karyawan; memakai data contoh).*
 
@@ -15,7 +15,7 @@
 
 ## Cocok untuk siapa
 - Pemilik & manajer pabrik kecil-menengah, konveksi, percetakan
-- Dapur F&B, katering, bakery, cloud kitchen
+- Dapur usaha makanan dan minuman (F&B), katering, bakery, cloud kitchen (dapur khusus pesanan online)
 - Toko/retail, gudang, dan distributor yang mencatat pengiriman & keluhan
 - Supervisor yang tiap hari mengisi angka di Excel tapi belum sempat menganalisanya
 
@@ -59,9 +59,9 @@ Salin folder `peringatan-dini-operasional` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Tidak perlu API key, akun, atau instalasi tambahan (hitungan memakai Python bawaan). Jadwal otomatis hanya tersedia di OpenClaw (belum diuji langsung) dan butuh komputer yang menyala di jam kirim.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Tidak perlu API key atau akun tambahan (hitungan memakai Python 3, lihat kotak "Yang Anda butuhkan" di atas). Jadwal otomatis hanya tersedia di OpenClaw (belum diuji langsung) dan butuh komputer yang menyala di jam kirim.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (diuji pada v1.0.5; versi terbaru 1.0.7), skor 1–10: tanpa skill **7,0** → dengan skill **9,0** (LULUS). Contoh log dapur 4 minggu: stok beras sisa **255 kg = ±2 hari** pemakaian, pemasok butuh 2 hari → **pesan HARI INI**; tanpa nama karyawan. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Contoh "Sesudah" di atas (pabrik roti fiktif) adalah hasil skrip dari pembuat skill, bukan dari uji OpenClaw.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (diuji pada v1.0.5; versi terbaru 1.0.7), skor 1–10: tanpa skill **7,0** → dengan skill **9,0** (LULUS). Contoh log dapur 4 minggu: stok beras sisa **255 kg = ±2 hari** pemakaian, pemasok butuh 2 hari → **pesan HARI INI**; tanpa nama karyawan. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Catatan jujur: tanpa skill pun angka inti sudah benar; daftar cek dari skill kadang masih generik dan sempat merujuk skill lain yang tidak terpasang. Contoh "Sesudah" di atas (pabrik roti fiktif) adalah hasil skrip dari pembuat skill, bukan dari uji OpenClaw.
 
 **Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-02). Claude Code/Codex/Cursor belum uji platform asli. Jadwal otomatis ke Telegram belum diuji langsung. Perkiraan stok/hari = estimasi kasar, bukan ramalan pasti.
 
@@ -73,10 +73,10 @@ Tidak. Ini peringatan dini statistik: memberi tahu angka yang "tidak biasa" diba
 Bisa, tapi terbatas: yang jalan baru banding target, naik/turun beruntun, dan sisa stok. Batas kendali (σ) butuh ±15 hari, banding hari yang sama butuh 2 minggu. Laporan akan menyebut ini terus terang, dan hasilnya makin tajam tiap minggu Anda mengisi log.
 
 **Angka saya ditulis macam-macam (1.250, 1,2rb, Rp 9 jt) dan ada hari libur. Masalah?**
-Tidak. Format angka Indonesia dibaca otomatis; hari libur/kosong dilewati (tidak diisi tebakan), baris rusak dilaporkan. Hari luar biasa seperti Lebaran atau bazar bisa dikecualikan supaya tidak mengacaukan rata-rata.
+Umumnya tidak. Format angka Indonesia dibaca otomatis; hari libur/kosong dilewati (tidak diisi tebakan), baris rusak dilaporkan. Hari luar biasa seperti Lebaran atau bazar bisa dikecualikan supaya tidak mengacaukan rata-rata.
 
 **Kenapa hampir tiap minggu ada tanda 🟡?**
-Wajar. 🟡 artinya "angka agak di luar kebiasaan, cukup dilirik" — pada data yang stabil pun sekitar 1 dari 4 hari akan ada satu metrik 🟡 (per metrik hanya ±2–8% hari). Yang perlu ditindaklanjuti adalah 🟠 dan 🔴; pada data stabil keduanya muncul di kurang dari 5% hari.
+Wajar. 🟡 artinya "angka agak di luar kebiasaan, cukup dilirik" — pada data yang stabil pun sekitar 1 dari 4 hari akan ada satu angka (misalnya reject atau penjualan) berstatus 🟡 (per angka hanya ±2–8% hari). Yang perlu ditindaklanjuti adalah 🟠 dan 🔴; dalam simulasi data stabil keduanya muncul di kurang dari 5% hari.
 
 ## Riwayat perubahan
 

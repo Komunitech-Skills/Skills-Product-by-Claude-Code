@@ -2,7 +2,7 @@
 
 **Calon pembeli diam setelah ditawari? Dapat 4 pesan follow-up sopan lengkap dengan tanggal kirimnya.**
 
-Diuji AI penguji independen di OpenClaw: 6,25 → 8,0 dari 10 (tanggal kirim dihitung dengan skrip sehingga nama harinya benar dan tawaran baru diberi label usulan; tanpa skill 3 dari 4 tanggal salah nama hari dan ada urgensi karangan).
+Diuji AI penguji independen di OpenClaw: 6,25 → 8,0 dari 10 (tanggal kirim dihitung dengan skrip sehingga nama harinya benar dan tawaran baru diberi label usulan; tanpa skill 3 dari 4 tanggal salah nama hari dan ada kesan mendesak yang dikarang).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -59,9 +59,9 @@ Salin folder `follow-up-prospek` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,25** → dengan skill **8,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill, 3 dari 4 tanggal follow-up salah nama hari dan ada urgensi karangan; dengan skill, tanggal dihitung script, hari benar, tawaran baru diberi label *usulan — konfirmasi dulu*.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,25** → dengan skill **8,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill, 3 dari 4 tanggal follow-up salah nama hari dan ada kesan mendesak yang dikarang; dengan skill, tanggal dihitung script, hari benar, tawaran baru diberi label *usulan — konfirmasi dulu*. Catatan jujur: uji pertama (sebelum perbaikan) 6,25 → 7,75 belum lulus, angka di atas dari uji ulang. Pada skenario prospek yang minta tidak dihubungi, kedua sisi sama-sama menolak dengan benar (7 vs 7,5) dan skill tidak dibaca oleh AI.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor memakai format skill yang sama; belum uji platform asli di kedua platform itu. Bot Telegram asli belum diuji.
 
 ## FAQ
 **Apakah pesannya dikirim otomatis?**
