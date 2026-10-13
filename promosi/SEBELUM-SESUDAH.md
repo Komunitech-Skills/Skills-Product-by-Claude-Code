@@ -55,7 +55,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 45 | Uji Pasar Produk Cepat (`uji-pasar-produk-cepat`) | Produktivitas | 6 → 9 | +3 |
 | 46 | Arsip Nota Otomatis, Tanpa Langganan (`arsip-nota`) | Produktivitas | 5,75 → 8,75 | +3 |
 | 47 | Buku Piutang Tanpa Langganan, Cukup Lewat Chat (`buku-piutang`) | Keuangan & Akuntansi | 5,75 → 8,75 | +3 |
-| 48 | Modul Ajar Jadi dalam Semenit, Guru Tinggal Mengajar (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8,7 | +2,95 |
+| 48 | Modul Ajar Jadi dalam Hitungan Menit, Guru Tinggal Mengajar (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8,7 | +2,95 |
 | 49 | Kalkulator Klinis Nakes: Hitungan Jelas, Bersumber Jelas (`kalkulator-klinis-nakes`) | Data & Analisis | 6,1 → 9 | +2,9 |
 | 50 | Orderan WA Beres: Rekap, Nota, Kirim (`proses-pesanan-wa`) | E-commerce/Marketplace Indonesia | 5,5 → 8,4 | +2,9 |
 | 51 | Ngomong ke Tim Tanpa Tidak Enak Hati (`satu-lawan-satu-dan-umpan-balik`) | HR | 5,5 → 8,4 | +2,9 |
@@ -73,7 +73,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 63 | Siapkan Usaha Anda Siap Dijual atau Diwariskan (`persiapan-jual-atau-wariskan-usaha`) | Keuangan & Akuntansi | 6,1 → 8,7 | +2,6 |
 | 64 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
 | 65 | Cek Layak Investasi Sebelum Keluar Uang (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
-| 66 | Paket Onboarding Karyawan Baru, Siap Pakai dalam 1 Menit (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
+| 66 | Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
 | 67 | Strategi Konten & Anggaran Iklan - konten jelas, uang iklan tidak bocor (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
 | 68 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
 | 69 | Cek Kesehatan Akun Iklan, Tanpa Login (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
@@ -529,7 +529,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Kelebihan bayar: piutang Rp0, deposit Rp50.000
 - **Catatan jujur:** Pada catat bon dan cek telat keunggulan tidak besar (7 vs 8,5); keunggulan besar di keamanan dan deposit.
 
-### Modul Ajar Jadi dalam Semenit, Guru Tinggal Mengajar — 5,75 → 8,7
+### Modul Ajar Jadi dalam Hitungan Menit, Guru Tinggal Mengajar — 5,75 → 8,7
 `rencana-pelajaran-guru` · Pendidikan · versi 1.0.11 · diuji 2026-10-05
 
 - **Permintaan:** Buatkan modul ajar Bahasa Inggris kelas 7 (descriptive text, 2x40 menit), tulis kode dan bunyi CP resmi persis untuk supervisi besok.
@@ -690,7 +690,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** NPV 12% Rp109.237.735; balik modal 1 tahun 1 bulan (dicek ulang python)
 - **Catatan jujur:** Versi 1.0.0 lulus tipis (8,0) karena pertanyaan kripto tidak memuat skill; diperbaiki di 1.0.1. Bukan nasihat keuangan; hasil tergantung asumsi pengguna. Pilot ulang bot Telegram (26, 2026-10-12): 6,5 → 9 LULUS, balasan utuh tanpa galat.
 
-### Paket Onboarding Karyawan Baru, Siap Pakai dalam 1 Menit — 6,5 → 9
+### Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit — 6,5 → 9
 `sop-onboarding` · HR · versi 1.0.5 · diuji 2026-10-05
 
 - **Permintaan:** Bikin paket onboarding lengkap untuk kasir baru, karyawan tetap, masa percobaan 3 bulan, mulai Senin 5 Oktober 2026.

@@ -1,4 +1,4 @@
-# Paket Onboarding Karyawan Baru, Siap Pakai dalam 1 Menit
+# Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit
 
 **Karyawan baru masuk Senin? Checklist, jadwal 90 hari, pesan sambutan, buku saku, dan formulir evaluasi langsung jadi — tinggal cetak.**
 
