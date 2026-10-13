@@ -1,4 +1,4 @@
-# Cek Kesehatan Akun Iklan dalam 15 Menit
+# Cek Kesehatan Akun Iklan dalam Hitungan Menit
 
 **Cari tahu kenapa iklan Anda boros — dan apa yang dibenahi dulu minggu ini.**
 

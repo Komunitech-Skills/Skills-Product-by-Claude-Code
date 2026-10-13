@@ -1,4 +1,4 @@
-# Buka Reseller & Agen Tanpa Salah Harga
+# Buka Reseller & Agen, Harga Terhitung Rapi
 
 **Daftar harga bertingkat, syarat kemitraan, dan pesan rekrut yang jujur, dengan hitungan yang membantu Anda dan reseller Anda sama-sama untung.**
 

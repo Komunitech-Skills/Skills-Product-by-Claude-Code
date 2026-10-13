@@ -1,4 +1,4 @@
-# Starter Kit Karyawan AI — Mulai dalam 5 Menit
+# Starter Kit Karyawan AI, Siap dalam Hitungan Menit
 
 **Cukup ketik "mulai", AI langsung wawancara singkat lalu kerjakan tugas pertama Anda.**
 

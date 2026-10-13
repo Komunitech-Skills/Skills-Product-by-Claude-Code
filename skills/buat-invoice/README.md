@@ -1,4 +1,4 @@
-# Invoice & Kuitansi Rapi dalam Semenit
+# Invoice & Kuitansi Rapi dalam Hitungan Menit
 
 **Sebut item dan harganya, dapat invoice profesional yang angkanya dihitung skrip (bukan dikira-kira) dan siap dicetak.**
 
