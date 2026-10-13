@@ -69,9 +69,13 @@ Salin folder `laporan-harian-usaha` ke folder skills AI agent kamu, **di folder 
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` dan `CARA-INSTAL.md` di paket.
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Laporan terjadwal ke Telegram butuh OpenClaw yang menyala di komputer yang sama dengan data toko (panduan langkah demi langkah ada di `references/openclaw-jadwal.md`; Komunitech juga menyediakan jasa setup).
+
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.1.4), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka penjualan benar tetapi salah menafsirkan “lead baru langsung closing” dan siap mengirim omzet ke grup WA karyawan; dengan skill laporan baku, PERLU PERHATIAN jelas, deal vs konversi benar, dan menolak grup/broadcast sesuai kebijakan kanal.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji CLI + gateway lokal automations). Claude Code (simulasi agent). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
 
 ## FAQ
 **Apakah skill ini bisa mengubah atau merusak data kasir/stok/absen saya?**

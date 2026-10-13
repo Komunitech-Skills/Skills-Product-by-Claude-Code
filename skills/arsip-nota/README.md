@@ -43,7 +43,11 @@ Salin folder `arsip-nota` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
+
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **5,75** → dengan skill **8,75** (LULUS). Contoh nominal ambigu "38,5": DENGAN menanyakan maksud Rp38.500 dan memblokir duplikat hash; TANPA memindahkan file asli ke Trash. **44/44** tes regresi lolos. Sumber: `examples/HASIL-UJI.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli. Codex dan Cursor belum uji platform asli. Bukan OCR — nominal dari pengguna/ekstrak-nota-faktur.
 
 ## FAQ
 **File nota asli saya bisa hilang/terhapus?**

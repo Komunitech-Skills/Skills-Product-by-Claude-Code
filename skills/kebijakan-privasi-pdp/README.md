@@ -52,14 +52,11 @@ Salin folder `kebijakan-privasi-pdp` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows) ada di `CARA-INSTAL.md` di dalam paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Sep–Okt 2026 (v1.0.7), skor 1–10: tanpa skill **5,0** → dengan skill **9,0** (LULUS). Uji bot Telegram gelombang 5 (2026-10-03): **5,5** → **8,5** — DENGAN dasar UU PDP lengkap (transfer luar negeri, kebocoran 3×24 jam, hak subjek); TANPA klaim opt-out dan melewatkan transfer/kebocoran. Sumber: `examples/HASIL-UJI.md`, `promosi/sebelum-sesudah.jsonl`.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 5, 2026-10-03.
-- Tanpa skill: https://t.me/c/4407409583/629/643 — skor 5,5
-- Dengan skill: https://t.me/c/4407409583/630/645 — skor 8,5
-Verdik gelombang: LULUS — DENGAN memuat dasar pemrosesan per tujuan, masa simpan, transfer luar negeri (Ps. 56), kebocoran 3×24 jam (Ps. 46), hak Ps. 5–13, plus Shopify/WhatsApp sebagai penerima; TANPA langsung jadi tetapi menyebut data Meta Pixel "bukan data pribadi" dan melewatkan transfer luar negeri, kebocoran, dan masa simpan.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 5). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: detail PP 33/2026 dari sumber sekunder.
 
 ## FAQ
 **Apakah usaha kecil juga wajib punya kebijakan privasi?**

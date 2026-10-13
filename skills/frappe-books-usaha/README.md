@@ -67,15 +67,11 @@ Setelah terpasang, cukup ketik permintaan biasa:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): `CARA-INSTAL.md` di paket. Butuh **Python 3.8+** (gratis di python.org).
-Tidak butuh internet, akun, kunci API, atau paket tambahan.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, kunci API, atau paket tambahan.
 
-**Status uji jujur (laporan diuji pada versi 1.0.3; versi 1.0.8 menambah `ppn-periode`):** laporan (penjualan, piutang, stok, laba rugi) sudah diuji penguji independen pada file
-**asli** buatan Frappe Books v0.36.0 dan angkanya cocok; file CSV pelanggan, barang, penjualan, dan pembelian diterima Import Wizard
-asli; akun barang berstok & kredit retur sudah beres. Versi 1.0.3 menghitung laba rugi dengan cara yang sama seperti laporan
-Profit And Loss Frappe Books (termasuk barang retur yang kembali ke gudang); di aplikasi asli angkanya sama persis dengan P&L
-bawaan dan lolos 46 uji otomatis, **menunggu uji ulang penguji independen**. Jadwal Telegram belum diuji di OpenClaw untuk skill ini. Catatan: per 20 Sep 2026 proyek Frappe Books mengumumkan pembaruan aplikasi sedang tertahan
-(masalah sertifikat penanda tangan); versi yang sudah dirilis tetap bisa dipakai.
+**Hasil uji (angka nyata):** uji OpenClaw dengan data contoh, Okt 2026 (v1.0.10), skor 1–10: tanpa skill **5,5** → dengan skill **9,0** (LULUS). Contoh PPN: tanpa skill disuruh setor Rp511.500; dengan skill PPN masukan diperhitungkan → **lebih bayar Rp93.500**, tanpa menyentuh file database. Uji penguji independen di **Frappe Books v0.36.0 asli**: laba rugi/stok/piutang cocok P&L aplikasi. Sumber: `examples/HASIL-UJI.md`, `promosi/sebelum-sesudah.jsonl`.
+
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis dengan data contoh 2026-10-02). Uji manusia akuntansi mengikuti `docs/uji-manusia-akuntansi.md` (disetujui pemilik 2026-10-09). Belum uji bot Telegram/jadwal untuk skill ini. Codex, Claude Code, Cursor belum uji platform asli penuh. Komunitech tidak berafiliasi dengan Frappe Technologies.
 
 ## FAQ
 **Apakah AI bisa merusak atau mengubah pembukuan saya?**

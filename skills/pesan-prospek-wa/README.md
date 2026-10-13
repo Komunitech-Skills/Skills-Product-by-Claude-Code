@@ -44,12 +44,9 @@ Salin folder `pesan-prospek-wa` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), Okt 2026 (v1.0.7), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS; uji ulang pra-cek bot **8,7**). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill draf WA + email, asal kontak wajib, zona jam benar, cek panjang lewat `cek_pesan.py`, tanpa blast. Uji bot Telegram gelombang 7 (2026-10-05): 6 → 8,5 LULUS tampilan.
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 7, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/738/760 — skor 6
-- Dengan skill: https://t.me/c/4407409583/739/762 — skor 8,5
-Verdik gelombang: LULUS — DENGAN langsung memberi 3 draf berisi asal kontak + opsi keluar, mengoreksi jam (19.30 WIB = 20.30 WITA, digeser ke 18.00 WIB = 19.00 WITA), memakai sapaan netral, dan menutup dengan checklist anti-blokir; TANPA memberi 2 draf "Selamat malam" tanpa opsi keluar yang jelas dan tetap mengirim 20.30 WITA.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
 
 ## FAQ
 **Bisa dipakai untuk kirim ke banyak kontak sekaligus?**
@@ -64,3 +61,5 @@ Skill ini berhenti di pesan pertama. Untuk menindaklanjuti prospek yang belum me
 ## Riwayat perubahan
 
 Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+Skill ini diadaptasi dari struktur marketing skill open-source (MIT, coreyhaines31/marketingskills); teks, contoh Indonesia, script cek pesan, dan aturan anti-spam milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber.

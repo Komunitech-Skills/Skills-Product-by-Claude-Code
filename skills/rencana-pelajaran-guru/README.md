@@ -56,12 +56,9 @@ Salin folder `rencana-pelajaran-guru` ke folder skills AI agent kamu:
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket, atau
 `docs/instalasi.md` di repo Komunitech.
 
-## Bukti uji di bot Telegram
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), Okt 2026 (v1.0.11), skor 1–10 penguji independen: tanpa skill **5,75** → dengan skill **8,7** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill ada kesalahan matematika JP dan CP usang; dengan skill modul + LKPD + kunci + rubrik utuh di chat, alokasi menit dihitung script, CP tidak dikarang. Uji bot Telegram gelombang 6 (2026-10-05) pernah BELUM karena isi tidak utuh di chat; versi 1.0.11 dirancang agar modul utuh tampil di chat (lihat catatan uji di `examples/00-openclaw-sebelum-sesudah.md`).
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/678/697 — skor 6
-- Dengan skill: https://t.me/c/4407409583/819/820 — skor 5 (uji ulang versi 1.0.6; versi sebelumnya 7,5)
-Verdik gelombang: BELUM — Versi 1.0.6 menangani capaian pembelajaran dengan jujur tetapi hanya mengirim ringkasan modul dan menyebut isi lengkap ada di file yang tidak bisa dibuka dari Telegram; TANPA mengirim modul utuh dan DOCX meski CP-nya keliru.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI). Claude Code (simulasi agent). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
 
 ## FAQ
 
@@ -92,3 +89,5 @@ langkah mengambil bunyi CP dari dokumen resminya, plus tempat isian di modul.
 ## Riwayat perubahan
 
 Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+Skill ini diadaptasi dari ide struktur modul ajar (Apache-2.0, proyek referensi pendidikan); implementasi, script, dan contoh Indonesia milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber referensi.
