@@ -143,7 +143,7 @@ Selalu tampilkan alasan yang diberikan calon pembeli yang menolak (dari form pen
 7. **Keputusan & langkah berikut** — LANJUT/UBAH/HENTIKAN + skill lanjutan yang relevan.
 
 ## Contoh
-Lihat `examples/01-kopi-susu-literan.md` (kopi susu gula aren kemasan literan, pre-order via status WA, hasil LULUS) dan `examples/02-jasa-laundry-sepatu.md` (jasa laundry sepatu, polling story IG + titip flyer di warung, hasil LULUS BERSYARAT → revisi harga). Kasus tambahan (kelas online Canva, uji lewat pre-order WA ke grup alumni pelatihan) dibahas ringkas di `references/menu-uji-murah.md`.
+Lihat `examples/01-kopi-susu-literan.md` (kopi susu gula aren kemasan literan, pre-order via status WA, hasil LULUS) dan `examples/02-jasa-laundry-sepatu.md` (jasa laundry sepatu, polling story IG + titip flyer di warung, hasil BELUM BISA DINILAI karena belum ada pesanan ber-DP → langkah berikut membuka pre-order ber-DP). Kasus tambahan (kelas online Canva, uji lewat pre-order WA ke grup alumni pelatihan) dibahas ringkas di `references/menu-uji-murah.md`.
 
 ## Batasan & Penanganan Error
 - **Minat ≠ pesanan.** Vote/like/komentar/"mau" tanpa bayar tidak pernah dihitung sebagai pesanan atau pendapatan. Klaim "sudah balik modal"/"untung" hanya boleh muncul dari hasil script atau rumus eksplisit yang ditampilkan.

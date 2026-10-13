@@ -73,4 +73,4 @@ Tidak. GAGAL artinya ide dalam bentuk sekarang (harga, penawaran, target pembeli
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
