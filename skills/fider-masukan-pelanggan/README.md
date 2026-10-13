@@ -59,7 +59,7 @@ Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (
 
 Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, ada pratinjau + persetujuan "ya", data disensor, duplikat digabung. Terpisah dari uji di atas, pembuat skill menjalankan alurnya pada Fider v0.38.0 asli (Docker + PostgreSQL); catatannya ada di `examples/HASIL-UJI.md`.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02) dan Claude Code (simulasi agent). Jadwal ringkasan ke Telegram (automations one-shot) diuji bot uji 2026-10-13 (C13). Codex dan Cursor belum kami uji langsung. Windows/macOS Fider dan HTTPS VPS sungguhan belum diverifikasi end-to-end.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02) dan Claude Code (simulasi agent). Jadwal ringkasan ke Telegram (automations one-shot) diuji bot uji 2026-10-13. Codex dan Cursor belum kami uji langsung. Windows/macOS Fider dan HTTPS VPS sungguhan belum diverifikasi end-to-end.
 
 ## FAQ
 **Apakah Fider dan biayanya gratis?** Fider gratis (AGPL-3.0) bila dipasang sendiri. Anda hanya membayar listrik/VPS dan email pengirim (banyak penyedia punya paket gratis kecil). Paket ini berisi skill, script, dan panduan Komunitech; Fider diunduh dari sumber resminya.
