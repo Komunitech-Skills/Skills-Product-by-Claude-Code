@@ -74,10 +74,12 @@ baru simulasi agent); Codex dan Cursor belum diuji.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02.
-- Tanpa skill: https://t.me/c/4407409583/515/571 — skor: lihat catatan gelombang
-- Dengan skill: https://t.me/c/4407409583/241/574 — skor: lihat catatan gelombang
-Verdik gelombang: — — TANPA memasang pengingat otomatis ke grup (melanggar aturan draf dikirim staf) dan tetap memproses pasien tanpa izin; DENGAN menghitung tanggal benar, mencatat izin, menyaring pasien tanpa izin, dan menyiapkan draf untuk disalin staf.
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02 (3 giliran). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.6).
+- Tanpa skill: https://t.me/c/4407409583/515/571 — skor tidak dicatat di gelombang itu
+- Dengan skill: https://t.me/c/4407409583/241/574 — skor tidak dicatat di gelombang itu
+Verdik gelombang: tidak dicatat di gelombang itu — TANPA memasang pengingat otomatis (cron) ke grup, melanggar aturan draf dikirim staf; DENGAN menghitung tanggal benar ("3 hari lagi" menjadi Senin 5 Okt), mencatat izin, menyaring pasien tanpa izin, dan menyiapkan draf untuk disalin staf.
+
+Diperbaiki di versi 1.0.7–1.0.8 (teks grup staf tanpa nomor/keterangan medis, izin pengingat bukan izin promo, rujukan laporan dipertegas; versi terkini 1.0.8), belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah skill ini menyimpan rekam medis atau diagnosis pasien?**

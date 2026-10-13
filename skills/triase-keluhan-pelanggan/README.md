@@ -65,10 +65,16 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
-- Tanpa skill: https://t.me/c/4407409583/904/942 — skor: lihat catatan gelombang
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup), dua gelombang. Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.2).
+
+**Gelombang 11, 2026-10-06**
+- Tanpa skill: https://t.me/c/4407409583/904/942 — skor tidak tersedia (pembanding tanpa skill hilang)
 - Dengan skill: https://t.me/c/4407409583/905/944 — skor 8,5
-Verdik gelombang: BELUM DAPAT DINILAI — Dengan skill: 3 P1/4 P2/1 bukan keluhan, baris "Batas waktu" platform sesuai referensi terverifikasi, nomor HP disamarkan, kompensasi ditandai [KEPUTUSAN PEMILIK]; pembanding tanpa skill hilang. Kirim ulang gelombang 11b (10 Okt 2026, topik berbeda, tautan tidak tercatat di log ini): 7,5 menjadi 8,5, BELUM.
+Verdik gelombang: BELUM DAPAT DINILAI — Dengan skill: 3 P1/4 P2/1 bukan keluhan, baris "Batas waktu" platform sesuai referensi terverifikasi, nomor HP disamarkan, kompensasi ditandai [KEPUTUSAN PEMILIK]; pembanding tanpa skill hilang.
+
+**Gelombang 11b (kirim ulang, topik berbeda), 2026-10-10 — verdik terakhir**
+- Skor: 7,5 → 8,5 (selisih +1,0). Tautan pesan tidak tercatat di catatan gelombang.
+Verdik gelombang: BELUM — DENGAN urutan P1/P2, batas waktu platform, draf balasan per item, dan nomor disamarkan; TANPA sudah urut tetapi draf lebih tipis.
 
 ## FAQ
 **Apakah skill ini yang membalas pelanggan?**

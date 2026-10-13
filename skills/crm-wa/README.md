@@ -76,10 +76,12 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02.
-- Tanpa skill: https://t.me/c/4407409583/516/565 — skor: lihat catatan gelombang
-- Dengan skill: https://t.me/c/4407409583/238/568 — skor: lihat catatan gelombang
-Verdik gelombang: — — DENGAN mendeteksi nama ganda dan mencatat status Deal + DP; TANPA mencatat ke CSV buatan sendiri. Catatan jujur: giliran 3 DENGAN sempat tercampur data uji lama usaha lain, lalu skill direvisi (cek identitas usaha sebelum mencatat).
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 2–3, 2026-10-02 (3 giliran). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.6).
+- Tanpa skill: https://t.me/c/4407409583/516/565 — skor tidak dicatat di gelombang itu
+- Dengan skill: https://t.me/c/4407409583/238/568 — skor tidak dicatat di gelombang itu
+Verdik gelombang: tidak dicatat di gelombang itu — DENGAN (giliran 1–2) mendeteksi nama ganda dan mencatat status Deal + DP; TANPA mencatat ke CSV buatan sendiri. Catatan jujur: giliran 3 DENGAN salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
+
+Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.10), belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah data pelanggan saya dikirim ke internet?**
