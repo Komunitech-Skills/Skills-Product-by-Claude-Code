@@ -115,3 +115,4 @@ PKP 112.800.000 − 58.500.000 = 54.300.000; PPh setahun 5% = Rp 2.715.000; diku
 - Status PTKP berubah di tengah tahun (menikah/punya anak) tidak mengubah PTKP tahun berjalan; berlaku tahun berikutnya.
 - Karyawan pindah kerja: pemberi kerja baru boleh menggabungkan penghasilan dari pemberi kerja lama hanya bila karyawan menyerahkan bukti potong Masa Pajak Terakhir dari kantor lama — di luar hitungan otomatis; jelaskan dan arahkan ke konsultan.
 - Uji otomatis: `python3 <folder-skill-ini>/scripts/test_pph21.py` (mencocokkan tabel dengan salinan resmi dan semua contoh resmi PMK 168/2023 & PMK 105/2025).
+- **Sumber tarif & angka:** setiap tarif/aturan yang disebut wajib disertai dasar aturan + tahunnya; angka hanya dari keluaran script atau input pengguna; nilai yang tidak diberikan pengguna (default, ilustrasi, patokan) ditandai sebagai asumsi, tanpa label "wajar/umum/lazim" yang tidak bersumber.

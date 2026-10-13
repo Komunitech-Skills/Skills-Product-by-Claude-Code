@@ -38,6 +38,9 @@ Penyesuaian ini berlaku untuk menyesuaikan jam operasional selama bulan Ramadhan
 
 Mohon seluruh karyawan menyesuaikan jadwal mulai tanggal tersebut. Pertanyaan bisa
 disampaikan ke Ibu Sari (0812-0000-1234).
+
+_Asumsi: hari kerja Senin–Jumat (tidak disebut pengguna). Ganti jika hari kerja kantor
+berbeda._
 ```
 
 ### 3. FAQ Karyawan
@@ -46,7 +49,8 @@ disampaikan ke Ibu Sari (0812-0000-1234).
 
 *THR cair kapan?*
 [isi: tanggal pencairan THR belum disebutkan pengguna — mohon konfirmasi ke HR/keuangan;
-sesuai aturan pemerintah THR wajib dibayarkan paling lambat H-7 sebelum Hari Raya]. Untuk
+sesuai aturan pemerintah THR wajib dibayarkan paling lambat H-7 sebelum Hari Raya
+(Permenaker 6/2016 Pasal 5 ayat 4)]. Untuk
 perhitungan nominal per karyawan, silakan gunakan skill `hitung-thr` atau hubungi Ibu Sari.
 
 *Cuti tahunan sisa boleh dirapel gak?*

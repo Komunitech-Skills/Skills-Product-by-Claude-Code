@@ -6,7 +6,7 @@
 - **Metode:** 5 skenario dijalankan dengan berperan sebagai agent yang memuat SKILL.md dan mengikuti langkahnya persis, ditambah 1 uji A/B (S1 tanpa skill). Hitungan kata versi IG/WA diukur dengan `wc -w`. Tanggal batas lamaran (14 hari dari 23 September 2026 = Rabu, 7 Oktober 2026) dicek dengan Python.
 
 ## Audit keamanan
-Tidak ada script, perintah shell, akses jaringan, atau pembacaan kredensial. SKILL.md dan file referensi tidak memuat instruksi tersembunyi atau prompt injection. Skill justru menambah perlindungan: menolak syarat diskriminatif, memperingatkan modus penipuan (biaya seragam/pelatihan), dan mengingatkan soal data pribadi pelamar (UU PDP). **Aman.**
+Tidak ada script, perintah shell, akses jaringan, atau pembacaan kredensial. SKILL.md dan file referensi tidak memuat instruksi tersembunyi atau prompt injection. Skill justru menambah perlindungan: menolak syarat diskriminatif, memperingatkan modus penipuan (biaya seragam/pelatihan), dan mengingatkan soal data pribadi pelamar (UU 27/2022 tentang PDP). **Aman.**
 
 ## Ringkasan skenario
 | # | Skenario | Hasil |
@@ -24,7 +24,7 @@ Tidak ada script, perintah shell, akses jaringan, atau pembacaan kredensial. SKI
 | Pemicu (description tepat) | 9 | Kata kunci ID/EN lengkap (loker, lowongan, job posting, hiring ad), kanal disebut, batas cakupan jelas. |
 | Kemudahan awam | 9 | Satu kalimat sudah cukup. Hasil siap tempel per kanal. Placeholder `[isi ...]` bisa terlewat oleh pengguna awam. |
 | Kualitas output | 9 | Tugas konkret, wajib vs nilai plus, screening yang relevan, batas panjang IG/WA dipatuhi. |
-| Akurasi (angka/fakta) | 9 | Dasar aturan (SE Menaker M/6/HK.04/V/2025, UU 13/2003, UU 8/2016, UU PDP) bertanggal dan bersumber. UMK dan benefit tidak dikarang. |
+| Akurasi (angka/fakta) | 9 | Dasar aturan (SE Menaker M/6/HK.04/V/2025, UU 13/2003, UU 8/2016, UU 27/2022 tentang PDP) bertanggal dan bersumber. UMK dan benefit tidak dikarang. |
 | Penanganan input kurang | 9 | Tanya sekali (≤ 5), atau placeholder + asumsi. |
 | Penanganan di luar cakupan | 8 | Pengarahan jelas. Belum ada fallback bila skill tujuan tidak terpasang. |
 | Keamanan | 10 | Tanpa script. Aktif mencegah diskriminasi, penipuan, dan penyalahgunaan data. |

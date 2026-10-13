@@ -151,6 +151,10 @@ langsung, tapi juga tidak menutup-nutupi masalah. Hindari jargon ("leverage",
 - **Tidak boleh mengarang angka, tren, atau kutipan** yang tidak ada di data pengguna.
   Bila data tidak cukup untuk salah satu dari "3 angka pendukung", tanyakan datanya atau
   sebutkan eksplisit "data ini belum tersedia" — jangan isi dengan perkiraan tanpa label.
+- **Angka hanya dari data pengguna atau keluaran script** (masukkan nominal Rupiah penuh atau
+  `jt`/`rb` ke script, bukan angka "dalam juta", agar rata-rata tidak terbulatkan), dan detail
+  yang tidak ada di input — nama kanal/marketplace, PIC, nominal anggaran, jadwal/program yang
+  belum disebut — ditulis `[isian: ...]`, tidak ditebak.
 - **Data kualitatif saja (tanpa angka sama sekali):** tetap bisa dipakai, tapi kalimat
   inti & "angka pendukung" diganti fakta konkret (mis. jumlah keluhan, tanggal kejadian)
   dan skill menyebutkan bahwa ini bukan data kuantitatif.

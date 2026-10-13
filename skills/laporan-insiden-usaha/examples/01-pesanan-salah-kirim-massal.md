@@ -12,8 +12,8 @@
 ## Kronologi
 09.00 — Tim packing mulai mencetak label pengiriman untuk pesanan promo 9.9.
 14.00 — Komplain masuk dari 5 pelanggan yang menerima paket dengan alamat tidak sesuai.
-14.00–14.30 — Dicek, ditemukan 40 pesanan memakai label dengan alamat salah karena data disalin dari sheet alamat versi lama.
-14.30 — Tim menghubungi kurir: 25 paket berhasil dibatalkan sebelum diambil kurir, 15 paket lainnya sudah terlanjur dikirim.
+[isian: jam] — Dicek, ditemukan 40 pesanan memakai label dengan alamat salah karena data disalin dari sheet alamat versi lama.
+[isian: jam] — Tim menghubungi kurir: 25 paket berhasil dibatalkan sebelum diambil kurir, 15 paket lainnya sudah terlanjur dikirim.
 
 ## Dampak
 - Pelanggan/pesanan terdampak: 40 pesanan
@@ -30,8 +30,7 @@
 
 ## Tindakan Cepat (sudah/sedang dilakukan)
 - Membatalkan 25 paket yang belum diambil kurir
-- Menghubungi 15 pelanggan yang paketnya sudah terlanjur jalan untuk koordinasi ulang alamat/pengambilan
-- Membalas 5 komplain yang sudah masuk dengan permintaan maaf dan solusi (lihat draf di bawah)
+- [isian: tindakan yang sudah Anda lakukan, selain membatalkan 25 paket]
 
 ## Rencana Pencegahan
 | Tindakan | Penanggung jawab | Tenggat |
@@ -62,5 +61,5 @@ Mohon maaf ke pelanggan yang pesanannya salah alamat pada promo 9.9 kemarin. Kam
 *Insiden: Salah Kirim Massal Promo 9.9*
 Apa: 40 pesanan salah label alamat, data dari sheet lama
 Dampak: ±Rp1,5jt ongkir kirim ulang, 5 komplain masuk
-Status: 25 paket dibatalkan, 15 masih ditangani
+Status: 25 paket dibatalkan, 15 sudah terlanjur jalan
 Pencegahan: SOP cek ulang alamat sebelum cetak label — PJ: Supervisor Gudang, tenggat [isi]

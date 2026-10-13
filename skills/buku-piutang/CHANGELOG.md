@@ -2,6 +2,10 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.5 (2026-10-13)
+- Batasan di SKILL.md ditambah satu aturan: setiap tarif/aturan disebut dengan dasar aturan + tahun; angka hanya dari script/input pengguna; nilai yang tidak diberikan pengguna ditandai asumsi (tanpa label "wajar/umum/lazim" yang tidak bersumber).
+- Contoh uji `examples/02`: keterangan PPh 23 kini bersyarat dan bersumber (bila pelanggan pemotong PPh 23/badan usaha, tarif 2% untuk jasa sesuai UU PPh Pasal 23 ayat (1) huruf c; pastikan ke pelanggan).
+
 ## Catatan revisi 1.0.4 (2026-10-01)
 - Petunjuk lokasi script ditambahkan di SKILL.md: script ada di subfolder `scripts/` di folder skill. Agent dilarang mencari script atau file pengguna ke seluruh disk (mis. `find /`).
 

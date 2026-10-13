@@ -38,8 +38,9 @@ Normal #1 (uji sesi ini). Manajer toko cabang melapor omzet 3 bulan ke pemilik u
    dari tren ini; perlu dipantau bila pola musiman berubah") alih-alih memaksakan risiko
    yang tidak ada di data. Ini sesuai Batasan SKILL.md (tidak boleh mengarang).
 7. Rekomendasi: karena tren positif, rekomendasi diarahkan ke "pertahankan" bukan aksi
-   korektif — spesifik: pertahankan alokasi stok & jadwal promo yang sama untuk Oktober,
-   PIC: Manajer Cabang, tenggat: awal Oktober.
+   korektif — spesifik: pertahankan [isian: langkah yang sedang berjalan, mis. promo/alokasi
+   stok] untuk Oktober, PIC: Manajer Cabang, tenggat: awal Oktober. (Revisi 2026-10-13:
+   "alokasi stok & jadwal promo" tidak ada di input → `[isian: ...]`.)
 
 ## Output — Ringkasan WA (5 baris)
 ```
@@ -49,7 +50,7 @@ Rp52 juta (+15,6%).
 • Omzet Juli: Rp45.000.000
 • Omzet September: Rp52.000.000 (+15,6% dari Juli)
 • Rata-rata 3 bulan: Rp48.333.333
-👉 Pertahankan alokasi stok & jadwal promo yang sama untuk Oktober.
+👉 Pertahankan [isian: langkah yang sedang berjalan] untuk Oktober.
 ```
 
 ## Output — Email formal (ringkas)
@@ -71,7 +72,7 @@ Tidak ada risiko mendesak dari tren ini; akan terus dipantau bila pola
 musiman berubah di bulan berikutnya.
 
 Rekomendasi:
-1. Pertahankan alokasi stok & jadwal promo yang sama untuk Oktober — PIC:
+1. Pertahankan [isian: langkah yang sedang berjalan] untuk Oktober — PIC:
    Manajer Cabang, tenggat: awal Oktober.
 
 Demikian laporan ini kami sampaikan, terima kasih atas perhatiannya.

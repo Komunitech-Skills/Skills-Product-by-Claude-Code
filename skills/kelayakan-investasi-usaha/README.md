@@ -81,4 +81,4 @@ Tidak. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, ren
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

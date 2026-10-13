@@ -30,7 +30,7 @@ import re
 import sys
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal as D, InvalidOperation
 
-VERSI = "1.0.9"
+VERSI = "1.0.10"
 NOL = D(0)
 SATU = D(1)
 SERATUS = D(100)

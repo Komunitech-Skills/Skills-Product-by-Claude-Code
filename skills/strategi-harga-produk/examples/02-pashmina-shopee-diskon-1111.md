@@ -31,7 +31,7 @@
 - Untuk diskon 30% dan beli 2 gratis 1, penjualan harus naik lebih dari 2,5 kali lipat supaya total laba tidak turun. Untuk pashmina yang biasanya laku 300 pcs, itu target berat. Kalau tidak tercapai, kamu kerja lebih banyak untuk laba lebih kecil.
 - Pada beli 2 gratis 1, kamu memberi diskon efektif 33% dan tetap kena potongan Shopee di tiap pcs.
 
-**Simulasi (perkiraan, bukan kepastian):** Kalau 11.11 bikin penjualan naik 2 sampai 3 kali lipat (600 sampai 900 pcs), diskon 30% bisa menutup laba bulan normal, tapi margin per pcs tetap di bawah targetmu. Diskon 25% cukup butuh kenaikan sekitar 100% (sekitar 600 pcs) untuk menyamai laba kotor normal, dan marginnya tetap di atas 25%. Angka ini belum kucek dengan script, jadi anggap kasar.
+**Simulasi (perkiraan, bukan kepastian):** Kalau 11.11 bikin penjualan naik 2 sampai 3 kali lipat (600 sampai 900 pcs), diskon 30% bisa menutup laba bulan normal, tapi margin per pcs tetap di bawah targetmu. Diskon 25% butuh kenaikan penjualan 103,85% (dari 300 jadi minimal 612 pcs) untuk menyamai laba kotor normal, dan marginnya tetap di atas 25% (26,64%).
 
 **Langkah minggu ini:**
 1. Pilih promo: diskon 25% atau paket "beli 2 diskon 25%". Paket ini menaikkan jumlah pcs per pesanan.
@@ -52,9 +52,9 @@ Script dijalankan penguji: `diskon --harga 89.900 --hpp 38rb --diskon 30 --volum
 - Beli 2 gratis 1: harga efektif 59.933,33; laba 11.744,67; margin 19,6%; +211,78% → **936** ✔.
 - Diskon 15% (agent): 76.415; laba 25.424,45; margin 33,27%; 300 × 1,4402 = 432,07 → **433** ✔.
 - Lantai 25%: 38.000 ÷ 0,58 = 65.517,24 → **Rp65.518**; diskon maks 27,12% ✔. Diskon 25% → Rp67.425 ✔ (margin 26,64% — penguji).
-- Kalimat agent "diskon 25% butuh kenaikan ±100% (±600 pcs)" **tidak dihitung script** (agent mengakuinya). Hitungan penguji: 36.617 ÷ 17.962,75 = 2,0385 → +103,85%, **612 pcs**. Selain itu ditaruh di bagian "Simulasi (perkiraan)" padahal ini angka pasti.
+- Diskon 25%: angka dihitung ulang skrip 2026-10-13 (`diskon --harga 89.900 --hpp 38rb --diskon 25 --volume 300 --margin-min 25 --biaya-persen 17`): harga promo Rp67.425, margin 26,64%, penjualan harus naik **103,85%** → minimal **612 pcs**. Script menandai kenaikan > 100% sebagai TIDAK DISARANKAN; angka ini pasti, bukan perkiraan.
 - Harga cantik di sekitar lantai: Rp64.900 di bawah batas, Rp65.900 OK (25,34%) ✔ — sesuai aturan "kandidat di bawah lantai tidak boleh dipilih".
 
-**Catatan:** tampilan script "laba Rp14.231,90/unit" bersen, sementara laba normal dibulatkan (inkonsisten tampilan, ringan).
+**Catatan penguji:** angka dihitung ulang skrip 2026-10-13; angka diskon 25% di output di atas sudah memakai hasil skrip. Tampilan script "laba Rp14.231,90/unit" bersen, sementara laba normal dibulatkan (inkonsisten tampilan, ringan).
 
-**Nilai: 8/10** — jawaban langsung ("masih untung, tapi di bawah target"), batas diskon maksimal, alternatif, langkah konkret. Minus: satu angka kasar tanpa script.
+**Nilai: 8/10** — jawaban langsung ("masih untung, tapi di bawah target"), batas diskon maksimal, alternatif, langkah konkret.

@@ -147,6 +147,7 @@ Lihat `examples/01-kopi-susu-literan.md` (kopi susu gula aren kemasan literan, p
 
 ## Batasan & Penanganan Error
 - **Minat ≠ pesanan.** Vote/like/komentar/"mau" tanpa bayar tidak pernah dihitung sebagai pesanan atau pendapatan. Klaim "sudah balik modal"/"untung" hanya boleh muncul dari hasil script atau rumus eksplisit yang ditampilkan.
+- **Jangan mengarang angka, kebijakan, atau tindakan yang tidak diberikan pengguna** (jumlah ditawari/pre-order/views, harga, HPP, biaya uji, hasil uji, alasan penolakan): tulis `[isian: ...]` atau tandai sebagai asumsi; angka pada contoh adalah data fiktif ilustrasi, bukan hasil nyata.
 - **Bukan riset pasar ilmiah.** Ambang 15%/8% adalah heuristik praktis, bukan angka baku industri — sebutkan ini ke pengguna, terutama untuk keputusan bermodal besar (di atas puluhan juta Rupiah), sarankan tambah metode uji atau konsultasi profesional.
 - **Sampel kecil = hasil belum pasti.** Selalu tandai hasil dari <20 orang yang ditawari sebagai "indikasi awal", jangan disebut kesimpulan final.
 - **Bukan pengganti kalkulasi biaya rinci.** Kalau pengguna butuh HPP/BEP presisi sebelum memutuskan modal produksi besar, arahkan ke `hitung-hpp` setelah hasil validasi LULUS.

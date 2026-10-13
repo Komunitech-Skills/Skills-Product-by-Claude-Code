@@ -237,6 +237,7 @@ Data Anda tetap di komputer Anda. Mau saya jalankan cek privasi dasar sekarang, 
 
 ## Batasan & penanganan error
 - **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+- **Jangan mengarang angka, kebijakan, atau tindakan yang tidak diberikan pengguna** (mis. lama resi aktif, siapa menanggung ongkir retur, jam batas kirim, janji ke pelanggan di draf balasan): tulis `[isian: kebijakan toko Anda]` atau tandai asumsi.
 - **Industri/tugas tanpa padanan di `peta-skill.md`:** katakan jujur, jangan mengarang nama
   skill. Tawarkan paket umum atau skill terdekat.
 - **Skill yang direkomendasikan (mis. `laporan-otomatis-terjadwal`, `buku-stok`, atau skill baru

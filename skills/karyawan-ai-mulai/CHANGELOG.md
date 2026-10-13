@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.1.10 (2026-10-13)
+- Batasan di SKILL.md: aturan eksplisit anti-karangan (jangan mengarang angka/kebijakan/tindakan yang tidak diberikan pengguna; tulis `[isian: kebijakan toko Anda]` atau tandai asumsi). Temuan audit contoh: `examples/03` memuat kebijakan toko yang tidak ada di input (resi aktif 1×24 jam, ongkir retur ditanggung, jam batas kirim 15.00); kini diganti `[isian: kebijakan toko Anda ...]`. Logika dan skrip tidak berubah.
+
 ## Catatan revisi 1.1.9 (2026-10-13)
 - Rujukan ke skill arsip diganti: `caption-sosmed-umkm`, `kalender-konten-30hari` diganti `konten-mingguan` di SKILL.md (contoh rekomendasi dan rencana 7 hari), references/peta-skill.md, references/openclaw.md, dan peta kata kunci di scripts/peta_kebutuhan.py (hanya nama skill; logika dan kasus uji tidak berubah selain nama yang diharapkan).
 

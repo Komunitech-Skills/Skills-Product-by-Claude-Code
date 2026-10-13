@@ -37,8 +37,8 @@ biaya/omzet melonjak dari 12% ke 23%.
 • Omzet: Rp32 juta → Rp24,5 juta (-23%)
 • Biaya iklan: Rp4 juta → Rp5,6 juta (+40%)
 • Rasio biaya iklan/omzet: 12% → 23%
-👉 Usul turunkan budget iklan Shopee ~Rp1 juta/bulan mulai minggu
-depan sambil evaluasi materi iklan.
+👉 Usul turunkan budget iklan [isian: kanal iklan] sebesar [isian: nominal]/bulan
+mulai minggu depan sambil evaluasi materi iklan.
 ```
 (Cuplikan diringkas dan angkanya dibulatkan; versi lengkap dengan angka rinci ada di `examples/01-omzet-turun-bulan-puasa.md`.) Plus versi email formal, 1 halaman eksekutif, dan skrip bicara — semua memakai angka yang sama.
 
@@ -89,4 +89,4 @@ bicara) — cocok untuk update cepat, bukan deck presentasi penuh.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

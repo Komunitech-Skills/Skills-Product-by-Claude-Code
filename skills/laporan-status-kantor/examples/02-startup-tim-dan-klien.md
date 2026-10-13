@@ -26,8 +26,9 @@ belum jelas. Ada 2 orang tim resign minggu ini jadi workload rada berat — butu
 soal redistribusi tugas. Budget server bulan ini juga sedikit over gara-gara traffic naik,
 perlu di-review.
 
-_Asumsi: periode minggu berjalan (21–25 Sep 2026), penerima tim internal. Ganti jika
-perlu._
+_Asumsi: periode minggu berjalan (21–25 Sep 2026), penerima tim internal. Usulan
+"butuh diskusi soal redistribusi tugas" dan "perlu di-review" adalah saran penulis, tidak
+ada di poin Anda — hapus bila tidak sesuai. Ganti jika perlu._
 ```
 
 ### Versi klien (email, sopan-formal wajib, template `3p-ke-klien.md`)
@@ -52,6 +53,10 @@ Mohon informasikan bila ada pertanyaan. Terima kasih atas kepercayaannya.
 Hormat kami,
 Tim Produk
 ```
+
+_Asumsi (di luar isi email): janji "akan menginformasikan estimasi waktu penyelesaian"
+adalah kalimat standar penulis, tidak ada di poin Anda — hapus atau ganti bila Anda belum
+bisa berjanji._
 
 ## Catatan penguji
 

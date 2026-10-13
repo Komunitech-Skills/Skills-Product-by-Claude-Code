@@ -35,7 +35,7 @@ Uang bersih ±Rp28.440.000 per tahun (Rp2.370.000/bulan) setelah bahan baku, bia
 
 **Kalau meleset (NPV):** omzet −10% → Rp44.914.108 · omzet −20% → Rp29.471.247 · biaya +10% → Rp44.784.336. Ketiganya tetap layak.
 **Syarat:** omzet tambahan tidak turun lebih dari 39,1% (minimal ±Rp3.654.956/bulan) dan biaya tidak naik lebih dari 38,8%.
-**Asumsi:** patokan 12%/tahun (bunga KUR 6% + risiko usaha 6%, bisa diganti), masa 5 tahun, penyusutan rata Rp8 juta/tahun sampai nilai sisa Rp5 juta, PPh final 0,5% dari tambahan omzet.
+**Asumsi:** patokan 12%/tahun (asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih), masa 5 tahun, penyusutan rata Rp8 juta/tahun sampai nilai sisa Rp5 juta, PPh final 0,5% dari tambahan omzet.
 Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untung.
 
 Supaya lebih tajam:

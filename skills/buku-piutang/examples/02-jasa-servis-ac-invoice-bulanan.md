@@ -39,7 +39,7 @@ potong --nota INV/2026/07/001 --jumlah 91rb --alasan "PPh 23 2% x DPP, bukti pot
 Ekspor `--format tagih-piutang` → `hitung_telat.py --file` (skill tagih-piutang, salinan) membaca 4 nota terbuka, total Rp 6.781.979 dan bucket sama (Hotel Melati: nominal 8.711.110, dibayar 8.700.000).
 
 ## Catatan temuan
-- **PPh 23 (P3):** pelanggan B2B jasa (PT/klinik/hotel) lazim memotong PPh 23 2% dari DPP. Skill tidak membahasnya; pengguna awam akan melihat "kurang bayar Rp 91.000" dan bisa menagih ulang pelanggan. `potong` berfungsi, tetapi rekap melabelinya "Potongan (retur/diskon/hapus)". Saran: satu baris panduan di Langkah C ("dipotong PPh 23 → `potong --alasan "PPh 23, bukti potong No ..."`, jangan ditagih") dan label terpisah di rekap.
+- **PPh 23 (P3):** bila pelanggan Anda pemotong PPh 23 (badan usaha), tarif 2% untuk jasa sesuai UU PPh Pasal 23 ayat (1) huruf c; pastikan ke pelanggan. Skill tidak membahasnya; pengguna awam akan melihat "kurang bayar Rp 91.000" dan bisa menagih ulang pelanggan. `potong` berfungsi, tetapi rekap melabelinya "Potongan (retur/diskon/hapus)". Saran: satu baris panduan di Langkah C ("dipotong PPh 23 → `potong --alasan "PPh 23, bukti potong No ..."`, jangan ditagih") dan label terpisah di rekap.
 - Pratinjau `potong` dan pesan dobel nota jelas. Catatan Coretax selalu muncul (sesuai standar CLAUDE.md).
 
 **Nilai skenario: lulus.**

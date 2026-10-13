@@ -133,3 +133,4 @@ Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untu
 - IRR bisa lebih dari satu bila arus kas berganti tanda beberapa kali (mis. ada overhaul besar) → script memberi peringatan; pakai NPV sebagai patokan.
 - Omzet dari pengguna adalah perkiraan. Bila terdengar terlalu optimis (mis. omzet cabang baru langsung sama dengan cabang lama), sebut risikonya dan tunjukkan skenario turun; jangan mengganti angkanya diam-diam.
 - Bukan nasihat keuangan/investasi; untuk investasi besar (≥ ratusan juta) atau keputusan pinjaman, sarankan diskusi dengan konsultan keuangan atau bank.
+- **Sumber tarif & angka:** setiap tarif/aturan yang disebut wajib disertai dasar aturan + tahunnya; angka hanya dari keluaran script atau input pengguna; nilai yang tidak diberikan pengguna (default, ilustrasi, patokan) ditandai sebagai asumsi, tanpa label "wajar/umum/lazim" yang tidak bersumber.

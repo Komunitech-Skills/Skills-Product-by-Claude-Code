@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.3 (2026-10-13)
+- Batasan di SKILL.md ditambah satu aturan: setiap tarif/aturan disebut dengan dasar aturan + tahun; angka hanya dari script/input pengguna; nilai yang tidak diberikan pengguna ditandai asumsi (tanpa label "wajar/umum/lazim" yang tidak bersumber).
+- Contoh uji `examples/01`–`03`: patokan 12% ditulis sebagai asumsi tingkat diskonto contoh (ganti dengan bunga pinjaman Anda + premi risiko pilihan Anda), tidak lagi menyebut tarif KUR tanpa sumber.
+
 ## Catatan revisi 1.0.2 (2026-10-05)
 - Format rupiah di hasil script ditulis "Rp1.000.000" (tanpa spasi setelah Rp).
 - Balik modal terdiskonto dihitung dari arus kas operasional saja (nilai sisa atau jual kembali tidak dimasukkan); bila nilai sisa besar, hal ini disebut dalam satu kalimat. Agent tidak boleh menulis "balik modal lebih lama dari masa pakai" bila angkanya masih di dalam masa pakai.

@@ -7,6 +7,9 @@ untuk uji lanjutan oleh penguji terpisah).
 > Sejak v1.0.1 default selalu **2 JP per pertemuan** (80 menit di SMP) bila guru tidak
 > menyebut JP. Struktur & isi lain tetap berlaku; baca angka menit di bawah sebagai kasus
 > "guru menyebut 3 JP per pertemuan".
+>
+> **Catatan audit 2026-10-13:** jumlah siswa per kelas tidak disebut guru, jadi ditulis
+> `[isian]` (versi awal menulis "32 siswa/kelas" tanpa dasar).
 
 ## Input pengguna
 > "buatkan modul ajar IPA kelas 7 tentang ekosistem 2 pertemuan"
@@ -39,7 +42,7 @@ untuk uji lanjutan oleh penguji terpisah).
 | Kompetensi awal | Siswa sudah mengenal makhluk hidup dan lingkungan sekitar (materi kelas SD) |
 | Profil Lulusan yang dituju | Dimensi **Penalaran Kritis** dan **Kesehatan** *(padanan lama: Profil Pelajar Pancasila — Bernalar Kritis)* |
 | Sarana & prasarana | Kertas HVS bekas, alat tulis, HP (kamera, untuk pertemuan 2), papan tulis |
-| Target peserta didik | Reguler, 32 siswa/kelas |
+| Target peserta didik | Reguler, [isian: jumlah siswa per kelas] |
 | Model pembelajaran | Tatap muka, diskusi kelompok kecil (4–5 siswa) |
 
 ## B. Komponen Inti

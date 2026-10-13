@@ -33,7 +33,7 @@ Uji ketat: Bila hasil minimal yang diminta dinaikkan ke 20%/tahun (bunga lebih m
 **Kalau meleset (NPV):** penghematan −10% → −Rp18.415.341 · −20% → −Rp46.532.595 · biaya mobil +10% → −Rp3.275.281.
 **Kenapa kurang layak:** penghematan hanya boleh turun 3,5% (mis. pengiriman berkurang) dan biaya mobil naik 7,5% sebelum rugi dibanding patokan. Hasil positif juga bergantung pada mobil masih bernilai ±Rp67,5 juta di tahun ke-5.
 **Agar layak:** penghematan (sewa ekspedisi yang tergantikan) minimal ±Rp6.275.716/bulan (bila biaya mobil tetap 3 juta), atau pilih mobil bekas yang lebih murah, atau manfaatkan mobil untuk pendapatan tambahan (antar pesanan pelanggan).
-**Asumsi:** patokan 12%/tahun (bunga KUR 6% + risiko usaha 6%, bisa diganti), masa 5 tahun, nilai mobil turun rata selama 8 tahun, sopir sudah ada, pajak tidak bertambah karena penghematan bukan omzet (bila usaha memakai PPh badan, laba naik dan pajaknya ikut naik).
+**Asumsi:** patokan 12%/tahun (asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih), masa 5 tahun, nilai mobil turun rata selama 8 tahun, sopir sudah ada, pajak tidak bertambah karena penghematan bukan omzet (bila usaha memakai PPh badan, laba naik dan pajaknya ikut naik).
 Catatan: bukan nasihat keuangan; hasil tergantung asumsi, tidak ada jaminan untung.
 
 Supaya lebih tajam:
