@@ -1,7 +1,9 @@
 # Laporan Progres Klien, Tinggal Catat Lalu Tinggal Kirim
 
 **Catat pekerjaan sekali jalan saat dikerjakan, minta "buatkan laporan mingguan untuk klien X",
-langsung dapat draf siap tinjau — email, WA/Telegram, dan Markdown, jam dihitung otomatis.**
+langsung dapat draf siap tinjau — email, WA/Telegram, dan Markdown (teks berformat untuk disimpan sebagai dokumen), jam dihitung otomatis.**
+
+Diuji AI penguji independen di OpenClaw: 8 → 8,5 dari 10 (setelah perbaikan v1.0.5; selisih kecil, karena tanpa skill pun jumlah jam sudah benar; pembedanya file catatan kerja CSV dari Excel/Sheets terbaca langsung dan bagian "rencana berikutnya" tidak dikarang).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -10,24 +12,24 @@ langsung dapat draf siap tinjau — email, WA/Telegram, dan Markdown, jam dihitu
   ada progres ("kelarin rekonsiliasi bank buat PT Maju, 2,5 jam"), sisanya dirakit otomatis saat
   diminta.
 - ✅ **Total jam dihitung, bukan dikira-kira.** Rincian per proyek, dan entri yang lupa dicatat
-  jamnya ditandai jelas — tidak pernah dianggap diam-diam 0 jam.
+  jamnya ditandai jelas — tidak dianggap diam-diam 0 jam.
 - ✅ **Tiga versi siap pakai sekaligus**: email formal, WA/Telegram ringkas, dan Markdown untuk
   disimpan sebagai dokumen — tinggal salin sesuai kanal yang dipakai klien Anda.
 - ✅ **Kendala dan kebutuhan dari klien otomatis terkumpul** dari catatan harian, tidak perlu
   diingat-ingat lagi saat menulis laporan.
-- ✅ **Tetap Anda yang mengirim.** Tidak ada kiriman otomatis ke klien — draf selalu ditinjau dan
-  disalin manual, aman dari salah kirim atau kesalahan yang tidak sempat dicek.
+- ✅ **Tetap Anda yang mengirim.** Tidak ada kiriman otomatis ke klien — draf ditinjau dan
+  disalin manual oleh Anda, sehingga risiko salah kirim lebih kecil (tetap baca ulang sebelum dikirim).
 
 ## Cocok untuk siapa
 - Konsultan pajak, konsultan hukum, akuntan lepas, freelancer IT/desain/marketing, dan jasa
   profesional lain yang menangani beberapa klien sekaligus dan harus rutin lapor progres.
 - Anda yang selama ini menulis laporan klien dari ingatan atau menggali ulang chat WA lama.
 - Member VIP komunitech.com yang sudah pakai OpenClaw — draf ini bisa dijadwalkan otomatis muncul
-  di Telegram Anda tiap Jumat sore (panduan ada di dalam paket; tetap Anda yang mengirim ke klien). Jadwal otomatis memakai pola OpenClaw yang sudah terbukti di skill lain; kombinasi dengan skill ini belum diuji di Gateway sungguhan.
+  di Telegram Anda tiap Jumat sore (belum diuji langsung; panduan ada di dalam paket; tetap Anda yang mengirim ke klien). Jadwal otomatis memakai pola OpenClaw yang sudah terbukti di skill lain; kombinasi dengan skill ini belum diuji di OpenClaw yang menyala terus (Gateway) di komputer sungguhan.
 
 **Kurang cocok:** ingin laporan otomatis langsung terkirim ke klien tanpa ditinjau (skill ini
 sengaja tidak melakukan itu), atau butuh laporan internal ke atasan/tim sendiri (pakai skill
-`laporan-status-kantor`).
+laporan internal Komunitech, `laporan-status-kantor`).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** akhir minggu baru mulai mengingat-ingat apa saja yang dikerjakan untuk tiap klien,
@@ -57,8 +59,6 @@ Total jam tercatat: 4 jam.
 ```
 (Contoh lengkap tiga versi + Markdown: `examples/uji-pembuat-01-konsultan-pajak.md`.)
 
-**Hasil uji:** skor kualitas 9/10 pada uji penguji independen (simulasi agent). Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Di OpenClaw 2026.9.6 (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/UJI-PLATFORM.md`. Uji OpenClaw 2026-10-01: 8 → 7 sebelum perbaikan, 8 → 8,5 setelah perbaikan v1.0.5 (lihat `examples/00-openclaw-sebelum-sesudah.md`). Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
-
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
 - "Catat: hari ini kelarin desain logo buat Kopi Senja, 3 jam."
@@ -67,7 +67,7 @@ Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
 - "Klien saya siapa saja yang tercatat?"
 - "Bikinin laporan 22–26 Sep buat PT Sentosa dari file catatan-kerja.csv" (file catatan Anda
   sendiri dari Excel/Sheets langsung dibaca: pemisah koma/titik koma, "2,5 jam", "90 menit")
-- "Kirim draf laporan tiap Jumat sore ke Telegram saya" (OpenClaw, opsional)
+- "Kirim draf laporan tiap Jumat sore ke Telegram saya" (OpenClaw, opsional; jadwal otomatisnya belum diuji langsung)
 
 ## Syarat
 Butuh Python di komputer (biasanya sudah ada di Mac/Linux; di Windows bisa dipasang gratis dari
@@ -87,6 +87,13 @@ Salin folder `laporan-klien-konsultan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
+**Hasil uji (jujur):** tiga sumber yang terpisah, skor 1–10.
+- **Uji perbandingan oleh penguji independen (simulasi agent):** skor kualitas 9/10. Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Rincian: `examples/00-pembanding-tanpa-skill.md`.
+- **Uji pemasangan di OpenClaw 2026.9.6** (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/UJI-PLATFORM.md`.
+- **Uji sebelum/sesudah OpenClaw, 2026-10-01** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): 8 → 7 sebelum perbaikan (skill sempat kalah dari AI tanpa skill), 8 → 8,5 setelah perbaikan v1.0.5.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal otomatis ke Telegram belum diuji langsung.
+
 ## FAQ
 **Data pekerjaan klien saya dikirim ke internet?**
 Tidak. Semua catatan tersimpan di satu file CSV di komputer Anda sendiri. Yang mengalir ke
@@ -94,8 +101,8 @@ penyedia model AI hanya teks percakapan biasa, sama seperti chat lainnya.
 
 **Bisa langsung terkirim otomatis ke klien tiap minggu?**
 Tidak, dan memang sengaja. Draf hanya disiapkan untuk Anda tinjau dan kirim sendiri — bahkan bila
-dijadwalkan lewat OpenClaw, draf itu masuk ke Telegram/WhatsApp **Anda sendiri**, bukan langsung
-ke klien (lihat `references/openclaw-jadwal.md`).
+dijadwalkan lewat OpenClaw, draf itu masuk ke Telegram **Anda sendiri**, bukan langsung
+ke klien (WhatsApp hanya dengan nomor terpisah; lihat `references/openclaw-jadwal.md`).
 
 **Bagaimana kalau saya lupa mencatat jam suatu pekerjaan?**
 Boleh dikosongkan — laporan tetap dibuat, dan bagian Total Jam menandai jelas berapa entri yang
