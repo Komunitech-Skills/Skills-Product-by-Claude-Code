@@ -66,10 +66,16 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup), dua gelombang. Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.2).
+
+**Gelombang 11, 2026-10-06**
 - Tanpa skill: https://t.me/c/4407409583/902/938 — skor 7
-- Dengan skill: https://t.me/c/4407409583/903/940 — skor: lihat catatan gelombang
-Verdik gelombang: BELUM DAPAT DINILAI — Tanpa skill sudah memberi segmen, hari senyap yang benar & 3 template WA (tanpa opsi "stop"/opt-in, tanpa jadwal); jawaban lengkap dengan skill tidak terekam di transkrip. Kirim ulang gelombang 11b (10 Okt 2026, topik berbeda, tautan tidak tercatat di log ini): 7 menjadi 8, BELUM.
+- Dengan skill: https://t.me/c/4407409583/903/940 — skor tidak tersedia (jawaban lengkap dengan skill tidak terekam di transkrip)
+Verdik gelombang: BELUM DAPAT DINILAI — Tanpa skill sudah memberi segmen, hari senyap yang benar & 3 template WA (tanpa opsi "stop"/opt-in, tanpa jadwal); jawaban lengkap dengan skill tidak terekam di transkrip.
+
+**Gelombang 11b (kirim ulang, topik berbeda), 2026-10-10 — verdik terakhir**
+- Skor: 7 → 8 (selisih +1,0). Tautan pesan tidak tercatat di catatan gelombang.
+Verdik gelombang: BELUM — DENGAN memberi segmen A/B/C, angka pasif, dan template WA terstruktur; TANPA sudah cukup lengkap tetapi tanpa opsi stop/opt-in dan ada dua balasan berurutan (termasuk rujukan "sama persis").
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan pasif?**

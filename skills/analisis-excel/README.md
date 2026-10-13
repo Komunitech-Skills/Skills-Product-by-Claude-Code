@@ -1,20 +1,23 @@
 # Analisis Excel Tanpa Rumus, Tinggal Tanya
 
-**Kirim file Excel/CSV, tanya pakai bahasa biasa, dapat tabel + temuan + saran grafik — angkanya
+**Kirim file Excel atau CSV (file tabel sederhana yang bisa dibuka di Excel), tanya pakai bahasa biasa, dapat tabel + temuan + saran grafik — angkanya
 dihitung komputer, bukan dikira-kira AI.**
+
+*Diuji AI penguji independen: 7,25 → 8,75 dari 10 (semua persen diambil dari skrip hitung, tanpa memasang paket tambahan diam-diam, dan data pribadi di file gaji diingatkan).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Jawaban langsung dari file Anda:** "total per kategori", "bulan mana paling tinggi",
-  "September naik berapa dibanding Agustus", "10 pelanggan terbesar" — tanpa bikin PivotTable
-  atau rumus SUMIFS sendiri.
-- ✅ **Angka bisa dipercaya:** semua dihitung script (presisi penuh untuk rupiah), baris "TOTAL"
-  di bawah tabel otomatis tidak dihitung dua kali, nilai yang aneh dilaporkan lengkap dengan nomor
-  barisnya — bukan ditebak diam-diam.
+  "September naik berapa dibanding Agustus", "10 pelanggan terbesar" — tanpa bikin tabel ringkasan
+  (PivotTable) atau rumus rumit sendiri.
+- ✅ **Angka dihitung komputer, bukan dikira:** persen dan total dihitung skrip (presisi penuh untuk rupiah),
+  baris "TOTAL" yang jelas di bawah tabel tidak dihitung dua kali (yang meragukan ditanyakan ke Anda),
+  dan nilai yang aneh dilaporkan lengkap dengan nomor barisnya — bukan ditebak diam-diam.
 - ✅ **Tahan file berantakan:** judul laporan di atas tabel, sel gabungan (merge), angka
   "Rp 1.234.567,89", tanggal campur "25/09/2026" / "25 Sep 2026" / "2026-09-25", "kopi susu" vs
-  "Kopi Susu ", file CSV dari Excel Windows lama — semua ditangani.
+  "Kopi Susu ", file CSV dari Excel Windows lama — umumnya terbaca; bila ragu, AI bertanya atau
+  menolak dengan alasan jelas, bukan menebak.
 - ✅ **Siap pakai:** tabel siap tempel ke WA/laporan, file CSV hasil yang bisa dibuka di Excel,
   narasi temuan bahasa awam, dan saran grafik yang cocok.
 - ✅ **Merapikan data:** satu perintah menghasilkan salinan data yang bersih (file asli tidak
@@ -28,7 +31,7 @@ dihitung komputer, bukan dikira-kira AI.**
 - Siapa pun yang sering ditanya "totalnya berapa?" dan harus menghitung manual
 
 ## Contoh sebelum & sesudah
-**Sebelum (AI tanpa skill):** AI membaca sebagian isi file lalu *mengira-ngira* total; baris
+**Sebelum (AI tanpa skill, risiko yang bisa muncul):** AI membaca sebagian isi file lalu *mengira-ngira* total; baris
 "TOTAL" di bawah tabel ikut terjumlah (hasilnya jadi dobel), "LISTRIK & AIR" dan "listrik & air"
 dihitung sebagai dua kategori, dan sel yang isinya rumus kosong tidak disadari.
 
@@ -45,9 +48,7 @@ Naik paling besar: Transport — naik 310,7% (Rp 1.595.000 → Rp 6.550.000).
 ⚠️ 1 sel berisi rumus tanpa nilai tersimpan (E16) sehingga dianggap kosong ...
 ⚠️ 1 baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris 18: TOTAL | … ).
 ```
-(Contoh lengkap: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.)
-
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.17):** rata-rata nilai 7,25 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (laporan biaya `.xlsx` dan CSV gaji yang berisi baris subtotal serta data pribadi). Pembeda: semua persen diambil dari script (bukan dikira AI), bagian "Perlu dicek" selalu ikut dilaporkan, dan data pribadi diingatkan. Tanpa skill, agent memasang paket tambahan tanpa bertanya dan tidak mengingatkan soal data pribadi di file gaji. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+(Cuplikan diringkas; contoh lengkap: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.)
 
 ## Cara pakai
 Kirim/sebutkan lokasi file ke AI agent Anda, lalu tanya seperti biasa:
@@ -59,7 +60,7 @@ Kirim/sebutkan lokasi file ke AI agent Anda, lalu tanya seperti biasa:
 Tips: skill ini **paling andal untuk tabel rapi** — **satu baris judul kolom** dan **satu baris per
 kejadian/transaksi** (lihat `templates/contoh-tabel-rapi.csv`). File berantakan tetap dicoba, tetapi untuk
 **laporan berformat** (ada subtotal per kelompok, baris Total/rekap di tengah, rincian Tunai/QRIS di bawah
-total, dua tabel dalam satu sheet, cetakan bank multi-halaman) AI akan **selalu meminta konfirmasi Anda**
+total, dua tabel dalam satu sheet, cetakan bank multi-halaman) AI diarahkan **meminta konfirmasi Anda**
 sebelum memberi angka final — tata letak laporan sangat beragam, jadi pengecekan singkat oleh Anda tetap perlu.
 
 ## Syarat
@@ -80,10 +81,17 @@ Salin folder `analisis-excel` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
+**Hasil uji (jujur):**
+- **Uji OpenClaw, v1.0.17** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,25 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (laporan biaya `.xlsx` dan CSV gaji yang berisi baris subtotal serta data pribadi). Pembeda: semua persen diambil dari skrip hitung (bukan dikira AI), bagian "Perlu dicek" ikut dilaporkan, dan data pribadi diingatkan. Tanpa skill, agent memasang paket tambahan tanpa bertanya dan tidak mengingatkan soal data pribadi di file gaji.
+- Catatan jujur: AI tanpa skill di uji ini juga menghitung total dengan benar. Pada uji pertama, AI dengan skill sempat menulis dua persen hasil hitungannya sendiri yang salah; perbaikannya (semua persen wajib dari skrip) lulus di uji ulang.
+
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## FAQ
 **Apakah data saya dikirim ke internet?**
-Tidak oleh skill ini. Perhitungan berjalan di komputer Anda lewat script Python. Bila file berisi
-data pribadi (NIK, No HP, gaji), skill akan mengingatkan dan hanya menampilkan ringkasan.
+Tidak oleh skill ini. Perhitungan berjalan di komputer Anda lewat skrip Python. Bila file berisi
+data pribadi (NIK, No HP, gaji), skill akan mengingatkan dan hanya menampilkan ringkasan. Isi yang
+Anda tanyakan ke AI tetap diproses layanan AI yang Anda pakai, seperti biasa.
 
 **Bisa membaca file Excel dengan banyak sheet?**
 Bisa. Skill menyebutkan sheet apa saja yang ada dan sheet mana yang dianalisis; Anda tinggal
@@ -100,22 +108,21 @@ dikosongkan (mis. "Catatan") walau komanya tidak diketik — selama isi baris ti
 galat menyebut kemungkinan penyebab (sel terlewat di tengah, koma tanpa tanda kutip, tanda kutip
 nyasar, catatan di tengah tabel) dan langkah memperbaikinya.
 
-**File ekspor Shopee/Tokopedia/mutasi bank saya ada baris Total, saldo, dan "Dicetak oleh…" di bawahnya. Aman?**
-Aman. Baris yang **pasti** bukan data — Total/Grand Total/Rata-rata/Saldo Akhir dan catatan di bawah
+**File ekspor Shopee/Tokopedia/mutasi bank saya ada baris Total, saldo, dan "Dicetak oleh…" di bawahnya. Bisa dibaca?**
+Umumnya bisa. Baris yang **jelas** bukan data — Total/Grand Total/Rata-rata/Saldo Akhir dan catatan di bawah
 tabel, Saldo Awal di atas tabel, sel berumus SUM/AVERAGE di Excel — tidak dihitung, dan skill menyebutkan
 baris mana saja beserta isinya. Baris yang **mungkin** total (mis. angka tanpa keterangan yang kebetulan
 sama dengan jumlah di atasnya) tidak dibuang diam-diam: skill tetap menghitungnya, memberi peringatan
-tegas, menunjukkan total DENGAN dan TANPA baris itu, lalu menanyakannya kepada Anda. Sejak v1.0.7 ini
+tegas, menunjukkan total DENGAN dan TANPA baris itu, lalu menanyakannya kepada Anda. Ini
 juga berlaku untuk baris "Jakarta Total" hasil Excel *Data › Subtotal* yang disimpan sebagai CSV dan
 rincian pembayaran (Tunai/QRIS) di bawah "Total Penjualan". Judul kolom yang berulang tiap halaman dan
 "Halaman 1 dari 2" dilewati; bila ada **tabel kedua** dengan judul kolom berbeda, skill berhenti dan
-menyebut baris awalnya agar kedua tabel tidak tercampur. Sejak v1.0.8 juga baris subtotal/total yang
-**terisi lengkap** (mis. "Subtotal Cabang Bekasi" dengan tanggal, qty, dan omzet), pivot yang disalin
+menyebut baris awalnya agar kedua tabel tidak tercampur. Juga baris subtotal/total yang
+**terisi lengkap** (mis. "Subtotal Cabang Bekasi" dengan tanggal, qty, dan omzet), hasil PivotTable (tabel ringkasan Excel) yang disalin
 sebagai nilai, dan tabel **tanpa baris judul kolom** (baris pertama tidak lagi hilang diam-diam).
-Sejak v1.0.9 ada **pengaman silang**: bila file Anda punya baris Total/Grand Total, skill mencocokkan
+Ada juga **pengaman silang**: bila file Anda punya baris Total/Grand Total, skill mencocokkan
 angkanya dengan hasil hitungan. Cocok → disebutkan (lebih yakin). Beda (mis. hasil tepat 2× Grand Total
-karena subtotal ikut terhitung) → peringatan tegas di atas hasil beserta kedua angkanya. Sejak v1.0.10,
-bila justru **Total di file Anda yang keliru** (mis. angka yang tersimpan sebagai teks tidak ikut dijumlah
+karena subtotal ikut terhitung) → peringatan tegas di atas hasil beserta kedua angkanya. Bila justru **Total di file Anda yang keliru** (mis. angka yang tersimpan sebagai teks tidak ikut dijumlah
 Excel), skill memberi tahu baris mana penyebabnya dan tidak menyodorkan angka file yang salah.
 
 **Apakah bisa memprediksi penjualan bulan depan atau analisis statistik rumit?**

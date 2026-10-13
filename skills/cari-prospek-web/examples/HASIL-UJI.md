@@ -1,5 +1,27 @@
 # Hasil uji: cari-prospek-web
 
+## Hasil resmi (yang berlaku)
+
+*Ringkasan penunjuk, ditambahkan 2026-10-13. Riwayat uji di bawah tidak diubah; angka disalin dari berkas sumber yang disebut.*
+
+**Yang berlaku: v1.0.2 dengan pencarian web hidup (DuckDuckGo): 6,7 → 8,2 dari 10, selisih +1,5, LULUS (uji OpenClaw 2026-10-10), dikonfirmasi di bot Telegram asli: 7,0 → 8,5, selisih +1,5, LULUS (2026-10-12).** Dasar: keputusan pemilik no. 24 (uji ulang dengan pencarian web hidup). SKILL.md tidak diubah antara semua uji di bawah (tetap 1.0.2).
+
+| Urutan | Tanggal | Uji | Tanpa → Dengan skill | Selisih | Verdik | Berlaku? | Sumber |
+|---|---|---|---|---|---|---|---|
+| 1 | 2026-10-06 | OpenClaw, `web_search` bawaan tidak aktif (tanpa penyedia pencarian), 5 run | 5,8 → 6,6 | +0,8 | BELUM | Tidak (pencarian web mati) | bagian "Skor kualitas: 6,6/10" di bawah |
+| 2 | 2026-10-10 | OpenClaw 2026.9.8, penyedia **Tavily**, 4 skenario + S1 Telegram | 5,8 → 7,7 | +1,9 | BELUM | Tidak (digantikan hasil DuckDuckGo; sesudah 7,7 < 8) | bagian "Uji ulang dengan Tavily" di bawah |
+| 3 | 2026-10-10 | OpenClaw 2026.9.9, plugin `@openclaw/duckduckgo-plugin` (`tools.web.search.provider: duckduckgo`, tanpa kunci), 4 skenario + S1 Telegram | 6,7 → 8,2 | +1,5 | **LULUS** | **Ya, resmi** | `HASIL-UJI-openclaw-websearch-2026-10-10.md` (ringkasan), `09-openclaw-websearch-hidup-2026-10-10.md` (rincian skenario), `08-uji-web-search-hidup-2026-10-10.md` (uji parsial awal). Hasil ini tidak ditulis di bagian bawah berkas ini. |
+| 4 | 2026-10-12 | Bot Telegram OpenClaw asli, gelombang 15 (satu pesan tanpa skill, satu dengan skill), pencarian DuckDuckGo | 7,0 → 8,5 | +1,5 | **LULUS** | **Ya, konfirmasi** | `koordinasi/telegram-gelombang-15-cari-prospek-2026-10-12.md` |
+
+**Catatan kejujuran (dari berkas sumber):**
+- Lulus tipis: selisih tepat 1,5 di uji 3 dan 4; skenario 3 (input tidak lengkap) masih 7,0 (< 8) di uji 3.
+- Skill hanya berjalan penuh bila agent punya alat pencarian web yang hidup. Tanpa itu hasilnya seperti uji 1 (BELUM).
+- Di bot Telegram, sesi dengan skill memakan ±18 menit (uji 4); balasan utama utuh 1.864 karakter.
+- Saran "berhenti iterasi" di bagian 2026-10-06 di bawah digantikan keputusan no. 24 (uji ulang dengan pencarian hidup, hasilnya ≥ 8).
+- PERLU REVIEW tetap: `references/sumber-sah.md` (UU PDP).
+
+---
+
 ## Uji ulang dengan Tavily `web_search` (2026-10-10, Akun C)
 
 - **Versi:** 1.0.2 · **Lingkungan:** OpenClaw 2026.9.8, provider `tools.web.search.provider: tavily`, plugin `@openclaw/tavily-plugin`, kunci hanya lewat env `TAVILY_API_KEY` (tidak di repo). Smoke: `tavily_search` terpanggil (`examples/data/tavily-20261010-websearch-smoke.txt`). `mk-home.sh` disalin `extensions/` agar plugin tersedia di HOME uji.

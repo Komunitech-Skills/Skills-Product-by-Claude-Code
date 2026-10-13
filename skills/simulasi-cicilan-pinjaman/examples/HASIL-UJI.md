@@ -1,5 +1,27 @@
 # Hasil uji: simulasi-cicilan-pinjaman
 
+## Hasil resmi (yang berlaku)
+
+*Ringkasan penunjuk, ditambahkan 2026-10-13. Riwayat uji di bawah tidak diubah; angka disalin dari berkas sumber yang disebut. Hasil 1.0.1 sudah ada di bagian "Uji ulang 1.0.1" lebih bawah di berkas ini; blok ini memindahkan petunjuknya ke atas.*
+
+**Yang berlaku: v1.0.1 (versi di katalog) — uji ulang 2026-10-06: 6,5 → 8,75 dari 10, selisih +2,25, skor kualitas 9/10, LULUS. Dikonfirmasi di bot Telegram asli (gelombang 14, 2026-10-12): 6 → 8,5, selisih +2,5, LULUS.** Status katalog sekarang `beta` (keputusan otomatis no. 53, 2026-10-13).
+
+| Urutan | Tanggal | Versi | Uji | Tanpa → Dengan skill | Selisih | Verdik | Berlaku? | Sumber |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 2026-10-06 | 1.0.0 | OpenClaw lokal + konteks Telegram, 4 skenario | 6,5 → 7,6 | +1,1 | BELUM (skor 7/10) | Tidak (digantikan 1.0.1; jebakan brosur tidak andal, satu salah fakta di skenario 2) | bagian paling atas di bawah ("Skor kualitas: 7/10") |
+| 2 | 2026-10-06 | 1.0.1 | OpenClaw lokal + konteks Telegram, 4 skenario (penguji independen kedua; SEBELUM dipakai ulang dari 1.0.0) | 6,5 → 8,75 | +2,25 | **LULUS** (skor 9/10) | **Ya, resmi** | bagian "Uji ulang 1.0.1" di bawah; `00-openclaw-sebelum-sesudah.md` (bagian "Uji ulang 1.0.1" dan "Ringkasan 1.0.1"); `promosi/sebelum-sesudah.jsonl` (6,5 → 8,75, tanggal uji 2026-10-06) |
+| 3 | 2026-10-12 | 1.0.1 | Bot Telegram OpenClaw asli, gelombang 14 (topik 1198–1207) | 6 → 8,5 | +2,5 | **LULUS** | **Ya, konfirmasi** | `koordinasi/telegram-gelombang-14-2026-10-12.md`; tautan pesan di README bagian "Bukti uji di bot Telegram" |
+
+Skor 1.0.1 per skenario (tanpa → dengan): motor flat 6,5 → 9; KPR fixed→floating 7 → 9; kredit HP tanpa bunga 6,5 → 8,5; jebakan brosur "bunga 0%" 6 → 8,5 (3 run, semua memuat skill).
+
+**Catatan kejujuran (dari berkas sumber):**
+- Sisi SEBELUM tidak dijalankan ulang untuk 1.0.1 (dipakai dari 1.0.0, pesan identik, model sama).
+- Cacat sisa 1.0.1 kecil: kalimat penutup Telegram S1 ambigu soal ruang cicilan, frasa "biar saya cek rasio", tabel ilustrasi 4 kolom di S3, brosur S4 masih kerangka `[isian]`.
+- Di Telegram tabel markdown tidak dirender (gelombang 14: 2 tabel pada jawaban skill ini).
+- PERLU REVIEW tersisa: angka batas manfaat ekonomi pinjaman daring 2026 (0,1%/hari konsumtif, 0,067%/hari produktif) masih dari riset internal; tidak muncul di 4 skenario uji. Nomor SEOJK sudah benar menurut penguji (19/SEOJK.06/2023).
+
+---
+
 - **Tanggal:** 2026-10-06
 - **Versi diuji:** 1.0.0
 - **Penguji:** agent penguji independen Komunitech (bukan pembuat)
