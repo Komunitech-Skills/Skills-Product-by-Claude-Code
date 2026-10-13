@@ -97,7 +97,5 @@ Sengaja **tidak**. Skill ini hanya menyiapkan perintah untuk `127.0.0.1` (komput
 
 Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
 
-Versi terkini: **1.0.4**.
-
 ---
 Komunitech tidak berafiliasi dengan proyek Datasette; Datasette adalah perangkat lunak terpisah (Apache-2.0) milik pembuatnya.
