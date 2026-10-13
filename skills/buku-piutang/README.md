@@ -2,7 +2,7 @@
 
 **Tahu siapa yang belum bayar, berapa, dan sejak kapan (sesuai catatan Anda). Pesan tagihan yang sopan sudah disiapkan. Data tetap di komputer Anda sendiri.**
 
-*Diuji AI penguji independen: 5,75 → 8,75 dari 10 (tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis; dengan skill ia menolak, menyiapkan draf untuk dikirim sendiri, dan kelebihan bayar ditanyakan dulu).*
+*Diuji AI penguji independen di OpenClaw: 5,75 → 8,75 dari 10 (tanpa skill, agent bersedia membuat jadwal WhatsApp tagihan otomatis plus denda, dan salah mengganti nama pelanggan; dengan skill, ia menolak kirim otomatis, menyiapkan draf untuk dikirim sendiri, dan mencatat di buku piutang yang tersimpan).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -24,7 +24,7 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** bon ditulis di buku, sebagian di chat WA. Sudah dibayar sebagian atau belum, lupa. Akhir bulan tidak tahu total uang yang masih di luar, dan menagih terasa canggung karena tidak ada kalimat yang pas.
 
-**Sesudah (cukup ketik):** "Tagihan yang jatuh tempo apa saja?"
+**Sesudah (cukup ketik):** "Tagihan yang jatuh tempo apa saja?" (Cuplikan di bawah adalah keluaran asli skrip dari uji simulasi oleh pembuat skill, data fiktif.)
 ```
 JATUH TEMPO PIUTANG - Sabtu, 26 September 2026 (WIB)
 Terlewat: Rp 1.400.000 (1 nota) | Hari ini: Rp 0 (0) | 7 hari ke depan: Rp 350.000 (1)
@@ -47,7 +47,7 @@ Mohon dibantu informasikan kapan rencana pembayarannya, supaya bisa kami catat. 
 membayar, mohon kirimkan bukti transfernya.
 Terima kasih atas perhatiannya.
 ```
-(Contoh lengkap dengan data fiktif: `examples/contoh-sesi-toko-sembako.md`.)
+(Contoh sesi lengkap, data fiktif: `examples/contoh-sesi-toko-sembako.md`.)
 
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
@@ -74,9 +74,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/piutang/` di komputer Anda, dengan cadangan otomatis di `KomunitechData/piutang/backup-piutang/`. Tanpa Python pun skill tetap membantu dengan tabel piutang manual di Excel.
 
-**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,75 tanpa skill menjadi 8,75 dengan skill. Untuk mencatat bon dan mengecek yang telat, kedua sisi sama-sama benar (7 vs 8,5). Pembeda besarnya di keamanan dan pembukuan: tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis (berisiko nomor diblokir) dan salah mengganti nama pelanggan; dengan skill ia menolak kirim otomatis, menyiapkan draf dan tautan untuk dikirim sendiri, dan kelebihan bayar tidak ditebak (ditanyakan dulu, lalu piutang Rp 0 dan deposit Rp 50.000).
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,75 tanpa skill menjadi 8,75 dengan skill. Untuk mencatat bon dan mengecek yang telat, kedua sisi sama-sama benar (7 vs 8,5). Pembeda besarnya di keamanan dan pembukuan: tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis plus denda 5% per minggu (berisiko nomor diblokir) dan salah mengganti nama pelanggan; dengan skill ia menolak kirim otomatis dan denda sepihak, menyiapkan draf dan tautan untuk dikirim sendiri, serta mencatat bon, pembayaran, dan deposit Rp 50.000 di buku piutang lokal dengan cadangan. Soal kelebihan bayar, kedua sisi sama-sama bertanya dulu ke Anda; bedanya hanya di pencatatannya.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal kirim otomatis ke Telegram: diuji di bot Telegram uji 13 Okt 2026 (ringkasan harian one-shot ~5 menit, angka Rp 1.300.000 / terlewat Rp 800.000 cocok; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal kirim otomatis ke Telegram: diuji di bot Telegram uji pada 13 Okt 2026 (jadwal sekali jalan yang diatur 5 menit ke depan, pesan tiba tepat waktu; angka total piutang Rp 1.300.000 dan terlewat Rp 800.000 cocok dengan hitungan terpisah; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Jadwal yang berulang tiap pagi dan alur konfirmasi lewat chat bot belum diuji.
 
 ## Yang perlu Anda tahu (jujur)
 - **Tidak mengirim pesan sendiri.** Skill hanya menyiapkan draf + tautan WhatsApp (wa.me); Anda yang menekan Kirim. Ini disengaja: kiriman otomatis lewat WhatsApp tidak resmi bisa membuat nomor diblokir.
@@ -85,7 +85,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - **Bukan pembukuan lengkap.** Tidak ada jurnal, laba rugi, atau hutang ke pemasok.
 - **Satu komputer, satu file data.** Jangan buka file yang sama dari dua komputer lewat Google Drive/Dropbox.
 - **Data pribadi pelanggan.** Nama, nomor HP, dan utang pelanggan hanya tersimpan di komputer Anda. Ringkasan ke Telegram disarankan versi disamarkan (nama jadi inisial).
-- Ringkasan terjadwal hanya berjalan saat komputer dan Gateway OpenClaw (program OpenClaw yang berjalan di latar belakang) menyala. Jadwal otomatis ke Telegram sudah diuji di bot uji 13 Okt 2026 (Gateway VM Cursor).
+- Ringkasan terjadwal hanya berjalan saat komputer dan Gateway OpenClaw (program OpenClaw yang berjalan di latar belakang) menyala. Jadwal otomatis ke Telegram sudah diuji di bot Telegram uji pada 13 Okt 2026, di mesin uji, bukan di komputer Anda.
 - Alat bantu pencatatan dan penagihan, bukan nasihat keuangan, pajak, atau hukum. Sengketa utang yang besar sebaiknya dibawa ke advokat.
 
 ## FAQ

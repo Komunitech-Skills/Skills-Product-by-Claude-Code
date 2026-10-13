@@ -2,7 +2,7 @@
 
 **Beli mesin, buka cabang, atau beli mobil usaha? Ketahui kapan balik modal dan seberapa kuat rencananya kalau hasil meleset, dengan hitungan yang transparan.**
 
-Diuji AI penguji independen di bot Telegram asli: 6,5 → 9 dari 10 (keduanya benar soal balik modal, tetapi hanya dengan skill ada NPV, IRR, uji "kalau meleset", dan batas aman).
+Diuji AI penguji independen di OpenClaw dan bot Telegram asli: 6,5 → 9 dari 10 (keduanya benar soal balik modal, tetapi hanya dengan skill ada NPV, IRR, uji "kalau meleset", dan batas aman).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -23,7 +23,7 @@ Diuji AI penguji independen di bot Telegram asli: 6,5 → 9 dari 10 (keduanya be
 
 **Sesudah (cukup ketik):** "Mau beli mesin espresso 45 juta. Tambahan jualan 6 juta sebulan, bahan baku 40%, listrik+servis+part-time 1,2 juta sebulan, mesin bekas laku 5 juta setelah 5 tahun, saya bayar PPh final 0,5%. Layak nggak?"
 
-Cuplikan contoh keluaran (dipotong; angkanya dicocokkan dengan hitungan independen; `examples/01-mesin-kopi-45jt.md`):
+Cuplikan contoh keluaran (dipotong; contoh buatan pembuat skill, bukan hasil uji penguji independen; angkanya dari skrip dan dicocokkan dengan hitungan Python terpisah; `examples/01-mesin-kopi-45jt.md`):
 
 **Mesin espresso Rp45 juta: LAYAK (dengan asumsi di bawah)**
 Modal kembali dalam ±1 tahun 7 bulan, dan imbal hasilnya 57,3% per tahun — jauh di atas patokan 12%.
@@ -60,24 +60,28 @@ Salin folder `kelayakan-investasi-usaha` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (v1.0.1), skor 1–10 dari penguji independen, 2 skenario: tanpa skill **6,5** → dengan skill **9,0** (LULUS). Skor tanpa skill diambil dari uji sebelumnya (v1.0.0) karena tidak terpengaruh perubahan skill. Beli mesin kopi Rp45 juta (tambahan omzet Rp6 juta/bulan, biaya Rp2,5 juta/bulan): kedua sisi sama-sama menyimpulkan layak dengan balik modal sekitar 1 tahun 1 bulan, tetapi tanpa skill AI menulis titik impas harian ±Rp200.000 (yang benar ±Rp83.000), tanpa NPV/IRR, dan tanpa catatan "bukan nasihat keuangan". Dengan skill ada NPV Rp109.237.735 (patokan 12%), IRR 89,96% per tahun, uji omzet turun 10–20%, dan batas aman, semuanya cocok dengan hitungan Python terpisah. Pertanyaan "pasti untung di kripto?": kedua sisi menolak janji untung, tetapi tanpa skill AI malah menawarkan proyeksi kripto dan perbandingan deposito/reksa dana tanpa disclaimer; dengan skill ada disclaimer dan arahan ke penasihat berizin OJK. Jujur: pada skenario tambahan mobil box Rp180 juta (8/10, di luar rata-rata) angkanya benar, tetapi satu kalimat penjelasnya keliru (4 tahun 3 bulan ditulis "lebih lama dari 5 tahun"). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, termasuk konteks kanal Telegram) dan di bot Telegram OpenClaw asli. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 11, 2026-10-06.
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech; tautan pesan hanya terbuka untuk anggota grup), 6 Okt 2026, pesan yang sama dikirim tanpa skill lalu dengan skill:
 - Tanpa skill: https://t.me/c/4407409583/908/950 — skor 6,5
 - Dengan skill: https://t.me/c/4407409583/909/952 — skor 9
-Verdik gelombang: LULUS — Keduanya benar soal payback ±1 th 1 bln, tetapi hanya dengan skill ada NPV/IRR/payback terdiskonto, uji meleset −10%/−20%/+10%, batas aman, asumsi diskonto & disclaimer, semuanya cocok dengan hitungan ulang.
+Hasilnya LULUS. Keduanya benar soal balik modal (±1 tahun 1 bulan), tetapi hanya dengan skill ada NPV, IRR, balik modal dengan nilai waktu uang, uji omzet turun 10%/20% dan biaya naik 10%, batas aman, asumsi patokan 12%, dan catatan bukan nasihat keuangan; semuanya cocok dengan hitungan ulang.
 
-- Pilot 26 (kirim ulang 4 pesan di topik baru, 2026-10-12, dijalankan Akun C): skor 6,5 → 9, verdik LULUS — hasil sama dengan gelombang 11 dan 11b (`koordinasi/telegram-gelombang-11b-pilot-2026-10-12.md`; tautan pesan tidak tercatat di log).
+Pesan serupa dikirim ulang di topik baru bot Telegram uji pada 12 Okt 2026: skor 6,5 → 9, LULUS, hasil sama dengan uji pertama (tautan pesan uji ulang ini tidak tercatat).
 
 ## FAQ
 **Apakah hasilnya menjamin usaha saya untung?**
-Tidak. Hasil tergantung perkiraan omzet dan biaya yang Anda masukkan. Karena itu skill menampilkan skenario "kalau meleset" dan batas aman. Ini alat bantu, bukan nasihat keuangan.
+Tidak menjamin. Hasil tergantung perkiraan omzet dan biaya yang Anda masukkan. Karena itu skill menampilkan skenario "kalau meleset" dan batas aman. Ini alat bantu, bukan nasihat keuangan.
 
 **Kenapa patokannya 12% per tahun?**
-Itu asumsi awal, bukan acuan pasar: bunga KUR Mikro/Kecil sektor produksi 6% efektif per tahun (Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44; konfirmasi ke bank penyalur) ditambah premi risiko usaha 6% yang kami pilih sebagai contoh. Anda bisa menggantinya dengan bunga pinjaman Anda sendiri atau hasil minimal yang Anda inginkan, dan skill akan menghitung ulang.
+Itu asumsi awal, bukan acuan pasar: bunga KUR (Kredit Usaha Rakyat) Mikro/Kecil sektor produksi 6% efektif per tahun (Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44; rujukan pasal ini belum dicek penguji independen, jadi konfirmasi ke bank penyalur) ditambah premi risiko usaha 6% yang kami pilih sebagai contoh. Anda bisa menggantinya dengan bunga pinjaman Anda sendiri atau hasil minimal yang Anda inginkan, dan skill akan menghitung ulang.
 
 **Bisa untuk menilai saham, kripto, atau reksa dana?**
-Tidak. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, renovasi). Kalau Anda bertanya "pasti untung berapa kalau di kripto?", AI diarahkan menolak janji untung dengan sopan, menyarankan penasihat keuangan berizin OJK, lalu menawarkan hitungan rencana usaha Anda.
+Tidak bisa. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, renovasi). Kalau Anda bertanya "pasti untung berapa kalau di kripto?", AI diarahkan menolak janji untung dengan sopan, menyarankan penasihat keuangan berizin OJK, lalu menawarkan hitungan rencana usaha Anda.
 
 ## Riwayat perubahan
 

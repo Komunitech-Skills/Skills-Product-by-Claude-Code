@@ -2,14 +2,14 @@
 
 **Setiap malam satu pesan Telegram (lewat OpenClaw yang menyala) berisi omzet, stok, karyawan, dan tagihan usaha Anda. Tanpa aplikasi dashboard (layar ringkasan) berlangganan, data tetap di komputer sendiri.**
 
-Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (angka penjualan sudah benar di kedua sisi; pembedanya laporan baku dengan butir "Perlu Perhatian", tafsir deal dan konversi calon pembeli yang benar, dan penolakan mengirim omzet ke grup WA karyawan).
+Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (angka penjualan sudah benar di kedua sisi; pembedanya: tanpa skill AI salah menyimpulkan "1 calon pembeli baru langsung jadi pembeli", tidak menyebut kasir belum ditutup, dan menyetujui mengirim omzet ke grup WA karyawan; dengan skill ada butir "Perlu Perhatian", tafsir deal dan konversi yang benar, dan penolakan kirim ke grup).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Satu pesan, seluruh usaha.** Penjualan, stok menipis, siapa yang terlambat/alpa, lembur yang perlu diputuskan, tagihan jatuh tempo, dan calon pembeli (prospek) beserta tahap penjualannya, digabung dari alat Komunitech yang sudah Anda pakai: **Kasir Lokal** (kasir), **Buku Stok** (pencatat stok), **Absensi Lokal** (catatan kehadiran), **Pengingat Follow-up** (pengingat tagihan dan tindak lanjut), dan **CRM WA** (catatan calon pembeli lewat WhatsApp).
 - ✅ **Langsung kelihatan naik atau turun.** Omzet dibandingkan dengan kemarin dan hari yang sama minggu lalu dalam persen. Tiap Senin pagi ada laporan mingguan dibanding minggu sebelumnya.
-- ✅ **Masalah muncul sendiri.** Selisih uang laci, stok minus, penjualan kasir yang belum masuk buku stok, absen yang belum dimasukkan, dan piutang terlambat dikumpulkan di bagian "Perlu Perhatian".
+- ✅ **Masalah muncul sendiri.** Selisih uang laci, stok minus, penjualan kasir yang belum masuk buku stok, absen yang belum dimasukkan, dan piutang (tagihan pelanggan yang belum dibayar) terlambat dikumpulkan di bagian "Perlu Perhatian".
 - ✅ **Angka apa adanya.** Angka diambil dari data alat Anda. Bagian yang datanya belum ada ditulis "belum ada data", tidak diisi perkiraan. Rumus persen dan pembulatan tertulis jelas.
 - ✅ **Dirancang aman.** Hanya membaca data (skrip tidak menulis ke data kasir/stok/absen Anda), tanpa nama pelanggan di laporan, nama karyawan bisa disamarkan, dan dikirim hanya ke chat Anda sendiri.
 
@@ -23,42 +23,29 @@ Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (angka penjualan su
 ## Contoh sebelum & sesudah
 **Sebelum:** tiap malam membuka rekap kasir, lalu cek stok, lalu tanya admin siapa yang tidak masuk, lalu ingat-ingat siapa yang belum bayar. Atau berlangganan aplikasi dashboard bulanan.
 
-**Sesudah (otomatis jam 21.00 di Telegram; contoh dengan data fiktif):**
+**Sesudah:** laporan seperti ini bisa dikirim otomatis ke Telegram (mis. tiap jam 21.00 lewat OpenClaw). Cuplikan hasil asli (dipotong; uji simulasi oleh penguji independen, 24 Sep 2026, data fiktif dari `examples/01-kafe-harian-empat-alat.md`):
 ```
 LAPORAN HARIAN USAHA
 Kamis, 24 September 2026
-
 PENJUALAN
-Omzet bersih: Rp 69.000
-Nota: 2 (+1 dibatalkan) | rata-rata Rp 34.500
-vs kemarin (Rab 23/9): Rp 36.000 -> naik 91,7%
-Per metode bayar: Tunai Rp 51.000, QRIS Rp 18.000
-
+Omzet bersih: Rp 346.400
+vs kemarin (Rab 23/9): Rp 96.000 -> naik 260,8%
 STOK
-- RB Roti Bakar - Coklat: stok -5 (min 5) MINUS
-- KH Kopi Hitam: stok 4 (min 10) MENIPIS
-
+- RTB Roti Bakar Srikaya: stok -5 (min 8) MINUS
 KEHADIRAN
-Hadir 2 dari 5 terjadwal | Terlambat: Andi 08.12 | Alpa: Rina
-
-TAGIHAN & FOLLOW-UP
-- #2 piutang Rp 12.500.000, lewat 3 hari
-
-PROSPEK
-Prospek baru: 1 | Follow-up terlambat 1, hari ini 2 | Deal: 1 senilai Rp 6.000.000
-
+Hadir 3 dari 6 terjadwal
 PERLU PERHATIAN
-1. Selisih kas saat tutup kasir: KURANG Rp 11.000
-2. Penjualan kasir hari ini belum diimpor ke buku stok
-3. 1 follow-up prospek CRM terlambat
+1. Selisih kas saat tutup kasir 2026-09-24 21:00: KURANG Rp 12.000 (seharusnya Rp 478.100, dihitung Rp 466.100).
+2. Ada 1 void & 1 retur (-Rp 30.000). Cek alasannya di kasir.
 ```
+(Void = nota dibatalkan; retur = barang dikembalikan pelanggan.) Laporan lengkap aslinya juga memuat metode bayar, menu terlaris, tagihan, dan lembur yang perlu diputuskan.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Laporan usaha hari ini"
 - "Gimana usaha kemarin?"
 - "Laporan minggu lalu, bandingkan dengan minggu sebelumnya"
-- "Kirim laporan harian ke Telegram saya tiap jam 9 malam, dan laporan mingguan tiap Senin pagi" (OpenClaw; jadwal ke Telegram sudah diuji di bot uji 2026-10-13)
+- "Kirim laporan harian ke Telegram saya tiap jam 9 malam, dan laporan mingguan tiap Senin pagi" (OpenClaw; jadwal ke Telegram sudah dicoba di bot Telegram uji, 13 Okt 2026)
 - "Samarkan nama karyawan di laporan"
 
 ## Instalasi singkat
@@ -75,13 +62,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Laporan terjadwal ke Telegram butuh OpenClaw yang menyala di komputer yang sama dengan data toko (panduan langkah demi langkah ada di `references/openclaw-jadwal.md`; Komunitech juga menyediakan jasa setup).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.1.4), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka penjualan benar tetapi salah menafsirkan “lead baru langsung closing” (calon pembeli baru dianggap langsung jadi pembeli) dan siap mengirim omzet ke grup WA karyawan; dengan skill laporan baku, butir PERLU PERHATIAN jelas, deal vs konversi benar, dan menolak grup/pesan massal sesuai kebijakan kanal.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.1.4), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dua skenario: "gimana usaha hari ini?" (tanpa skill 7 → dengan skill 9) dan "pasang laporan tiap jam 9 malam, kirim juga ke grup WA karyawan" (5 → 9). Kedua sisi sama-sama memakai alat kasir dan CRM Komunitech. Tanpa skill angka penjualan benar tetapi salah menafsirkan “lead baru langsung closing” (calon pembeli baru dianggap langsung jadi pembeli), tidak menyebut kasir belum ditutup, dan siap mengirim omzet ke grup WA karyawan; dengan skill laporan baku, butir PERLU PERHATIAN jelas, deal vs konversi benar, dan menolak grup/pesan massal karena memuat selisih kas, kehadiran, dan piutang. Jujur: bila alat kasir dan CRM sudah terpasang, AI tanpa skill pun bisa menyusun rekap yang angkanya benar; pembedanya format baku, definisi yang tepat, dan kepatuhan privasi.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji CLI + gateway lokal automations). Claude Code (simulasi agent). **Kiriman terjadwal ke Telegram:** diuji di bot Telegram uji 2026-10-13 (C13, topik `C13 laporan-harian-usaha — jadwal`, msg terjadwal tiba ~5 menit setelah jadwal dibuat; detail `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 1 Okt 2026; uji pemasangan jadwal di OpenClaw lokal). Claude Code (simulasi agent). **Kiriman terjadwal ke Telegram:** dicoba di bot Telegram uji pada 13 Okt 2026 — satu pesan laporan terjadwal tiba di grup uji sekitar 5 menit setelah jadwal dibuat, omzet Rp51.000 cocok dengan data uji (detail `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Yang belum diuji: alur konfirmasi "Lanjut? (ya/tidak)" lewat chat bot. Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
 
 ## FAQ
 **Apakah skill ini bisa mengubah atau merusak data kasir/stok/absen saya?**
-Tidak. Data dibuka dalam mode baca saja dan disalin sementara untuk dihitung. File asli tidak ditulis oleh skrip (sudah diuji otomatis).
+Tidak untuk skrip laporannya. Data dibuka dalam mode baca saja dan disalin sementara untuk dihitung. File asli tidak ditulis oleh skrip (pada uji, isi file data sama persis sebelum dan sesudah laporan dijalankan).
 
 **Saya baru memakai Kasir Lokal saja. Apakah tetap berguna?**
 Ya. Bagian penjualan langsung terisi; bagian lain menulis "belum ada data" sampai alatnya dipakai. Tidak ada angka karangan.
