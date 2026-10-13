@@ -2,6 +2,8 @@
 
 **Catat uang masuk-keluar, cocokkan uang laci, dan tahu kapan uang usaha terpakai untuk pribadi, semua tersimpan di komputer Anda sendiri.**
 
+*Diuji AI penguji independen: 9 → 9 dari 10 pada rekap kas sekali-jalan (tanpa selisih skor; nilai lebihnya, yaitu buku kas tersimpan, saldo per laci/rekening, dan hitung uang laci, terlihat di perbandingan simulasi di bawah, bukan di skor ini).*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
@@ -9,12 +11,12 @@
 - ✅ **Cukup ketik seperti biasa.** "Hari ini jualan tunai 780 ribu, QRIS 240 ribu, beli gas 25 ribu, ambil 200 ribu buat jajan anak" → langsung tercatat per kategori, per laci/rekening, lengkap dengan saldo terbaru. Yang tidak jelas ditanyakan, bukan ditebak.
 - ✅ **Uang laci ketahuan pas atau selisih.** Hitung per lembar ("seratus ribuan 22 lembar, lima puluh ribuan 10...") dan langsung terlihat kurang/lebih berapa, beserta kemungkinan penyebabnya.
 - ✅ **Rem untuk "uang usaha kepakai pribadi".** Ada peringatan bila ambil pribadi melebihi hasil usaha atau melewati batas bulanan yang Anda tetapkan.
-- ✅ **Laporan siap kirim.** Rekap harian, mingguan, bulanan per kategori, bisa dikirim otomatis ke Telegram tiap malam. Datanya juga bisa langsung dipakai untuk laporan keuangan (pengajuan KUR) dan proyeksi kas.
+- ✅ **Laporan siap kirim.** Rekap harian, mingguan, bulanan per kategori, bisa dikirim otomatis ke Telegram tiap malam (jadwal otomatis ini belum diuji langsung). Datanya juga bisa langsung dipakai untuk laporan keuangan (pengajuan KUR, yaitu Kredit Usaha Rakyat) dan proyeksi kas.
 
 ## Cocok untuk siapa
 - Warung, toko kelontong, kedai, warung makan, katering rumahan, laundry, bengkel kecil, toko online rumahan — yang selama ini mencatat di buku tulis atau tidak mencatat sama sekali.
 - Pemilik yang uang usahanya tersebar di laci, rekening, QRIS, dan e-wallet, dan sering bingung "uangnya ke mana".
-- Pengguna skill **Kasir Lokal**: rekap penjualan harian kasir bisa dimasukkan ke buku kas sekali perintah.
+- Pengguna skill **Kasir Lokal** (aplikasi kasir Komunitech di komputer Anda, dioperasikan lewat chat): rekap penjualan harian kasir bisa dimasukkan ke buku kas sekali perintah.
 
 **Kurang cocok:** usaha yang butuh akuntansi lengkap (jurnal, stok, piutang, penyusutan) atau dipakai beberapa komputer/cabang sekaligus.
 
@@ -41,8 +43,6 @@ PERINGATAN PRIVE bulan ini: Rp 1.800.000 melewati batas prive bulanan yang Anda 
 ```
 (Contoh lengkap dengan data fiktif ada di folder `examples/`.)
 
-**Hasil uji A/B (penguji independen, 26 September 2026):** warung makan tiga hari dengan laci, QRIS ke BRI, dan GoPay. Jawaban agent umum yang disusun penguji mencatat setoran Rp 1.000.000 ke BRI sebagai pengeluaran, tanpa saldo per akun, dan hanya menulis "sepertinya ada selisih" untuk uang laci. Dengan skill: saldo per akun benar ke rupiah (Laci Rp 1.578.500, BRI Rp 4.830.000, GoPay Rp 225.000), pindah dana tidak mengubah hasil usaha (Rp 3.083.500), dan selisih laci pasti Rp 345.000 (kurang) beserta kemungkinan penyebabnya. Catatan jujur: contoh "tanpa skill" disusun penguji, bukan hasil sesi OpenClaw terpisah. Rincian: `examples/00-pembanding-tanpa-skill.md`. Uji OpenClaw 1 Okt 2026: skor tanpa skill 9 → dengan skill 9 pada uji pertama (skill belum terpicu) dan tetap 9 pada uji ulang v1.0.11, jadi tidak ada selisih skor pada skenario rekap kas sekali-jalan (lihat `examples/00-openclaw-sebelum-sesudah.md`).
-
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Bikinin buku kas untuk warung saya, uang laci sekarang 500 ribu, rekening BRI 3 juta"
@@ -51,8 +51,8 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Setor uang laci 1 juta ke BRI" (pindah dana, tidak mengubah hasil usaha)
 - "Hitung laci: seratus ribuan 12 lembar, lima puluh ribuan 6, receh 3.500"
 - "Saldo kas sekarang?" / "Rekap kas minggu lalu" / "Rekap September"
-- "Masukin mutasi BRI ini" (kirim file CSV dari internet banking)
-- "Kirim ringkasan kas ke Telegram saya tiap jam 9 malam" (OpenClaw)
+- "Masukin mutasi BRI ini" (kirim file CSV, yaitu tabel mutasi yang diunduh dari internet banking)
+- "Kirim ringkasan kas ke Telegram saya tiap jam 9 malam" (OpenClaw; jadwal otomatisnya belum diuji langsung)
 
 Setiap pencatatan ditampilkan dulu untuk Anda cek; baru disimpan setelah Anda bilang "ya". Salah catat bisa dibatalkan dengan alasan; catatan lama tetap ada di riwayat.
 
@@ -70,8 +70,14 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/kas/` di folder pengguna Anda; cadangan dibuat otomatis setiap hari ada perubahan.
 
+**Hasil uji (jujur):** dua sumber yang terpisah, skor 1–10.
+- **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario rekap kas sekali-jalan): skor tanpa skill 9 → dengan skill 9 pada uji pertama (skill belum terpicu) dan tetap 9 pada uji ulang v1.0.11, jadi tidak ada selisih skor pada skenario ini.
+- **Uji perbandingan oleh penguji independen, 26 September 2026** (`examples/00-pembanding-tanpa-skill.md`): warung makan tiga hari dengan laci, QRIS ke BRI, dan GoPay. Jawaban agent umum yang disusun penguji mencatat setoran Rp 1.000.000 ke BRI sebagai pengeluaran, tanpa saldo per akun, dan hanya menulis "sepertinya ada selisih" untuk uang laci. Dengan skill: saldo per akun benar ke rupiah (Laci Rp 1.578.500, BRI Rp 4.830.000, GoPay Rp 225.000), pindah dana tidak mengubah hasil usaha (Rp 3.083.500), dan selisih laci dihitung Rp 345.000 (kurang) beserta kemungkinan penyebabnya. Catatan jujur: contoh "tanpa skill" disusun penguji, bukan hasil sesi OpenClaw terpisah.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal ringkasan otomatis ke Telegram belum diuji langsung (lihat bagian berikut).
+
 ## Yang perlu Anda tahu (jujur)
-- **"Hasil usaha" bukan laba resmi.** Ini selisih uang masuk dan keluar untuk usaha (tanpa modal, pinjaman/cicilan utang, kasbon karyawan, ambil pribadi, dan pindah dana). Stok yang masih ada, piutang, dan penyusutan alat belum dihitung. Untuk laporan laba rugi & neraca (mis. untuk bank), pakai skill **Laporan Keuangan SAK EMKM**; buku kas ini bisa langsung diekspor ke sana.
+- **"Hasil usaha" bukan laba resmi.** Ini selisih uang masuk dan keluar untuk usaha (tanpa modal, pinjaman/cicilan utang, kasbon karyawan, ambil pribadi, dan pindah dana). Stok yang masih ada, piutang, dan penyusutan alat belum dihitung. Untuk laporan laba rugi & neraca (mis. untuk bank), pakai skill Komunitech lain, **Laporan Keuangan SAK EMKM** (standar laporan keuangan untuk usaha kecil); buku kas ini bisa langsung diekspor ke sana.
 - **Bukan aplikasi bank.** Saldo rekening tidak terbaca otomatis; masukkan lewat catatan atau file mutasi CSV dari internet banking. Tarik tunai/setor tunai perlu Anda pastikan (pindah dana atau pribadi).
 - **Satu usaha, satu komputer.** Jangan membuka file buku kas yang sama dari dua komputer (mis. lewat Google Drive).
 - Ringkasan otomatis ke Telegram butuh OpenClaw yang menyala di komputer yang sama; isinya (saldo, prive) tersimpan di chat Telegram Anda. Jadwal ini belum diuji langsung di OpenClaw untuk skill ini (polanya sudah teruji di skill Kasir Lokal).
