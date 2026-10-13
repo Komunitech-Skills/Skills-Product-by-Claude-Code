@@ -40,7 +40,7 @@ Versi lengkap (JobStreet/Glints) dan versi Instagram tidak aku buat karena kamu 
 - Tugas "frozen box" dan "COD" disusun dari tugas umum kurir (sesuaikan).
 - Status kerja dan jam kerja belum disebut. Jam kerja ditulis `[isi jam kerja]`; isi sebelum diposting.
 - Batas lamaran 14 hari dari hari ini (7 Oktober 2026).
-- Karena lamaran lewat WA, data pelamar (nomor HP, CV) sebaiknya hanya dipakai untuk rekrutmen dan dihapus bila pelamar tidak lolos (UU PDP).
+- Karena lamaran lewat WA, data pelamar (nomor HP, CV) sebaiknya hanya dipakai untuk rekrutmen dan dihapus bila pelamar tidak lolos (UU 27/2022 tentang PDP).
 
 ## Catatan penguji
 - **Bagus:** menghormati permintaan "WA grup aja" (langkah 5 dan tabel Input: kanal default semua, tapi pengguna memilih). Versi WA 76 kata (≤ 80, mepet batas). Syarat motor sendiri dipertahankan karena sah menurut tabel `references/anti-diskriminasi.md` ("Punya motor & SIM C: Boleh"). Nomor WA fiktif.

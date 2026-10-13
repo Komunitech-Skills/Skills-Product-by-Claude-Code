@@ -1,13 +1,14 @@
 # Uji 02 — Karyawan dengan 4 utang: Avalanche vs Snowball
 
 > Penguji independen, 2026-09-26. Keluaran asli `scripts/keuangan.py`; semua angka dicocokkan dengan simulasi Fraction independen penguji (HASIL-UJI.md §4).
+> Revisi 2026-10-13 (audit contoh): penyebutan batas OJK/BI kini disertai dasar + tahun dari `references/utang-dan-pinjol.md`; angka tidak berubah.
 
 ## Input pengguna
 "Saya karyawan, utang saya: kartu kredit 12 juta (bunga 1,75%/bulan, minimum 5%), KTA 30 juta bunga flat 0,9% per bulan 24 bulan (baru mulai), paylater 3 juta, pinjol legal 2 juta. Tiap bulan saya bisa sisihkan 2,5 juta lebih di luar cicilan. Mana dulu yang harus dilunasi, avalanche atau snowball? Kapan lunas?"
 
 ## Data yang dilengkapi agent (ditanyakan sekali, dijawab pengguna)
 - Paylater: bunga 2,5%/bulan, cicilan minimum Rp300.000.
-- Pinjol legal: bunga 0,1%/hari (batas OJK 2026), cicilan Rp500.000.
+- Pinjol legal: bunga 0,1%/hari (batas bunga pinjol konsumtif tahap 2026 menurut SEOJK No. 19/SEOJK.06/2023), cicilan Rp500.000.
 - KTA: pokok awal Rp30 jt, belum ada cicilan yang dibayar.
 - Minimum kartu kredit 5% × Rp12 jt = Rp600.000 (script memakai minimum tetap; lihat catatan penguji).
 
@@ -135,8 +136,8 @@ KTA "flat 0,9%/bulan" sebenarnya setara **bunga efektif 1,628%/bulan (19,53%/tah
 
 ## Cek bahaya
 - Tidak ada cicilan minimum yang lebih kecil dari bunganya ✓.
-- Pinjol 0,1%/hari tepat di batas OJK 2026 untuk pinjaman konsumtif — pastikan aplikasinya terdaftar di ojk.go.id / Kontak OJK 157 / WA 081-157-157-157.
-- Kartu kredit 1,75%/bulan = batas maksimum BI ✓.
+- Pinjol 0,1%/hari tepat di batas bunga pinjol konsumtif tahap 2026 (SEOJK No. 19/SEOJK.06/2023, rujukan `references/utang-dan-pinjol.md`, dicek 26 September 2026) — pastikan aplikasinya terdaftar di ojk.go.id / Kontak OJK 157 / WA 081-157-157-157.
+- Kartu kredit 1,75%/bulan = batas bunga kartu kredit menurut ketentuan Bank Indonesia yang berlaku sejak Juli 2021 (rujukan `references/utang-dan-pinjol.md`, dicek 26 September 2026; nomor aturan tidak tercantum di sana — cek ulang di bi.go.id) ✓.
 
 ## Langkah minggu ini
 1. Bayar pinjol Rp2.060.000 sekaligus bulan ini (sisa ekstra Rp940.000 ke paylater).

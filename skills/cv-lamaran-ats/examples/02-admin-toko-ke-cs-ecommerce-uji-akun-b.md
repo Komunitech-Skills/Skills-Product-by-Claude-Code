@@ -33,7 +33,9 @@ gaji tidak dicantumkan → dicatat "belum diketahui, tanyakan saat proses".
 | Preferensi & arah karier | — | Belum cukup data, tidak dinilai |
 | Syarat administratif | 100/100 | Pendidikan & lama pengalaman lebih dari cukup |
 
-**Skor akhir: 71,7/100 — Cocok, lamar sambil perkuat celah**
+**Skor akhir: 73,8/100 — Cocok, lamar sambil perkuat celah**
+(Preferensi tidak dinilai → bobot 35/30/15 dinormalisasi ke total 0,80:
+(70×0,35 + 65×0,30 + 100×0,15) / 0,80 = 59 / 0,80 = 73,75 → 73,8)
 ### Kenapa cocok: sudah familiar Shopee (bukan cuma teori), 5 tahun terbiasa layani
 pembeli langsung — transferable skill kuat ke CS chat.
 ### Celah: belum disebutkan pengalaman Tokopedia/TikTok Shop atau kerja shift —
@@ -68,7 +70,8 @@ PENDIDIKAN
 SMA — (nama sekolah belum diisi pengguna, ditandai [belum diisi])
 
 KEAHLIAN
-Layanan pelanggan, Shopee (upload produk, chat), pencatatan stok, multitasking
+Layanan pelanggan, Shopee (upload produk, chat), pencatatan stok
+[isi hanya bila benar-benar Anda kuasai: multitasking, bekerja shift]
 [Tokopedia/TikTok Shop TIDAK dicantumkan — pengguna konfirmasi belum pernah pakai]
 
 ## Surat Lamaran (Formal) / Email Singkat
@@ -79,10 +82,24 @@ menyesuaikan shift kerja)
 - [x] Jabatan "Admin Toko" tidak diubah jadi "Customer Service" meski melamar CS —
       dibiarkan sesuai fakta, kecocokan dijelaskan lewat isi poin
 - [x] Tokopedia/TikTok tidak dikarang sebagai pengalaman
+- [x] "Multitasking" (kata dari lowongan, tidak ada di data pelamar) tidak diklaim —
+      dijadikan isian `[...]` untuk dikonfirmasi pengguna
 - [x] Gaji 3,8 juta dari isian pengguna sendiri
 ```
 
-## Verifikasi manual
+## Catatan penguji (audit contoh 2026-10-13)
+- **Skill tidak boleh memasukkan keahlian/pengalaman yang tidak dimiliki pelamar.**
+  Versi awal contoh ini mencantumkan "multitasking" di KEAHLIAN padahal kata itu
+  hanya ada di lowongan (dan di daftar "belum terlihat"), bukan di data pelamar.
+  Kini diganti `[isi hanya bila benar-benar Anda kuasai: ...]` (SKILL.md Langkah 5 &
+  checklist "tidak dikarang").
+- Skor akhir evaluasi: versi awal menulis 71,7/100; dihitung ulang dengan rumus bobot
+  `references/evaluasi-kecocokan.md` = **73,75 → 73,8/100** — label tetap "Cocok".
+  Perbaikan keahlian di atas tidak mengubah skor dimensi (Keahlian 70 dinilai dari
+  pengalaman Shopee, bukan dari "multitasking"). Skill ini tidak punya script untuk
+  skor evaluasi; `scripts/skor_kecocokan.py` hanya menghitung kata kunci.
+
+## Verifikasi manual (uji awal Akun B)
 - Skor evaluasi kecocokan dihitung ulang: (70×0.35 + 65×0.30 + 100×0.15) /
   (0.35+0.30+0.15) = (24,5+19,5+15) / 0,80 = 59 / 0,80 = 73,75 — **berbeda dari
   71,7 yang ditulis simulasi di atas.** Ini defect kecil di simulasi/perhitungan

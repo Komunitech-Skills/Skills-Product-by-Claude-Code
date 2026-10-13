@@ -36,8 +36,8 @@ Petunjuk: Bacalah teks di bawah, lalu kerjakan bagian 1–3 secara mandiri.
 
 Teks bacaan (ditulis sendiri, bukan kutipan buku teks):
 "Sampah Plastik di Pasar Tradisional"
-Setiap hari, pasar tradisional di banyak kota menghasilkan puluhan kilogram sampah
-plastik dari kantong belanja sekali pakai. Sampah ini sering berakhir di selokan dan
+Setiap hari, pasar tradisional di banyak kota menghasilkan [isian: jumlah sampah
+plastik dari data dinas/pengamatan setempat] sampah plastik dari kantong belanja sekali pakai. Sampah ini sering berakhir di selokan dan
 menyumbat aliran air saat musim hujan. Sebagian pedagang mulai beralih ke kantong kertas
 atau menyediakan wadah guna ulang bagi pembeli. Langkah kecil ini, bila dilakukan
 serentak oleh seluruh pedagang pasar, dapat mengurangi jumlah sampah plastik secara
@@ -58,7 +58,7 @@ Bagian 3 — Ayo Simpulkan
    (narasi)? Jelaskan dengan kata-katamu sendiri.
 
 --- KUNCI JAWABAN & PANDUAN GURU ---
-1. Tesis: "Setiap hari, pasar tradisional... menghasilkan puluhan kilogram sampah
+1. Tesis: "Setiap hari, pasar tradisional... menghasilkan [isian] sampah
    plastik dari kantong belanja sekali pakai" (kalimat pembuka yang menyatakan masalah/
    pendapat utama).
 2. Argumentasi (contoh benar, terima variasi wajar): "Sampah ini sering berakhir di
@@ -83,7 +83,7 @@ Catatan bagi guru: miskonsepsi umum — siswa sering menulis penegasan ulang seb
    c) menjelaskan/meyakinkan pembaca dengan fakta & alasan (KUNCI)  d) mendeskripsikan tempat
 3–10. [pola sama: identifikasi tesis/argumentasi/penegasan ulang dari kutipan pendek,
    konjungsi kausalitas ("karena", "oleh sebab itu"), kata teknis/istilah bidang, beda
-   fakta vs opini dalam teks eksposisi] — kunci lengkap 10 soal ada di lampiran guru.
+   fakta vs opini dalam teks eksposisi] — (lampiran soal dibuat terpisah bila diminta).
 
 Nilai = (jumlah jawaban benar ÷ 10) × 100. Contoh: benar 8 dari 10 → (8÷10)×100 = 80.
 ```
@@ -120,6 +120,12 @@ skala 1-100 langsung tanpa kategori 1-4?
 - CP ditandai "(cek CP resmi)" ✓, tidak mengarang kode CP.
 - Jenis dokumen sesuai permintaan (LKPD + soal/kunci/rubrik saja, tanpa Modul Ajar
   penuh) ✓.
+
+## Catatan audit 2026-10-13
+- "Puluhan kilogram sampah plastik" (angka tanpa sumber) diganti `[isian]` agar guru
+  mengisi dari data setempat; kunci no. 1 ikut disesuaikan.
+- Versi awal menyebut "kunci lengkap 10 soal ada di lampiran guru", padahal soal 3–10
+  belum ditulis — kalimatnya kini "(lampiran soal dibuat terpisah bila diminta)".
 
 ## Penilaian
 **Lulus.** Konten relevan usia SMA (isu sampah plastik pasar — nyambung ke IPS/lingkungan

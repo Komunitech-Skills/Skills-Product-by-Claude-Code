@@ -2,11 +2,12 @@
 
 - **Tanggal uji:** 2026-10-12 (versi 1.0.1; OpenClaw 2026.9.6 lokal, model claude-sonnet-5; detail sebelum/sesudah lengkap di `00-openclaw-sebelum-sesudah.md`)
 - **Data pesan:** `data/pesan-1-surat-kenaikan-harga.txt`
+- **Data fiktif:** nama "Bayu" (nama fiktif), usaha, alamat, email `.example`, dan nomor telepon `08xx-xxxx-xxxx` (nomor fiktif, disamarkan 2026-10-13) hanya contoh.
 
 ## Input (pesan pengguna)
 
 ```
-Tolong rapikan draf ini jadi surat resmi siap kirim ke pelanggan, pakai kop usaha saya. Kop: Kopi Seduh Nusantara, Jl. Dago Asri No. 12, Bandung 40135, Telp 0812-3456-7890, email halo@kopiseduh-nusantara.example. Ini drafnya dari chat WA saya sama ChatGPT:
+Tolong rapikan draf ini jadi surat resmi siap kirim ke pelanggan, pakai kop usaha saya. Kop: Kopi Seduh Nusantara, Jl. Dago Asri No. 12, Bandung 40135, Telp 08xx-xxxx-xxxx (nomor fiktif), email halo@kopiseduh-nusantara.example. Ini drafnya dari chat WA saya sama ChatGPT:
 
 Tentu! Berikut ini draf suratnya ya kak 😊
 yth. pelanggan setia kami
@@ -15,7 +16,7 @@ mulai 1 nov 2026 harga biji kopi kami naik ya soalnya harga bahan baku naik juga
 - robusta lampung 250 gr dari 45rb jadi 49rb
 - house blend 500gr dari 120.000 jadi 129.000
 pesanan yg masuk sebelum 31 okt masih pake harga lama
-kalau mau tanya wa aja ke 0812-3456-7890
+kalau mau tanya wa aja ke 08xx-xxxx-xxxx
 makasih banyak ya kak 🙏
 -bayu pemilik
 ```
@@ -27,7 +28,7 @@ makasih banyak ya kak 🙏
 > ```
 > KOPI SEDUH NUSANTARA
 > Jl. Dago Asri No. 12, Bandung 40135
-> Telp 0812-3456-7890 · Email halo@kopiseduh-nusantara.example
+> Telp 08xx-xxxx-xxxx · Email halo@kopiseduh-nusantara.example
 > ────────────────────────────────────────────────
 >
 > Bandung, 12 Oktober 2026
@@ -51,7 +52,7 @@ makasih banyak ya kak 🙏
 >
 > Untuk pesanan yang masuk **sebelum tanggal 31 Oktober 2026**, harga lama masih berlaku sepenuhnya.
 >
-> Apabila Bapak/Ibu memiliki pertanyaan, silakan menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
+> Apabila Bapak/Ibu memiliki pertanyaan, silakan menghubungi kami melalui WhatsApp di nomor 08xx-xxxx-xxxx.
 >
 > Kami mengucapkan terima kasih atas kepercayaan dan dukungan Bapak/Ibu selama ini.
 >
@@ -80,7 +81,7 @@ makasih banyak ya kak 🙏
 ## Output SESUDAH (skill aktif) - konteks Telegram
 
 > **KOPI SEDUH NUSANTARA**
-> Jl. Dago Asri No. 12, Bandung 40135 · Telp 0812-3456-7890 · Email halo@kopiseduh-nusantara.example
+> Jl. Dago Asri No. 12, Bandung 40135 · Telp 08xx-xxxx-xxxx · Email halo@kopiseduh-nusantara.example
 > ────────────────────────────────────────
 >
 > Bandung, 12 Oktober 2026
@@ -100,7 +101,7 @@ makasih banyak ya kak 🙏
 >
 > Pesanan yang masuk sebelum tanggal 31 Oktober 2026 masih akan dikenakan harga lama.
 >
-> Apabila ada pertanyaan, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 0812-3456-7890.
+> Apabila ada pertanyaan, Bapak/Ibu dapat menghubungi kami melalui WhatsApp di nomor 08xx-xxxx-xxxx.
 >
 > Kami mengucapkan terima kasih atas kepercayaan dan dukungan Bapak/Ibu selama ini.
 >
