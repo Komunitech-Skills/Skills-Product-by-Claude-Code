@@ -4,9 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun B** — uji independen `jadwal-pelajaran-sekolah` v1.0.1 + `ubah-draf-ke-dokumen` v1.0.1 (pembuat ≠ penguji).
-2. **Akun A** — merge branch kanonik; `kartu-belajar-anki` 1.0.1 → `lulus` bila setuju.
-3. **Akun C** — tunggu antrean uji (jangan uji skill buatan sendiri); koordinasi / uji skill `uji` buatan Akun B bila ada.
+1. **Akun C** — C12 audit README batch 2 (8 skill berikutnya, lihat `koordinasi/c12-readme-progress.md`).
+2. **Akun B** — uji independen draf C8; program beta VIP (keputusan 53).
+3. **Akun A** — merge branch kanonik bila perlu.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-13 ~03:34 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C12 README Tahap 8 ×8 (fider + 7 marketplace) | 8/53 C12 | docs OK | ya |
 | 2026-10-13 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | fetch+merge default (sudah mutakhir); getUpdates 242 kosong; KEY/BOT/TESTER SET | C6–C11 selesai — tunggu uji B / skill `uji` baru | idle | tidak |
 | 2026-10-12 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | sync default; getUpdates 242 (tester kosong, bot lama) | antrean C kosong — tunggu uji B | idle | tidak |
 | 2026-10-12 ~22:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek ulang `slip-gaji-bpjs` v1.0.7 | 2892 char, 3 slip utuh | LOLOS TG | ya |

@@ -34,6 +34,16 @@ PRATINJAU - BELUM ADA YANG DITULIS ke Fider. ...
 ```
 Balas "ya" → dibuat. Lalu: *"Gabungkan #3 ke #1"*, *"Apa yang paling banyak disuka minggu ini?"*, *"#5 sudah selesai, buatkan kabarnya."* (Keluaran nyata dari Fider v0.38.0 ada di folder `examples/`.)
 
+## Cara pakai
+Setelah Fider terpasang dan kunci API disimpan, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
+- "Cek apakah Fider saya nyambung."
+- "Masukkan catatan WA ini ke papan saran." (lalu tempel catatan)
+- "Usulan apa yang paling banyak disukai minggu ini?"
+- "Gabung usulan #3 ke #1 kalau memang sama maksudnya."
+- "Usulan #5 sudah selesai, buatkan kabar untuk pelanggan (sopan)."
+
+Semua perubahan ke papan ditampilkan sebagai **pratinjau** dulu; balas **"ya"** bila sudah benar, baru ditulis ke Fider.
+
 ## Instalasi singkat
 Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (lokasi lengkap per platform di `docs/instalasi.md`): **OpenClaw**, **Codex**, **Claude Code**, **Cursor**. Lalu pasang Fider mengikuti **`docs/panduan-fider.md`** (Windows/macOS/Linux lewat Docker, ±30 menit; butuh email pengirim) dan buat kunci API. Kunci disimpan sendiri oleh Anda dengan `python3 scripts/fider.py simpan-kunci` (Windows: `python` atau `py`); **jangan tempel kunci di chat**.
 
