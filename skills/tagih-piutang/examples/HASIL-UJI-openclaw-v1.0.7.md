@@ -1,9 +1,10 @@
 # Hasil uji OpenClaw ulang: tagih-piutang (v1.0.7)
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** agent penguji independen Akun C (Cursor Cloud), bukan pembuat
+- **Status:** berkas resmi hasil uji v1.0.7 (5 skenario)
+- **Penguji:** agent penguji otomatis Komunitech (independen), bukan pembuat
 - **Platform:** OpenClaw 2026.9.8 lokal (`run-uji.sh` / `run-uji-tg.sh`, tanpa `unshare`), model router `claude-sonnet-5`; skenario 1 SESUDAH juga konteks Telegram (`--channel telegram`, tanpa mengirim)
-- **Fokus uji ulang (C5):** kolom `sdh bayar` & peringatan script, input kurang (kerjakan dulu + maks 3 pertanyaan), penolakan jebakan singkat, tanpa kata proses ke pengguna
+- **Fokus uji ulang:** kolom `sdh bayar` & peringatan script, input kurang (kerjakan dulu + maks 3 pertanyaan), penolakan jebakan singkat, tanpa kata proses ke pengguna
 - **Rincian utuh:** `00-openclaw-v1.0.7-sebelum-sesudah.md`; teks mentah di `data/tp107/`
 
 ## Skor per skenario

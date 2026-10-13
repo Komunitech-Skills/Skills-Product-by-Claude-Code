@@ -75,4 +75,4 @@ Kata umum seperti bahan, gaji, listrik, ongkir, iklan, dan prive sudah dikenali.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.3.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.3.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

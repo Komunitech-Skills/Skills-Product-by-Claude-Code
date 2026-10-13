@@ -126,7 +126,7 @@ hasil identik 100% dengan output skrip skill untuk skenario a, b, dan c.
   skill bahkan **salah faktual** (mengklaim keputusan pembayaran sudah final padahal file tidak
   menunjukkan itu).
 - `examples/00-banding-pesaing.md`: pesaing yang ditemukan (`mocasus/whatsapp-group-summary`, 14
-  ⭐) di bawah ambang kurasi CLAUDE.md dan justru memakai pendekatan perekaman diam-diam yang
+  ⭐) di bawah ambang kurasi pedoman kurasi Komunitech dan justru memakai pendekatan perekaman diam-diam yang
   bertentangan dengan kebijakan Komunitech — skill kita unggul dari sisi etika, kesiapan pakai,
   dan struktur output (kutipan+jam, daftar tindakan).
 

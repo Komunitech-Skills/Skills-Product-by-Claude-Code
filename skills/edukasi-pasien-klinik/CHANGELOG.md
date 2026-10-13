@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.12 (2026-10-13)
+- `references/batasan-medis.md`: rujukan ke dokumen aturan internal diganti kalimat yang berdiri sendiri (kebijakan Komunitech untuk bidang kesehatan); batasan dan cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.11 (2026-10-13)
 - Pemindaian contoh uji: contoh pengingat imunisasi menulis "Yang perlu dibawa: buku KIA / kartu vaksinasi, KTP orang tua" padahal klinik tidak menyebutnya. Kini ditulis `[isi dari klinik ...]`; templat `templates/pengingat-kontrol.md` diperbaiki dengan cara yang sama.
 - Ditambah satu kalimat anti-karangan di Batasan SKILL.md: atribut/angka/fakta yang tidak diberikan pengguna ditulis `[isi: ...]` atau ditandai asumsi; jadwal/usia imunisasi hanya dari klinik atau jadwal resmi IDAI/Kemenkes beserta tahunnya, bila tidak ada sumber tulis "cek jadwal resmi terbaru"; tanpa dosis obat. **PERLU REVIEW tenaga medis** tetap berlaku. Script tidak berubah.

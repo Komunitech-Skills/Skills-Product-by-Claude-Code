@@ -5,7 +5,7 @@ Tujuan: menghasilkan angka kunjungan per hari/poli/penjamin, jam ramai, dan
 jumlah pasien tidak datang, TANPA pernah menampilkan data per-pasien
 (nama, NIK, tanggal lahir, diagnosis, dll.) di output. Ini BUKAN alat rekam
 medis dan BUKAN alat skrining/diagnosis — hanya rekap jumlah untuk laporan
-operasional (lihat CLAUDE.md Komunitech & keputusan pemilik jalur 3, bidang
+operasional (lihat kebijakan Komunitech bidang kesehatan, bidang
 kesehatan: tanpa skrining/diagnosis/kalkulator medis).
 
 Prinsip keandalan & privasi (v1.0.4, setelah empat ronde uji independen):

@@ -50,7 +50,7 @@ Jangan menyebut nama alat, peran, atau kata "tool"/skill/script/file/path, dan j
 | Biaya tetap tambahan (gaji, sewa, listrik, servis, BBM) | Tidak | Rp0 — sebut asumsi dan tanyakan di akhir |
 | Masa proyek | Tidak | 5 tahun |
 | Umur ekonomis & nilai jual kembali | Tidak | Umur = masa proyek; tanpa harga jual kembali: nilai buku garis lurus (nilai akhir Rp0); kendaraan: umur 8 tahun (asumsi, bisa diubah) |
-| Tingkat diskonto | Tidak | **12%/tahun** = bunga KUR Mikro/Kecil sektor produksi 6% efektif (acuan Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44; konfirmasi ke bank penyalur) + tambahan risiko usaha 6%. Ini **asumsi**, bukan rekomendasi; pakai bunga pinjaman pengguna bila modal dari pinjaman. NPV juga selalu ditampilkan pada **20%** (uji ketat) |
+| Tingkat diskonto | Tidak | **12%/tahun** = bunga KUR Mikro/Kecil sektor produksi 6% efektif (acuan Permenko Perekonomian No. 1 Tahun 2026 tentang Pedoman Pelaksanaan KUR, Pasal 37 & 44 ayat (1) huruf a, berlaku 13 Januari 2026; konfirmasi ke bank penyalur) + tambahan risiko usaha 6%. Ini **asumsi**, bukan rekomendasi; pakai bunga pinjaman pengguna bila modal dari pinjaman. NPV juga selalu ditampilkan pada **20%** (uji ketat). Sumber, URL & tanggal cek aturan: `references/istilah-dan-asumsi.md` bagian 2 (untuk agent, jangan disebut ke pengguna) |
 | Pajak | Tidak | Tidak dihitung, tetapi disebut. Pengguna menyebut PPh final UMKM → `--pajak-persen 0,5` (dari omzet). Badan usaha (PPh badan) → `--pajak-persen 22 --dasar-pajak laba` |
 | Pertumbuhan omzet/biaya | Tidak | 0% (sebut) |
 

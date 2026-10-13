@@ -1,9 +1,9 @@
-# Uji OpenClaw — web_search DuckDuckGo hidup (C2, 2026-10-10)
+# Uji OpenClaw — web_search DuckDuckGo hidup (2026-10-10)
 
 - **Versi skill:** 1.0.2 (tidak diubah)
-- **Penguji:** Akun C independen
-- **Lingkungan:** OpenClaw 2026.9.9, `@openclaw/duckduckgo-plugin`, config bot uji internal kurator (tidak disertakan dalam paket) (+ salinan di HOME bot uji VM). Uji: `$SCRATCHPAD/openclaw-real/run-uji.sh`, `run-uji-tg.sh`.
-- **Output mentah (VM, tidak di-repo):** `$SCRATCHPAD/openclaw-real/hasil/cpw-*-out.txt`
+- **Penguji:** penguji otomatis Komunitech (independen)
+- **Lingkungan:** OpenClaw 2026.9.9, `@openclaw/duckduckgo-plugin`, config bot uji internal kurator (tidak disertakan dalam paket). Uji: `run-uji.sh`, `run-uji-tg.sh` (alat uji internal kurator, tidak disertakan dalam paket).
+- **Output mentah:** catatan internal kurator (tidak disertakan dalam paket)
 
 ## Smoke test
 Pesan: «cari 3 toko kue di Bandung beserta nomor teleponnya» — `web_search` + `tool_call`, ~361 char, tanpa captcha.

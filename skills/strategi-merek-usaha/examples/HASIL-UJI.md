@@ -1,6 +1,6 @@
 # HASIL UJI — strategi-merek-usaha v1.0.0
 
-**Penguji:** agent independen (bukan pembuat), 2026-09-30. Hanya membaca folder skill + CLAUDE.md. Skill disalin ke scratchpad; tidak dipasang di `.claude/skills` repo. SKILL.md, scripts, dan catalog tidak diubah.
+**Penguji:** agent independen (bukan pembuat), 2026-09-30. Hanya membaca folder skill + pedoman kurasi Komunitech. Skill disalin ke scratchpad; tidak dipasang di `.claude/skills` repo. SKILL.md, scripts, dan catalog tidak diubah.
 
 ## Ringkasan
 | Uji | File | Hasil |

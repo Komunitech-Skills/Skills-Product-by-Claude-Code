@@ -1119,7 +1119,9 @@ Batas skill: maks 3 pencarian + 6 halaman direktori. Dipatuhi hanya di S1 lokal 
 
 ---
 
-## Uji ulang 1.0.2 + Tavily web_search (2026-10-10, Akun C)
+## Uji ulang 1.0.2 + Tavily web_search (2026-10-10, penguji otomatis Komunitech)
+
+> Catatan: uji ini memakai penyedia pencarian Tavily (dengan kunci API) dan tidak dipakai sebagai hasil resmi: digantikan uji ulang dengan pencarian DuckDuckGo tanpa kunci API (keputusan kurator 2026-10-10), dan skor sesudahnya (7,7) di bawah 8. Hasil resmi ada di `HASIL-UJI.md`.
 
 **Cara uji:** `mk-home.sh` (salin `extensions/`), `run-uji.sh` + `--tg` untuk S1; provider `tavily`; alat `tavily_search` terpanggil di S1/S2/S4. SEBELUM = nilai lama (5,8). Cuplikan output: `data/tavily-20261010-s1-tg.txt`, `data/tavily-20261010-s1-lokal.txt`.
 

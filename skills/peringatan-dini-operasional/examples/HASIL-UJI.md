@@ -1,6 +1,6 @@
 # HASIL UJI — peringatan-dini-operasional v1.0.0
 
-- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md. Tanggal 2026-09-29.
+- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech. Tanggal 2026-09-29.
 - **Platform:** `claude-code (simulasi agent)` + uji muat otomatis OpenClaw 2026.9.6
   (`bash scripts/uji_openclaw.sh`: eligible/modelVisible/commandVisible 97/97 ✅).
 - **Lokasi uji:** scratchpad (salinan skill), bukan `.claude/skills/`.
@@ -106,7 +106,7 @@ Pola musiman mingguan kuat (akhir pekan 2×): hanya 🟡 7,2% hari (beruntun), �
     menyebut "tren ≥5 hari" walau tren sudah dihitung. "kemarin" = angka tercatat sebelumnya
     (bisa Sabtu untuk laporan Senin). Untuk target maks tertulis "tidak capai target" (lebih pas
     "melewati target").
-11. README menyebut `CARA-INSTAL.md` di paket, sedangkan CLAUDE.md menyebut `docs/instalasi.md` —
+11. README menyebut `CARA-INSTAL.md` di paket, sedangkan pedoman kurasi Komunitech menyebut `docs/instalasi.md` —
     cocokkan dengan `build.py` (di luar cakupan baca penguji).
 12. Garis dasar bergulir menyerap pergeseran yang sedang berlangsung (telat kirim: 3,4σ → 2,7σ dalam
     sehari). Wajar; tetap 🔴 lewat aturan lain.
@@ -151,7 +151,7 @@ Skor 6/10 → **revisi** temuan 1–4 (minimal 1–3), lalu uji ulang oleh pengu
 # Uji ulang v1.0.1 (2026-09-29)
 
 - **Penguji:** agent independen yang sama (bukan pembuat); membaca folder skill v1.0.1 (commit
-  `63421ed`) + CLAUDE.md. SKILL.md/scripts tidak diubah, tidak commit.
+  `63421ed`) + pedoman kurasi Komunitech. SKILL.md/scripts tidak diubah, tidak commit.
 - Script penguji dipindah ke scratchpad (tidak ikut paket): `gen.py`, `verif.py` (v1.0.0),
   **`verif2.py`** (baru: menghitung ulang model normal/hitungan/konstan/kejadian, ekor peluang dengan
   `math.erfc` + pmf Poisson sendiri, aturan "2 dari 3 hari", pola bergeser dengan syarat selisih,

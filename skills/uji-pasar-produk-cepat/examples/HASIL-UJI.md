@@ -1,6 +1,6 @@
 # Hasil Uji: uji-pasar-produk-cepat v1.0.0
 
-- Penguji: agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md. Tanggal: 2026-09-29.
+- Penguji: agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech. Tanggal: 2026-09-29.
 - Platform: `claude-code (simulasi agent)`. Belum diuji di OpenClaw/Codex/Cursor asli.
 - `python3 scripts/validate.py --skill uji-pasar-produk-cepat` → ✅ lolos. `python3 tests/uji_hasil_eksperimen.py` → "Semua uji lolos."
 

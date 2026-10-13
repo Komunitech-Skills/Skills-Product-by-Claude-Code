@@ -1,6 +1,6 @@
 # HASIL UJI - riset-harga-kompetitor v1.0.0
 
-- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md. Model: Opus.
+- **Penguji:** agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech. Model: Opus.
 - **Tanggal:** 2026-09-28. Lokasi uji: scratchpad (salinan folder skill), bukan `.claude/skills/`.
 - **Platform:** `claude-code (simulasi agent)`. Uji muat OpenClaw (`scripts/uji_openclaw.sh`) **belum** dijalankan penguji (di luar folder skill) - wajib dijalankan kurator.
 

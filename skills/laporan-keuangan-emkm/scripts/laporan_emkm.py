@@ -28,7 +28,7 @@ from collections import OrderedDict, defaultdict
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-VERSI = "1.3.3"
+VERSI = "1.3.4"
 
 # ---------------------------------------------------------------------------
 # Kategori & peran akuntansinya

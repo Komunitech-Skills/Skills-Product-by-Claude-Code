@@ -1,7 +1,7 @@
 # HASIL UJI ULANG INDEPENDEN — bot-trading-kripto v1.0.1
 
 - **Penguji:** agent independen (bukan pembuat, bukan penguji v1.0.0), 2026-09-29. Hanya membaca folder skill ini
-  dan CLAUDE.md (termasuk syarat pemilik 2026-09-29 soal auto-trading kripto). SKILL.md & scripts **tidak diubah**.
+  dan pedoman kurasi Komunitech (termasuk syarat pemilik 2026-09-29 soal auto-trading kripto). SKILL.md & scripts **tidak diubah**.
 - **Lingkungan:** salinan skill di scratchpad (di luar repo git), Python 3 standar, Linux, `HOME` dialihkan ke
   scratchpad (tombol berhenti global tidak menyentuh home asli). **Tanpa kunci/uang asli**: testnet/live hanya ke
   server tiruan lokal (`tests/mock_bursa.py`, kunci contoh publik dari dokumentasi resmi). Env var tidak dicetak.
@@ -144,7 +144,7 @@ Status tetap `uji`. Uji ulang oleh penguji independen tetap diperlukan sebelum n
 ## Uji ulang 1.0.3
 
 - **Penguji:** agent independen (bukan pembuat, bukan penguji sebelumnya), 2026-09-29. Hanya membaca folder skill ini dan
-  CLAUDE.md (termasuk syarat pemilik 2026-09-29 soal kripto). SKILL.md & scripts **tidak diubah**.
+  pedoman kurasi Komunitech (termasuk syarat pemilik 2026-09-29 soal kripto). SKILL.md & scripts **tidak diubah**.
 - **Lingkungan:** salinan skill di scratchpad (di luar repo), `HOME` dialihkan ke scratchpad, Python 3 standar, Linux.
   Testnet/live **hanya** ke server tiruan lokal `tests/mock_bursa.py` (kunci contoh publik dokumentasi). Tanpa kunci/uang
   asli. Env var tidak dicetak. Script penguji (scratchpad `uji-ulang-bot3/`): `serang_n1.py` (12 serangan modal total),

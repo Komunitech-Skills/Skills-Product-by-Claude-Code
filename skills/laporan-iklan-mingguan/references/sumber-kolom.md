@@ -1,6 +1,6 @@
 # Sumber nama kolom ekspor iklan per platform
 
-Dicatat sesuai Tahap 2 `CLAUDE.md`: nama kolom yang dipakai `scripts/laporan_iklan.py` untuk
+Dicatat sesuai standar kurasi Komunitech: nama kolom yang dipakai `scripts/laporan_iklan.py` untuk
 mendeteksi platform & metrik **harus** berasal dari dokumentasi resmi atau contoh ekspor nyata,
 bukan tebakan. Semua sumber di bawah diakses **25 September 2026**.
 

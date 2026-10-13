@@ -1,5 +1,5 @@
 # Hasil Uji Independen - iterasi-dari-masukan-pelanggan v1.0.0
-Penguji: agent terpisah dari pembuat (hanya membaca folder skill + CLAUDE.md), 2026-09-29. Platform: `claude-code (simulasi agent)`.
+Penguji: agent terpisah dari pembuat (hanya membaca folder skill + pedoman kurasi Komunitech), 2026-09-29. Platform: `claude-code (simulasi agent)`.
 Contoh 01-05 dari pembuat dipertahankan; uji penguji = 06-10, 00-pembanding-tanpa-skill, 00-banding-pesaing.
 
 ## 1. Audit keamanan & format
@@ -28,7 +28,7 @@ Contoh 01-05 dari pembuat dipertahankan; uji penguji = 06-10, 00-pembanding-tanp
 
 ## 3. Skor kualitas: **6/10 - BELUM LULUS (revisi, lalu uji ulang independen)**
 Alasan: alur SKILL.md, privasi, template, siklus bulanan, dan materi README sangat baik (A/B dan pesaing menang). Namun prinsip "reliable"
-CLAUDE.md dilanggar oleh script: input paling umum (ekspor ulasan marketplace dengan kolom "Ulasan Pembeli") gagal **diam-diam**, skala nilai
+pedoman kurasi Komunitech dilanggar oleh script: input paling umum (ekspor ulasan marketplace dengan kolom "Ulasan Pembeli") gagal **diam-diam**, skala nilai
 survei 0-10 membalik sentimen, dan pola sangat umum "kurang + kata positif" serta "pas" (= ketika) mengubah keluhan menjadi pujian. Angka yang
 dihitung benar tapi dari klasifikasi yang salah tetap menyesatkan pembeli awam.
 

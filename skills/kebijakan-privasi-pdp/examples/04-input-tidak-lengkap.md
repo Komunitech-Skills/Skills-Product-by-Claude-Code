@@ -26,7 +26,7 @@ Kalau ingin cepat, cukup jawab nomor 1–3; sisanya saya isi dengan saran umum d
 Agent (ringkas): menyusun draf dari `templates/kebijakan-privasi.md` dengan nama "Warung Kopi Nanda"; data = nama, no. WA, isi chat, alamat antar; penerima = `[isi: kurir/ojek online]`, GoFood disebut sebagai platform (catatan: GoFood punya kebijakan privasi sendiri untuk data di platformnya — pilihan-per-jenis-usaha §2); transfer LN opsi (a) karena WhatsApp/Meta; masa simpan saran default ditandai "saran"; bagian cookie dihapus (tidak ada website). Status `PERLU DILENGKAPI` + daftar asumsi + disclaimer.
 
 ## Penilaian penguji
-- ✅ Tanya sekali, daftar bernomor, bahasa awam, ada opsi cepat (sesuai CLAUDE.md "instan").
+- ✅ Tanya sekali, daftar bernomor, bahasa awam, ada opsi cepat (sesuai pedoman kurasi Komunitech "instan").
 - ✅ Tidak langsung mengarang dokumen generik.
 - ⚠ 8 pertanyaan sedikit panjang untuk pengguna awam; opsi "jawab 1–3 saja" (tambahan agent) sebaiknya ditulis eksplisit di SKILL.md.
 - ⚠ Pertanyaan "Data anak / kesehatan / keuangan?" (tabel Input: **wajib**) hanya tersirat di no. 3 — cukup, tetapi bisa terlewat bila pengguna menjawab singkat. Usul: tambah "(ada data kesehatan/anak? ya/tidak)".

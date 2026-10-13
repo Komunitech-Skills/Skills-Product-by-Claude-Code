@@ -18,7 +18,7 @@ folder yang sama setiap minggu (mis. `Dokumen/Laporan-AI/masuk/iklan/`).
 Perintah `openclaw automations add`/`add --command-argv` di bawah **sama persis** dengan yang
 sudah diverifikasi lewat CLI OpenClaw asli di `laporan-harian-usaha/references/openclaw-jadwal.md`
 (2026.9.5) dan diverifikasi ulang lewat `openclaw automations add --help` OpenClaw 2026.9.6
-(lihat `solusi-vip/README.md` §"Metodologi verifikasi"). Halaman ini **tidak menebak flag baru** —
+(lihat panduan paket VIP Komunitech bagian "Metodologi verifikasi"; hanya di paket VIP). Halaman ini **tidak menebak flag baru** —
 hanya menerapkan pola yang sudah ada ke resep laporan iklan. Bagian "Pengiriman sungguhan ke
 Telegram" tetap berstatus ⚠️ (belum diuji butuh token bot asli), sama seperti skill lain di
 repo ini.

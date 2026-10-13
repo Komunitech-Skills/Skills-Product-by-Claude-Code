@@ -67,9 +67,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/674/685 — skor 6,5
-- Dengan skill: https://t.me/c/4407409583/675/688 — skor 8,5
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 6, 2026-10-05.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
 Verdik gelombang: LULUS — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv = rekap omzet dari file kasir, balas-chat-cs mode draf = draf balasan chat pelanggan yang Anda kirim sendiri, promo-kalender = rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan.
 
 ## FAQ

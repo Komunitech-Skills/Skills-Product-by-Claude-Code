@@ -1,7 +1,7 @@
 # Contoh 2 - Klinik kecantikan, Meta Ads klik-ke-WhatsApp
 
 > Contoh uji pembuat (simulasi agent, 2026-09-26; output diperbarui ke v1.0.1). Data fiktif yang meniru kasus UMKM nyata;
-> bukan hasil uji independen (itu dilakukan penguji terpisah sesuai CLAUDE.md Tahap 6).
+> bukan hasil uji independen (itu dilakukan penguji terpisah sesuai pedoman kurasi Komunitech tahap 6).
 
 ## Permintaan pengguna
 "Klinik saya pasang iklan IG/FB ke WhatsApp, chat banyak tapi yang booking sedikit. Bisa diaudit? Ini screenshot Ads Manager-nya."

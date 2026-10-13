@@ -6,7 +6,7 @@ pendukung") di ringkasan untuk atasan/investor/bank tidak dikira-kira. Menerima
 beberapa pasangan angka sekaligus (mis. omzet lama vs baru, biaya iklan lama vs
 baru) dan mengeluarkan JSON siap dibaca agent.
 
-Pembulatan (sesuai standar library ini, CLAUDE.md Tahap 4):
+Pembulatan (sesuai standar library ini, standar pembulatan library Komunitech):
 - Nominal Rupiah (nilai lama, nilai baru, selisih) dibulatkan ke rupiah terdekat.
 - Persen perubahan dibulatkan ke 1 angka desimal (ROUND_HALF_UP), bukan dipotong.
 - Bila nilai lama = 0, persen perubahan tidak didefinisikan → dilaporkan sebagai

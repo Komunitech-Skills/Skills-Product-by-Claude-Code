@@ -32,6 +32,6 @@ Rekap bulan 09/2026: `total_nominal: 15500000`, `jumlah_nota: 2`.
 **Verifikasi independen:** 12.500.000 + 3.000.000 = 15.500.000 — cocok.
 
 ## Temuan
-- Nominal format Indonesia dengan titik ribuan ("12.500.000") dan singkatan ("3jt") pada dokumen bernilai besar (PDF faktur toko bangunan) diparser tepat, sesuai standar pembulatan CLAUDE.md (di sini tidak ada pecahan, tidak ada pembulatan).
+- Nominal format Indonesia dengan titik ribuan ("12.500.000") dan singkatan ("3jt") pada dokumen bernilai besar (PDF faktur toko bangunan) diparser tepat, sesuai standar pembulatan pedoman kurasi Komunitech (di sini tidak ada pecahan, tidak ada pembulatan).
 - Vendor "CV Sumber Bangunan Jaya" tidak tertangkap kata kunci kategori manapun (termasuk `bahan-baku`) → jatuh ke "Lain-lain". Ini **bukan bug**, tapi kesenjangan kamus kata kunci: usaha toko bangunan (semen, cat, bata, paku) tidak terwakili di `KATEGORI` (kata kunci saat ini condong ke usaha kuliner/sembako). Dicatat sebagai temuan sedang di `HASIL-UJI.md`.
 - Ekstensi `.pdf` diarsipkan dengan benar (termasuk daftar `EKSTENSI_DIKENAL`), tanpa peringatan.

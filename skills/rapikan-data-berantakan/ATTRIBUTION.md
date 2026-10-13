@@ -14,7 +14,7 @@
 - **Lisensi:** [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). Dibaca 2026-10-05.
 - **Pernyataan perubahan (diubah/diadaptasi):** prinsip-prinsipnya (satu baris satu catatan, satu kolom satu variabel, satu sel satu nilai, simpan data mentah, ekspor ke format teks seperti CSV) **diadaptasi dan ditulis ulang** oleh Komunitech dalam Bahasa Indonesia, ditambah contoh dan template usaha Indonesia (pelanggan, penjualan, stok, buku kas), aturan nomor HP/tanggal/Rupiah, dan peringatan Excel (nomor HP jadi 6,28E+11). Contoh ekologi dan teks asli tidak disalin. Hasil adaptasi ada di `references/tabel-rapi.md` dan ringkasannya di `SKILL.md`. The Carpentries tidak mengesahkan skill ini.
 
-## Audit keamanan (Tahap 3 CLAUDE.md), 2026-10-05
+## Audit keamanan (pedoman kurasi Komunitech), 2026-10-05
 - Hanya halaman dokumentasi/pelajaran sumber yang dibaca (lewat peramban teks). **Tidak ada repositori yang di-clone dan tidak ada kode sumber yang dijalankan.**
 - Diperiksa pada halaman yang dibaca: instruksi tersembunyi untuk agent (mengabaikan pengguna, mengirim file, menonaktifkan konfirmasi), perintah unduh-dan-jalankan, pengiriman data ke server luar, kredensial tertanam. **Nihil.** Isi hanya penjelasan metode dan prinsip.
 - `scripts/rapikan.py` (karya Komunitech) memakai pustaka standar saja (`csv`, `re`, `json`, `difflib`, `decimal`, `datetime`, `unicodedata`); tidak ada akses jaringan, tidak ada `eval`/`exec`/`subprocess`, tidak membaca file di luar yang diberikan pengguna, tidak menimpa file asli (hasil ke folder `hasil-rapikan`).

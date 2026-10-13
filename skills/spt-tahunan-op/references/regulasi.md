@@ -1,7 +1,7 @@
 # Dasar aturan — SPT Tahunan PPh Orang Pribadi
 
 Dicek **30 September 2026** (baris PPh 21 bukan pegawai & setoran final salah skema: 1 Oktober 2026). ✅ = diverifikasi dari naskah resmi/situs DJP · 🟡 = sumber sekunder konsisten · ⚠️ = PERLU REVIEW.
-Riset lengkap + URL: `research/sources/spt-tahunan-op-2026-09-30.md` (repo kurator).
+Riset lengkap + URL tersimpan di catatan riset internal kurator (tidak disertakan dalam paket); sumber utama tiap aturan dicantumkan di bawah.
 
 | Topik | Aturan yang dipakai | Status | Dasar |
 |---|---|---|---|

@@ -38,4 +38,4 @@ Panduan lebih rinci untuk melengkapi Langkah 2 di SKILL.md. Semua sumber di bawa
 ## Dasar hukum ringkas (UU PDP — UU 27/2022)
 - Pemrosesan data kontak bisnis publik untuk penawaran bisnis yang relevan umumnya termasuk "kepentingan sah" (legitimate interest), tapi tetap harus: identitas pengirim jelas, tujuan disebutkan, dan ada opsi mudah untuk berhenti dihubungi.
 - Ini bukan nasihat hukum. Untuk kasus yang meragukan atau skala besar (ribuan kontak, data sensitif), sarankan pengguna konsultasi ke ahli hukum/kepatuhan data.
-- Sumber: https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-data-pribadi-lt5d588c1cc649e/ (dicatat di `research/sources/regulasi-2026-09-23.md`).
+- Sumber: https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-data-pribadi-lt5d588c1cc649e/

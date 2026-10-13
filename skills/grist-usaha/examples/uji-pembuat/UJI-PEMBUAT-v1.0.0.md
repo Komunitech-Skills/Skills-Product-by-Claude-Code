@@ -3,7 +3,7 @@
 **Tanggal:** 2026-09-26
 **Penguji:** sesi ini (agent) — **bukan** penguji independen terpisah dari pembuat, karena
 skill ini dibuat & diuji dalam satu sesi kerja atas permintaan pemilik untuk mempercepat batch
-pertama. Ini dicatat apa adanya; CLAUDE.md Tahap 6 butir 2 ("pengujian oleh agent/sesi terpisah")
+pertama. Ini dicatat apa adanya; pedoman kurasi Komunitech Tahap 6 butir 2 ("pengujian oleh agent/sesi terpisah")
 **belum dipenuhi** — perlu diulang oleh sesi/penguji independen sebelum naik ke status `uji`.
 
 ## Ringkasan 5 skenario (Tahap 6 butir 3)
@@ -41,7 +41,7 @@ batas 10) → sisa **2 < 10** → MENIPIS ✓; `Cup Kertas 12oz` (masuk 200, kel
 Cakupan tugas untuk skill ini (draft pertama, batch 2026-09-26) tidak meminta perbandingan
 "agent tanpa skill vs dengan skill" maupun uji banding pesaing (skill publik Airtable/Grist di
 ClawHub/skills.sh/GitHub). Ini **PERLU DIKERJAKAN** sebelum skill naik ke status `uji`/`lulus`,
-sesuai CLAUDE.md Tahap 6 butir 4–5. Rekomendasi kata kunci pencarian pesaing untuk sesi
+sesuai pedoman kurasi Komunitech Tahap 6 butir 4–5. Rekomendasi kata kunci pencarian pesaing untuk sesi
 berikutnya: "grist skill", "grist mcp", "airtable agent skill", "grist api agent".
 
 ## Kejujuran soal apa yang benar-benar diuji vs tidak
@@ -66,7 +66,7 @@ Alasan: fungsi inti benar & teruji otomatis (fungsi murni + SQLite read-only + R
 server tiruan), penanganan input buruk & di luar cakupan lengkap, keamanan kunci API & alamat
 server sudah dipikirkan. **Skor ditahan di 6** (bukan lebih tinggi) semata karena Tahap 6 belum
 lengkap secara prosedural: belum ada uji A/B, uji banding pesaing, penguji independen terpisah
-dari pembuat, maupun uji terhadap Grist sungguhan/OpenClaw asli — sesuai aturan CLAUDE.md "di
+dari pembuat, maupun uji terhadap Grist sungguhan/OpenClaw asli — sesuai aturan pedoman kurasi Komunitech "di
 bawah 7 → revisi, jangan rilis" dan "uji A/B/banding pesaing wajib, kalau tidak dikerjakan skor
 maks. 6". Status katalog: **draft** (belum `uji`/`lulus`), konsisten dengan skor ini.
 

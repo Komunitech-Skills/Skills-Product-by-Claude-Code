@@ -1,6 +1,6 @@
 # Uji 04: tiga skenario normal (penguji independen, 2026-09-29)
 
-Penguji: agent terpisah dari pembuat, hanya membaca folder skill + CLAUDE.md. Semua data fiktif. "Hari ini" = 2026-09-29.
+Penguji: agent terpisah dari pembuat, hanya membaca folder skill + pedoman kurasi Komunitech. Semua data fiktif. "Hari ini" = 2026-09-29.
 Jadwal di bawah adalah keluaran nyata `scripts/jadwal_peluncuran.py`; tanggal & pergeseran hari sudah diverifikasi independen (lihat HASIL-UJI.md).
 
 ---

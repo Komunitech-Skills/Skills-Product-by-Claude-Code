@@ -10,12 +10,11 @@ di komputer mereka (atau lewat jasa pendampingan).
 
 Semua perintah & kunci config di bawah **diverifikasi langsung** pada OpenClaw **2026.9.5
 (ec9c1a1)** di mesin uji terisolasi (`config set ... --dry-run --strict-json` lalu
-`config validate`, dan `--help` tiap perintah) atau dari dokumentasi resmi `docs.openclaw.ai`
-yang dikutip di `research/solusi-member-vip-2026-09-23.md` §1. Tidak ada kode yang benar-benar
+`config validate`, dan `--help` tiap perintah) atau dari dokumentasi resmi `docs.openclaw.ai`. Tidak ada kode yang benar-benar
 dijalankan terhadap WhatsApp asli (tidak ada login/QR/gateway berjalan) — jadi tandai **B**
 = belum diverifikasi ujung-ke-ujung dengan WhatsApp nyata.
 
-## Prasyarat wajib (keputusan pemilik, CLAUDE.md §1 jalur 3)
+## Prasyarat wajib (kebijakan Komunitech)
 1. **Nomor WhatsApp TERPISAH** untuk bot, bukan nomor utama usaha/pribadi. Login hanya lewat
    scan QR: `openclaw channels login --channel whatsapp` (T, dari dokumentasi — belum diuji
    di sesi ini karena butuh WhatsApp asli).

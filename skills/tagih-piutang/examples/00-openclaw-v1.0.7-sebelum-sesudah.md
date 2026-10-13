@@ -1,7 +1,7 @@
 # Uji OpenClaw sebelum/sesudah: tagih-piutang v1.0.7 (ulang)
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** Akun C (Cursor Cloud), independen dari pembuat v1.0.7
+- **Penguji:** penguji otomatis Komunitech, independen dari pembuat v1.0.7
 - **Cara uji:** OpenClaw 2026.9.8, `run-uji.sh` / `run-uji-tg.sh` (VM tanpa `unshare`); SEBELUM = home tanpa skill; SESUDAH = hanya `tagih-piutang` v1.0.7 dari repo. Pesan & data identik per skenario.
 - **Data S1:** `piutang-toko-bangunan.csv` (10 nota, kolom `sdh bayar`, tanggal acuan 10 Okt 2026) — sama dengan uji v1.0.6.
 - **Kebenaran angka:** lihat `HASIL-UJI-openclaw-v1.0.7.md` (Decimal independen + 33 tes regresi).

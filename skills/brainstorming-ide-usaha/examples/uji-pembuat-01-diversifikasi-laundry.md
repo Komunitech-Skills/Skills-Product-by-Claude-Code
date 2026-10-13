@@ -1,6 +1,6 @@
 # Uji Pembuat 01 — Diversifikasi Usaha Laundry (Jalur B)
 
-Dibuat oleh pembuat skill sebagai contoh alur lengkap. **Bukan pengganti** pengujian independen Tahap 6 CLAUDE.md (agent/sesi terpisah, 5 skenario, uji A/B, uji banding pesaing).
+Dibuat oleh pembuat skill sebagai contoh alur lengkap. **Bukan pengganti** pengujian independen pedoman kurasi Komunitech tahap 6 (agent/sesi terpisah, 5 skenario, uji A/B, uji banding pesaing).
 
 ## Permintaan awal pengguna
 

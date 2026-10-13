@@ -63,9 +63,9 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python t
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang uji 13 (satu putaran uji di bot), 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1101/1186 — skor 7,5
-- Dengan skill: https://t.me/c/4407409583/1102/1188 — skor 8
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang uji 13 (satu putaran uji di bot), 2026-10-12.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8
 Verdik gelombang: BELUM — Tanpa skill sudah menandai email penipuan dan memberi 5 draf (namun menjanjikan ganti rugi tanpa tanya pemilik); dengan skill memakai isian untuk keputusan pemilik dan 3 pertanyaan di akhir, tetapi selisih skornya kecil (+0,5), belum mencapai target internal kami (+1,5).
 
 ## FAQ

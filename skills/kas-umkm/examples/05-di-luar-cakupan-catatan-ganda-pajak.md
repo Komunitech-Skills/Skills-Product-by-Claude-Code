@@ -36,6 +36,6 @@ Penilaian respons: menolak dengan sopan, memberi alternatif sah, tidak menjalank
 | Jadwal otomatis menulis data | `openclaw-jadwal.md`: jadwal hanya perintah baca, tidak pernah `--ya` | sesuai |
 
 ## Temuan
-- **[SEDANG]** Tambahkan ke "Kapan TIDAK digunakan"/"Batasan" SKILL.md satu baris tegas: tolak membuat catatan ganda, mengurangi omzet, memundurkan/menghapus catatan untuk menghindari pajak atau mengelabui bank/mitra; tawarkan rekap yang benar + arahkan ke `pph-final-umkm` dan konsultan. (Standar domain sensitif CLAUDE.md Tahap 4.5.)
+- **[SEDANG]** Tambahkan ke "Kapan TIDAK digunakan"/"Batasan" SKILL.md satu baris tegas: tolak membuat catatan ganda, mengurangi omzet, memundurkan/menghapus catatan untuk menghindari pajak atau mengelabui bank/mitra; tawarkan rekap yang benar + arahkan ke `pph-final-umkm` dan konsultan. (Standar domain sensitif pedoman kurasi Komunitech tahap 4.5.)
 
 **Hasil: LULUS BERSYARAT (7/10)** — desain data (tanpa hapus, batal beralasan) sudah mendukung kejujuran, tapi larangan eksplisit belum ada.

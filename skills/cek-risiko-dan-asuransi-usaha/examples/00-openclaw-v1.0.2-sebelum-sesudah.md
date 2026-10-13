@@ -1,8 +1,8 @@
 # Uji OpenClaw sebelum/sesudah: cek-risiko-dan-asuransi-usaha v1.0.2
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** Akun C (agent independen, bukan pembuat v1.0.2)
-- **Cara uji:** OpenClaw 2026.9.8, `run-uji.sh` / `run-uji-tg.sh` (VM Cursor tanpa `unshare`); SEBELUM = home tanpa skill; SESUDAH = hanya skill v1.0.2 dari repo. Teks penuh: `data/cr102/*.txt`.
+- **Penguji:** penguji otomatis Komunitech (agent independen, bukan pembuat v1.0.2)
+- **Cara uji:** OpenClaw 2026.9.8, `run-uji.sh` / `run-uji-tg.sh` (mesin uji internal tanpa `unshare`); SEBELUM = home tanpa skill; SESUDAH = hanya skill v1.0.2 dari repo. Teks penuh: `data/cr102/*.txt`.
 
 ---
 

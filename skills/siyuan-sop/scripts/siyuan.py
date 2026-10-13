@@ -52,7 +52,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI_SKRIP = "1.0.0"
+VERSI_SKRIP = "1.0.11"
 URL_DEFAULT = "http://127.0.0.1:6806"
 BATAS_WAKTU = 20
 FILE_KUNCI_DEFAULT = os.path.expanduser(os.path.join("~", ".komunitech", "siyuan-kunci.txt"))

@@ -50,6 +50,6 @@ TIDAK ADA PERUBAHAN
 - SKILL.md diperiksa: tidak ada instruksi tersembunyi ke agent untuk mengabaikan pengguna, mengirim file, atau menonaktifkan konfirmasi.
 
 ## Yang belum diuji / catatan jujur untuk pemilik
-- Belum ada penguji independen (Tahap 6.2 CLAUDE.md), uji A/B "tanpa skill vs dengan skill", dan uji banding pesaing — dilewati sesuai cakupan tugas sesi ini (fokus: kurasi Datasette + skill + uji instalasi nyata). Perlu dikerjakan sebelum naik ke status `uji`/`lulus`.
+- Belum ada penguji independen (pedoman kurasi Komunitech), uji A/B "tanpa skill vs dengan skill", dan uji banding pesaing — dilewati sesuai cakupan tugas sesi ini (fokus: kurasi Datasette + skill + uji instalasi nyata). Perlu dikerjakan sebelum naik ke status `uji`/`lulus`.
 - Instalasi `pipx` (bukan `pip` biasa) belum dicoba langsung; kedua cara didokumentasikan resmi di `docs.datasette.io`.
 - Belum diuji dengan Datasette versi lain, database besar (>~10rb baris), atau `KOMUNITECH_DATA` yang menunjuk folder jaringan (SMB/NFS) — mode `?mode=ro` seharusnya tetap aman tapi belum dicoba.

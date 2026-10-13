@@ -12,10 +12,10 @@
 - **Bagian yang dipelajari (kerangka):** jenis pemecahan selisih (harga/volume, bauran, jumlah orang/tarif untuk biaya tenaga kerja, pengelompokan biaya); ambang materialitas "rupiah atau persen, salah satu terlampaui"; urutan prioritas pemeriksaan (rupiah terbesar, persen terbesar, arah tak terduga, selisih baru, selisih berulang); ciri penjelasan selisih yang baik dan pola yang harus dihindari; jembatan (waterfall) dari angka rencana ke realisasi dengan syarat jumlahnya cocok.
 - **Bagian yang TIDAK dipakai:** perbandingan anggaran-forecast-realisasi tiga arah dan akurasi forecast (MAPE), tren varians, ambang 10/15/20% gaya korporat, contoh dolar/ARR/SaaS (churn, ekspansi, FX), dan field frontmatter `argument-hint`.
 
-## Audit keamanan (Tahap 3 CLAUDE.md), 2026-10-05
+## Audit keamanan (pedoman kurasi Komunitech), 2026-10-05
 - Dibaca penuh: `SKILL.md` sumber (266 baris) dan `finance/LICENSE`. Folder skill sumber tidak berisi script; tidak ada yang dijalankan.
 - Diperiksa (manual + pencarian pola curl/wget/eval/base64/rm/ssh/token/api key/password/secret/ignore): perintah destruktif, pengiriman data ke luar, pembacaan kredensial, kode ter-obfuscate, instruksi tersembunyi/prompt injection, API key tertanam. **Nihil.** Sumber memuat disclaimer "bukan nasihat keuangan, perlu ditinjau profesional" — semangatnya dipertahankan.
-- Kesimpulan: **lolos audit**. Catatan lengkap: `research/sources/knowledge-work-plugins-2026-10-05.md` (bagian skill ini) di repo kurator.
+- Kesimpulan: **lolos audit**. Catatan lengkap: catatan riset internal kurator (tidak disertakan dalam paket) (bagian skill ini) di repo kurator.
 
 ## Pernyataan perubahan (Apache-2.0 bagian 4b: berkas telah diubah)
 Materi asal **telah diubah** oleh Komunitech:

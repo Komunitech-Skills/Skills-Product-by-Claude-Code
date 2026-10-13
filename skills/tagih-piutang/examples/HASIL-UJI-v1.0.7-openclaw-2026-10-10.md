@@ -1,9 +1,11 @@
+> Catatan: berkas ini memuat uji ulang parsial 3 skenario (S1, S4, S5) yang dijalankan sesudah uji lengkap; hasil lengkap 5 skenario (berkas resmi) ada di `HASIL-UJI-openclaw-v1.0.7.md`.
+
 # Hasil uji OpenClaw ulang: tagih-piutang v1.0.7
 
-- **Tanggal:** 2026-10-10 (cron Akun C ~23:15 UTC)
-- **Penguji:** Akun C (independen, bukan pembuat)
-- **Platform:** OpenClaw 2026.9.8 lokal, model router `claude-sonnet-5`; VM Cursor tanpa `unshare` (perintah inti sama dengan `uji.sh`).
-- **Fokus C5:** kolom **sdh bayar** di CSV toko bangunan + skenario jebakan + input kurang (v1.0.7).
+- **Tanggal:** 2026-10-10 (jadwal otomatis penguji, ~23:15 UTC)
+- **Penguji:** penguji otomatis Komunitech (independen, bukan pembuat)
+- **Platform:** OpenClaw 2026.9.8 lokal, model router `claude-sonnet-5`; mesin uji internal tanpa `unshare` (perintah inti sama dengan `uji.sh`).
+- **Fokus uji ulang:** kolom **sdh bayar** di CSV toko bangunan + skenario jebakan + input kurang (v1.0.7).
 - **Regresi:** `python3 tests/uji_regresi.py` → 33 tes OK.
 
 ## Skor per skenario

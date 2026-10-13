@@ -1,6 +1,8 @@
+> Catatan: berkas ini rincian uji ulang parsial 3 skenario (S1, S4, S5); hasil lengkap 5 skenario (berkas resmi) ada di `HASIL-UJI-openclaw-v1.0.7.md` (rincian: `00-openclaw-v1.0.7-sebelum-sesudah.md`).
+
 # Uji OpenClaw v1.0.7 (ulang sebagian) — tagih-piutang
 
-- **Tanggal:** 2026-10-10 · **Penguji:** Akun C · **OpenClaw** 2026.9.8 · **Hari ini uji:** 10 Oktober 2026
+- **Tanggal:** 2026-10-10 · **Penguji:** penguji otomatis Komunitech · **OpenClaw** 2026.9.8 · **Hari ini uji:** 10 Oktober 2026
 - **Data S1:** `piutang-toko-bangunan.csv` (identik `00-openclaw-sebelum-sesudah.md`).
 
 ## Skenario 1 — CSV toko bangunan

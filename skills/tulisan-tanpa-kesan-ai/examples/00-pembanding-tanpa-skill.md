@@ -1,4 +1,4 @@
-# Uji A/B — Tanpa Skill vs Dengan Skill (Wajib, Tahap 6 CLAUDE.md)
+# Uji A/B — Tanpa Skill vs Dengan Skill (Wajib, pedoman kurasi Komunitech tahap 6)
 
 Skenario normal pertama dipakai: **caption IG promo kopi penuh gaya AI** (skenario 3, lihat
 `03-normal-caption-ig-kopi-uji-akun-b.md` untuk versi lengkap "dengan skill").
@@ -58,4 +58,4 @@ Plus daftar "Yang diubah" per pola (6 pola disebut eksplisit dengan alasan), sko
 Hasil **dengan skill jelas lebih baik**: pola AI benar-benar dihilangkan (bukan sekadar dipindah ke
 kalimat lain), tidak ada klaim baru yang dikarang, dan proses bisa diverifikasi (skor + daftar
 perubahan). Skill ini memberi nilai tambah nyata dibanding agent umum tanpa panduan — sesuai syarat
-Tahap 6 CLAUDE.md poin 4 (nilai tambah harus jelas, bukan skor maks. 6 kalau tidak jelas lebih baik).
+pedoman kurasi Komunitech tahap 6 poin 4 (nilai tambah harus jelas, bukan skor maks. 6 kalau tidak jelas lebih baik).

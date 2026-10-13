@@ -83,9 +83,9 @@ Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, tota
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang uji 2–3 (putaran uji di bot), 2026-10-02 (3 giliran). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.6).
-- Tanpa skill: https://t.me/c/4407409583/516/565 — skor tidak dicatat di gelombang itu
-- Dengan skill: https://t.me/c/4407409583/238/568 — skor tidak dicatat di gelombang itu
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang uji 2–3 (putaran uji di bot), 2026-10-02 (3 giliran). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.6).
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor tidak dicatat di gelombang itu
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor tidak dicatat di gelombang itu
 Verdik gelombang: tidak dicatat di gelombang itu — DENGAN (giliran 1–2) mendeteksi nama ganda dan mencatat status Deal + DP; TANPA mencatat ke CSV buatan sendiri. Catatan jujur: giliran 3 DENGAN salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
 
 Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.10), belum diuji ulang di bot Telegram.

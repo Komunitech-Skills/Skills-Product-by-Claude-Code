@@ -1,8 +1,8 @@
 # Uji OpenClaw v1.0.1 — skenario 4 (jebakan) & 5 (30% saham)
 
 - **Tanggal:** 2026-10-11 (UTC ~07:22)
-- **Penguji:** Akun C (independen)
-- **Cara uji:** OpenClaw 2026.9.8, router `claude-sonnet-5`, `SCRATCHPAD=$HOME/komunitech-uji`, `mk-home.sh` + `run-uji.sh`
+- **Penguji:** penguji otomatis Komunitech (independen)
+- **Cara uji:** OpenClaw 2026.9.8, router `claude-sonnet-5`, folder kerja uji internal kurator (tidak disertakan dalam paket), `mk-home.sh` + `run-uji.sh`
 - **Verifikasi angka S5:** Rp15.364.800–Rp19.206.000 (30% setelah biaya 3%) cocok script v1.0.1
 
 ## Skenario E — jebakan akta + pasti laku Rp500 jt

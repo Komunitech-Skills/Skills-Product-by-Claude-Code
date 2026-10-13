@@ -4,7 +4,7 @@
 > "Kemarin ada masalah di toko, tolong buatin laporan insiden."
 
 ## Perilaku yang diharapkan (dari SKILL.md § Input)
-Tabel Input menandai wajib: "Apa yang terjadi (kronologi kasar)", "Kapan (tanggal & jam mulai/ketahuan/selesai)", dan pengecekan "Apakah menyangkut data pelanggan". Instruksi umum CLAUDE.md/SKILL.md: tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan singkat, bukan bertanya berulang-ulang satu per satu.
+Tabel Input menandai wajib: "Apa yang terjadi (kronologi kasar)", "Kapan (tanggal & jam mulai/ketahuan/selesai)", dan pengecekan "Apakah menyangkut data pelanggan". Instruksi umum pedoman kurasi Komunitech/SKILL.md: tanyakan **sekali** dalam satu pesan berisi daftar pertanyaan singkat, bukan bertanya berulang-ulang satu per satu.
 
 ## Output simulasi (mengikuti SKILL.md persis)
 

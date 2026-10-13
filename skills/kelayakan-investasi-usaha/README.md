@@ -67,8 +67,8 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 ## Bukti uji di bot Telegram
 
 Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech; tautan pesan hanya terbuka untuk anggota grup), 6 Okt 2026, pesan yang sama dikirim tanpa skill lalu dengan skill:
-- Tanpa skill: https://t.me/c/4407409583/908/950 — skor 6,5
-- Dengan skill: https://t.me/c/4407409583/909/952 — skor 9
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 9
 Hasilnya LULUS. Keduanya benar soal balik modal (±1 tahun 1 bulan), tetapi hanya dengan skill ada NPV, IRR, balik modal dengan nilai waktu uang, uji omzet turun 10%/20% dan biaya naik 10%, batas aman, asumsi patokan 12%, dan catatan bukan nasihat keuangan; semuanya cocok dengan hitungan ulang.
 
 Pesan serupa dikirim ulang di topik baru bot Telegram uji pada 12 Okt 2026: skor 6,5 → 9, LULUS, hasil sama dengan uji pertama (tautan pesan uji ulang ini tidak tercatat).
@@ -78,11 +78,11 @@ Pesan serupa dikirim ulang di topik baru bot Telegram uji pada 12 Okt 2026: skor
 Tidak menjamin. Hasil tergantung perkiraan omzet dan biaya yang Anda masukkan. Karena itu skill menampilkan skenario "kalau meleset" dan batas aman. Ini alat bantu, bukan nasihat keuangan.
 
 **Kenapa patokannya 12% per tahun?**
-Itu asumsi awal, bukan acuan pasar: bunga KUR (Kredit Usaha Rakyat) Mikro/Kecil sektor produksi 6% efektif per tahun (Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44; rujukan pasal ini belum dicek penguji independen, jadi konfirmasi ke bank penyalur) ditambah premi risiko usaha 6% yang kami pilih sebagai contoh. Anda bisa menggantinya dengan bunga pinjaman Anda sendiri atau hasil minimal yang Anda inginkan, dan skill akan menghitung ulang.
+Itu asumsi awal, bukan acuan pasar: bunga KUR (Kredit Usaha Rakyat) Mikro/Kecil sektor produksi 6% efektif per tahun (Peraturan Menteri Koordinator Bidang Perekonomian No. 1 Tahun 2026 tentang Pedoman Pelaksanaan KUR, Pasal 37 & 44, berlaku sejak 13 Januari 2026; teks pasalnya sudah dicek penguji independen pada 13 Oktober 2026, tetapi aturan bisa berubah, jadi konfirmasi ke bank penyalur) ditambah premi risiko usaha 6% yang kami pilih sebagai contoh. Anda bisa menggantinya dengan bunga pinjaman Anda sendiri atau hasil minimal yang Anda inginkan, dan skill akan menghitung ulang.
 
 **Bisa untuk menilai saham, kripto, atau reksa dana?**
 Tidak bisa. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, renovasi). Kalau Anda bertanya "pasti untung berapa kalau di kripto?", AI diarahkan menolak janji untung dengan sopan, menyarankan penasihat keuangan berizin OJK, lalu menawarkan hitungan rencana usaha Anda.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

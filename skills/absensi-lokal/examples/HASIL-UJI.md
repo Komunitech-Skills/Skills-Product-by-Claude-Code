@@ -1,7 +1,7 @@
 # HASIL UJI — absensi-lokal v1.0.0
 
 - **Tanggal:** 2026-09-23 (selesai 24/09 dini hari)
-- **Penguji:** agent penguji independen (simulasi, Claude Code) — bukan pembuat skill; hanya membaca folder `skills/absensi-lokal/`, `CLAUDE.md`, dan brief uji.
+- **Penguji:** agent penguji independen (simulasi, Claude Code) — bukan pembuat skill; hanya membaca folder `skills/absensi-lokal/`, `pedoman kurasi Komunitech`, dan brief uji.
 - **Lingkungan:** Linux, Python 3.11, semua database uji di `/tmp/uji-absensi-lokal/` (lewat `--db` / `KOMUNITECH_ABSENSI_DB`), tidak menyentuh `~/KomunitechData`.
 - **Regresi bawaan:** `tests/uji_regresi.py` → 29 tes OK.
 

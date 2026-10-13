@@ -20,7 +20,7 @@ bisa dipakai skill **Grist Usaha** (`grist-usaha`).
 Komunitech membaca **langsung kode sumber resmi** `grist-core` (v1.7.19) dan `grist-desktop`
 (v0.3.15) dari GitHub untuk memastikan alamat unduhan, port default (**8484**), format API
 (`Authorization: Bearer <kunci>`), dan format file `.grist` (SQLite) yang ditulis di bawah ini
-benar — lihat `research/sources/grist-2026-09-26.md` untuk rincian.
+benar.
 
 **Yang BELUM dicoba klik/jalankan langsung** oleh Komunitech: menyalakan container Docker
 `gristlabs/grist` sungguhan (lingkungan pembuatan panduan ini tidak mengizinkan menjalankan
@@ -294,6 +294,6 @@ Sumber resmi yang dirujuk panduan ini (diakses & diverifikasi langsung dari kode
 26 September 2026): github.com/gristlabs/grist-core (README.md, LICENSE.txt, NOTICE.txt,
 `app/server/lib/DocApi.ts`, `app/server/lib/DocStorage.ts`, `sandbox/grist/schema.py`),
 github.com/gristlabs/grist-desktop (README.md, halaman Releases), hub.docker.com/r/gristlabs/grist.
-Rincian metode verifikasi ada di `research/sources/grist-2026-09-26.md`.
+Rincian metode verifikasi adalah catatan riset internal kurator (tidak disertakan dalam paket).
 
 Komunitech tidak berafiliasi dengan Grist Labs Inc.; "Grist" adalah merek milik pemiliknya.

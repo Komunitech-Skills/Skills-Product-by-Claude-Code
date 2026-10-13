@@ -53,7 +53,7 @@ Salin folder `cari-prospek-web` ke folder skill platform Anda (OpenClaw, Codex, 
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12, dengan pencarian web aktif.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 15, 2026-10-12, dengan pencarian web aktif.
 - Skor: 7 tanpa skill, 8,5 dengan skill.
 Verdik gelombang: LULUS. Dengan skill setiap usaha ada tautan situs/Google Maps dan catatan nomor bisnis resmi; tanpa skill sudah ada 15 nama dari direktori publik tetapi tanpa prioritas dan tanpa sumber per baris.
 

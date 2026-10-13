@@ -13,4 +13,4 @@ menunjukkan format input/output yang sebenarnya. Data pesanan/pembeli di sini **
   kolom wajib tidak ditemukan, sesuai batasan di SKILL.md.
 
 Pengujian mutu independen (uji A/B tanpa-skill, uji banding pesaing, skor kualitas, uji platform asli)
-adalah tanggung jawab penguji terpisah sesuai `CLAUDE.md` Tahap 6 dan belum dilakukan pada draf ini.
+adalah tanggung jawab penguji terpisah sesuai `pedoman kurasi Komunitech` Tahap 6 dan belum dilakukan pada draf ini.

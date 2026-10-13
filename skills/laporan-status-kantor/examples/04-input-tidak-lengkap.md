@@ -33,7 +33,7 @@ saya sebutkan asumsinya di laporan.
 - Tidak langsung mengarang laporan kosong ("berjalan lancar seperti biasa") — sesuai
   larangan eksplisit di Batasan & Penanganan Error: "jangan mengisi dengan asumsi generik".
 - Memberi jalan pintas untuk pengguna terburu-buru ("cukup jawab poin 1 dan 3 saja... saya
-  pakai default") — konsisten dengan prinsip CLAUDE.md "instan tapi powerful": pengguna
+  pakai default") — konsisten dengan prinsip pedoman kurasi Komunitech "instan tapi powerful": pengguna
   awam yang malas mengetik tetap dilayani cepat tanpa dipaksa isi form panjang.
 - Pertanyaan wajib yang paling krusial (penerima, jenis, bahan mentah) diprioritaskan di
   urutan atas.

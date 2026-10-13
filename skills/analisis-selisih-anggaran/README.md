@@ -66,9 +66,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1097/1166 — skor 7,5
-- Dengan skill: https://t.me/c/4407409583/1098/1168 — skor 8
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 13, 2026-10-12.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8
 Verdik gelombang: BELUM — Tanpa skill sudah benar angkanya dan menolak memoles laporan investor; dengan skill ditambah tabel selisih per pos berpersen, penyesuaian volume, daftar tindakan, dan pesan siap kirim ke tim, tetapi selisihnya belum mencapai acuan 1,5.
 
 ## FAQ

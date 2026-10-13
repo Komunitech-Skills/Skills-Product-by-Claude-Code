@@ -12,8 +12,8 @@
 - **Bagian yang dipelajari:** `skills/cold-email/SKILL.md` dan seluruh isi `references/` di dalamnya (`frameworks.md`, `personalization.md`, `subject-lines.md`, `follow-up-sequences.md`, `benchmarks.md`) — prinsip "tulis seperti rekan sejawat, bukan vendor", struktur pesan (observasi → masalah → bukti → ajakan), level personalisasi, dan larangan taktik manipulatif ("just checking in", urgensi palsu, jargon).
 - **Bagian yang TIDAK dipakai:** `evals/evals.json` (skema evaluasi internal repo sumber, bukan konten produk) dan seluruh skill lain di repo tersebut (di luar cakupan `pesan-prospek-wa`).
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
-- `LICENSE` root repo sumber dibaca langsung via `git show HEAD:LICENSE`: MIT, Copyright (c) 2025 Corey Haines — mengizinkan modifikasi & penjualan turunan. Sesuai `research/sources/kurasi-terbukti-2026-09-24.md`, seluruh repo (termasuk `cold-email`) sudah **LULUS audit** popularitas (45.000★/7.800 fork lintas beberapa sumber independen), pembuat kredibel, dan keamanan.
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
+- `LICENSE` root repo sumber dibaca langsung via `git show HEAD:LICENSE`: MIT, Copyright (c) 2025 Corey Haines — mengizinkan modifikasi & penjualan turunan. Sesuai catatan riset internal kurator (tidak disertakan dalam paket), seluruh repo (termasuk `cold-email`) sudah **LULUS audit** popularitas (45.000★/7.800 fork lintas beberapa sumber independen), pembuat kredibel, dan keamanan.
 - Seluruh isi `skills/cold-email/` (SKILL.md + 5 file `references/` + `evals/evals.json`) dibaca penuh oleh sesi ini. Tidak ada script (`scripts/`) di skill sumber ini — murni instruksi Markdown + data.
 - Diperiksa manual untuk: perintah destruktif, pengiriman data ke server luar, permintaan kredensial/SSH key/data browser, `curl`/`wget` yang dieksekusi otomatis, kode ter-obfuscate, dan instruksi tersembunyi yang menyuruh agent mengabaikan pengguna/menonaktifkan konfirmasi/mengirim file — **nihil ditemukan**. Tidak ada API key, token, atau data pribadi tertanam.
 - Kesimpulan: **lolos audit**, aman diadaptasi.

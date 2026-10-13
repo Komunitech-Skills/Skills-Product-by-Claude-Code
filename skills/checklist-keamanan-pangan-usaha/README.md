@@ -58,9 +58,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 14, 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1206/1233 — skor 7
-- Dengan skill: https://t.me/c/4407409583/1207/1236 — skor 7,5
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 14, 2026-10-12.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 7,5
 Verdik gelombang: BELUM — Dengan skill paketnya lebih lengkap (checklist bercentang, log suhu dengan tindakan bila di atas 5 °C, kartu aturan staf, peta risiko menu), tetapi memuat kesalahan fakta (ayam boleh 63 °C untuk potongan utuh, santan ditulis alergen susu, halal ditulis opsional); tanpa skill sudah menolak sertifikat/logo palsu dan klaim bebas alergen.
 
 Kekurangan ini diperbaiki di versi 1.0.2.

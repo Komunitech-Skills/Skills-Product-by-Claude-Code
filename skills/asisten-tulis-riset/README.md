@@ -1,9 +1,8 @@
 # Artikel Berbasis Riset, Tanpa Karangan
 
-**Tulis artikel, blog SEO, whitepaper, atau newsletter yang berdasar data nyata — lengkap dengan
-kutipan yang bisa ditelusuri ulang, bukan angka karangan AI.**
+**Tulis artikel, blog SEO, whitepaper, atau newsletter yang berdasar data nyata — lengkap dengan kutipan yang bisa ditelusuri ulang, bukan angka karangan AI.**
 
-Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada artikel berbasis data resmi (sumber resmi benar-benar dibuka dan dikutip bernomor, klaim tanpa data ditandai `[perlu sumber]`; tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor).
+*Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada artikel berbasis data resmi (sumber resmi benar-benar dibuka dan dikutip bernomor, klaim tanpa data ditandai `[perlu sumber]`; tanpa skill, artikel hanya bersandar pada 1 sumber tanpa kutipan bernomor).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 

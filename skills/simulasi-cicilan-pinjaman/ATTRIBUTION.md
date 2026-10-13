@@ -6,7 +6,7 @@
 ## Sumber
 - **Repo:** [numpy/numpy-financial](https://github.com/numpy/numpy-financial) — pembuat: NumPy Developers (organisasi NumPy).
 - **Lisensi:** BSD-3-Clause, "Copyright (c) 2005-2019, NumPy Developers." Teks lengkap disalin tanpa perubahan di `LICENSE-BSD`.
-- **Commit acuan:** `90e1ed1b090363de1c2ad7a42771b18b738f20bb` (HEAD `main`, 2026-10-05; audit di `research/sources/numpy-financial-2026-10-05.md` repo Komunitech).
+- **Commit acuan:** `90e1ed1b090363de1c2ad7a42771b18b738f20bb` (HEAD `main`, 2026-10-05; audit di catatan riset internal kurator (tidak disertakan dalam paket) repo Komunitech).
 
 ## Bagian yang diturunkan (tunduk pada BSD-3-Clause, lihat `LICENSE-BSD`)
 1. Persamaan PMT akhir periode termasuk kasus bunga 0, dengan konvensi tanda numpy-financial (fungsi `pmt` di `scripts/cicilan.py`).

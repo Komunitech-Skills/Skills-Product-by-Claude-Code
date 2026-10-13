@@ -31,7 +31,7 @@ Margin per unit      : Rp13  (Rp25 - Rp12)   # seharusnya Rp13.000
 ```
 Untuk angka 3-digit-desimal-persis ("25.000", "150.000", dst — pola paling umum untuk harga UMKM di bawah Rp1 juta), hasilnya **diam-diam salah 1000x lipat**, bukan error. Untuk angka dengan >1 titik ("1.234.567") skrip memang menolak dengan pesan error yang jelas — jadi perilakunya **tidak konsisten**: kadang gagal jelas, kadang salah senyap. Ini berisiko tinggi karena target skill adalah "orang awam teknologi" yang wajar mengetik harga dengan format lokal ini, dan SKILL.md sendiri menampilkannya begitu di semua contoh perintah CLI.
 
-**Dampak:** kalau agent (atau pengguna yang menjalankan skrip manual) memasukkan harga dengan titik ribuan, perhitungan margin/balik modal jadi salah tanpa peringatan apa pun — bertentangan dengan prinsip CLAUDE.md "Reliable: angka dihitung (bukan dikira)".
+**Dampak:** kalau agent (atau pengguna yang menjalankan skrip manual) memasukkan harga dengan titik ribuan, perhitungan margin/balik modal jadi salah tanpa peringatan apa pun — bertentangan dengan prinsip pedoman kurasi Komunitech "Reliable: angka dihitung (bukan dikira)".
 
 **Saran perbaikan (untuk pembuat, bukan dikerjakan penguji):** normalisasi input harga/hpp/biaya-uji dengan menghapus titik ribuan sebelum `Decimal()` (mis. deteksi pola `\d{1,3}(\.\d{3})+$` → hapus titik; atau lebih aman, minta strip eksplisit lalu re-parse; jangan izinkan koma desimal & titik ribuan bercampur tanpa aturan jelas), lalu tambahkan kasus uji baru untuk ini.
 
@@ -56,8 +56,8 @@ Semua kasus lain (batas 15%/8% tepat, nol, negatif, ditawari 0, preorder>ditawar
 
 **Alasan:**
 - Konten prosedural, template, dan proses hipotesis→kriteria→uji→keputusan kuat, konsisten, dan berbeda telak dari sumber (lolos uji A/B jelas lebih baik dari tanpa-skill, dan tidak kalah dari pesaing — jadi tidak terkena batas skor maks. 6 di kedua uji wajib).
-- **Ditahan dari skor lebih tinggi** oleh: (a) bug parsing format Rupiah bertitik ribuan yang **diam-diam salah** — bertentangan langsung dengan prinsip "Reliable" CLAUDE.md dan berisiko tinggi karena polanya sangat umum dipakai target pengguna; (b) template pre-order tidak menyebut opsi batal/refund secara eksplisit di mana pun.
-- Kedua temuan **dapat diperbaiki cepat** (perbaikan skrip + tambah satu baris di template) tanpa merombak skill — sesuai CLAUDE.md Tahap 6 poin 7 ("Di bawah 7 → revisi, jangan rilis"), skor 7,5 berada **di atas** ambang revisi wajib, namun kedua temuan tetap direkomendasikan diperbaiki sebelum naik ke status `uji`/`lulus` karena menyentuh keandalan angka dan kejujuran penawaran — dua hal inti yang dituntut CLAUDE.md.
+- **Ditahan dari skor lebih tinggi** oleh: (a) bug parsing format Rupiah bertitik ribuan yang **diam-diam salah** — bertentangan langsung dengan prinsip "Reliable" pedoman kurasi Komunitech dan berisiko tinggi karena polanya sangat umum dipakai target pengguna; (b) template pre-order tidak menyebut opsi batal/refund secara eksplisit di mana pun.
+- Kedua temuan **dapat diperbaiki cepat** (perbaikan skrip + tambah satu baris di template) tanpa merombak skill — sesuai pedoman kurasi Komunitech tahap 6 poin 7 ("Di bawah 7 → revisi, jangan rilis"), skor 7,5 berada **di atas** ambang revisi wajib, namun kedua temuan tetap direkomendasikan diperbaiki sebelum naik ke status `uji`/`lulus` karena menyentuh keandalan angka dan kejujuran penawaran — dua hal inti yang dituntut pedoman kurasi Komunitech.
 
 ## 7. Rekomendasi ke pembuat/pemilik
 1. **Wajib sebelum lulus:** perbaiki parsing harga/hpp/biaya-uji di `hitung_validasi.py` agar format Rupiah bertitik ribuan (`25.000`, `150.000`, dst.) ditangani benar, konsisten (bukan kadang error kadang salah senyap); tambah kasus uji untuk format ini.
@@ -66,7 +66,7 @@ Semua kasus lain (batas 15%/8% tepat, nol, negatif, ditawari 0, preorder>ditawar
 4. **Disarankan (kecil):** perbaiki panjang commit hash di `ATTRIBUTION.md` (41→40 karakter, sesuai format SHA-1 git).
 5. **Disarankan (kejelasan proses, bukan bug):** tambah satu kalimat di SKILL.md Langkah 3 yang menegaskan agen harus menyampaikan **kedua** hasil (ambang default vs ambang harga-tinggi/impulsif) ke pengguna saat hasil berada di zona yang bisa berubah klasifikasi, bukan hanya melaporkan satu ambang.
 
-Setelah item 1–2 diperbaiki dan diuji ulang oleh penguji independen (sesuai CLAUDE.md Tahap 6 poin 7), skill ini layak lanjut ke uji platform asli.
+Setelah item 1–2 diperbaiki dan diuji ulang oleh penguji independen (sesuai pedoman kurasi Komunitech tahap 6 poin 7), skill ini layak lanjut ke uji platform asli.
 
 ---
 
@@ -78,7 +78,7 @@ Detail lengkap: [`08-uji-ulang-v101-akun-b.md`](08-uji-ulang-v101-akun-b.md).
 **Cakupan:** (a) `parse_uang()` diuji 31 variasi format Rupiah (angka polos, titik ribuan, `Rp`/`IDR`, singkatan `rb`/`ribu`/`jt`/`juta`, desimal+singkatan, gaya Inggris, campur titik-koma, negatif, kosong, teks) — ekspektasi dihitung independen dengan `Decimal`; (b) regresi konversi/margin/balik modal & batas 8%/15% (LULUS pada 15,0%, LULUS BERSYARAT pada 8,0%, GAGAL pada 7,0% — sesuai dokumentasi "≥"); (c) template `pesan-uji-murah.md`; (d) panjang hash commit di `ATTRIBUTION.md`; (e) skenario ujung-ke-ujung es kopi literan harga "35.000".
 
 **Hasil temuan v1.0.0:**
-1. **Parsing "25.000" → sekarang benar 25000** (bukan 25). Diverifikasi di 31 kasus, termasuk nilai ambigu (`12,5`, `25,000` gaya Inggris, `25.5`, `1.234,56`, `1.00`) yang semuanya **ditolak eksplisit** dengan pesan error yang menyebut format benar — sesuai prinsip "Reliable" CLAUDE.md (tidak pernah menebak). **Diperbaiki, terkonfirmasi.**
+1. **Parsing "25.000" → sekarang benar 25000** (bukan 25). Diverifikasi di 31 kasus, termasuk nilai ambigu (`12,5`, `25,000` gaya Inggris, `25.5`, `1.234,56`, `1.00`) yang semuanya **ditolak eksplisit** dengan pesan error yang menyebut format benar — sesuai prinsip "Reliable" pedoman kurasi Komunitech (tidak pernah menebak). **Diperbaiki, terkonfirmasi.**
 2. **Template pre-order (#1 WA, #4 listing PO) kini mencantumkan opsi batal/refund yang jujur dan jelas** (dana kembali 100%, tenggat konkret, hak batal tanpa syarat sebelum produksi mulai). **Diperbaiki, terkonfirmasi.**
 3. **Hash commit di `ATTRIBUTION.md` sekarang 40 karakter** (dihitung dengan `len()`, bukan dihitung manual). **Diperbaiki, terkonfirmasi.**
 

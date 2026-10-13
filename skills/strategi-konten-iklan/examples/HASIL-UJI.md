@@ -1,6 +1,6 @@
 # Hasil Uji Independen - strategi-konten-iklan v1.0.0
 
-Penguji: agent independen (bukan pembuat), 2026-09-30. Hanya membaca folder skill + CLAUDE.md (+ SKILL.md tiga skill tetangga sekilas untuk cek tumpang tindih). Skill disalin ke scratchpad; tidak dipasang di `.claude/skills`. Platform: `claude-code (simulasi agent)`.
+Penguji: agent independen (bukan pembuat), 2026-09-30. Hanya membaca folder skill + pedoman kurasi Komunitech (+ SKILL.md tiga skill tetangga sekilas untuk cek tumpang tindih). Skill disalin ke scratchpad; tidak dipasang di `.claude/skills`. Platform: `claude-code (simulasi agent)`.
 
 ## Ringkasan
 | Uji | Hasil |

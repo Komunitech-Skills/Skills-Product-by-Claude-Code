@@ -14,11 +14,11 @@ Bagian yang dipelajari (struktur/alur saja):
 - marketingskills: `skills/product-marketing` (konteks pemasaran, pembeda, keberatan/anti-persona, Empat Gaya peralihan JTBD, bahasa pelanggan).
 - Tidak dipakai: skill lain di kedua repo; tautan kursus/templat luar milik pembuat sumber tidak disalin.
 
-## Audit keamanan (Tahap 3 CLAUDE.md)
+## Audit keamanan (pedoman kurasi Komunitech)
 - Seluruh `SKILL.md` yang diadaptasi dibaca penuh. Tidak ada folder `scripts/` pada skill sumber ini; tidak ada kode dari sumber yang dijalankan atau disalin.
 - Pencarian pola berbahaya (curl/wget/eval/exec/base64, kredensial, `.env`, token, instruksi "abaikan") pada skill terpilih: tidak ditemukan. Tidak ada prompt injection tersembunyi, permintaan mengirim file, atau menonaktifkan konfirmasi. Skill sumber hanya berisi instruksi prompt dan tautan bacaan.
 - Tidak ada API key/token/data pribadi tertanam.
-- Kesimpulan: **lolos audit**. Sinyal kualitas sumber: bintang tinggi, dirawat aktif (commit terakhir September 2026), ada kontributor luar; pembuat individu (dicatat di `research/sources/`).
+- Kesimpulan: **lolos audit**. Sinyal kualitas sumber: bintang tinggi, dirawat aktif (commit terakhir September 2026), ada kontributor luar; pembuat individu (dicatat di catatan riset internal kurator (tidak disertakan dalam paket)).
 
 ## Apa yang diubah/ditambahkan (file telah diubah dari sumber)
 Sumber berbahasa Inggris, generik-global (SaaS/produk digital). Perubahan besar:

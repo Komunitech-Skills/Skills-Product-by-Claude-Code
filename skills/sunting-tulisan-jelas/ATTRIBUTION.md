@@ -10,7 +10,7 @@
 - **Tidak ada dukungan dari Google.** Google tidak berafiliasi dengan, tidak mengesahkan, dan tidak mendukung skill ini. "Google" hanya disebut sebagai asal prinsip.
 - Hasil adaptasi ada di `references/prinsip-sunting.md` dan ringkasannya di `SKILL.md`; bagian itu dapat dipakai ulang dengan atribusi ini.
 
-## Audit keamanan (Tahap 3 CLAUDE.md), 2026-10-05
+## Audit keamanan (pedoman kurasi Komunitech), 2026-10-05
 - Hanya halaman kursus (teks) yang dibaca lewat pengambil halaman. **Tidak ada repositori yang di-clone dan tidak ada kode sumber dari sumber yang dijalankan.**
 - Diperiksa pada halaman yang dibaca: instruksi tersembunyi untuk agent, perintah unduh-dan-jalankan, pengiriman data ke luar, kredensial tertanam. **Nihil**; isinya hanya materi ajar.
 - `scripts/ukur_keterbacaan.py` (karya Komunitech) memakai pustaka standar saja (`argparse`, `re`, `json`, `collections`, `pathlib`); tidak ada akses jaringan, tidak ada `eval`/`exec`/`subprocess` (kecuali `tests/uji_ukur.py` yang menjalankan script itu sendiri), tidak menulis berkas, hanya membaca berkas teks yang diberikan pengguna dan `references/kata-pengisi-jargon.txt`.

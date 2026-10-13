@@ -8,7 +8,7 @@ merupakan skill PDF paling kredibel yang tersedia secara publik untuk tugas ini
 
 **Lisensi:** frontmatter skill ini menyatakan `license: Proprietary. LICENSE.txt has
 complete terms`. Isinya **hanya dibaca untuk dinilai berdampingan**, tidak disalin satu
-baris pun ke `pdf-lokal` — sesuai aturan Tahap 3/CLAUDE.md ("Tanpa lisensi/proprietary
+baris pun ke `pdf-lokal` — sesuai aturan Tahap 3/pedoman kurasi Komunitech ("Tanpa lisensi/proprietary
 → DILARANG disalin, hanya inspirasi lalu tulis ulang dari nol"). `pdf-lokal` memang
 sudah ditulis dari nol dengan pendekatan arsitektur yang sama sekali berbeda (REST API
 ke Stirling-PDF lokal, bukan library Python langsung), jadi tidak ada risiko duplikasi.
@@ -48,7 +48,7 @@ Indonesia awam yang tidak paham `pip install`), `pdf-lokal` **unggul jelas**: pe
 publik yang paling kredibel bahkan tidak mendokumentasikan foto→PDF maupun kompres
 bertarget di isi yang terbaca, dan mengasumsikan pengguna (via agent) bisa/boleh
 `pip install` beberapa paket plus Tesseract sistem — sesuatu yang tidak realistis untuk
-"tanpa setup" versi CLAUDE.md.
+"tanpa setup" versi pedoman kurasi Komunitech.
 
 Namun perlu dicatat jujur **kelemahan arsitektural** `pdf-lokal` dibanding pendekatan
 pesaing: pendekatan "panggil library Python langsung" milik pesaing **tidak punya

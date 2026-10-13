@@ -1,6 +1,6 @@
 # Skenario 03 (Normal) — Halaman produk Shopify fashion muslim, noindex tak sengaja & dua H1
 
-> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code, hanya membaca folder skill yang disalin ke scratchpad terpisah), sesuai Tahap 6 CLAUDE.md. Data & HTML fiktif.
+> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code, hanya membaca folder skill yang disalin ke scratchpad terpisah), sesuai pedoman kurasi Komunitech tahap 6. Data & HTML fiktif.
 
 ## Permintaan pengguna
 > "Cek dong halaman produk gamis saya, kok sepi banget dari Google padahal udah lama online. Ini linknya https://busanamuslimah.myshopify.com/products/gamis-syari-adelia — saya tempel HTML-nya juga. Harga gamis ini Rp275.000, kata kunci yang saya incar 'gamis syari'."
@@ -146,6 +146,6 @@ Tidak ada — semua data (harga, URL, kata kunci) berasal dari pengguna.
 ---
 ## Catatan verifikasi penguji (bukan bagian laporan ke pengguna)
 - Temuan `noindex` dan 2×H1 diambil langsung dari output nyata skrip dan diverifikasi ulang manual dengan regex terpisah — cocok 100%.
-- Panjang title (48) & meta description (142) diverifikasi ulang dengan `len()` Python independen — skill dengan benar TIDAK mengubah teks yang sudah bagus (tidak asal "memperbaiki" sesuatu yang tidak perlu diperbaiki), ini konsisten dengan prinsip "reliable" di CLAUDE.md.
+- Panjang title (48) & meta description (142) diverifikasi ulang dengan `len()` Python independen — skill dengan benar TIDAK mengubah teks yang sudah bagus (tidak asal "memperbaiki" sesuatu yang tidak perlu diperbaiki), ini konsisten dengan prinsip "reliable" di pedoman kurasi Komunitech.
 - Harga (Rp275.000) yang dipakai di contoh JSON-LD berasal dari pernyataan eksplisit pengguna di permintaan, BUKAN dikarang oleh skill — sesuai Langkah 8 SKILL.md.
 - **Lulus** untuk skenario ini. Ini skenario paling penting untuk menguji apakah skill bisa menemukan masalah "tersembunyi" (noindex) yang sering jadi penyebab utama tapi gampang terlewat kalau hanya dicek manual sekilas oleh pemilik usaha awam — skill lulus dengan baik.

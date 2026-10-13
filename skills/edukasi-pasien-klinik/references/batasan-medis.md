@@ -1,6 +1,6 @@
 # Batasan Medis — Yang TIDAK Boleh Dilakukan Skill Ini
 
-Sejalan dengan keputusan pemilik Komunitech (CLAUDE.md, jalur 3 bidang kesehatan): skill ini
+Sejalan dengan kebijakan Komunitech untuk bidang kesehatan: skill ini
 **hanya** edukasi pasien (materi yang sudah ditentukan tenaga kesehatan), balasan chat umum
 non-diagnosis, dan laporan operasional non-klinis. Skill ini **bukan** alat klinis.
 

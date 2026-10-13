@@ -65,11 +65,11 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup), dua gelombang uji (putaran uji di bot). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.2).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), dua gelombang uji (putaran uji di bot). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.2).
 
 **Gelombang 11, 2026-10-06**
-- Tanpa skill: https://t.me/c/4407409583/904/942 — skor tidak tersedia (pembanding tanpa skill hilang)
-- Dengan skill: https://t.me/c/4407409583/905/944 — skor 8,5
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor tidak tersedia (pembanding tanpa skill hilang)
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
 Verdik gelombang: BELUM DAPAT DINILAI — Dengan skill: 3 P1/4 P2/1 bukan keluhan, baris "Batas waktu" platform sesuai referensi terverifikasi, nomor HP disamarkan, kompensasi ditandai [KEPUTUSAN PEMILIK]; pembanding tanpa skill hilang.
 
 **Gelombang 11b (kirim ulang, topik berbeda), 2026-10-10 — verdik terakhir**

@@ -85,7 +85,7 @@ sebelum status ini):
    perilaku nyata ini, bukan diklaim lebih fleksibel dari implementasinya.
 
 ## 3. Skor kualitas (usulan pembuat, bukan keputusan akhir)
-**Belum diberi skor** — Tahap 6 CLAUDE.md mensyaratkan uji A/B tanpa-skill vs dengan-skill dan uji
+**Belum diberi skor** — pedoman kurasi Komunitech tahap 6 mensyaratkan uji A/B tanpa-skill vs dengan-skill dan uji
 banding pesaing oleh **penguji independen**, keduanya di luar cakupan tugas ini. Skor kualitas
 dikosongkan di `catalog.csv` (`status=draft`) sampai penguji independen menyelesaikan itu.
 

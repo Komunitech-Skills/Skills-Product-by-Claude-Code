@@ -1,9 +1,9 @@
 # Hasil uji OpenClaw ulang: cek-risiko-dan-asuransi-usaha (v1.0.2)
 
 - **Tanggal:** 2026-10-10
-- **Penguji:** agent penguji independen Akun C (Cursor Cloud), bukan pembuat
+- **Penguji:** agent penguji otomatis Komunitech (independen), bukan pembuat
 - **Platform:** OpenClaw 2026.9.8 lokal (`run-uji.sh` / `run-uji-tg.sh`, tanpa `unshare`), model router `claude-sonnet-5`; skenario 1 SESUDAH juga konteks Telegram
-- **Fokus uji ulang (C5):** R1 label BPJS otomatis, R2 kategori tanggung gugat/mesin/titipan, R5 Kontak OJK 157 + LAPS SJK, R8 urutan dana darurat + script
+- **Fokus uji ulang:** R1 label BPJS otomatis, R2 kategori tanggung gugat/mesin/titipan, R5 Kontak OJK 157 + LAPS SJK, R8 urutan dana darurat + script
 - **Rincian utuh:** `00-openclaw-v1.0.2-sebelum-sesudah.md`; teks mentah di `data/cr102/`
 
 ## Skor per skenario

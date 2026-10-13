@@ -31,7 +31,7 @@ Belum disimpan. Ulangi perintah yang sama + --ya untuk menyimpan ke Vikunja.
 ```
 Benar: "Toko" cocok tepat satu proyek nyata ("Toko Bangunan Sinar Jaya") dari 4 proyek yang ada
 (termasuk "Inbox" bawaan), jadi diterima tanpa perlu tanya ulang — sesuai prinsip "instan, tapi
-reliable" di CLAUDE.md.
+reliable" di pedoman kurasi Komunitech.
 
 ## 4d. Nama proyek ambigu (cocok ke DUA proyek) — diuji ulang setelah menambah proyek kedua "Toko Elektronik Jaya"
 ```

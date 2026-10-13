@@ -1,6 +1,6 @@
 # HASIL UJI — spt-tahunan-op v1.0.0
 
-Penguji independen (bukan pembuat), 2026-09-30. Hanya membaca folder skill + CLAUDE.md. Uji di scratchpad (salinan), bukan di `.claude/skills/`. Agent uji: Claude Sonnet headless (`claude -p`) — **simulasi agent**, bukan uji platform asli.
+Penguji independen (bukan pembuat), 2026-09-30. Hanya membaca folder skill + pedoman kurasi Komunitech. Uji di scratchpad (salinan), bukan di `.claude/skills/`. Agent uji: Claude Sonnet headless (`claude -p`) — **simulasi agent**, bukan uji platform asli.
 
 ## 1. Verifikasi aturan (independen, web)
 

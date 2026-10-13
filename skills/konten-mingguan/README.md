@@ -73,9 +73,9 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 6, 2026-10-05.
-- Tanpa skill: https://t.me/c/4407409583/680/706 — skor 5,5
-- Dengan skill: https://t.me/c/4407409583/681/708 — skor 6
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 6, 2026-10-05.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5,5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 6
 Verdik gelombang: BELUM — DENGAN benar menolak testimoni, before-after (walau ada izin), **dan** diskon tindakan medis, tetapi **tidak menyerahkan satu post pun** (hanya bertanya "boleh saya lanjutkan?"); TANPA memberi rencana 5 post tetapi tetap mempromosikan diskon 20% dan menawarkan testimoni asli "dengan izin pasien".
 
 Kekurangan ini diperbaiki di versi 1.0.8 (lihat `CHANGELOG.md`); pada uji ulang OpenClaw v1.0.10 (lihat Hasil uji di atas), 3 dari 3 percobaan langsung memberi paket konten pengganti di chat.

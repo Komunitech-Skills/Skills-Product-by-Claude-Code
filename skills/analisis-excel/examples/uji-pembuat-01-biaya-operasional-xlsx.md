@@ -1,7 +1,7 @@
 # Contoh 01 — Biaya operasional kantor (XLSX berantakan): kategori terbesar & Agustus vs September
 
 > Dijalankan sendiri oleh pembuat skill saat pengembangan (bukan uji independen Tahap 6
-> `CLAUDE.md` — itu perlu agent/sesi terpisah yang belum dilakukan). Disertakan agar pembeli/
+> `pedoman kurasi Komunitech` — itu perlu agent/sesi terpisah yang belum dilakukan). Disertakan agar pembeli/
 > reviewer bisa melihat contoh nyata input → output. Angka diverifikasi manual di bagian akhir.
 
 ## Skenario

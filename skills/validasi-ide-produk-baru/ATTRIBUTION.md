@@ -12,11 +12,11 @@
 - **NOTICE:** repo sumber **tidak menyertakan file `NOTICE`** (dicek langsung — tidak ada `NOTICE`/`NOTICE.txt` di root maupun folder skill) — sesuai Apache-2.0 §4(d), tidak ada NOTICE untuk disertakan.
 - **File telah diubah:** ya — seluruh teks dalam paket ini (`SKILL.md`, `references/`, `templates/`, `scripts/`, `examples/`, `README.md`) ditulis ulang dari nol dalam Bahasa Indonesia untuk konteks UMKM; tidak ada teks sumber yang disalin verbatim.
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - File `LICENSE` di root repo sumber dicek langsung: Apache License 2.0 — mengizinkan modifikasi & penjualan turunan dengan syarat menyertakan teks lisensi, atribusi, NOTICE (jika ada), dan keterangan file diubah. Semua syarat dipenuhi di file ini.
 - Skill-skill terkait (`define-hypothesis`, `tool-foundation-sprint-*`, `tool-design-sprint-test-and-score`, `measure-experiment-design`, `discover-market-sizing`) dibaca penuh dan di-`grep` untuk pola mencurigakan di seluruh repo (`skills/`, `scripts/`): perintah destruktif (`rm -rf` dsb.), unduh-lalu-eksekusi skrip dari internet, pengiriman data ke server luar, permintaan kredensial/SSH key/data browser, kode ter-obfuscate, dan prompt injection tersembunyi ("ignore the user/previous instructions", instruksi menonaktifkan konfirmasi).
 - Tidak ditemukan pola berbahaya pada skill yang diadaptasi — isinya murni instruksi prosedural (kerangka hipotesis, kriteria sukses, metode validasi) tanpa script executable dan tanpa data pribadi/kredensial tertanam.
-- Repo memiliki banyak file `scripts/*.mjs`/`*.ps1` untuk tooling internal CI proyek sumber (pengecekan lintas-skill, generator situs) — **tidak diadaptasi/disalin sama sekali**, di luar cakupan kebutuhan skill ini (di luar prinsip "tanpa setup" CLAUDE.md).
+- Repo memiliki banyak file `scripts/*.mjs`/`*.ps1` untuk tooling internal CI proyek sumber (pengecekan lintas-skill, generator situs) — **tidak diadaptasi/disalin sama sekali**, di luar cakupan kebutuhan skill ini (di luar prinsip "tanpa setup" pedoman kurasi Komunitech).
 - **Kesimpulan: lolos audit.**
 
 ## Apa yang diubah/ditambahkan (nilai tambah ATM)

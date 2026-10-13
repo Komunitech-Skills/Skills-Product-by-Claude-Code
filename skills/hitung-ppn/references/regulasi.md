@@ -14,7 +14,7 @@
 
 ## Pembulatan (keputusan desain skill)
 - PPN dihitung langsung 11% × DPP (non-mewah) atau 12% × DPP (mewah) agar tidak ada pembulatan berantai; secara matematis identik dengan 12% × 11/12 × DPP.
-- PPN dihitung dari DPP persis lalu dibulatkan **ke bawah sekali** ke rupiah penuh (standar library di CLAUDE.md Tahap 4; tidak ada opsi pembulatan lain). **Belum dicocokkan** dengan perilaku Coretax — bila angka Coretax berbeda, ikuti Coretax.
+- PPN dihitung dari DPP persis lalu dibulatkan **ke bawah sekali** ke rupiah penuh (standar pembulatan seluruh library Komunitech; tidak ada opsi pembulatan lain). **Belum dicocokkan** dengan perilaku Coretax — bila angka Coretax berbeda, ikuti Coretax.
 - Mode harga termasuk PPN: DPP dipilih = rupiah penuh terbesar sehingga DPP + PPN ≤ harga termasuk PPN.
 
 ## Sumber

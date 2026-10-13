@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.7 (2026-10-13)
+- `references/openclaw-jadwal.md`: dua rujukan ke dokumen yang tidak ikut paket pembeli (panduan uji platform dan aturan kerja internal) diganti kalimat yang berdiri sendiri: karena jadwal bulanan ini belum diuji di Gateway sungguhan, coba sekali dengan `openclaw automations run <id>` dan pastikan ringkasan tiba di Telegram sebelum diandalkan; risiko WhatsApp ditulis langsung (WhatsApp Web tidak resmi, nomor bisa diblokir). Script dan cara kerja skill tidak berubah.
+
 ## Catatan revisi 1.0.6 (2026-10-01)
 - Petunjuk lokasi script ditambahkan di SKILL.md: script ada di subfolder `scripts/` di folder skill. Agent dilarang mencari script atau file pengguna ke seluruh disk (mis. `find /`).
 

@@ -1,6 +1,6 @@
 # Skenario 02 (Normal) — Beranda jasa servis AC Bekasi, JSON-LD LocalBusiness salah format & NAP tidak konsisten
 
-> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code, hanya membaca folder skill yang disalin ke scratchpad terpisah), sesuai Tahap 6 CLAUDE.md. Data & HTML fiktif.
+> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code, hanya membaca folder skill yang disalin ke scratchpad terpisah), sesuai pedoman kurasi Komunitech tahap 6. Data & HTML fiktif.
 
 ## Permintaan pengguna
 > "Tolong audit SEO website servis AC saya, ini HTML halaman utamanya saya tempel. Google Bisnisku saya: CV Sejuk Selalu Teknik, alamat Jl. Raya Bekasi Timur No. 45, Bekasi Timur, Kota Bekasi, Jawa Barat 17111, telepon 0812-9988-7766. Kata kunci yang saya incar: 'servis AC Bekasi'."

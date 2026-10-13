@@ -1,5 +1,5 @@
 # HASIL UJI - listmonk-newsletter 1.0.0 (penguji independen, 29 Sep 2026)
-Lingkungan: listmonk v6.2.0 ASLI (Docker, postgres:17, port lokal, SMTP penampung), pengguna API berperan sesuai panduan §7. Penguji hanya membaca folder skill, panduan, CLAUDE.md. `validate.py --skill listmonk-newsletter` lolos. Berkas 06-10 dan 00-* adalah hasil penguji.
+Lingkungan: listmonk v6.2.0 ASLI (Docker, postgres:17, port lokal, SMTP penampung), pengguna API berperan sesuai panduan §7. Penguji hanya membaca folder skill, panduan, pedoman kurasi Komunitech. `validate.py --skill listmonk-newsletter` lolos. Berkas 06-10 dan 00-* adalah hasil penguji.
 
 ## Audit
 - Format: frontmatter hanya name+description (791 karakter), SKILL.md 112 baris, README lengkap (jualan, FAQ 3), ATTRIBUTION ada. Catatan: catalog.csv menulis jalur `kurasi`, padahal karya orisinal.

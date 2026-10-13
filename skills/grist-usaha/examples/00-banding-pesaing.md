@@ -8,13 +8,13 @@ template UMKM CRM stok Indonesia gratis". Sumber: web search 2026-09-26 (lihat d
 SKILL.md) yang membungkus REST API Grist jadi 11 tools untuk agent. Dinilai **hanya lewat
 deskripsi publik** (dibaca untuk dinilai, tidak disalin):
 - Perlu instalasi npm + konfigurasi MCP server manual + `GRIST_API_KEY` di config file —
-  **bukan** "tanpa setup" seperti prinsip CLAUDE.md; tidak cocok untuk pembeli awam yang
+  **bukan** "tanpa setup" seperti prinsip pedoman kurasi Komunitech; tidak cocok untuk pembeli awam yang
   ditargetkan skill ini.
 - Berbahasa Inggris, tidak berkonteks Indonesia (tidak ada pola tabel UMKM, tidak ada
   pembersihan angka Rupiah, tidak ada rumus WA/stok siap pakai).
 - Tidak ditemukan kemampuan membaca file `.grist` langsung secara read-only tanpa Grist
   menyala — semua lewat REST API (berarti wajib Grist/Docker sedang berjalan).
-- Bintang GitHub rendah (~3) — **tidak lolos ambang bukti pemakaian nyata** CLAUDE.md Tahap 2
+- Bintang GitHub rendah (~3) — **tidak lolos ambang bukti pemakaian nyata** pedoman kurasi Komunitech tahap 2
   (< 100 untuk repo satu skill), jadi tidak memenuhi syarat untuk kurasi/ATM, hanya relevan
   sebagai pembanding kualitas fungsi.
 

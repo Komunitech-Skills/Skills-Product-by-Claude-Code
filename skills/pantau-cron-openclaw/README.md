@@ -60,10 +60,7 @@ Folder `pantau-cron-openclaw` disalin ke lokasi skill platform Anda -- lokasi le
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12.
-- Tanpa skill: https://t.me/c/4407409583/1250/1265 — skor 4
-- Dengan skill: https://t.me/c/4407409583/1251/1268 — skor 8
-Verdik gelombang: LULUS — Tanpa skill bot menjawab setelah 14 menit dengan klaim "sudah terpasang dan aktif" yang tidak diverifikasi dan tanpa pengawas bagi jadwal yang hilang; dengan skill ada daftar 3 jadwal, langkah lapor selesai, dua pengawas siap salin, dan konfirmasi "Lanjut? (ya/tidak)" sebelum apa pun dipasang.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 12 Okt 2026): tanpa skill skor **4** → dengan skill skor **8** (LULUS). Tanpa skill bot menjawab setelah 14 menit dengan klaim "sudah terpasang dan aktif" yang tidak diverifikasi dan tanpa pengawas bagi jadwal yang hilang; dengan skill ada daftar 3 jadwal, langkah lapor selesai, dua pengawas siap salin, dan konfirmasi "Lanjut? (ya/tidak)" sebelum apa pun dipasang.
 
 ## FAQ
 **1. Apakah ini memata-matai komputer saya atau karyawan?**

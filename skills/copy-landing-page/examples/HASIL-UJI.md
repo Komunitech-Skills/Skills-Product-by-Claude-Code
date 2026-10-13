@@ -10,7 +10,7 @@
 - **Platform teruji:** `claude-code (simulasi agent)`; `openclaw (uji muat otomatis)`. Perilaku agent sungguhan di OpenClaw/Codex/Cursor **tidak** diuji penguji ini (Tahap 6 butir 10).
 
 ## Audit lisensi MIT (Tahap 2)
-`LICENSE-MIT` diperiksa **byte-identik** (`diff`) dengan `LICENSE` di clone lokal `coreyhaines31/marketingskills` — sama persis, termasuk "Copyright (c) 2025 Corey Haines". `ATTRIBUTION.md` mencantumkan sumber, bagian yang diadaptasi (`copywriting`, `cro`, `offers`), bagian yang tidak dipakai, dan daftar nilai tambah — memenuhi ketentuan MIT (atribusi + teks lisensi disertakan) dan aturan Tahap 2 CLAUDE.md ("nilai tambah wajib"). Dibaca langsung `skills/copywriting/SKILL.md` di sumber (256 baris) untuk uji banding — tidak disalin. **Lulus kepatuhan lisensi.**
+`LICENSE-MIT` diperiksa **byte-identik** (`diff`) dengan `LICENSE` di clone lokal `coreyhaines31/marketingskills` — sama persis, termasuk "Copyright (c) 2025 Corey Haines". `ATTRIBUTION.md` mencantumkan sumber, bagian yang diadaptasi (`copywriting`, `cro`, `offers`), bagian yang tidak dipakai, dan daftar nilai tambah — memenuhi ketentuan MIT (atribusi + teks lisensi disertakan) dan aturan pedoman kurasi Komunitech tahap 2 ("nilai tambah wajib"). Dibaca langsung `skills/copywriting/SKILL.md` di sumber (256 baris) untuk uji banding — tidak disalin. **Lulus kepatuhan lisensi.**
 
 ## Verifikasi fakta hukum (independen, lewat pencarian & fetch web — bukan mengutip ulang klaim skill)
 | Klaim di `references/dasar-hukum-klaim.md` | Status | Sumber diverifikasi |
@@ -61,7 +61,7 @@ Alasan:
 - (+) Menangani dua kasus sulit dengan benar: testimoni "ada tapi belum berizin" (skenario 02) dan klaim campuran normal+berisiko dalam satu permintaan (skenario 03) — bukan sekadar tolak/terima biner.
 - (+) Script `bangun_tautan_wa.py` teruji (18 kasus + kasus tambahan data rusak penguji), encoding wa.me & panjang meta 100% cocok verifikasi independen. Lulus `validate.py` dan uji muat OpenClaw 2026.9.6 (58/58).
 - (+) Kepatuhan lisensi MIT bersih (LICENSE byte-identik, atribusi lengkap, nilai tambah signifikan didokumentasikan).
-- (−) **S1 & S2**: dua temuan akurasi hukum di `references/dasar-hukum-klaim.md` — satu kesalahan sitasi huruf pasal yang bisa diverifikasi salah, satu lagi kemungkinan salah kesan "belum berlaku" untuk peraturan yang tanggal efektifnya (kalau benar 27 Mei 2026) sudah lewat 4 bulan. Ini domain sensitif (Tahap 4 butir 5 CLAUDE.md: dasar aturan wajib akurat) sehingga diberi bobot lebih dari sekadar "rendah".
+- (−) **S1 & S2**: dua temuan akurasi hukum di `references/dasar-hukum-klaim.md` — satu kesalahan sitasi huruf pasal yang bisa diverifikasi salah, satu lagi kemungkinan salah kesan "belum berlaku" untuk peraturan yang tanggal efektifnya (kalau benar 27 Mei 2026) sudah lewat 4 bulan. Ini domain sensitif (Tahap 4 butir 5 pedoman kurasi Komunitech: dasar aturan wajib akurat) sehingga diberi bobot lebih dari sekadar "rendah".
 - (−) R1: celah instruksi kecil soal placeholder nomor WA.
 
 **Keputusan: LULUS (≥ 7)**, boleh naik ke status berikutnya *setelah* S1 diperbaiki (perbaikan sitasi huruf pasal — cepat & pasti) dan S2 dicek ulang pemilik ke sumber primer resmi (situs BPOM sempat menolak akses otomatis saat uji ini, perlu dicoba manual atau di waktu lain) sebelum dipakai sebagai dasar klaim ke pembeli. Disarankan uji ulang singkat oleh penguji independen khusus untuk memverifikasi S1/S2 setelah revisi, tidak perlu mengulang skenario 01–05 secara penuh.

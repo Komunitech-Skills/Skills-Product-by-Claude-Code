@@ -25,7 +25,7 @@ from pathlib import Path
 
 APLIKASI = "komunitech-arsip-nota"
 SKEMA = 1
-VERSI = "1.0.6"
+VERSI = "1.0.7"
 
 KATEGORI = OrderedDict([
     ("bahan-baku", ("Bahan baku", ["bahan", "baku", "sembako", "grosir", "supplier", "pemasok",
@@ -43,7 +43,7 @@ KATEGORI = OrderedDict([
 ])
 JENIS_DOKUMEN = {"nota", "struk", "kuitansi", "invoice", "faktur", "bukti-transfer"}
 EKSTENSI_DIKENAL = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".gif", ".tif", ".tiff", ".pdf", ".bmp"}
-# Kode kategori kas-umkm yang cocok untuk pengeluaran (lihat CLAUDE.md & references/kas-umkm)
+# Kode kategori kas-umkm yang cocok untuk pengeluaran (lihat references/kas-umkm)
 PETA_KATEGORI_KAS_UMKM = {
     "bahan-baku": "beli-stok", "peralatan": "beli-stok", "operasional": "lain-lain",
     "jasa": "lain-lain", "transportasi": "lain-lain", "listrik-air": "listrik-air",

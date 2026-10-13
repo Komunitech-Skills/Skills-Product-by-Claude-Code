@@ -1,6 +1,6 @@
 # Skenario 04 (input buruk) — 6 kasus rusak/tidak lengkap
 
-Menguji beberapa kasus sekaligus (bukan cuma satu) karena CLAUDE.md meminta cakupan
+Menguji beberapa kasus sekaligus (bukan cuma satu) karena pedoman kurasi Komunitech meminta cakupan
 "file bukan PDF, PDF terkunci tanpa sandi, file 0 byte, Stirling mati, URL publik, nama
 file dengan spasi/karakter Indonesia".
 

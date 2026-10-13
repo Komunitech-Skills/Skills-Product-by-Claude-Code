@@ -258,6 +258,12 @@ cek("K5 rujukan bunga KUR = Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44
     any("Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44" in x for x in h["asumsi"]))
 k, h = jalankan("--investasi", "85jt", "--cari-minimal")
 cek("K6 cari minimal: rujukan sama + disclaimer", any("No. 1 Tahun 2026" in x for x in h["asumsi"]) and "Bukan nasihat keuangan" in h["ringkasan_untuk_agent"])
+k, h = jalankan(*dasar)
+cek("K7 rujukan bunga KUR menyebut tanggal berlaku 13 Januari 2026 (v1.0.5)",
+    any("Pasal 37 & 44, berlaku 13 Januari 2026" in x for x in h["asumsi"]))
+k, h = jalankan(*dasar, "--diskonto", "5")
+cek("K8 peringatan diskonto < 6% menyebut pasal + tanggal berlaku",
+    k == 0 and any("Pasal 37 & 44, berlaku 13 Januari 2026" in x for x in h["peringatan"]))
 
 print()
 print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'}")

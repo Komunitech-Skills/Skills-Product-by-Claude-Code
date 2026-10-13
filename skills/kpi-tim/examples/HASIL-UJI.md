@@ -1,6 +1,6 @@
 # HASIL UJI — kpi-tim v1.0.0
 
-- **Penguji:** agent independen (bukan pembuat), hanya membaca folder `skills/kpi-tim/` + CLAUDE.md.
+- **Penguji:** agent independen (bukan pembuat), hanya membaca folder `skills/kpi-tim/` + pedoman kurasi Komunitech.
 - **Tanggal:** 2026-09-29. **Lingkungan:** Linux, Python 3.11.15, salinan skill di scratchpad (bukan `.claude/skills/`).
 - **Platform teruji:** `claude-code (simulasi agent)`; uji muat `scripts/uji_openclaw.sh` → OpenClaw 2026.9.6:
   eligible/modelVisible/commandVisible 97/97 ✅. `validate.py` ✅.
@@ -86,7 +86,7 @@ Pengaman bekerja: skor menolak draf yang belum dikonfirmasi, dan realisasi ganda
 - R-6 `status_draf` selain "PERLU KONFIRMASI" (mis. "ditolak") tetap dihitung; lebih aman hanya
   menerima "dikonfirmasi"/kosong.
 - R-7 1:1: "nilai 36,0 ▲36,0" — panah adalah perubahan capaian (poin %), mudah dibaca sebagai perubahan nilai.
-- R-8 README merujuk `CARA-INSTAL.md`, sedangkan CLAUDE.md menyebut `docs/instalasi.md` ikut paket;
+- R-8 README merujuk `CARA-INSTAL.md`, sedangkan pedoman kurasi Komunitech menyebut `docs/instalasi.md` ikut paket;
   pastikan nama file sesuai hasil `build.py` (tidak diperiksa penguji karena di luar folder skill).
 - R-9 `BrokenPipeError` traceback bila output dipotong pipe (`| head`); kosmetik.
 

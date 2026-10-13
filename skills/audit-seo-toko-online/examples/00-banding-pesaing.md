@@ -1,6 +1,6 @@
 # Uji Banding Pesaing
 
-> Dibuat oleh **penguji independen**, Tahap 6 butir 5 CLAUDE.md. Skill pesaing dibaca langsung dari repo publik (clone lokal sementara di scratchpad penguji) untuk dinilai, **tidak disalin isinya**.
+> Dibuat oleh **penguji independen**, Tahap 6 butir 5 pedoman kurasi Komunitech. Skill pesaing dibaca langsung dari repo publik (clone lokal sementara di scratchpad penguji) untuk dinilai, **tidak disalin isinya**.
 
 ## Kata kunci pencarian & sumber yang dicek
 Dicari lewat web search: "SEO audit skill for Claude Code/OpenClaw", "ClawHub skills.sh seo audit agent skill". Kandidat yang muncul: `JeffLi1993/seo-audit-skill`, `dtsola/xiaoyaoclaw-seo-skill`, `RankSpotAI/awesome-seo-agent-skills` (daftar kurasi, bukan skill tunggal), `ryudi84/sovereign-seo-audit` (ClawHub), `mattvalenta/pls-seo-audit` (ClawHub), `coreyhaines31/marketingskills` (sumber ATM kita sendiri, dibandingkan juga di bawah).
@@ -25,18 +25,18 @@ Dibaca langsung dari clone lokal (`SKILL.md` 383 baris, `scripts/fetch-page.py`,
 | Aspek | `seo-audit-skill` (JeffLi1993) | `audit-seo-toko-online` (kita) |
 |---|---|---|
 | Cara ambil halaman | **Mengambil URL langsung via internet** (`scripts/fetch-page.py` pakai library `requests`, spoof User-Agent Chrome) | Tidak pernah mengakses internet; bekerja dari HTML yang ditempel/diambil agent — sesuai target "tanpa setup" untuk agent tanpa akses web |
-| Dependensi | **Butuh `pip install requests`** (library luar) — kalau belum terpasang, skrip langsung `sys.exit(1)` dengan pesan minta instal | Hanya pustaka standar Python (`argparse`, `json`, `re`, `html.parser`, `pathlib`) — sesuai aturan "tanpa instalasi paket" CLAUDE.md §1 |
+| Dependensi | **Butuh `pip install requests`** (library luar) — kalau belum terpasang, skrip langsung `sys.exit(1)` dengan pesan minta instal | Hanya pustaka standar Python (`argparse`, `json`, `re`, `html.parser`, `pathlib`) — sesuai aturan "tanpa instalasi paket" pedoman kurasi Komunitech §1 |
 | Bahasa & lokalisasi | Bahasa Inggris, ambang title/meta 50-60/120-160, tidak ada contoh Indonesia, NAP, atau Rupiah sama sekali (dicek dengan `grep -i "NAP\|indonesia\|rupiah"` — nihil) | Bahasa Indonesia penuh + lokalisasi lengkap (NAP, GBP, kata kunci lokal, schema alamat Indonesia) |
 | Larangan teknik terlarang / jaminan ranking | Dicek dengan `grep -i "guarantee\|fake review\|buy backlink\|search volume"` di seluruh isi skill → **nihil**, tidak ada larangan eksplisit maupun disclaimer soal ini | Larangan eksplisit + tegas (beli backlink, ulasan palsu, jaminan ranking) di `SKILL.md` & `references/lokal-dan-gmb.md` |
 | Output | Laporan HTML lewat template (`assets/report-template.html`), disimpan ke file `reports/<hostname>-audit.html` | Laporan Markdown terstruktur (`templates/laporan-audit.md`) langsung di chat, plus teks siap tempel |
 | Skala target | Audiens teknis (developer/marketer yang nyaman `npx skills add`, jalankan Python dgn dependensi, baca laporan HTML) | Pemilik UMKM awam teknologi — instalasi cukup salin folder, tanpa command line/paket tambahan untuk memakainya |
 | Lisensi | MIT (dicek langsung, `Copyright (c) 2026 Jeff`) — tidak relevan karena tidak ada materinya yang disalin, hanya dibaca untuk pembanding |
 
-**Kesimpulan vs pesaing independen:** Untuk **audiens target kita** (UMKM Indonesia awam, tanpa akses agent yang bisa browsing internet, tanpa mau install paket Python), skill kita **unggul** karena tidak butuh koneksi internet dari skrip, tidak butuh dependensi luar, dan berbahasa Indonesia dengan konteks lokal penuh. Untuk **audiens developer teknis berbahasa Inggris yang agennya sudah bisa browsing web**, pesaing ini punya kelebihan sah: bisa audit langsung dari URL tanpa perlu pengguna menempel HTML manual, dan punya deteksi SPA/prerender (bandingkan response Googlebot UA vs browser UA) yang tidak ada di skill kita. Ini kelebihan nyata, dicatat jujur — tapi tidak relevan untuk target pembeli komunitech.com yang mayoritas awam teknologi dan skillnya harus "tanpa setup" (CLAUDE.md §1).
+**Kesimpulan vs pesaing independen:** Untuk **audiens target kita** (UMKM Indonesia awam, tanpa akses agent yang bisa browsing internet, tanpa mau install paket Python), skill kita **unggul** karena tidak butuh koneksi internet dari skrip, tidak butuh dependensi luar, dan berbahasa Indonesia dengan konteks lokal penuh. Untuk **audiens developer teknis berbahasa Inggris yang agennya sudah bisa browsing web**, pesaing ini punya kelebihan sah: bisa audit langsung dari URL tanpa perlu pengguna menempel HTML manual, dan punya deteksi SPA/prerender (bandingkan response Googlebot UA vs browser UA) yang tidak ada di skill kita. Ini kelebihan nyata, dicatat jujur — tapi tidak relevan untuk target pembeli komunitech.com yang mayoritas awam teknologi dan skillnya harus "tanpa setup" (pedoman kurasi Komunitech §1).
 
 ## Ide yang layak dipertimbangkan untuk versi berikutnya (bukan disalin, hanya diamati)
 - Deteksi SPA/JS-rendering via perbandingan ukuran respons Googlebot-UA vs browser-UA (dari `seo-audit-skill`) — tidak relevan langsung karena skill kita offline, tapi prinsipnya bisa diadaptasi jadi pertanyaan manual ke pengguna ("apakah situsmu dibuat pakai React/Vue single-page app tanpa SSR?").
 - Format laporan HTML siap unduh (dari `seo-audit-skill`) sebagai opsi tambahan di versi mendatang, di luar cakupan revisi wajib saat ini.
 
 ## Kesimpulan akhir
-Skill kita **tidak kalah** dari kedua pembanding untuk target pasarnya (UMKM Indonesia awam teknologi, tanpa akses internet/paket tambahan di skrip) — memenuhi syarat Tahap 6 butir 5 CLAUDE.md untuk tidak otomatis dibatasi skor maksimal 6.
+Skill kita **tidak kalah** dari kedua pembanding untuk target pasarnya (UMKM Indonesia awam teknologi, tanpa akses internet/paket tambahan di skrip) — memenuhi syarat Tahap 6 butir 5 pedoman kurasi Komunitech untuk tidak otomatis dibatasi skor maksimal 6.

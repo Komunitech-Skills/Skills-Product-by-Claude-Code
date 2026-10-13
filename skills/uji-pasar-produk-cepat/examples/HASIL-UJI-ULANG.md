@@ -1,6 +1,6 @@
 # Hasil Uji Ulang: uji-pasar-produk-cepat v1.0.1
 
-- Penguji: agent independen kedua (bukan pembuat, bukan penguji pertama). Hanya membaca folder skill + CLAUDE.md. Tanggal: 2026-09-29.
+- Penguji: agent independen kedua (bukan pembuat, bukan penguji pertama). Hanya membaca folder skill + pedoman kurasi Komunitech. Tanggal: 2026-09-29.
 - Platform: `claude-code (simulasi agent)`. Belum diuji di OpenClaw/Codex/Cursor asli.
 - `python3 scripts/validate.py --skill uji-pasar-produk-cepat` → ✅ "1 skill valid". `python3 tests/uji_hasil_eksperimen.py` → "Semua uji lolos."
 - Hitungan pembanding ditulis sendiri oleh penguji di scratchpad (`verif.py`), tanpa memakai kode skill: Fisher dua sisi dengan `Fraction` + faktorial eksak; ukuran sampel = n terkecil yang power normalnya ≥ 0,80 (`statistics.NormalDist`, varians gabungan di H0, varians terpisah di H1).

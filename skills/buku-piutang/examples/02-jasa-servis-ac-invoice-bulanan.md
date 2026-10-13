@@ -40,6 +40,6 @@ Ekspor `--format tagih-piutang` → `hitung_telat.py --file` (skill tagih-piutan
 
 ## Catatan temuan
 - **PPh 23 (P3):** bila pelanggan Anda pemotong PPh 23 (badan usaha), tarif 2% untuk jasa sesuai UU PPh Pasal 23 ayat (1) huruf c; pastikan ke pelanggan. Skill tidak membahasnya; pengguna awam akan melihat "kurang bayar Rp 91.000" dan bisa menagih ulang pelanggan. `potong` berfungsi, tetapi rekap melabelinya "Potongan (retur/diskon/hapus)". Saran: satu baris panduan di Langkah C ("dipotong PPh 23 → `potong --alasan "PPh 23, bukti potong No ..."`, jangan ditagih") dan label terpisah di rekap.
-- Pratinjau `potong` dan pesan dobel nota jelas. Catatan Coretax selalu muncul (sesuai standar CLAUDE.md).
+- Pratinjau `potong` dan pesan dobel nota jelas. Catatan Coretax selalu muncul (sesuai standar pedoman kurasi Komunitech).
 
 **Nilai skenario: lulus.**

@@ -1,7 +1,7 @@
 # Uji pembuat — buku-piutang v1.0.0 (bukan penilaian)
 
 - **Tanggal:** 2026-09-26. **Oleh:** agent pembuat skill (bukan penguji independen). Skor kualitas sengaja **tidak**
-  diberikan; penilaian, uji A/B, dan uji banding pesaing menunggu penguji terpisah (CLAUDE.md Tahap 6).
+  diberikan; penilaian, uji A/B, dan uji banding pesaing menunggu penguji terpisah (pedoman kurasi Komunitech Tahap 6).
 - **Lingkungan:** Linux, Python 3.10 & 3.12 (sintaks juga diperiksa untuk 3.8). Data fiktif di folder sementara /
   scratchpad, `--db` per skenario, tanggal disimulasikan dengan opsi uji `--hari-ini`.
 

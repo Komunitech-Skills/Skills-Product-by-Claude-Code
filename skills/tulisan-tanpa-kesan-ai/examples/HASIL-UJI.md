@@ -1,7 +1,7 @@
 # Hasil Uji Independen — tulisan-tanpa-kesan-ai v1.0.0
 
 Diuji oleh penguji independen (Akun B) yang **hanya membaca folder skill** ini (SKILL.md, references/,
-scripts/, examples/, README.md, ATTRIBUTION.md), sesuai Tahap 6 CLAUDE.md. Tidak mengubah SKILL.md,
+scripts/, examples/, README.md, ATTRIBUTION.md), sesuai pedoman kurasi Komunitech tahap 6. Tidak mengubah SKILL.md,
 README.md, scripts/, atau catalog.csv.
 
 ## 1. Atribusi MIT — diverifikasi BENAR
@@ -10,7 +10,7 @@ README.md, scripts/, atau catalog.csv.
   `https://raw.githubusercontent.com/petergyang/no-ai-slop/main/LICENSE` — konsisten).
 - Bagian yang diadaptasi (struktur dua mode + beberapa prinsip umum) vs. bagian orisinal (17 pola
   Indonesia, script, references, examples, README) dipisahkan jelas di ATTRIBUTION.md — sesuai aturan
-  CLAUDE.md Tahap 2 untuk lisensi MIT ("boleh dimodifikasi & dijual, sertakan atribusi dan teks lisensi
+  pedoman kurasi Komunitech tahap 2 untuk lisensi MIT ("boleh dimodifikasi & dijual, sertakan atribusi dan teks lisensi
   asli").
 - Dibandingkan langsung terhadap `SKILL.md` + `eval.md` sumber (dibaca ulang penuh via GitHub raw,
   lihat `00-banding-pesaing.md`): tidak ada teks disalin literal dari sumber ke skill kami — struktur
@@ -91,7 +91,7 @@ santai — tetap mempertahankan register formal saat memang dibutuhkan.
    agen penguji berhasil menangkapnya secara manual di kedua kasus — jadi mekanisme mitigasi bekerja.
 2. **Batasan "menulis ulang karya orang lain untuk lolos plagiarism checker" tidak eksplisit** di
    bagian Batasan SKILL.md (skenario 7 kasus B) — hanya bisa disimpulkan dari semangat "Kapan
-   digunakan" dan prinsip umum CLAUDE.md. Disarankan menambahkan satu baris eksplisit.
+   digunakan" dan prinsip umum pedoman kurasi Komunitech. Disarankan menambahkan satu baris eksplisit.
 3. Cakupan script murni Bahasa Indonesia (tidak menangkap pola AI-slop Inggris pada teks campuran
    ID/EN) — sesuai cakupan produk (skill khusus Indonesia), bukan cacat, tapi baik disebutkan di
    SKILL.md/README kalau ada draf campuran bahasa signifikan agar ekspektasi pengguna jelas.

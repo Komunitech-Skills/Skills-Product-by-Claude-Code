@@ -34,7 +34,7 @@ Sumber:
 Sumber:
 - JDIH BPK, UU No. 10 Tahun 2020: https://peraturan.bpk.go.id/Home/Details/149748/
 - peraturan.go.id: https://peraturan.go.id/id/uu-no-10-tahun-2020
-- Catatan riset internal: research/sources/regulasi-2026-09-23.md
+- Catatan riset internal kurator (tidak disertakan dalam paket)
 
 ## 3. Bahasa perjanjian: UU No. 24 Tahun 2009, Pasal 31
 - Ayat (1): Bahasa Indonesia **wajib** digunakan dalam nota kesepahaman atau perjanjian yang melibatkan lembaga negara, instansi pemerintah, lembaga swasta Indonesia, atau perseorangan WNI.

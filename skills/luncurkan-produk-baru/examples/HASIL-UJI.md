@@ -1,7 +1,7 @@
 # HASIL UJI - luncurkan-produk-baru v1.0.0
 
 - Tanggal uji: 2026-09-29
-- Penguji: agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md
+- Penguji: agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech
 - Platform: `claude-code (simulasi agent)` - belum diuji di platform asli
 - Berkas uji: `04-uji-skenario-normal.md`, `05-uji-input-kurang-luar-cakupan-data-rusak.md`, `00-pembanding-tanpa-skill.md`, `00-banding-pesaing.md` (contoh pembuat 01-03 dibiarkan)
 
@@ -45,7 +45,7 @@
 - **B8 (kecil):** deskripsi & README menyebut "jasa", tetapi tidak ada `--jenis jasa`; tugas stok/kemasan/uji kirim tidak relevan untuk jasa dan SKILL tidak menyuruh agen membuangnya.
 
 ## 5. Skor: **8/10 - LULUS**
-Alasan: menang telak di A/B dan banding pesaing; script aman, stdlib, teruji, dan 100% akurat untuk 730 tanggal; data libur 2026-2027 cocok dengan SKB resmi; teks siap tempel, pagar etika WA (opt-in, STOP, tanpa blast), dan pengingat legal sesuai CLAUDE.md. Dikurangi karena celah logika soft launch (B1), peringatan waktu pendek yang bergantung pada flag opsional (B2), dan cakupan kosmetik/jasa yang tidak setara klaimnya (B3, B8).
+Alasan: menang telak di A/B dan banding pesaing; script aman, stdlib, teruji, dan 100% akurat untuk 730 tanggal; data libur 2026-2027 cocok dengan SKB resmi; teks siap tempel, pagar etika WA (opt-in, STOP, tanpa blast), dan pengingat legal sesuai pedoman kurasi Komunitech. Dikurangi karena celah logika soft launch (B1), peringatan waktu pendek yang bergantung pada flag opsional (B2), dan cakupan kosmetik/jasa yang tidak setara klaimnya (B3, B8).
 
 ## 6. Permintaan perbaikan (untuk pembuat)
 1. B1: pindahkan tugas umpan balik soft launch ke setelah barang pre-order diterima (mis. tambah tugas "kirim pre-order soft launch" di T-10 hari kerja dan umpan balik di T-5), atau jadikan T-14 pre-order dengan barang yang sudah ada; selaraskan contoh 02.

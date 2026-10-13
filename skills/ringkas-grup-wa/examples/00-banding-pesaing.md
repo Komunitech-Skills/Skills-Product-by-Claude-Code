@@ -22,13 +22,13 @@
    API, bukan ringkasan grup untuk pengguna awam).
 
 ## Penilaian kelayakan sebagai pesaing (sebelum dibandingkan langsung)
-`mocasus/whatsapp-group-summary` **TIDAK LOLOS** ambang bukti kurasi CLAUDE.md (repo skill
+`mocasus/whatsapp-group-summary` **TIDAK LOLOS** ambang bukti kurasi pedoman kurasi Komunitech (repo skill
 tunggal perlu ≥100 ⭐; ini baru 14 ⭐, 8 commit, tidak ada bukti dipakai komunitas lain/issue/fork).
 Secara arsitektur pun **tidak sebanding langsung**: skill kita memproses **file ekspor** yang
 pengguna buat sendiri sekali jalan (tanpa setup), sedangkan skill ini mengharuskan **mem-patch
 kode sumber Hermes** dan menjalankan **bot yang merekam semua pesan grup terus-menerus tanpa
 sepengetahuan anggota lain** — bertentangan langsung dengan keputusan pemilik Komunitech
-(CLAUDE.md §1 jalur 3: harus Copilot/persetujuan, anggota grup wajib diberi tahu, tanpa
+(pedoman kurasi Komunitech §1 jalur 3: harus Copilot/persetujuan, anggota grup wajib diberi tahu, tanpa
 perekaman diam-diam) dan dengan SKILL.md kita sendiri ("Kapan TIDAK digunakan": menyadap grup
 tanpa sepengetahuan anggotanya).
 

@@ -1,6 +1,6 @@
 # Skenario 01 (Normal) — Halaman produk WooCommerce, title kepanjangan & alt kosong
 
-> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code, hanya membaca folder `audit-seo-toko-online/` yang disalin ke scratchpad terpisah — bukan pembuat skill), sesuai Tahap 6 CLAUDE.md. Data & HTML fiktif, dibuat sendiri oleh penguji.
+> Dibuat oleh **penguji independen** (agent terpisah, simulasi Claude Code, hanya membaca folder `audit-seo-toko-online/` yang disalin ke scratchpad terpisah — bukan pembuat skill), sesuai pedoman kurasi Komunitech tahap 6. Data & HTML fiktif, dibuat sendiri oleh penguji.
 
 ## Permintaan pengguna
 > "Audit SEO halaman produk toko saya dong: https://tokorenyahjaya.co.id/produk/keripik-pedas-bandung-250gr/ — saya tempel HTML-nya juga (dari Lihat Sumber Halaman). Kata kunci yang saya incar: 'keripik pedas Bandung'."

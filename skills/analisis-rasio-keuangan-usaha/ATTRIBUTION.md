@@ -11,7 +11,7 @@
 - **Commit yang dipakai:** `813fbeec03cdedfda7808529438d1c7af71f26eb` (Thu Sep 24 14:19:10 2026 -0400). Diambil 2026-09-26 lewat `git clone --depth 1 --filter=blob:none --sparse` + `git sparse-checkout set skills`.
 - **Bagian yang TIDAK dipakai:** rasio valuasi/pasar modal (P/E, P/B, EV/EBITDA, PEG, EPS), DCF & simulasi Monte Carlo (`creating-financial-models`), pembuatan file Excel/PowerPoint lewat Skills API, dan seluruh kode notebook yang memanggil API Anthropic.
 
-## Audit lisensi & keamanan (Tahap 2–3 CLAUDE.md)
+## Audit lisensi & keamanan (pedoman kurasi Komunitech)
 - `LICENSE` MIT dibaca langsung. Lisensi ini mengizinkan modifikasi & penjualan turunan dengan menyertakan pemberitahuan hak cipta dan izin.
 - `calculate_ratios.py` (346 baris) dan `interpret_ratios.py` (377 baris) **dibaca penuh, tidak dijalankan**. Keduanya hanya mengimpor `json`/`typing`. Tidak ada akses jaringan, berkas, subprocess, `eval`/`exec`, atau kode ter-obfuscate.
 - Notebook 02 & 03 dibaca tanpa dieksekusi. Isinya memanggil API Anthropic dengan kunci dari `.env` milik pengguna notebook sendiri, serta membuat, mengunggah, dan menghapus skill di akun pengguna tersebut. Semua itu tidak relevan dan tidak ikut disalin.

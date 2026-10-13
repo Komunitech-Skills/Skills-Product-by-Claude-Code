@@ -14,7 +14,7 @@ Indonesia:
   diambil dan ditinjau 2026-09-26. Riwayat commit dicek lewat `git log --follow` pada file
   `skills/incident-postmortem/SKILL.md`: 214 commit tersebar berbulan-bulan dengan rilis
   bertahap (mis. `v76.1`), bukan dump satu hari — memenuhi syarat "umur & perawatan" di
-  CLAUDE.md Tahap 2.
+  pedoman kurasi Komunitech tahap 2.
 - Lisensi sumber: **MIT**. Diverifikasi langsung dari file `LICENSE` di root repo (bukan
   diasumsikan dari README) — isinya teks MIT standar, hak cipta "Copyright (c) 2026 Mohit
   Aggarwal".
@@ -69,7 +69,7 @@ MIT untuk bagian yang berasal dari karya asli (lihat `LICENSE-MIT`).
    agenda rapat review 45 menit) — diganti 2 contoh baru dari nol dengan kasus UMKM lokal
    (pesanan salah kirim promo 9.9, QRIS error jam makan siang).
 
-## Audit keamanan sumber (Tahap 3 CLAUDE.md)
+## Audit keamanan sumber (pedoman kurasi Komunitech)
 - Seluruh isi `SKILL.md` dari `skills/incident-postmortem/`, `skills/customer-incident-
   update/`, dan `plugins/pm-crisis/skills/apology-letter/` dibaca penuh sebelum dipakai
   sebagai inspirasi. Repo **tidak dijalankan** — hanya `git clone --depth 1`, tidak ada

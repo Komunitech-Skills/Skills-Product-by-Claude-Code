@@ -84,7 +84,7 @@ Sisa cacat berikut layak diperbaiki di v1.1.1 tetapi tidak menghalangi kelulusan
 ### Ringan
 3. Salah cocok kecil: "belum bayar" (→ tagih-piutang) sebaiknya dibatasi dengan "pelanggan belum
    bayar". "jasa kesehatan" → urutkan industri spesifik (kesehatan/klinik/dokter) sebelum "jasa".
-4. `references/openclaw.md` §7 merujuk `CLAUDE.md` §1. File itu tidak ada di paket pembeli; ganti
+4. `references/openclaw.md` §7 merujuk `pedoman kurasi Komunitech` §1. File itu tidak ada di paket pembeli; ganti
    dengan "aturan paket Komunitech".
 5. Contoh profil memori (`references/openclaw.md` §4) masih "Kanal favorit: WhatsApp" dan "skala
    6–15" (tidak cocok dengan 4 opsi baku dan default Telegram).

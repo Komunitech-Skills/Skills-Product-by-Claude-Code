@@ -78,4 +78,4 @@ Skill ini diadaptasi dari struktur marketing skill open-source (MIT, coreyhaines
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

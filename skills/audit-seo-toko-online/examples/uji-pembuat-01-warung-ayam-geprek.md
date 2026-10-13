@@ -1,6 +1,6 @@
 # Contoh 01 (Normal) — "Audit SEO website warung ayam geprek saya"
 
-> Dibuat oleh **pembuat skill** untuk verifikasi awal (menjalankan skrip sungguhan dan memeriksa hasilnya), **bukan pengganti** pengujian independen Tahap 6 CLAUDE.md.
+> Dibuat oleh **pembuat skill** untuk verifikasi awal (menjalankan skrip sungguhan dan memeriksa hasilnya), **bukan pengganti** pengujian independen pedoman kurasi Komunitech tahap 6.
 
 ## Permintaan pengguna
 > "Tolong audit SEO website warung ayam geprek saya. Saya tempel isi halamannya ya. Kata kunci yang saya mau ditarget: 'ayam geprek Cibiru'. Nama usaha di Google Bisnisku: Ayam Geprek Bu Sri, alamatnya Jl. Cibiru Indah No. 12, Kec. Cibiru, Kota Bandung, Jawa Barat 40615, telepon 0812-3456-7890."

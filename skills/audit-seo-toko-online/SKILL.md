@@ -70,7 +70,7 @@ Ikuti struktur [templates/laporan-audit.md](templates/laporan-audit.md):
 5. **Asumsi yang Dipakai** (kalau ada).
 
 ## Contoh
-Lihat [examples/uji-pembuat-01-warung-ayam-geprek.md](examples/uji-pembuat-01-warung-ayam-geprek.md) untuk contoh lengkap audit halaman warung makan lokal (website sederhana + info Google Business Profile), dari permintaan pengguna sampai laporan siap pakai. Dibuat oleh pembuat skill sendiri untuk verifikasi awal — bukan pengganti pengujian independen Tahap 6 CLAUDE.md.
+Lihat [examples/uji-pembuat-01-warung-ayam-geprek.md](examples/uji-pembuat-01-warung-ayam-geprek.md) untuk contoh lengkap audit halaman warung makan lokal (website sederhana + info Google Business Profile), dari permintaan pengguna sampai laporan siap pakai. Dibuat oleh pembuat skill sendiri untuk verifikasi awal — bukan pengganti pengujian independen oleh kurator Komunitech.
 
 ## Batasan & Penanganan Error
 - **Tidak mengakses internet sama sekali di dalam skrip.** Tautan dicek dari FORMATNYA saja (kosong, `#`, `javascript:...`, ada spasi) — bukan apakah tujuannya benar-benar hidup. Kecepatan halaman, Core Web Vitals, dan skor mobile TIDAK dihitung — itu ceklis manual, bukan angka pasti.

@@ -15,7 +15,7 @@
 Sumber:
 - IAI — Tentang SAK EMKM: https://web.iaiglobal.or.id/SAK-IAI/Tentang%20SAK%20EMKM
 - Teks SAK EMKM (IAI), halaman pos laporan posisi keuangan: https://www.iaiglobal.or.id/v03/files/file_sak/emkm/files/basic-html/page21.html
-- Catatan riset internal: research/sources/regulasi-2026-09-23.md
+- Catatan riset internal kurator (tidak disertakan dalam paket)
 
 ## Terkait pajak (hanya konteks, skill ini TIDAK menghitung pajak)
 - PPh final UMKM 0,5% (PP 55/2022 sebagaimana diubah PP 20/2026): pembayaran PPh yang tercatat di buku kas disajikan sebagai "Beban pajak penghasilan". Perhitungan pajak → skill `pph-final-umkm` atau konsultan/DJP.

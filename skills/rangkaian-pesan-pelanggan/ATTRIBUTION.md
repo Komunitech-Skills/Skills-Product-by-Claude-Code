@@ -12,7 +12,7 @@
 - **Bagian yang dipelajari (kerangka saja):** delapan jenis urutan (onboarding, lead nurture, re-engagement, win-back, peluncuran produk, tindak lanjut acara, upgrade/upsell, edukasi bertahap), pemetaan jumlah dan jarak pesan per jenis, tujuan tiap langkah, definisi kondisi keluar ("tanda rangkaian sudah berhasil"), aturan penekanan (jangan kirim bila penerima sudah berhenti, sudah di rangkaian lain, atau baru menghubungi layanan pelanggan), satu ajakan utama per pesan.
 - **Bagian yang TIDAK dipakai:** seluruh konektor (Klaviyo, Mailchimp, HubSpot dan sejenisnya), tabel tolok ukur persentase (tidak berlaku untuk skala UMKM Indonesia dan tidak dapat dipertanggungjawabkan), saran uji A/B ala platform email, diagram alur bercabang berbasis pembukaan email, tindak lanjut acara dan upsell paket perangkat lunak, field `argument-hint`.
 
-## Audit keamanan (Tahap 3 CLAUDE.md), 2026-10-06
+## Audit keamanan (pedoman kurasi Komunitech), 2026-10-06
 - Dibaca penuh: `SKILL.md` sumber dan `LICENSE`. Tidak ada script maupun berkas pendukung di folder skill sumber. Tidak ada yang dijalankan.
 - Diperiksa (dibaca + pencarian pola curl/wget/eval/base64/rm/ssh/token/api key/password/secret/ignore): perintah destruktif, pengiriman data ke luar, pembacaan kredensial, unduh-dan-jalankan, kode ter-obfuscate, instruksi tersembunyi, rahasia tertanam. **Nihil.** Satu-satunya kemunculan "token" adalah istilah personalisasi (token nama depan). Penanda konektor dan `argument-hint` di frontmatter tidak dibawa. **Lolos audit.**
 

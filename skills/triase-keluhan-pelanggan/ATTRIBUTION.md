@@ -12,12 +12,12 @@
 - **Bagian yang dipelajari:** (1) alur membaca keluhan: inti masalah, gejala, konteks pelanggan, sinyal urgensi, keadaan emosi; (2) kategori berdasarkan **penyebab utama**, bukan gejala; (3) kerangka prioritas bertingkat dengan kriteria dan target waktu respons, serta pemicu menaikkan prioritas (menunggu melewati batas, banyak pelapor, pelanggan mengancam naik ke atasan, solusi sementara gagal, cakupan melebar); (4) saran "ragu pilih tingkat lebih tinggi"; (5) deteksi duplikat dan pola; (6) kerangka rute eskalasi (dari frontline, ke tim teknis, ke produk, ke keamanan, ke pimpinan) dan kapan ditangani sendiri versus dinaikkan; (7) isi ringkasan eskalasi (dampak, apa yang sudah dicoba, keputusan yang dibutuhkan, tenggat); (8) tahap kabar lanjutan dan penurunan eskalasi bila akar masalah sudah ketemu; (9) draf balasan awal per kategori.
 - **Bagian yang TIDAK dipakai:** semua konektor (platform dukungan, basis pengetahuan, pelacak proyek, CRM, obrolan tim), empat tingkat prioritas P1-P4 dengan SLA korporat, kategori khusus perangkat lunak (SSO, API, integrasi, bug, data), rute tim engineering/produk/keamanan, templat langkah reproduksi bug, dan hitungan pendapatan berulang tahunan (ARR).
 
-## Audit keamanan (Tahap 3 CLAUDE.md), 2026-10-05
+## Audit keamanan (pedoman kurasi Komunitech), 2026-10-05
 - Dibaca penuh: kedua `SKILL.md` sumber dan `customer-support/LICENSE`. Tidak ada script dan tidak ada file pendukung di folder skill sumber. Tidak ada yang dijalankan.
 - Diperiksa: perintah destruktif, pengiriman data ke server luar, pembacaan kredensial/SSH key/data browser, pengunduh-lalu-eksekusi otomatis, kode ter-obfuscate, instruksi tersembunyi (mengabaikan pengguna, mengirim file, menonaktifkan konfirmasi), API key/token tertanam, dan prompt injection. **Nihil.** Yang ada hanya penanda konektor (`~~support platform`, `~~CRM`) dan tawaran langkah lanjutan; keduanya tidak dibawa.
 - Catatan: kedua frontmatter sumber memuat `argument-hint` (tidak dibawa; frontmatter di sini hanya `name` dan `description`). Bagian yang tidak dibawa tidak memengaruhi keamanan.
 - Kesimpulan: **lolos audit**, aman diadaptasi.
-- Lihat juga `research/sources/knowledge-work-plugins-2026-10-05.md` (bagian skill ini) di repo kurator.
+- Lihat juga catatan riset internal kurator (tidak disertakan dalam paket) (bagian skill ini) di repo kurator.
 
 ## Pernyataan perubahan (Apache-2.0 bagian 4b: berkas telah diubah)
 Materi asal **telah diubah** oleh Komunitech:

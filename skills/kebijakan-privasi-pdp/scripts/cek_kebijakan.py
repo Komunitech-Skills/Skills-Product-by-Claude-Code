@@ -51,7 +51,7 @@ import re
 import sys
 import unicodedata
 
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 BATAS_BYTE = 5 * 1024 * 1024        # file > 5 MB ditolak dengan pesan ramah
 MAKS_TEMUAN_PER_POLA = 20
 MAKS_TEMUAN_TOTAL = 60

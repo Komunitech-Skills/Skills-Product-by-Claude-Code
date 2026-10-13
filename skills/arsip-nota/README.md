@@ -4,7 +4,7 @@
 
 Diuji AI penguji independen di OpenClaw: 5,75 → 8,75 dari 10 (tanpa skill nominal "38.5" dicatat apa adanya dan file asli dipindah ke Trash (tempat sampah); dengan skill nominal ditanyakan dulu, nota dobel diblokir, dan file asli tidak dihapus).
 
-_Versi 1.0.6. Perubahan di 1.0.5 (30 Sep 2026): nominal yang meragukan seperti "1,5" atau "150,50" kini ditanyakan ulang, tidak lagi salah dibaca._
+_Versi 1.0.7. Perubahan di 1.0.5 (30 Sep 2026): nominal yang meragukan seperti "1,5" atau "150,50" kini ditanyakan ulang, tidak lagi salah dibaca._
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -72,4 +72,4 @@ Skill ini sendiri tidak mengunggah apa pun: foto nota dan indeksnya tersimpan di
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

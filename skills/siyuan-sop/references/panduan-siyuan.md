@@ -27,7 +27,7 @@ Kernel SiYuan (bagian yang melayani API) secara default **hanya mendengar di `12
    python3 <folder-skill>/scripts/siyuan.py simpan-kunci
    ```
    (Windows: `python` atau `py`). Tempel token saat diminta - tersimpan di `~/.komunitech/siyuan-kunci.txt` berizin ketat, tidak tampil di layar/log.
-5. **PENTING - baca ini:** menurut pengujian Komunitech (lihat `research/sources/siyuan-2026-09-26.md`), permintaan API dari **program lain di komputer yang sama** (bukan dari peramban web) bisa saja tidak selalu diminta token, tergantung versi. Jadi pembatas keamanan yang **sesungguhnya** bukan hanya token, melainkan: **kernel SiYuan hanya bisa dijangkau dari komputer ini sendiri**. Karena itu:
+5. **PENTING - baca ini:** menurut pengujian Komunitech, permintaan API dari **program lain di komputer yang sama** (bukan dari peramban web) bisa saja tidak selalu diminta token, tergantung versi. Jadi pembatas keamanan yang **sesungguhnya** bukan hanya token, melainkan: **kernel SiYuan hanya bisa dijangkau dari komputer ini sendiri**. Karena itu:
    - **JANGAN PERNAH** membuka port `6806` ke internet atau jaringan kantor (tidak ada alasan bisnis untuk ini).
    - **JANGAN PERNAH** melakukan **port-forwarding router** ke port 6806.
    - **JANGAN memasang software yang tidak dipercaya** di komputer yang sama dengan SiYuan.

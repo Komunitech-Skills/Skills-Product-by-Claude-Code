@@ -41,3 +41,6 @@
 3. Script selalu berlabel "Omzet" walau kasus penghematan; perlu opsi label penghematan.
 4. Diskonto 12% dapat dipakai sebagai asumsi batas bawah (bukan acuan pasar); sarankan tampilkan juga NPV pada 20%; verifikasi rujukan "Permenko 1/2026".
 5. Aturan "kurang layak" (omzet −10%/biaya +10%/bergantung nilai jual kembali) tidak terlalu ketat; pertahankan.
+
+## Verifikasi rujukan aturan — 2026-10-13 (penguji independen, untuk 1.0.5)
+Catatan "Rujukan Permenko 1/2026 belum diverifikasi penguji" di atas (1.0.0 & 1.0.1) **sudah dicek**: Peraturan Menteri Koordinator Bidang Perekonomian No. 1 Tahun 2026 tentang Pedoman Pelaksanaan KUR ada (ditetapkan 5 Jan 2026, berlaku 13 Jan 2026, BN 2026 No. 17); Pasal 37 ayat (1) huruf a dan Pasal 44 ayat (1) huruf a memuat "6% (enam persen) efektif per tahun" untuk KUR mikro/kecil Sektor Produksi atau perdagangan berorientasi ekspor. Sumber: teks lengkap di basis data hukum DDTC (https://perpajakan.ddtc.co.id/sumber-hukum/peraturan-pusat/peraturan-menteri-koordinator-bidang-perekonomian-1-tahun-2026) dan siaran pers resmi Kemenko Perekonomian (Januari 2026, ekon.go.id/publikasi/detail/6784). Salinan resmi jdih.ekon.go.id/peraturan.go.id tidak dapat diakses saat pengecekan. Rincian di `references/istilah-dan-asumsi.md` bagian 2. Skor uji tidak berubah (perubahan 1.0.5 hanya teks rujukan; `tests/uji_kelayakan.py` lulus).

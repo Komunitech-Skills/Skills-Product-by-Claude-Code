@@ -1,8 +1,8 @@
 # Uji OpenClaw sebelum/sesudah — persiapan-jual-atau-wariskan-usaha **v1.0.1** (skenario 2–3)
 
 - **Tanggal:** 2026-10-11 (UTC ~06:30)
-- **Penguji:** Akun C (independen)
-- **Cara uji:** OpenClaw 2026.9.8, router `claude-sonnet-5`, `SCRATCHPAD=$HOME/komunitech-uji`, `mk-home.sh` + `run-uji.sh`
+- **Penguji:** penguji otomatis Komunitech (independen)
+- **Cara uji:** OpenClaw 2026.9.8, router `claude-sonnet-5`, folder kerja uji internal kurator (tidak disertakan dalam paket), `mk-home.sh` + `run-uji.sh`
 - **Tes script:** `python3 tests/uji_regresi.py` → 15 tes OK
 - **Transkrip:** `examples/data/pjs0616/`
 

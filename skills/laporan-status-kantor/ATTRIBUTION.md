@@ -78,18 +78,18 @@ diambil dari sumber murni gagasan struktural tingkat tinggi (lihat bawah).
    karyawan → `surat-peringatan-karyawan`) — konsep "skill lain dalam satu perpustakaan"
    tidak relevan untuk sumber yang berdiri sendiri.
 8. **Perlindungan data pribadi karyawan** eksplisit (larangan mencantumkan gaji individu,
-   kondisi kesehatan, alasan cuti pribadi tanpa izin) sesuai prinsip UU PDP di CLAUDE.md
+   kondisi kesehatan, alasan cuti pribadi tanpa izin) sesuai prinsip UU PDP di pedoman kurasi Komunitech
    — tidak dibahas di sumber.
 9. **Panduan khusus pengumuman THR/libur nasional/cuti bersama**: penegasan tanggal resmi
    (SKB 3 Menteri) dan nominal THR TIDAK dihitung/dikarang oleh skill ini, wajib diisi
    pengguna atau diarahkan ke skill hitung terpisah — konsep ini spesifik konteks Indonesia
    dan tidak ada di sumber (perusahaan AS tidak punya THR/cuti bersama).
 10. **Dihapus**: rujukan ke `license: Complete terms in LICENSE.txt` di frontmatter (repo
-    ini memakai frontmatter hanya `name`+`description` sesuai standar CLAUDE.md), dan
+    ini memakai frontmatter hanya `name`+`description` sesuai standar pedoman kurasi Komunitech), dan
     seluruh rujukan ke tool internal perusahaan besar (Slack/Google Drive/Email/Calendar
     korporat) yang tidak relevan untuk UMKM/kantor kecil Indonesia.
 
-## Audit keamanan sumber (Tahap 3 CLAUDE.md)
+## Audit keamanan sumber (pedoman kurasi Komunitech)
 - Seluruh isi `SKILL.md` dan 4 file `examples/*.md` sumber dibaca penuh sebelum digunakan.
   Tidak ada script (`scripts/` kosong/tidak ada) — murni instruksi teks.
 - Tidak ditemukan perintah shell destruktif, pola unduh-lalu-eksekusi langsung dari
@@ -104,7 +104,7 @@ diambil dari sumber murni gagasan struktural tingkat tinggi (lihat bawah).
   user" — nihil kecocokan di kelima file).
 - Tidak ditemukan API key, token, atau data pribadi tertanam.
 - **Hasil: LULUS audit keamanan**, sesuai catatan awal di
-  `research/sources/kurasi-terbukti-2026-09-23.md` §4.
+  catatan riset internal kurator (tidak disertakan dalam paket) §4.
 
 ## Teks lisensi asli (Apache License, Version 2.0)
 

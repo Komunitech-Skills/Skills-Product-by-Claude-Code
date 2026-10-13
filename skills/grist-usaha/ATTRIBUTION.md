@@ -25,7 +25,7 @@ Lisensi: **Proprietary Komunitech** — penggunaan tunduk pada `LISENSI.txt` dal
   dikonfirmasi dengan membaca langsung kode sumber resmi `grist-core` v1.7.19
   (`sandbox/grist/schema.py`, `app/server/lib/DocStorage.ts`) — nama tabel/kolom adalah fakta
   format file untuk keperluan interoperabilitas, bukan kode yang disalin. Rincian lengkap &
-  metodologi verifikasi ada di `research/sources/grist-2026-09-26.md`.
+  metodologi verifikasi ada di catatan riset internal kurator (tidak disertakan dalam paket).
 - File `tests/fixtures/buat_fixture.py` membuat file `.grist` **TIRUAN** untuk keperluan uji
   (bukan hasil ekspor Grist sungguhan) — lihat catatan kejujuran di dalam file itu dan di
   `examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md`.

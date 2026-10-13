@@ -55,7 +55,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 APLIKASI = "laporan-klien-konsultan"
-VERSI = "1.0.5"
+VERSI = "1.0.6"
 SKEMA = 1
 
 KOLOM = ["tanggal", "klien", "proyek", "pekerjaan", "jam", "status", "kendala", "butuh_dari_klien"]

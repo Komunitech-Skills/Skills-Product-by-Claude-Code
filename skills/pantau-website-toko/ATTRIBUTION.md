@@ -18,7 +18,7 @@ Lisensi: **Proprietary Komunitech** — penggunaan tunduk pada `LISENSI.txt` dal
   model status page, model monitor/heartbeat) dan dengan **menjalankan langsung rilis resmi**
   (dipasang lewat `npm run setup` bawaan proyek, mengunduh `dist.tar.gz` dari GitHub Releases
   resmi) di sandbox Komunitech pada 2026-09-26 — lihat
-  `research/sources/uptime-kuma-2026-09-26.md` untuk metodologi lengkap. **Tidak ada baris kode
+  catatan riset internal kurator (tidak disertakan dalam paket) untuk metodologi lengkap. **Tidak ada baris kode
   Uptime Kuma yang disalin** ke script ini.
 - File `tests/fixtures/uptime-kuma-2.5.5-status-page.json` dan `-heartbeat.json` berisi **contoh
   bentuk respons** API yang direkam apa adanya dari instance Uptime Kuma 2.5.5 sungguhan yang

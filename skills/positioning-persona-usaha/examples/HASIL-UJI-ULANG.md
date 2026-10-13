@@ -1,6 +1,6 @@
 # Hasil Uji Ulang: positioning-persona-usaha v1.0.1
 
-- Penguji: agent independen kedua (bukan pembuat, bukan penguji pertama). Hanya membaca folder skill + CLAUDE.md. Tanggal: 2026-09-29.
+- Penguji: agent independen kedua (bukan pembuat, bukan penguji pertama). Hanya membaca folder skill + pedoman kurasi Komunitech. Tanggal: 2026-09-29.
 - Platform: `claude-code (simulasi agent)`. Belum diuji di OpenClaw/Codex/Cursor asli.
 - `python3 scripts/validate.py --skill positioning-persona-usaha` → ✅ "1 skill valid". `python3 scripts/uji_skor_segmen.py` → "Semua uji lulus".
 - Skor diverifikasi penguji dengan hitungan sendiri (jumlah bobot x nilai ÷ 5, pecahan eksak), bukan kode skill.

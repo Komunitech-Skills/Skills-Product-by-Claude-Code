@@ -88,7 +88,7 @@ dibatasi ≤ 6 sesuai brief. Perbaikannya kecil dan terlokalisasi, lalu perlu uj
 15. `catat-jam`: "Tahun tidak disebut" muncul hampir di setiap entri. Hilangkan catatan bila hasilnya ≤ 60 hari ke belakang.
 16. Mode §2 (tanpa AI, `--command`) mengirim draf timesheet dengan placeholder `[TOTAL JAM]/[NILAI]` apa adanya. Sebutkan di referensi.
 17. Job §1 terbentuk dengan `toolsAllow: ["*"]` (terlihat di JSON). Sarankan `--tools exec,read` agar agent jadwal hanya punya alat yang diperlukan.
-18. Referensi diverifikasi di OpenClaw 2026.9.5; Gateway uji melaporkan 2026.9.6 tersedia. Uji ulang sebelum rilis (CLAUDE.md Tahap 6 butir 8).
+18. Referensi diverifikasi di OpenClaw 2026.9.5; Gateway uji melaporkan 2026.9.6 tersedia. Uji ulang sebelum rilis (pedoman kurasi Komunitech tahap 6 butir 8).
 19. Baris CSV yang sudah berisi `=rumus` (diedit manual) ditulis ulang tanpa diamankan `aman_csv`. Input lewat `tambah` sudah aman (`'=HYPERLINK…`).
 
 ## Uji script dengan data rusak/tepi (ringkas)

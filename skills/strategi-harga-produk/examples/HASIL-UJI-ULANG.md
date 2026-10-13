@@ -1,7 +1,7 @@
 # HASIL UJI ULANG — strategi-harga-produk v1.0.1
 
 - **Tanggal:** 2026-09-29
-- **Penguji:** agent penguji ulang independen (bukan pembuat, bukan penguji pertama), Claude Code. Yang dibaca hanya folder skill ini dan CLAUDE.md.
+- **Penguji:** agent penguji ulang independen (bukan pembuat, bukan penguji pertama), Claude Code. Yang dibaca hanya folder skill ini dan pedoman kurasi Komunitech.
 - **Cara uji:** skill disalin ke folder sementara `scratchpad/uji-ulang-harga/run/.claude/skills/`, tanpa `examples/` dan `tests/`. Setiap skenario dijalankan oleh sesi `claude -p` baru. Sebagian dijalankan dengan `stream-json` agar terlihat perintah script apa saja yang dipakai. → `platform_teruji` yang jujur: `claude-code (simulasi agent)`.
 - **Dasar:** `HASIL-UJI.md` (skor 7/10, 11 permintaan perbaikan) dan bagian "Catatan revisi 1.0.1".
 

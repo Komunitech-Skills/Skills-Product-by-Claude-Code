@@ -37,7 +37,7 @@ dengan benar berdasarkan posisi tanda baca terakhir).
 `HargaSatuan`, dll. (aturan Grist: awali huruf, hanya huruf/angka/garis bawah).
 
 ## Temuan penting #1 — format "1,25jt"/"1,25 juta" TIDAK dikenali
-CLAUDE.md & README skill ini (bagian "3–5 manfaat", poin 3) menyebut contoh **"Rp 1,25jt"**
+pedoman kurasi Komunitech & README skill ini (bagian "3–5 manfaat", poin 3) menyebut contoh **"Rp 1,25jt"**
 sebagai salah satu format yang "dirapikan otomatis". Diuji langsung:
 ```python
 _bersihkan_angka("Rp 1,25jt")  -> None

@@ -1,4 +1,4 @@
-# Kanboard Papan Kerja: Pantau Order & Produksi Lewat Chat
+# Kanboard: Pantau Order & Produksi via Chat
 
 **Tanya "order mana yang telat?", "kartu apa yang macet?", atau "pindahkan pesanan Pak Joko ke Dikirim" — AI Anda langsung membaca dan mengatur papan kerja Kanboard, aplikasi kanban (papan kartu untuk memantau tahap pekerjaan) gratis yang jalan di komputer sendiri.**
 

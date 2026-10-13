@@ -1,7 +1,7 @@
 # HASIL UJI — positioning-persona-usaha
 
 - Tanggal: 2026-09-29
-- Penguji: agent independen (bukan pembuat), hanya membaca folder skill + CLAUDE.md. Uji = **simulasi agent** di `claude-code (simulasi agent)`; belum diuji di platform asli.
+- Penguji: agent independen (bukan pembuat), hanya membaca folder skill + pedoman kurasi Komunitech. Uji = **simulasi agent** di `claude-code (simulasi agent)`; belum diuji di platform asli.
 - Script dijalankan sungguhan di folder scratchpad penguji; angka diverifikasi dengan hitungan pecahan eksak buatan penguji.
 
 ## 1. Audit keamanan & format
@@ -43,7 +43,7 @@
 - Tidak ada aturan untuk skor segmen yang hampir seri; di 2 dari 3 skenario normal dua segmen teratas selisih 1 poin dan keduanya berlabel "Utama".
 - "Hitung karakter, jangan dikira" tanpa cara menghitung; emoji dihitung berbeda per aplikasi.
 - Keluaran lengkap ±150 baris; berat untuk dibaca di chat (OpenClaw via Telegram/WA), padahal audiens mayoritas awam.
-- "UU Perlindungan Konsumen" disebut tanpa nomor/tahun/pasal (Tahap 4 butir 5 CLAUDE.md minta dasar aturan + tanggal).
+- "UU Perlindungan Konsumen" disebut tanpa nomor/tahun/pasal (Tahap 4 butir 5 pedoman kurasi Komunitech minta dasar aturan + tanggal).
 - Contoh `01-toko-hijab-stp-persona-lengkap.md` (fiktif, "bukan hasil uji resmi") masih dirujuk SKILL.md & README sebagai contoh lengkap; kini ada dua file berawalan `01-`.
 - Tidak ada peringatan bahwa hitungan tema ulasan bisa tumpang-tindih (satu ulasan memuat beberapa pujian) sehingga tidak boleh dijumlahkan menjadi "N pelanggan".
 

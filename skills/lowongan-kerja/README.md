@@ -69,9 +69,9 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 5, 2026-10-03.
-- Tanpa skill: https://t.me/c/4407409583/631/650 — skor 5
-- Dengan skill: https://t.me/c/4407409583/632/652 — skor 9
+Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 5, 2026-10-03.
+- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5
+- Dengan skill: (pesan di grup uji internal Komunitech) — skor 9
 Verdik gelombang: LULUS — DENGAN menghapus keempat syarat diskriminatif (wanita, maks 25 th, belum menikah, berpenampilan menarik) dengan dasar SE Menaker M/6/HK.04/V/2025 + 3 versi (portal/IG/WA) + pertanyaan seleksi + cek UMK; TANPA masih memuat "wanita, usia maks 25" dan menawarkan menambah kembali syarat yang dihapus.
 
 ## Catatan penting
