@@ -34,7 +34,7 @@ from datetime import date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-VERSI = "1.1.1"
+VERSI = "1.1.6"
 SKEMA = 1
 APLIKASI = "buku-stok"
 EPS = 1e-9

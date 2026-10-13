@@ -17,7 +17,7 @@ Diuji AI penguji independen di bot Telegram asli: 7 → 8,5 dari 10 (pembedanya 
 - Pemilik UMKM (makanan beku, kue, fesyen, kerajinan, jasa) yang mau meluncurkan varian atau produk baru.
 - Yang sudah punya ide dan mau menguji dua pilihan (harga, kemasan, rasa, kalimat iklan).
 - Profesional yang mau menguji layanan baru ke kontak sendiri.
-- Belum punya ide sama sekali? Mulai dari skill Brainstorming Ide Usaha (`brainstorming-ide-usaha`). Ide baru satu kalimat? Pakai skill Tes Ide Sebelum Modal Habis (`validasi-ide-produk-baru`) dulu, lalu pakai skill ini.
+- Ide baru satu kalimat? Pakai skill Tes Ide Sebelum Modal Habis (`validasi-ide-produk-baru`) dulu, lalu pakai skill ini.
 
 ## Contoh sebelum & sesudah
 **Sebelum:** "Lima dari 12 orang di grup WA bilang mau. Berarti 42% laku, langsung produksi 400 box, modal 15 juta."

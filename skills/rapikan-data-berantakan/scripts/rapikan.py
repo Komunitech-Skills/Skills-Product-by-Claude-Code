@@ -31,7 +31,7 @@ from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from difflib import SequenceMatcher
 
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 
 # --------------------------------------------------------------------------- umum
 

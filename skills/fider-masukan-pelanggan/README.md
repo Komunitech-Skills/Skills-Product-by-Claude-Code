@@ -2,26 +2,28 @@
 
 **Pelanggan mengusulkan dan memberi suara; AI Anda merapikan, menggabung duplikat, meringkas yang paling diminta, dan menyiapkan kabar "sudah kami perbaiki".**
 
-> Komunitech **tidak berafiliasi** dengan tim Fider (getfider). Fider adalah software open-source (lisensi AGPL-3.0) milik pengembangnya dan **tidak ikut dalam paket ini**; skill dan panduan ini adalah karya orisinal Komunitech yang memanggil REST API resmi Fider di komputer/server Anda sendiri.
+Diuji AI penguji independen di OpenClaw (dengan server Fider tiruan berisi data contoh): 4,5 → 9 dari 10 (tanpa skill nama atau nomor pelanggan bisa ikut tampil di papan publik; dengan skill ada pratinjau, penyamaran data, dan penggabungan usulan kembar).
+
+> Komunitech **tidak berafiliasi** dengan tim Fider (getfider). Fider adalah software gratis berkode terbuka (open-source, lisensi AGPL-3.0) milik pengembangnya dan **tidak ikut dalam paket ini**; skill dan panduan ini adalah karya orisinal Komunitech yang terhubung ke Fider lewat pintu data resminya (REST API, jalur bagi program untuk berbicara dengan Fider) di komputer/server Anda sendiri.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Fider (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Pengganti Canny/UserVoice tanpa langganan.** Papan usulan + voting + status (Direncanakan, Dikerjakan, Selesai) jalan di komputer atau VPS Anda; data tidak dititipkan ke pihak lain.
+- ✅ **Pengganti layanan papan saran berlangganan (seperti Canny atau UserVoice).** Papan usulan + voting + status (Direncanakan, Dikerjakan, Selesai) jalan di komputer atau VPS (server sewaan) Anda; data tidak dititipkan ke pihak lain.
 - ✅ **Catatan WA dan ulasan marketplace jadi usulan rapi.** Tempel catatan, AI menyusun judul, memeriksa yang sudah pernah masuk, dan **menyamarkan nomor HP/email** sebelum tampil di papan.
-- ✅ **Tidak ada yang tertulis tanpa izin Anda.** Semua perubahan tampil sebagai pratinjau dulu; baru ditulis setelah Anda bilang "ya".
-- ✅ **Tahu apa yang paling diminta.** Ringkasan mingguan: usulan teratas menurut suara, yang baru masuk, dan yang baru selesai (bisa dikirim tiap Senin ke Telegram).
+- ✅ **Perubahan ditulis setelah Anda setuju.** Perubahan tampil sebagai pratinjau dulu; baru ditulis ke papan setelah Anda bilang "ya".
+- ✅ **Tahu apa yang paling diminta.** Ringkasan mingguan: usulan teratas menurut suara, yang baru masuk, dan yang baru selesai (bisa dijadwalkan tiap Senin ke Telegram; jadwal otomatis ini belum diuji langsung).
 - ✅ **Kabar perbaikan siap kirim.** Ubah status lalu minta draf "sudah kami perbaiki" (sopan atau santai) untuk Anda kirim sendiri ke pelanggan.
 
 ## Cocok untuk siapa
 - **UMKM & toko online** yang menerima saran lewat WhatsApp, DM, dan ulasan marketplace, tetapi sulit mencatat dan mengurutkannya.
-- **Tim produk kecil, aplikasi, SaaS, komunitas** yang butuh halaman "usulkan fitur" dan roadmap publik.
+- **Tim produk kecil, pengelola aplikasi berlangganan (SaaS), dan komunitas** yang butuh halaman "usulkan fitur" dan rencana pengembangan (roadmap) yang bisa dilihat publik.
 - **Konsultan/agensi** yang mengelola papan saran untuk beberapa klien.
 
-**Kurang cocok:** yang belum punya komputer/VPS yang menyala terus dan email pengirim (lihat panduan atau pakai jasa setup); yang hanya butuh membalas ulasan (pakai `balas-ulasan-pelanggan`); yang ingin menganalisis ratusan chat sekaligus (pakai `iterasi-dari-masukan-pelanggan`, lalu impor hasilnya ke sini).
+**Kurang cocok:** yang belum punya komputer/VPS yang menyala terus dan email pengirim (lihat panduan atau pakai jasa setup); yang hanya butuh membalas ulasan (pakai skill Komunitech lain, `balas-ulasan-pelanggan`, khusus untuk menulis balasan ulasan); yang ingin menganalisis ratusan chat sekaligus (pakai skill Komunitech lain, `iterasi-dari-masukan-pelanggan`, lalu impor hasilnya ke sini).
 
 ## Contoh sebelum & sesudah
-**Sebelum:** 40 catatan WA dan ulasan berserakan; usulan "bayar QRIS" muncul 6 kali dengan kata berbeda; tidak jelas mana yang paling banyak diminta; pelanggan yang meminta tidak pernah dikabari.
+**Sebelum:** 40 catatan WA dan ulasan berserakan; usulan "bayar QRIS" muncul 6 kali dengan kata berbeda; tidak jelas mana yang paling banyak diminta; pelanggan yang meminta jarang dikabari.
 
 **Sesudah:** ketik *"Masukkan catatan WA ini ke papan saran."*
 ```
@@ -34,31 +36,35 @@ RENCANA IMPOR dari catatan.txt: 4 butir
       mirip dengan #1 "Tambah pembayaran QRIS" (kemiripan 100%)
 PRATINJAU - BELUM ADA YANG DITULIS ke Fider. ...
 ```
-Balas "ya" → dibuat. Lalu: *"Gabungkan #3 ke #1"*, *"Apa yang paling banyak disuka minggu ini?"*, *"#5 sudah selesai, buatkan kabarnya."* (Keluaran nyata dari Fider v0.38.0 ada di folder `examples/`.)
+Balas "ya" → dibuat. Lalu: *"Gabungkan #3 ke #1"*, *"Apa yang paling banyak disuka minggu ini?"*, *"#5 sudah selesai, buatkan kabarnya."* (Contoh dengan data fiktif, dipersingkat dari format keluaran skill. Keluaran hasil uji, termasuk dari Fider v0.38.0 asli yang dijalankan pembuat skill, ada di folder `examples/`.)
 
 ## Cara pakai
-Setelah Fider terpasang dan kunci API disimpan, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
+Setelah Fider terpasang dan kunci akses (kunci API) disimpan, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Cek apakah Fider saya nyambung."
 - "Masukkan catatan WA ini ke papan saran." (lalu tempel catatan)
 - "Usulan apa yang paling banyak disukai minggu ini?"
 - "Gabung usulan #3 ke #1 kalau memang sama maksudnya."
 - "Usulan #5 sudah selesai, buatkan kabar untuk pelanggan (sopan)."
 
-Semua perubahan ke papan ditampilkan sebagai **pratinjau** dulu; balas **"ya"** bila sudah benar, baru ditulis ke Fider.
+Perubahan ke papan ditampilkan sebagai **pratinjau** dulu; balas **"ya"** bila sudah benar, baru ditulis ke Fider.
 
 ## Instalasi singkat
-Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (lokasi lengkap per platform di `docs/instalasi.md`): **OpenClaw**, **Codex**, **Claude Code**, **Cursor**. Lalu pasang Fider mengikuti **`docs/panduan-fider.md`** (Windows/macOS/Linux lewat Docker, ±30 menit; butuh email pengirim) dan buat kunci API. Kunci disimpan sendiri oleh Anda dengan `python3 scripts/fider.py simpan-kunci` (Windows: `python` atau `py`); **jangan tempel kunci di chat**.
+Skill = folder `fider-masukan-pelanggan/`. Salin ke folder skill platform Anda (lokasi lengkap per platform di `docs/instalasi.md`): **OpenClaw**, **Codex**, **Claude Code**, **Cursor**. Lalu pasang Fider mengikuti **`docs/panduan-fider.md`** (lewat Docker, program untuk menjalankan aplikasi dalam kotak terisolasi, ±30 menit; butuh email pengirim; Windows dan macOS belum diuji langsung) dan buat kunci API. Kunci disimpan sendiri oleh Anda dengan `python3 scripts/fider.py simpan-kunci` (Windows: `python` atau `py`); **jangan tempel kunci di chat**.
 
 **Tidak mau repot?** Ada **jasa setup berbayar Komunitech**: komputer/VPS, domain + HTTPS, Fider + database, email pengirim, kunci API, tag awal, dan jadwal ringkasan Telegram. Hubungi admin komunitech.com.
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi, server Fider tiruan + Fider v0.38.0 asli), 2026-10-02 (v1.0.7), skor 1–10 penguji independen: tanpa skill **4,5** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, pratinjau + `--ya`, data disensor, duplikat digabung.
+**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, home terisolasi), 2026-10-02, skor 1–10 penguji independen. Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ini memakai server Fider tiruan berisi data contoh (bukan Fider asli), jadi yang dinilai adalah perilaku AI-nya.
+- Uji ulang skill v1.0.5 (dua skenario): tanpa skill **4,5** → dengan skill **9,0** (LULUS).
+- Uji ulang skill v1.0.7 (satu skenario): tanpa skill **5** → dengan skill **9** (LULUS).
+
+Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, ada pratinjau + persetujuan "ya", data disensor, duplikat digabung. Terpisah dari uji di atas, pembuat skill menjalankan alurnya pada Fider v0.38.0 asli (Docker + PostgreSQL); catatannya ada di `examples/HASIL-UJI.md`.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Windows/macOS Fider, jadwal Telegram, dan HTTPS VPS sungguhan belum diverifikasi end-to-end.
 
 ## FAQ
 **Apakah Fider dan biayanya gratis?** Fider gratis (AGPL-3.0) bila dipasang sendiri. Anda hanya membayar listrik/VPS dan email pengirim (banyak penyedia punya paket gratis kecil). Paket ini berisi skill, script, dan panduan Komunitech; Fider diunduh dari sumber resminya.
 
-**Apakah AI bisa merusak papan saya?** Skill tidak punya perintah menghapus pos atau mengubah pengaturan. Semua penulisan (impor, tag, gabung, status, komentar) butuh persetujuan Anda lewat pratinjau. Sebaiknya buat akun Collaborator khusus AI (panduan §6) dan cadangkan database berkala (panduan §10).
+**Apakah AI bisa merusak papan saya?** Skill tidak punya perintah menghapus pos atau mengubah pengaturan. Penulisan (impor, tag, gabung, status, komentar) diminta persetujuan Anda lewat pratinjau dulu. Sebaiknya buat akun Collaborator (akun staf dengan hak terbatas) khusus AI (panduan Fider, bagian 6) dan cadangkan database (basis data) secara berkala (panduan Fider, bagian 10).
 
-**Bagaimana dengan privasi pelanggan?** Papan Fider bisa dilihat publik. Skill menyamarkan nomor HP, telepon rumah/kantor, dan email otomatis, tetapi nama dan detail pesanan Anda periksa sendiri di pratinjau. Catat hanya usulan, bukan data pelanggan. Detail ada di panduan §9.
+**Bagaimana dengan privasi pelanggan?** Papan Fider bisa dilihat publik. Skill menyamarkan nomor HP, telepon rumah/kantor, dan email otomatis, tetapi nama dan detail pesanan Anda periksa sendiri di pratinjau. Catat hanya usulan, bukan data pelanggan. Detail ada di panduan Fider, bagian 9.
 

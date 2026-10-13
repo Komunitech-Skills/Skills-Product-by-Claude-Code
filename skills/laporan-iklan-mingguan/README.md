@@ -1,25 +1,27 @@
 # Laporan Iklan Mingguan, Bahasa Awam
 
-**Kirim ekspor Meta/TikTok/Shopee/Google Ads, dapat laporan mingguan siap kirim ke Telegram —
-lengkap dengan iklan mana yang harus dimatikan.**
+**Kirim file ekspor (CSV) dari Meta/TikTok/Shopee/Google Ads, dapat laporan mingguan siap kirim ke bos atau tim —
+lengkap dengan saran iklan mana yang perlu ditinjau atau dimatikan.**
+
+Diuji AI penguji independen di OpenClaw: 6,0 → 8,75 dari 10 (tanpa skill menebak kurs dolar dan menghitung biaya per hasil dari sebagian kampanye saja; dengan skill AI berhenti menanyakan kurs lalu menghitung seluruh belanja).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ CPC, CPM, CTR, biaya per hasil (CPA/CPL), dan ROAS dihitung dari angka mentah — bukan
+- ✅ CPC (biaya per klik), CPM (biaya per 1.000 tayangan), CTR (persentase yang mengeklik), biaya per hasil (CPA/CPL), dan ROAS (omzet per rupiah iklan) dihitung dari angka mentah — bukan
   dari kolom rata-rata bawaan file yang bisa salah kalau dijumlah langsung
 - ✅ Perbandingan % otomatis vs minggu lalu, dengan aturan pembulatan yang konsisten
 - ✅ 3 kampanye terbaik & 3 yang perlu perhatian (termasuk yang 0 hasil tapi tetap makan biaya)
 - ✅ Saran tindakan dengan angka jelas ("tinjau iklan X: Rp120.000/hasil, 2,1× rata-rata"),
   dengan catatan "sampel kecil" bila hasilnya masih sedikit. Tanpa janji hasil, keputusan tetap
   di tangan Anda
-- ✅ Baca CSV Meta Ads, TikTok Ads Manager, Shopee Ads, TikTok Shop Ads (dulu Tokopedia Ads), dan
+- ✅ Baca file ekspor (CSV) Meta Ads, TikTok Ads Manager, Shopee Ads, TikTok Shop Ads (dulu Tokopedia Ads), dan
   Google Ads — bahkan bisa digabung jadi satu laporan lintas platform
 - ✅ Langsung dari file ekspor apa adanya: baris judul, baris "Total", sel kosong, dan kolom
   rata-rata bawaan ditangani otomatis dan dicatat di laporan, bukan dihitung dua kali atau dibuang.
   Kampanye bernama "Total 12.12 Flash Sale" atau "Jumlah 2 Pcs Bundling" tetap dihitung, dan setiap
-  baris yang dikecualikan sebagai total selalu disebut nama & biayanya di bagian ⚠️
-- ✅ Tidak pernah menghitung dolar sebagai Rupiah: kalau file ternyata mata uang asing, AI berhenti
+  baris yang dikecualikan sebagai total disebut nama & biayanya di bagian ⚠️
+- ✅ Tidak menghitung dolar sebagai Rupiah: kalau file ternyata mata uang asing, AI berhenti
   dan menanyakan kurs dulu
 
 ## Cocok untuk siapa
@@ -27,7 +29,7 @@ lengkap dengan iklan mana yang harus dimatikan.**
   tiap minggu cuma untuk tahu "habis berapa, dapat apa"
 - Admin/tim marketing kecil yang bikin laporan mingguan manual ke bos lewat WA/Telegram
 - Member VIP komunitech.com yang sudah pakai OpenClaw — laporan ini bisa dijadwalkan otomatis
-  tiap Senin pagi lewat skill `laporan-otomatis-terjadwal` (panduan ada di dalam paket)
+  tiap Senin pagi lewat skill `laporan-otomatis-terjadwal` (penjadwal laporan ke Telegram; pengiriman ke Telegram belum diuji langsung, panduan ada di dalam paket)
 
 ## Contoh sebelum & sesudah
 **Sebelum:** buka Ads Manager tiap platform satu-satu, catat angka manual di Excel, hitung sendiri
@@ -48,12 +50,12 @@ SARAN
 2. Tinjau/matikan iklan 'Prospek Baru - Tas': biaya per Results Rp 120.000, 2,1x rata-rata
    semua iklan (Rp 58.000).
 ```
-(Contoh lengkap dengan angka diverifikasi manual: `examples/uji-pembuat-01-meta-mingguan-vs-lalu.md`.)
+(Contoh dengan data fiktif; lengkapnya dengan angka diverifikasi manual ada di `examples/uji-pembuat-01-meta-mingguan-vs-lalu.md`.)
 
 ## Cara pakai
 Setelah terpasang, ekspor CSV dari Ads Manager platform Anda (menu "Export"/"Download" di masing-
 masing dashboard iklan — tetap manual, 1-2 menit, skill ini **tidak** login/menarik data otomatis
-demi keamanan akun Anda), lalu cukup ketik ke AI agent kamu, misalnya:
+demi keamanan akun Anda), lalu cukup ketik ke AI agent Anda, misalnya:
 - "Ini ekspor iklan minggu ini, buatin laporannya."
 - "Bandingkan biaya iklan minggu ini vs minggu lalu, ini dua filenya."
 - "Gabungkan laporan Meta Ads dan Shopee Ads minggu ini jadi satu, omzet toko 20 juta."
@@ -73,7 +75,7 @@ python.org) — tapi kalau tidak ada Python pun, langkah hitung manual & rumusny
 di dalam skill.
 
 ## Instalasi singkat
-Salin folder `laporan-iklan-mingguan` ke folder skills AI agent kamu:
+Salin folder `laporan-iklan-mingguan` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -82,11 +84,11 @@ Salin folder `laporan-iklan-mingguan` ke folder skills AI agent kamu:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` dan `CARA-INSTAL.md` di paket.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.10), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka iklan sering salah (CPC/CTR/biaya per hasil); dengan skill semua angka cocok hitungan independen dan rekomendasi kanal jelas.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.10), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka iklan bisa meleset (kurs ditebak, biaya per hasil hanya dari sebagian kampanye); dengan skill angka pada skenario uji cocok dengan hitungan independen dan rekomendasi kanal jelas.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Penjadwalan dicoba di OpenClaw, tetapi pengiriman ke Telegram belum diuji langsung. Codex dan Cursor belum uji platform asli.
 
 ## FAQ
 **Data iklan saya dikirim ke internet?**
@@ -99,7 +101,7 @@ Anda cukup ditanya satu kali nama kolom mana yang dimaksud — tidak ada yang di
 
 **Bisa langsung dikirim otomatis tiap Senin pagi ke Telegram?**
 Bisa, lewat skill `laporan-otomatis-terjadwal` yang memang khusus menjadwalkan (panduannya ada di
-`references/openclaw-jadwal.md` dalam paket ini). Skill ini sendiri fokus menghitung laporannya
+`references/openclaw-jadwal.md` dalam paket ini); pengiriman ke Telegram belum diuji langsung. Skill ini sendiri fokus menghitung laporannya
 dengan benar dulu.
 
 ## Riwayat perubahan

@@ -30,7 +30,7 @@ import sys
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, "
                "tanpa menyebut script/file/proses]")
 DISCLAIMER = ("Analisis selisih ini alat bantu manajemen, bukan audit atau nasihat keuangan/pajak. "

@@ -34,7 +34,7 @@ import urllib.parse
 import urllib.request
 import uuid
 
-VERSI = "1.0.1"
+VERSI = "1.0.7"
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
 KUNCI_DEFAULT = os.path.join(os.path.expanduser("~"), ".komunitech", "open-notebook-kunci.txt")

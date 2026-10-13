@@ -876,7 +876,7 @@ class Uji(unittest.TestCase):
             self.assertIn("kelalaian agent", t, f)
 
     def test_versi(self):
-        self.assertEqual(lm.VERSI, "1.0.5")
+        self.assertEqual(lm.VERSI, "1.0.6")
 
 
 if __name__ == "__main__":

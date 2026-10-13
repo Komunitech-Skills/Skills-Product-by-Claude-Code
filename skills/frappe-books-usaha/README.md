@@ -1,30 +1,32 @@
 # Frappe Books Usaha: Pembukuan Gratis, Laporan Tinggal Tanya
 
 **Pakai Frappe Books (software akuntansi gratis, offline, di komputer sendiri) lalu cukup ketik "penjualan bulan ini berapa?",
-"siapa yang belum bayar?", atau "masukkan daftar pelanggan ini". AI Anda membaca datanya tanpa mengubah apa pun dan
+"siapa yang belum bayar?", atau "masukkan daftar pelanggan ini". AI Anda membaca datanya tanpa mengubah data Anda dan
 menyiapkan file impor yang rapi, tanpa biaya bulanan.**
+
+Diuji AI penguji independen di OpenClaw (dengan data contoh): 5,5 → 9,0 dari 10 (tanpa skill disuruh menyetor PPN Rp511.500; dengan skill PPN masukan diperhitungkan sehingga lebih bayar Rp93.500, dan file database tidak disentuh).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Laporan dalam satu kalimat.** Penjualan & pembelian per bulan/hari/pelanggan/barang, laba rugi ringkas, lengkap dengan
-  DPP, pajak, dan sisa tagihan. Draf, invoice batal, dan retur ditangani dengan benar, jam UTC di file sudah dikonversi ke WIB/WITA/WIT.
+  DPP (harga sebelum pajak), pajak, dan sisa tagihan. Draf, invoice batal, dan retur dipisahkan dari angka final, dan jam UTC (waktu standar internasional) di file dikonversi ke WIB/WITA/WIT.
 - ✅ **Tahu siapa yang telat bayar.** Piutang & utang dikelompokkan per umur (belum jatuh tempo, telat 1–30, 31–60, 61–90, >90 hari),
   yang paling lama di atas. Tempo pembayaran bisa diatur.
 - ✅ **Stok tidak kecolongan.** Barang minus, habis, dan menipis langsung terlihat, per gudang bila perlu.
-- ✅ **Pindah dari Excel tanpa ketik ulang.** Daftar pelanggan, barang, dan nota dari Excel diubah jadi file Import Wizard resmi
+- ✅ **Pindah dari Excel tanpa ketik ulang.** Daftar pelanggan, barang, dan nota dari Excel diubah jadi file untuk fitur impor (Import Wizard) bawaan
   Frappe Books. Harga "Rp 85.000", "18rb", "1,5jt" dibaca benar; nama dobel, satuan belum ada, tanggal mustahil ditolak sebelum
   merusak data. Ada pratinjau total per nota untuk dicocokkan.
-- ✅ **Aman untuk pembukuan.** File data hanya **dibaca** (dikunci read-only), tidak pernah diubah. Laporan harian ke Telegram
-  lewat OpenClaw tanpa nama pelanggan. PPN 12% DPP 11/12 dihitung dengan standar pembulatan yang tidak memungut lebih, termasuk PPN bulanan (keluaran − masukan = kurang/lebih bayar) langsung dari data, penjualan tanpa PPN dipisah.
+- ✅ **Dirancang hati-hati untuk pembukuan.** File data hanya **dibaca** (dikunci hanya-baca) dan skrip tidak punya perintah menulis ke file itu. Laporan harian ke Telegram
+  lewat OpenClaw (belum diuji langsung) tanpa nama pelanggan. PPN 12% × DPP 11/12 dihitung dengan pembulatan yang tidak memungut lebih dari tarif (belum dicocokkan dengan Coretax), termasuk PPN bulanan (keluaran = dipungut dari pembeli, masukan = dibayar ke pemasok; selisihnya kurang/lebih bayar) langsung dari data, penjualan tanpa PPN dipisah.
 
 ## Cocok untuk siapa
 - UMKM yang ingin berhenti bayar Jurnal/Kledo/Paper.id dan memakai **Frappe Books** di laptop/PC sendiri.
 - Pemilik yang ingin cukup bertanya ke AI (OpenClaw, Claude Code, Codex, Cursor) tanpa menghafal menu laporan.
 - Admin yang punya data lama di Excel dan ingin memindahkannya ke Frappe Books.
 
-**Kurang cocok:** butuh e-Faktur/Coretax (Frappe Books tidak membuatnya), multi-cabang online, atau sudah memakai Dolibarr/hledger
-(pakai skill **Dolibarr Usaha** / **hledger Usaha**).
+**Kurang cocok:** butuh e-Faktur/Coretax (sistem faktur pajak resmi DJP; Frappe Books tidak membuatnya), multi-cabang online, atau sudah memakai Dolibarr/hledger
+(pakai skill **Dolibarr Usaha** untuk Dolibarr atau **hledger Usaha** untuk hledger, program pembukuan berbasis teks).
 
 ## Contoh sebelum & sesudah
 **Sebelum:** buka Frappe Books → daftar Sales Invoice → filter tanggal → jumlahkan manual, pisahkan draf & batal, hitung sendiri
@@ -53,7 +55,7 @@ Setelah terpasang, cukup ketik permintaan biasa:
 - "Stok apa yang mau habis di gudang Stores?"
 - "Untung rugi September"
 - "Ini daftar pelanggan dan barang dari Excel, siapkan untuk diimpor ke Frappe Books"
-- "Kirim laporan harian Frappe Books ke Telegram saya tiap jam 9 malam" (OpenClaw)
+- "Kirim laporan harian Frappe Books ke Telegram saya tiap jam 9 malam" (OpenClaw; belum diuji langsung)
 
 ## Instalasi singkat
 1. **Frappe Books** sudah terpasang (gratis, dari https://frappe.io/books). Belum? Ikuti `references/panduan-pasang.md`
@@ -67,16 +69,18 @@ Setelah terpasang, cukup ketik permintaan biasa:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, kunci API, atau paket tambahan.
+Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Butuh **Python 3.8+** (gratis di python.org). Tidak butuh internet, akun, kunci API, atau paket tambahan.
 
-**Hasil uji (angka nyata):** uji OpenClaw dengan data contoh, Okt 2026 (v1.0.10), skor 1–10: tanpa skill **5,5** → dengan skill **9,0** (LULUS). Contoh PPN: tanpa skill disuruh setor Rp511.500; dengan skill PPN masukan diperhitungkan → **lebih bayar Rp93.500**, tanpa menyentuh file database. Uji penguji independen di **Frappe Books v0.36.0 asli**: laba rugi/stok/piutang cocok P&L aplikasi. Sumber: `examples/HASIL-UJI.md`, `promosi/sebelum-sesudah.jsonl`.
+**Hasil uji (angka nyata):** dua sumber, skor 1–10 penguji independen.
+- **Uji OpenClaw dengan data contoh, 2 Okt 2026** (diuji pada v1.0.8; versi terkini 1.0.10; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,5** → dengan skill **9,0** (LULUS). Contoh PPN: tanpa skill disuruh setor Rp511.500; dengan skill PPN masukan diperhitungkan sehingga **lebih bayar Rp93.500**, tanpa menyentuh file database.
+- **Uji pada Frappe Books v0.36.0 asli** (`examples/HASIL-UJI.md`, uji ulang v1.0.3, LULUS): laba rugi, stok, dan piutang cocok dengan laporan laba rugi (P&L) di aplikasinya.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis dengan data contoh 2026-10-02). Uji manusia akuntansi mengikuti `docs/uji-manusia-akuntansi.md` (disetujui pemilik 2026-10-09). Belum uji bot Telegram/jadwal untuk skill ini. Codex, Claude Code, Cursor belum uji platform asli penuh. Komunitech tidak berafiliasi dengan Frappe Technologies.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis dengan data contoh 2026-10-02). Aplikasi Frappe Books asli diuji penguji di Linux; uji manusia di komputer pembeli sungguhan (Windows/Mac) belum dilakukan. Belum uji bot Telegram/jadwal untuk skill ini. Codex, Claude Code, Cursor belum uji platform asli penuh. Komunitech tidak berafiliasi dengan Frappe Technologies.
 
 ## FAQ
 **Apakah AI bisa merusak atau mengubah pembukuan saya?**
 Tidak lewat skill ini. File data dibuka dalam mode baca-saja yang dikunci, dan script tidak punya perintah menulis ke file itu.
-Data baru hanya masuk lewat Import Wizard di aplikasi Frappe Books yang Anda klik sendiri — disarankan sebagai draf dulu, setelah backup.
+Data baru hanya masuk lewat Import Wizard (fitur impor) di aplikasi Frappe Books yang Anda klik sendiri — disarankan sebagai draf dulu, setelah backup.
 
 **Kenapa PPN di Frappe Books kadang beda pecahan rupiah dengan hitungan skill?**
 Frappe Books menghitung pajak per baris tanpa pembulatan, sedangkan standar Komunitech menghitung persis lalu membulatkan ke bawah
@@ -84,7 +88,7 @@ sekali (agar tidak memungut melebihi tarif). Skill menampilkan keduanya dan tida
 dengan Coretax; nilai resmi mengikuti faktur di Coretax. Ini alat bantu, bukan nasihat pajak.
 
 **Frappe Books tidak punya tanggal jatuh tempo, lalu bagaimana skill tahu siapa yang telat?**
-Jatuh tempo dihitung dari tanggal invoice + tempo pembayaran yang Anda sebutkan (bawaan 30 hari). Asumsi ini selalu ditulis di laporan.
+Jatuh tempo dihitung dari tanggal invoice + tempo pembayaran yang Anda sebutkan (bawaan 30 hari). Asumsi ini ditulis di laporan.
 
 ---
 Komunitech tidak berafiliasi dengan Frappe Technologies maupun proyek Frappe Books. Frappe Books (AGPL-3.0) tidak disertakan
