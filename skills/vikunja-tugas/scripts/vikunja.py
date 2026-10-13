@@ -32,7 +32,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.1"
+VERSI = "1.0.13"
 VIKUNJA_TERUJI = ("2.6.0", "v2.6.0")
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)

@@ -34,7 +34,7 @@ from datetime import date, datetime, time, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-VERSI = "1.0.1"
+VERSI = "1.0.7"
 SKEMA = 1
 APLIKASI = "absensi-lokal"
 PEMBAGI_UPAH_SEJAM = Decimal(173)          # PP 35/2021 Pasal 32 ayat (2)

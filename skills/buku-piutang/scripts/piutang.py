@@ -47,7 +47,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 APLIKASI = "buku-piutang"
-VERSI = "1.0.0"
+VERSI = "1.0.4"
 SKEMA = 1
 SKEMA_JSON_REKAP = 1
 SIMPAN_BACKUP_HARIAN = 30

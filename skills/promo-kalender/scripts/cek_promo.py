@@ -44,7 +44,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.0"
+VERSI = "1.0.3"
 NOL = Decimal(0)
 SERATUS = Decimal(100)
 

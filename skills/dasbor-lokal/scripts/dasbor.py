@@ -35,7 +35,7 @@ from datetime import date
 from pathlib import Path
 
 APLIKASI = "dasbor-lokal"
-VERSI = "1.0.2"
+VERSI = "1.0.4"
 FOLDER_SKRIP = Path(__file__).resolve().parent
 FOLDER_SKILL = FOLDER_SKRIP.parent
 

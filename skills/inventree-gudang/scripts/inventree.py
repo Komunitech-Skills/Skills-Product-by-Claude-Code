@@ -39,7 +39,7 @@ import urllib.parse
 import urllib.request
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 
-VERSI = "1.0.5"
+VERSI = "1.0.6"
 INVENTREE_TERUJI = ("1.5.6",)
 API_TERUJI = 530
 KUNCI_DEFAULT = os.path.join(os.path.expanduser("~"), ".komunitech", "inventree-kunci.txt")

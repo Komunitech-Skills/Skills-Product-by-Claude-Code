@@ -41,7 +41,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.2"
+VERSI = "1.0.11"
 APLIKASI = "gaji-umkm"
 SKEMA = 1
 FOLDER = Path(__file__).resolve().parent

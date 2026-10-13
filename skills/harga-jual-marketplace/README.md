@@ -1,15 +1,15 @@
 # Harga Jual Marketplace Anti Boncos
 
-**Tahu harga tayang yang pas di Shopee, Tokopedia, dan TikTok Shop supaya tetap untung setelah semua potongan.**
+**Tahu harga tayang yang pas di Shopee, Tokopedia, dan TikTok Shop supaya masih untung setelah potongan yang Anda masukkan.**
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Harga minimal (balik modal) dan harga rekomendasi sesuai target margin atau laba
-- ✅ Semua potongan dihitung: admin, gratis ongkir, pembayaran, biaya per pesanan, voucher toko, PPh 22 0,5%
+- ✅ Potongan yang Anda sebutkan dihitung satu per satu: admin, gratis ongkir, pembayaran, biaya per pesanan, voucher toko, PPh 22 0,5% (pajak penghasilan yang dipotong marketplace dari omzet)
 - ✅ Mode kebalikan: masukkan harga jual, langsung tahu untung bersih per barang
 - ✅ Bandingkan beberapa marketplace dalam satu tabel
-- ✅ Angka dihitung script, rincian potongan jelas per baris
+- ✅ Angka dihitung dengan skrip (program hitung kecil), rincian potongan jelas per baris
 
 ## Cocok untuk siapa
 - Penjual online di Shopee, Tokopedia, TikTok Shop, Lazada, dan marketplace lain
@@ -19,17 +19,35 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Pasang harga Rp50.000 karena "modal 35 ribu, untung 15 ribu", ternyata setelah potongan marketplace untungnya tinggal separuh.
 
-**Sesudah (cukup ketik):** "Modal 35 ribu, admin Shopee 8%, gratis ongkir 4%, biaya pembayaran 1,5%, biaya proses 1.250 per pesanan. Mau margin 20%, harga jualnya berapa?"
-→ Harga minimal Rp42.152, harga rekomendasi Rp55.000, uang diterima Rp46.050, laba bersih Rp11.050 per barang, lengkap rincian potongannya (termasuk PPh 22 0,5%).
+**Sesudah (cukup ketik):** "Aku jual hijab voal, modal 28 ribu udah sama packing. Di Shopee admin aku 8,25%, ikut gratis ongkir xtra 4% maks 20 ribu, biaya proses 1.250 per pesanan. Mau untung 25% dari harga jual. Harga jualnya berapa? Aku belum nyerahin surat pernyataan omzet ke Shopee."
+
+Cuplikan hasil (contoh dengan data fiktif; dipotong dari `examples/01-hijab-shopee-target-margin.md`; HPP = modal per barang):
+> ### Shopee - target margin 25% dari harga setelah voucher
+> - Harga minimal agar tidak rugi: **Rp 33.525**
+> - Harga tepat sesuai target: Rp 46.988
+> - **Harga rekomendasi (dibulatkan ke atas kelipatan Rp 500): Rp 47.000**
+>
+> Rincian pada harga rekomendasi:
+>
+> | Komponen | Nilai |
+> |---|---:|
+> | Harga tayang | Rp 47.000 |
+> | Biaya admin/komisi (8,25%) | -Rp 3.878 |
+> | Biaya layanan/program ongkir (4%) | -Rp 1.880 |
+> | Biaya per pesanan (dibagi 1 barang) | -Rp 1.250 |
+> | PPh 22 marketplace (0,5%) | -Rp 235 |
+> | **Uang diterima dari marketplace** | **Rp 39.758** |
+> | Modal/HPP | -Rp 28.000 |
+> | **Laba bersih per barang** | **Rp 11.758** |
 
 ## Cara pakai
-Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Kalau saya jual Rp59.900 di Tokopedia, untung bersihnya berapa?"
 - "Bandingkan harga ideal produk ini di Shopee, Tokopedia, dan TikTok Shop."
 - "Kalau pasang voucher 10% maks 5 ribu, harga jualnya harus naik berapa?"
 
 ## Instalasi singkat
-Salin folder `harga-jual-marketplace` ke folder skills AI agent kamu:
+Salin folder `harga-jual-marketplace` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -40,19 +58,19 @@ Salin folder `harga-jual-marketplace` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat → harga/laba salah; dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka diverifikasi script). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah OpenClaw 2026-10-01 tercatat di katalog; berkas skor numerik OpenClaw belum ada di `examples/`.
+**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat → harga/laba salah; dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka diverifikasi script). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah otomatis OpenClaw 2026-10-01 sudah dijalankan, tetapi skor angkanya belum didokumentasikan di folder `examples/`.
 
 **Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat CLI + uji sebelum/sesudah otomatis 2026-10-01). Codex dan Cursor belum kami uji langsung.
 
 ## FAQ
 **Kenapa saya harus mengisi sendiri persentase biaya admin?**
-Biaya marketplace berbeda per kategori dan program, dan sering berubah. Supaya hasilnya akurat, ambil angka terbaru dari Seller Center kamu. Kalau cuma ingin gambaran, skill bisa memakai angka contoh yang diberi label jelas.
+Biaya marketplace berbeda per kategori dan program, dan sering berubah. Supaya hasilnya akurat, ambil angka terbaru dari Seller Center Anda. Kalau cuma ingin gambaran, skill bisa memakai angka contoh yang diberi label jelas.
 
 **Apa itu PPh 22 0,5% yang ikut dipotong?**
 Sejak 1 Agustus 2026 marketplace yang ditunjuk memungut PPh 22 sebesar 0,5% dari omzet penjual. Penjual perorangan dengan omzet setahun sampai Rp500 juta bisa dikecualikan jika sudah menyerahkan surat pernyataan ke marketplace.
 
 **Modal saya belum tahu pasti, bagaimana?**
-Hitung dulu dengan skill `hitung-hpp` (bahan, tenaga kerja, kemasan, dll.), lalu pakai hasilnya sebagai modal di sini.
+Hitung dulu dengan skill Komunitech lain, `hitung-hpp` (menghitung modal per produk dari bahan, tenaga kerja, kemasan, dll.), lalu pakai hasilnya sebagai modal di sini.
 
 ## Riwayat perubahan
 

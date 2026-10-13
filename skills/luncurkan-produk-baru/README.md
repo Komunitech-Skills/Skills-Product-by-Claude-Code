@@ -62,7 +62,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket (`docs
 Skrip jadwal (opsional): `python3 scripts/jadwal_peluncuran.py --tanggal 2026-11-14 --produk "Nama" --jenis pangan` (Windows: `python` atau `py`).
 
 ## Skill pelengkap
-hitung modal & harga jual (`hitung-hpp`), harga jual marketplace (`harga-jual-marketplace`), caption sosmed (`caption-sosmed-umkm`), kalender konten 30 hari (`kalender-konten-30hari`), listing marketplace (`listing-marketplace`), naskah live jualan (`naskah-live-jualan`), laporan iklan mingguan (`laporan-iklan-mingguan`), KPI tim (`kpi-tim`), dan kalender promo (`promo-kalender`).
+hitung modal & harga jual (`hitung-hpp`), harga jual marketplace (`harga-jual-marketplace`), paket konten mingguan dengan caption siap tempel (`konten-mingguan`), listing marketplace (`listing-marketplace`), naskah live jualan (`naskah-live-jualan`), laporan iklan mingguan (`laporan-iklan-mingguan`), KPI tim (`kpi-tim`), dan kalender promo (`promo-kalender`).
 
 **Hasil uji (jujur):** dua sumber yang terpisah, skor 1–10.
 - **Uji OpenClaw, uji otomatis agent, v1.0.4** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,5 tanpa skill menjadi 9,0 dengan skill. Pada rencana launching kosmetik pencerah yang izin BPOM-nya belum terbit (kandidat peluncuran 12 Oktober 2026), AI tanpa skill menolak dua klaim terlarang tetapi masih menjadwalkan pre-order 10 Oktober; dengan skill penjualan, pre-order, dan promo ditunda sampai izin terbit, hanya daftar tunggu tanpa uang yang dibuka, dan Go/No-Go otomatis No-Go. Pada rencana nastar 20 November, stok awal dihitung rumus: (40 + 20) x 1,3 = 78 toples.

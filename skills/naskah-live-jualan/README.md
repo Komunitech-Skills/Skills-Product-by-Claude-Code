@@ -1,13 +1,15 @@
 # Naskah Live Jualan Siap Baca per Menit
 
-**Sebut produk dan promonya, dapat rundown dan naskah live TikTok/Shopee yang tinggal dibaca host.**
+**Sebut produk dan promonya, dapat rundown (urutan acara) dan naskah live TikTok/Shopee yang tinggal dibaca host.**
+
+Diuji AI penguji independen di OpenClaw: 6,17 → 8,83 dari 10 (rundown per menit dengan angka promo yang dihitung dan tanpa klaim produk karangan; tanpa skill naskahnya generik tanpa pembagian waktu live).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Rundown per menit: semua produk kebagian waktu, penonton yang baru masuk selalu dapat rekap promo
-- ✅ Kalimat siap ucap untuk hook, demo, harga, dan ajakan checkout, lengkap dengan arahan aksi host
-- ✅ Angka promo dihitung otomatis: potongan, persen hemat, dan harga per pcs paket bundling
+- ✅ Rundown per menit: setiap produk kebagian waktu, dan ada segmen rekap promo untuk penonton yang baru masuk
+- ✅ Kalimat siap ucap untuk pembuka penarik perhatian (hook), demo produk, harga, dan ajakan checkout, lengkap dengan arahan aksi untuk host (pembawa acara live)
+- ✅ Angka promo dihitung otomatis: potongan, persen hemat, dan harga per pcs paket (beli beberapa lebih hemat)
 - ✅ Jawaban cepat untuk pertanyaan penonton ("size?", "bisa COD?", "ongkir?")
 - ✅ Urgensi yang jujur, tanpa "tinggal 3!" palsu yang bisa bikin akun kena penalti
 
@@ -19,17 +21,40 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Host bingung mau ngomong apa, satu produk dibahas 30 menit, produk lain terlupa, penonton baru tidak tahu promonya.
 
-**Sesudah (cukup ketik):** "Bikinin script TikTok Live 1 jam jam 7 malam, Hijab Voal 89rb jadi 69rb, paket 3 jadi 189rb, Pashmina Kaos 65rb diskon 10%"
-→ Rundown 19.00–20.00, tabel angka promo (Hijab Voal hemat Rp 20.000, paket isi 3 jatuhnya Rp 63.000/pcs), naskah per segmen, dan jawaban cepat untuk penonton.
+**Sesudah (cukup ketik):** "Bikinin script live TikTok 1 jam ya, mulai jam 8 malam. Toko Batik Lestari dari Pekalongan. Produk: Kemeja batik cap pria katun primisima, normal 185rb, pas live 149rb, beli 2 jadi 280rb. Daster batik rayon allsize (LD 120), 95rb diskon 15%. Kain batik tulis 2 meter pewarna alam, 650rb gak diskon, stoknya emang cuma 5 lembar bulan ini. …"
+
+Cuplikan hasil (contoh dengan data fiktif; dipotong dari `examples/01-tiktok-live-batik-60-menit.md`):
+> ## Naskah Live TikTok — Batik Lestari, 60 menit (20.00–21.00 WIB)
+>
+> …
+>
+> | Waktu | Segmen | Produk |
+> |---|---|---|
+> | 20.00–20.03 | Pembukaan: sapa, hook besar, janji promo live | – |
+> | 20.03–20.04 | Hook | Kemeja Batik Cap Pria |
+> | 20.04–20.08 | Demo produk | Kemeja Batik Cap Pria |
+>
+> …
+>
+> | Produk | Normal | Harga live | Hemat | Bundling |
+> |---|---|---|---|---|
+> | Kemeja Batik Cap Pria | Rp 185.000 | Rp 149.000 | Rp 36.000 (±19%) | Isi 2 Rp 280.000 → Rp 140.000/pcs, hemat Rp 90.000 vs 2× harga normal |
+>
+> …
+>
+> **[20.08–20.10] Harga & promo — Kemeja Batik Cap Pria**
+> "Harga normalnya Rp 185.000. Khusus selama live malam ini jadi Rp 149.000 — hemat Rp 36.000. Mau lebih hemat? Ambil paket isi 2, Rp 280.000 saja, jadi Rp 140.000 per potong — hemat Rp 90.000 dibanding beli 2 di harga normal. Cocok buat Bapak dan kakaknya, atau satu buat kantor satu buat kondangan." [pin produk no. 1]
+
+Hasil lengkapnya juga memuat naskah semua segmen dan jawaban cepat untuk pertanyaan penonton.
 
 ## Cara pakai
-Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Buatin naskah Shopee Live 30 menit buat jualan kopi bubuk 3 varian"
 - "Script live TikTok 2 jam buat 5 produk skincare, host-nya 2 orang"
 - "Siapin jawaban cepat buat pertanyaan penonton live tentang ukuran gamis"
 
 ## Instalasi singkat
-Salin folder `naskah-live-jualan` ke folder skills AI agent kamu:
+Salin folder `naskah-live-jualan` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -40,7 +65,7 @@ Salin folder `naskah-live-jualan` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.7), skor 1–10 penguji independen: tanpa skill **6,17** → dengan skill **8,83** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: run-of-show + cue stok/harga, cek silang fakta, tanpa kebocoran kata internal; tanpa skill: naskah generik tanpa timing live.
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (skill v1.0.5), skor 1–10 penguji independen: tanpa skill **6,17** → dengan skill **8,83** (LULUS). Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ulang di konteks Telegram pada v1.0.7 (5 Okt 2026, 3 percobaan, tanpa kirim ke grup): rata-rata dengan skill **8,17**, lulus 3 dari 3 (tanpa pembanding tanpa-skill). Dengan skill: rundown per menit dengan tanda kapan menyebut stok dan harga, fakta dicek silang, dan tidak ada istilah internal yang ikut terucap; tanpa skill: naskah generik tanpa pembagian waktu live.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
 
@@ -53,13 +78,13 @@ Verdik gelombang: LULUS — DENGAN memberi rundown 30 menit bertanggal jam, tabe
 
 ## FAQ
 **Kenapa tidak boleh bilang "stok tinggal sedikit" untuk memancing pembeli?**
-Boleh, asalkan benar. Skill menaruh `[stok nyata]` agar host membaca angka dari layar. Stok atau hitung mundur palsu termasuk informasi menyesatkan dan bisa merugikan tokomu.
+Boleh, asalkan benar. Skill menaruh `[stok nyata]` agar host membaca angka dari layar. Stok atau hitung mundur palsu termasuk informasi menyesatkan dan bisa merugikan toko Anda.
 
 **Bisa untuk live dengan 2 host atau bahasa daerah?**
 Bisa. Sebutkan saja, misalnya "host 2 orang, pakai sedikit bahasa Sunda".
 
 **Bagaimana kalau Python tidak ada di komputer saya?**
-Skill tetap jalan. AI agent menghitung manual dengan rumus yang sama dan memberi tahu kamu bahwa hitungannya manual.
+Skill tetap jalan. AI agent menghitung manual dengan rumus yang sama dan memberi tahu Anda bahwa hitungannya manual.
 
 ## Riwayat perubahan
 

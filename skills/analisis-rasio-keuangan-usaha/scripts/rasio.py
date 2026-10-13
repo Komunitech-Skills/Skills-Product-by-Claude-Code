@@ -20,7 +20,7 @@ import sys
 from datetime import date
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 D0 = Decimal(0)
 D100 = Decimal(100)
 HARI_SETAHUN = Decimal(365)

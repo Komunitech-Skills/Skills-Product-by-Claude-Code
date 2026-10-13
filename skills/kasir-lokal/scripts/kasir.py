@@ -43,7 +43,7 @@ from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
 APLIKASI = "kasir-lokal"
-VERSI = "1.1.1"
+VERSI = "1.1.7"
 
 
 def _timeout():

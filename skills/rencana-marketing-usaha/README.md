@@ -11,7 +11,7 @@ Diuji AI penguji independen di OpenClaw: 6,0 → 9,0 dari 10 (pembedanya skill m
 - **Angka dihitung, bukan dikira:** pembagian anggaran per kanal, batas biaya per pelanggan baru (CAC), ROAS impas (omzet minimal dari tiap rupiah iklan agar tidak rugi), dan anggaran iklan maksimal dihitung skrip dari margin Anda.
 - **Cocok untuk modal kecil:** mulai dari WhatsApp, Google Maps, Instagram, TikTok, marketplace; iklan berbayar hanya bila margin sehat.
 - **Kalender Indonesia:** gajian, 11.11/12.12, Ramadan-Lebaran, tahun ajaran baru, akhir tahun.
-- **Terhubung ke skill lain:** kalender konten, promo, audit iklan, laporan iklan, KPI tim, riset pelanggan.
+- **Terhubung ke skill lain:** paket konten mingguan, promo, audit iklan, laporan iklan, KPI tim, riset pelanggan.
 
 ## Cocok untuk siapa
 Pemilik warung/kedai/toko online, jasa lokal, reseller, freelancer, dan usaha mapan yang belum punya rencana marketing tertulis. Tidak butuh istilah teknis.
@@ -59,7 +59,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 3. **Apakah skill menjalankan iklan untuk saya?** Tidak. Skill menyusun rencana dan angka batasnya; pemasangan iklan dikerjakan Anda/tim. Untuk audit iklan pakai `audit-akun-iklan`.
 
 ## Skill pendamping
-kalender konten 30 hari (`kalender-konten-30hari`), kalender promo (`promo-kalender`), cek akun iklan (`audit-akun-iklan`), laporan iklan mingguan (`laporan-iklan-mingguan`), KPI tim (`kpi-tim`), riset calon pelanggan (`riset-calon-pelanggan`), hitung modal & harga jual (`hitung-hpp`), dan harga jual marketplace (`harga-jual-marketplace`).
+paket konten mingguan (`konten-mingguan`), kalender promo (`promo-kalender`), cek akun iklan (`audit-akun-iklan`), laporan iklan mingguan (`laporan-iklan-mingguan`), KPI tim (`kpi-tim`), riset calon pelanggan (`riset-calon-pelanggan`), hitung modal & harga jual (`hitung-hpp`), dan harga jual marketplace (`harga-jual-marketplace`).
 
 ## Asal-usul
 Diadaptasi dan diperluas dari dua skill berlisensi MIT (marketing-plan oleh Corey Haines; gtm-strategy oleh Pawel Huryn); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan para pembuat sumber.

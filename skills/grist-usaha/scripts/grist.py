@@ -56,7 +56,7 @@ import urllib.request
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.3"
+VERSI = "1.0.8"
 APLIKASI = "grist-usaha"
 LOKAL_DIIZINKAN = {"localhost", "127.0.0.1", "::1"}
 FILE_KUNCI_DEFAULT = Path.home() / ".komunitech" / "grist-kunci.txt"

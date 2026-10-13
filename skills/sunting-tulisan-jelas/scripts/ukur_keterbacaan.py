@@ -25,7 +25,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 BATAS_KALIMAT_PANJANG = 25
 MAKS_BYTE = 2_000_000
 DAFTAR = Path(__file__).resolve().parent.parent / "references" / "kata-pengisi-jargon.txt"
