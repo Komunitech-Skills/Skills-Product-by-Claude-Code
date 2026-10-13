@@ -46,21 +46,21 @@ Roastery kecil ingin membuka mitra. Ia sudah punya harga eceran. Resellernya keb
 - Contoh dropshipper: tanpa stok. Per pesanan untung ±Rp 7.900 bila dijual Rp 79.000 di marketplace.
 
 ## 3. Syarat & ketentuan kemitraan (siap tempel)
-**SYARAT & KETENTUAN MITRA KOPI <NAMA BRAND>** (berlaku mulai 1 Oktober 2026)
+**SYARAT & KETENTUAN MITRA KOPI <NAMA BRAND>** (berlaku mulai [isi: tanggal berlaku])
 1. Dropshipper tidak menyimpan stok. Pesanan dikirim langsung dari kami atas nama toko mitra, minimal 1 pcs.
-2. Reseller: minimal 10 pcs per pembelian (boleh campur varian gilingan). Agen: minimal 50 pcs per pembelian.
+2. Reseller: minimal 10 pcs per pembelian ([isi: boleh campur varian atau tidak]). Agen: minimal 50 pcs per pembelian.
 3. Tier ditentukan dari jumlah pembelian dalam satu transaksi. **Tidak ada biaya pendaftaran. Tidak ada bonus dari merekrut mitra lain.**
-4. Perubahan harga diinformasikan paling lambat 7 hari sebelumnya.
+4. Perubahan harga diinformasikan paling lambat [isi: jumlah] hari sebelumnya.
 5. Pembayaran lunas sebelum barang dikirim, ke rekening atas nama usaha kami. Kami tidak pernah meminta transfer ke rekening pribadi lain.
-6. Pesanan yang dibayar sebelum pukul 14.00 dikirim di hari kerja yang sama. Ongkir ke reseller/agen ditanggung mitra.
+6. Pesanan yang dibayar sebelum pukul [isi: jam] dikirim di [isi: hari kerja yang sama / hari kerja berikutnya]. Ongkir ke reseller/agen ditanggung mitra.
 7. Untuk dropship: nama pengirim memakai nama toko mitra; invoice tanpa harga mitra.
-8. Retur/tukar untuk kemasan bocor/rusak atau salah kirim maksimal 3 hari setelah diterima, dengan video pembukaan paket. Kopi yang tidak laku tidak dapat diretur, tapi boleh ditukar varian gilingan maksimal 10% dari pembelian terakhir.
+8. Retur/tukar untuk kemasan bocor/rusak atau salah kirim maksimal [isi: jumlah] hari setelah diterima, dengan [isi: bukti yang diminta, mis. video pembukaan paket]. Kopi yang tidak laku [isi: boleh diretur/ditukar atau tidak, dan batasnya].
 9. Harga eceran anjuran Rp 79.000. Harga minimum anjuran untuk iklan/etalase online Rp 75.000. Tujuannya menjaga citra produk dan agar semua mitra tetap untung. Mitra yang berulang kali memasang harga di bawah harga minimum anjuran akan diingatkan, lalu disesuaikan tiernya, lalu dihentikan kerja samanya. **Tidak ada denda uang.**
 10. Mitra boleh memakai foto & materi resmi kami untuk menjual produk asli kami. Dilarang mengubah klaim, memakai untuk produk lain, atau menjual produk tiruan dengan merek kami.
 11. Mitra hanya menyampaikan klaim yang tertulis di kemasan/materi resmi. Tidak boleh menambah klaim kesehatan.
 12. Nama toko mitra tidak boleh menyerupai toko resmi kami.
 13. Data konsumen hanya dipakai untuk memproses pesanan dan tidak dibagikan ke pihak lain.
-14. Kerja sama dapat diakhiri salah satu pihak dengan pemberitahuan 7 hari; pesanan yang sudah dibayar tetap diproses.
+14. Kerja sama dapat diakhiri salah satu pihak dengan pemberitahuan [isi: jumlah] hari; pesanan yang sudah dibayar tetap diproses.
 
 ## 4. Pesan ajakan rekrut
 **WA broadcast** (hanya ke kontak yang pernah berinteraksi/setuju)
@@ -69,20 +69,20 @@ Roastery kecil ingin membuka mitra. Ia sudah punya harga eceran. Resellernya keb
 > 💰 Harga mitra mulai Rp 48.900/pcs (harga eceran anjuran Rp 79.000)
 > 🧾 Pilihan: Dropshipper (tanpa stok, mulai 1 pcs) • Reseller (min. 10 pcs, modal ±Rp 553.000) • Agen (min. 50 pcs)
 > 📈 Contoh: Reseller beli 10 pcs, jika semua terjual di harga eceran, untung ±Rp 143.000 (sudah dipotong perkiraan biaya marketplace & ongkir).
-> ✅ Gratis pendaftaran • foto & materi promosi disediakan • retur untuk kemasan rusak
+> ✅ Gratis pendaftaran • [isi: layanan pendukung yang benar-benar ada, mis. foto & materi promosi, retur kemasan rusak]
 > Mau daftar harga lengkap & syaratnya? Balas **MITRA** ya, Kak.
 > _(Tidak ingin menerima info seperti ini lagi? Balas STOP.)_
 
 **Caption IG/TikTok**
 > Mau jualan kopi tanpa roasting sendiri? ☕
-> Harga mitra mulai Rp 48.900, eceran anjuran Rp 79.000. Bisa dropship tanpa stok, reseller mulai 10 pcs, atau agen 50 pcs. Foto & materi promosi kami sediakan.
+> Harga mitra mulai Rp 48.900, eceran anjuran Rp 79.000. Bisa dropship tanpa stok, reseller mulai 10 pcs, atau agen 50 pcs. [isi: layanan pendukung yang benar-benar ada, mis. foto & materi promosi].
 > Contoh jujur: reseller 10 pcs, jika semua terjual di harga eceran, untung ±Rp 143.000.
 > DM "MITRA" untuk daftar harga. Tanpa biaya pendaftaran.
 
 **Status singkat**
 > Dibuka: mitra Kopi <brand>. Mulai 1 pcs (dropship). Untung ±Rp 7.900/pcs di harga eceran. DM "MITRA".
 
-**Asumsi & catatan:** mode diskon dari harga eceran; harga tier dibulatkan ke **bawah** ke Rp 100 (diskon mitra tidak pernah lebih kecil dari yang dijanjikan); harga minimum dibulatkan ke bawah. Potongan marketplace 10% adalah perkiraan dari pengguna, jadi cek Seller Center mitra. Harga minimum ditulis sebagai anjuran + kebijakan kemitraan, bukan denda (lihat UU 5/1999 Pasal 8 & pengecualian usaha kecil Pasal 50 huruf h). Per 23 September 2026; bukan nasihat hukum/pajak.
+**Asumsi & catatan:** mode diskon dari harga eceran; harga tier dibulatkan ke **bawah** ke Rp 100 (diskon mitra tidak pernah lebih kecil dari yang dijanjikan); harga minimum dibulatkan ke bawah. Potongan marketplace 10% adalah perkiraan dari pengguna, jadi cek Seller Center mitra. Harga minimum ditulis sebagai anjuran + kebijakan kemitraan, bukan denda (lihat UU 5/1999 Pasal 8 & pengecualian usaha kecil Pasal 50 huruf h). Per 23 September 2026; bukan nasihat hukum/pajak. Tanggal berlaku, batas waktu (pemberitahuan harga, jam potong kirim, retur/tukar, pengakhiran kerja sama), kebijakan tukar kopi tidak laku, dan layanan pendukung (foto & materi promosi, retur kemasan rusak) tidak diberikan pengguna, jadi ditulis `[isi: ...]` (asumsi, ganti dengan data Anda; hapus bila tidak berlaku). Syarat nomor 5, 7, 9, 10–13 adalah usulan standar dari template.
 
 ## Catatan penguji
 - **Verifikasi independen:** 300 kombinasi acak (mode diskon & margin, biaya produsen, biaya jual 0–15%, ongkir, maks. diskon konsumen, eceran diturunkan script) dihitung ulang dengan python terpisah (pecahan eksak): harga tier, arah pembulatan (diskon → ke bawah, margin → ke atas, eceran usulan → ke atas ke Rp 1.000), margin produsen, untung mitra di eceran & di harga minimum → **cocok 300/300**.

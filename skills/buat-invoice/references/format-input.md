@@ -24,3 +24,5 @@ Angka boleh gaya Indonesia (`"65.000"`, `"1,5jt"`, `"Rp 3.000.000"`). Diskon: `"
 
 ## Penomoran otomatis
 Urutan prioritas: `nomor` di JSON → `--nomor-terakhir` (angka urut terakhir +1, nol di depan dipertahankan; bila bulan/tahun tanggal dokumen lebih baru dari nomor terakhir → periode diganti dan urut mulai 0001, atau dilanjutkan dengan `--urut-lanjut`; tanggal lebih lama → ditolak; format `INV/2026/09/0012`, `012/INV/IX/2026`, `INV-2026-0012` dikenali) → `--counter-file` (urut per prefix/tahun/bulan, file diperbarui) → `PREFIX/TAHUN/BULAN/0001` dengan pengingat.
+
+**Cegah nomor dobel (v1.0.5):** bila `--counter-file` diberikan (boleh bersama `nomor`/`--nomor-terakhir`), file itu menyimpan `"terbit": {nomor: nama pembeli}` dan counter per bulan. Nomor hasil otomatis yang sudah dipakai pembeli lain dinaikkan ke nomor berikutnya yang belum dipakai (dengan PERHATIAN); nomor yang sama untuk pembeli yang sama dianggap revisi (tetap); `nomor` manual yang sudah dipakai pembeli lain → error. Pakai path file yang sama setiap kali (path relatif dibaca dari folder kerja saat script dijalankan).

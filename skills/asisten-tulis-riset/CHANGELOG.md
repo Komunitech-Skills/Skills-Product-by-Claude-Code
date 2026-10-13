@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.7 (2026-10-13)
+- Pemindaian contoh uji: contoh newsletter koperasi mengarang program internal (sesi edukasi, materi bergambar, pendampingan), kanal (grup WhatsApp, papan pengumuman), dan "kantor cabang" yang tidak diberikan pengguna. Kini ditulis `[isian: ...]`.
+- Ditambah aturan anti-halusinasi no. 9 di SKILL.md: atribut/angka/harga/fakta (termasuk program dan data internal organisasi pengguna) yang tidak diberikan pengguna atau tidak bersumber ditulis `[isi: ...]` atau ditandai asumsi. Script tidak berubah.
+
 ## Catatan revisi 1.0.6 (2026-10-13)
 - Rujukan ke skill arsip diganti: `caption-sosmed-umkm`, `kalender-konten-30hari` diganti `konten-mingguan` (SKILL.md, bagian Kapan TIDAK digunakan).
 

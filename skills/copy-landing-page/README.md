@@ -24,22 +24,20 @@ Diuji AI penguji independen di OpenClaw: 6,0 → 8,0 dari 10 (dengan skill struk
 
 **Sesudah (cukup ketik):** "Buatkan landing page untuk keripik pedas saya, harga 25 ribu"
 
-Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/uji-pembuat-01-keripik-pedas.md`):
+Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/01-keripik-pedas-normal.md`). Hal yang tidak Anda sebutkan (ukuran, level pedas, masa simpan, garansi) tidak dikarang, tetapi ditandai `[isian: ...]` untuk Anda isi:
 ```
-# Ngemil Pedas Sepuasnya, Tanpa Ribet Mikirin Kadaluarsa
-### Keripik Pedas Bu Yuli — renyah tahan 3 bulan, dikirim ke seluruh Indonesia dari Solo.
+# Pesan Keripik Pedas Mak Iyem Lewat WhatsApp, Dikirim ke Rumahmu
+### Keripik Setan Mak Iyem — Rp25.000 [isian: per bungkus/ukuran]. Kirim ke Jabodetabek dan luar kota, bayar transfer atau QRIS.
 
-**[Pesan Sekarang lewat WhatsApp →](https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Pedas%20Bu%20Yuli%20dari%20halaman%20ini)**
+**[Pesan Sekarang lewat WhatsApp →](https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini)**
 …
-## Kenapa Keripik Pedas Bu Yuli Cocok Buat Kamu
-- Renyah tahan sampai 3 bulan meski disimpan di suhu ruang
-- Level pedas 1–5, dari yang cuma nendang dikit sampai yang bikin nangis
+- Rasa dan tingkat pedas: [isian: varian rasa/level pedas yang tersedia sesuai produkmu].
 …
 ## Kata Mereka yang Sudah Coba
-[ISI TESTIMONI ASLI — nama & kota pembeli. Kosongkan/hapus bagian ini sampai ada testimoni asli.]
+[ISI TESTIMONI ASLI — nama & kota pembeli. Hapus bagian ini sampai ada testimoni asli.]
 …
-## Penawaran
-- Harga: Rp25.000 / bungkus (200 gr)
+## Garansi
+[isi: garansi/retur, hanya yang benar-benar kamu berlakukan.]
 ```
 Hasil lengkapnya juga memuat struktur masalah–manfaat–penawaran–garansi–FAQ, 3 variasi judul untuk dites, serta judul dan deskripsi Google yang panjangnya sudah diukur.
 
@@ -79,6 +77,6 @@ Tidak wajib. Kalau Python ada, tautan WhatsApp dan panjang meta title/descriptio
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
 
 Skill ini diadaptasi dari struktur marketing skill open-source (MIT, coreyhaines31/marketingskills); teks, contoh Indonesia, script, dan ceklis kepatuhan milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber.

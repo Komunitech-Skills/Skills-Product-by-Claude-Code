@@ -8,7 +8,7 @@
 ## Ringkasan skenario
 | # | Skenario | Hasil | Catatan |
 |---|---|---|---|
-| 01 | Katering kantor → HRD, kontak dari pameran | ✅ Lulus | 3 varian 239/469/506 kar., script menangkap kalimat 29 kata di draf awal, wa.me terverifikasi round-trip. |
+| 01 | Katering kantor → HRD, kontak dari pameran | ✅ Lulus | 3 varian 239/480/505 kar., script menangkap kalimat 29 kata di draf awal, wa.me terverifikasi round-trip. |
 | 02 | Roastery → kafe dari Google Maps, nomor `+62 857-…` | ✅ Lulus (dengan catatan) | Kalimat pola #3 dari `pola-pembuka.md` **tidak dikenali** script sebagai asal kontak (B1); agent harus menulis ulang. |
 | 03 | Konsultan pajak, referral, formal, penerima di WITA | ✅ Lulus (dengan catatan) | Agent mengonversi 19.30 WIB → 20.30 WITA dan menyarankan pindah jadwal. Script menolak format `19.30` (B4) & menandai PPN/SPT sebagai "teriak" (B3). |
 | 04 | Input tidak lengkap, asal kontak mengelak | ✅ Lulus | Tanya sekali (4 poin), asal kontak ditanya ulang 1x, tidak dikarang walau didesak "cepet". |
@@ -18,7 +18,7 @@
 
 ## Uji script (`scripts/cek_pesan.py`)
 - `tests/uji_regresi.py`: **43 tes, semua OK** (sesuai klaim ATTRIBUTION).
-- Verifikasi independen (Python one-liner `len()`, `str.split()`, regex pisah kalimat terpisah): jumlah karakter & kata cocok untuk semua 12 varian + 3 teks pembanding (mis. 239/40, 469/74, 506/82; teks emoji 132 kar./24 kata). Encoding wa.me diverifikasi dengan `urllib.parse.parse_qs` → teks identik (termasuk `&`, `#`, `+`, `=`, `?`, baris baru, emoji).
+- Verifikasi independen (Python one-liner `len()`, `str.split()`, regex pisah kalimat terpisah): jumlah karakter & kata cocok untuk semua 12 varian + 3 teks pembanding (mis. 239/40, 480/76, 505/83; teks emoji 132 kar./24 kata). Encoding wa.me diverifikasi dengan `urllib.parse.parse_qs` → teks identik (termasuk `&`, `#`, `+`, `=`, `?`, baris baru, emoji).
 - Normalisasi nomor diuji 17 bentuk:
 
 | Input | Hasil | Benar? |
@@ -54,7 +54,7 @@
 ### Rendah
 **B7 — Emoji tidak diperiksa script,** padahal `checklist-anti-blokir.md` menulis "maksimal 1 emoji". Teks A/B dengan 5 emoji lolos tanpa catatan emoji. Usulan: hitung emoji (rentang Unicode simbol/piktograf) dan beri peringatan bila > 1.
 **B8 — Pemisah kalimat tidak memecah baris baru** (`pisah_kalimat`, baris 117). Daftar poin tanpa titik (gaya ✅ … ✅ …) dihitung satu "kalimat" 52 kata. Usulan: juga split pada `\n`.
-**B9 — Varian 3 (template) hampir selalu > 500 karakter** (506, 558, 594 di skenario 01–03) → peringatan panjang jadi rutin. Usulan: template V3 targetkan ≤ 500 karakter (4–5 kalimat pendek) atau naikkan ambang saran untuk V3 dan sebutkan di SKILL.md.
+**B9 — Varian 3 (template) hampir selalu > 500 karakter** (505, 558, 594 di skenario 01–03) → peringatan panjang jadi rutin. Usulan: template V3 targetkan ≤ 500 karakter (4–5 kalimat pendek) atau naikkan ambang saran untuk V3 dan sebutkan di SKILL.md.
 **B10 — Label "Singkat (1-2 kalimat)"** tidak cocok dengan template V1 yang berisi 3–4 kalimat (salam + perkenalan/asal + ajakan + opsi keluar). Usulan: "Singkat (± 2–3 kalimat, ≤ 300 karakter)".
 **B11 — Detail layanan yang boleh diasumsikan** belum diatur: skill tegas melarang mengarang bukti/testimoni, tapi tidak menyebut detail layanan (mis. "bisa datang ke dapur") — di skenario 04 agent harus menandainya manual di Asumsi. Usulan: tambahkan satu kalimat di Langkah 5: "detail layanan yang tidak diberikan pengguna ditulis sebagai [placeholder] atau masuk Asumsi".
 **B12 (ide dari pesaing)** — varian 3 cenderung mendaftar fitur; `cold-email` lebih kuat menyebut akibat masalah bagi penerima. Usulan tulis ulang panduan V3 ("1 kalimat akibat masalah bagi penerima, bila wajar & tidak mengarang").

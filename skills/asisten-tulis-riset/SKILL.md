@@ -69,6 +69,7 @@ tujuan, panjang). Jika pengguna ingin cepat, pakai default dan sebutkan asumsiny
    tanpa kutipan dikarang.
 7. **Tidak ada angka tanpa sumber:** perbandingan biaya/tarif/persentase (mis. "EDC memotong 2-3%") juga wajib `[n]` atau `[perlu sumber]` — jangan ditulis dari ingatan.
 8. Sebelum menyerahkan hasil, jalankan **Checklist Verifikasi** di bagian bawah (bila Python ada, jalankan `scripts/cek_sitasi.py` dan tampilkan ringkas hasilnya di akhir jawaban).
+9. **Jangan mengarang atribut produk/layanan, angka, harga, atau fakta yang tidak diberikan pengguna atau tidak bersumber** — termasuk program, kegiatan, kanal, dan data internal organisasi/usaha pengguna (mis. program koperasi, jadwal, grup WhatsApp, kantor cabang); tulis `[isi: ...]` atau tandai sebagai asumsi.
 
 ## Langkah kerja
 

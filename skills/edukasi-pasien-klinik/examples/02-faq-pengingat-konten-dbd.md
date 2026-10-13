@@ -72,12 +72,13 @@ Jadwal imunisasi Ananda [nama anak] sudah dekat:
 📅 Sabtu, 3 Oktober 2026, pukul 09.00
 📍 Ruang KIA, Klinik Pratama Sehat Bersama
 
-Yang perlu dibawa: buku KIA / kartu vaksinasi, KTP orang tua.
+Yang perlu dibawa: [isi dari klinik, mis. buku KIA / kartu vaksinasi, KTP orang tua — tidak disebut di permintaan].
 
 Ada pertanyaan atau perlu jadwal ulang? Hubungi kami di 0812-0000-7788.
 
 Klinik Pratama Sehat Bersama
 ```
+*(Daftar bawaan tidak diberikan klinik, jadi ditandai `[isi]`. Skill tidak menambahkan jadwal/usia/dosis imunisasi; bila ingin menjelaskan jadwal imunisasi anak, rujuk jadwal resmi terbaru IDAI/Kemenkes dengan tahunnya, atau tulis "cek jadwal resmi terbaru".)*
 
 ### 4) Konten Instagram — DBD musim hujan
 

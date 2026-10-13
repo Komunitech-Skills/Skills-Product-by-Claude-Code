@@ -47,7 +47,7 @@ House Blend Rp 44.000. Ada juga voucher toko potongan Rp 10.000 untuk belanja mi
 checkout ya." [tunjuk ikon voucher di layar] [sapa 3 nama pertama di komentar]
 
 **[12.03–12.04] Hook — Arabika Gayo**
-"Suka kopi yang nggak terlalu pahit dan ada rasa buahnya? Kenalan sama Arabika Gayo ini." [angkat kemasan]
+"Suka kopi yang [isi: ciri rasa Arabika Gayo dari toko, mis. tingkat pahit/asam/aroma]? Kenalan sama Arabika Gayo ini." [angkat kemasan]
 
 **[12.04–12.06] Demo — Arabika Gayo**
 "Biji kopinya saya tuang ya, lihat warnanya." [tuang biji ke piring kecil, dekatkan ke kamera]
@@ -126,7 +126,7 @@ Sleman, bisa COD. Live berikutnya [isi: jadwal]. Follow toko kami ya. Selamat la
 ### Catatan untuk host
 - Sisa kuota voucher dibaca dari layar (`[stok nyata]`), jangan dikarang. Jangan hitung mundur "voucher habis 5 menit lagi" kecuali memang berakhir.
 - Jangan bilang paket isi 2 Arabika "lebih murah dari harga live" (harganya sama).
-- Hal yang perlu dilengkapi: profil rasa, saran penyimpanan/masa simpan, komposisi House Blend, jadwal live berikutnya.
+- Hal yang perlu dilengkapi: profil rasa (termasuk ciri rasa di hook Arabika Gayo; belum diberikan pengguna, jadi ditulis `[isi: ...]`), saran penyimpanan/masa simpan, komposisi House Blend, jadwal live berikutnya.
 - Asumsi: host `[nama host]`; voucher berlaku untuk semua produk; urutan produk Arabika dulu karena harganya tertinggi & ada paket.
 
 ## Catatan penguji

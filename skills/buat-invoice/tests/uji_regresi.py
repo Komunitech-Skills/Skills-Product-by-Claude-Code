@@ -147,6 +147,88 @@ class UjiCLI(unittest.TestCase):
         self.assertIn("**No.:** INV/2026/09/0050", out)
 
 
+class UjiNomorTidakDobel(unittest.TestCase):
+    """v1.0.5: dua pembuatan berturut-turut tidak boleh menghasilkan nomor yang sama (temuan uji platform:
+    nomor invoice dobel). --counter-file mencatat nomor yang sudah dibuat + nama pembeli."""
+
+    setUp, tearDown, jalan = UjiCLI.setUp, UjiCLI.tearDown, UjiCLI.jalan
+
+    def data(self, pembeli):
+        d = copy.deepcopy(CONTOH)
+        d["pembeli"] = {"nama": pembeli}
+        return d
+
+    def no(self, out):
+        return json.loads(out)["nomor"]
+
+    def test_dua_kali_berantai_tanpa_counter(self):
+        k1, o1, _ = self.jalan(self.data("PT A Fiktif"), "--nomor-terakhir", "INV/2026/09/0012", "--format", "json")
+        k2, o2, _ = self.jalan(self.data("PT B Fiktif"), "--nomor-terakhir", self.no(o1), "--format", "json")
+        self.assertEqual((k1, k2), (0, 0))
+        self.assertEqual((self.no(o1), self.no(o2)), ("INV/2026/09/0013", "INV/2026/09/0014"))
+
+    def test_nomor_terakhir_sama_dua_kali_dengan_counter(self):
+        # agent menyalin lagi "nomor terakhir 0012" dari pesan pengguna untuk invoice kedua
+        c = os.path.join(self.dir, "nomor-invoice.json")
+        o1 = self.jalan(self.data("PT A Fiktif"), "--nomor-terakhir", "INV/2026/09/0012", "--counter-file", c,
+                        "--format", "json")[1]
+        k2, o2, _ = self.jalan(self.data("PT B Fiktif"), "--nomor-terakhir", "INV/2026/09/0012", "--counter-file",
+                               c, "--format", "json")
+        self.assertEqual(k2, 0)
+        self.assertEqual((self.no(o1), self.no(o2)), ("INV/2026/09/0013", "INV/2026/09/0014"))
+        self.assertTrue(any("sudah dipakai untuk PT A Fiktif" in w for w in json.loads(o2)["peringatan"]))
+        # mode counter saja melanjutkan, tidak mengulang dari 0001
+        o3 = self.jalan(self.data("PT C Fiktif"), "--counter-file", c, "--format", "json")[1]
+        self.assertEqual(self.no(o3), "INV/2026/09/0015")
+        with open(c, encoding="utf-8") as fh:
+            self.assertEqual(sorted(json.load(fh)["terbit"]),
+                             ["INV/2026/09/0013", "INV/2026/09/0014", "INV/2026/09/0015"])
+
+    def test_counter_saja_dua_kali_hari_sama(self):
+        c = os.path.join(self.dir, "nomor-invoice.json")
+        n1 = self.no(self.jalan(self.data("PT A Fiktif"), "--counter-file", c, "--format", "json")[1])
+        n2 = self.no(self.jalan(self.data("PT A Fiktif"), "--counter-file", c, "--format", "json")[1])
+        self.assertEqual((n1, n2), ("INV/2026/09/0001", "INV/2026/09/0002"))
+
+    def test_revisi_pembeli_sama_nomor_tetap(self):
+        c = os.path.join(self.dir, "nomor-invoice.json")
+        argv = ("--nomor-terakhir", "INV/2026/09/0012", "--counter-file", c, "--format", "json")
+        n1 = self.no(self.jalan(self.data("PT A Fiktif"), *argv)[1])
+        o2 = self.jalan(self.data("PT A Fiktif"), *argv)[1]
+        self.assertEqual((n1, self.no(o2)), ("INV/2026/09/0013", "INV/2026/09/0013"))
+        self.assertTrue(any("dianggap revisi" in w for w in json.loads(o2)["peringatan"]))
+
+    def test_folder_kerja_berbeda_file_counter_sama(self):
+        c = os.path.join(self.dir, "nomor-invoice.json")
+        asal = os.getcwd()
+        hasil = []
+        try:
+            for i, pembeli in enumerate(("PT A Fiktif", "PT B Fiktif")):
+                sub = os.path.join(self.dir, "kerja{}".format(i))
+                os.mkdir(sub)
+                os.chdir(sub)
+                hasil.append(self.no(self.jalan(self.data(pembeli), "--nomor-terakhir", "INV/2026/09/0012",
+                                                "--counter-file", c, "--format", "json")[1]))
+        finally:
+            os.chdir(asal)
+        self.assertEqual(hasil, ["INV/2026/09/0013", "INV/2026/09/0014"])
+
+    def test_nomor_manual_bentrok_ditolak(self):
+        c = os.path.join(self.dir, "nomor-invoice.json")
+        self.jalan(self.data("PT A Fiktif"), "--nomor-terakhir", "INV/2026/09/0012", "--counter-file", c)
+        d = self.data("PT B Fiktif")
+        d["nomor"] = "INV/2026/09/0013"
+        kode, _, err = self.jalan(d, "--counter-file", c)
+        self.assertEqual(kode, 2)
+        self.assertIn("tidak boleh dobel", err)
+
+    def test_file_counter_rusak(self):
+        c = os.path.join(self.dir, "nomor-invoice.json")
+        with open(c, "w", encoding="utf-8") as fh:
+            fh.write('{"terbit": [1]}')
+        self.assertEqual(self.jalan(self.data("PT A Fiktif"), "--counter-file", c)[0], 2)
+
+
 class UjiPPh23(unittest.TestCase):
     """v1.0.3 (uji OpenClaw 2026-10-01): PPh 23 jasa 2% sebagai info, total tagihan tidak berubah.
     Skenario: 8.750.000 + 2 x 2.375.000 = 13.500.000; PPN 12% x 11/12 x 13.500.000 = 1.485.000 -> total 14.985.000;

@@ -32,7 +32,7 @@ Casing iPhone 15 bening (clear case). Warna asli HP tetap terlihat, sekaligus me
 
 ✅ Bening, warna HP tetap terlihat
 ✅ Dibuat khusus untuk ukuran iPhone 15
-✅ Lubang kamera, tombol, dan port pas sesuai model
+✅ [isi: lubang kamera/tombol/port pas, bila benar]
 ✅ [isi: keunggulan lain yang benar, mis. sudut tebal / bahan lentur]
 ✅ [isi: isi paket]
 

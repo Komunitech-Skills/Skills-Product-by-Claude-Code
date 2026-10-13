@@ -1,17 +1,18 @@
 # Contoh 2: Cek cepat tanpa Uptime Kuma sama sekali
 
-**Permintaan pengguna:** "Cek website saya masih hidup nggak, alamatnya api.anthropic.com" (dipakai
-di sini sebagai domain https publik nyata untuk menunjukkan hasil sungguhan tanpa memantau situs
-orang lain berulang — satu kali cek saja, sesuai kebijakan skill).
+**Permintaan pengguna:** "Cek website saya masih hidup nggak, alamatnya toko-contoh.example.com"
+(domain contoh fiktif; angka di bawah berasal dari satu kali cek sungguhan pada 2026-09-26 terhadap
+sebuah server https publik, dengan nama domainnya diganti domain contoh — satu kali cek saja, sesuai
+kebijakan skill. Di pemakaian nyata, skill hanya mengecek situs milik pengguna).
 
 **Perintah yang dijalankan agent:**
 ```bash
-python3 scripts/pantau.py cek-cepat https://api.anthropic.com --timeout 8
+python3 scripts/pantau.py cek-cepat https://toko-contoh.example.com --timeout 8
 ```
 
-**Keluaran nyata (satu kali permintaan HTTP + pemeriksaan SSL sungguhan, dijalankan 2026-09-26):**
+**Keluaran (angka dari satu kali permintaan HTTP + pemeriksaan SSL sungguhan, dijalankan 2026-09-26; domain diganti domain contoh):**
 ```
-CEK CEPAT: https://api.anthropic.com
+CEK CEPAT: https://toko-contoh.example.com
 HTTP    : 404 (GALAT KLIEN (4xx))
 Respons : 63.5 ms
 SSL     : 25 hari lagi (kedaluwarsa 2026-10-21)
@@ -21,7 +22,7 @@ Versi `--json` dari permintaan yang sama:
 ```json
 {
   "ok": true,
-  "url": "https://api.anthropic.com",
+  "url": "https://toko-contoh.example.com",
   "kode_http": 404,
   "kategori": "GALAT KLIEN (4xx)",
   "waktu_respons_ms": 86.7,
