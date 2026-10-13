@@ -1,4 +1,4 @@
-# Notebook Riset Lokal: NotebookLM Pribadi yang Tetap di Komputer Anda
+# Notebook Riset Lokal di Komputer Anda
 
 **Kumpulkan PDF regulasi, katalog supplier, notulen rapat, atau artikel riset ke satu "notebook" — lalu tanya apa saja ke AI Anda dan dapatkan jawaban beserta rujukan sumbernya. Dokumen disimpan di komputer/server Anda sendiri, tidak dititipkan ke Google (catatan privasi lengkap ada di FAQ).**
 

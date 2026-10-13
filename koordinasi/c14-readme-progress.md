@@ -39,4 +39,19 @@ Daftar 40 skill (`random.seed(20261013+23)`), pool = skill aktif minus set A–F
 | riset-saham-berita | sudah memenuhi checklist | — |
 | asisten-tulis-riset | tagline terpotong; baris pembeda | tagline satu baris + italic |
 
-Sisa: set I (run berikutnya).
+## Set I (2026-10-13 ~18:30 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| dasbor-lokal | baris Versi terkini ganda | hapus duplikat |
+| uji-pasar-produk-cepat | sudah memenuhi checklist | — |
+| laporan-iklan-mingguan | rujukan uji terlalu teknis di Cocok untuk siapa | bahasa awam |
+| naskah-live-jualan | sudah memenuhi checklist | — |
+| promo-kalender | sudah memenuhi checklist | — |
+| kalkulator-klinis-nakes | sudah memenuhi checklist | — |
+| landing-page-siap-tayang | sudah memenuhi checklist | — |
+| seleksi-cv-pelamar | tanpa blok Hasil uji / Status uji | tambah blok dari examples/00 |
+| notebook-riset-lokal | judul >8 kata | judul dipersingkat |
+| pantau-website-toko | judul >8 kata | judul dipersingkat |
+
+Sisa: set J (run berikutnya).

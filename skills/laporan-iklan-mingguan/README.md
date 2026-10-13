@@ -29,7 +29,7 @@ Diuji AI penguji independen di OpenClaw: 6,0 → 8,75 dari 10 (tanpa skill meneb
   tiap minggu cuma untuk tahu "habis berapa, dapat apa"
 - Admin/tim marketing kecil yang bikin laporan mingguan manual ke bos lewat WA/Telegram
 - Member VIP komunitech.com yang sudah pakai OpenClaw — laporan ini bisa dijadwalkan otomatis
-  tiap Senin pagi lewat skill `laporan-otomatis-terjadwal` (penjadwal ke Telegram; pengiriman laporan iklan via `automations` command-argv diuji bot Telegram uji 2026-10-13, lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`)
+  tiap Senin pagi lewat skill `laporan-otomatis-terjadwal` (penjadwal ke Telegram; pengiriman laporan iklan terjadwal sudah diuji bot Telegram uji 2026-10-13 — bukti di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`)
 
 ## Contoh sebelum & sesudah
 **Sebelum:** buka Ads Manager tiap platform satu-satu, catat angka manual di Excel, hitung sendiri

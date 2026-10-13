@@ -58,6 +58,10 @@ Salin folder `seleksi-cv-pelamar` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Python tidak wajib; hanya membantu menyaring awal bila CV berupa folder atau file tabel (CSV) teks dalam jumlah besar (perintah: `python3 scripts/nilai_cv.py`, Windows: `python` atau `py`).
 
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.2), skor 1–10: tanpa skill **6,0** → dengan skill **8,2** (LULUS; selisih +2,2). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill ranking dan skor per kriteria kurang konsisten; dengan skill tabel skor per kriteria ber-kutipan CV, pertanyaan wawancara per kandidat, kalimat pengarah di CV ditangkis, dan permintaan diskriminatif ditolak dengan dasar aturan.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan bot Telegram asli (gelombang 14, 2026-10-12). Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 14, 2026-10-12.
