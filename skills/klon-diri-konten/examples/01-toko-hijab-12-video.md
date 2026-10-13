@@ -1,6 +1,6 @@
 # Contoh 1 - Toko hijab, 12 video/bulan, anggaran Rp500 ribu
 
-Catatan: contoh dari pembuat skill (v1.0.1). Semua paket nyata, batas dari halaman resmi dicek 2026-09-29. **Asumsi yang harus Anda cek sendiri:** berapa kredit HeyGen dipakai per menit video avatar. Contoh memakai 10 kredit/menit sebagai angka ILUSTRASI; ganti dengan angka dari halaman/akun HeyGen Anda, lalu hitung ulang.
+Catatan: contoh dari pembuat skill (v1.0.1). Semua paket nyata, batas dari halaman resmi dicek 2026-09-29 (sumber: https://www.heygen.com/pricing dan https://www.synthesia.io/pricing; HeyGen Creator US$29/bulan, Synthesia Starter US$29, Synthesia Creator US$89; harga bisa berubah, cek harga terkini di situs resmi). **Asumsi yang harus Anda cek sendiri:** berapa kredit HeyGen dipakai per menit video avatar. Contoh memakai 10 kredit/menit sebagai angka ILUSTRASI; ganti dengan angka dari halaman/akun HeyGen Anda, lalu hitung ulang.
 
 **Input pengguna:** "Saya pemilik toko hijab, mau video bicara pakai wajah AI saya sendiri, 12 video sebulan, anggaran Rp500 ribu."
 
@@ -16,7 +16,7 @@ Synthesia Creator          11.25     30.00    18.75  lewat-anggaran   Rp1.468.50
 Termurah yang mencukupi: HeyGen Creator (Rp478.500/bulan)
 Catatan: harga adalah input Anda, cek ulang di halaman resmi; belum termasuk pajak/biaya bank.
 ```
-**3. Rekomendasi:** HeyGen Creator (Rp478.500, di bawah anggaran) **dengan syarat** kredit per menit sesuai asumsi. Bila kredit per menit sebenarnya lebih dari ±53, kuota 600 kredit tidak cukup: kurangi jadi 8-10 video atau kurangi revisi. Cadangan: rekam sebagian video asli dan pakai avatar hanya untuk yang bicara panjang. **Tidak direkomendasikan:** Synthesia Starter (kuota menit kurang; ketersediaan avatar pribadi di paket ini perlu dicek ulang di halaman resmi) dan Synthesia Creator (di atas anggaran). Harga perkiraan bertanggal, skill tidak berafiliasi dengan merek mana pun.
+**3. Rekomendasi:** HeyGen Creator (Rp478.500, di bawah anggaran) **dengan syarat** kredit per menit sesuai asumsi. Bila kredit per menit sebenarnya lebih dari ±53, kuota 600 kredit tidak cukup: kurangi jadi 8-10 video atau kurangi revisi. Cadangan: rekam sebagian video asli dan pakai avatar hanya untuk yang bicara panjang. **Tidak direkomendasikan:** Synthesia Starter (kuota menit kurang; ketersediaan avatar pribadi di paket ini perlu dicek ulang di halaman resmi) dan Synthesia Creator (di atas anggaran). Harga perkiraan per 2026-09-29 (cek harga terkini di situs resmi), skill tidak berafiliasi dengan merek mana pun.
 
 **4. Rekam sampel:** Sabtu pagi, ruang berkarpet, cahaya jendela, naskah latihan bagian 1-4 (`references/naskah-latihan-rekam.md`).
 

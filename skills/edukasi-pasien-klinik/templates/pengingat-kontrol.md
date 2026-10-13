@@ -28,7 +28,7 @@ Jadwal imunisasi [nama anak — samarkan bila untuk contoh] sudah dekat:
 📅 [tanggal], pukul [jam]
 📍 [lokasi]
 
-Yang perlu dibawa: buku KIA / kartu vaksinasi, KTP orang tua.
+Yang perlu dibawa: [buku KIA / kartu vaksinasi / KTP orang tua — isi dari klinik]
 
 Ada pertanyaan atau perlu jadwal ulang? Hubungi kami di [kontak klinik].
 

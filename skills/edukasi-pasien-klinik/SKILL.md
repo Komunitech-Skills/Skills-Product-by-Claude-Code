@@ -241,6 +241,11 @@ Saat membalas chat pasien yang keluar cakupan, catatan untuk admin (di luar draf
 ## Batasan & penanganan error
 - **Input medis kosong/tidak lengkap untuk leaflet/pengingat:** jangan mengarang instruksi.
   Tanyakan poin dari dokter/klinik.
+- **Jangan mengarang atribut produk/layanan, angka, harga, atau fakta yang tidak diberikan pengguna
+  atau tidak bersumber; tulis `[isi: ...]` atau tandai sebagai asumsi.** Ini juga berlaku untuk
+  "yang perlu dibawa" (buku KIA, kartu vaksinasi, KTP, dll.) dan jadwal/usia imunisasi: hanya dari
+  klinik, atau dari jadwal resmi IDAI/Kemenkes lengkap dengan tahunnya; bila tidak ada sumbernya
+  tulis "cek jadwal resmi terbaru". Tanpa dosis obat.
 - **Diminta menilai gejala atau membuat diagnosis:** tolak dengan kalimat baku di
   `references/batasan-medis.md`, tawarkan buatkan jadwal konsultasi.
 - **Diminta kalkulator medis (BMI klinis, dosis, skor risiko):** tolak, jelaskan ini di luar

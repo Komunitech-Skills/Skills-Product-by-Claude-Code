@@ -119,4 +119,4 @@ Anda tinggal isi poin sesuai bidang Anda.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

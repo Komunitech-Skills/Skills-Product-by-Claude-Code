@@ -4,7 +4,7 @@
 
 **Respons dengan skill (mengikuti SKILL.md):**
 1. Status persetujuan: diri sendiri = lolos; isi Bagian A formulir, simpan.
-2. Alat: utama HeyGen Creator (US$29, ~Rp478.500, 600 kredit, watermark hilang di paket berbayar); cadangan Synthesia (tes bahasa Indonesia dulu). Harga bertanggal 2026-09-29, tidak berafiliasi.
+2. Alat: utama HeyGen Creator (US$29, ~Rp478.500, 600 kredit, watermark hilang di paket berbayar); cadangan Synthesia (tes bahasa Indonesia dulu). Harga bertanggal 2026-09-29 (sumber: https://www.heygen.com/pricing dan https://www.synthesia.io/pricing; cek harga terkini di situs resmi), tidak berafiliasi.
 3. Hitungan (script, paket diisi dari halaman resmi, asumsi 1 kredit = 1 menit HeyGen, PERLU DIKONFIRMASI pengguna):
 ```
 Kebutuhan render (termasuk revisi): 7.50 menit/bulan

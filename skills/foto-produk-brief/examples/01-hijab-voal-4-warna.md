@@ -68,7 +68,7 @@ Tambahan kecil di foto ukuran/varian (bukan foto utama): "Warna bisa sedikit ber
 |---|---|---|---|
 | 0–3 | Tangan membentangkan hijab mocca di dekat jendela | "Ini warna ASLI-nya, tanpa filter" | Suara kain + musik pelan dari pustaka platform |
 | 4–12 | Kamera bergeser pelan menampilkan 4 warna berjajar, lalu satu per satu diangkat | "Hitam • Mocca • Dusty pink • Sage" | Musik |
-| 13–17 | Close-up tekstur voal diterawangkan ke jendela | "Voal adem, 115 × 115 cm" | Musik |
+| 13–17 | Close-up tekstur voal diterawangkan ke jendela | "Voal [ISI: sifat kain yang benar, mis. adem], 115 × 115 cm" | Musik |
 | 18–20 | Keempat hijab dilipat berjajar | "Pilih warnamu di keranjang kuning" | Musik |
 
 **Video 2 — "3 gaya 1 hijab"** (9:16, ±25 detik)

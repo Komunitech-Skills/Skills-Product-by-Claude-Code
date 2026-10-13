@@ -38,8 +38,8 @@ Tempelan disimpan ke `ulasan.txt`, lalu `python3 scripts/olah_ulasan.py ulasan.t
 
 **Ide konten**
 1. **TikTok/Reels 10–15 detik, "tes kriuk"**. Hook (3 detik pertama): suara "kriuk" keripik dipatahkan dekat mikrofon. Teks di layar menampilkan kutipan "renyah & ga keras, cocok buat ngemil nonton". CTA: "Cek keranjang kuning, pilih level pedasmu."
-2. **Carousel IG "Kata yang udah langganan"**. Hook: "Kenapa ada yang order sampai 4 kali?" Kutipan: "udah ke-4 kali order, anak2 suka" dan "bakal order lagi buat oleh2". CTA: "Paket oleh-oleh tersedia, DM untuk pesan."
-3. **Video ASMR packing (TikTok/Story)**. Hook: "Keripik rapuh dikirim jauh, aman nggak?" Kutipan: "packing rapi pake kardus, ga ada yg remuk". CTA: "Kirim ke seluruh Indonesia." Jangan menulis "tidak pernah remuk", karena buktinya baru satu ulasan.
+2. **Carousel IG "Kata yang udah langganan"**. Hook: "Kenapa ada yang order sampai 4 kali?" Kutipan: "udah ke-4 kali order, anak2 suka" dan "bakal order lagi buat oleh2". CTA: "[isi: info paket oleh-oleh, bila memang ada], DM untuk pesan."
+3. **Video ASMR packing (TikTok/Story)**. Hook: "Keripik rapuh dikirim jauh, aman nggak?" Kutipan: "packing rapi pake kardus, ga ada yg remuk". CTA: "Pesan sekarang, [isi: jangkauan pengiriman Anda]." Jangan menulis "tidak pernah remuk", karena buktinya baru satu ulasan.
 4. **Story tantangan "Level 5 beneran pedes?"**. Hook: seseorang mencoba level 5 (teman atau tim sendiri, dengan izin). Kutipan: "level 5 beneran pedes, mantul". CTA: polling "Kamu kuat level berapa?"
 5. **WA Status "Bonus kecil"**. Tampilkan foto stiker bonus dengan kutipan "makasih bonus stikernya kak, lucu". Pakai ini hanya selama bonus stiker memang masih dikirim.
 
