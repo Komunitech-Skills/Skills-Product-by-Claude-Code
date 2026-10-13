@@ -7,6 +7,8 @@
 
 Warung bakso + es campur, 2 gerobak, stok daging giling dibeli pagi dipakai sampai malam, es batu beli di pinggir jalan: apa yang harus saya ubah dulu?
 
+**Sumber acuan angka dan aturan pada output di bawah** (ditambahkan kurator 2026-10-13, sama dengan `references/` skill): zona bahaya 5–60 °C dan batas 2 jam di suhu ruang — WHO, *Five Keys to Safer Food* (2006); 1 jam bila > 32 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); bakso/daging giling sapi ≥ 71 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) (FDA untuk usaha 68 °C/17 detik; dipakai yang lebih ketat); halal (usaha mikro/kecil wajib mulai 18 Okt 2026) — UU 33/2014 tentang Jaminan Produk Halal dan PP 42/2024 (mencabut PP 39/2021); BPJPH (2026).
+
 ## Output SESUDAH (dengan skill)
 
 > Dari gambaran usaha Anda, ada **2 titik paling rawan** yang perlu diubah lebih dulu dibanding yang lain — baru setelah itu checklist harian umum.

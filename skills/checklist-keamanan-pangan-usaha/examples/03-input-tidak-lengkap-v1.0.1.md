@@ -1,9 +1,13 @@
+> Catatan: berkas versi 1.0.1 (arsip); angka suhu diperbaiki di versi 1.0.2 — lihat 01 terbaru.
+
 # Skenario 3: input tidak lengkap
 
 **Input:** "checklist keamanan pangan dong"
 
 ## Catatan
 Catatan penguji: langsung bekerja dengan asumsi default skill dan menyebutnya, 3 pertanyaan di akhir. Cacat kecil: alergen menyebut kacang & gandum "ada di menu asumsi" padahal asumsi menu (ayam, telur, nasi, santan, susu) tidak memuatnya. Nilai: sebelum 6,0, sesudah 8,0.
+
+**Sumber acuan angka dan aturan pada output di bawah** (ditambahkan kurator 2026-10-13, sama dengan `references/` skill): ayam/sisa panasan ≥ 74 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); kulkas ≤ 5 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan WHO, *Five Keys to Safer Food* (2006); freezer ≤ -18 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); penahan panas ≥ 60 °C — WHO, *Five Keys to Safer Food* (2006); batas 2 jam di suhu ruang — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) dan WHO, *Five Keys to Safer Food* (2006); alergen — Peraturan BPOM No. 31 Tahun 2018 Pasal 49 ayat (3), diubah Peraturan BPOM No. 20 Tahun 2021; halal (Self Declare usaha mikro/kecil) — UU 33/2014 tentang Jaminan Produk Halal dan PP 42/2024 (mencabut PP 39/2021); BPJPH (2026); NIB/SLHS/PIRT — Permenkes 2/2023 (mencabut Permenkes 1096/2011) dan Peraturan BPOM 31/2018; syarat SLHS/PIRT PERLU REVIEW ke Dinkes/OSS. Kalibrasi termometer dengan air es 0 °C adalah praktik umum.
 
 ## Output SESUDAH (skill aktif)
 

@@ -3,6 +3,9 @@
 **Input pengguna:**
 > "Saya mau coba jual kopi susu gula aren kemasan literan buat dijual online, tapi belum tahu bakal laku atau enggak. Saya punya sekitar 150 kontak WA yang lumayan aktif (teman kantor, tetangga, komunitas arisan RT). Rencana harga Rp45.000/liter."
 
+**Input lanjutan pengguna setelah 7 hari** *(data fiktif yang dimasukkan pengguna untuk contoh)*:
+> "Sudah saya tawarkan ke 60 kontak: 11 orang pre-order. HPP kopi susu Rp22.000 per liter, biaya uji total Rp30.000. Yang menolak (2-3 orang) bilang 'belum butuh sekarang'."
+
 ## 1. Hipotesis
 > "Kami percaya **warga di sekitar rumah & teman kantor yang suka ngopi tapi malas antre kedai** mau membayar **Rp45.000** untuk **kopi susu gula aren kemasan literan (cukup untuk 4-5 gelas)** karena bisa **menghemat waktu & uang dibanding beli satuan di kedai setiap hari**. Kami akan tahu ini benar jika minimal 15% dari orang yang ditawari benar-benar pre-order dalam 7 hari."
 
@@ -33,7 +36,7 @@ Kopi Aren Bu Sari
 Dikirim ke 60 kontak yang relevan (bukan grup keluarga jauh) selama 7 hari.
 
 ## 5. Hasil setelah 7 hari
-Data dicatat di form pencatatan: 60 ditawari, 11 pre-order.
+Data dicatat di form pencatatan (angka dari input lanjutan di atas, data fiktif untuk contoh): 60 ditawari, 11 pre-order.
 
 ```
 $ python3 scripts/hitung_validasi.py --ditawari 60 --preorder 11 --harga 45000 --hpp 22000 --biaya-uji 30000

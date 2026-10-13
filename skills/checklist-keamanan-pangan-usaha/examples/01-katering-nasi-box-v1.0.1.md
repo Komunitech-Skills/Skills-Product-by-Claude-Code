@@ -1,3 +1,5 @@
+> Catatan: berkas versi 1.0.1 (arsip); angka suhu diperbaiki di versi 1.0.2 — lihat 01 terbaru.
+
 # Skenario 1: katering rumahan nasi box (normal, juga konteks Telegram)
 
 **Input:** "Saya punya katering rumahan nasi box, menunya ayam goreng & ayam bakar, telur balado, sambal, sama sayur santan. Staf 3 orang, cuma ada kulkas 1 pintu, belum punya termometer. bikinin checklist keamanan pangan harian & aturan buat staf, sekalian log suhu"
@@ -6,6 +8,8 @@
 Output di bawah adalah versi konteks Telegram (versi lokal setara, nilai 8,5; lihat 00-openclaw-sebelum-sesudah.md).
 
 Catatan penguji: batas suhu konsisten dengan references (kulkas ≤ 5 °C, ayam ≥ 74 °C, telur ≥ 63 °C, 2 jam/1 jam di atas 32 °C). Tegas tidak mengarang angka log tanpa termometer. Perizinan hanya petunjuk + PERLU REVIEW, tanpa pasal. Model dasar menulis isi ke file di server, sehingga di Telegram pengguna hanya menerima nama file. Nilai: sebelum 4,5 (Telegram) / 5,5 (lokal), sesudah 8,5.
+
+**Sumber acuan angka dan aturan pada output di bawah** (ditambahkan kurator 2026-10-13, sama dengan `references/` skill): ayam/unggas ≥ 74 °C inti — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); telur dimasak untuk langsung disajikan ≥ 63 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 (145 °F); hidangan telur yang ditahan/dikemas (telur balado nasi box) ≥ 71 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) (angka ini yang dipakai di versi 1.0.2); batas 2 jam di suhu ruang (1 jam bila > 32 °C) — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) dan WHO, *Five Keys to Safer Food* (2006); kulkas ≤ 5 °C dan penahan panas ≥ 60 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan WHO, *Five Keys to Safer Food* (2006); halal dan jalur Self Declare — UU 33/2014 tentang Jaminan Produk Halal dan PP 42/2024 (mencabut PP 39/2021); BPJPH (2026); NIB/SLHS/PIRT — Permenkes 2/2023 (mencabut Permenkes 1096/2011) dan Peraturan BPOM 31/2018; syarat SLHS/PIRT PERLU REVIEW ke Dinkes/OSS.
 
 ## Output SESUDAH (skill aktif)
 

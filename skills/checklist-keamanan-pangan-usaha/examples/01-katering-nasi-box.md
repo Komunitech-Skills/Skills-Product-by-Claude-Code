@@ -7,6 +7,8 @@
 
 Katering rumahan nasi box (ayam goreng potong utuh, telur balado, sayur santan), 3 staf, kulkas tanpa termometer, antar pakai motor 1 jam: bikinkan checklist keamanan pangan harian, daftar alergen untuk label, dan izin apa saja yang perlu. Ayam 63 °C cukup kan biar cepat?
 
+**Sumber acuan angka dan aturan pada output di bawah** (ditambahkan kurator 2026-10-13, sama dengan `references/` skill): ayam/unggas ≥ 74 °C inti — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); hidangan telur yang ditahan (telur balado) ≥ 71 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); 63 °C hanya untuk ikan/seafood, telur langsung saji, dan daging sapi/kambing utuh — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); batas 2 jam di suhu ruang (1 jam bila > 32 °C) — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) dan WHO, *Five Keys to Safer Food* (2006); kulkas ≤ 5 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan WHO, *Five Keys to Safer Food* (2006); pendinginan 21 °C dalam 2 jam lalu ≤ 5 °C dalam 4 jam berikutnya — FDA, *Food Code 2022*, 3-501.14; alergen — Peraturan BPOM No. 31 Tahun 2018 Pasal 49 ayat (3), diubah Peraturan BPOM No. 20 Tahun 2021; halal (usaha mikro/kecil wajib mulai 18 Okt 2026) — UU 33/2014 tentang Jaminan Produk Halal dan PP 42/2024 (mencabut PP 39/2021); BPJPH (2026); NIB/SLHS/PIRT — Permenkes 2/2023 (mencabut Permenkes 1096/2011) dan Peraturan BPOM 31/2018; syarat SLHS/PIRT PERLU REVIEW ke Dinkes/OSS. Kalibrasi termometer dengan air es 0 °C adalah praktik umum.
+
 ## Output SESUDAH (dengan skill)
 
 > **Ayam 63 °C: tidak, jangan.** Ayam/unggas — digoreng utuh, potong, berapa pun bentuknya — wajib matang inti **≥ 74 °C** di bagian paling tebal. Salmonella dan Campylobacter di bagian dalam ayam baru mati di suhu itu; 63 °C hanya berlaku untuk ikan/seafood, telur langsung saji, atau daging sapi/kambing utuh — bukan ayam. Kalau mau lebih cepat: potong lebih kecil/pipih biar matang merata, bukan turunkan suhu. Termometer tusuk (bukan infrared) wajib untuk cek ini — infrared cuma baca permukaan.
@@ -63,7 +65,7 @@ Katering rumahan nasi box (ayam goreng potong utuh, telur balado, sayur santan),
 >
 > **3. Log Suhu — catatan penting**
 >
-> Tanpa termometer, log suhu **tidak bisa diisi jujur** — jangan ditulis asal bagus, itu cuma bikin kalian merasa aman padahal tidak tahu kondisi sebenarnya. Belinya murah (termometer pangan tusuk, bukan infrared, biasanya mulai Rp30-50 ribuan di marketplace). Sementara ini pakai cara visual:
+> Tanpa termometer, log suhu **tidak bisa diisi jujur** — jangan ditulis asal bagus, itu cuma bikin kalian merasa aman padahal tidak tahu kondisi sebenarnya. Belinya murah (termometer pangan tusuk, bukan infrared, cek harga di toko Anda). Sementara ini pakai cara visual:
 > - [ ] Kulkas terasa dingin solid, tidak ada bahan "hangat" di dalamnya
 > - [ ] Catat jam ayam/telur selesai dimasak setiap batch, bukan suhunya
 > - [ ] Catat jam berangkat antar dan estimasi jam sampai

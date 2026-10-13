@@ -1,3 +1,5 @@
+> Catatan: berkas versi 1.0.1 (arsip); angka suhu diperbaiki di versi 1.0.2 — lihat 01 terbaru.
+
 # Skenario 2: kafe kopi + kue + frozen food, cek log suhu 2 hari
 
 **Input:** "Kafe saya jual kopi, kue (cheesecake, brownies, roti sobek) sama frozen food (dimsum, nugget) disimpan di freezer, staf 5 orang. Ini log suhu 2 hari terakhir: [isi data/log-suhu.csv ditempel] cek log ini aman nggak, apa yang harus dibuang"
@@ -20,6 +22,8 @@ PELANGGARAN:
 ```
 
 Verifikasi independen (python penguji): kulkas 2 pembacaan melanggar, episode 14:00-17:00 = 180 menit; freezer 3 pembacaan melanggar (-17, -12, -12). Semua angka di jawaban agent cocok. Catatan: 180 menit adalah durasi dari pembacaan pertama yang melanggar sampai pembacaan normal; kenaikan bisa sudah mulai setelah 11:00, jadi angka ini sebaiknya disebut "setidaknya 1,5 jam terukur, sampai 3 jam" bukan durasi pasti. Nilai: sebelum 7,5, sesudah 8,0.
+
+**Sumber acuan angka dan aturan pada output di bawah** (ditambahkan kurator 2026-10-13, sama dengan `references/` skill): kulkas ≤ 5 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan WHO, *Five Keys to Safer Food* (2006); freezer ≤ -18 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) (0 °F); batas 2 jam di suhu ruang untuk bahan berisiko tinggi — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) dan WHO, *Five Keys to Safer Food* (2006); masak ≥ 74 °C (ayam/sisa panasan) — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024). Batas ini adalah acuan minimum, bukan pengganti acuan Kemenkes/BPOM (PERLU REVIEW).
 
 ## Output SESUDAH (skill aktif)
 

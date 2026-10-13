@@ -7,6 +7,8 @@
 
 Bikinin checklist keamanan pangan buat usaha saya.
 
+**Sumber acuan angka dan aturan pada output di bawah** (ditambahkan kurator 2026-10-13, sama dengan `references/` skill): ayam/unggas dan pemanasan ulang ≥ 74 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); daging giling dan hidangan telur ≥ 71 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); telur langsung saji ≥ 63 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3; kulkas ≤ 5 °C — FDA, *Food Code 2022* (+ Supplement 2024), bab 3 dan WHO, *Five Keys to Safer Food* (2006); freezer ≤ -18 °C — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024); penahan panas ≥ 60 °C — WHO, *Five Keys to Safer Food* (2006); batas 2 jam di suhu ruang (1 jam bila > 32 °C) — USDA FSIS, *Safe Minimum Internal Temperature Chart* (diperbarui 2024) dan WHO, *Five Keys to Safer Food* (2006); pendinginan 21 °C dalam 2 jam lalu ≤ 5 °C dalam 4 jam berikutnya — FDA, *Food Code 2022*, 3-501.14; alergen — Peraturan BPOM No. 31 Tahun 2018 Pasal 49 ayat (3), diubah Peraturan BPOM No. 20 Tahun 2021; halal (usaha mikro/kecil wajib mulai 18 Okt 2026; menengah/besar sejak 18 Okt 2024) — UU 33/2014 tentang Jaminan Produk Halal dan PP 42/2024 (mencabut PP 39/2021); BPJPH (2026); NIB/SLHS/PIRT — Permenkes 2/2023 (mencabut Permenkes 1096/2011) dan Peraturan BPOM 31/2018; syarat SLHS/PIRT PERLU REVIEW ke Dinkes/OSS. Kalibrasi termometer dengan air es 0 °C adalah praktik umum.
+
 ## Output SESUDAH (dengan skill)
 
 > # Paket Keamanan Pangan - Kafe/Warung
@@ -68,7 +70,7 @@ Bikinin checklist keamanan pangan buat usaha saya.
 >
 > ## 3. Log Suhu
 >
-> > **Catatan penting:** Anda belum punya termometer pangan. Log suhu di bawah **tidak bisa diisi dengan akurat** tanpa alat ukur — tebakan dari rasa/warna bukan penentu aman. Sarankan beli termometer pangan tusuk (murah, tersedia di toko alat dapur/online, mulai puluhan ribu rupiah). Sementara menunggu, pakai checklist visual: catat jam makanan keluar dari penahan panas/kulkas, dan jangan biarkan lebih dari 2 jam di suhu ruang.
+> > **Catatan penting:** Anda belum punya termometer pangan. Log suhu di bawah **tidak bisa diisi dengan akurat** tanpa alat ukur — tebakan dari rasa/warna bukan penentu aman. Sarankan beli termometer pangan tusuk (tersedia di toko alat dapur/online; cek harga di toko Anda). Sementara menunggu, pakai checklist visual: catat jam makanan keluar dari penahan panas/kulkas, dan jangan biarkan lebih dari 2 jam di suhu ruang.
 >
 > **[Nama Usaha]** — Bulan: ______
 >
