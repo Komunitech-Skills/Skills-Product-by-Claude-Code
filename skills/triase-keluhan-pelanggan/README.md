@@ -2,14 +2,14 @@
 
 **Puluhan keluhan masuk sekaligus? Tempel saja, dan dapatkan urutan kerja P1-P3 (P1 = paling mendesak), tindakan pertama, serta draf balasan siap kirim untuk tiap keluhan.**
 
-Diuji AI penguji independen di OpenClaw: 4,5 → 8,4 dari 10 (urutan prioritas dengan batas waktu platform yang sesuai referensi, dan draf balasan tanpa janji refund yang belum Anda putuskan).
+Diuji AI penguji independen di OpenClaw: 4,5 → 8,4 dari 10 (urutan prioritas dengan batas waktu platform yang sesuai referensi, dan draf balasan tanpa janji refund yang belum Anda putuskan). Di bot Telegram asli selisihnya lebih kecil: 7,5 → 8,5.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) hanya bila Anda menyerahkan file tabel (CSV) berisi banyak keluhan; untuk keluhan yang ditempel di chat, Python tidak diperlukan. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tahu mana yang dibalas dulu.** Keluhan yang mengancam lapor/bintang 1, menyangkut keamanan, mendekati tenggat platform, atau bernilai besar naik ke atas daftar, lengkap dengan alasan pendek.
 - ✅ **Dikelompokkan menurut penyebab:** barang rusak/tidak sesuai, belum sampai/kurir, salah kirim, COD gagal/ditolak, komplain layanan, minta retur/refund, atau memang bukan keluhan.
-- ✅ **Draf balasan siap kirim** untuk tiap keluhan: empati yang menyebut masalahnya, langkah nyata, dan janji waktu yang bisa ditepati (`[isian]` bila Anda belum menyebutnya). Tidak menjanjikan refund atau ganti sebelum Anda memutuskan.
+- ✅ **Draf balasan siap kirim** untuk tiap keluhan: empati yang menyebut masalahnya, langkah nyata, dan janji waktu yang bisa ditepati (`[isian]` = tanda kosong untuk Anda isi, bila Anda belum menyebutnya). Tidak menjanjikan refund atau ganti sebelum Anda memutuskan.
 - ✅ **Daftar keputusan untuk pemilik** dan **pola** (tiga keluhan sebab sama berarti ada akar masalah), supaya masalah yang sama tidak terulang.
 - ✅ **Menjaga privasi dan etika:** rekap untuk grup dirancang tanpa nama, nomor HP, atau alamat pelanggan (tetap periksa sebelum dibagikan); tidak membantu menghapus ulasan atau menyamar jadi pembeli; fakta toko tidak dikarang.
 
@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 4,5 → 8,4 dari 10 (urutan prioritas d
 ## Contoh sebelum & sesudah
 **Sebelum:** 8 keluhan masuk dari 5 aplikasi. Admin membalas dari yang paling atas, sehingga pembeli yang mengancam lapor ke Shopee baru dibalas siang, dan pembeli COD bernilai Rp875.000 tertunda sampai besok.
 
-**Sesudah (cukup tempel keluhannya):** cuplikan keluarannya (contoh dengan data fiktif, dari `examples/01-toko-fashion-8-keluhan-campur.md`):
+**Sesudah (cukup tempel keluhannya):** cuplikan keluarannya (contoh rancangan pembuat dengan data fiktif, bukan hasil uji platform; dari `examples/01-toko-fashion-8-keluhan-campur.md`):
 
 ```
 **Ringkasan:** 8 masuk: 3 P1, 4 P2, 1 pertanyaan biasa (bukan keluhan). 3 perlu keputusan Anda (K5, K2, K8).
@@ -65,7 +65,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup), dua gelombang. Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.2).
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup), dua gelombang uji (putaran uji di bot). Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.2).
 
 **Gelombang 11, 2026-10-06**
 - Tanpa skill: https://t.me/c/4407409583/904/942 — skor tidak tersedia (pembanding tanpa skill hilang)
@@ -84,7 +84,7 @@ Tidak. Skill ini menyiapkan urutan kerja dan draf. Anda yang mengirim, satu per 
 Tidak. Yang bisa: menyelesaikan masalahnya, membalas ulasan secara sopan, dan melaporkan ulasan yang benar-benar melanggar aturan platform lewat fitur laporan platform.
 
 **Apakah tenggat retur/refund Shopee, Tokopedia, dan TikTok Shop sudah pasti?**
-Tidak pasti: platform sering mengubahnya. Skill ini memakai ketentuan umum yang dicek per 2026-10-05 dan mengingatkan Anda mencocokkan dengan Pusat Penjual sebelum menjanjikan sesuatu ke pelanggan.
+Tidak pasti: platform sering mengubahnya. Skill ini memakai ketentuan umum yang dicek per 2026-10-05 dan mengingatkan Anda mencocokkan dengan Pusat Penjual sebelum menjanjikan sesuatu ke pelanggan. Angka yang belum terkonfirmasi di halaman resmi platform sengaja tidak dipakai sebagai batas waktu.
 
 ## Catatan
 Bukan nasihat hukum. Ringkasan aturan di `references/dasar-hukum-dan-platform.md` membantu menulis dengan hati-hati, bukan pengganti konsultasi hukum.

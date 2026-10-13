@@ -2,7 +2,7 @@
 
 **Setiap pagi (lewat OpenClaw), asisten AI Anda dapat mengirim daftar siapa yang harus ditagih dan di-follow-up hari ini, lengkap dengan pesan siap kirim.**
 
-*Diuji AI penguji independen: 3,5 → 9,25 dari 10 (tanpa skill agent menebak nominal dan mengubah konfigurasi tanpa izin; dengan skill daftar tersimpan rapi dan draf pesan dikirim sendiri oleh Anda).*
+*Diuji AI penguji independen di OpenClaw: 3,5 → 9,25 dari 10 (tanpa skill agent menebak nominal dan mengubah konfigurasi tanpa izin; dengan skill daftar tersimpan rapi dan draf pesan dikirim sendiri oleh Anda).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -11,7 +11,7 @@
 - ✅ **Rekap pagi yang jelas:** yang terlambat (berapa hari), yang jatuh tempo hari ini, dan yang jatuh tempo besok. Total piutang (tagihan yang belum dibayar pelanggan) yang tertunggak dihitung otomatis oleh skrip.
 - ✅ **Draf pesan siap kirim.** Nadanya sopan dan naik bertahap sesuai lama keterlambatan. Anda tinggal cek, salin, dan kirim dari WA sendiri.
 - ✅ **Rekap jam kerja klien.** Jam dicatat lewat chat ("catat 1,5 jam untuk PT Kreatif"). Tiap Jumat Anda mendapat total jam, nilai rupiah, dan draf pesan ke klien.
-- ✅ **Data tetap di komputer Anda.** Yang disimpan cukup nama panggilan. Nomor HP pelanggan tidak ikut disimpan.
+- ✅ **Data tetap di komputer Anda.** Yang disimpan cukup nama panggilan. Skill dirancang tidak menyimpan nomor HP pelanggan.
 
 ## Cocok untuk siapa
 - Pemilik usaha dengan banyak pelanggan tempo/bon: supplier, grosir, katering, konveksi, percetakan.
@@ -24,16 +24,22 @@
 sebulan. Pesan tagihan diketik dari nol setiap kali, dan kadang nadanya terlalu keras atau malah terlalu sungkan.
 
 **Sesudah (cukup ketik):** "Ingatkan saya follow-up Bu Rina tgl 3 kalau belum bayar 4,5 jt."
-→ Tersimpan. Pagi 2 Okt (sehari sebelumnya) dan 3 Okt, rekap di Telegram Anda menampilkan (contoh tampilan; kiriman terjadwal ke Telegram belum diuji langsung):
+→ Tersimpan, dan pada hari jatuh tempo masuk rekap. Cuplikan balasan asli dari uji OpenClaw 1 Okt 2026 (dipotong; pesan ujinya mencatat tiga hal sekaligus, lalu bertanya "hari ini aku harus nagih siapa aja? kasih draf chatnya sekalian"; data fiktif, dari `examples/00-openclaw-sebelum-sesudah.md`):
 ```
-HARI INI (1)
-1. #1 Piutang - Bu Rina | Rp 4.500.000 | INV-012 | jatuh tempo hari ini
-Total piutang tertunggak (terlambat + hari ini): Rp 4.500.000
+Semua sudah dicatat ✅
+1. #1 Bu Rina — piutang Rp 4.500.000 (INV-012), jatuh tempo Sabtu, 3 Okt 2026
+2. #2 Pak Budi — janji follow-up penawaran katering, Senin 5 Okt 2026
+3. #3 Toko Sinar — piutang Rp 2.750.000, jatuh tempo 25 Sep 2026 → sudah terlambat 6 hari
 
-#1 untuk Bu Rina:
-Selamat pagi Bu Rina, kami mengingatkan pembayaran INV-012 sebesar Rp 4.500.000 jatuh tempo hari ini, ...
+Hari ini (1 Okt) yang perlu ditagih: Toko Sinar saja — total piutang tertunggak Rp 2.750.000.
+
+Draf chat ke Toko Sinar (tinggal salin & kirim sendiri):
+Selamat pagi Toko Sinar, mohon maaf mengganggu. Menurut catatan kami, pembayaran tagihan
+sebesar Rp 2.750.000 yang jatuh tempo 25 Sep 2026 belum kami terima. Mungkin terlewat; jika
+sudah transfer, mohon kirimkan bukti transfernya. Jika belum, pembayaran bisa melalui
+[rekening]. Terima kasih.
 ```
-Sudah dibayar? Balas "Bu Rina sudah bayar", dan item itu tidak muncul lagi.
+Tanda `[rekening]` adalah isian yang perlu Anda lengkapi sendiri sebelum dikirim. Sudah dibayar? Balas "Bu Rina sudah bayar", dan item itu tidak muncul lagi. (Rekap otomatis tiap pagi ke Telegram belum diuji langsung.)
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -66,11 +72,11 @@ ketik "rekap pengingat" setiap pagi (Codex dan Cursor belum diuji langsung).
 
 **Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 3,5 tanpa skill menjadi 9,25 dengan skill. Tanpa skill, agent menebak nominal, menyimpan nomor HP pihak ketiga, mengubah konfigurasi tanpa izin, dan berniat mengirim tagihan otomatis ke pelanggan. Dengan skill, nominal ambigu ("5m") dan tanggal mustahil (31/9) ditanyakan dulu, daftar tersimpan rapi bernomor, dan draf pesan dikirim sendiri oleh Anda.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk membuat jadwal harian dan menjalankannya sekali di Gateway uji, yaitu program OpenClaw yang berjalan di latar belakang) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung. Kiriman terjadwal yang benar-benar tiba di Telegram pada jam yang ditentukan belum diuji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk membuat jadwal harian dan menjalankannya sekali di Gateway uji, yaitu program OpenClaw yang berjalan di latar belakang) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung. Kiriman terjadwal yang benar-benar tiba di Telegram pada jam yang ditentukan belum diuji langsung. Draf tagihan bisa memuat tanda isian seperti `[rekening]`; isi dulu sebelum dikirim.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 4, 2026-10-03. Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.6, sama dengan versi terkini).
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang uji 4 (satu putaran uji di bot), 2026-10-03. Versi yang diuji tidak tercatat di catatan gelombang (versi repo saat itu: 1.0.6, sama dengan versi terkini).
 - Tanpa skill: https://t.me/c/4407409583/582/600 — skor tidak dicatat di gelombang itu
 - Dengan skill: https://t.me/c/4407409583/583/603 — skor tidak dicatat di gelombang itu
 Verdik gelombang: tidak dicatat di gelombang itu — angka dan draf kedua sisi benar; beda di keamanan dan pencatatan: TANPA menawarkan "kirim langsung ke mereka" dan berjanji mengingatkan Senin tanpa jadwal nyata, DENGAN tersimpan terstruktur (#1–#3), menyebut tahun yang diasumsikan, total Rp7.250.000, dan draf dikirim sendiri oleh pengguna. Catatan kecil: draf ke Toko Sinar memuat tenggat "paling lambat 6 Okt" yang tidak diminta pengguna.
@@ -82,7 +88,7 @@ yang memutuskan dan mengirim sendiri. Ini disengaja: tagihan yang salah kirim me
 pelanggan, dan pesan otomatis lewat WhatsApp tidak resmi bisa membuat nomor diblokir.
 
 **Data pelanggan saya disimpan di mana?**
-Di file `pengingat/DAFTAR.csv` di komputer Anda sendiri, bukan di server Komunitech. Isinya cukup nama
+Di file `pengingat/DAFTAR.csv` (file tabel yang bisa dibuka di Excel) di komputer Anda sendiri, bukan di server Komunitech. Isinya cukup nama
 panggilan atau kode, nominal, dan tanggal. Skill dirancang menolak menyimpan nomor HP, email, atau NIK. Catatan pribadi
 Anda tidak dimasukkan ke draf pesan. Item yang sudah selesai bisa dibersihkan otomatis.
 

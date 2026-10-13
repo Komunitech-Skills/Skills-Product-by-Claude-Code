@@ -2,12 +2,12 @@
 
 **Tempel email yang menumpuk, dapatkan urutan kerja, ringkasan, draf balasan siap edit, dan peringatan bila ada yang mirip penipuan.**
 
-Diuji AI penguji independen di OpenClaw: 5,5 → 8,0 dari 10 (email penipuan modus "rekening baru" terdeteksi dengan alasan yang benar, dan draf balasan memakai kolom isian alih-alih mengarang harga atau tanggal).
+Diuji AI penguji independen di OpenClaw: 5,5 → 8,0 dari 10 (pembedanya: draf balasan memakai kolom isian alih-alih mengarang harga atau tanggal, dan skill tetap memilah email lain saat menolak permintaan berbahaya; AI tanpa skill pun sudah bisa mengenali penipuan modus "rekening baru"). Di bot Telegram asli selisihnya lebih kecil: 7,5 → 8.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) hanya bila Anda menyerahkan folder atau file tabel (CSV) berisi banyak email; untuk email yang ditempel di chat, Python tidak diperlukan. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Tahu email mana yang dibalas dulu.** Tenggat, nominal, klien penting, dan kata "segera" menentukan urutan P1-P3, lengkap dengan alasan pendek.
+- ✅ **Tahu email mana yang dibalas dulu.** Tenggat, nominal, klien penting, dan kata "segera" menentukan urutan P1-P3 (P1 = paling mendesak), lengkap dengan alasan pendek.
 - ✅ **Ringkasan 1-2 kalimat per email** dan daftar tindakan dengan tenggat, jadi tidak perlu membaca ulang semuanya.
 - ✅ **Draf balasan siap edit** yang sopan. Harga, tanggal, dan janji yang belum Anda putuskan ditandai `[isian]`, tidak dikarang.
 - ✅ **Peringatan penipuan email (phishing) tanpa membuka tautan:** nama pengirim vs alamat sebenarnya, tautan mencurigakan, permintaan kode rahasia (OTP/PIN), dan modus "ganti rekening baru".
@@ -22,7 +22,7 @@ Diuji AI penguji independen di OpenClaw: 5,5 → 8,0 dari 10 (email penipuan mod
 ## Contoh sebelum & sesudah
 **Sebelum:** 10 email pagi hari. Tagihan Rp7.450.000 jatuh tempo dua hari lagi terbenam di bawah promosi, dan email "rekening kami berganti, mohon transfer ke rekening baru" nyaris dibalas.
 
-**Sesudah (cukup tempel emailnya):** tagihan di urutan teratas, permintaan penawaran Rp18.000.000 berikutnya, dua email dicurigai penipuan dengan alasannya, promosi diarsipkan, draf balasan untuk semua yang perlu dijawab. Cuplikan keluarannya (contoh dengan data fiktif, dari `examples/01-pemilik-usaha-10-email.md`):
+**Sesudah (cukup tempel emailnya):** tagihan di urutan teratas, permintaan penawaran Rp18.000.000 berikutnya, dua email dicurigai penipuan dengan alasannya, promosi diarsipkan, draf balasan untuk semua yang perlu dijawab. Cuplikan keluarannya (contoh rancangan pembuat dengan email fiktif, bukan hasil uji platform; dari `examples/01-pemilik-usaha-10-email.md`):
 
 ```
 **Waspada dulu (2 email dicurigai phishing, jangan dibalas atau diklik)**
@@ -63,10 +63,10 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python t
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
+Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang uji 13 (satu putaran uji di bot), 2026-10-12.
 - Tanpa skill: https://t.me/c/4407409583/1101/1186 — skor 7,5
 - Dengan skill: https://t.me/c/4407409583/1102/1188 — skor 8
-Verdik gelombang: BELUM — Tanpa skill sudah menandai email penipuan dan memberi 5 draf (namun menjanjikan ganti rugi tanpa tanya pemilik); dengan skill memakai isian untuk keputusan pemilik dan 3 pertanyaan di akhir, tetapi selisihnya belum mencapai acuan 1,5.
+Verdik gelombang: BELUM — Tanpa skill sudah menandai email penipuan dan memberi 5 draf (namun menjanjikan ganti rugi tanpa tanya pemilik); dengan skill memakai isian untuk keputusan pemilik dan 3 pertanyaan di akhir, tetapi selisih skornya kecil (+0,5), belum mencapai target internal kami (+1,5).
 
 ## FAQ
 **Apakah skill ini membaca atau membalas email saya sendiri?**

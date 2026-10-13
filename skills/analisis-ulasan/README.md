@@ -1,6 +1,6 @@
 # Ratusan Ulasan Jadi Laporan Satu Halaman
 
-**Tempel ulasan atau kirim file ekspor, langsung tahu apa yang harus diperbaiki duluan dan apa yang bisa dijadikan konten.**
+**Tempel ulasan atau kirim file ekspor (file ulasan yang diunduh dari marketplace), langsung tahu apa yang harus diperbaiki duluan dan apa yang bisa dijadikan konten.**
 
 Diuji AI penguji independen di OpenClaw: 7,0 → 8,25 dari 10 (persentase keluhan dan pujian serta prioritas perbaikan terukur, username pembeli disamarkan; tanpa skill wawasannya benar tetapi tanpa sebaran dan username ikut bocor).
 
@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 7,0 → 8,25 dari 10 (persentase keluha
 
 **Sesudah (cukup ketik):** "Ini ulasan toko aku 3 bulan terakhir dari Shopee, filenya ulasan.csv. Keluhan paling banyak apa sih? Terus apa yang harus aku benahi duluan?" (CSV = file tabel yang bisa dibuka di Excel/Google Sheets)
 
-Cuplikan laporan (contoh dengan data fiktif: 160 ulasan; dipotong dari `examples/01-toko-kaos-160-ulasan-csv.md`):
+Cuplikan laporan (data fiktif: 160 ulasan; hasil uji simulasi agent di Claude Code, bukan dari uji OpenClaw; dipotong dari `examples/01-toko-kaos-160-ulasan-csv.md`):
 > ## Ringkasan cepat
 > - Rata-rata **3,88★**. 67,5% ulasan positif (4–5★) dan **18,8% negatif (1–2★)**. Rata-rata turun tiap bulan: Juli 4,07 → Agustus 3,84 → September 3,71.
 > - Keluhan paling merusak bintang adalah **pengiriman atau proses kirim lambat**: 15 ulasan (9,4%), rata-rata 2,07★. Dari 15 itu, 7 menyebut "pesanan diproses lama, 5 hari baru dikirim", jadi penyebabnya ada di **proses toko**, bukan hanya kurir.
@@ -58,16 +58,16 @@ Salin folder `analisis-ulasan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen: tanpa skill **7,0** → dengan skill **8,25** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: persentase keluhan/pujian, prioritas terukur, username disamarkan; tanpa skill: wawasan benar tapi tanpa sebaran dan membocorkan username.
+**Hasil uji (angka nyata):** uji OpenClaw (folder kerja bersih terpisah untuk tiap skenario), 1 Okt 2026 (v1.0.3), skor 1–10 penguji independen, rata-rata 2 skenario: tanpa skill **7,0** → dengan skill **8,25** (LULUS). Pada skenario utama (40 ulasan Shopee) skornya 6 → 8,5; pada skenario permintaan ulasan palsu skill tidak termuat dan hasilnya setara tanpa skill (8 vs 8). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: persentase keluhan/pujian, prioritas terukur, username disamarkan; tanpa skill: wawasan benar tapi tanpa sebaran dan membocorkan username.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Semua uji memakai file ulasan contoh (data fiktif), belum dengan ekspor asli dari tiap marketplace.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Semua uji memakai file ulasan contoh (data fiktif), belum dengan ekspor asli dari tiap marketplace. Pada uji OpenClaw v1.0.3, ulasan bernada sindiran (mis. "mantap, 2 minggu baru sampai") sempat tidak terhitung sebagai keluhan pengiriman, jadi tetap baca ringkasan keluhan dengan teliti.
 
 ## FAQ
 **Apakah nama pembeli ikut muncul di laporan?**
-Tidak. Kolom nama/username diabaikan, dan nomor HP, email, nomor pesanan, serta sapaan nama di dalam ulasan disamarkan otomatis.
+Seharusnya tidak. Kolom nama/username diabaikan, dan nomor HP, email, nomor pesanan, serta sapaan nama di dalam ulasan disamarkan otomatis. Tetap periksa laporan sebelum dibagikan atau diposting.
 
 **Ulasan saya banyak pakai bahasa gaul dan singkatan. Tetap terbaca?**
-Ya. Sekitar 300 singkatan umum sudah dikenali. Kata khas usaha Anda bisa ditambahkan, dan ulasan yang belum dikenali tetap dibaca AI agent sebelum laporan dibuat.
+Umumnya terbaca. Sekitar 300 singkatan umum sudah dikenali. Kata khas usaha Anda bisa ditambahkan, dan ulasan yang belum dikenali tetap dibaca AI agent sebelum laporan dibuat.
 
 **Perlu Python?**
 Disarankan (gratis, biasanya sudah ada di Mac/Linux). Tanpa Python, AI agent tetap bisa menghitung manual dan akan memberi tahu bahwa hasilnya belum diverifikasi script.
