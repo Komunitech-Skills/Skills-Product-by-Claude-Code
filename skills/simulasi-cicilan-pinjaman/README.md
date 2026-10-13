@@ -11,7 +11,7 @@ Diuji AI penguji independen di bot Telegram asli: 6 → 8,5 dari 10 (tanpa skill
 - ✅ **Bunga efektif setara per tahun** (bunga yang dihitung dari sisa utang) yang sudah memasukkan biaya admin, provisi (biaya pencairan), dan asuransi, sehingga penawaran bunga "flat" (dihitung dari pokok awal terus) dan efektif bisa dibandingkan dengan adil
 - ✅ Jadwal angsuran (pokok, bunga, sisa utang) dan perbandingan flat vs anuitas (cicilan tetap dengan bunga dari sisa utang) dalam rupiah
 - ✅ Cocok untuk motor, mobil, HP, KPR (kredit rumah, termasuk bunga tetap yang kemudian mengambang), leasing (kredit lewat perusahaan pembiayaan), koperasi, KTA (pinjaman tanpa agunan), paylater (bayar nanti), sampai pinjaman harian
-- ✅ **Batas cicilan yang masih wajar** dari gaji bersih Anda (patokan umum maks. 30% gaji, bukan aturan resmi semua lembaga), plus peringatan bila cicilan terasa berat; angkanya dihitung lewat skrip, bukan dikira
+- ✅ **Batas cicilan yang masih aman** dari gaji bersih Anda (patokan hati-hati maks. 30% gaji, asumsi yang bisa diubah, bukan aturan resmi semua lembaga), plus peringatan bila cicilan terasa berat; angkanya dihitung lewat skrip, bukan dikira
 
 ## Cocok untuk siapa
 - Karyawan, ibu rumah tangga, dan pelaku usaha yang mau ambil kredit motor, HP, mobil, atau rumah
@@ -35,7 +35,7 @@ Diuji AI penguji independen di bot Telegram asli: 6 → 8,5 dari 10 (tanpa skill
 > | Total biaya pinjaman | Rp6.760.000 |
 > | Total harga lewat kredit | Rp31.760.000 (lebih mahal Rp6.760.000 = 27,0% dari tunai) |
 
-Hasil lengkapnya juga memuat perbandingan dengan anuitas dan batas cicilan yang wajar dari gaji.
+Hasil lengkapnya juga memuat perbandingan dengan anuitas dan batas cicilan aman dari gaji (patokan asumsi, bisa diubah).
 
 ## Cara pakai
 Ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -74,4 +74,4 @@ Tidak. Skill ini tidak menyebut atau merekomendasikan merek. Kirimkan angka dari
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

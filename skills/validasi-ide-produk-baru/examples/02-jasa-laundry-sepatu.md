@@ -32,24 +32,38 @@ Kalau ada, kamu bakal pakai? [Ya, mau! / Nanti dulu]
 Flyer di warung fotokopi memakai pitch titip warung yang disesuaikan jadi ajakan DM IG.
 
 ## 5. Hasil setelah 7 hari
-*(Angka dari input lanjutan di atas: data fiktif untuk contoh.)* Story dilihat 118 orang, 9 vote "Ya, mau!" tapi hanya 6 yang lanjut DM serius. Warung fotokopi: ~35 orang lewat (estimasi pemilik warung), 2 DM masuk dari flyer. Total ditawari = 118 + 35 = 153, total pre-order (DM serius) = 6 + 2 = 8.
+*(Angka dari input lanjutan di atas: data fiktif untuk contoh.)* Story dilihat 118 orang, 9 vote "Ya, mau!", 6 di antaranya lanjut DM serius. Warung fotokopi: ~35 orang lewat (estimasi pemilik warung), 2 DM masuk dari flyer. **Belum ada satu pun yang transfer/DP** — story dan flyer hanya mengajak DM, tidak membuka PO berbayar.
+
+Sesuai Aturan Hitung (Langkah 2), vote dan DM tanpa bayar = **minat**, bukan pesanan. Kedua kanal hanya menghasilkan minat, jadi dihitung dengan mode `kanal` (`data-uji.json`):
+
+```json
+{"harga": 35000,
+ "kanal": [{"nama": "Polling story IG", "ditawari": 118, "minat": 9},
+           {"nama": "Flyer warung fotokopi", "ditawari": 35, "minat": 2}]}
+```
 
 ```
-$ python3 scripts/hitung_validasi.py --ditawari 153 --preorder 8 --harga 35000
+$ python3 scripts/hitung_validasi.py --file data-uji.json
 === HASIL VALIDASI IDE ===
-Ditawari       : 153 orang/tampilan
-Pre-order/beli : 8
-Konversi       : 5.2%
-Ambang         : LULUS >= 15% | LULUS BERSYARAT >= 8% | GAGAL < 8%
-Klasifikasi    : GAGAL
-Saran          : Data belum mendukung ide ini dalam bentuk sekarang — pertimbangkan HENTIKAN atau pivot besar. Kumpulkan alasan penolakan dari form pencatatan sebagai bahan ide berikutnya (brainstorming-ide-usaha).
+Yang dihitung sebagai pesanan: HANYA pre-order yang sudah transfer/DP/bayar atau order masuk.
+
+Per kanal:
+  - Polling story IG: ditawari 118, minat 9 (7.6%, BUKAN pesanan)
+  - Flyer warung fotokopi: ditawari 35, minat 2 (5.7%, BUKAN pesanan)
+
+Pesanan berkomitmen : 0 (belum ada kanal dengan pre-order/DP/bayar)
+Sinyal minat        : 11 (vote/like/komentar — TIDAK dihitung sebagai pesanan)
+Klasifikasi         : BELUM BISA DINILAI
+Saran               : Minat belum sama dengan membeli. Ubah minat jadi pesanan dulu: buka pre-order dengan DP/transfer ke yang vote/komentar, lalu hitung ulang.
 ```
 
-Catatan: perhitungan awal (hanya menghitung vote polling "Ya" sebagai pre-order, 9+2=11 dari 153 = 7,2%) juga masih di bawah ambang GAGAL kalau dihitung longgar. Karena keduanya konsisten di bawah 8%, hasil **GAGAL** cukup meyakinkan meski memakai cara hitung yang lebih longgar sekalipun.
+Ringkas: pesanan (sudah DP) **0 dari 153** ditawari; minat 11 (9 vote IG — 6 di antaranya DM — + 2 DM dari flyer) dilaporkan terpisah dan tidak dihitung sebagai pesanan.
 
 Alasan yang sempat ditanyakan ke beberapa yang menjawab "nanti dulu": mayoritas bilang "Rp35rb kemahalan buat cuci sepatu sendiri, biasanya cuma perlu sikat cepat" dan "gak tahu berapa lama prosesnya" (masalah kejelasan, bukan cuma harga).
 
-## 6. Keputusan
-Skenario di atas menunjukkan **GAGAL** murni (untuk latihan skenario kedua yang berbeda hasil dari Contoh 1). Namun andaikan hasil riil pengguna berada di kisaran 8%–<15% (mis. konversi 10%) — skenario ini ditulis ulang di bawah sebagai ilustrasi **LULUS BERSYARAT**, karena itu klasifikasi paling sering menuntut revisi eksplisit:
+> **Catatan penguji:** dihitung ulang 2026-10-13 sesuai aturan DP. Versi sebelumnya menghitung 6 + 2 "DM serius" sebagai pre-order (8/153 = 5,2% → GAGAL), padahal belum ada yang transfer/DP. Dengan hanya pesanan ber-DP: 0 pesanan, 11 minat → **BELUM BISA DINILAI**.
 
-> Andai konversi = 10%: **LULUS BERSYARAT.** Alasan penolakan dominan soal harga & kejelasan proses → UBAH satu variabel: turunkan harga awal jadi Rp25.000 (promo perkenalan) DAN tambahkan info "estimasi selesai 1x24 jam, ambil-antar gratis area kampus" di pesan berikutnya. Uji ulang 7 hari dengan hipotesis baru sebelum sewa tempat/beli alat lengkap. Jangan ubah target pembeli sekaligus — supaya jelas variabel mana yang memperbaiki hasil.
+## 6. Keputusan
+**BELUM BISA DINILAI** — jangan sewa tempat atau beli alat lengkap dulu, tapi juga jangan langsung hentikan: datanya baru minat. Langkah berikut: ubah minat jadi pesanan. Hubungi 8 orang yang sudah DM (6 dari IG + 2 dari flyer) dan unggah ulang story dengan tawaran **PO berbayar** (DP atau bayar di muka, kebijakan batal/refund ditulis jelas), sekaligus jawab alasan penolakan: tambahkan info "estimasi selesai 1x24 jam, ambil-antar area kampus". Setelah 7 hari, hitung ulang dengan `--preorder` = jumlah yang sudah DP saja.
+
+> Ilustrasi (bukan hasil): andai setelah PO berbayar konversi pesanan = 10% → **LULUS BERSYARAT**. Karena alasan penolakan dominan soal harga, UBAH satu variabel dulu (mis. harga perkenalan Rp25.000), uji ulang 7 hari dengan hipotesis baru. Jangan ubah target pembeli sekaligus — supaya jelas variabel mana yang memperbaiki hasil.

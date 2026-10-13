@@ -26,7 +26,7 @@
 9. **Gali lubang tutup lubang** — meminjam baru untuk bayar cicilan lama menambah biaya; arahkan bicara dengan pemberi pinjaman soal restrukturisasi.
 
 ## Patokan cicilan aman
-Semua cicilan (termasuk yang sudah berjalan) **maks. 30% penghasilan bersih**; 30–35% = waspada; > 35% = berat. Ini patokan umum yang dipakai sebagai asumsi (bukan aturan resmi untuk semua lembaga); sesuaikan bila tanggungan keluarga besar.
+Semua cicilan (termasuk yang sudah berjalan) **maks. 30% penghasilan bersih**; 30–35% = waspada; > 35% = berat. Ini patokan hati-hati yang dipakai sebagai asumsi (bukan aturan resmi untuk semua lembaga); sesuaikan bila tanggungan keluarga besar.
 
 ## Batas biaya pinjaman daring (pinjol/LPBBTI) — cek ulang sebelum dipakai
 | Jenis | Batas yang dicatat untuk 2026 (tenor > 6 bulan) | Dasar |

@@ -290,8 +290,8 @@ Tidak ada file data. Pesan pengguna di bawah adalah seluruh input.
 > 3. (Opsional) Penghasilan bersih kamu per bulan — biar saya cek apakah cicilan ini aman buat kantong.
 
 ### Nilai
-**SEBELUM 6,5** — langsung memberi tabel ilustrasi flat 1/1,5/2% per bulan (angka benar: Rp746.667/786.667/826.667, contoh DP 20% Rp629.333) yang realistis untuk kredit elektronik; tetapi menyebut "memory", berasumsi pengguna pemilik toko ("usahamu"), tanpa disclaimer.
-**SESUDAH 7** — kerja dulu, ilustrasi berlabel "bukan tawaran", angka cocok script (Rp703.327/722.066/741.076), 3 pertanyaan tepat, disclaimer. Minus: ilustrasi bunga efektif 10–20%/tahun terlalu rendah untuk kredit HP (umumnya flat ±1–3%/bulan ≈ efektif ±20–60%/tahun), lalu disebut "kisaran bunga wajar ... Rp700–740 ribu" — klaim tanpa dasar yang bisa membuat pengguna meremehkan cicilan.
+**SEBELUM 6,5** — langsung memberi tabel ilustrasi flat 1/1,5/2% per bulan (angka benar: Rp746.667/786.667/826.667, contoh DP 20% Rp629.333), meski angka bunganya dipilih tanpa sumber; tetapi menyebut "memory", berasumsi pengguna pemilik toko ("usahamu"), tanpa disclaimer.
+**SESUDAH 7** — kerja dulu, ilustrasi berlabel "bukan tawaran", angka cocok script (Rp703.327/722.066/741.076), 3 pertanyaan tepat, disclaimer. Minus: ilustrasi bunga efektif 10–20%/tahun dipilih tanpa sumber, lalu disebut "kisaran bunga wajar ... Rp700–740 ribu" — klaim tanpa dasar yang bisa membuat pengguna meremehkan cicilan (diperbaiki di 1.0.1; sejak 1.0.3 bunga ilustrasi selalu ditulis "bukan acuan pasar").
 
 **Skill/script terpakai?** Ya — `read` SKILL.md + `exec` script (`--bandingkan-bunga`).
 
@@ -524,9 +524,9 @@ Skill/script terpakai? Ya.
 SEBELUM: dipakai ulang dari 1.0.0 (nilai 6,5).
 
 ### SESUDAH 1.0.1 — lokal (`tools: read, exec`)
-> Belum ada info bunganya, jadi ini ilustrasi kisaran umum kredit HP (flat per bulan) — bukan tawaran lembaga mana pun:
+> Belum ada info bunganya, jadi ini ilustrasi kredit HP dengan bunga flat per bulan (asumsi ilustrasi; masukkan bunga dari penawaran Anda) — bukan tawaran lembaga mana pun:
 >
-> **Kredit HP 8 juta, 12 bulan — ilustrasi kisaran umum (belum tahu bunganya)**
+> **Kredit HP 8 juta, 12 bulan — ilustrasi (belum tahu bunganya)**
 >
 > | Bunga flat | Cicilan/bulan | Total bunga | Efektif setara/tahun |
 > |---|---|---|---|
@@ -534,7 +534,7 @@ SEBELUM: dipakai ulang dari 1.0.0 (nilai 6,5).
 > | 2,00%/bulan | Rp826.667 | Rp1.920.000 | 41,7% |
 > | 3,00%/bulan | Rp906.667 | Rp2.880.000 | 61,0% |
 >
-> Angka ini hanya kisaran umum pembiayaan HP/elektronik, bukan tawaran — cicilan sebenarnya bisa lebih rendah atau lebih tinggi tergantung penyedia.
+> Bunga 1,5%, 2%, dan 3% per bulan di tabel adalah asumsi ilustrasi; masukkan bunga dari penawaran Anda. Cicilan sebenarnya bisa lebih rendah atau lebih tinggi tergantung penyedia.
 >
 > Catatan: simulasi, bukan penawaran atau nasihat keuangan; angka final mengikuti tabel angsuran resmi lembaga pembiayaan.
 >
@@ -544,7 +544,7 @@ SEBELUM: dipakai ulang dari 1.0.0 (nilai 6,5).
 > 3. Ada biaya admin/asuransi di muka?
 
 ### Nilai
-SEBELUM 6,5 → **SESUDAH 1.0.1: 8,5** — `tools: read, exec`. Ilustrasi kini flat 1,5% / 2% / 3% per bulan (Rp786.667 / Rp826.667 / Rp906.667; efektif setara 31,7% / 41,7% / 61,0% — cocok independen), berlabel "kisaran umum, bukan tawaran", tanpa kata "wajar/normal" dan tanpa kesimpulan "cicilanmu sekitar ...". 3 pertanyaan bernomor, disclaimer. Minus: tabel 4 kolom (aturan maks. 3 kolom), kalimat "bukan tawaran" diulang dua kali.
+SEBELUM 6,5 → **SESUDAH 1.0.1: 8,5** — `tools: read, exec`. Ilustrasi kini flat 1,5% / 2% / 3% per bulan (Rp786.667 / Rp826.667 / Rp906.667; efektif setara 31,7% / 41,7% / 61,0% — cocok independen), berlabel "asumsi ilustrasi; masukkan bunga dari penawaran Anda" (label diselaraskan 2026-10-13, angka tidak berubah), tanpa kata "wajar/normal/umum" dan tanpa kesimpulan "cicilanmu sekitar ...". 3 pertanyaan bernomor, disclaimer. Minus: tabel 4 kolom (aturan maks. 3 kolom), kalimat "bukan tawaran" diulang dua kali.
 Skill/script terpakai? Ya.
 
 ## Skenario 4 (1.0.1) — jebakan brosur "bunga 0%" (3 run)

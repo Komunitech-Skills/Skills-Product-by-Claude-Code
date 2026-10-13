@@ -54,12 +54,12 @@ Skor 1.0.1 per skenario (tanpa → dengan): motor flat 6,5 → 9; KPR fixed→fl
 - (+) Skenario 3: kerja dulu dengan ilustrasi berlabel "bukan tawaran", lalu 3 pertanyaan tepat.
 - (−) Jebakan tidak andal: 2 dari 3 run skill tidak dimuat (`tools: []`) → tanpa draf brosur transparan, tanpa disclaimer, dan satu run membocorkan kata "skill". Hanya run Telegram yang mengikuti pola tolak → padanan → draf.
 - (−) Model dasar sudah bagus di hitungan inti (cicilan flat & KPR benar/kasar benar), sehingga selisih hanya nyata di skenario 1.
-- (−) Ilustrasi default 10/15/20% efektif untuk kredit HP terlalu rendah dan agent menyebutnya "kisaran bunga wajar" — model dasar justru memberi ilustrasi flat 1–2%/bulan yang lebih realistis.
+- (−) Ilustrasi default 10/15/20% efektif untuk kredit HP terlalu rendah dan agent menyebutnya "kisaran bunga wajar" — model dasar memberi ilustrasi flat 1–2%/bulan (juga tanpa sumber).
 - (−) Skenario 2: anotasi karangan "tahun ke-4 bulan 1-3 masih fixed" (salah; fixed 36 bulan habis di akhir tahun 3).
 
 ## Cacat (urut dampak) & saran perbaikan
 1. **Pemicu jebakan lemah** — permintaan brosur "bunga 0%" tidak selalu memuat skill. Perkuat description: taruh kata kunci "brosur kredit", "bunga 0%", "sembunyikan biaya admin/asuransi" di awal kalimat description.
-2. **Ilustrasi bunga untuk kredit barang konsumsi tidak realistis** — untuk HP/elektronik/motor tanpa info bunga, tampilkan ilustrasi flat (mis. 1%; 1,5%; 2% per bulan) beserta EIR-nya, dan larang kata "wajar"/"normal" untuk angka ilustrasi.
+2. **Ilustrasi bunga untuk kredit barang konsumsi dipilih tanpa dasar** — untuk HP/elektronik/motor tanpa info bunga, tampilkan ilustrasi flat (mis. 1%; 1,5%; 2% per bulan) beserta EIR-nya, dan larang kata "wajar"/"normal" untuk angka ilustrasi.
 3. **Anotasi tambahan di luar keluaran script** — tambahkan aturan "jangan menambah keterangan pada jadwal selain dari keluaran"; script bisa menandai sendiri baris tahun saat tahap bunga berganti.
 4. **Baris "Uang yang benar-benar diterima"** membingungkan untuk kredit barang/KPR (pembeli tidak menerima uang tunai) dan memancing penjelasan keliru (Telegram: "cicilan berubah bila admin dipotong"). Ganti label: "Pinjaman bersih setelah biaya di muka".
 5. **Pertanyaan berulang** — jangan menanyakan jenis bunga bila pengguna sudah menyebut "flat"/"efektif".

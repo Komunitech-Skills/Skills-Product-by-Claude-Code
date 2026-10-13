@@ -26,7 +26,7 @@ import sys
 from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 DISKONTO_DEFAULT = Decimal("12")
 DISKONTO_KETAT = Decimal("20")
 LABEL_MANFAAT = {"omzet": "Omzet", "penghematan": "Penghematan", "pemasukan": "Pemasukan tambahan"}
@@ -487,7 +487,8 @@ def siapkan(a):
         raise Galat("tingkat diskonto harus 0% sampai 100% per tahun", "Mis. 12.")
     p["diskonto"] = d
     if d < 6:
-        peringatan.append("Tingkat diskonto di bawah bunga KUR 6% - hasil bisa terlalu optimis.")
+        peringatan.append("Tingkat diskonto di bawah 6%/tahun (bunga KUR produksi menurut Permenko Perekonomian "
+                          "No. 1 Tahun 2026; konfirmasi ke bank penyalur) - hasil bisa terlalu optimis.")
     if d > 30:
         peringatan.append("Tingkat diskonto di atas 30%/tahun - pastikan memang disengaja.")
 

@@ -2,6 +2,12 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.4 (2026-10-13)
+- Teks netral untuk tingkat diskonto (logika hitung tidak berubah): template SKILL.md (pola balasan "kembali ke usaha" dan baris **Asumsi**) kini menulis patokan 12% sebagai "asumsi tingkat diskonto contoh; ganti dengan bunga pinjaman Anda + premi risiko yang Anda pilih", tidak lagi menyebut tarif KUR tanpa sumber. Daftar periksa: bila bunga KUR disebut, dasar aturannya wajib ikut.
+- Peringatan script untuk diskonto < 6% kini menyertakan dasar aturan (Permenko Perekonomian No. 1 Tahun 2026; konfirmasi ke bank penyalur). `VERSI` script → 1.0.4.
+- README (FAQ patokan 12%): bunga KUR disertai dasar aturan; premi risiko 6% ditulis sebagai pilihan contoh, bukan acuan pasar.
+- Contoh `examples/04` dan `05` diselaraskan dengan `01`–`03` (angka tidak berubah); catatan `examples/HASIL-UJI.md` tidak lagi menyebut 12% "wajar".
+
 ## Catatan revisi 1.0.3 (2026-10-13)
 - Batasan di SKILL.md ditambah satu aturan: setiap tarif/aturan disebut dengan dasar aturan + tahun; angka hanya dari script/input pengguna; nilai yang tidak diberikan pengguna ditandai asumsi (tanpa label "wajar/umum/lazim" yang tidak bersumber).
 - Contoh uji `examples/01`–`03`: patokan 12% ditulis sebagai asumsi tingkat diskonto contoh (ganti dengan bunga pinjaman Anda + premi risiko pilihan Anda), tidak lagi menyebut tarif KUR tanpa sumber.
