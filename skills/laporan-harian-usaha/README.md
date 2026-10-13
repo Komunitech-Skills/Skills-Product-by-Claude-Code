@@ -58,7 +58,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Laporan usaha hari ini"
 - "Gimana usaha kemarin?"
 - "Laporan minggu lalu, bandingkan dengan minggu sebelumnya"
-- "Kirim laporan harian ke Telegram saya tiap jam 9 malam, dan laporan mingguan tiap Senin pagi" (OpenClaw; pengiriman ke Telegram baru dicoba oleh agent, belum oleh manusia)
+- "Kirim laporan harian ke Telegram saya tiap jam 9 malam, dan laporan mingguan tiap Senin pagi" (OpenClaw; jadwal ke Telegram sudah diuji di bot uji 2026-10-13)
 - "Samarkan nama karyawan di laporan"
 
 ## Instalasi singkat
@@ -77,7 +77,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 
 **Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.1.4), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka penjualan benar tetapi salah menafsirkan “lead baru langsung closing” (calon pembeli baru dianggap langsung jadi pembeli) dan siap mengirim omzet ke grup WA karyawan; dengan skill laporan baku, butir PERLU PERHATIAN jelas, deal vs konversi benar, dan menolak grup/pesan massal sesuai kebijakan kanal.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji CLI + gateway lokal automations). Claude Code (simulasi agent). Pengiriman laporan ke Telegram dicoba oleh agent di gateway lokal (hasil: terkirim ke chat pemilik), belum diuji manusia di bot Telegram sungguhan. Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji CLI + gateway lokal automations). Claude Code (simulasi agent). **Kiriman terjadwal ke Telegram:** diuji di bot Telegram uji 2026-10-13 (C13, topik `C13 laporan-harian-usaha — jadwal`, msg terjadwal tiba ~5 menit setelah jadwal dibuat; detail `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
 
 ## FAQ
 **Apakah skill ini bisa mengubah atau merusak data kasir/stok/absen saya?**
