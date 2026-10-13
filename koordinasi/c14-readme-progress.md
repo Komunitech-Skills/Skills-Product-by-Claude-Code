@@ -1,0 +1,42 @@
+# C14 — cek acak README jualan (set G–J)
+
+Daftar 40 skill (`random.seed(20261013+23)`), pool = skill aktif minus set A–F (60 skill).
+
+| Set | Skill |
+|-----|--------|
+| G | tulisan-tanpa-kesan-ai, resi-picking, dolibarr-usaha, kontrak-kerja-pkwt, kanboard-papan-kerja, hitung-thr, pantau-cron-openclaw, riset-harga-kompetitor, fider-masukan-pelanggan, simulasi-cicilan-pinjaman |
+| H | slip-gaji-bpjs, tagih-piutang, siyuan-sop, ringkas-grup-wa, kpi-tim, balas-ulasan-pelanggan, hitung-hpp, laporan-insiden-usaha, riset-saham-berita, asisten-tulis-riset |
+| I | dasbor-lokal, uji-pasar-produk-cepat, laporan-iklan-mingguan, naskah-live-jualan, promo-kalender, kalkulator-klinis-nakes, landing-page-siap-tayang, seleksi-cv-pelamar, notebook-riset-lokal, pantau-website-toko |
+| J | surat-resmi, bot-trading-kripto, grist-usaha, positioning-persona-usaha, copy-landing-page, vikunja-tugas, rekonsiliasi-bank, arus-kas-13minggu, absensi-lokal, kasir-lokal |
+
+## Set G (2026-10-13 ~17:30 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| tulisan-tanpa-kesan-ai | sudah memenuhi checklist | — |
+| resi-picking | sudah memenuhi checklist | — |
+| dolibarr-usaha | sudah memenuhi checklist | — |
+| kontrak-kerja-pkwt | sudah memenuhi checklist | — |
+| kanboard-papan-kerja | judul >8 kata | judul dipersingkat |
+| hitung-thr | sudah memenuhi checklist | — |
+| pantau-cron-openclaw | tautan t.me privat di Bukti Telegram | diganti ringkasan teks |
+| riset-harga-kompetitor | sudah memenuhi checklist | — |
+| fider-masukan-pelanggan | sudah memenuhi checklist | — |
+| simulasi-cicilan-pinjaman | tanpa blok Hasil uji; tautan t.me | blok Hasil uji + Status uji; hapus t.me |
+
+## Set H (2026-10-13 ~18:00 UTC)
+
+| Skill | Temuan | Perbaikan |
+|-------|--------|-----------|
+| slip-gaji-bpjs | tautan t.me privat di Bukti Telegram | diganti ringkasan teks |
+| tagih-piutang | sudah memenuhi checklist | — |
+| siyuan-sop | sudah memenuhi checklist | — |
+| ringkas-grup-wa | baris pembeda & subjudul ganda Hasil uji | rapikan format |
+| kpi-tim | sudah memenuhi checklist | — |
+| balas-ulasan-pelanggan | baris pembeda & subjudul ganda Hasil uji | rapikan format |
+| hitung-hpp | tautan t.me privat di Bukti Telegram | diganti ringkasan teks |
+| laporan-insiden-usaha | sudah memenuhi checklist | — |
+| riset-saham-berita | sudah memenuhi checklist | — |
+| asisten-tulis-riset | tagline terpotong; baris pembeda | tagline satu baris + italic |
+
+Sisa: set I (run berikutnya).
