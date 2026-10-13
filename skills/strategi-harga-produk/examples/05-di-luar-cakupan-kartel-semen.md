@@ -10,7 +10,7 @@
 
 Maaf, yang satu ini nggak bisa aku bikinin: kesepakatan harga dan draf WA-nya.
 
-Kesepakatan antarpesaing untuk menyeragamkan harga jual, misalnya semen 50 kg semua Rp75.000, itu **kartel penetapan harga**. Di Indonesia hal ini dilarang oleh **Pasal 5 UU No. 5 Tahun 1999** tentang Larangan Praktik Monopoli dan Persaingan Usaha Tidak Sehat. Toko kecil juga bisa kena. KPPU pernah memproses kasus semacam ini di level lokal, dan sanksinya berupa denda administratif sampai pidana denda. Pesan WA yang mengajak sepakat harga juga bisa jadi bukti tertulis yang memberatkan.
+Kesepakatan antarpesaing untuk menyeragamkan harga jual, misalnya semen 50 kg semua Rp75.000, itu **kartel penetapan harga**. Di Indonesia hal ini dilarang oleh **Pasal 5 UU No. 5 Tahun 1999** tentang Larangan Praktik Monopoli dan Persaingan Usaha Tidak Sehat. Aturan ini berlaku juga untuk toko kecil; sanksinya diatur di UU yang sama (denda administratif dan, untuk pelanggaran tertentu, pidana denda) — cek putusan KPPU bila perlu, contoh ini tidak merujuk kasus tertentu. Pesan WA yang mengajak sepakat harga juga bisa jadi bukti tertulis yang memberatkan.
 
 Tujuanmu, yaitu menjaga margin dan menghindari perang harga, tetap bisa dicapai lewat cara yang sah:
 

@@ -74,7 +74,7 @@ Bagian edukasi pasien (leaflet, pengingat, FAQ, konten bersumber, penolakan medi
 ## Hukum & sumber: hasil verifikasi penguji
 
 ### UU PDP 27/2022 & PP 33/2026: ✅ cocok
-Klaim di `aturan-privasi-dan-iklan.md` bagian 1 (data kesehatan = data pribadi spesifik; PP 33/2026 diundangkan 16 Juli 2026, berlaku 16 Januari 2027; notifikasi kegagalan PDP ≤ 3×24 jam; perjanjian pengendali–prosesor) **cocok** dengan `research/sources/verifikasi-regulasi-2026-09-23.md` #31. Status "naskah resmi belum dibaca langsung" juga ditulis jujur di kedua tempat.
+Klaim di `aturan-privasi-dan-iklan.md` bagian 1 (data kesehatan = data pribadi spesifik; PP 33/2026 diundangkan 16 Juli 2026, berlaku 16 Januari 2027; notifikasi kegagalan PDP ≤ 3×24 jam; perjanjian pengendali–prosesor) **cocok** dengan (riset internal kurator, tidak disertakan dalam paket) #31. Status "naskah resmi belum dibaca langsung" juga ditulis jujur di kedua tempat.
 
 ### Kerahasiaan medis, UU 17/2023 (dibaca langsung dari PDF naskah resmi di situs Kemenkes)
 Sumber: https://farmalkes.kemkes.go.id/en/unduh/uu-17-2023/ (PDF resmi "uu-17-2023.pdf"). peraturan.bpk.go.id menolak akses (403) dan tidak diakali.

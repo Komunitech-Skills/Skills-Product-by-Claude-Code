@@ -229,4 +229,4 @@ Rincian: `10-uji-ulang-v103-akun-b.md`.
 
 ### Rekomendasi
 Perbaiki A–C (teks/dok, tanpa uji ulang penuh), tambahkan catatan aplikasi di atas ke referensi, lalu lanjut ke uji platform asli
-(`docs/uji-platform.md`). `platform_teruji` tetap `claude-code (simulasi agent)`; aplikasi Frappe Books asli teruji, platform agen sungguhan belum.
+(panduan uji platform internal (tidak disertakan dalam paket)). `platform_teruji` tetap `claude-code (simulasi agent)`; aplikasi Frappe Books asli teruji, platform agen sungguhan belum.

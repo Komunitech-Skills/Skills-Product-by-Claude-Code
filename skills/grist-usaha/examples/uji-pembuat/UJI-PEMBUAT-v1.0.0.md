@@ -55,7 +55,7 @@ berikutnya: "grist skill", "grist mcp", "airtable agent skill", "grist api agent
   ini tidak bisa menjalankan Docker — dicoba, ditolak kebijakan sandbox; tidak ada GUI untuk
   aplikasi desktop). Rumus di `references/rumus-umum.md` belum dijalankan di kotak formula Grist
   sungguhan. File `.grist` fixture adalah **tiruan** yang skemanya disusun dari kode sumber resmi
-  (lihat `research/sources/grist-2026-09-26.md`), bukan ekspor Grist asli.
+  (lihat (riset internal kurator, tidak disertakan dalam paket)), bukan ekspor Grist asli.
 - Lihat `docs/panduan-grist.md` bagian 0 dan `README.md` untuk keterangan yang sama ke pembeli.
 
 ## Uji muat OpenClaw
@@ -77,4 +77,4 @@ maks. 6". Status katalog: **draft** (belum `uji`/`lulus`), konsisten dengan skor
 2. Penguji independen (sesi/agent lain yang hanya membaca folder skill ini) menjalankan ulang
    5 skenario.
 3. Uji A/B (tanpa skill vs dengan skill) & uji banding pesaing.
-4. `bash scripts/uji_openclaw.sh` dan uji platform asli (`docs/uji-platform.md`).
+4. `bash scripts/uji_openclaw.sh` dan uji platform asli (panduan uji platform internal (tidak disertakan dalam paket)).

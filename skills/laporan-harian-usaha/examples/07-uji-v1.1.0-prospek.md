@@ -115,8 +115,8 @@ Semua kasus di atas: exit code 0 (laporan tetap dibuat), tidak ada crash, tidak 
 ## 6. Regresi (bagian selain PROSPEK)
 
 - `tests/uji_regresi.py` (bawaan skill) → **47 tes OK**, termasuk 8 tes khusus crm-wa milik pembuat (`test_crm_prospek_cocok_dengan_rekap_langsung`, `test_crm_mingguan_banding_minggu_sebelumnya`, `test_crm_tidak_terpasang_bukan_error`, `test_crm_db_rusak_dilewati_dengan_catatan`, `test_crm_script_tidak_ditemukan`, `test_tanpa_crm`, `test_crm_tanpa_nama_nomor_prospek`, `test_crm_db_asli_tidak_berubah`) — dijalankan ulang di lingkungan penguji, bukan dijadikan satu-satunya dasar penilaian (data & skenario tambahan pada bagian 1–5 dibuat independen oleh penguji).
-- `python3 scripts/validate.py` (dari `/home/user/Skills`) → **58 skill valid, 58 baris katalog sesuai**.
-- `bash scripts/uji_openclaw.sh` (dari `/home/user/Skills`) → OpenClaw **2026.9.6**: 58/58 `eligible`/`modelVisible`/`commandVisible`.
+- `python3 scripts/validate.py` (dari `<folder repo>`) → **58 skill valid, 58 baris katalog sesuai**.
+- `bash scripts/uji_openclaw.sh` (dari `<folder repo>`) → OpenClaw **2026.9.6**: 58/58 `eligible`/`modelVisible`/`commandVisible`.
 - Uji gabungan (kasir-lokal minimal + crm-wa bersamaan, di luar suite bawaan): laporan harian dengan 1 nota kasir (Rp 24.000) **dan** data CRM di atas — bagian PENJUALAN tetap benar (Rp 24.000, 1 nota) dan bagian PROSPEK tetap sama persis dengan uji crm-wa sendirian; footer "Sumber: kasir-lokal, crm-wa (hanya dibaca)." muncul benar. Tidak ada interferensi antar alat.
 
 ## 7. Uji jadwal OpenClaw sungguhan (bukan simulasi)

@@ -7,7 +7,7 @@
   web untuk verifikasi regulasi.
 - **Lingkungan:** Linux, Python 3.11.15. Skill disalin ke scratchpad terpisah
   (`uji-rpg/skills/rencana-pelajaran-guru`), tidak dipasang di `.claude/skills` repo ini.
-- **Uji muat OpenClaw:** `bash scripts/uji_openclaw.sh` (dari `/home/user/Skills`) →
+- **Uji muat OpenClaw:** `bash scripts/uji_openclaw.sh` (dari `<folder repo>`) →
   **OpenClaw 2026.9.6**: `eligible 55/55`, `modelVisible 55/55`, `commandVisible 55/55` —
   `rencana-pelajaran-guru` lulus semua 3 kriteria bersama 54 skill lain.
 - **Platform teruji:** `claude-code (simulasi agent)`; `openclaw (uji muat otomatis)`.

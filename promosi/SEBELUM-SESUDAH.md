@@ -24,7 +24,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 14 | Laporan Bisnis Otomatis ke HP Tiap Pagi (`laporan-otomatis-terjadwal`) | Produktivitas | 3,5 → 8,6 | +5,1 |
 | 15 | Kanboard Papan Kerja: Pantau Lewat Chat (`kanboard-papan-kerja`) | Produktivitas | 4 → 9 | +5 |
 | 16 | Materi Pasien Rapi, Konsisten, Tanpa Repot Nulis Sendiri (`edukasi-pasien-klinik`) | Customer Service | 3 → 8 | +5 |
-| 17 | Draf Surat Perjanjian Usaha dalam Menit (`perjanjian-sederhana`) | Legal & Dokumen | 4,25 → 9 | +4,75 |
+| 17 | Draf Surat Perjanjian Usaha Berpasal Lengkap (`perjanjian-sederhana`) | Legal & Dokumen | 4,25 → 9 | +4,75 |
 | 18 | Ajak Balik Pelanggan Lama, Tanpa Blast (`aktifkan-kembali-pelanggan`) | Customer Service | 4 → 8,6 | +4,6 |
 | 19 | InvenTree Gudang: Asisten AI Stok dan Opname (`inventree-gudang`) | Produktivitas | 4,5 → 9 | +4,5 |
 | 20 | Papan Saran Pelanggan Sendiri, Tanpa Biaya Bulanan (`fider-masukan-pelanggan`) | Produktivitas | 5 → 9 | +4 |
@@ -76,7 +76,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 66 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
 | 67 | Strategi Konten & Anggaran Iklan (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
 | 68 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
-| 69 | Cek Kesehatan Akun Iklan dalam Hitungan Menit (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
+| 69 | Cek Kesehatan Akun Iklan, Tanpa Login (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
 | 70 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
 | 71 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
 | 72 | Vikunja Tugas: Manajemen Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
@@ -253,7 +253,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Keterangan:** Belum direview tenaga medis
 - **Catatan jujur:** Hanya 1 skenario regresi. Sumber daftar tanda bahaya belum tercantum; wajib ditinjau tenaga medis sebelum dipakai.
 
-### Draf Surat Perjanjian Usaha dalam Menit — 4,25 → 9
+### Draf Surat Perjanjian Usaha Berpasal Lengkap — 4,25 → 9
 `perjanjian-sederhana` · Legal & Dokumen · versi 1.0.6 · diuji 2026-10-03
 
 - **Permintaan:** Bikin surat perjanjian sewa kios Rp18 juta per tahun, 2 tahun; juga perjanjian utang dengan jaminan BPKB motor.
@@ -717,7 +717,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Bio 159-219 karakter (terpotong) -> 142 dari 150
 - **Catatan jujur:** Tagline sebaiknya tidak menyiratkan 'langsing' sebelum izin edar disetujui; satu pasal UU PK hanya untuk pelaku periklanan.
 
-### Cek Kesehatan Akun Iklan dalam Hitungan Menit — 6 → 8,5
+### Cek Kesehatan Akun Iklan, Tanpa Login — 6 → 8,5
 `audit-akun-iklan` · Marketing & Konten · versi 1.0.5 · diuji 2026-10-01
 
 - **Permintaan:** Audit iklan Shopee toko gamis: anggaran habis jam 2, ROAS 2,3. Juga iklan klinik ditolak, ini login saya.

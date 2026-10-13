@@ -7,7 +7,7 @@ tidak dipasang (butuh Docker/pip & kunci).
 | Sumber | Kata kunci | Temuan |
 |---|---|---|
 | Freqtrade (GPL-3.0, ±55 rb bintang) | docs quickstart & configuration | https://www.freqtrade.io/en/stable/ , /configuration/ |
-| Hummingbot (Apache-2.0, ±20 rb bintang) | docs (dirujuk di research/sources/bot-trading-2026-09-29.md) | Fokus market making; berat (Docker/conda), tidak dinilai rinci |
+| Hummingbot (Apache-2.0, ±20 rb bintang) | docs (dirujuk di (riset internal kurator, tidak disertakan dalam paket)) | Fokus market making; berat (Docker/conda), tidak dinilai rinci |
 | ClawHub / skill OpenClaw | "crypto trading bot skill", "DCA grid binance skill" | `binance-spot-trader` (srikanthbellary, MIT, ±1,7 rb unduhan): "autonomous … LLM-powered market analysis", momentum/mean reversion/DCA; halaman katalog tanpa info batas risiko/paper/izin withdraw (https://clawbot.ai/skills/binance-spot-trader.html). Juga ada peringatan skill kripto berbahaya di ClawHub (opensourcemalware.com, "clawdbot-skills-ganked-your-crypto"). |
 
 Skill ClawHub tersebut memberi **analisis pasar/sinyal oleh LLM** → bertentangan langsung dengan keputusan pemilik

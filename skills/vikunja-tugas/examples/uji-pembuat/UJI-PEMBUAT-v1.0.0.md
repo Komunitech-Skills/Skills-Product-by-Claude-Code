@@ -33,7 +33,7 @@ Ini bagian yang **melampaui** uji regresi berserver-tiruan:
 1. Binary resmi diunduh dari `https://dl.vikunja.io/vikunja/v2.6.0/vikunja-v2.6.0-linux-amd64-full.zip`
    (URL resmi dari `vikunja.io/docs/installing/`). Checksum SHA-256 dicocokkan dengan file
    `.sha256` bawaan paket → **COCOK**. Verifikasi tanda tangan GPG (`.sig`) **tidak selesai**
-   (keyserver GPG tidak terjangkau lewat proxy sandbox, lihat `research/sources/vikunja-2026-09-26.md`
+   (keyserver GPG tidak terjangkau lewat proxy sandbox, lihat (riset internal kurator, tidak disertakan dalam paket)
    §3) — dicatat sebagai **PERLU REVIEW**, bukan diklaim selesai.
 2. Binary dijalankan sungguhan, diikat ke `127.0.0.1:3456` lewat `config.yml` (`service.interface:
    127.0.0.1:3456`), database SQLite baru.
@@ -91,6 +91,6 @@ dikosongkan di `catalog.csv` (`status=draft`) sampai penguji independen menyeles
 
 ## 4. PERLU REVIEW untuk pemilik
 - Verifikasi GPG signature biner resmi belum selesai (§1.2 poin 1).
-- Belum diuji platform asli manusia (OpenClaw/Codex/Claude Code/Cursor) sesuai `docs/uji-platform.md`.
+- Belum diuji platform asli manusia (OpenClaw/Codex/Claude Code/Cursor) sesuai panduan uji platform internal (tidak disertakan dalam paket).
 - Kuirk "401 untuk token kurang izin, bukan 403" (didokumentasikan di `references/api-vikunja.md`)
   perlu dipantau bila Vikunja mengubah perilaku ini di rilis mendatang.

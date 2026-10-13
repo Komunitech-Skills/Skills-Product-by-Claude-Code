@@ -1,7 +1,7 @@
 # HASIL UJI INDEPENDEN — kanboard-papan-kerja v1.0.0
 
 - **Tanggal:** 2026-09-30 (±19:50–21:10 WIB)
-- **Penguji:** agent penguji independen (Claude Code, simulasi agent) — bukan pembuat; membaca folder skill, `docs/panduan-kanboard.md`, `research/sources/kanboard-2026-09-30.md`. Skill disalin ke folder uji di scratchpad (tanpa `tests/`), tidak dipasang di `.claude/skills/`.
+- **Penguji:** agent penguji independen (Claude Code, simulasi agent) — bukan pembuat; membaca folder skill, `docs/panduan-kanboard.md`, (riset internal kurator, tidak disertakan dalam paket). Skill disalin ke folder uji di scratchpad (tanpa `tests/`), tidak dipasang di `.claude/skills/`.
 - **Kanboard asli milik penguji:** `git clone --depth 1 --branch v1.2.54` dari github.com/kanboard/kanboard (tag terbaru, commit `9ce6a5e`, 28 Agu 2026), `APP_VERSION=v1.2.54 php -S 127.0.0.1:8090`, PHP 8.4.19 + SQLite, database baru. Tidak ada paket sistem yang dipasang. Server tiruan pembuat **tidak** dipakai. Docker tidak dipakai (daemon mati).
 - **Data uji baru:** 3 akun (Manajer/Pengguna), 3 papan dari template skill, 27 kartu; zona server diuji **UTC dan Asia/Jakarta**, pengguna WIB/WITA/WIT. Token pribadi dibuat acak oleh penguji dan ditulis ke `users.api_access_token` (setara tombol "Generate token baru"); `date_moved` beberapa kartu dimundurkan langsung di DB uji agar ada kartu macet.
 - **OpenClaw:** `bash scripts/uji_openclaw.sh` → OpenClaw 2026.9.7: eligible/modelVisible/commandVisible 117/117 ✔.

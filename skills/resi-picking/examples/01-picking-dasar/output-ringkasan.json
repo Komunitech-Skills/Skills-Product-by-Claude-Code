@@ -1,10 +1,10 @@
 {
   "ok": true,
   "file_keluaran": {
-    "daftar_ambil_md": "/home/user/Skills/skills/resi-picking/examples/01-picking-dasar/daftar-ambil.md",
-    "urutan_resi_md": "/home/user/Skills/skills/resi-picking/examples/01-picking-dasar/urutan-resi.md"
+    "daftar_ambil_md": "examples/01-picking-dasar/daftar-ambil.md",
+    "urutan_resi_md": "examples/01-picking-dasar/urutan-resi.md"
   },
-  "file_pesanan": "/home/user/Skills/skills/resi-picking/examples/01-picking-dasar/input-pesanan.csv",
+  "file_pesanan": "examples/01-picking-dasar/input-pesanan.csv",
   "encoding": "utf-8-sig",
   "pemetaan_kolom": {
     "No. pesanan": "No. Pesanan",
