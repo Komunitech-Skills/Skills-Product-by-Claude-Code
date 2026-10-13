@@ -13,7 +13,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 3 | SPT Tahunan Beres Sebelum Buka Coretax (`spt-tahunan-op`) | Keuangan & Akuntansi | 2 → 9 | +7 |
 | 4 | Cek Privasi OpenClaw dalam Bahasa Awam (`cek-privasi-openclaw`) | Produktivitas | 3 → 9 | +6 |
 | 5 | Odoo Usaha: Tanya Lewat Chat (`odoo-usaha`) | Keuangan & Akuntansi | 3 → 8,9 | +5,9 |
-| 6 | Tak Ada Lagi Tagihan Terlupa (`pengingat-follow-up`) | Produktivitas | 3,5 → 9,25 | +5,75 |
+| 6 | Tagihan dan Follow-up Tak Lagi Mudah Terlupa (`pengingat-follow-up`) | Produktivitas | 3,5 → 9,25 | +5,75 |
 | 7 | Pantau Website Toko Sebelum Pelanggan Mengeluh (`pantau-website-toko`) | E-commerce/Marketplace Indonesia | 3 → 8,7 | +5,7 |
 | 8 | Surat Peringatan Karyawan yang Adil dan Rapi (`surat-peringatan-karyawan`) | HR | 3 → 8,6 | +5,6 |
 | 9 | Rapikan Daftar Pelanggan, Tanpa Data Hilang (`rapikan-data-berantakan`) | Data & Analisis | 3,5 → 9 | +5,5 |
@@ -154,7 +154,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Skor skenario kunci 1 -> 8,8; 2 penawaran + 1 faktur dihapus -> 0 perubahan
 - **Catatan jujur:** Diuji dengan server Odoo tiruan (data contoh), sampel 3 sesi; model non-deterministik.
 
-### Tak Ada Lagi Tagihan Terlupa — 3,5 → 9,25
+### Tagihan dan Follow-up Tak Lagi Mudah Terlupa — 3,5 → 9,25
 `pengingat-follow-up` · Produktivitas · versi 1.0.6 · diuji 2026-10-01
 
 - **Permintaan:** Ingatkan: Bu Rina bayar 4,5 jt tgl 3, hubungi Pak Budi Senin, Toko Sinar belum bayar Rp2.750.000. Tagih siapa?
