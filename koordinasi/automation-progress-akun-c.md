@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-13 ~09:42 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~09:42 UTC — C13 `buku-stok` jadwal TG topik 1353 | jadwal LOLOS, omzet Rp 150rb cocok | LOLOS | ya |
+| 2026-10-13 ~09:42 | `cursor/iterasi-otomatis-akun-c-8b42` | 07b85f15 | selesai ~09:42 UTC — C13 `buku-stok` jadwal TG topik 1353 | jadwal LOLOS, omzet Rp 150rb cocok | LOLOS | ya |
 | 2026-10-13 ~09:32 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:32 UTC — merge default; getUpdates 242 kosong; C13 buku-stok topik 1353 | — | — | — |
 | 2026-10-13 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~09:25 UTC — C13 `kasir-lokal` jadwal TG topik 1343 | jadwal LOLOS, penjualan bersih Rp 51rb cocok | LOLOS | ya |
 | 2026-10-13 ~09:14 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:14 UTC — merge default; getUpdates 242 kosong; C13 kasir-lokal topik 1343 | — | — | — |
