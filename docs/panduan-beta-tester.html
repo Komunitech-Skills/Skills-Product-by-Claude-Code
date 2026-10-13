@@ -1,0 +1,312 @@
+<title>Panduan Beta Tester Komunitech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: satu kolom baca ±68ch, timeline 7 hari di atas, nav bagian lengket, kartu skill dengan tombol salin. */
+:root{
+  --bg:#F5F8F7; --surface:#FFFFFF; --fg:#17221F; --muted:#5A6B66; --border:#D5E0DB;
+  --accent:#0E7C6B; --accent-ink:#FFFFFF; --soft:#DDF1EB; --code:#EBF2EF; --warn:#9A5B00; --warn-soft:#FFF1D6;
+  --display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1A17; --surface:#15231F; --fg:#E7EFEC; --muted:#A3B5AF; --border:#28403A;
+  --accent:#4FD1B6; --accent-ink:#0B1F1A; --soft:#173A32; --code:#1B2C27; --warn:#F2C26B; --warn-soft:#3A2D12; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0F1A17; --surface:#15231F; --fg:#E7EFEC; --muted:#A3B5AF; --border:#28403A;
+  --accent:#4FD1B6; --accent-ink:#0B1F1A; --soft:#173A32; --code:#1B2C27; --warn:#F2C26B; --warn-soft:#3A2D12; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-block:0 64px;padding-inline:16px}
+header.hero{padding-block:40px 24px}
+.eyebrow{font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,5vw,2.6rem);line-height:1.12;margin:.3rem 0 .6rem;text-wrap:balance}
+.meta{color:var(--muted);font-size:.95rem;margin:0}
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:24px 0 8px}
+.timeline a{display:block;text-decoration:none;color:var(--fg);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;min-width:0}
+.timeline a:hover,.timeline a:focus-visible{border-color:var(--accent);outline:none}
+.timeline b{display:block;font-family:var(--display);font-weight:700;color:var(--accent);font-size:.8rem;letter-spacing:.04em;text-transform:uppercase}
+.timeline span{font-size:.92rem;color:var(--muted)}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:10px 0;margin:8px 0 16px;border-bottom:1px solid var(--border);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav.toc::-webkit-scrollbar{display:none}
+nav.toc a{flex:0 0 auto;white-space:nowrap;font-family:var(--display);font-weight:600;font-size:.82rem;color:var(--fg);text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:6px 12px}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+section{padding-block:28px 4px;scroll-margin-top:64px}
+h2{font-family:var(--display);font-weight:800;font-size:1.55rem;line-height:1.2;margin:0 0 .8rem;text-wrap:balance}
+h3{font-family:var(--display);font-weight:700;font-size:1.12rem;margin:1.6rem 0 .5rem;text-wrap:balance}
+p{margin:.7rem 0;max-width:68ch}
+ul,ol{padding-left:1.35rem;margin:.6rem 0} li{margin:.4rem 0;max-width:68ch} li::marker{color:var(--accent);font-weight:600}
+code{font-family:var(--mono);font-size:.9em;background:var(--code);padding:.12em .4em;border-radius:5px;overflow-wrap:anywhere}
+strong{font-weight:600}
+.callout{background:var(--soft);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;margin:18px 0}
+.callout h3{margin:0 0 .4rem} .callout ol{margin:.3rem 0 0}
+ul.tasks{list-style:none;padding:0;margin:.6rem 0;display:grid;gap:8px}
+.task label{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;max-width:none}
+.task input{width:20px;height:20px;margin:.2rem 0 0;accent-color:var(--accent);flex:0 0 auto}
+.task input:checked + span{color:var(--muted);text-decoration:line-through}
+.task label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.skill{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 18px 10px;margin:16px 0}
+.skill-head{display:flex;gap:14px;align-items:flex-start}
+.skill-no{font-family:var(--display);font-weight:800;font-size:1.1rem;color:var(--accent-ink);background:var(--accent);border-radius:999px;width:34px;height:34px;display:grid;place-items:center;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.skill-title{margin:0;font-size:1.12rem} .skill-name{display:inline-block;margin-top:4px;font-size:.82rem}
+.skill-desc{margin:.8rem 0 .4rem;color:var(--fg)}
+.skill ul{list-style:none;padding:0;margin:.4rem 0 0}
+li.cmd{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;background:var(--code);border-radius:10px;padding:10px 12px;margin:8px 0;max-width:none}
+li.cmd code{background:transparent;padding:0;flex:1 1 220px;min-width:0;font-size:.92em}
+li.cmd .note{flex-basis:100%;font-size:.88rem;color:var(--muted)}
+.copy{font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.03em;color:var(--accent);background:var(--surface);border:1px solid var(--accent);border-radius:999px;padding:5px 12px;cursor:pointer;flex:0 0 auto}
+.copy:hover,.copy:focus-visible{background:var(--accent);color:var(--accent-ink);outline:none}
+.copy.ok{background:var(--accent);color:var(--accent-ink)}
+.codebox{position:relative;margin:14px 0}
+.codebox .copy{position:absolute;top:10px;right:10px}
+.codebox pre{font-family:var(--mono);font-size:.88rem;line-height:1.55;background:var(--code);border-radius:12px;padding:44px 16px 16px;margin:0;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+@media (max-width:520px){ .timeline{grid-template-columns:1fr} body{font-size:16px} .skill{padding:14px 14px 8px} }
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">Komunitech Skills · Program Beta VIP</div>
+  <h1>Panduan Beta Tester Komunitech Skills</h1>
+  <p class="meta">Versi 13 Oktober 2026 · Masa uji 13–19 Oktober 2026, masukan paling lambat 20 Oktober · Untuk Anda yang bukan orang teknis: ikuti hari demi hari.</p>
+  <div class="timeline">
+    <a href="#alur-7-hari-hari-1-pasang-dan-coba-1-skill"><b>Hari 1 · 13 Okt</b><span>Pasang satu skill, coba satu kalimat, catat.</span></a>
+    <a href="#alur-7-hari-hari-2-6-pakai-untuk-pekerjaan-nyata"><b>Hari 2–6</b><span>Minimal 3 skill, masing-masing 3 pekerjaan nyata.</span></a>
+    <a href="#alur-7-hari-hari-7-19-oktober-kirim-masukan-paling-l"><b>Hari 7 · 19 Okt</b><span>Isi formulir per skill, kirim paling lambat 20 Oktober.</span></a>
+  </div>
+</header>
+<nav class="toc" aria-label="Bagian"><a href="#daftar-periksa">Daftar periksa singkat</a><a href="#apa-itu-program-beta-dan-berapa-lama">Apa itu Program Beta dan berapa lama?</a><a href="#apa-yang-anda-terima">Apa yang Anda terima?</a><a href="#cara-pasang-singkat">Cara pasang singkat</a><a href="#alur-7-hari">Alur 7 hari</a><a href="#sepuluh-skill-fokus">Sepuluh skill fokus</a><a href="#aturan-main">Aturan main</a><a href="#cara-dan-tenggat-mengirim-masukan">Cara dan tenggat mengirim masukan</a><a href="#faq">FAQ</a><a href="#terima-kasih">Terima kasih</a></nav>
+<p>Terima kasih sudah bersedia menjadi beta tester. Panduan ini ditulis untuk Anda yang bukan orang teknis: ikuti hari demi hari, satu langkah sekali waktu. Setiap langkah punya <strong>tanda berhasil</strong> supaya Anda yakin sudah di jalur yang benar.</p>
+<section id="daftar-periksa"><h2>Daftar periksa singkat</h2>
+<ul class="tasks">
+<li class="task"><label><input type="checkbox" id="task1" data-task="1"> <span>Terima file ZIP paket beta (gratis, khusus Anda, jangan dibagikan).</span></label></li>
+<li class="task"><label><input type="checkbox" id="task2" data-task="2"> <span>Ekstrak ZIP, pasang skill ke folder "skills" AI agent Anda (bagian 3).</span></label></li>
+<li class="task"><label><input type="checkbox" id="task3" data-task="3"> <span>Pilih <strong>minimal 3 skill</strong> dari 10 skill beta yang cocok dengan usaha Anda (bagian 5).</span></label></li>
+<li class="task"><label><input type="checkbox" id="task4" data-task="4"> <span>Pakai tiap skill pilihan untuk <strong>pekerjaan nyata minimal 3 kali</strong> selama 7 hari.</span></label></li>
+<li class="task"><label><input type="checkbox" id="task5" data-task="5"> <span>Catat setiap pemakaian: tanggal, skill, kalimat perintah, hasil bisa langsung dipakai atau tidak, hal yang salah/aneh.</span></label></li>
+<li class="task"><label><input type="checkbox" id="task6" data-task="6"> <span>Hari ke-7 (19 Oktober): isi formulir masukan untuk <strong>tiap skill</strong> yang dicoba (bagian 7), kirim paling lambat 20 Oktober di topik Telegram tempat Anda menerima paket ini atau lewat pesan pribadi ke pemilik Komunitech (cara menemukannya ada di bagian 7).</span></label></li>
+</ul>
+</section>
+<section id="apa-itu-program-beta-dan-berapa-lama"><h2>1. Apa itu Program Beta dan berapa lama?</h2>
+<p>Program Beta Tester Komunitech bertujuan menguji skill di tangan pengguna sungguhan (pengusaha dan profesional awam) sebelum skill dijual. Untuk Program Beta VIP ini dipilih <strong>10 skill</strong> yang sudah lulus pengujian tim Komunitech, termasuk dicoba langsung lewat bot Telegram OpenClaw. Yang kami butuhkan sekarang: skill itu dipakai untuk <strong>pekerjaan nyata</strong> Anda.</p>
+<ul>
+<li><strong>Masa uji:</strong> 7 hari, <strong>13–19 Oktober 2026</strong>. Tenggat kirim masukan: <strong>20 Oktober 2026</strong>.</li>
+<li><strong>Target:</strong> pilih <strong>minimal 3 skill</strong> yang cocok dengan usaha Anda (tidak harus semua 10), pakai masing-masing <strong>minimal 3 kali</strong> untuk pekerjaan nyata.</li>
+<li><strong>Hari ke-7 (19 Oktober):</strong> isi formulir 5 menit untuk tiap skill yang dicoba; kirim paling lambat 20 Oktober.</li>
+<li><strong>Imbalan:</strong> 10 skill yang diuji <strong>gratis selamanya</strong> + <strong>1 skill lain</strong> pilihan Anda (diberikan setelah formulir masukan Anda diterima).</li>
+</ul>
+<p>Masukan Anda dirangkum tanpa nama (Beta 1, Beta 2, dst.) dan menentukan apakah skill direvisi lagi atau langsung dirilis.</p>
+<aside class="callout"><h3>Yang kami butuhkan dari Anda</h3><ol><li><strong>Instal sendiri</strong> tanpa bantuan, dan catat di langkah mana (jika) tersendat.</li><li><strong>Minimal 3 skill, masing-masing minimal 3 kali</strong> untuk pekerjaan nyata Anda.</li><li><strong>Catatan tiap pemakaian:</strong> tanggal, skill, kalimat perintah, hasil bisa langsung dipakai atau tidak, hal yang salah/aneh (tempel contohnya, hapus data pribadi/pelanggan).</li><li><strong>Formulir masukan per skill</strong> di hari ke-7 (19 Oktober); kirim paling lambat 20 Oktober.</li><li><strong>Laporan</strong> bila bot menjawab aneh, salah hitung, atau menolak permintaan wajar.</li></ol></aside>
+</section>
+<section id="apa-yang-anda-terima"><h2>2. Apa yang Anda terima?</h2>
+<p>Satu file ZIP paket VIP beta, <strong>gratis</strong>, dengan nama seperti <code>komunitech-vip-beta-budi-a1b2c3d4e5f6.zip</code> (berisi nama Anda dan kode lisensi Anda; ukuran sekitar 9,8 MB). Isinya:</p>
+<ul>
+<li><strong>Satu folder per skill</strong> (di dalamnya langsung ada <code>SKILL.md</code>), termasuk 10 skill beta.</li>
+<li><strong><code>CARA-INSTAL.md</code></strong> — panduan pasang lengkap per platform.</li>
+<li><strong><code>LISENSI.txt</code></strong> — kode lisensi, nama pemegang, daftar skill beserta versinya, dan teks lisensi.</li>
+<li>Folder <code>docs</code>, <code>solusi-vip</code> (panduan OpenClaw per profesi), dan <code>templates</code> (contoh teks aturan kerja bot OpenClaw) bukan skill dan tidak perlu dipasang; boleh dibaca bila Anda ingin memakai panduan per profesi. <strong>Jangan</strong> disalin ke folder skills; yang dipasang ke folder skills hanya folder skill.</li>
+</ul>
+<p>Paket ini <strong>khusus untuk Anda</strong>: diberi tanda (watermark) berupa nama dan kode lisensi Anda, dan tiap <code>SKILL.md</code> berisi keterangan "Dilarang menyebarluaskan". Mohon tidak dibagikan ke siapa pun.</p>
+</section>
+<section id="cara-pasang-singkat"><h2>3. Cara pasang singkat</h2>
+<p>Skill adalah folder berisi <code>SKILL.md</code>. Memasangnya = menyalin folder skill ke folder "skills" milik AI agent Anda, lalu minta tolong seperti biasa; AI memakai skill otomatis bila relevan. Platform = aplikasi AI yang Anda pakai: OpenClaw (umumnya member VIP), Claude Code, OpenAI Codex, atau Cursor.</p>
+<p><strong>Buka ZIP dulu:</strong> Windows klik kanan ZIP → Extract All; Mac klik dua kali ZIP. Yang disalin nanti adalah <strong>folder skill-nya</strong> (yang langsung berisi <code>SKILL.md</code>), bukan folder pembungkus hasil ekstrak. Biarkan <code>LISENSI.txt</code> dan <code>CARA-INSTAL.md</code> tetap di folder hasil ekstrak; keduanya tidak perlu disalin ke folder skills.</p>
+<p><strong>Cara termudah menyalin folder</strong> (tanpa Terminal):</p>
+<p>Windows:</p>
+<ol>
+<li>Tekan tombol Windows + R.</li>
+<li>Tempel alamat folder tujuan persis seperti di bagian aplikasi Anda di bawah (OpenClaw / Claude Code / Codex / Cursor), mis. <code>%USERPROFILE%\.claude\skills\</code> (<code>%USERPROFILE%</code> adalah alamat folder pengguna Anda, biasanya <code>C:\Users\NamaAnda</code>; ketik apa adanya, Windows yang menerjemahkan).</li>
+<li>Tekan Enter.</li>
+<li>Seret folder skill ke jendela yang terbuka.</li>
+</ol>
+<p>Bila muncul pesan folder tidak ada: tekan Windows + R, ketik <code>%USERPROFILE%</code>, Enter. Di jendela yang terbuka klik kanan → New → Folder, beri nama sesuai aplikasi Anda, mis. <code>.claude</code> (dengan titik di depan), buka folder itu, lalu buat folder <code>skills</code> di dalamnya. Ulangi langkah Windows + R dengan alamat lengkap.</p>
+<p>Mac:</p>
+<ol>
+<li>Di Finder tekan Cmd + Shift + G.</li>
+<li>Tempel alamat folder tujuan, mis. <code>~/.claude/skills</code>.</li>
+<li>Tekan Enter.</li>
+<li>Seret folder skill ke sana.</li>
+</ol>
+<p>Catatan: folder yang namanya diawali titik (<code>.claude</code>, <code>.openclaw</code>) disembunyikan Mac; tekan Cmd + Shift + . (titik) agar tampak.</p>
+<p>Memakai lebih dari satu platform: salin ke masing-masing folder tujuan.</p>
+<h3 id="cara-pasang-singkat-openclaw-utama-semua-member-vip-memakai-">OpenClaw (utama — semua member VIP memakai ini)</h3>
+<p>Folder tujuan Mac/Linux: <code>~/.openclaw/skills/</code> (bisa diisi dengan cara seret folder di atas). Windows: bila OpenClaw Anda berjalan lewat WSL (fitur Windows untuk menjalankan Linux), pakai cara Terminal di bawah. Windows tanpa WSL belum kami uji; tulis "Perlu bantuan" di formulir dan tanyakan di topik Telegram tempat Anda menerima paket ini. Cara paling andal adalah lewat Terminal:</p>
+<ol>
+<li>Buka Terminal. Mac: tekan Cmd + Spasi, ketik Terminal, lalu Enter. Windows: bila OpenClaw Anda berjalan lewat WSL (fitur Windows untuk menjalankan Linux), buka jendela WSL yang Anda pakai untuk OpenClaw.</li>
+<li>Masuk ke folder hasil ekstrak: ketik <code>cd </code> (dengan spasi) lalu seret folder hasil ekstrak ke jendela Terminal, lalu tekan Enter. Di WSL, folder Windows ditulis dengan awalan <code>/mnt/c/</code>, mis. <code>cd /mnt/c/Users/NamaAnda/Downloads/nama-folder-hasil-ekstrak</code> (huruf c kecil, pakai garis miring biasa). Sebaiknya ekstrak ZIP ke folder Downloads agar alamatnya mudah ditebak; ketik <code>ls</code> untuk melihat nama folder yang ada.</li>
+<li>Jalankan <code>openclaw skills install ./kelayakan-investasi-usaha --global</code> (ganti dengan nama skill yang dipasang; ulangi per skill). <code>--global</code> memasang skill ke folder <code>~/.openclaw/skills/</code> Anda, sama seperti menyalin folder secara manual.</li>
+<li>Cek dengan <code>openclaw skills list</code> (diketik di Terminal/jendela WSL di komputer tempat OpenClaw berjalan — bukan di chat Telegram). Skill terbaca pada pesan berikutnya.</li>
+</ol>
+<p>Bila Terminal terasa sulit, tulis "Perlu bantuan" di formulir dan tanyakan di topik Telegram tempat Anda menerima paket ini — tim akan memandu.</p>
+<h3 id="cara-pasang-singkat-claude-code">Claude Code</h3>
+<ul>
+<li>Folder tujuan Mac/Linux: <code>~/.claude/skills/</code>; Windows: <code>%USERPROFILE%\.claude\skills\</code></li>
+<li>Salin folder skill ke sana dengan cara seret folder di atas. Jangan ekstrak seluruh ZIP langsung ke folder skills: itu memasang lebih dari 100 skill sekaligus beserta folder <code>docs</code>, <code>solusi-vip</code>, dan <code>templates</code>, padahal untuk uji ini cukup skill yang Anda pilih.</li>
+<li>Jika folder skills baru dibuat, tutup dan buka lagi Claude Code. Cek: ketik <code>/skills</code>.</li>
+</ul>
+<h3 id="cara-pasang-singkat-openai-codex">OpenAI Codex</h3>
+<ul>
+<li>Folder tujuan Mac/Linux: <code>~/.agents/skills/</code>; Windows: <code>%USERPROFILE%\.agents\skills\</code></li>
+<li>Salin folder skill ke sana. Skill terbaca pada pesan berikutnya; bisa juga dipanggil langsung dengan mengetik tanda dolar diikuti nama skill, mis. <code>$kelayakan-investasi-usaha</code>. Cek: ketik <code>/skills</code>.</li>
+</ul>
+<h3 id="cara-pasang-singkat-cursor">Cursor</h3>
+<ul>
+<li>Folder tujuan Mac/Linux: <code>~/.cursor/skills/</code>; Windows: <code>%USERPROFILE%\.cursor\skills\</code></li>
+<li>Setelah memasang, buka chat baru (atau restart Cursor). Cursor juga membaca <code>~/.claude/skills</code> dan <code>~/.agents/skills</code>, jadi jangan pasang skill yang sama di beberapa folder itu sekaligus agar tidak dobel. Cek: ketik <code>/</code> di chat, cari nama skill.</li>
+</ul>
+<p><strong>Python (hanya untuk skill yang memakai script):</strong> Mac dan Linux umumnya sudah punya Python. Di Windows, pasang gratis dari python.org dan centang "Add Python to PATH" saat instalasi. Anda tidak perlu mengetik perintah apa pun; bot yang menjalankan script. Bila bot bertanya nama perintah Python di Windows, jawab <code>python</code>. Tanpa Python, skill hitungan tetap berjalan tetapi angkanya dihitung AI secara manual — sebaiknya Anda cek ulang; khusus <code>pantau-cron-openclaw</code> wajib Python 3 (tanpa Python pengawas tidak bisa dipasang).</p>
+<p><strong>Masalah umum:</strong> skill tidak muncul → pastikan <code>SKILL.md</code> ada langsung di dalam folder skill (bukan di dalam folder pembungkus) dan mulai percakapan baru (OpenClaw lewat Telegram: cukup kirim pesan baru ke bot Anda; Claude Code, Codex, atau Cursor: buka sesi/chat baru). Skill tidak dipakai otomatis → sebut kebutuhan lebih jelas atau panggil namanya (mis. "pakai skill kelayakan-investasi-usaha").</p>
+</section>
+<section id="alur-7-hari"><h2>4. Alur 7 hari</h2>
+<h3 id="alur-7-hari-hari-1-pasang-dan-coba-1-skill">Hari 1 — Pasang dan coba 1 skill</h3>
+<ol>
+<li>Unduh ZIP dan buka (ekstrak). <strong>Tanda berhasil:</strong> Anda melihat banyak folder (lebih dari 100 — itu seluruh paket VIP Anda), file <code>CARA-INSTAL.md</code>, dan <code>LISENSI.txt</code>. Cari sepuluh folder skill beta berdasarkan nama di bagian 5 (mis. <code>kelayakan-investasi-usaha</code>); folder lainnya adalah skill VIP Anda yang lain dan boleh diabaikan selama uji. Folder <code>docs</code>, <code>solusi-vip</code> (panduan OpenClaw per profesi), dan <code>templates</code> (contoh teks aturan kerja bot OpenClaw) bukan skill dan tidak perlu dipasang; boleh dibaca bila Anda ingin memakai panduan per profesi.</li>
+<li>Pasang <strong>satu</strong> skill dulu, misalnya <code>kelayakan-investasi-usaha</code>, dengan cara di bagian 3. <strong>Tanda berhasil:</strong> nama skill muncul saat dicek — OpenClaw: <code>openclaw skills list</code> (diketik di Terminal/jendela WSL di komputer tempat OpenClaw berjalan — bukan di chat Telegram); Claude Code atau Codex: ketik <code>/skills</code>; Cursor: ketik <code>/</code> di chat lalu cari nama skill.</li>
+<li>Mulai percakapan baru (OpenClaw lewat Telegram: cukup kirim pesan baru ke bot Anda; Claude Code, Codex, atau Cursor: buka sesi/chat baru) dan tempel: <code>Hitung kelayakan beli mesin kopi Rp25 juta, omzet tambahan Rp4 juta per bulan</code>. <strong>Tanda berhasil:</strong> bot menjawab tegas layak / kurang layak / tidak layak lengkap dengan balik modal. (Bila muncul "dihitung manual, mohon dicek", berarti Python belum terpasang; lihat catatan Python di bagian 3.) Kalimat uji ini hanya untuk memastikan skill terpasang; yang dinilai adalah pemakaian untuk pekerjaan nyata Anda.</li>
+<li>Catat di buku atau catatan HP: tanggal, nama skill, kalimat perintah, hasil bisa langsung dipakai atau tidak, dan hal yang salah/aneh. <strong>Tanda berhasil:</strong> catatan pertama Anda sudah ada.</li>
+</ol>
+<h3 id="alur-7-hari-hari-2-6-pakai-untuk-pekerjaan-nyata">Hari 2–6 — Pakai untuk pekerjaan nyata</h3>
+<ol start="5">
+<li>Pilih <strong>minimal 3 skill</strong> dari daftar di bagian 5 yang cocok dengan usaha Anda, lalu pasang semuanya. <strong>Tanda berhasil:</strong> ketiganya muncul di daftar skill.</li>
+<li>Setiap hari, kerjakan 1–2 pekerjaan sungguhan dengan skill itu. Cukup kalimat biasa di chat; kalau bot mengajukan beberapa pertanyaan, jawab semuanya dalam satu pesan balasan. <strong>Tanda berhasil:</strong> hasilnya benar-benar Anda pakai (dikirim, dicetak, atau jadi dasar keputusan).</li>
+<li>Catat tiap pemakaian seperti langkah 4. <strong>Tanda berhasil:</strong> di akhir Hari 6, tiap skill pilihan punya minimal 3 catatan.</li>
+<li>Bila bot menjawab aneh atau salah hitung, tempel contohnya di catatan (hapus nama/nomor pelanggan). Pertanyaan teknis boleh langsung ditulis di topik Telegram tempat Anda menerima paket ini dengan menandai pemilik Komunitech (lihat bagian 7). <strong>Tanda berhasil:</strong> contoh masalah tersimpan di catatan Anda tanpa data pribadi.</li>
+</ol>
+<h3 id="alur-7-hari-hari-7-19-oktober-kirim-masukan-paling-l">Hari 7 (19 Oktober) — Kirim masukan, paling lambat 20 Oktober</h3>
+<ol start="9">
+<li>Isi formulir di bagian 7 <strong>untuk tiap skill yang dicoba</strong> (±5 menit per skill), lalu kirim di topik Telegram tempat Anda menerima paket ini atau lewat pesan pribadi ke pemilik Komunitech (lihat bagian 7). <strong>Tanda berhasil:</strong> satu formulir terkirim untuk tiap skill yang Anda coba.</li>
+</ol>
+</section>
+<section id="sepuluh-skill-fokus"><h2>5. Sepuluh skill fokus</h2>
+<p>Tempel kalimat di bawah apa adanya ke chat bot Anda, lalu ganti angka dan nama sesuai keadaan usaha Anda. Catatan: <code>pantau-cron-openclaw</code> dan <code>cek-privasi-openclaw</code> <strong>hanya untuk OpenClaw</strong>; delapan skill lain berformat sama sehingga bisa dipasang di Claude Code, Codex, atau Cursor, tetapi baru diuji di OpenClaw; laporan Anda dari platform lain sangat berharga.</p>
+<article class="skill" id="skill-pantau-cron-openclaw"><div class="skill-head"><span class="skill-no">1</span><div><h3 class="skill-title">Laporan Terjadwal Gagal? Langsung Ketahuan</h3><code class="skill-name">pantau-cron-openclaw</code></div></div><p class="skill-desc">Jadwal/laporan otomatis OpenClaw yang terlambat atau hilang ketahuan dan Anda dikabari lewat Telegram. Tugas 7 hari: periksa jadwal otomatis bot Anda, pasang pengawas (bot menampilkan rencana dan meminta "ya" sebelum mengubah jadwal). Perlu: hanya OpenClaw, Telegram terhubung, Python 3 (wajib). Catatan jujur: pemasangan penuh sampai kabar benar-benar masuk ke Telegram belum kami uji; bot akan menjalankan satu uji peringatan dulu — laporkan apakah pesan uji itu sampai ke Telegram Anda (ini masukan paling berharga untuk skill ini).</p>
+<ul>
+<li class="cmd"><code id="c1">Pantau laporan harian 21.00 dan piutang 07.45 Senin-Jumat saya. Kabari ke Telegram kalau gagal.</code><button class="copy" type="button" data-copy="c1" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c2">Job mana yang terlambat hari ini?</code><button class="copy" type="button" data-copy="c2" aria-label="Salin kalimat">Salin</button><span class="note">(job = jadwal otomatis bot Anda)</span></li>
+</ul>
+</article>
+<article class="skill" id="skill-rapor-mingguan-ai"><div class="skill-head"><span class="skill-no">2</span><div><h3 class="skill-title">Rapor Mingguan untuk Karyawan AI Anda</h3><code class="skill-name">rapor-mingguan-ai</code></div></div><p class="skill-desc">Rapor satu layar atas percakapan bot dengan pelanggan: nilai A–D, kesalahan tersering, tren, dan teks perbaikan siap tempel. Tugas 7 hari: minta rapor mingguan pekerjaan bot. Perlu: salin sendiri 10–20 percakapan bot–pelanggan sebagai teks biasa (hapus nomor kartu dan data sensitif); Python tidak wajib.</p>
+<ul>
+<li class="cmd"><code id="c3">Tolong buatkan rapor bot saya minggu ini. Ini percakapannya. Bot saya baru dua minggu.</code><button class="copy" type="button" data-copy="c3" aria-label="Salin kalimat">Salin</button><span class="note">(tempel percakapannya)</span></li>
+<li class="cmd"><code id="c4">Ini rapor minggu lalu dan percakapan minggu ini. Naik atau turun?</code><button class="copy" type="button" data-copy="c4" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+<article class="skill" id="skill-cek-privasi-openclaw"><div class="skill-head"><span class="skill-no">3</span><div><h3 class="skill-title">Cek Privasi OpenClaw dalam Bahasa Awam</h3><code class="skill-name">cek-privasi-openclaw</code></div></div><p class="skill-desc">Laporan merah/kuning/hijau atas pengaturan keamanan dan privasi OpenClaw; perbaikan ditawarkan satu per satu dengan izin Anda. Tugas 7 hari: audit privasi setelan bot sendiri. Perlu: hanya OpenClaw. Bila bot menjawab tidak bisa menjalankan perintah, itu normal: bot akan menuliskan perintahnya, lalu Anda salin dan jalankan di Terminal komputer tempat OpenClaw berjalan (atau tulis "Perlu bantuan" di formulir). Tanpa Python.</p>
+<ul>
+<li class="cmd"><code id="c5">cek privasi saya</code><button class="copy" type="button" data-copy="c5" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c6">amankah OpenClaw saya?</code><button class="copy" type="button" data-copy="c6" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+<article class="skill" id="skill-kelayakan-investasi-usaha"><div class="skill-head"><span class="skill-no">4</span><div><h3 class="skill-title">Cek Layak Investasi Sebelum Keluar Uang</h3><code class="skill-name">kelayakan-investasi-usaha</code></div></div><p class="skill-desc">Jawaban tegas layak / kurang layak / tidak layak untuk beli mesin, buka cabang, atau beli kendaraan usaha, lengkap balik modal, omzet minimal, uji "kalau meleset", dan batas aman. Tugas 7 hari: hitung kelayakan 1 rencana beli alat/cabang. Tidak untuk saham, kripto, reksa dana, atau deposito. Perlu: Python 3 disarankan. Tanpa Python, bot menghitung manual (mohon dicek ulang) dan tidak menampilkan IRR, yaitu persentase keuntungan tahunan investasi.</p>
+<ul>
+<li class="cmd"><code id="c7">Buka cabang modal 250 juta, omzet tahun pertama 380 juta, kapan balik modal?</code><button class="copy" type="button" data-copy="c7" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c8">Lebih untung beli mobil box 180 juta atau tetap sewa 6,5 juta sebulan?</code><button class="copy" type="button" data-copy="c8" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+<article class="skill" id="skill-simulasi-cicilan-pinjaman"><div class="skill-head"><span class="skill-no">5</span><div><h3 class="skill-title">Tahu Harga Asli Cicilan Sebelum Tanda Tangan</h3><code class="skill-name">simulasi-cicilan-pinjaman</code></div></div><p class="skill-desc">Dari angka penawaran kredit: cicilan per bulan, total bunga, bunga efektif setara per tahun (termasuk admin/provisi/asuransi), jadwal angsuran, dan batas cicilan aman dari gaji. Tugas 7 hari: bandingkan 2 tawaran kredit. Perlu: Python 3 disarankan (tanpa Python: dihitung manual, mohon dicek).</p>
+<ul>
+<li class="cmd"><code id="c9">Motor 25 juta, DP 20%, 3 tahun, bunga 0,8% per bulan. Cicilannya berapa? Mahal nggak?</code><button class="copy" type="button" data-copy="c9" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c10">Pinjam 30 juta, cicilannya 1,5 juta selama 24 bulan. Bunganya sebenarnya berapa persen?</code><button class="copy" type="button" data-copy="c10" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+<article class="skill" id="skill-cek-risiko-dan-asuransi-usaha"><div class="skill-head"><span class="skill-no">6</span><div><h3 class="skill-title">Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak</h3><code class="skill-name">cek-risiko-dan-asuransi-usaha</code></div></div><p class="skill-desc">Tabel risiko usaha, langkah murah minggu ini, keputusan perlu asuransi atau tidak per risiko, dan target dana darurat. Tugas 7 hari: peta risiko + target dana darurat usaha. Perlu: Python opsional (tanpa Python dihitung manual dengan rumus yang sama); tidak masuk ke akun bank/asuransi/BPJS.</p>
+<ul>
+<li class="cmd"><code id="c11">Kafe saya di ruko dekat sungai, 3 karyawan, apa risikonya dan perlu asuransi apa?</code><button class="copy" type="button" data-copy="c11" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c12">Berapa dana darurat usaha yang ideal?</code><button class="copy" type="button" data-copy="c12" aria-label="Salin kalimat">Salin</button><span class="note">(sebutkan biaya tetap bulanan: sewa, gaji, listrik, cicilan, dan kas cadangan sekarang)</span></li>
+</ul>
+</article>
+<article class="skill" id="skill-seleksi-cv-pelamar"><div class="skill-head"><span class="skill-no">7</span><div><h3 class="skill-title">Seleksi Puluhan CV dalam Hitungan Menit</h3><code class="skill-name">seleksi-cv-pelamar</code></div></div><p class="skill-desc">Peringkat CV per kriteria dengan kutipan bukti, shortlist, pertanyaan wawancara, dan draf pesan untuk pelamar. Tugas 7 hari: saring 3–10 CV lowongan nyata. Simpan CV di komputer sendiri dan hapus setelah proses. Perlu: CV harus berupa teks yang ditempel ke chat. Bila pelamar mengirim PDF yang tulisannya bisa disalin, buka PDF-nya, salin seluruh teksnya, lalu tempel ke chat; jangan mengirim file PDF ke bot. CV berupa foto/scan tidak terbaca — minta pelamar mengirim versi teks. Python tidak wajib.</p>
+<ul>
+<li class="cmd"><code id="c13">Ini 12 CV untuk admin toko online. Pilih 5 terbaik dan siapkan pertanyaan wawancaranya.</code><button class="copy" type="button" data-copy="c13" aria-label="Salin kalimat">Salin</button><span class="note">(tempel CV-nya)</span></li>
+<li class="cmd"><code id="c14">Bikinin pesan untuk yang lolos dan yang belum cocok.</code><button class="copy" type="button" data-copy="c14" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+<article class="skill" id="skill-satu-lawan-satu-dan-umpan-balik"><div class="skill-head"><span class="skill-no">8</span><div><h3 class="skill-title">Ngomong ke Tim Tanpa Tidak Enak Hati</h3><code class="skill-name">satu-lawan-satu-dan-umpan-balik</code></div></div><p class="skill-desc">Naskah ucapan dan pesan WA untuk obrolan empat mata, teguran halus, rencana 30 hari karyawan baru, dan pengumuman ke tim. Tugas 7 hari: siapkan 1 sesi empat mata dengan karyawan. Perlu: tidak ada (tanpa Python, akun, atau program tambahan).</p>
+<ul>
+<li class="cmd"><code id="c15">Saya nggak enak negur kasir yang sering telat.</code><button class="copy" type="button" data-copy="c15" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c16">Buatkan agenda obrolan empat mata 30 menit dengan staf gudang saya.</code><button class="copy" type="button" data-copy="c16" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+<article class="skill" id="skill-tangani-keberatan-pelanggan"><div class="skill-head"><span class="skill-no">9</span><div><h3 class="skill-title">Jawab &quot;Mahal&quot; dan &quot;Mikir Dulu&quot; Tanpa Memaksa</h3><code class="skill-name">tangani-keberatan-pelanggan</code></div></div><p class="skill-desc">2–3 balasan WA siap kirim untuk keberatan "mahal", "mikir dulu", "tanya suami/bos", "takut tipu", "pesaing lebih murah", plus satu pertanyaan lanjutan. Tugas 7 hari: balas 3 keberatan harga/pesaing sungguhan; Anda yang mengirim balasan satu per satu. Bila Anda belum menyebut data produk, bot menulis tanda <code>[isian: ...]</code> di balasannya; ganti tanda itu dengan data Anda sebelum dikirim ke pelanggan. Perlu: Python opsional (untuk hitungan harga per hari dan cicilan).</p>
+<ul>
+<li class="cmd"><code id="c17">Pelanggan bilang 'kemahalan kak'. Aku jual [produk] Rp[harga].</code><button class="copy" type="button" data-copy="c17" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c18">Klien jawab 'saya pikir-pikir dulu'. Gimana balasnya?</code><button class="copy" type="button" data-copy="c18" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+<article class="skill" id="skill-landing-page-siap-tayang"><div class="skill-head"><span class="skill-no">10</span><div><h3 class="skill-title">Landing Page Jadi dan Tayang Hari Ini</h3><code class="skill-name">landing-page-siap-tayang</code></div></div><p class="skill-desc">Satu file web <code>index.html</code> utuh (tampil rapi di HP, tombol WhatsApp dengan pesan terisi, FAQ). Plus panduan langkah demi langkah menayangkannya gratis lewat layanan seperti Netlify Drop, GitHub Pages, atau Cloudflare Pages (hosting = tempat menyimpan halaman agar bisa dibuka orang lewat internet) dan cara memasang nama domain (alamat web Anda, mis. tokoanda.com). Tugas 7 hari: buat 1 halaman promo produk, lalu tayangkan. Ganti bagian bertanda <code>[isian: ...]</code> (mis. <code>[isian: harga]</code>) sebelum tayang; versi file bisa diminta dengan membalas "kirim file". Perlu: Anda sendiri yang mengunggah file ke hosting; Python tidak wajib.</p>
+<ul>
+<li class="cmd"><code id="c19">Buatkan landing page jasa servis AC saya, WA 0812-3456-7890.</code><button class="copy" type="button" data-copy="c19" aria-label="Salin kalimat">Salin</button></li>
+<li class="cmd"><code id="c20">Bagaimana pasang domain ke landing page ini?</code><button class="copy" type="button" data-copy="c20" aria-label="Salin kalimat">Salin</button></li>
+</ul>
+</article>
+</section>
+<section id="aturan-main"><h2>6. Aturan main</h2>
+<ul>
+<li><strong>Yang dinilai adalah pekerjaan nyata.</strong> Kalimat contoh di panduan ini hanya untuk memastikan skill terpasang; untuk penilaian, pakai skill pada pekerjaan sungguhan minimal 3 kali per skill.</li>
+<li><strong>Data Anda sendiri, tanggung jawab Anda sendiri.</strong> Simpan di komputer sendiri, hapus nomor kartu dan data sensitif sebelum menempel, dan periksa hasil sebelum dipakai untuk keputusan uang, karyawan, atau pelanggan. Hasil skill bukan nasihat keuangan, hukum, asuransi, atau medis; keputusan akhir tetap di tangan Anda.</li>
+<li><strong>Jangan sebar paket.</strong> ZIP diberi tanda (watermark) berupa nama dan kode lisensi Anda; <code>SKILL.md</code> di dalamnya memuat keterangan "Dilarang menyebarluaskan".</li>
+<li><strong>Laporkan bila bot menjawab aneh</strong>, salah hitung, atau menolak permintaan wajar: tempel contohnya, hapus data pribadi/pelanggan dulu. Itu justru masukan paling berharga.</li>
+<li><strong>Tidak harus 10 skill.</strong> Minimal 3 yang cocok; skill lain di dalam ZIP boleh dicoba, tetapi fokus penilaian pada 10 skill beta.</li>
+<li><strong>Privasi.</strong> Hasil audit privasi tidak dikirim ke Komunitech, CV tidak dikirim ke mana pun oleh skill, dan hitungan berjalan di komputer Anda sendiri; yang kami terima hanya jawaban formulir Anda. Seperti pemakaian bot biasa, isi chat (termasuk CV atau percakapan yang Anda tempel) tetap diproses oleh penyedia model AI yang Anda pilih sendiri (mis. Anthropic/OpenAI), bukan oleh Komunitech; karena itu hapus data sensitif sebelum menempel. Masukan dirangkum anonim (Beta 1, Beta 2, dst.), dan testimoni hanya dikutip dengan izin tertulis Anda.</li>
+</ul>
+</section>
+<section id="cara-dan-tenggat-mengirim-masukan"><h2>7. Cara dan tenggat mengirim masukan</h2>
+<p><strong>Tenggat: Hari ke-7 (19 Oktober 2026); kirim paling lambat 20 Oktober 2026.</strong></p>
+<p><strong>Di mana mengirim:</strong> di topik Telegram tempat Anda menerima paket ini, yaitu topik yang namanya diawali <strong>"Beta VIP — panduan tester"</strong> di grup Telegram Komunitech tempat Anda diundang (tempat pesan pembuka dan file ZIP Anda dikirim). Untuk menandai pemilik Komunitech, balas pesan pembuka di topik itu, atau ketik <code>@</code> lalu pilih nama yang disebut di pesan pembuka. Bila lebih nyaman, kirim lewat pesan pribadi (japri) ke pemilik Komunitech: ketuk nama pengirim pesan pembuka di topik itu, lalu pilih "Kirim Pesan".</p>
+<ul>
+<li><strong>Selama uji:</strong> pertanyaan teknis ditulis di topik itu dengan menandai pemilik Komunitech.</li>
+<li><strong>Hari ke-7 (19 Oktober):</strong> isi formulir di bawah untuk <strong>tiap skill yang dicoba</strong> (satu formulir per skill), kirim paling lambat 20 Oktober di topik yang sama atau lewat pesan pribadi ke pemilik Komunitech. Bila tim membagikan Google Form atau jalur WA, boleh lewat itu.</li>
+<li>Jawaban diteruskan ke tim tanpa nama/kontak Anda dan dirangkum anonim (Beta 1, Beta 2, dst.).</li>
+</ul>
+<p><strong>Formulir masukan (salin, isi per skill).</strong> Tulis nama skill di baris pertama jawaban Anda.</p>
+<div class="codebox"><button class="copy" type="button" data-copy="c21" aria-label="Salin formulir">Salin</button><pre id="c21">1. Platform &amp; OS yang dipakai?
+2. Instalasi berhasil tanpa bantuan? (Ya / Perlu bantuan / Gagal — di langkah mana?)
+3. Berapa kali dipakai untuk pekerjaan nyata minggu ini?
+4. Seberapa berguna hasilnya? (1–5)
+5. Seberapa sering hasil bisa langsung dipakai tanpa diedit? (Selalu / Sering / Kadang / Jarang)
+6. Lama pekerjaan ini tanpa skill? Dengan skill?
+7. Pernah dapat hasil salah/aneh? Ceritakan.
+8. Yang paling disukai?
+9. Satu hal yang harus diperbaiki?
+10. Harga wajar menurut Anda? (Rp0 / Rp29rb / Rp49rb / Rp99rb / Rp149rb+)
+11. Boleh dikutip sebagai testimoni? (Ya dengan nama / Ya anonim / Tidak)</pre></div>
+</section>
+<section id="faq"><h2>8. FAQ</h2>
+<p><strong>Harus mencoba semua 10 skill?</strong> Tidak. Pilih minimal 3 yang cocok dengan usaha Anda, masing-masing dipakai minimal 3 kali untuk pekerjaan nyata.</p>
+<p><strong>Skill tidak muncul atau tidak dipakai otomatis?</strong> Pastikan <code>SKILL.md</code> ada langsung di dalam folder skill (bukan di dalam folder pembungkus), mulai percakapan baru (OpenClaw lewat Telegram: cukup kirim pesan baru ke bot Anda; Claude Code, Codex, atau Cursor: buka sesi/chat baru), lalu sebut kebutuhan lebih jelas atau panggil nama skill-nya, misalnya "pakai skill kelayakan-investasi-usaha". Di OpenClaw, cek dengan <code>openclaw skills list</code> (diketik di Terminal/jendela WSL di komputer tempat OpenClaw berjalan — bukan di chat Telegram).</p>
+<p><strong>Saya pakai Windows, perlu apa?</strong> Untuk OpenClaw: bila OpenClaw Anda berjalan lewat WSL (fitur Windows untuk menjalankan Linux), jalankan perintah pasang di jendela WSL seperti langkah di bagian 3. Windows tanpa WSL belum kami uji; bila ragu atau Terminal terasa sulit, tulis "Perlu bantuan" di formulir dan tanyakan di topik Telegram tempat Anda menerima paket ini. Untuk skill hitungan: pasang Python dari python.org dan centang "Add Python to PATH"; tanpa Python skill hitungan tetap jalan, tetapi angka sebaiknya dicek ulang; khusus <code>pantau-cron-openclaw</code> wajib Python 3 (tanpa Python pengawas tidak bisa dipasang).</p>
+<p><strong>Muncul "python not found"?</strong> Pasang Python (Windows dari python.org, centang "Add Python to PATH"), lalu tutup dan buka lagi aplikasi AI Anda (Claude Code, Codex, atau Cursor). Untuk OpenClaw: jalankan ulang OpenClaw di komputer tempat ia berjalan; bila tidak tahu caranya, tulis "Perlu bantuan" di formulir.</p>
+<p><strong>Saya pakai Claude Code, Codex, atau Cursor, bukan OpenClaw. Masih berguna ikut?</strong> Sangat berguna. Ke-10 skill ini kami uji di OpenClaw (termasuk lewat bot Telegram); format skill sama di platform lain, tetapi pengalaman nyata di sana belum kami miliki. Ingat, <code>pantau-cron-openclaw</code> dan <code>cek-privasi-openclaw</code> hanya untuk OpenClaw.</p>
+<p><strong>Apakah hasil audit privasi atau data saya dikirim ke Komunitech?</strong> Tidak. Hasil audit privasi tidak dikirim ke Komunitech, CV tidak dikirim ke mana pun oleh skill, dan hitungan berjalan di komputer Anda sendiri; yang kami terima hanya jawaban formulir yang Anda kirim. Seperti pemakaian bot biasa, isi chat (termasuk CV atau percakapan yang Anda tempel) tetap diproses oleh penyedia model AI yang Anda pilih sendiri (mis. Anthropic/OpenAI), bukan oleh Komunitech; karena itu hapus data sensitif sebelum menempel.</p>
+<p><strong>Apa yang saya dapat setelah program selesai?</strong> 10 skill yang diuji gratis selamanya + 1 skill lain pilihan Anda, diberikan setelah formulir masukan Anda diterima.</p>
+</section>
+<section id="terima-kasih"><h2>9. Terima kasih</h2>
+<p>Tujuh hari Anda sangat berarti: dari catatan kecil Anda, skill ini diperbaiki sebelum sampai ke pengusaha dan profesional lain di Indonesia. Selamat mencoba, dan sampai bertemu di topik Telegram tempat Anda menerima paket ini.</p>
+</section>
+<footer>Panduan ini bagian dari Program Beta Tester Komunitech Skills. Paket beta bersifat pribadi dan berwatermark; mohon tidak dibagikan.</footer>
+</div>
+<script>
+(function(){
+  var K='kt-beta-tasks';
+  var saved={};
+  try{ saved=JSON.parse(localStorage.getItem(K)||'{}')||{}; }catch(e){ saved={}; }
+  document.querySelectorAll('input[data-task]').forEach(function(cb){
+    if(saved[cb.dataset.task]) cb.checked=true;
+    cb.addEventListener('change',function(){
+      saved[cb.dataset.task]=cb.checked;
+      try{ localStorage.setItem(K,JSON.stringify(saved)); }catch(e){}
+    });
+  });
+  document.querySelectorAll('button.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var el=document.getElementById(btn.dataset.copy); if(!el) return;
+      var text=el.textContent;
+      function done(){ btn.classList.add('ok'); btn.textContent='Tersalin'; setTimeout(function(){ btn.classList.remove('ok'); btn.textContent='Salin'; },1600); }
+      function fallback(){ var r=document.createRange(); r.selectNodeContents(el); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent='Pilih lalu salin'; setTimeout(function(){ btn.textContent='Salin'; },2000); }
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,fallback); } else { fallback(); }
+    });
+  });
+})();
+</script>
