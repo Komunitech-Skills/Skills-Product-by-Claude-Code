@@ -2,7 +2,7 @@
 
 **Sebutkan jenis usaha dan kotanya; dapatkan daftar 10-20 calon pelanggan (prospek) berbukti, 3 prioritas, dan tabel CSV (file tabel) siap tempel.**
 
-Diuji AI penguji independen di OpenClaw dengan pencarian web aktif: 6,7 → 8,2 dari 10 (tanpa skill nama usaha dari direktori publik tanpa prioritas dan sumber per baris; dengan skill tiap usaha ada tautan sumber, kontak bisnis, dan 3 prioritas).
+Diuji AI penguji independen di OpenClaw dengan pencarian web aktif: 6,7 → 8,2 dari 10 (tanpa skill daftar nama usaha dari direktori publik tanpa tautan sumber per baris dan tanpa skor prioritas; dengan skill tiap usaha ada tautan sumber, kontak bisnis, dan 3 prioritas).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -47,18 +47,18 @@ Hubungi calon pelanggan satu per satu lewat kontak bisnisnya, sebut asal kontak,
 ## Instalasi singkat
 Salin folder `cari-prospek-web` ke folder skill platform Anda (OpenClaw, Codex, Claude Code, Cursor). Rincian per platform: `docs/instalasi.md` di paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw 10 Okt 2026 (uji otomatis agent, v1.0.2, pencarian web DuckDuckGo aktif, 4 skenario), skor 1–10 penguji independen: tanpa skill **6,7** → dengan skill **8,2** (LULUS). Sumber: `examples/HASIL-UJI-openclaw-websearch-2026-10-10.md`. Hasil di bot Telegram asli ada di bagian berikutnya.
+**Hasil uji (angka nyata):** uji OpenClaw 10 Okt 2026 (uji otomatis agent, v1.0.2, pencarian web DuckDuckGo aktif, 4 skenario), skor 1–10 penguji independen: tanpa skill **6,7** → dengan skill **8,2** (LULUS). Sumber: `examples/HASIL-UJI-openclaw-websearch-2026-10-10.md`. Skill sudah naik ke v1.0.3 (kontak di contoh disamarkan, alasan prospek tanpa dugaan) dan versi itu belum diuji ulang. Hasil di bot Telegram asli ada di bagian berikutnya.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji, keduanya dengan alat pencarian web aktif. Tanpa alat pencarian web, skill hanya memberi rencana pencarian. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12, dengan pencarian web aktif.
-- Tanpa skill: **7** — 15 nama dari direktori publik tanpa prioritas dan tanpa sumber per baris.
+- Tanpa skill: **7** — 15 nama dari direktori publik tanpa tautan sumber per baris dan tanpa skor prioritas (skill v1.0.2).
 - Dengan skill: **8,5** (LULUS) — tiap usaha ada tautan sumber dan catatan kontak bisnis resmi.
 
 ## FAQ
-**Apakah daftarnya pasti benar?** Setiap baris ditautkan ke sumbernya dan diberi tanggal cek; tetap cek singkat sebelum menghubungi karena info bisa berubah.
+**Apakah daftarnya pasti benar?** Tidak ada jaminan. Setiap baris ditautkan ke sumbernya dan diberi tanggal cek; tetap cek singkat sebelum menghubungi karena info bisa berubah.
 
 **Kenapa tidak boleh scrape LinkedIn/Instagram atau ambil nomor dari grup?** Melanggar aturan platform, berisiko akun diblokir, dan nomor pribadi dilindungi UU PDP. Sumber publik cukup untuk daftar awal yang baik.
 

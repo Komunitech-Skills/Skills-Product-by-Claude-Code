@@ -1,8 +1,8 @@
 # Karyawan CS AI yang Hafal Isi Toko Anda
 
-**Draf balasan pelanggan siap tempel dalam hitungan detik — Anda tetap yang memutuskan dan mengirim.**
+**Draf balasan pelanggan siap tempel dalam hitungan menit — Anda tetap yang memutuskan dan mengirim.**
 
-*Diuji AI penguji independen: 6,0 → 8,75 dari 10 (tanpa skill, AI menawarkan memasang balas-otomatis di WhatsApp pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan dan mode Copilot).*
+*Diuji AI penguji independen di OpenClaw: 6,0 → 8,75 dari 10 (tanpa skill, AI menawarkan memasang balas-otomatis di WhatsApp pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan dan mode Copilot).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -10,7 +10,7 @@
 - ✅ Basis pengetahuan toko (kumpulan harga, stok, ongkir, retur, FAQ yang Anda tulis sekali) dipakai berulang — jawaban konsisten, tidak beda-beda tiap admin.
 - ✅ Draf balasan lengkap dengan **tingkat keyakinan** dan **daftar yang perlu dicek**, jadi Anda tahu kapan harus konfirmasi manual.
 - ✅ Aturan eskalasi (diteruskan ke Anda): komplain berat, refund, ancaman, data sensitif, dan pertanyaan medis/hukum ditandai untuk Anda tangani sendiri.
-- ✅ Dirancang hati-hati: tidak mengarang harga/stok (yang belum ada datanya ditandai "perlu dicek admin") dan tidak mengirim pesan sendiri ke pelanggan lewat WhatsApp Web (cara memakai WhatsApp dari komputer yang bukan jalur resmi untuk bot) — mode Copilot: AI menyiapkan draf, Anda yang kirim.
+- ✅ Dirancang hati-hati: berusaha tidak mengarang harga/stok (yang belum ada datanya ditandai "perlu dicek admin") dan tidak mengirim pesan sendiri ke pelanggan lewat WhatsApp Web (cara memakai WhatsApp dari komputer yang bukan jalur resmi untuk bot) — mode Copilot: AI menyiapkan draf, Anda yang kirim.
 - ✅ Rekap harian pertanyaan terbanyak & pertanyaan yang belum ada jawabannya, jadi FAQ Anda makin lengkap dari hari ke hari (jadwal otomatis ke Telegram belum diuji langsung).
 
 ## Cocok untuk siapa
@@ -58,16 +58,16 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **Hasil uji (angka nyata):**
 - **Uji OpenClaw, 1 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 6,0 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (membangun CS toko hijab; komplain dengan ancaman, data KTP/rekening, dan permintaan bot WA auto-reply). Tanpa skill, agent menawarkan memasang auto-reply di nomor WA pribadi tanpa peringatan risiko; dengan skill, ada penolakan beralasan, mode Copilot, eskalasi ke pemilik, dan draf penahan.
-- **Uji ulang dengan konteks kanal Telegram (tanpa mengirim ke Telegram), v1.0.11:** rata-rata 8,0, lulus 2 dari 3 percobaan (file yang sama). Uji di bot Telegram asli ada di bagian berikutnya.
+- **Uji ulang yang meniru percakapan di Telegram (tanpa benar-benar mengirim ke Telegram), v1.0.11:** rata-rata 8,0, lulus 2 dari 3 percobaan (file yang sama). Uji di bot Telegram asli ada di bagian berikutnya.
 - Catatan jujur dari uji: kadang masih muncul kalimat seperti "ready ya" pada template stok sebelum stok dicek, jadi periksa draf sebelum dikirim.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent dan bot Telegram asli) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal rekap otomatis ke Telegram belum diuji langsung.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05, skill v1.0.9.
 - Tanpa skill: skor **4,5**
-- Dengan skill: skor **8,5** (LULUS). Dengan skill menolak auto-balas WA (WhatsApp Web tidak resmi), menawarkan mode Copilot, template balasan + aturan nada; tanpa skill hanya bertanya dan menawarkan pairing WA otomatis.
+- Dengan skill: skor **8,5** (LULUS). Dengan skill menolak auto-balas WA (WhatsApp Web tidak resmi), menawarkan mode Copilot, template balasan + aturan nada; tanpa skill hanya bertanya dan menawarkan memandu menyambungkan WhatsApp untuk balas-otomatis.
 
 ## FAQ
 **Apakah bot ini otomatis membalas pelanggan di WhatsApp?**

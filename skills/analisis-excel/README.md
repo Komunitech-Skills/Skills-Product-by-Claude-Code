@@ -3,7 +3,7 @@
 **Kirim file Excel atau CSV (file tabel sederhana yang bisa dibuka di Excel), tanya pakai bahasa biasa, dapat tabel + temuan + saran grafik — angkanya
 dihitung komputer, bukan dikira-kira AI.**
 
-*Diuji AI penguji independen: 7,25 → 8,75 dari 10 (semua persen diambil dari skrip hitung, tanpa memasang paket tambahan diam-diam, dan data pribadi di file gaji diingatkan).*
+*Diuji AI penguji independen di OpenClaw: 7,25 → 8,75 dari 10 (semua persen diambil dari skrip hitung, tanpa memasang paket tambahan diam-diam, dan data pribadi di file gaji diingatkan).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -31,7 +31,7 @@ dihitung komputer, bukan dikira-kira AI.**
 - Siapa pun yang sering ditanya "totalnya berapa?" dan harus menghitung manual
 
 ## Contoh sebelum & sesudah
-**Sebelum (AI tanpa skill, risiko yang bisa muncul):** AI membaca sebagian isi file lalu *mengira-ngira* total; baris
+**Sebelum (AI tanpa skill, risiko yang bisa muncul; pada uji OpenClaw di bawah, AI tanpa skill ternyata menghitung totalnya dengan benar):** AI membaca sebagian isi file lalu *mengira-ngira* total; baris
 "TOTAL" di bawah tabel ikut terjumlah (hasilnya jadi dobel), "LISTRIK & AIR" dan "listrik & air"
 dihitung sebagai dua kategori, dan sel yang isinya rumus kosong tidak disadari.
 
@@ -48,7 +48,7 @@ Naik paling besar: Transport — naik 310,7% (Rp 1.595.000 → Rp 6.550.000).
 ⚠️ 1 sel berisi rumus tanpa nilai tersimpan (E16) sehingga dianggap kosong ...
 ⚠️ 1 baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris 18: TOTAL | … ).
 ```
-(Cuplikan diringkas; contoh lengkap: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.)
+(Cuplikan diringkas dari contoh yang dijalankan pembuat skill pada data fiktif, bukan dari uji independen; contoh lengkap: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.)
 
 ## Cara pakai
 Kirim/sebutkan lokasi file ke AI agent Anda, lalu tanya seperti biasa:
@@ -82,7 +82,7 @@ Salin folder `analisis-excel` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **Hasil uji (angka nyata):**
-- **Uji OpenClaw, v1.0.17** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,25 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (laporan biaya `.xlsx` dan CSV gaji yang berisi baris subtotal serta data pribadi). Pembeda: semua persen diambil dari skrip hitung (bukan dikira AI), bagian "Perlu dicek" ikut dilaporkan, dan data pribadi diingatkan. Tanpa skill, agent memasang paket tambahan tanpa bertanya dan tidak mengingatkan soal data pribadi di file gaji.
+- **Uji OpenClaw, uji ulang 1 Oktober 2026, skill v1.0.17** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 7,25 tanpa skill menjadi 8,75 dengan skill (skala 10), pada dua skenario (laporan biaya `.xlsx` dan CSV gaji yang berisi baris subtotal serta data pribadi). Pembeda: semua persen diambil dari skrip hitung (bukan dikira AI), bagian "Perlu dicek" ikut dilaporkan, dan data pribadi diingatkan. Tanpa skill, agent memasang paket tambahan tanpa bertanya dan tidak mengingatkan soal data pribadi di file gaji.
 - Catatan jujur: AI tanpa skill di uji ini juga menghitung total dengan benar. Pada uji pertama, AI dengan skill sempat menulis dua persen hasil hitungannya sendiri yang salah; perbaikannya (semua persen wajib dari skrip) lulus di uji ulang.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
@@ -105,7 +105,7 @@ ke kolom yang salah dan totalnya keliru. Daripada memberi angka salah diam-diam,
 baris dan isinya agar Anda bisa membetulkannya. Kolom kosong di ujung kanan dan alamat/catatan yang
 ditulis beberapa baris dalam satu sel tetap boleh, begitu juga kolom paling kanan yang sering
 dikosongkan (mis. "Catatan") walau komanya tidak diketik — selama isi baris tidak bergeser. Pesan
-galat menyebut kemungkinan penyebab (sel terlewat di tengah, koma tanpa tanda kutip, tanda kutip
+kesalahannya menyebut kemungkinan penyebab (sel terlewat di tengah, koma tanpa tanda kutip, tanda kutip
 nyasar, catatan di tengah tabel) dan langkah memperbaikinya.
 
 **File ekspor Shopee/Tokopedia/mutasi bank saya ada baris Total, saldo, dan "Dicetak oleh…" di bawahnya. Bisa dibaca?**

@@ -2,7 +2,7 @@
 
 **Tempel anggaran vs realisasi, dapatkan penyebab selisih per pos, apa yang perlu dicek, dan pesan siap kirim ke tim, dengan angka yang dihitung langsung dari data Anda.**
 
-Diuji AI penguji independen di OpenClaw: 5,75 → 8,5 dari 10 (selisih dipecah "karena harga" atau "karena jumlah", dan permintaan menggeser angka untuk investor ditolak).
+Diuji AI penguji independen di OpenClaw: 5,75 → 8,5 dari 10 (pembedanya: biaya bahan dibandingkan dengan jumlah yang terjual sehingga "hemat" yang semu terlihat, hasil tersusun lengkap dengan pesan ke tim; memecah efek harga vs jumlah dan menolak menggeser angka untuk investor sudah bisa dilakukan AI tanpa skill).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -22,7 +22,7 @@ Diuji AI penguji independen di OpenClaw: 5,75 → 8,5 dari 10 (selisih dipecah "
 **Sebelum:** "Laba Juli turun 6 juta, kayaknya karena sepi." Tidak jelas pos mana, berapa, dan apa yang harus dibenahi.
 
 **Sesudah (cukup tempel tabel atau ketik):** "Anggaran penjualan minuman 62 jt realisasi 57,4 jt, makanan 18 jt jadi 21,3 jt, HPP 24 jt jadi 25,9 jt, iklan 1,5 jt jadi 3,2 jt, ... kok laba turun?"
-Cuplikan keluarannya (contoh dengan data fiktif, dari `examples/01-kafe-bulanan-8-pos.md`; HPP = modal bahan yang terpakai):
+Cuplikan keluarannya (contoh dengan data fiktif yang dibuat pembuat skill, dari `examples/01-kafe-bulanan-8-pos.md`; bukan dari uji OpenClaw; HPP = modal bahan yang terpakai):
 
 ```
 **Rekap Juli 2026: laba Rp23.750.000 vs rencana Rp30.000.000 (−Rp6.250.000, −20,8%)**
@@ -62,7 +62,7 @@ Salin folder `analisis-selisih-anggaran` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (v1.0.1), skor 1–10: tanpa skill **5,75** → dengan skill **8,5** (LULUS). Dua skenario: anggaran kafe 8 pos (juga di konteks Telegram) dan permintaan menggeser angka agar laporan investor tampak sesuai target; angka dicocokkan hitung ulang independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (skill v1.0.0; temuan uji itu diperbaiki di v1.0.1 dan belum diuji ulang), skor 1–10: tanpa skill **5,75** → dengan skill **8,5** (LULUS). Dua skenario: anggaran kafe 8 pos (juga di konteks Telegram) dan permintaan menggeser angka agar laporan investor tampak sesuai target; angka dicocokkan hitung ulang independen. Catatan jujur: AI tanpa skill juga sudah memecah efek harga dan jumlah dengan benar di skenario kafe dan menolak menggeser angka untuk investor; pembeda terbesar ada pada penilaian biaya bahan (tanpa skill, HPP dinilai "hemat" padahal setelah disesuaikan jumlah cup justru boros Rp2,58 juta). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah.
 
 **Status uji (jujur):** diuji OpenClaw (uji otomatis agent) dan bot Telegram asli (selisih kecil di bot asli). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
 - Tanpa skill: skor **7,5** — angka sudah benar dan menolak memoles laporan investor.
-- Dengan skill: skor **8** — ditambah tabel selisih per pos, penyesuaian volume, daftar tindakan, pesan siap kirim ke tim. Verdik: BELUM (selisih skor < 1,5).
+- Dengan skill: skor **8** — ditambah tabel selisih per pos, penyesuaian volume, daftar tindakan, pesan siap kirim ke tim. Verdik: BELUM, artinya belum memenuhi acuan lulus kami (selisih skor minimal 1,5; di sini 0,5).
 
 ## FAQ
 **Apakah AI akan memastikan siapa/apa penyebab selisihnya?**

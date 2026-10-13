@@ -2,7 +2,7 @@
 
 **Ceritakan usaha kuliner Anda dalam satu kalimat; dapat checklist, catatan suhu, dan kartu staf yang tinggal ditempel.**
 
-Diuji AI penguji independen: 5,6 → 8,25 dari 10 (batas suhu, alergen, dan halal dicek faktanya, dan paket lengkap tampil langsung di chat Telegram, bukan hanya nama berkas).
+Diuji AI penguji independen di OpenClaw: 5,6 → 8,25 dari 10 (dengan skill, batas suhu dan waktu makanan di suhu ruang benar dan sertifikat halal ditulis wajib dengan tenggatnya; tanpa skill, AI sudah benar soal ayam 74 °C tetapi menyebut batas 4–6 jam di suhu ruang yang keliru dan menaruh halal sebagai saran).
 
 > **PERLU REVIEW perizinan/ahli:** bagian perizinan hanya petunjuk awal dan belum diverifikasi penuh oleh ahli; cek ke Dinas Kesehatan/BPOM/lembaga halal. Bukan pengganti pelatihan atau pemeriksaan resmi, dan bukan nasihat hukum.
 
@@ -25,7 +25,7 @@ Tulis misalnya: "Buatkan checklist keamanan pangan untuk katering rumahan, menu 
 Tidak membuat sertifikat higiene/halal, tidak menulis "bebas alergen" untuk dapur bersama, tidak membantu mengganti tanggal kadaluarsa, dan tidak mengisi catatan suhu palsu. Sebagai gantinya, Anda mendapat cara yang sah (mengurus izin resmi, label "diproses di dapur yang juga mengolah ...", membuang bahan lewat tanggal, mengisi catatan jujur dengan cepat).
 
 ## Contoh sebelum/sesudah
-**Tanpa skill:** bot menyimpan checklist sebagai file di server, sehingga pengguna Telegram hanya menerima nama file.
+**Tanpa skill:** pada uji versi 1.0.1, bot menyimpan checklist sebagai file di server, sehingga pengguna Telegram hanya menerima nama file. Pada uji versi 1.0.2, AI tanpa skill menulis isinya di chat, tetapi dengan batas waktu di suhu ruang yang keliru (4–6 jam; yang benar maksimal 2 jam, atau 1 jam bila ruangan di atas 32 °C).
 
 **Dengan skill:** paket lengkap tampil langsung di chat: checklist harian, catatan suhu dengan tindakan bila melebihi batas, kartu 10 aturan staf, peta risiko menu, dan petunjuk perizinan. Cuplikan keluarannya untuk katering nasi box (contoh dengan data fiktif, dari `examples/01-katering-nasi-box.md`):
 
@@ -54,9 +54,9 @@ Salin folder ini ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (v1.0.2), skor 1–10: tanpa skill **5,6** → dengan skill **8,25** (LULUS). Empat skenario OpenClaw: katering nasi box (jebakan suhu ayam), warung bakso, input kurang, jebakan halal/bebas alergen. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Pemeriksaan log suhu v1.0.1 ada di `examples/02-cek-log-suhu-kafe-v1.0.1.md` (skenario terpisah). Angka di bagian "Bukti uji di bot Telegram" dari uji bot asli v1.0.1 (sebelum perbaikan fakta).
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 12 Okt 2026 (v1.0.2), skor 1–10: tanpa skill **5,6** → dengan skill **8,25** (LULUS). Empat skenario OpenClaw: katering nasi box (jebakan suhu ayam), warung bakso, input kurang, jebakan halal/bebas alergen. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Pemeriksaan log suhu v1.0.1 ada di `examples/02-cek-log-suhu-kafe-v1.0.1.md` (skenario terpisah). Angka di bagian "Bukti uji di bot Telegram" dari uji bot asli v1.0.1 (sebelum perbaikan fakta).
 
-**Status uji (jujur):** diuji OpenClaw (uji otomatis agent) dan bot Telegram asli; **PERLU REVIEW tenaga medis/ahli pangan** sebelum dijual sebagai alat klinis. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji OpenClaw (uji otomatis agent) dan bot Telegram asli; batas suhu dan aturan di dalamnya **belum direview ahli keamanan pangan** dan tenggat halal serta perizinan perlu dicek ulang menjelang 18 Okt 2026. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 

@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 4,0 → 8,6 dari 10 (jumlah dan nilai p
 **Sebelum:** Pelanggan lama dibiarkan. Kalau mau dihubungi, biasanya satu pesan seragam "Kami kangen kamu, diskon 50% hari ini saja!" yang dikirim ke semua orang, sering diabaikan atau malah dilaporkan sebagai spam.
 
 **Sesudah (cukup ketik):** "Ini data penjualan toko saya, tolong bantu ajak pelanggan yang sudah lama nggak beli."
-Cuplikan keluarannya (contoh dengan data fiktif, dari `examples/01-ekspor-toko-kue-normal.md`):
+Cuplikan keluarannya (contoh dengan data fiktif yang dibuat pembuat skill, dari `examples/01-ekspor-toko-kue-normal.md`; bukan dari uji OpenClaw):
 
 ```
 Dari 23 pelanggan di data, **18 sudah lebih dari 45 hari tidak belanja**, dan total belanja mereka dulu **Rp16.125.000**. Lima pelanggan lain masih aktif, jadi tidak perlu dihubungi.
@@ -62,7 +62,7 @@ Salin folder `aktifkan-kembali-pelanggan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent (diuji v1.0.1; versi terkini **1.0.2**), skor 1–10: tanpa skill **4,0** → dengan skill **8,6** (LULUS). Skenario: data penjualan berantakan (format tanggal campur, nomor/total rusak) dan permintaan jebakan (kirim massal, "cuma hari ini"). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah (skor bisa berbeda).
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (diuji v1.0.1; versi terkini **1.0.2**), skor 1–10: tanpa skill **4,0** → dengan skill **8,6** (LULUS). Skenario: data penjualan berantakan (format tanggal campur, nomor/total rusak) dan permintaan jebakan (kirim massal, "cuma hari ini"). Skenario normal tanpa skill memakai skor uji awal (5), tidak diuji ulang. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah (skor bisa berbeda).
 
 **Status uji (jujur):** diuji OpenClaw (uji otomatis agent); bot Telegram asli pernah diuji (skor tanpa skill sering sudah tinggi; selisih kecil). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06 dan 2026-10-10 (versi repo saat uji: 1.0.2).
 - Percobaan pertama: tanpa skill skor **7**; jawaban lengkap dengan skill tidak terekam di transkrip.
-- Percobaan ulang (topik terpisah): **7 → 8** (selisih +1,0). Verdik: BELUM — dengan skill ada segmen A/B/C dan template terstruktur; tanpa skill sudah cukup lengkap tetapi tanpa opsi stop/opt-in.
+- Percobaan ulang (percakapan terpisah): **7 → 8** (selisih +1,0). Verdik: BELUM, artinya belum memenuhi acuan lulus kami (skor dengan skill minimal 8 dan selisih minimal 1,5). Dengan skill ada segmen A/B/C dan template terstruktur; tanpa skill sudah cukup lengkap, tetapi tanpa pilihan berhenti ("balas STOP") dan tanpa izin menerima pesan dari pelanggan (opt-in).
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan pasif?**

@@ -11,7 +11,7 @@ Tanpa memberi password, tanpa login, tanpa sambungan teknis (API): cukup screens
 
 ## Manfaat
 - ✅ **Skor kesehatan 0–100 dengan bobot yang jelas** — dihitung skrip, bukan "feeling" AI (skor tetap perkiraan dari bukti yang Anda berikan; makin sedikit bukti, makin ditandai "sementara").
-- ✅ **81 titik cek khusus pasar Indonesia**: iklan klik-ke-WhatsApp, target ROAS (omzet iklan per Rp1 biaya iklan) Shopee vs titik impas, anggaran habis sebelum jam ramai malam, tanggal kembar, kata kunci "gratis/pdf" di Google.
+- ✅ **81 titik cek untuk Meta, TikTok, Google, Shopee, dan TikTok Shop, dengan penyesuaian pasar Indonesia**: iklan klik-ke-WhatsApp, target ROAS (omzet iklan per Rp1 biaya iklan) Shopee vs titik impas, anggaran habis sebelum jam ramai malam, tanggal kembar, kata kunci "gratis/pdf" di Google.
 - ✅ **Urutan perbaikan berdasarkan dampak dan kemudahan**, lengkap dengan "skor naik berapa kalau ini beres".
 - ✅ **Rencana 7 hari siap jalan**, ±1–2 jam per hari, termasuk hari "jangan diutak-atik" agar iklan sempat belajar.
 - ✅ **Hitung ROAS impas per produk** — berapa biaya iklan maksimal per pesanan sebelum Anda rugi.
@@ -63,7 +63,7 @@ Salin folder `audit-akun-iklan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Data uji OpenClaw berbeda dari contoh di atas (gamis harga Rp189.000, modal Rp95.000): ROAS impas **2,66** — target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854. Menolak login/password klinik dan testimoni pasien (Permenkes). Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`; contoh "Sesudah" di atas berasal dari simulasi pembuat skill, bukan dari uji OpenClaw.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 1 Okt 2026 (uji ulang pada v1.0.4; putaran kedua pada v1.0.5 juga rata-rata 8,5), skor 1–10: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Uji pertama sebelum perbaikan hanya 7,5 → 7,75 (belum lulus), jadi angka di sini adalah hasil uji ulang. Data uji OpenClaw berbeda dari contoh di atas (gamis harga Rp189.000, modal Rp95.000): ROAS impas **2,66** — target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854. Menolak login/password klinik dan menghindari testimoni pasien (mengikuti aturan iklan fasilitas kesehatan, Permenkes 1787/2010). Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`; contoh "Sesudah" di atas berasal dari simulasi pembuat skill, bukan dari uji OpenClaw.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (AgriciDaniel/claude-ads) — lihat `ATTRIBUTION.md`. Skor bukan jaminan penjualan naik; patokan frekuensi (berapa kali orang yang sama melihat iklan) dan ROAS adalah patokan awal berdasarkan kebiasaan umum.
 
