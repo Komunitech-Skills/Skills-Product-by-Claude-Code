@@ -2,6 +2,11 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.6 (2026-10-13)
+- Koreksi tanggal PPh 22 marketplace: bukan "berlaku 1 Agustus 2026" melainkan **dipungut sejak 1 Oktober 2026** oleh Shopee, Tokopedia, Lazada, Blibli (Siaran Pers DJP SP-23/2026, 1 Okt 2026; rencana 1 Agustus 2026 ditunda lewat PENG-46/PJ.09/2026, lalu penunjukan ulang 24 Sep 2026). Diperbarui di catatan script, SKILL.md, README, `references/regulasi.md`, dan tes. `TANGGAL_ATURAN` → 2026-10-13.
+- `references/regulasi.md`: judul lengkap & tanggal PMK 37/2025, riwayat jadwal, sumber resmi DJP. Dasar pungutan setelah voucher toko ditandai PERLU REVIEW (definisi peredaran bruto PMK 37/2025 disebut "sebelum dikurangi potongan penjualan").
+- Contoh di `examples/` adalah rekaman uji 2026-09-23/10-01 dan sengaja tidak diubah (masih memuat tanggal lama).
+
 ## Catatan revisi 1.0.3 (2026-10-01)
 - AI wajib menyalin blok "Catatan & asumsi" dari script **kata per kata** ke balasan: dasar aturan PPh 22 marketplace (PMK 37/2025, berlaku 1 Agustus 2026), syarat pengecualian omzet ≤ Rp500 juta, tanggal berlaku, dan disclaimer (temuan uji OpenClaw: sempat diringkas jadi "per PMK terbaru").
 - Perbaikan: `harga_marketplace.py --help` sebelumnya error; kini tampil normal.

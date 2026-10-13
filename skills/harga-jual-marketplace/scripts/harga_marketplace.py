@@ -6,7 +6,8 @@ Dua mode:
 2. Cek harga  : dari harga jual (--harga-jual) -> rincian potongan & laba bersih.
 
 SEMUA persentase biaya platform diisi pengguna (cek Seller Center masing-masing; angka berubah-ubah).
-PPh 22 marketplace 0,5% (PMK 37/2025, berlaku 1 Agustus 2026) ikut dihitung kecuali --pph22 tidak.
+PPh 22 marketplace 0,5% (PMK 37/2025, dipungut sejak 1 Oktober 2026 - Siaran Pers DJP SP-23/2026) ikut dihitung
+kecuali --pph22 tidak.
 
 Asumsi dasar (tulis di hasil):
 - Biaya persen (admin, layanan, pembayaran, iklan) & PPh 22 dihitung dari HARGA SETELAH VOUCHER TOKO.
@@ -27,8 +28,8 @@ import re
 import sys
 from decimal import Decimal, ROUND_CEILING, ROUND_HALF_UP, InvalidOperation
 
-TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.5"
+TANGGAL_ATURAN = "2026-10-13"
+VERSI = "1.0.6"
 TARIF_PPH22 = Decimal("0.5")
 BATAS_ATAS_HARGA = Decimal(10) ** 12
 PERINGATAN_CONTOH = ("ANGKA CONTOH: persentase biaya platform di hasil ini berasal dari template contoh, BUKAN tarif "
@@ -546,7 +547,8 @@ def main(argv=None):
         "Biaya dihitung tanpa pembulatan; angka di tabel dibulatkan ke rupiah terdekat.",
     ]
     if any(pf["pph22"] for pf in daftar):
-        catatan.append("PPh 22 marketplace 0,5% (PMK 37/2025, berlaku 1 Agustus 2026). Penjual orang pribadi dengan "
+        catatan.append("PPh 22 marketplace 0,5% dari omzet (PMK 37/2025; dipungut Shopee, Tokopedia, Lazada, Blibli "
+                       "sejak 1 Oktober 2026). Penjual orang pribadi dengan "
                        "omzet setahun s.d. Rp500 juta bisa dikecualikan jika sudah menyampaikan surat pernyataan ke "
                        "marketplace; bila sudah, minta hitung ulang tanpa PPh 22. PPh 22 ini bukan pajak baru; cara "
                        "memperhitungkannya dengan PPh final Anda, tanyakan ke DJP/konsultan.")

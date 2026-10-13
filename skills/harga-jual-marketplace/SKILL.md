@@ -55,7 +55,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    Opsi lain: `--pembayaran`, `--iklan` (%), `--voucher 10%` / `--voucher 5000`, `--maks-voucher`, `--qty-per-pesanan`, `--biaya-lain` (Rp/barang), `--target-laba`, `--target-markup`, `--pph22 tidak`, `--bulatkan 1000` (kelipatan pembulatan, default 500), `--format json`.
 3. Sajikan hasil: harga minimal, harga rekomendasi, tabel rincian, dan baris **"Status target"** dari script **apa adanya**. Tambahkan 1–2 saran praktis berbasis angka (mis. "voucher 10% menurunkan laba Rp3.500/barang").
    **Perbandingan terhadap target hanya dari script (wajib):** kata "memenuhi/di atas/di bawah target", "masih untung/rugi", dan angka laba/margin untuk harga apa pun **dikutip dari baris "Status target" atau tabel "Banding harga" keluaran script** — jangan menilai sendiri. Sebelum menyebut atau menyarankan harga lain (mis. harga psikologis Rp62.900), jalankan ulang dengan `--banding-harga` lalu kutip statusnya. Bila belum dihitung, jangan menyebut harga itu.
-4. **Salin blok "Catatan & asumsi" dari script ke balasan chat apa adanya, kata per kata** — termasuk "PPh 22 marketplace 0,5% (PMK 37/2025, berlaku 1 Agustus 2026)", syarat pengecualian omzet ≤ Rp500 juta, baris "Berlaku per <tanggal>" dan "Alat bantu hitung, bukan nasihat pajak". Jangan diringkas menjadi "sesuai PMK terbaru"/"aturan terbaru" dan jangan dihilangkan walau balasan dipersingkat.
+4. **Salin blok "Catatan & asumsi" dari script ke balasan chat apa adanya, kata per kata** — termasuk "PPh 22 marketplace 0,5% dari omzet (PMK 37/2025; dipungut Shopee, Tokopedia, Lazada, Blibli sejak 1 Oktober 2026)", syarat pengecualian omzet ≤ Rp500 juta, baris "Berlaku per <tanggal>" dan "Alat bantu hitung, bukan nasihat pajak". Jangan diringkas menjadi "sesuai PMK terbaru"/"aturan terbaru" dan jangan dihilangkan walau balasan dipersingkat.
 5. **Fallback tanpa Python:** hitung manual dengan rumus di bawah dan beri tahu bahwa hasil dihitung manual.
 
 ## Rumus (untuk hitung manual)
@@ -84,7 +84,7 @@ Bulatkan harga **ke atas** ke rupiah penuh, lalu ke atas ke kelipatan pembulatan
 - **Harga rekomendasi: Rp ...**
 | Komponen | Nilai |  ← rincian potongan, uang diterima, modal, laba, margin, markup
 (Perbandingan antar-platform bila lebih dari satu)
-**Catatan & asumsi**  ← disalin utuh dari script (sumber persentase, dasar biaya, PPh 22 + PMK 37/2025 + tanggal berlaku, berlaku per, disclaimer)
+**Catatan & asumsi**  ← disalin utuh dari script (sumber persentase, dasar biaya, PPh 22 + PMK 37/2025 + tanggal mulai pungut, berlaku per, disclaimer)
 💡 Saran: <1–2 saran berbasis angka>
 ```
 
@@ -116,7 +116,7 @@ Bulatkan harga **ke atas** ke rupiah penuh, lalu ke atas ke kelipatan pembulatan
 - [ ] PPh 22 0,5% disertakan (atau dijelaskan kenapa tidak) + catatan pengecualian OP omzet ≤ Rp500 juta dengan surat pernyataan.
 - [ ] Harga rekomendasi dibulatkan ke atas dan laba pada harga itu ditampilkan.
 - [ ] Format Rupiah `Rp 1.250.000`; disclaimer + tanggal berlaku ada.
-- [ ] Blok "Catatan & asumsi" tersalin utuh: nomor aturan "PMK 37/2025", tanggal berlaku "1 Agustus 2026", "Berlaku per …", dan "bukan nasihat pajak" muncul di balasan.
+- [ ] Blok "Catatan & asumsi" tersalin utuh: nomor aturan "PMK 37/2025", tanggal mulai pungut "1 Oktober 2026", "Berlaku per …", dan "bukan nasihat pajak" muncul di balasan.
 
 ## Batasan & penanganan error
 - Script keluar kode 2 + `ERROR: ...` bila modal kosong/bukan angka, persen ≥ 100, voucher persen ≥ 100%, qty per pesanan bukan bilangan bulat, atau total persen biaya + target margin ≥ 100% (target mustahil). Jelaskan dan minta angka yang benar.
