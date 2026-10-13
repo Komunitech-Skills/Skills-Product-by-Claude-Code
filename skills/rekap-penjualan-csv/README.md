@@ -2,14 +2,16 @@
 
 **Kirim file penjualan, dapat laporan omzet dan produk terlaris dalam semenit.**
 
+*Diuji AI penguji independen: 7,5 → 9 dari 10 (angka sama-sama benar; dengan skill laporan lebih lengkap: persentase tiap produk, rata-rata harian, dan saran yang bisa dijalankan).*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Total omzet, rata-rata harian, dan 5 produk terlaris
 - ✅ Hari terbaik dan hari terendah terlihat jelas
 - ✅ Angka dihitung dengan script, bukan dikira-kira
-- ✅ Membaca format Indonesia: `Rp 15.000`, `15.000,50`, dan pemisah `;`
-- ✅ 2–3 insight yang bisa langsung dijalankan
+- ✅ Membaca format Indonesia: `Rp 15.000`, `15.000,50`, dan pemisah titik koma (`;`) seperti file Excel berbahasa Indonesia
+- ✅ 2–3 saran (insight) yang bisa langsung dijalankan
 
 ## Cocok untuk siapa
 - Pemilik toko atau usaha yang punya ekspor data kasir, Shopee, Tokopedia, atau spreadsheet
@@ -18,13 +20,27 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Rekap manual di Excel memakan waktu 1–2 jam.
 
-**Sesudah (cukup ketik):** "Tolong rekap penjualan dari file penjualan-september.csv"
-→ Laporan untuk contoh kedai kopi (127 transaksi, 1–14 September): omzet Rp 5.084.000, rata-rata Rp 363.143 per hari, 5 produk terlaris dengan persentasenya (Matcha Latte Rp 1.320.000 = 26,0% omzet), hari terbaik Senin 7 September (Rp 549.000) dan hari terendah Senin 14 September (Rp 214.000), plus insight yang bisa langsung dijalankan.
+**Sesudah (cukup ketik):** "Halo, ini file export kasir kedai kopi aku 2 minggu pertama September (kasir-kopi-sept.csv). Tolong direkap ya, mau tau menu mana yang paling laku sama hari apa yang paling rame."
 
-**Hasil uji A/B (simulasi agent, 23 September 2026):** pada file yang rapi, angka agent tanpa skill sama benarnya. Nilai tambahnya ada di format Indonesia yang berantakan: pada file dengan harga `68.500,00`, cara "ambil digit saja" menghasilkan Rp 1.389.910.000 padahal yang benar Rp 13.899.100 (100 kali lipat), tanpa peringatan. Pada ekspor marketplace, bila pesanan batal dan retur ikut dihitung, omzet contoh membengkak menjadi Rp 10.793.000 dari yang seharusnya Rp 9.006.000; dengan skill keduanya benar. Rincian: `examples/00-pembanding-tanpa-skill.md`. Uji OpenClaw 1 Okt 2026: skor tanpa skill 7,5 → dengan skill 8,5, lalu 9 setelah perbaikan v1.2.3; selisihnya kecil dan terutama pada kelengkapan format, bukan ketepatan angka (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+*Cuplikan hasil nyata dari `examples/01-kasir-kedai-kopi-2-minggu.md` (produk peringkat 3–5 dan saran tindakan dipotong):*
+```
+## Rekap Penjualan 1 – 14 September 2026
+
+**Total omzet:** Rp 5.084.000
+**Jumlah transaksi (baris):** 127
+**Rata-rata omzet per hari (kalender):** Rp 363.143  _(hari berjualan: Rp 363.143; 14 dari 14 hari ada penjualan)_
+
+### 5 Produk Terlaris (omzet)
+| # | Produk | Qty | Omzet | % |
+|---|---|---|---|---|
+| 1 | Matcha Latte | 60 | Rp 1.320.000 | 26,0% |
+| 2 | Es Kopi Susu Gula Aren | 63 | Rp 1.134.000 | 22,3% |
+…
+Hari terbaik: Senin, 7 September 2026 (Rp 549.000). Hari terendah: Senin, 14 September 2026 (Rp 214.000).
+```
 
 ## Cara pakai
-Setelah terpasang, ketik permintaan biasa ke AI agent kamu dan lampirkan file CSV-nya, misalnya:
+Setelah terpasang, ketik permintaan biasa ke AI agent Anda dan lampirkan file CSV-nya (file tabel sederhana yang bisa dibuka di Excel), misalnya:
 - "Tolong rekap penjualan dari file penjualan-september.csv"
 - "Ini ekspor kasir kedai kopi aku 2 minggu, menu mana yang paling laku sama hari apa yang paling rame?"
 - "Rekap pesanan Shopee bulan ini, yang batal dan retur jangan dihitung."
@@ -34,7 +50,7 @@ Setelah terpasang, ketik permintaan biasa ke AI agent kamu dan lampirkan file CS
 File berformat **CSV** yang punya kolom tanggal, nama produk, dan total atau harga. Jika filenya Excel (.xlsx), simpan dulu sebagai CSV. Butuh Python di komputer (biasanya sudah ada di Mac/Linux; di Windows bisa dipasang gratis dari python.org).
 
 ## Instalasi singkat
-Salin folder `rekap-penjualan-csv` ke folder skills AI agent kamu:
+Salin folder `rekap-penjualan-csv` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -45,17 +61,23 @@ Salin folder `rekap-penjualan-csv` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
+**Hasil uji (jujur):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
+- **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario ekspor Shopee): skor tanpa skill 7,5 → dengan skill 8,5, lalu 9 setelah perbaikan v1.2.3. Selisihnya kecil dan terutama pada kelengkapan format, bukan ketepatan angka.
+- **Uji simulasi agent (perbandingan tanpa dan dengan skill), 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`): pada file yang rapi, angka agent tanpa skill sama benarnya. Nilai tambahnya ada di format Indonesia yang berantakan: pada file dengan harga `68.500,00`, cara "ambil digit saja" menghasilkan Rp 1.389.910.000 padahal yang benar Rp 13.899.100 (100 kali lipat), tanpa peringatan. Pada ekspor marketplace, bila pesanan batal dan retur ikut dihitung, omzet contoh membengkak menjadi Rp 10.793.000 dari yang seharusnya Rp 9.006.000; dengan skill keduanya benar.
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Format ekspor Tokopedia, kasir kedai, dan angka berformat campur belum diuji di OpenClaw.
+
 ## FAQ
 **Apakah data saya dikirim ke internet?**
-Script berjalan di komputermu sendiri. Isi data tetap dibaca oleh AI agent yang kamu pakai.
+Script berjalan di komputer Anda sendiri. Isi data tetap dibaca oleh AI agent yang Anda pakai.
 
 **Nama kolom di file saya berbeda. Tetap bisa?**
-Bisa. AI agent akan mencocokkan kolom secara otomatis.
+Biasanya bisa: AI agent mencocokkan kolom berdasarkan isi file. Syaratnya ada kolom tanggal, nama produk, dan total atau harga.
 
 **Bagaimana kalau ada baris yang rusak?**
 Baris yang rusak dilewati, lalu jumlah dan alasannya dilaporkan.
 
-> **Catatan:** rekap ini menghitung omzet dari file penjualan yang kamu kirim. Bukan laporan laba rugi dan bukan perhitungan pajak; hasilnya sebaik kualitas datanya.
+> **Catatan:** rekap ini menghitung omzet dari file penjualan yang Anda kirim. Bukan laporan laba rugi dan bukan perhitungan pajak; hasilnya sebaik kualitas datanya.
 
 ## Riwayat perubahan
 

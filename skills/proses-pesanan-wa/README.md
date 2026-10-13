@@ -1,26 +1,46 @@
 # Orderan WA Beres: Rekap, Nota, Kirim
 
-**Tempel chat pesanan pelanggan, dapatkan total pasti, pesan konfirmasi, nota, label paket, dan daftar serah-terima kurir dalam satu balasan.**
+**Tempel chat pesanan pelanggan, dapatkan total yang dihitung rinci, pesan konfirmasi, nota, label paket, dan daftar serah-terima kurir dalam satu balasan.**
+
+Diuji AI penguji independen: 5,5 → 8,4 dari 10 (semua angka rupiah cocok dengan hitung ulang independen; harga dan resi yang belum Anda beri ditandai, tidak dikarang).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Total pasti, tanpa salah hitung.** Barang × jumlah × harga, diskon, lalu ongkir dihitung otomatis, format rupiah rapi (Rp247.500). Pesanan yang tertempel dua kali hanya dihitung sekali.
+- ✅ **Total dihitung, bukan dikira.** Barang × jumlah × harga, diskon, lalu ongkir dihitung otomatis, format rupiah rapi (Rp247.500). Pesanan yang tertempel dua kali hanya dihitung sekali.
 - ✅ **Pesan untuk pelanggan siap kirim:** konfirmasi + cara bayar, pengingat bayar yang sopan, dan kabar "pesanan dikirim + resi". Data yang kurang (alamat, kode pos, HP) langsung ditanyakan di pesan yang sama.
 - ✅ **Label paket & daftar serah-terima kurir** per JNE, J&T, SiCepat, AnterAja, Pos, GoSend/Grab, lengkap dengan penanda COD/non-COD.
-- ✅ **Rekap harian sekali lihat:** jumlah pesanan, omzet, barang terlaris, siapa yang belum bayar, plus CSV siap tempel ke spreadsheet.
-- ✅ **Jujur & aman:** harga, ongkir, dan resi yang belum Anda berikan ditandai `[isian]`, tidak dikarang. Nomor HP & alamat pelanggan hanya muncul di label.
+- ✅ **Rekap harian sekali lihat:** jumlah pesanan, omzet, barang terlaris, siapa yang belum bayar, plus tabel CSV (teks yang bisa ditempel ke Excel/Google Sheets).
+- ✅ **Jujur dan menjaga privasi:** harga, ongkir, dan resi yang belum Anda berikan ditandai `[isian]`, tidak dikarang. Nomor HP & alamat pelanggan hanya dimasukkan ke label, tidak ke rekap harian atau CSV.
 
 ## Cocok untuk siapa
 - Toko online kecil-menengah yang menerima pesanan lewat WhatsApp, DM Instagram/TikTok, atau Facebook.
 - Reseller/dropshipper, katering, kue rumahan, fashion, kosmetik, oleh-oleh yang rekap order masih manual.
 - Admin toko yang tiap sore harus menyiapkan paket untuk kurir.
-- **Bukan untuk:** file ekspor marketplace (`resi-picking`), invoice formal ber-PPN (`buat-invoice`), kasir toko fisik (`kasir-lokal`), catatan stok (`buku-stok`).
+- **Bukan untuk:** file ekspor marketplace (skill Picking List & Urutan Resi, `resi-picking`), invoice formal ber-PPN (skill Invoice & Kuitansi, `buat-invoice`), kasir toko fisik (skill Kasir Lokal, `kasir-lokal`), catatan stok (skill Buku Stok, `buku-stok`).
 
 ## Contoh sebelum & sesudah
-**Sebelum** (uji OpenClaw 2026-10-06, rata-rata 5,5/10): AI mengarang harga untuk warna yang tidak ada di katalog, mau membagikan alamat pelanggan ke grup reseller, dan menawarkan menghubungkan WhatsApp untuk mengirim sendiri.
+**Sebelum** (uji OpenClaw tanpa skill, 2026-10-06): AI mengarang harga untuk warna yang tidak ada di katalog, mau membagikan alamat pelanggan ke grup reseller, dan menawarkan menghubungkan WhatsApp untuk mengirim sendiri.
 
-**Sesudah** (rata-rata 8,4/10): satu tempelan chat 6 pelanggan (satu kirim dobel) langsung jadi konfirmasi, nota, label, daftar serah-terima per kurir, rekap harian (omzet Rp782.000, belum bayar Rp399.000) dan CSV, semua angka cocok hitung ulang, HP/alamat tidak bocor ke rekap. Rincian di `examples/00-openclaw-sebelum-sesudah.md`.
+**Sesudah:** satu tempelan chat 6 pelanggan (satu kirim dobel) langsung jadi konfirmasi, nota, label, daftar serah-terima per kurir, rekap harian (omzet Rp782.000, belum bayar Rp399.000) dan tabel CSV; semua angka cocok dengan hitung ulang, HP/alamat tidak masuk rekap. Cuplikan salah satu pesan konfirmasi (contoh dengan data fiktif, dari `examples/01-normal-6-pelanggan.md`):
+
+```
+Halo Kak Rina, terima kasih sudah order di Nayla Hijab 🙏
+Pesanan yang tadi pagi sudah kami terima ya, tidak perlu dikirim ulang 😊
+
+20261006-01
+• Pashmina Ceruty Babydoll Mocca x2 = Rp90.000
+• Pashmina Ceruty Babydoll Dusty Pink x1 = Rp45.000
+• Bros Mutiara x3 = Rp30.000
+Subtotal: Rp165.000
+Ongkir JNE REG: Rp12.000
+*Total: Rp177.000*
+
+Pembayaran via transfer ke:
+BCA 1234567890 a.n. Nayla Putri
+Mohon transfer sesuai total, lalu kirim bukti transfernya di chat ini ya, Kak.
+…
+```
 
 ## Cara pakai
 Tempel chat pesanan (boleh beberapa pelanggan sekaligus), lalu tulis misalnya:
@@ -42,6 +62,8 @@ Salin folder `proses-pesanan-wa` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python (bawaan Mac/Linux) membuat hitungan otomatis; tanpa Python hitungan tetap ditunjukkan rinci per baris.
 
+**Hasil uji (OpenClaw, uji otomatis agent, 2026-10-06):** rata-rata nilai 5,5 tanpa skill menjadi 8,4 dengan skill (skala 10), dari empat skenario: tempelan chat 6 pelanggan (dijalankan dua kali, lokal dan konteks Telegram), diskon + DP + pengingat bayar, pesan kurang lengkap, dan jebakan (kirim otomatis dari WA, cek m-banking, bagikan alamat ke reseller). Semua angka rupiah di jawaban dengan skill dicocokkan dengan hitung ulang independen. Rincian: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 13, 2026-10-12.
@@ -57,7 +79,7 @@ Tidak. Mengirim otomatis dari WhatsApp pribadi berisiko nomor diblokir dan salah
 Tidak masuk ke m-banking. Cek mutasi sendiri, lalu tempel "yang sudah bayar: Kak Dina, Pak Bowo"; status dan rekap langsung diperbarui.
 
 **Ongkirnya dihitung otomatis?**
-Tarif kurir berubah dan bergantung berat serta rute, jadi tidak ditebak. Tempel ongkir dari aplikasi kurir (atau tarif per kota yang biasa Anda pakai), lalu total dihitung pasti.
+Tarif kurir berubah dan bergantung berat serta rute, jadi tidak ditebak. Tempel ongkir dari aplikasi kurir (atau tarif per kota yang biasa Anda pakai), lalu total dihitung rinci per baris.
 
 ## Catatan
 Nota yang dihasilkan bukan faktur pajak. Karya orisinal Komunitech; nama kurir dan bank hanya disebut sebagai penyebut layanan dan tidak berafiliasi. Lihat `ATTRIBUTION.md`.

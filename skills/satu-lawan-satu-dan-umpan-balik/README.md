@@ -1,18 +1,20 @@
 # Ngomong ke Tim Tanpa Tidak Enak Hati
 
-**Naskah ucapan dan pesan WA siap pakai untuk 1-on-1, teguran halus, karyawan baru, dan pengumuman perubahan.**
+**Naskah ucapan dan pesan WA siap pakai untuk obrolan 1-on-1 (empat mata), teguran halus, karyawan baru, dan pengumuman perubahan.**
+
+Diuji AI penguji independen di OpenClaw: 5,5 → 8,4 dari 10 (tanpa skill saran umum yang malah menyuruh membahas masalah rumah tangga karyawan; dengan skill pesan ajakan, naskah empat mata berisi tanggal dan jam kejadian, serta tanggal cek ulang).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Berani bicara, tetap hangat:** kalimat halus tapi jelas, bukan sindiran.
-- ✅ **Agenda 1-on-1 30 menit** yang rutin dan tidak bertele-tele.
-- ✅ **Onboarding 30 hari** dengan pesan sambutan dan titik cek.
+- ✅ **Agenda obrolan 1-on-1 30 menit** yang rutin dan tidak bertele-tele.
+- ✅ **Rencana 30 hari untuk karyawan baru (onboarding)** dengan pesan sambutan dan titik cek.
 - ✅ **Pengumuman perubahan** yang tidak bikin gaduh: yang terdampak dikabari dulu.
-- ✅ **Batas yang aman:** tidak membantu PHK sepihak lewat WA; diarahkan ke jalur yang sah.
+- ✅ **Ada batasnya:** skill menolak membantu pemutusan hubungan kerja (PHK) sepihak lewat WA dan mengarahkan ke jalur yang sah.
 
 ## Cocok untuk siapa
-Pemilik/atasan UMKM dengan tim 3-20 orang. Bukan untuk memecat atau menghitung pesangon (lihat `surat-peringatan-karyawan` dan konsultan hukum ketenagakerjaan). Melengkapi `kpi-tim`, `sop-onboarding` (dokumen), sementara skill ini untuk percakapan.
+Pemilik/atasan UMKM dengan tim 3-20 orang. Bukan untuk memecat atau menghitung pesangon (lihat skill Surat Peringatan Karyawan dan konsultan hukum ketenagakerjaan). Melengkapi skill KPI Tim (target kinerja) dan skill SOP Onboarding (dokumen pembekalan karyawan baru); skill ini khusus untuk percakapan.
 
 ## Contoh sebelum & sesudah
 **Permintaan:** "Si Rina kasir saya sering telat (09.40, 09.35, 09.50; toko buka 09.00). Dedi jadi sendirian, ada pelanggan pergi. Anaknya baik, kabarnya lagi ada masalah rumah. Saya nggak enak negur."
@@ -21,7 +23,20 @@ Pemilik/atasan UMKM dengan tim 3-20 orang. Bukan untuk memecat atau menghitung p
 |---|---|
 | Saran umum "awali dengan empati, lalu tegas", membuka dengan pujian pembungkus, ikut menyinggung masalah rumah tangga, mengarang konsekuensi potongan gaji, lalu menawarkan "mau dibuatkan pesan WA?" | Langsung jadi: pesan WA ajakan bicara (terpisah dari teguran), naskah empat mata urut konteks → fakta tanggal & jam → dampak → tanya → sepakat (tiba 08.45, cek ulang Jumat), pujian dipisah, kalimat halus-tapi-jelas, tindak lanjut 3 baris. Hal pribadi tidak diangkat; yang belum diketahui ditandai `[isian]`, 3 pertanyaan di akhir. |
 
-Skor uji penguji independen (5 skenario): rata-rata 6,2 tanpa skill → 8,5 dengan skill (uji simulasi agent 2026-10-09). Dikonfirmasi di bot OpenClaw asli: lihat "Bukti uji di bot Telegram" di bawah.
+Cuplikan keluaran nyata dengan skill (uji OpenClaw v1.0.2, dipotong; `examples/01-teguran-kasir-terlambat.md`):
+
+> **Pesan WA ajakan ngobrol (kirim dulu, jangan langsung tegur lewat WA):**
+>
+> "Rin, nanti setelah tutup bisa ngobrol 10 menit? Mau bahas soal jadwal masuk sebentar."
+>
+> **Naskah ngobrol empat mata (besok, bukan di depan Dedi/pelanggan):**
+>
+> "Rin, saya mau ngobrol soal jam masuk. Minggu ini kamu masuk jam 09.40 hari Senin (5 Okt), 09.35 hari Rabu (7 Okt), dan 09.50 hari Kamis (8 Okt) — padahal harusnya siap jam 08.45 sebelum toko buka jam 09.00.
+>
+> Akibatnya Dedi jadi pegang kasir sendirian pas lagi ramai, antreannya numpuk, dan kemarin sampai ada pelanggan yang pergi karena nunggu kelamaan.
+>
+> Dari sisi kamu sendiri, ada kendala apa sampai beberapa hari ini telat? [dengarkan dulu, jangan motong]
+> …
 
 ## Cara pakai
 Cukup ketik, misalnya:
@@ -32,6 +47,13 @@ Cukup ketik, misalnya:
 ## Instalasi
 Salin folder `satu-lawan-satu-dan-umpan-balik` ke folder skills platform Anda. Lokasi untuk OpenClaw, Codex, Claude Code, dan Cursor ada di `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun atau API key.
 
+**Hasil uji (angka nyata):** skor 1–10 penguji independen.
+- Uji OpenClaw (uji otomatis agent, 12 Okt 2026, v1.0.2, 4 skenario): tanpa skill **5,5** → dengan skill **8,4** (LULUS). Sumber: `examples/HASIL-UJI.md` dan `examples/00-openclaw-sebelum-sesudah.md`.
+- Uji simulasi agent sebelumnya (9 Okt 2026, bukan OpenClaw, 5 skenario; sisi tanpa dan dengan skill ditulis penguji yang sama, jadi condong ke skill): tanpa skill **6,2** → dengan skill **8,5**. Sumber: `examples/HASIL-UJI-simulasi-2026-10-09.md`.
+- Hasil di bot Telegram asli ada di bagian berikutnya.
+
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk anggota grup): gelombang 15, 2026-10-12.
@@ -40,10 +62,17 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, tautan hanya terbuka untuk angg
 Verdik gelombang: LULUS — Tanpa skill saran umum yang malah menyuruh membahas kabar masalah rumah; dengan skill ada pesan ajakan, naskah empat mata berisi tanggal dan jam kejadian yang benar, serta tanggal cek ulang.
 
 ## FAQ
-**Apakah ini nasihat hukum?** Bukan; untuk PHK dan sengketa, konsultasikan ke ahli ketenagakerjaan.
-**Kalau saya minta pecat lewat WA?** Ditolak singkat; Anda tetap dibantu pesan ajakan bicara, naskah empat mata, dan format catatan kejadian (versi 1.0.2).
-**Boleh dipakai untuk menegur lewat WA?** WA hanya untuk mengajak bicara; teguran inti disampaikan empat mata.
-**Perlu instal apa-apa?** Tidak.
+**Apakah ini nasihat hukum?**
+Bukan; untuk PHK dan sengketa, konsultasikan ke ahli ketenagakerjaan.
+
+**Kalau saya minta pecat lewat WA?**
+Ditolak singkat; Anda tetap dibantu pesan ajakan bicara, naskah empat mata, dan format catatan kejadian (versi 1.0.2).
+
+**Boleh dipakai untuk menegur lewat WA?**
+WA hanya untuk mengajak bicara; teguran inti disampaikan empat mata.
+
+**Perlu instal apa-apa?**
+Tidak.
 
 ## Catatan
 Bukan nasihat hukum; naskah ini alat bantu bicara, bukan pengganti ahli ketenagakerjaan. Skill ini menyiapkan naskah; Anda yang menyampaikannya. Diadaptasi dan diubah dari ide "Manager's Playbook" karya Kamal Sindi (CC BY 4.0); pembuat asli tidak mendukung hasil adaptasi ini. Lihat `ATTRIBUTION.md`.

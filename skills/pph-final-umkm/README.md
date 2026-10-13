@@ -2,12 +2,14 @@
 
 **Masukkan omzet, langsung tahu pajak per bulan dan kapan batas Rp500 juta terlewati.**
 
+*Diuji AI penguji independen: 8 → 9 dari 10 (angka pajak sama-sama benar; dengan skill ada tabel per bulan lengkap dengan tanggal setor, dan aturan yang belum pasti disebut apa adanya).*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Tabel pajak per bulan lengkap dengan omzet kumulatif dan batas setor
+- ✅ Tabel pajak per bulan lengkap dengan omzet kumulatif (dijumlah sejak Januari) dan batas setor
 - ✅ Otomatis menerapkan Rp500 juta pertama bebas pajak untuk orang pribadi, termasuk bulan saat batas terlewati
-- ✅ Mencatat PPh 22 yang dipotong marketplace supaya tidak tercecer
+- ✅ Mencatat PPh 22 (pajak yang dipungut marketplace dari penjual) supaya tidak tercecer
 - ✅ Mengingatkan bila omzet mendekati batas Rp4,8 miliar
 - ✅ Angka dihitung script, bukan dikira-kira, dan disertai dasar aturan
 
@@ -19,19 +21,28 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Menjumlah omzet di buku, bingung bulan mana mulai bayar pajak dan berapa persisnya.
 
-**Sesudah (cukup ketik):** "Omzet saya Jan 45jt, Feb 60jt, Mar 80jt, Apr 120jt, Mei 150jt, Jun 90jt. Pajaknya berapa?"
-→ Tabel per bulan: Januari–Mei Rp0 (masih dalam Rp500 juta), Juni hanya Rp45 juta yang kena pajak → PPh Rp225.000, setor paling lambat 15 Juli.
+**Sesudah (cukup ketik):** "Saya jualan baju online, atas nama pribadi (bukan PT). Omzet 2026: Jan 38jt, Feb 42jt, Mar 55jt, Apr 61jt, Mei 70jt, Jun 88jt, Jul 95jt, Agu 102jt. Pajaknya berapa per bulan?"
 
-**Hasil uji A/B (simulasi agent, 23 September 2026):** olshop perorangan dengan omzet Januari–Agustus 2026 sebesar Rp551.000.000. Angka inti sama-sama benar (Januari–Juli Rp0, Agustus Rp255.000), tetapi tanpa skill tidak ada tabel per bulan dan tanggal setor, dan jawabannya menyatakan pasti bahwa tarif 0,5% "maksimal 7 tahun", padahal batas itu mungkin berubah oleh PP 20/2026 dan belum terverifikasi. Dengan skill status aturan itu disebut jujur dan kamu diarahkan ke DJP. Angka skill juga cocok dengan hitungan independen pada 400 kasus acak (0 selisih). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/HASIL-UJI.md`. Uji OpenClaw 1 Okt 2026: skor tanpa skill 8 → dengan skill 7 pada uji pertama (skill kalah), lalu 9 setelah perbaikan v1.0.3 (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+*Cuplikan hasil nyata dari `examples/01-olshop-pribadi-lewat-500-juta.md` (baris Februari–Juli dan catatan dasar aturan dipotong):*
+```
+| Bulan | Omzet | Omzet kumulatif | Omzet kena pajak | PPh final 0,5% | PPh 22 marketplace (info) | Setor paling lambat | Keterangan |
+|---|---:|---:|---:|---:|---:|---|---|
+| Januari | Rp 38.000.000 | Rp 38.000.000 | Rp 0 | Rp 0 | - | 2026-02-15 | masih dalam Rp500 juta bebas |
+…
+| Agustus | Rp 102.000.000 | Rp 551.000.000 | Rp 51.000.000 | Rp 255.000 | - | 2026-09-15 | melewati Rp500 juta; hanya Rp 51.000.000 yang kena pajak |
+| **Total** | **Rp 551.000.000** | | | **Rp 255.000** | - | | |
+
+**Penjelasan singkat:** Januari–Juli Anda belum bayar PPh final karena omzet kumulatif masih di bawah Rp500 juta. Di **Agustus** omzet kumulatif menjadi Rp551 juta, jadi **hanya Rp51 juta** (bagian di atas Rp500 juta) yang kena 0,5% → **Rp255.000**. Mulai September, seluruh omzet tiap bulan kena 0,5%.
+```
 
 ## Cara pakai
-Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
+Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Hitung PPh final UMKM saya dari file omzet-2026.csv."
 - "PT perorangan saya omzet Agustus 120 juta, pajaknya berapa?"
 - "Sisa omzet bebas pajak saya tahun ini tinggal berapa?"
 
 ## Instalasi singkat
-Salin folder `pph-final-umkm` ke folder skills AI agent kamu:
+Salin folder `pph-final-umkm` ke folder skills AI agent Anda:
 
 | Platform | Folder tujuan |
 |---|---|
@@ -42,12 +53,18 @@ Salin folder `pph-final-umkm` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
+**Hasil uji (jujur):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
+- **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario orang pribadi dengan NPWP sejak 2021): skor tanpa skill 8 → dengan skill 7 pada uji pertama (skill kalah), lalu 9 setelah perbaikan v1.0.3. Selisih akhir +1 poin dan terutama pada tabel per bulan dengan tanggal setor serta sikap jujur soal batas 7 tahun, bukan angka pajaknya (kedua sisi sama-sama benar). Usaha berbentuk badan dan aturan PP 20/2026 belum diuji di OpenClaw.
+- **Uji simulasi agent (perbandingan tanpa dan dengan skill), 23 September 2026** (`examples/00-pembanding-tanpa-skill.md` dan `examples/HASIL-UJI.md`): olshop perorangan dengan omzet Januari–Agustus 2026 sebesar Rp551.000.000. Angka inti sama-sama benar (Januari–Juli Rp0, Agustus Rp255.000), tetapi tanpa skill tidak ada tabel per bulan dan tanggal setor, dan jawabannya menyatakan pasti bahwa tarif 0,5% "maksimal 7 tahun", padahal batas itu mungkin berubah oleh PP 20/2026 dan belum terverifikasi. Dengan skill status aturan itu disebut jujur dan Anda diarahkan ke DJP (Direktorat Jenderal Pajak). Angka skill juga cocok dengan hitungan independen pada 400 kasus acak (0 selisih).
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
 ## FAQ
 **Apakah hasil ini bisa langsung dipakai untuk setor pajak?**
-Hasilnya adalah hitungan bantu. Setoran dan pelaporan tetap lewat Coretax/DJP. Untuk kasus khusus, konfirmasi ke DJP (Kring Pajak 1500200) atau konsultan pajak.
+Hasilnya adalah hitungan bantu. Setoran dan pelaporan tetap lewat Coretax (sistem pajak online) atau DJP. Untuk kasus khusus, konfirmasi ke DJP (Kring Pajak 1500200) atau konsultan pajak.
 
 **Saya CV, masih bisa pakai tarif 0,5%?**
-Aturan baru (PP 20/2026) mengeluarkan CV, firma, dan PT biasa dari skema ini dengan masa transisi. Skill akan menghitung simulasinya, tapi pastikan dulu ke DJP apakah usahamu masih boleh memakai 0,5%.
+Aturan baru (PP 20/2026) mengeluarkan CV, firma, dan PT biasa dari skema ini dengan masa transisi. Skill akan menghitung simulasinya, tapi pastikan dulu ke DJP apakah usaha Anda masih boleh memakai 0,5%.
 
 **PPh 22 yang dipotong Shopee/Tokopedia mengurangi pajak saya?**
 Pungutan itu dicatat di tabel sebagai informasi. Cara memperhitungkannya dengan PPh final perlu ditanyakan ke DJP atau konsultan, jadi skill tidak menguranginya otomatis.
