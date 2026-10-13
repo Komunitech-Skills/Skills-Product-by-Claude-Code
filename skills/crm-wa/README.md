@@ -63,6 +63,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/crm/` di komputer Anda, dengan cadangan otomatis di `KomunitechData/crm/backup-crm/`. Tanpa Python pun skill tetap membantu dengan tabel CRM manual di Excel.
 
+**Hasil uji (angka nyata):** uji OpenClaw (home terisolasi), 1 Okt 2026 (v1.0.8), skor 1–10 penguji independen: tanpa skill **4,5** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: draf WA + tautan wa.me, kontak batal dikecualikan, total nilai prospek dihitung; tanpa skill: menyarankan broadcast otomatis berisiko. Di bot Telegram asli (gelombang 2–3): selisih positif, draf terstruktur (lihat bagian Bukti uji di bawah).
+
+**Status uji (jujur):** sudah diuji di OpenClaw (uji muat CLI, uji platform otomatis agent, uji sebelum/sesudah 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
+
 ## Yang perlu Anda tahu (jujur)
 - **Tidak mengirim pesan sendiri.** Skill hanya menyiapkan draf + tautan wa.me; Anda yang menekan Kirim. Ini disengaja: kiriman otomatis lewat WhatsApp tidak resmi bisa membuat nomor diblokir.
 - **Tidak membaca chat WhatsApp otomatis.** Perkembangan dicatat dari cerita Anda (atau chat yang Anda tempel ke agent).

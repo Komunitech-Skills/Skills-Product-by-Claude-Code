@@ -40,6 +40,10 @@ Salin folder `listing-marketplace` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
+**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: judul 141 karakter (melewati batas Shopee/Tokopedia/TikTok), klaim karangan (“tidak menerawang”, “wudhu friendly”); dengan skill: judul per platform + batas karakter, deskripsi polos siap tempel, cek kata terlarang. Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji muat OpenClaw 2026.9.5–9.7 dan uji sebelum/sesudah otomatis 2026-10-01 tercatat di katalog; berkas skor numerik OpenClaw belum ada di `examples/`.
+
+**Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat CLI + uji sebelum/sesudah otomatis 2026-10-01). Codex dan Cursor belum kami uji langsung.
+
 ## FAQ
 **Apakah batas karakternya pasti sesuai aturan terbaru marketplace?**
 Skill memakai batas aman yang sama atau lebih ketat dari batas yang pernah berlaku, dan selalu mengingatkan kamu untuk cek batas terbaru di Seller Center. Kalau kamu tahu angka terbarunya, sebutkan saja dan skill akan memakainya.
