@@ -3,6 +3,8 @@
 **Catat pekerjaan sekali jalan saat dikerjakan, minta "buatkan laporan mingguan untuk klien X",
 langsung dapat draf siap tinjau — email, WA/Telegram, dan Markdown, jam dihitung otomatis.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tidak ada lagi mengetik ulang laporan dari memori setiap minggu.** Cukup catat sekali tiap
   ada progres ("kelarin rekonsiliasi bank buat PT Maju, 2,5 jam"), sisanya dirakit otomatis saat
@@ -55,7 +57,7 @@ Total jam tercatat: 4 jam.
 ```
 (Contoh lengkap tiga versi + Markdown: `examples/uji-pembuat-01-konsultan-pajak.md`.)
 
-**Hasil uji:** skor kualitas 9/10 pada uji penguji independen (simulasi agent). Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Di OpenClaw 2026.9.6 (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/UJI-PLATFORM.md`. Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Hasil uji:** skor kualitas 9/10 pada uji penguji independen (simulasi agent). Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Di OpenClaw 2026.9.6 (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/00-pembanding-tanpa-skill.md` dan `examples/UJI-PLATFORM.md`. Uji OpenClaw 2026-10-01: 8 → 7 sebelum perbaikan, 8 → 8,5 setelah perbaikan v1.0.5 (lihat `examples/00-openclaw-sebelum-sesudah.md`). Claude Code diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
@@ -99,17 +101,6 @@ ke klien (lihat `references/openclaw-jadwal.md`).
 Boleh dikosongkan — laporan tetap dibuat, dan bagian Total Jam menandai jelas berapa entri yang
 tidak ikut dihitung, supaya tidak disalahartikan sebagai 0 jam.
 
-## Catatan revisi 1.0.5 (2026-10-01)
-Perbaikan dari uji OpenClaw asli 2026-10-01 (skenario laporan progres dari file CSV):
-- **Jam tidak lagi dibulatkan 1 desimal.** 3,25 jam tampil "3,25 jam" (sebelumnya "3,2"), total
-  tampil "9,75 jam (9 jam 45 menit)" dan selalu sama persis dengan jumlah jam per pekerjaan.
-- **File catatan Anda sendiri langsung terbaca** (`--file`): pemisah koma/titik koma/tab, desimal
-  koma, "90 menit"/"1 jam 30 menit"/"1:30", tanggal 22/09/2026, header Indonesia/Inggris, file
-  dari Excel (BOM, UTF-16, Windows-1252). Bila tetap gagal, pesan error menyebut baris & cara
-  memperbaikinya.
-- **Teks "Periode periode kustom" diperbaiki** -- rentang kustom cukup menampilkan tanggalnya.
-- **"Rencana berikutnya" tidak lagi mengulang judul tugas.** Diisi dari rencana Anda (ucapan,
-  `--rencana`, atau kolom Rencana di file); bila belum ada, muncul isian `[isi: ...]` untuk Anda
-  lengkapi sebelum dikirim.
-- Agent diarahkan memakai script di folder skill sendiri, tidak mencari file ke seluruh disk.
-- Uji regresi: 45/45 lolos (termasuk file contoh skenario `tests/data/catatan-kerja.csv`).
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -2,6 +2,8 @@
 
 **Naskah ucapan dan pesan WA siap pakai untuk 1-on-1, teguran halus, karyawan baru, dan pengumuman perubahan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Berani bicara, tetap hangat:** kalimat halus tapi jelas, bukan sindiran.
 - ✅ **Agenda 1-on-1 30 menit** yang rutin dan tidak bertele-tele.

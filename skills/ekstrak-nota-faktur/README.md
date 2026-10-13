@@ -2,6 +2,8 @@
 
 **Kirim foto nota, struk, atau faktur pajak. Dapat tabel rapi, hitungan yang sudah dicek, dan rekap pengeluaran.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tidak perlu mengetik ulang nota satu per satu. Hasilnya tabel dan CSV yang bisa langsung ditempel ke Excel atau Google Sheets
 - ✅ Hitungan dicek otomatis: harga × jumlah, subtotal, PPN, total, sampai terbilang. Selisih sekecil apa pun terlihat
@@ -57,7 +59,6 @@ Tidak. Skill ini mengecek hitungan dan format nomor, lalu memberi peringatan bil
 
 > **Catatan penting:** alat bantu mengetik ulang dan mengecek hitungan, bukan nasihat pajak. Dasar aturan PPN (berlaku per 23 September 2026): UU HPP dan PMK 131/2024, yaitu PPN 12% × DPP nilai lain 11/12 untuk barang/jasa non-mewah dan 12% dari harga penuh hanya untuk barang mewah. Pembulatan belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Format NPWP, NITKU, dan nomor faktur hanya diperiksa sebagai peringatan (belum diverifikasi dari dokumen resmi), dan skill tidak memutuskan PPN bisa dikreditkan. Kepastian: Kring Pajak 1500200 atau konsultan pajak.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Bila PPN atau total buram tetapi DPP/subtotal terbaca, kolom **PPN Seharusnya** dan **Total Seharusnya** tetap terisi dari hitungan sebagai pembanding (total tetap tidak ikut rekap sampai dicocokkan).
-- Digit buram ditulis dengan `?` (mis. `92?.000`) dan ditandai jelas `[cek: 92?.000]`; script memberi tahu apakah hitungannya sesuai pola yang terlihat.
-- Kategori pengeluaran yang ditebak kini selalu disebut sebagai asumsi.
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

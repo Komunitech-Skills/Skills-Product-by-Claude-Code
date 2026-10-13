@@ -4,6 +4,8 @@
 
 > Komunitech **tidak berafiliasi** dengan proyek Uptime Kuma. Uptime Kuma adalah software open-source (MIT) milik Louis Lam & komunitasnya; skill dan panduan ini adalah karya orisinal Komunitech untuk mempermudah pemakaiannya bagi pemilik usaha Indonesia.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Uptime Kuma (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tahu duluan, bukan dari komplain pelanggan.** Website/checkout/link WA down biasanya baru ketahuan saat pelanggan sudah kesal — dengan Uptime Kuma + notifikasi Telegram, Anda tahu dalam hitungan menit.
 - ✅ **Bukan cuma "hidup/mati".** Ringkasan menyebut uptime 24 jam, berapa lama down, dan sisa hari sertifikat SSL — dihitung dari data asli, bukan kira-kira. SSL kedaluwarsa berarti browser pelanggan menampilkan peringatan "Not Secure" yang menakuti calon pembeli.
@@ -67,28 +69,6 @@ Cukup ketik permintaan biasa ke AI agent Anda:
 3. Bila memakai Uptime Kuma: catat alamat status page Anda (bentuk `http://ALAMAT:PORT/status/NAMA-SLUG`, dari `docs/panduan-uptime-kuma.md` §5) — tidak ada token/API key yang perlu disiapkan.
 4. Coba: "Cek website saya masih hidup nggak?" atau "Ringkas status website toko saya."
 
-## Catatan revisi 1.0.9 (2026-10-03)
-
-- Description melarang eksplisit tawaran balik "aku setup/aktifkan pemantauan/alert/cek tiap jam"; pemicu ditambah ("pantau tiap jam", "cek otomatis", "kabari kalau down").
-
-## Catatan revisi 1.0.8 (2026-10-03)
-
-- `description` kini memuat batas keras (tidak memasang Uptime Kuma/alert, tidak mengecek situs pesaing, termasuk cek sekali) beserta kata pemicu, karena model sering menjawab tanpa membuka SKILL.md; ditambah "ATURAN WAJIB" di awal SKILL.md.
-
-## Catatan revisi 1.0.7 (2026-10-01)
-
-- Kata pemicu ditambah di description ("kabari ke WA kalau web down", "pasang alert website", "pantau/cek website saingan atau kompetitor") agar skill terbaca pada permintaan jebakan; uji ulang putaran 2 menunjukkan agent tidak membaca SKILL.md di skenario itu.
-
-## Catatan revisi 1.0.6 (2026-10-01)
-- Batas layanan dipertegas di bagian paling awal skill dan di deskripsinya: AI tidak memasang Uptime Kuma, monitor, maupun alert WA/notifikasi — dipasang Anda sendiri (dipandu) atau lewat jasa setup Komunitech; notifikasi resmi lewat Telegram.
-- Kalimat baku penolakan untuk permintaan memantau website pesaing/orang lain, tanpa tawaran cek terjadwal ke situs mereka.
-- Contoh balasan yang benar ditambahkan di `examples/10-contoh-balasan-pantau-saingan-dan-minta-pasang.md`.
-
-## Catatan revisi 1.0.5 (2026-10-01)
-- Ringkasan kini menghitung **kejadian** down (beberapa cek gagal berurutan = 1 kejadian) lengkap dengan jam mulai–selesai (WIB) dan durasinya — tidak lagi "turun 5x" yang membingungkan.
-- Angka menit & persen disampaikan persis seperti hasil script.
-- Batas layanan diperjelas: AI tidak memasang Uptime Kuma atau notifikasi untuk Anda; pemasangan dilakukan sendiri (dipandu) atau lewat jasa setup Komunitech. Notifikasi resmi lewat Telegram; WhatsApp hanya dengan nomor terpisah sesuai kebijakan Komunitech.
-
 ## FAQ
 **Apakah data website saya dikirim ke server Komunitech atau pihak lain?**
 Tidak. Script ini hanya menghubungi Uptime Kuma **milik Anda sendiri** (biasanya `127.0.0.1`) atau website Anda sendiri langsung. Tidak ada data yang dikirim ke Komunitech, kecuali Anda sendiri mengatur jadwal laporan ke Telegram.
@@ -98,3 +78,7 @@ Tidak — skill ini sengaja **menolak** dipakai untuk situs yang bukan milik/dik
 
 **Saya belum punya komputer yang menyala 24 jam untuk Uptime Kuma, apa saya bisa mulai sekarang?**
 Bisa — pakai `cek-cepat` kapan saja tanpa instalasi apa pun. Untuk pemantauan otomatis terus-menerus (dengan notifikasi Telegram saat down), Uptime Kuma butuh komputer/mini PC/VPS yang menyala saat itu terjadi — lihat opsi mini PC murah atau jasa setup Komunitech di `docs/panduan-uptime-kuma.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

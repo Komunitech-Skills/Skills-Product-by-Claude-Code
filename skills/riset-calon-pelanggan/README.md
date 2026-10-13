@@ -2,6 +2,8 @@
 
 **Susun profil pelanggan ideal, cari calon pelanggan dari sumber publik, dan tahu siapa yang paling layak dihubungi dulu.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Profil pelanggan ideal (ICP) tersusun jelas, bukan sekadar tebakan
 - ✅ Arahan sumber pencarian publik & sah — tanpa scraping ilegal, tanpa beli database
@@ -50,5 +52,6 @@ Dari penilaian 0-5 yang kamu/tim sales isi sendiri untuk 4 hal: kecocokan profil
 **Bedanya dengan `follow-up-prospek`?**
 Skill ini untuk **mencari & menyaring** calon pelanggan baru, plus draf sapaan singkat. Untuk menyusun & memeriksa pesan pertama ke satu prospek secara mendalam → `pesan-prospek-wa`. `follow-up-prospek` dipakai setelah prospek sudah dihubungi tapi belum deal/belum balas.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Dari uji OpenClaw sebelum/sesudah: AI sempat menyarankan memasang skill lain "dari ClawHub" (keliru). Kini hanya menyebut nama skill Komunitech terkait bila relevan dan sudah terpasang, tanpa menyebut cara/sumber instalasi.
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

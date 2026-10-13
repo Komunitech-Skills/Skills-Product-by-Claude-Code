@@ -2,6 +2,8 @@
 
 **Pengganti aplikasi absensi bulanan: cukup chat ke AI agent, data karyawan tetap di komputer kamu sendiri, lembur dihitung sesuai PP 35/2021.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Hemat biaya per karyawan.** Aplikasi HRIS/absensi berbayar umumnya ditagih per karyawan per bulan. Menurut riset harga publik kami (23 Sep 2026, bisa berubah): Talenta sekitar Rp25–50 rb dan Gadjian sekitar Rp12,5 rb per karyawan per bulan. Untuk 20 karyawan, itu kira-kira Rp250 rb–1 jt per bulan. Di sini kamu bayar sekali, tanpa langganan.
 - ✅ **Data mesin fingerprint langsung terbaca.** Kirim file ekspor mesin absen (CSV/Excel). Kolomnya dikenali otomatis, format tanggal Indonesia/Amerika dideteksi, tap ganda dibuang, dan file yang sama bisa diimpor ulang tanpa dobel.
@@ -70,5 +72,6 @@ Karena PP 35/2021 Pasal 28 mensyaratkan perintah pengusaha dan persetujuan peker
 **Apakah angkanya dijamin sama dengan hitungan Disnaker?**
 Rumusnya mengikuti PP 35/2021 Pasal 31–33 (dikutip lengkap dengan pasalnya) dan dibulatkan ke rupiah terdekat. Ini alat bantu hitung, bukan nasihat hukum. Aturan perusahaanmu (PP/PK/PKB) yang lebih menguntungkan pekerja tetap berlaku. Untuk sektor khusus, golongan jabatan tertentu, atau sengketa, konsultasikan ke Disnaker atau konsultan.
 
-## Catatan revisi 1.0.6 (2026-10-01)
-- Dari uji OpenClaw sebelum/sesudah: kini data karyawan selalu ditampilkan sebagai pratinjau dan baru disimpan setelah Anda membalas "ya"; tanggal yang kosong untuk semua karyawan ditandai "kemungkinan libur — konfirmasi" (bukan dianggap bolong per orang).
+## Riwayat perubahan
+
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

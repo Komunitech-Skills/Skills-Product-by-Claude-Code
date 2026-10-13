@@ -7,6 +7,8 @@
 > open-source (lisensi MIT) yang Anda unduh sendiri dari https://actualbudget.org/download. Komunitech **tidak
 > berafiliasi dengan Actual Budget**; nama dipakai hanya untuk menjelaskan kompatibilitas.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 1. **Tidak perlu ketik transaksi satu per satu.** Mutasi CSV BCA, BRI, Mandiri, atau BNI langsung jadi file siap
    impor ke Actual. Angka format Indonesia (`1.500.000,00`) dan format Inggris (`1,500,000.00`) sama-sama terbaca

@@ -2,6 +2,8 @@
 
 **Tagline:** Satu kalimat dari Anda: pilar konten yang tepat sasaran plus pembagian anggaran iklan per kanal per minggu, lengkap dengan batas impas yang dihitung, bukan dikira.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - **Tahu harus posting apa:** 3-5 pilar konten dari pertanyaan dan keberatan pembeli Anda sendiri, lengkap 5 judul contoh per pilar.
 - **Anggaran terbagi jelas:** Meta/Instagram, TikTok, Shopee Ads, TikTok Shop Ads, Google Ads, per minggu, dengan porsi uji 30%.
@@ -40,13 +42,9 @@ Verdik gelombang: LULUS — DENGAN menolak klaim "turun 5kg seminggu" dengan das
 ## Skill pendamping
 `rencana-marketing-usaha`, `kalender-konten-30hari`, `laporan-iklan-mingguan`, `caption-sosmed-umkm`, `hitung-hpp`, `strategi-harga-produk`
 
-## Riwayat versi
-- **Catatan revisi 1.0.5 (2026-10-05):** pra-cek Telegram G9: bot menolak klaim "turun 5kg seminggu" tetapi tanpa dasar BPOM/iklan, hanya bertanya AOV, dan kata "script" bocor. Aturan "kerjakan dulu, tanya di akhir" (tolak klaim + dasar aturan, ROAS impas 1/margin langsung, rencana ringkas dengan [isian], jelaskan tidak ada ROAS pasti, maks. 3 pertanyaan), larangan kata proses, dan `references/kepatuhan-klaim-iklan.md` (PERLU REVIEW pasal). Menunggu uji ulang independen.
-- **Catatan revisi 1.0.6 (2026-10-05):** uji ulang Telegram menemukan rujukan PerBPOM 31/2018 (aturan label) dipakai sebagai aturan iklan. Dasar aturan diverifikasi web dan ditulis ulang di `references/kepatuhan-klaim-iklan.md`: Peraturan BPOM 1/2022 (klaim label & iklan pangan olahan), 34/2022 (iklan obat tradisional/suplemen), 25/2023 (registrasi obat bahan alam), UU 8/1999 Pasal 9 & 17, kebijakan TikTok Ads; penjelasan singkat pangan vs obat tradisional untuk teh pelangsing. Menunggu cek penguji.
-- **Catatan revisi 1.0.4 (2026-10-01):** momen per bulan wajib dicek, bukan diingat: opsi baru `--momen TAHUN-BULAN` mencetak momen bertanggal tetap dari tabel referensi (mis. Oktober = 10.10 di minggu 2) + saran bobot minggu; larangan menulis "bulan ini tidak ada momen" tanpa cek tabel; bulan yang dipakai ditulis di asumsi; tes regresi momen ditambahkan.
-- **Catatan revisi 1.0.3 (2026-10-01):** (1) kanal penjualan utama: `--kanal-utama` (otomatis Shopee/TikTok Shop bila `--jenis marketplace`) membuat porsi kanal tempat pembeli bertransaksi 2x kanal pendukung terbesar, sehingga penjual Shopee tidak lagi mendapat porsi Meta terbesar; skill menanyakan "penjualan paling banyak dari mana?"; (2) nama momen wajib dari tabel referensi: Harbolnas = 12.12, 11.11 bukan Harbolnas; (3) larangan menulis "dihitung pakai script" kecuali script benar-benar dijalankan pada giliran itu; script wajib dijalankan tiap kali angka anggaran disusun/berubah; (4) tes regresi kanal utama ditambahkan.
-- **1.0.1 (2026-09-30):** saringan kanal konsisten (dasar minggu terkecil; tidak ada "0 - DI BAWAH BATAS" tanpa catatan); saat uang tipis kanal yang paling cocok dipertahankan (`--jenis marketplace|jasa-lokal`); tujuan campuran (`--tujuan awareness:30,penjualan:70`); peringatan margin tipis/negatif; kata kunci kategori lebih lengkap (skincare, suplemen, klinik, pinjaman, dll.); alias kanal (ig, fb, tiktok shop, tokopedia) dan format `Rp 3.000.000,-`; panduan retargeting singkat; pembeda tegas dengan `rencana-marketing-usaha`.
-- **1.0.0 (2026-09-30):** rilis awal.
-
 ## Asal-usul
 Diadaptasi dan diperluas dari skill `content-strategy` dan `ads` (marketingskills, Corey Haines, lisensi MIT); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber. Nama platform hanya sebagai penyebut kanal.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

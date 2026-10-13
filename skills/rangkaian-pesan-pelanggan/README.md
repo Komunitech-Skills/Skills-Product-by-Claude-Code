@@ -2,6 +2,8 @@
 
 **Dari satu kalimat, AI menyiapkan seluruh urutan pesan WhatsApp/Telegram/email lengkap dengan jadwal dan kapan harus berhenti.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **8 situasi siap pakai:** sambutan pelanggan baru, edukasi sebelum beli, keranjang tertunda, setelah beli, minta ulasan, perpanjangan/langganan, ajak balik pelanggan lama, peluncuran produk baru.
 - ✅ **Semua pesan ditulis utuh**, bahasa WA sehari-hari yang sopan, tinggal isi `[nama]` dan salin. Tidak ada saran umum "buatlah pesan yang menarik".
@@ -60,5 +62,6 @@ Skill tidak menyusun pesan seperti itu. Banyak platform ulasan melarang imbalan 
 **Bagaimana dengan data pelanggan dan aturan perlindungan data?**
 Skill hanya menyarankan data minimal (nama panggilan, kanal, tahap, status), mewajibkan opt-out di tiap pesan, dan menolak daftar nomor beli/bocoran. Ringkasan etika dan dasar hukum ada di `references/etika-dan-hukum.md` (bukan nasihat hukum).
 
-## Catatan versi
-- **1.0.0 (2026-10-06):** rilis awal.
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -2,6 +2,8 @@
 
 **Pelanggan telat bayar? Dapat pesan penagihan bertahap sampai surat teguran resmi, dengan hitungan keterlambatan yang pasti.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Pesan penagihan 6 tahap: pengingat sebelum jatuh tempo, hari H, lewat 7, 14, sampai 30 hari (surat teguran resmi)
 - ✅ Hari keterlambatan, sisa tagihan, dan denda dihitung otomatis dan pasti benar
@@ -52,15 +54,6 @@ Tidak. Surat ini membantu menagih secara resmi. Jika tetap tidak dibayar atau ni
 
 > **Catatan penting:** alat bantu menyusun pesan dan surat penagihan, bukan nasihat hukum atau keuangan dan bukan pengganti advokat. Denda hanya dihitung bila disepakati tertulis. Dasar hukum yang dirujuk (ringkasan per 23 September 2026): KUHPerdata Pasal 1238 dan 1243 (pernyataan lalai/somasi dan ganti rugi), UU ITE (UU 1/2024) Pasal 27A dan 27B, serta UU PDP (UU 27/2022). Ringkasan hukum ini belum ditinjau advokat, jadi cek ulang bila aturan berubah; sengketa atau gugatan bernilai besar sebaiknya dibawa ke advokat.
 
-## Catatan revisi 1.0.5 (2026-10-01)
-- Temuan uji ulang OpenClaw: pesan menulis "kami lampirkan surat" padahal tidak ada file.
-- Kini lampiran hanya disebut bila pengguna menyatakan ada; selain itu ditulis `[lampirkan: …]` dengan catatan pengguna yang membuat/melampirkan. Catatan pemilik di luar blok pesan.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.4 (2026-10-01)
-Perbaikan dari uji OpenClaw asli (paket kantor-manajemen, konsultan, usaha-offline):
-- File piutang dengan judul kolom umum langsung terbaca: `no_faktur`, `nilai_faktur`, `sudah_dibayar`, `customer`, `due_date`, `amount`, `paid`, kolom `sisa`/`outstanding`, judul berkurung seperti "Nilai Faktur (Rp)". Kolom lain (no. WA, tanggal faktur) diabaikan. Angka format Indonesia dan tanggal "25 Sep 2026" diterima. Bila kolom tidak dikenali, pesan error menyebut nama kolom yang diterima dan kolom yang ada di file.
-- Rekap kini menampilkan total yang sudah lewat jatuh tempo.
-- Script menulis kalimat jadwal yang jelas (tenggat bayar + kapan tahap berikutnya). Opsi `--hubungan dekat` (tetangga/kenalan/keluarga) memakai jeda 14 hari dan menyarankan bicara langsung dulu. Tidak ada lagi saran naik ke tahap tegas dalam 2 hari.
-- Rincian yang diberikan pengguna (per bulan/per invoice) wajib masuk ke pesan tagihan.
-- UU ITE/UU PDP hanya disebut bila relevan, dengan alasannya. Bila pengguna minta tahap 5 lewat WA: versi WA singkat + saran surat resmi.
-- Path script ditulis jelas (subfolder `scripts/` di folder skill); agent dilarang mencari ke seluruh disk.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

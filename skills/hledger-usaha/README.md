@@ -4,6 +4,8 @@
 
 Dibangun di atas **hledger**, program pembukuan gratis dan open-source yang sudah dipakai bertahun-tahun oleh komunitas akuntansi di seluruh dunia. Pengganti aplikasi pembukuan berlangganan.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Hledger (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Catat dari kalimat biasa.** Jual, beli, bayar listrik, pelanggan belum bayar, ambil uang pribadi, angsuran KUR, semua langsung jadi catatan akuntansi yang benar. Anda tidak perlu paham debit-kredit.
 - ✅ **Mutasi bank masuk sendiri.** Unggah CSV dari internet banking (BCA, Mandiri, BRI, BNI, dll.). Transaksi dikelompokkan otomatis (listrik, gaji, QRIS, ongkir, admin bank), yang ragu ditanyakan, dan saldo akhir dicocokkan dengan saldo bank sampai sen. Impor ulang tidak membuat data dobel.

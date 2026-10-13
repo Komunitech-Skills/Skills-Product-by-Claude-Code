@@ -2,6 +2,8 @@
 
 **Tempel chat pesanan pelanggan, dapatkan total pasti, pesan konfirmasi, nota, label paket, dan daftar serah-terima kurir dalam satu balasan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Total pasti, tanpa salah hitung.** Barang × jumlah × harga, diskon, lalu ongkir dihitung otomatis, format rupiah rapi (Rp247.500). Pesanan yang tertempel dua kali hanya dihitung sekali.
 - ✅ **Pesan untuk pelanggan siap kirim:** konfirmasi + cara bayar, pengingat bayar yang sopan, dan kabar "pesanan dikirim + resi". Data yang kurang (alamat, kode pos, HP) langsung ditanyakan di pesan yang sama.
@@ -57,8 +59,9 @@ Tidak masuk ke m-banking. Cek mutasi sendiri, lalu tempel "yang sudah bayar: Kak
 **Ongkirnya dihitung otomatis?**
 Tarif kurir berubah dan bergantung berat serta rute, jadi tidak ditebak. Tempel ongkir dari aplikasi kurir (atau tarif per kota yang biasa Anda pakai), lalu total dihitung pasti.
 
-## Catatan versi
-- **1.0.0 (2026-10-06):** rilis awal.
-
 ## Catatan
 Nota yang dihasilkan bukan faktur pajak. Karya orisinal Komunitech; nama kurir dan bank hanya disebut sebagai penyebut layanan dan tidak berafiliasi. Lihat `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

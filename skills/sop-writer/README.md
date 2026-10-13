@@ -2,6 +2,8 @@
 
 **Ceritakan cara kerjamu, dapat SOP lengkap dan checklist harian yang siap dicetak dan ditempel.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Langkah kerja bernomor dengan bahasa super sederhana, mudah dipahami karyawan baru di hari pertama
 - ✅ Checklist harian siap cetak dengan kolom centang Senin–Minggu dan paraf
@@ -51,10 +53,6 @@ Bisa. Minta "versi poster", nanti dibuat 5–7 langkah inti dengan huruf besar.
 **Apakah SOP ini cukup untuk sertifikasi (halal, SLHS, PIRT, ISO)?**
 Belum. SOP ini untuk operasional harian. Untuk sertifikasi, ikuti ketentuan resmi dan konsultasikan ke petugas atau pendamping sertifikasi.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- SOP lengkap (semua bagian, termasuk checklist harian) **wajib tampil di balasan chat**, siap salin — tidak lagi hanya disimpan ke file dengan ringkasan di chat. File hanya tambahan bila diminta/di folder proyek. Penting untuk pengguna Telegram/WhatsApp.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.3 (2026-10-01)
-- Alur uang SOP kas konsisten: modal laci dipisah **satu kali** saja, ada baris rumus "uang seharusnya = modal + penjualan tunai; setoran = uang di laci − modal", dan aturan "satu tindakan hanya muncul sekali" di panduan bahasa.
-- Izin usaha makanan diperbaiki: warung/rumah makan memakai **Sertifikat Laik Higiene Sanitasi (SLHS)** (atau label pengawasan untuk risiko rendah) dari Dinas Kesehatan (Permenkes 14/2021); PIRT/SPP-IRT hanya untuk pangan olahan kemasan.
-
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

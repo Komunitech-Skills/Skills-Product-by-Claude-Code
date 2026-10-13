@@ -2,6 +2,8 @@
 
 **Tempel chat pelanggan, dapat balasan siap kirim yang menenangkan dan menyelesaikan masalah.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Balasan pertanyaan stok, ongkir, cara order, dan pembayaran dalam hitungan detik
 - ✅ Komplain barang rusak, telat, atau salah kirim ditangani dengan alur minta maaf, beri solusi, lalu tindak lanjut
@@ -50,10 +52,6 @@ Tidak. Kamu menempelkan chat-nya, lalu menyalin balasan yang dibuat. Data tokomu
 **Bagaimana kalau info tokoku belum lengkap?**
 Balasan tetap dibuat, dengan bagian `[isi ...]` yang tinggal kamu lengkapi, misalnya estimasi restok atau nomor rekening.
 
-## Catatan revisi 1.0.4 (2026-10-02)
-- Masuk skill inti paket klinik (temuan uji gabungan klinik: tidak ada skill yang terpicu untuk "chat pasien ini gimana jawabnya"). Ditambah aturan chat pasien klinik: selalu draf, tanpa dosis/diagnosis, arahkan ke dokter + tanda bahaya IGD/119, tanpa promo/imbalan rujukan. PERLU REVIEW tenaga medis.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.3 (2026-10-01)
-- Janji dan kompensasi (mis. siapa menanggung ongkir) hanya dari kebijakan toko yang Anda berikan; sisanya ditulis [isi: kebijakan ...], tidak dikarang.
-- Setiap permintaan pembeli (mis. refund) kini ditanggapi dan ditandai untuk konfirmasi pemilik.
-- Balasan selalu menyertakan waktu tindak lanjut yang jelas.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

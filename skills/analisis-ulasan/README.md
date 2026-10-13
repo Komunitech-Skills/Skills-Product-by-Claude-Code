@@ -2,6 +2,8 @@
 
 **Tempel ulasan atau kirim file ekspor, langsung tahu apa yang harus diperbaiki duluan dan apa yang bisa dijadikan konten.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Sebaran bintang, rata-rata, dan persen ulasan positif/negatif dihitung pasti, bukan dikira-kira
 - ✅ Keluhan & pujian teratas lengkap dengan jumlah dan contoh kutipan asli, tanpa nama pembeli

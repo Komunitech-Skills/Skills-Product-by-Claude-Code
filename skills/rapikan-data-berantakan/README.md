@@ -2,6 +2,8 @@
 
 **Nama, nomor HP, tanggal, dan harga yang kacau jadi seragam dalam satu perintah, tanpa ada data yang hilang diam-diam.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Nomor HP seragam:** `0812-3450-0101`, `+62 812 3450 0101`, `812 3450 0101` jadi satu bentuk, `6281234500101`.
 - ✅ **Tanggal dan harga terbaca:** "7 Okt 2026", "05/10/26" jadi `2026-10-07`; "Rp 1.250.000,-", "150rb", "1,5jt" jadi angka biasa yang bisa dijumlah.
@@ -80,9 +82,9 @@ Tidak. Nama mirip hanya ditandai dan diusulkan nama bakunya. Baris kembar juga h
 **Nomor HP saya jadi 6,28E+11 saat dibuka di Excel. Kenapa?**
 Itu kebiasaan Excel menampilkan angka panjang sebagai notasi ilmiah, bukan kesalahan data. Minta agent membuat versi "untuk Excel" (nomor ditulis khusus agar tampil utuh), atau impor file lewat *Data > From Text/CSV* dan atur kolom HP sebagai Teks.
 
-## Catatan versi
-- **1.0.1 (2026-10-05):** nomor baris di balasan kini selalu disalin dari laporan alat (bukan kolom "No" atau dihitung sendiri); telepon rumah/kantor (021, 022, 0274, ...) tidak lagi masuk kolom HP/WhatsApp, dipisah ke kolom `_telepon_rumah`; sel berisi dua nomor dipisah (nomor seluler pertama jadi HP, sisanya dicatat); ringkasan angka tetap ("blok angka") yang wajib disalin utuh, juga di chat Telegram/WhatsApp; daftar baris kembar tetap dari alat walau sebagian permintaan ditolak.
-- **1.0.0:** rilis awal.
-
 ## Catatan sumber
 Gagasan pengelompokan nama mirip terinspirasi konsep "cluster and edit" di OpenRefine (BSD-3-Clause), dan prinsip tabel rapi diadaptasi dari pelajaran Data Carpentry oleh The Carpentries (CC BY 4.0). Kode dan teks ditulis ulang sendiri; keduanya tidak berafiliasi dengan skill ini. Rincian: `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

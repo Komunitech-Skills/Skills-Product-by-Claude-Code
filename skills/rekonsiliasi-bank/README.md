@@ -2,6 +2,8 @@
 
 **Kirim file mutasi rekening dan daftar penjualan — dalam semenit tahu transfer mana yang sudah masuk, mana yang belum, dan dari mana selisihnya.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Membaca ekspor mutasi BCA, Mandiri, BRI, BNI, dan bank lain (kolom dikonfirmasi dulu, jadi tidak salah baca)
 - ✅ Mengenali kasus yang bikin pusing: pelanggan bayar 2 invoice sekaligus, invoice dicicil, transfer terpotong biaya, tanggal meleset

@@ -4,6 +4,8 @@
 
 Laporan harian 21.00, tagihan piutang 07.45, ringkasan stok... semuanya berjalan otomatis lewat OpenClaw. Sampai suatu hari laptop tertidur atau gateway mati, dan **tidak ada yang memberi tahu**. Skill ini membuat setiap jadwal otomatis "melapor selesai" setiap kali sukses. Kalau laporannya tidak datang tepat waktu, Anda dikabari. Kalau semua aman, Anda tidak diganggu.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - **Tidak ada lagi gagal diam-diam**: peringatan Telegram saat laporan terlambat atau hilang, lengkap dengan jadwal yang terlewat.
 - **Tidak berisik**: tidak ada pesan "semua aman" tiap jam; cukup satu ringkasan pagi dan peringatan hanya saat perlu (masalah yang sama tidak diulang-ulang, dan ada kabar saat sudah pulih).

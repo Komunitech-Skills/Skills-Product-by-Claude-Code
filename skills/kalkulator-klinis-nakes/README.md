@@ -8,6 +8,8 @@ dengan kutipan pedoman. Untuk dokter, bidan, dan perawat.**
 > "Status verifikasi"). Alat bantu keputusan untuk tenaga kesehatan, **bukan** pengganti
 > penilaian klinis, **bukan** alat diagnosis, dan **tidak memberi dosis obat**.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **HPL & usia kehamilan tanpa salah hitung** — Naegele dan HPHT+280 hari, tahun kabisat,
   siklus ≠ 28 hari, plus cek otomatis "perlu penanggalan ulang dengan USG?" (ACOG 2017).

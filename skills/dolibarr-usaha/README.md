@@ -2,6 +2,8 @@
 
 **Ketik "buatkan invoice untuk CV Maju Jaya", "siapa yang belum bayar?", atau "stok apa yang mau habis?". AI Anda langsung membaca dan menyiapkan data di Dolibarr, program pembukuan-stok-CRM gratis yang jalan di komputer sendiri, tanpa biaya bulanan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Dolibarr (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Invoice dalam satu kalimat.** Pelanggan dan barang dicari otomatis, PPN 12% × DPP 11/12 dihitung, lalu dibuat sebagai **draf** di Dolibarr. Setelah itu angkanya dicocokkan dengan hitungan Dolibarr, dan bila beda sepeser pun Anda diberi tahu.
 - ✅ **Tahu siapa yang belum bayar.** Daftar piutang dikelompokkan per umur (belum jatuh tempo, telat 1–30, 31–60, 61–90, >90 hari), yang paling lama telat di atas.

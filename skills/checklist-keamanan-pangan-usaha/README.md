@@ -4,6 +4,8 @@
 
 > **PERLU REVIEW perizinan/ahli:** bagian perizinan hanya petunjuk awal dan belum diverifikasi penuh oleh ahli; cek ke Dinas Kesehatan/BPOM/lembaga halal. Bukan pengganti pelatihan atau pemeriksaan resmi, dan bukan nasihat hukum.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - Checklist harian (datang, sebelum buka, jam sibuk, tutup) sesuai menu dan alat yang kamu punya.
 - Log suhu kulkas, freezer, masak, dan pemanasan ulang lengkap dengan batas Celsius dan "kalau melebihi, lakukan apa".

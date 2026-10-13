@@ -4,6 +4,8 @@
 
 > Komunitech **tidak berafiliasi** dengan proyek listmonk. listmonk adalah software open-source (lisensi AGPL-3.0) milik pengembangnya; skill dan panduan ini karya orisinal Komunitech. Mailchimp adalah merek pihak ketiga yang disebut hanya sebagai pembanding. listmonk tidak ikut didistribusikan dalam paket ini; rincian lisensi: `ATTRIBUTION.md`.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Listmonk (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Bebas biaya per kontak.** Mailchimp menarik biaya makin mahal seiring daftar membesar; listmonk gratis, Anda hanya membayar pengirim email (SMTP) yang murah atau ber-paket gratis.
 - ✅ **Aman secara hukum dan reputasi.** Pengingat persetujuan UU PDP 27/2022, **double opt-in**, tautan berhenti berlangganan wajib, dan **menolak daftar tanpa persetujuan (beli, scraping, grup WA, vendor, "dapat dari teman")**.

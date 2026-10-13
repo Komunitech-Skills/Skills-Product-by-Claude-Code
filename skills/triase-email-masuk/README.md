@@ -2,6 +2,8 @@
 
 **Tempel email yang menumpuk, dapatkan urutan kerja, ringkasan, draf balasan siap edit, dan peringatan bila ada yang mirip penipuan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tahu email mana yang dibalas dulu.** Tenggat, nominal, klien penting, dan kata "segera" menentukan urutan P1-P3, lengkap dengan alasan pendek.
 - ✅ **Ringkasan 1-2 kalimat per email** dan daftar tindakan dengan tenggat, jadi tidak perlu membaca ulang semuanya.
@@ -59,8 +61,9 @@ Hanya dugaan dari teks. Email penipuan bisa tampak rapi dan email asli bisa tamp
 **Apakah isi email saya dikirim ke pihak lain?**
 Skill ini sendiri tidak mengirim apa pun. Namun email yang Anda tempel diproses oleh model AI di aplikasi agent Anda, jadi ikuti kebijakan privasi aplikasi itu. Samarkan data yang sangat rahasia sebelum menempel.
 
-## Catatan versi
-- **1.0.0 (2026-10-06):** rilis awal.
-
 ## Catatan
 Bukan nasihat hukum atau keuangan. Karya orisinal Komunitech; merek pihak ketiga hanya disebut sebagai contoh dan tidak berafiliasi. Lihat `ATTRIBUTION.md`.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

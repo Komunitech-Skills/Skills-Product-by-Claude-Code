@@ -2,6 +2,8 @@
 
 **Sebut keperluannya, dapat surat resmi lengkap dengan kop, nomor, perihal, dan tanda tangan yang benar.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Enam jenis surat paling sering dipakai: permohonan, pemberitahuan, undangan, surat kuasa, surat keterangan, dan surat pengantar
 - ✅ Ejaan mengikuti EYD Edisi V: "Yth.", "izin", "pukul 09.00", "di tempat", dan tanpa kalimat bertele-tele

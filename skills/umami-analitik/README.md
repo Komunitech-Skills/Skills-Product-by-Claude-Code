@@ -4,6 +4,8 @@
 
 > Komunitech **tidak berafiliasi** dengan Umami Software, Inc. Umami adalah software open-source (lisensi MIT) milik pengembangnya dan tidak ikut didistribusikan dalam paket ini; skill dan panduan ini adalah karya orisinal Komunitech untuk memudahkan pemakaiannya oleh UMKM Indonesia. Rincian lisensi: `ATTRIBUTION.md`.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Umami (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Pengganti Google Analytics yang gratis & sederhana.** Tanpa biaya bulanan, tanpa spanduk "setuju cookie", data pengunjung tetap di server Anda sendiri.
 - ✅ **Cukup ngobrol, tanpa belajar dashboard.** "Halaman apa yang paling dilihat?", "pengunjung pakai HP atau laptop?", "dari kota mana?" — jawaban rapi dengan angka gaya Indonesia (1.200 / 27,3%).

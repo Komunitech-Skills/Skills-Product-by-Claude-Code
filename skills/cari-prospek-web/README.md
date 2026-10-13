@@ -2,6 +2,8 @@
 
 **Sebutkan jenis usaha dan kotanya; dapatkan daftar 10-20 prospek berbukti, 3 prioritas, dan CSV siap tempel.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Daftar prospek terisi sendiri.** Tidak perlu berjam-jam membuka Maps dan situs satu per satu.
 - ✅ **Setiap baris ada sumbernya.** URL dan tanggal cek tercantum; yang belum bisa dipastikan ditulis `[belum terverifikasi]`, tidak pernah dikarang.

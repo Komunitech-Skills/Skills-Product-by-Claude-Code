@@ -2,6 +2,8 @@
 
 **Semua calon pembeli tercatat, tiap pagi tahu siapa yang harus disapa, dan pesan follow-up sudah disiapkan. Data tetap di komputer Anda sendiri.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tidak ada lagi calon pembeli yang terlupa.** Setiap pagi Anda menerima daftar "terlambat", "hari ini", dan "besok", lengkap dengan catatan obrolan terakhir dan nilai potensinya. Bisa dikirim otomatis ke Telegram Anda.
 - ✅ **Pesan follow-up siap kirim dalam satu klik.** Draf yang sopan dan tidak memaksa disesuaikan dengan tahapnya: sapaan awal, lanjutan, "balas 1/2/3", sampai pesan pamit. Tinggal klik tautan, WhatsApp terbuka dengan teks terisi, periksa, lalu tekan Kirim sendiri. Tidak ada kiriman otomatis, jadi nomor Anda aman dari blokir.
@@ -85,6 +87,6 @@ Tidak, dan itu disengaja. Setiap pesan dikirim manusia satu per satu supaya nomo
 **Saya sudah punya daftar pelanggan di Excel/HP. Harus ketik ulang?**
 Tidak. Simpan sebagai CSV (Excel: *Save As → CSV*; Google Contacts: *Export → Google CSV*), kirim ke agent, lalu periksa pratinjaunya. Nomor dirapikan otomatis, nomor dobel dan baris yang bermasalah dilewati dan disebutkan barisnya.
 
-## Catatan revisi 1.0.9 (2026-10-02)
-- Temuan uji gabungan paket Toko Online: permintaan "daftar pelanggan buat promo" tidak memicu skill ini, dan rujukan ke `broadcast-wa` (tidak ada di paket Toko Online) membingungkan.
-- Pemicu baru: "daftar pelanggan buat promo", "data pelanggan", "kontak pembeli". Aturan 10: promo hanya ke kontak berlabel `setuju-promo`; pembeli marketplace default belum setuju; tanpa broadcast (termasuk WhatsApp Business) ke kontak yang belum setuju.
+## Riwayat perubahan
+
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

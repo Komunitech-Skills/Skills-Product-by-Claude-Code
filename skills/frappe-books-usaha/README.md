@@ -4,6 +4,8 @@
 "siapa yang belum bayar?", atau "masukkan daftar pelanggan ini". AI Anda membaca datanya tanpa mengubah apa pun dan
 menyiapkan file impor yang rapi, tanpa biaya bulanan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Laporan dalam satu kalimat.** Penjualan & pembelian per bulan/hari/pelanggan/barang, laba rugi ringkas, lengkap dengan
   DPP, pajak, dan sisa tagihan. Draf, invoice batal, dan retur ditangani dengan benar, jam UTC di file sudah dikonversi ke WIB/WITA/WIT.

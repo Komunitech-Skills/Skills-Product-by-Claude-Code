@@ -2,6 +2,8 @@
 
 **Catat uang masuk-keluar, cocokkan uang laci, dan tahu kapan uang usaha terpakai untuk pribadi, semua tersimpan di komputer Anda sendiri.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tanpa aplikasi berlangganan, tanpa akun.** Buku kas tersimpan di satu file di komputer Anda. Tidak ada biaya bulanan, tidak perlu internet.
 - ✅ **Cukup ketik seperti biasa.** "Hari ini jualan tunai 780 ribu, QRIS 240 ribu, beli gas 25 ribu, ambil 200 ribu buat jajan anak" → langsung tercatat per kategori, per laci/rekening, lengkap dengan saldo terbaru. Yang tidak jelas ditanyakan, bukan ditebak.
@@ -39,7 +41,7 @@ PERINGATAN PRIVE bulan ini: Rp 1.800.000 melewati batas prive bulanan yang Anda 
 ```
 (Contoh lengkap dengan data fiktif ada di folder `examples/`.)
 
-**Hasil uji A/B (penguji independen, 26 September 2026):** warung makan tiga hari dengan laci, QRIS ke BRI, dan GoPay. Jawaban agent umum yang disusun penguji mencatat setoran Rp 1.000.000 ke BRI sebagai pengeluaran, tanpa saldo per akun, dan hanya menulis "sepertinya ada selisih" untuk uang laci. Dengan skill: saldo per akun benar ke rupiah (Laci Rp 1.578.500, BRI Rp 4.830.000, GoPay Rp 225.000), pindah dana tidak mengubah hasil usaha (Rp 3.083.500), dan selisih laci pasti Rp 345.000 (kurang) beserta kemungkinan penyebabnya. Catatan jujur: contoh "tanpa skill" disusun penguji, bukan hasil sesi OpenClaw terpisah. Rincian: `examples/00-pembanding-tanpa-skill.md`.
+**Hasil uji A/B (penguji independen, 26 September 2026):** warung makan tiga hari dengan laci, QRIS ke BRI, dan GoPay. Jawaban agent umum yang disusun penguji mencatat setoran Rp 1.000.000 ke BRI sebagai pengeluaran, tanpa saldo per akun, dan hanya menulis "sepertinya ada selisih" untuk uang laci. Dengan skill: saldo per akun benar ke rupiah (Laci Rp 1.578.500, BRI Rp 4.830.000, GoPay Rp 225.000), pindah dana tidak mengubah hasil usaha (Rp 3.083.500), dan selisih laci pasti Rp 345.000 (kurang) beserta kemungkinan penyebabnya. Catatan jujur: contoh "tanpa skill" disusun penguji, bukan hasil sesi OpenClaw terpisah. Rincian: `examples/00-pembanding-tanpa-skill.md`. Uji OpenClaw 1 Okt 2026: skor tanpa skill 9 → dengan skill 9 pada uji pertama (skill belum terpicu) dan tetap 9 pada uji ulang v1.0.11, jadi tidak ada selisih skor pada skenario rekap kas sekali-jalan (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -87,11 +89,6 @@ Bisa. Setelah menghitung uang fisik, Anda langsung tahu kurang/lebih berapa dan 
 **Saya sudah pakai Kasir Lokal. Perlu catat penjualan dua kali?**
 Tidak. Rekap harian kasir dimasukkan ke buku kas dengan satu perintah (tunai ke laci, QRIS ke rekening penampung). Buku kas juga menolak memasukkan rekap kasir bila tanggal itu sudah ada catatan penjualan manual, supaya penjualan tidak dobel.
 
-## Catatan revisi 1.0.12 (2026-10-02)
-- Biaya operasional umum (operasional, bensin/BBM/solar, uang makan sopir, tol, parkir, transport, ongkir, uang jalan) kini dikenali sebagai pengeluaran usaha, sehingga untung tidak tampak terlalu besar.
-- Bila masih ada baris yang belum jelas ("perlu dicek"), hasil usaha ditulis sebagai **sementara** beserta angka bila baris itu ternyata biaya usaha, agar tidak menyesatkan. 102 uji otomatis lulus.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.11 (2026-10-01)
-- **Rekap catatan kas dari teks/file tanpa database** (perintah baru `cek-catatan`): kirim catatan kas hari ini (file atau ketikan), langsung dapat pemasukan, pengeluaran usaha, untung hari itu, uang laci seharusnya, dan selisih (kurang/lebih) dengan uang yang dihitung — tanpa menyimpan apa pun. Kasbon, prive, dan uang QRIS/transfer dipisah otomatis. Setelah itu Anda bisa memilih menyimpannya ke buku kas.
-- Skill kini terpicu oleh kalimat seperti "rekap catatan kas dari file", "uang di laci harusnya berapa", "kok laci kurang" (temuan uji OpenClaw: sebelumnya skill tidak terpakai).
-- Instruksi: script dijalankan dari subfolder `scripts/` di folder skill; file pengguna dicari di folder kerja saja (tidak mencari ke seluruh disk). 100 uji otomatis lulus (4 uji baru).
+Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

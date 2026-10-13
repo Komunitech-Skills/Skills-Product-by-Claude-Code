@@ -2,6 +2,8 @@
 
 **Rencana promo lengkap untuk momen belanja besar, dengan hitungan margin yang langsung memberi tahu kalau diskonmu bikin rugi.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tahu diskon maksimal yang aman sebelum promo dimulai, bukan setelah rugi
 - ✅ Bandingkan diskon, flash sale, bundling, beli 2 gratis 1, voucher, dan gratis ongkir dalam satu tabel
@@ -24,6 +26,8 @@
 - Tanpa skill: satu skenario dihitung benar (laba Rp 17.110 per serum), tetapi laba toner diskon 30% meleset ("sekitar Rp 16.000", yang benar Rp 16.950), tidak ada batas diskon aman, linimasa tanpa tanggal, dan disarankan memasang harga coret tanpa peringatan hukum.
 - Dengan skill: semua mekanisme (diskon, bundling, beli 2 gratis 1, voucher, subsidi ongkir) dibandingkan dalam satu tabel. Diskon maksimal sebelum rugi 56,2% (serum) dan 40,5% (toner dengan ongkir); diskon 40% perlu terjual 3,47 kali lipat penjualan biasa agar laba setara; laba bersih kampanye Rp 4.643.100 setelah iklan; linimasa bertanggal; ada peringatan harga coret (UU 8/1999 Pasal 11 huruf f).
 - Skor penguji independen: 8 dari 10; 300 dari 300 kombinasi hitungan cocok dengan kalkulator terpisah.
+
+Uji OpenClaw 2026-10-01: 6,5 → 8 (8,5 setelah perbaikan dan uji ulang) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -59,6 +63,6 @@ Bisa. Pakai tanggal perkiraan, dan jadwal akan diberi label "perkiraan" sampai a
 **Apakah boleh menaikkan harga dulu lalu diberi diskon besar?**
 Tidak. Itu dilarang UU Perlindungan Konsumen. Skill selalu memakai harga normal yang benar-benar berlaku dan menghitung persen hemat yang jujur.
 
-## Catatan revisi 1.0.3 (2026-10-01)
-- Temuan uji OpenClaw: target dihitung untuk promo 3 hari, tetapi linimasa & S&K memakai 1 hari; S&K memuat janji "dikirim maks 2 hari kerja" yang tidak disebut pemilik.
-- Durasi promo kini ditetapkan sekali di awal dan wajib sama di target, linimasa, dan S&K (ada butir checklist). Hal operasional yang tidak diberikan pemilik (waktu kirim, kuota, retur) ditulis `[isi: …]`, bukan dikarang. Script tidak berubah.
+## Riwayat perubahan
+
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

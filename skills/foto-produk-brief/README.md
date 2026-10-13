@@ -2,6 +2,8 @@
 
 **Dapatkan daftar foto, cara menata cahaya jendela, dan ide video 15–30 detik yang tinggal dikerjakan, tanpa studio dan tanpa alat mahal.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Shot list 8–10 foto yang menjawab pertanyaan pembeli: bentuk, detail, ukuran, cara pakai, isi paket, varian
 - ✅ Panduan cahaya jendela, latar kertas karton, dan pemantul styrofoam, jadi hasilnya terang dan bersih
@@ -48,7 +50,6 @@ Tidak. Skill membuat brief dan daftar foto yang tinggal kamu kerjakan, lalu memb
 **Bolehkah foto dibuat lebih bagus dari aslinya?**
 Foto boleh dibuat terang dan rapi, tapi warna, ukuran, dan isi harus sesuai barang asli. Foto yang berlebihan memicu ulasan "tidak sesuai foto" dan retur.
 
-## Catatan revisi 1.0.3 (2026-10-01)
-- Pemicu baru di deskripsi: foto produk kosmetik/skincare/serum/pemutih/obat/suplemen/jamu, foto before-after, edit foto produk, logo BPOM/halal di foto (uji OpenClaw 2026-10-01: skill tidak terbaca pada permintaan serum pemutih).
-- Aturan "produk wajib izin edar": tidak menyarankan before-after (termasuk "versi realistis"), klaim hasil, logo BPOM/halal yang belum dimiliki, maupun menjual/pre-order/teaser atau menulis "BPOM dalam proses" sebelum izin edar terbit (PerBPOM 18/2024: promosi & iklan hanya untuk kosmetik bernotifikasi).
-- Teks di layar video hanya fakta dari pengguna; selebihnya `[ISI: ...]`.
+## Riwayat perubahan
+
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

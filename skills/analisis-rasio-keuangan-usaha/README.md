@@ -2,6 +2,8 @@
 
 **Kirim neraca & laba rugi, AI langsung menjawab: usaha kamu sehat, waspada, atau bahaya, dan apa yang harus diperbaiki dulu.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Rapor keuangan lengkap sekali jalan.** 15+ rasio (likuiditas, keuntungan, utang, perputaran stok & piutang) dihitung script dengan angka pasti, bukan kira-kira.
 - ✅ **Dinilai sesuai jenis usahamu.** Warung/toko, jasa, dan produksi/kuliner punya patokan berbeda. Warung tidak dicap "bahaya" hanya karena asetnya banyak di stok.
@@ -58,13 +60,6 @@ Tidak ke mana-mana. Script berjalan di komputermu sendiri dan tidak mengakses in
 ---
 *Disclaimer: hasil analisis membantu memahami kondisi keuangan usaha. Hasil ini bukan nasihat investasi, bukan penilaian kredit, dan bukan laporan audit. Untuk keputusan besar, konsultasikan dengan akuntan atau pendamping UMKM.*
 
-## Catatan revisi 1.0.5 (2026-10-01)
-- Temuan uji ulang OpenClaw: jenis/skala usaha untuk ambang tidak dilabeli asumsi.
-- Kini wajib ditulis "Asumsi: jenis usaha …, skala …".
+## Riwayat perubahan
 
-## Catatan revisi 1.0.4 (2026-10-01)
-Perbaikan dari uji OpenClaw asli (bahan rapat komisaris):
-- Utang bank yang jatuh tempo ≤ 12 bulan kini dicatat terpisah dan **dibandingkan langsung dengan kas**. Bila utangnya lebih besar dari kas, hasil menyebut risiko likuiditas (mis. "SEDANG") beserta alasannya, rasio kas tidak lagi hijau, dan saran pertama adalah mengurus jadwal/perpanjangan pinjaman.
-- Kesimpulan likuiditas selalu bertingkat (rendah / rendah–sedang / sedang / tinggi). Tidak ada lagi kalimat "tidak ada risiko gagal bayar".
-- Skala usaha (mikro/kecil/menengah/besar) dihitung dari penjualan setahun; usaha menengah ke atas memakai ambang kas & cakupan bunga yang lebih ketat.
-- Jenis usaha yang dipilih AI sendiri wajib ditulis sebagai asumsi. Path script ditulis jelas; AI dilarang mencari ke seluruh disk.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

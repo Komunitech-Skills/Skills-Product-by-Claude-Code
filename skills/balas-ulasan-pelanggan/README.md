@@ -2,6 +2,8 @@
 
 **Tempel ulasan pelanggan, dapat balasan yang menenangkan, aman, dan membuat calon pembeli tetap percaya.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Balasan untuk ulasan positif, netral, dan negatif di Shopee, Tokopedia, TikTok Shop, dan Google Maps
 - ✅ Nada tenang dan tidak defensif, jadi calon pembeli melihat tokomu bertanggung jawab
@@ -24,6 +26,8 @@
 - Tanpa skill: balasan memuat 2 pelanggaran kebijakan marketplace sekaligus, yaitu mengajak ke WhatsApp lengkap dengan nomor dan meminta pembeli mengubah rating. Alasan keterlambatan ("lonjakan pesanan") dikarang dan janji ongkir retur ditulis di depan umum.
 - Dengan skill: 0 pelanggaran; balasan publik 358 dari batas 500 karakter dan mengarah ke chat toko, ditambah pesan chat pribadi siap kirim dan urutan "chat pribadi dulu, baru posting balasan publik".
 - Skor penguji independen: 8 dari 10 (lulus uji).
+
+Uji OpenClaw 2026-10-01: 5,5 → 8,25 (rata-rata dua skenario ulasan; 8,5 setelah perbaikan dan uji ulang) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent kamu, misalnya:
@@ -55,14 +59,6 @@ Skill membuat balasan yang tetap sopan dan netral, lalu menyarankan kamu melapor
 **Apakah balasannya diposting otomatis?**
 Tidak. Kamu tinggal menyalin dan menempelkannya sendiri, jadi tetap bisa dicek dulu.
 
-## Catatan revisi 1.0.5 (2026-10-01)
-- Temuan uji ulang OpenClaw: balasan menulis "sudah kami bahas bersama tim" tanpa konfirmasi pemilik.
-- Kini klaim tindakan jadi isian/pilihan untuk dikonfirmasi pemilik; default versi netral.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Temuan uji ulang OpenClaw (faskes): frasa "saat berkunjung ke klinik kami" masih mengonfirmasi kunjungan.
-- Mode `--faskes` kini menandai GAGAL "saat berkunjung/datang/berobat" (tanpa subjek) + 1 uji regresi baru; aturan di SKILL.md diperbarui.
-
-## Catatan revisi 1.0.3 (2026-10-01)
-- Temuan uji OpenClaw (klinik): balasan publik Google Maps menyebut "saat periksa gigi putra/putri Bapak" — mengonfirmasi perawatan pasien di ruang publik.
-- Aturan baru khusus klinik/faskes: balasan publik tidak menyebut status pasien, kunjungan, tindakan, atau kondisi kesehatan, dan mengalihkan ke kanal pribadi (rahasia kesehatan UU 17/2023 Ps. 301; data kesehatan = data pribadi spesifik UU 27/2022 Ps. 4 ayat (2) huruf a). `cek_balasan.py --faskes` menandai GAGAL frasa semacam itu. Ditambah 3 uji regresi. **PERLU REVIEW** tenaga medis/kepatuhan.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -4,6 +4,8 @@
 
 > Komunitech **tidak berafiliasi** dengan tim Fider (getfider). Fider adalah software open-source (lisensi AGPL-3.0) milik pengembangnya dan **tidak ikut dalam paket ini**; skill dan panduan ini adalah karya orisinal Komunitech yang memanggil REST API resmi Fider di komputer/server Anda sendiri.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Software tambahan: Fider (gratis, open-source; panduan pemasangan disertakan). Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Pengganti Canny/UserVoice tanpa langganan.** Papan usulan + voting + status (Direncanakan, Dikerjakan, Selesai) jalan di komputer atau VPS Anda; data tidak dititipkan ke pihak lain.
 - ✅ **Catatan WA dan ulasan marketplace jadi usulan rapi.** Tempel catatan, AI menyusun judul, memeriksa yang sudah pernah masuk, dan **menyamarkan nomor HP/email** sebelum tampil di papan.

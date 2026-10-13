@@ -2,6 +2,8 @@
 
 **Dari "mau launching" ke jadwal, teks, dan hitungan stok yang siap dijalankan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - Jadwal bertanggal otomatis dari tanggal peluncuran, sudah menghindari hari libur nasional 2026-2027 untuk urusan pemasok/kemasan/izin.
 - Alur lengkap: teaser, daftar tunggu WA/Google Form, soft launch, launching resmi, pasca-peluncuran.
@@ -42,9 +44,6 @@ Salin folder `luncurkan-produk-baru` ke folder skills AI agent kamu:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket (`docs/instalasi.md`).
 
-## Catatan revisi (v1.0.5, 2026-10-05)
-Pra-cek konteks Telegram: untuk "launching serum, izin BPOM masih proses" bot hanya membalas 5 pertanyaan. Perbaikan: aturan "kerjakan dulu, tanya di akhir" (peringatan izin edar + dasar aturan + rencana dengan asumsi default + maks. 1-3 pertanyaan di balasan yang sama); dasar aturan kosmetik ditambahkan di `references/legalitas-label.md`; contoh baru `examples/06-kosmetik-izin-proses-kerjakan-dulu.md`. Menunggu uji ulang independen.
-
 ## Skill pelengkap
 `hitung-hpp`, `harga-jual-marketplace` (harga & margin), `caption-sosmed-umkm`, `kalender-konten-30hari`, `listing-marketplace`, `naskah-live-jualan`, `laporan-iklan-mingguan`, `kpi-tim`, `promo-kalender`.
 
@@ -66,3 +65,7 @@ Tidak. Ia hanya mengingatkan hal yang perlu dicek dan menautkan situs resmi (oss
 Berasal dari SKB 3 Menteri 2026 dan 2027 (sudah dicocokkan dengan lampiran resmi per 2026-09-29). Pemerintah dapat mengubahnya; cocokkan dengan pengumuman terbaru atau tambahkan lewat `--libur-tambahan`.
 
 Kredit sumber terbuka dan lisensi: lihat `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
+
+## Riwayat perubahan
+
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

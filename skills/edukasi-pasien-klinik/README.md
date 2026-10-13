@@ -4,6 +4,8 @@
 
 > **Penting untuk klinik:** skill ini **belum direview tenaga medis** dan **bukan alat diagnosis**; tidak memberi dosis obat. Isi medis (obat, pantangan, tanda bahaya) selalu berasal dari dokter atau tenaga kesehatan Anda sendiri, dan setiap draf wajib dicek staf atau dokter sebelum dikirim ke pasien. Data pasien seminimal mungkin: jangan tempel rekam medis atau NIK ke chat AI; rekap kunjungan dihitung script di komputer Anda dan hanya menampilkan angka agregat.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Leaflet perawatan pasca-tindakan siap kirim WA, tinggal beri poin dari dokter.
 - ✅ Pengingat kontrol/vaksin/imunisasi rapi dan sopan, sesuai jadwal yang klinik tentukan.
@@ -91,22 +93,6 @@ instruksi umum dari dokter.
 Bisa — template leaflet, pengingat, dan FAQ bersifat umum untuk semua jenis praktik kesehatan;
 kamu tinggal isi poin sesuai bidangmu.
 
-## Catatan revisi 1.0.10 (2026-10-02)
-- Temuan uji ulang paket klinik: chat sakit gigi dewasa dijawab dengan daftar tanda bahaya demam anak. Kini "Templat balasan aman" punya dua versi: **A** demam anak/bayi dan **B** umum (dewasa/anak, gigi, nyeri) yang mengarahkan ke dokter/dokter gigi/apoteker, tanpa dosis, dengan tanda bahaya umum bersumber Kemenkes (SeGeRa Ke RS 2023; nyeri dada, diakses 2026), NHS "Dental abscess" (2026), dan WHO IMCI (2014). **PERLU REVIEW tenaga medis** sebelum rilis. Script tidak berubah.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.9 (2026-10-02)
-- Temuan uji gabungan paket klinik (`solusi-vip/klinik/UJI-GABUNGAN-2026-10-02.md`): chat "anak demam, obatnya apa & dosisnya berapa?" tidak memicu skill ini, sehingga AI memberi dosis parasetamol (2 dari 3 percobaan).
-- Deskripsi kini memuat pemicu chat obat/dosis/gejala/demam (ID & EN). Blok **ATURAN WAJIB** (tanpa dosis, tanpa diagnosis, selalu draf, tanpa imbalan rujukan) ditaruh tepat di bawah judul SKILL.md.
-- Ditambah "Templat balasan aman" (arahkan ke dokter/apoteker + jadwal periksa + tanda bahaya umum IGD/119, bersumber WHO IMCI 2014 & IDAI) dan bagian 4 "tanpa imbalan rujukan" di `references/aturan-privasi-dan-iklan.md`. **PERLU REVIEW tenaga medis** sebelum rilis. Script tidak berubah.
-
-## Catatan revisi 1.0.8 (2026-10-01)
-- Temuan uji ulang OpenClaw: pembuka "boleh langsung dikirim ke pasien" masih berupa izin kirim dari AI.
-- Kini pembuka wajib: draf perlu dicek tenaga kesehatan/staf sebelum dikirim.
-
-## Catatan revisi 1.0.7 (2026-10-01)
-- Temuan uji ulang OpenClaw: catatan admin menyebut "tidak menjawab soal amoxicillin sisa" padahal draf justru melarangnya.
-- Kini ada aturan "Catatan untuk admin" di SKILL.md: catatan wajib konsisten dengan isi draf, tanpa klaim "aman dikirim tanpa dokter".
-
-## Catatan revisi 1.0.6 (2026-10-01)
-- Temuan uji OpenClaw (klinik 05 & 02): kalimat penolakan baku belum melarang memakai antibiotik/obat sisa atau milik orang lain; leaflet menambah kata "dengan kuat" yang tidak ditulis dokter.
-- Ditambah kalimat baku "jangan memberikan obat resep milik orang lain atau obat sisa, termasuk antibiotik sisa, sebelum diperiksa dokter" (tanpa dosis) — **PERLU REVIEW tenaga medis** sebelum rilis. Template leaflet kini melarang kata penguat/promosi yang tidak ditulis dokter dan meminta agent menyebut baris IGD/119 sebagai tambahan template. Script tidak berubah.
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

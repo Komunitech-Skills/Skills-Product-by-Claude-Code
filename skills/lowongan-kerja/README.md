@@ -2,6 +2,8 @@
 
 **Sebut posisinya, dapat iklan lowongan lengkap untuk JobStreet, LinkedIn, Glints, Instagram, dan grup WA.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Satu permintaan, tiga versi: lengkap (JobStreet/LinkedIn/Glints), Instagram, dan grup WhatsApp
 - ✅ Kualifikasi dipisah "wajib" dan "nilai plus", sehingga pelamar yang cocok tidak mundur
@@ -65,6 +67,6 @@ Tidak. UMK berbeda per kota dan berubah tiap tahun, jadi kamu yang mengisi angka
 **Bisa dibuat dalam bahasa Inggris untuk LinkedIn?**
 Bisa. Minta saja "versi bahasa Inggris".
 
-## Catatan revisi 1.0.3 (2026-10-01)
-- Peringatan baru **"Cek gaji vs UMK"**: setiap kali gaji dan kota/kabupaten disebut, loker diberi pengingat untuk mencocokkan gaji dengan UMK tahun berjalan (`[isi: UMK]`, angka tidak dikarang), dasar larangan upah di bawah minimum (UU 13/2003 Ps. 88E s.t.d.d. UU 6/2023), dan pengecualian usaha mikro/kecil (PP 36/2021).
+## Riwayat perubahan
 
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

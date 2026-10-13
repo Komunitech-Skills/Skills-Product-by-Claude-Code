@@ -2,6 +2,8 @@
 
 **Setiap pagi, asisten AI Anda mengirim daftar siapa yang harus ditagih dan di-follow-up hari ini, lengkap dengan pesan siap kirim.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Cukup ketik satu kalimat.** "Ingatkan saya tagih Bu Rina tgl 3, 4,5 jt" langsung tercatat. Tidak perlu mengisi tabel.
 - ✅ **Rekap pagi yang jelas:** yang terlambat (berapa hari), yang jatuh tempo hari ini, dan yang jatuh tempo besok. Total piutang tertunggak dihitung otomatis dan tepat.
@@ -85,5 +87,6 @@ Tanggal ditulis bebas: "3/10", "3 Okt", "besok", "Jumat". Jika tahun tidak diseb
 terdekat dan memberi tahu pilihannya supaya bisa Anda koreksi. Tanggal yang mustahil (mis. 31/2) langsung
 ditolak dengan penjelasan.
 
-## Catatan revisi 1.0.6 (2026-10-01)
-- Dari uji OpenClaw sebelum/sesudah: draf tagihan sempat memuat `[rekening]` tanpa disebut sebagai bagian yang perlu dilengkapi. Kini setiap placeholder seperti `[rekening]` wajib disebut ke pemilik sebagai yang harus diisi sebelum draf dikirim.
+## Riwayat perubahan
+
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -2,6 +2,8 @@
 
 **Catat penjualan, cetak struk, tutup kasir, dan terima rekap harian di Telegram — semua data tetap di komputer Anda sendiri.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ **Tanpa biaya bulanan.** Pengganti fitur dasar aplikasi kasir berlangganan (Moka, Majoo, Olsera, dsb.) untuk satu toko. Data tersimpan di satu file di komputer Anda, bukan di server orang lain.
 - ✅ **Cukup ketik seperti biasa.** "2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb" → nota bernomor, total, dan kembalian langsung jadi. Produk yang tidak jelas ditanyakan, bukan ditebak.

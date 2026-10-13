@@ -2,6 +2,8 @@
 
 **"Bunganya cuma 0,8% sebulan" — sebenarnya berapa? Hitung cicilan, total bunga, dan bunga efektif dalam satu kalimat.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Cicilan per bulan, total bayar, total bunga, dan **total harga lewat kredit vs harga tunai** — langsung jelas
 - ✅ **Bunga efektif setara per tahun** yang sudah memasukkan admin, provisi, dan asuransi, sehingga penawaran flat dan efektif bisa dibandingkan dengan adil
@@ -54,9 +56,6 @@ Flat menghitung bunga dari pinjaman awal sampai lunas; efektif menghitung dari s
 **Bisa menyarankan bank atau aplikasi pinjaman yang paling murah?**
 Tidak. Skill ini tidak menyebut atau merekomendasikan merek. Kirimkan angka dari penawaran yang kamu terima, dan AI akan membandingkannya dengan bunga efektif setara dan total biaya.
 
-## Catatan versi
-- **1.0.1 (2026-10-06):** permintaan brosur/iklan kredit "bunga 0%" lebih andal memicu pola tolak → brosur transparan; ilustrasi bunga per jenis kredit (HP, motor, KPR) bila bunga belum diketahui; penjelasan KPR fixed → floating dipertegas; label "pinjaman bersih setelah biaya di muka"; rujukan aturan OJK pinjaman daring diperbarui.
-- **1.0.0 (2026-10-06):** rilis awal.
+## Riwayat perubahan
 
----
-Sebagian rumus dan kasus uji diturunkan dari numpy-financial (BSD-3-Clause, © NumPy Developers) — lihat `ATTRIBUTION.md`. Komunitech tidak berafiliasi dengan NumPy. Simulasi, bukan penawaran atau nasihat keuangan.
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

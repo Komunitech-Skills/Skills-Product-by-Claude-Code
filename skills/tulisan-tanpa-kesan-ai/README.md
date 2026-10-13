@@ -3,6 +3,8 @@
 **Cek atau perbaiki caption, deskripsi produk, pesan WA, email, sampai artikel — pola tulisan
 "kedengaran AI" khas Bahasa Indonesia ditandai dan diperbaiki, suara aslimu tetap dijaga.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Menandai pola tulisan AI **khas Bahasa Indonesia** ("Di era digital ini", "Mari kita simak",
   "Tidak hanya X tetapi juga Y", "Semoga bermanfaat!") — bukan sekadar daftar kata bahasa Inggris

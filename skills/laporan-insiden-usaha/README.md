@@ -2,6 +2,8 @@
 
 **Dari kejadian panik — pesanan salah kirim, kasir error, komplain viral — jadi laporan lengkap + draf minta maaf, siap kirim.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Susun laporan insiden lengkap (kronologi, dampak berangka, akar masalah, pencegahan) dari cerita berantakan, dalam hitungan menit
 - ✅ Akar masalah dicari pakai 5 Kenapa yang **mengarah ke proses**, bukan menyalahkan karyawan
@@ -67,10 +69,6 @@ Tidak masalah — skill akan menandai bagian itu `[isi: jumlah]` daripada meneba
 ---
 *Terinspirasi dari struktur `incident-postmortem`, `customer-incident-update`, dan `apology-letter` (MIT, pm-claude-skills), ditulis ulang & diperluas untuk konteks UMKM Indonesia. Rincian di `ATTRIBUTION.md`.*
 
-## Catatan revisi 1.0.2 (2026-10-01)
-Hasil uji sebelum/sesudah di OpenClaw (`examples/00-openclaw-sebelum-sesudah.md`):
-- **Cabang khusus insiden data pribadi** (Langkah 6 + `references/insiden-data-pribadi.md`): fakta UU 27/2022 Pasal 46 ditulis jelas (tertulis, paling lambat 3×24 jam, ke subjek data & lembaga; isi minimal ayat 2), tenggat dihitung dari jam ketahuan, draf pemberitahuan per pelanggan terdampak, catatan untuk lembaga (bila kanal resmi tersedia, tanpa mengarang alamat). Ditandai PERLU REVIEW HUKUM.
-- Bila pemilik ingin tidak memberi tahu pelanggan, skill mengoreksi dengan sopan (tanpa menakut-nakuti) dan status tetap "Masih ditangani".
-- Hubungi proaktif **semua** yang terdampak, bukan hanya yang sudah komplain.
-- Kanal permintaan maaf mengikuti asal pelanggan (chat marketplace per pesanan / WA pribadi), bukan broadcast/status WA.
+## Riwayat perubahan
 
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

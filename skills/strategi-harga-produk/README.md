@@ -2,6 +2,8 @@
 
 **Tentukan harga eceran, reseller, paket, dan promo dengan hitungan pasti, bukan feeling.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Harga yang disarankan **tidak pernah di bawah batas untung** Anda (dihitung dari modal + potongan + margin minimum)
 - ✅ Daftar harga reseller/grosir/agen siap kirim ke WA, lengkap untung Anda dan untung reseller per level (harga anjuran reseller selalu sama dengan harga toko)
@@ -60,7 +62,6 @@ Untung dihitung dari harga sebelum PPN. Bila ingin harga tayang cantik yang suda
 ## Atribusi & lisensi
 Kerangka strategi harga diadaptasi dari dua karya berlisensi MIT: coreyhaines31/marketingskills (Corey Haines) dan phuryn/pm-skills (Pawel Huryn), lalu ditulis ulang untuk UMKM Indonesia dengan hitungan Rupiah buatan Komunitech. Teks lisensi asli ada di `LICENSE-MIT-marketingskills` dan `LICENSE-MIT-pm-skills`; rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan para pembuat sumber.
 
-## Riwayat versi
-- **1.0.9 (2026-10-03)** — dari uji ulang OpenClaw 1.0.8: AI sempat mengisi sendiri baris tabel ("~40,2%", "15%+"). Kini hitungan mencetak tabel siap salin: harga promo + margin promo + status untuk setiap harga cantik (`cantik --diskon`), harga normal minimal agar bisa diskon X% (`margin --diskon-target`), dan tabel rentang diskon di ringkasan. AI wajib menyalin tabel utuh, tanpa angka perkiraan.
-- **1.0.8 (2026-10-03)** — dari uji ulang OpenClaw 1.0.7: hitungan PPN kini menampilkan terpisah margin bila harga "dibagi 1,12" (keliru), bila PPN tidak dipisah (keliru), dan margin yang benar — agar AI tidak tertukar. Dari harga lantai, AI tegas tidak menawarkan diskon dan menyebut harga normal minimal agar ada ruang diskon 5%/10%; contoh harga cantik yang aman dicetak hitungan sehingga AI tidak mengarang "misal" harga.
-- **1.0.7 (2026-10-03)** — dari uji OpenClaw 1.0.6: AI sempat menulis "diskon maksimal 9%" sendiri padahal hitungan menunjukkan tidak ada ruang diskon. Kini setiap hitungan mencetak **ringkasan siap tempel** (harga, laba, margin, status, diskon maksimal, konflik reseller/agen) dan AI wajib menyalinnya apa adanya — tidak boleh menulis angka harga/diskon yang tidak dihitung. Tambahan: rentang aman harga khusus reseller/agen selama promo, pembanding volume promo marketplace terhadap jual langsung, dan peringatan bila margin terlihat besar karena PPN lupa dipisah.
+## Riwayat perubahan
+
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

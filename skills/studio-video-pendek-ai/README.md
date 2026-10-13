@@ -1,6 +1,8 @@
 # Studio Video Pendek AI
 **Tagline:** Satu kalimat, jadi paket produksi video 15-60 detik siap rekam.
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - Hook, naskah per adegan, dan teks di layar selesai dalam hitungan menit, bukan berjam-jam.
 - Durasi dihitung, bukan ditebak: naskah pas 30 detik, tidak kepanjangan.

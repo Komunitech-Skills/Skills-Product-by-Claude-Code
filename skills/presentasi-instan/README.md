@@ -2,6 +2,8 @@
 
 **Cukup ceritakan usahamu, langsung jadi presentasi siap kirim — buka di HP pun bisa.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Tidak perlu install PowerPoint/Canva atau bikin akun apa pun — hasilnya satu file HTML yang langsung bisa dibuka.
 - ✅ Bisa dibuka tanpa internet, di laptop maupun HP, dan tinggal dicetak ke PDF (Print → Save as PDF) untuk dikirim lewat email/WA atau dicetak.
@@ -71,5 +73,6 @@ Bisa. Cukup sebutkan presentasi ini untuk keperluan apa (misalnya "pitch investo
 "pengajuan KUR"), nanti kerangka slide dan contoh isinya dibuatkan otomatis — bagian
 yang perlu kamu lengkapi sendiri (seperti data usaha) akan ditandai jelas.
 
-## Catatan revisi 1.1.5 (2026-10-01)
-- Dari uji OpenClaw sebelum/sesudah: AI sempat menulis klaim di slide yang tidak pernah diberikan pengguna ("pelanggan bertambah tiap tahun", "selesai 1–2 hari"). Kini klaim kinerja/kecepatan/tren hanya dari fakta pengguna; selain itu ditandai `[isi: ...]` untuk dilengkapi.
+## Riwayat perubahan
+
+Versi terkini: **1.1.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

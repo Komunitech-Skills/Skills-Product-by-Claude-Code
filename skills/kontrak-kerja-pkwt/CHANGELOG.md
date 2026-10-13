@@ -1,0 +1,34 @@
+# Riwayat perubahan — kontrak-kerja-pkwt
+
+Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
+
+## Catatan revisi 1.0.8 (2026-10-01)
+- Dari uji ulang OpenClaw: jawaban sempat menyimpulkan "omzet di atas Rp2 miliar berarti bukan usaha mikro/kecil" — **salah**. Menurut PP 7/2021 Pasal 35, Rp2 miliar hanya batas usaha **mikro**; usaha **kecil** sampai Rp15 miliar (omzet) atau Rp5 miliar (modal).
+- **Status usaha kini dihitung, bukan ditebak:** script baru `scripts/status_usaha.py` menghitung kelas usaha dari omzet setahun dan/atau modal usaha, lalu menulis hasilnya sebagai "hasil perhitungan — konfirmasi dengan dokumen NIB/OSS". Bila omzet/modal belum diketahui, AI tidak memutuskan dan memakai klausul versi umum.
+- **Batas upah usaha mikro/kecil memakai tingkat provinsi** (PP 36/2021 Pasal 36: paling sedikit 50% rata-rata konsumsi dan 25% di atas garis kemiskinan **provinsi**, data BPS), bukan kota. Script menghitung batasnya bila angka BPS diisi; template Pasal 4 ayat (2) kini punya versi umum dan versi usaha mikro/kecil.
+- Tes baru `tests/uji_status_usaha.py` (39 cek) + uji regresi lama tetap lulus.
+
+## Catatan revisi 1.0.7 (2026-10-01)
+- Dari uji OpenClaw sebelum/sesudah: jawaban sempat menyebut "usaha kecil ≤ Rp5 miliar/tahun menurut UU UMKM" — **salah**. Kriteria resmi ada di PP 7/2021 Pasal 35 dan memakai **dua ukuran**: modal usaha (mikro s.d. Rp1 miliar; kecil > Rp1 miliar s.d. Rp5 miliar; menengah > Rp5 miliar s.d. Rp10 miliar, tanpa tanah & bangunan) **atau** hasil penjualan setahun (mikro s.d. Rp2 miliar; kecil > Rp2 miliar s.d. Rp15 miliar; menengah > Rp15 miliar s.d. Rp50 miliar). Angka ini kini tercatat di rujukan skill dan AI **wajib mengutipnya dari sana**, bukan dari ingatan; skill tetap tidak memutuskan status usahamu.
+
+## Riwayat versi
+- **1.0.4 (26 September 2026)** — perbaikan kecil dari uji ulang v1.0.3 (semua angka rupiah tidak berubah):
+  - Opsi usaha mikro/kecil: rumus umum kini disebut konsisten sebagai **acuan praktik baik, bukan batas bawah wajib** (sejalan dengan checklist B4a — besaran kesepakatan di bawah acuan sah bila ditulis jelas).
+  - Dalam mode usaha mikro/kecil, judul kolom tabel menjadi "Kompensasi (acuan)".
+  - Tanggal pengecekan aturan di footer dan dokumen diperbarui ke 26 September 2026.
+- **1.0.3 (26 September 2026)** — disesuaikan dengan naskah resmi PP 35/2021 (semua angka rupiah metode bawaan tidak berubah):
+  - **Usaha mikro & kecil:** sesuai PP 35/2021 Pasal 16 ayat (6), besaran uang kompensasi bagi pekerja di usaha mikro/kecil ditentukan **kesepakatan** pengusaha dan pekerja. Skill kini menanyakan apakah usahamu usaha mikro/kecil; script punya opsi `--usaha-mikro-kecil` yang menampilkan rumus umum sebagai **acuan** (bukan kewajiban); template punya klausul kompensasi versi kesepakatan; checklist periksa tidak lagi menandai kompensasi kesepakatan UMK sebagai pelanggaran.
+  - Rujukan pasal dirapikan: upah lembur sejam 1/173 = PP 35/2021 Pasal 32 ayat (2); aturan "rata-rata 12 bulan terakhir" adalah Pasal 33 ayat (2) dan hanya untuk upah lembur, bukan kompensasi PKWT.
+- **1.0.2 (25 September 2026)** — perbaikan kecil dari uji ulang independen (semua angka rupiah metode bawaan tidak berubah):
+  - Keterangan sisa kontrak kini menampilkan pecahan yang benar-benar dipakai, mis. "(3 − 1,5357) = 1,4643 bulan"; jumlah hari kalender hanya sebagai informasi (sebelumnya tertulis "1 bulan 16 hari" yang tidak cocok dengan 1,4643).
+  - Bila berhenti tepat di hari terakhir periode berjalan, tidak lagi tercetak rentang tanggal terbalik; ditulis "tidak ada sisa di periode berjalan" (Rp0).
+  - Opsi `--metode bulan-penuh` dihapus karena membuat masa dijalani + sisa kontrak tidak sama dengan panjang kontrak; kini hanya satu cara hitung yang konsisten.
+  - Upah tertulis "4,5" kini disarankan Rp4.500.000 (4,5 juta), bukan Rp5.000.
+  - Checklist THR diperjelas: THR dikecualikan = risiko tinggi 🔴; THR tidak disebut = risiko sedang 🟠.
+- **1.0.1 (25 September 2026)** — revisi temuan uji independen:
+  - Ganti rugi pengakhiran dini (Pasal 62): sisa kontrak kini = panjang periode − masa yang sudah dijalani, sehingga keduanya selalu berjumlah tepat panjang kontrak (sebelumnya bisa selisih hingga ±2,8 hari upah). Contoh skenario utama (Rp4.150.000/orang; Rp5.000.000 + Rp1.250.000 + ganti rugi Rp15.000.000) tidak berubah.
+  - Checklist jam kerja diperbaiki: 6 hari kerja = 7 jam/hari dan 40 jam/minggu, 5 hari kerja = 8 jam/hari dan 40 jam/minggu (PP 35/2021 Pasal 21).
+  - Peringatan baru bila beberapa kontrak pendek (< 1 bulan) berurutan tanpa jeda sehingga kompensasi Rp0, lengkap dengan dua kemungkinan tafsir.
+  - Menerima penulisan "Rp 5.000.000,-" dan "Rp5.000.000,00", periode tanpa spasi "1/1/2026-31/12/2026"; peringatan bila upah terlalu kecil (kemungkinan salah ketik).
+  - Panduan untuk beberapa pekerja sekaligus dan untuk tanggal mulai yang belum diketahui.
+- **1.0.0 (25 September 2026)** — rilis draf pertama.

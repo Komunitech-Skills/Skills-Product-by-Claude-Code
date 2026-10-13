@@ -2,6 +2,8 @@
 
 **Tempel tulisan yang kepanjangan atau berbelit; dapat versi jelas, pendek, siap kirim, lengkap dengan angka sebelum dan sesudah.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Email ke klien, pengumuman karyawan, deskripsi produk, pesan WA, dan laporan jadi mudah dipahami dalam sekali baca
 - ✅ Inti tulisan pindah ke depan; kalimat 70 kata dipecah jadi kalimat yang masuk akal

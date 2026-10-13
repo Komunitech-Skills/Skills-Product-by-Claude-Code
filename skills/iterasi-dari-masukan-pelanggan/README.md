@@ -2,6 +2,8 @@
 
 **Satukan chat WA, ulasan, komentar, dan survei jadi daftar "perbaiki ini dulu" - lengkap dengan balasan ke pelanggan.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Masukan dari WhatsApp, Shopee/Tokopedia/Google Maps, Instagram/TikTok, dan survei dibaca sekaligus, bukan satu-satu; ekspor Shopee/Tokopedia/TikTok Shop, Google Form, dan chat WA langsung terbaca (kolom yang dipakai selalu disebut, file rusak diberi pesan jelas)
 - ✅ Nama, nomor HP, email, alamat, dan nomor pesanan pelanggan disamarkan otomatis sebelum dianalisis

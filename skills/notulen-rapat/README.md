@@ -2,6 +2,8 @@
 
 **Tempel catatan atau transkrip rapat, dapat notulen lengkap dan pesan ringkas siap kirim ke grup WA.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Keputusan, poin diskusi, dan daftar tugas dipisah dengan jelas
 - ✅ Tabel action item: siapa, mengerjakan apa, dan tenggatnya kapan. "Jumat depan" diubah menjadi tanggal nyata
@@ -53,13 +55,6 @@ Skill ini sengaja dibuat hati-hati. Hanya hal yang jelas disepakati yang ditulis
 **Hal rahasia seperti gaji ikut masuk ke pesan WA?**
 Tidak. Info sensitif hanya ada di notulen lengkap, tidak di pesan grup.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Temuan uji ulang OpenClaw: muncul satu tugas (untuk Hendra) yang tidak ada di catatan.
-- Kini setiap tugas dan PIC wajib berasal dari catatan; yang tersirat/tidak jelas ditulis `[cek: …]`.
+## Riwayat perubahan
 
-## Catatan revisi 1.0.3 (2026-10-01)
-Perbaikan dari uji OpenClaw asli (notulen dari catatan rapat berantakan):
-- Tenggat berawalan kini dikenali script: "sebelum rabu", "sblm jumat", "paling lambat senin depan", "maks besok", "s.d. akhir bulan" → mis. "Sebelum Rabu, 7 Oktober 2026".
-- Nomor unit tidak lagi dibaca sebagai jumlah: "forklift 2 rusak" ditulis "Forklift 2 rusak", bukan "2 unit forklift rusak". Bila ragu, ditandai `[cek: …]`.
-- AI tidak lagi menawarkan menghubungi peserta rapat; hal yang perlu dikonfirmasi ditulis sebagai pertanyaan untuk Anda.
-- Path script ditulis jelas (subfolder `scripts/`); AI dilarang mencari file ke seluruh disk.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

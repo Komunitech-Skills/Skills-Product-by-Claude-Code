@@ -2,6 +2,8 @@
 
 **Daftar harga bertingkat, syarat kemitraan, dan pesan rekrut yang jujur, dengan hitungan yang memastikan kamu dan resellermu sama-sama untung.**
 
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk skrip hitung; tanpa Python skill tetap berjalan dengan hitungan oleh AI. Tidak perlu API key atau akun tambahan dari Komunitech.
+
 ## Manfaat
 - ✅ Harga dropshipper, reseller, dan agen dihitung otomatis dari modal atau harga eceran, bukan kira-kira
 - ✅ Langsung ketahuan kalau untung resellermu terlalu tipis (penyebab utama reseller banting harga atau berhenti)
@@ -59,5 +61,6 @@ Boleh ditulis sebagai "harga minimum anjuran" dengan konsekuensi kebijakan kemit
 **Saya belum menentukan harga eceran. Bisa?**
 Bisa. Isi modal dan target margin per tier, lalu skill mengusulkan harga eceran agar reseller tetap punya ruang untung.
 
-## Catatan revisi 1.0.4 (2026-10-01)
-- Uji OpenClaw 2026-10-01: file CSV daftar harga mitra sempat tersimpan di folder `scripts/` skill tanpa lokasi disebut. Kini CSV ditulis ke folder kerja pengguna (path lengkap di `--csv-keluar`), script mencetak path absolut, dan agent wajib menyebut lokasi file di balasan (script `hitung_tier.py` 1.0.1).
+## Riwayat perubahan
+
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
