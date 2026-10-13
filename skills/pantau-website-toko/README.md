@@ -1,4 +1,4 @@
-# Pantau Website Toko: Tahu Duluan Sebelum Pelanggan yang Mengeluh
+# Pantau Website Toko Sebelum Pelanggan Mengeluh
 
 **Ketik "cek website saya masih hidup nggak", "SSL toko saya kapan habis?", atau "ringkas status website hari ini" — AI Anda langsung membacanya lewat Uptime Kuma (gratis, jalan di komputer sendiri) atau, tanpa pasang apa pun, cek sekali langsung ke alamat website Anda.** (SSL = sertifikat keamanan yang menampilkan gembok di browser.)
 

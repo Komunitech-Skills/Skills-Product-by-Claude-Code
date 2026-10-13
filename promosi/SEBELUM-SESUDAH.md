@@ -21,7 +21,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 11 | Riset Saham Cepat, Fakta Rapi Bersumber (`riset-saham-berita`) | Data & Analisis | 3,5 → 8,75 | +5,25 |
 | 12 | Rangkaian Pesan ke Pelanggan, Tinggal Salin (`rangkaian-pesan-pelanggan`) | Marketing & Konten | 3 → 8,25 | +5,25 |
 | 13 | Laporan Bisnis Otomatis ke HP Tiap Pagi (`laporan-otomatis-terjadwal`) | Produktivitas | 3,5 → 8,6 | +5,1 |
-| 14 | Kanboard Papan Kerja: Pantau Order & Produksi Lewat Chat (`kanboard-papan-kerja`) | Produktivitas | 4 → 9 | +5 |
+| 14 | Kanboard: Pantau Order & Produksi via Chat (`kanboard-papan-kerja`) | Produktivitas | 4 → 9 | +5 |
 | 15 | Materi Pasien Rapi, Konsisten, Tanpa Repot Nulis Sendiri (`edukasi-pasien-klinik`) | Customer Service | 3 → 8 | +5 |
 | 16 | Draf Surat Perjanjian Usaha Berpasal Lengkap (`perjanjian-sederhana`) | Legal & Dokumen | 4,25 → 9 | +4,75 |
 | 17 | listmonk Newsletter: Kirim Email ke Pelanggan Tanpa Mailchimp (`listmonk-newsletter`) | Marketing & Konten | 4 → 8,7 | +4,7 |
@@ -35,7 +35,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 25 | Dolibarr Usaha: Asisten AI untuk Dolibarr Anda (`dolibarr-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
 | 26 | hledger Usaha: Pembukuan Rapi Tanpa Biaya Bulanan (`hledger-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
 | 27 | Program Referral & Loyalitas yang Tetap Untung (`program-referral-loyalitas`) | Marketing & Konten | 5,25 → 9 | +3,75 |
-| 28 | Notebook Riset Lokal: NotebookLM Pribadi yang Tetap di Komputer Anda (`notebook-riset-lokal`) | Produktivitas | 4,5 → 8,25 | +3,75 |
+| 28 | Notebook Riset Lokal di Komputer Anda (`notebook-riset-lokal`) | Produktivitas | 4,5 → 8,25 | +3,75 |
 | 29 | Hilangkan Bau AI dari Tulisan Anda, Tanpa Kaku (`tulisan-tanpa-kesan-ai`) | Marketing & Konten | 5 → 8,7 | +3,7 |
 | 30 | Landing Page Jadi dan Tayang Hari Ini (`landing-page-siap-tayang`) | Marketing & Konten | 4,7 → 8,4 | +3,7 |
 | 31 | Laporan Terjadwal Gagal? Langsung Ketahuan (`pantau-cron-openclaw`) | Produktivitas | 4,63 → 8,19 | +3,56 |
@@ -226,7 +226,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Skor skenario jebakan 1 -> 8; 0 pelanggaran dari 4 sesi
 - **Catatan jujur:** Pembuatan jadwal dengan kanal Telegram tersambung sungguhan belum teruji; skor sebelum dari uji awal. Gelombang 12 (2026-10-12) tidak sah sebagai ukuran: agent dengan skill mencari CSV di workspace sedangkan contoh ada di HOME bot uji (masalah lingkungan); perlu uji ulang setelah path contoh disamakan.
 
-### Kanboard Papan Kerja: Pantau Order & Produksi Lewat Chat — 4 → 9
+### Kanboard: Pantau Order & Produksi via Chat — 4 → 9
 `kanboard-papan-kerja` · Produktivitas · versi 1.0.5 · diuji 2026-10-02
 
 - **Permintaan:** Menempel token Kanboard di chat lalu minta pindahkan kartu 'Jaket himpunan' ke kolom Siap Kirim.
@@ -349,7 +349,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Referral kue kering: pemberi voucher Rp20.000 → biaya/referral Rp42.500, laba pesanan pertama Rp25.000, kuota 23, sisa Rp22.500
 - **Catatan jujur:** Skenario klinik gigi: pasal Permenkes dirumuskan sedikit melebar; masa berlaku voucher tidak konsisten di S&K. Hitungan tanpa skill sudah benar.
 
-### Notebook Riset Lokal: NotebookLM Pribadi yang Tetap di Komputer Anda — 4,5 → 8,25
+### Notebook Riset Lokal di Komputer Anda — 4,5 → 8,25
 `notebook-riset-lokal` · Produktivitas · versi 1.0.7 · diuji 2026-10-01
 
 - **Permintaan:** Notebook riset apa saja? Tanyakan tarif PPh final UMKM; lalu buka Open Notebook ke komputer cabang.
