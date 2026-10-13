@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-13 ~16:02 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~16:02 UTC — dokumentasi C13 `dasbor-lokal` N/A jadwal | tidak ada klaim terjadwal | N/A | ya |
+| 2026-10-13 ~16:02 | `cursor/iterasi-otomatis-akun-c-8b42` | c2a20dcc | selesai ~16:02 UTC — dokumentasi C13 `dasbor-lokal` N/A jadwal | tidak ada klaim terjadwal | N/A | ya |
 | 2026-10-13 ~16:02 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 16:02 UTC — merge default; getUpdates 242 kosong; C13 antrean selesai, tambah berkas N/A dasbor-lokal | — | — | — |
 | 2026-10-13 ~15:45 | `cursor/iterasi-otomatis-akun-c-8b42` | 93eeb96a | selesai ~15:45 UTC — C13 `vikunja-tugas` jadwal TG topik 1393 (antrean C13 selesai) | jadwal LOLOS, 1 terlambat cocok | LOLOS | ya |
 | 2026-10-13 ~15:34 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 15:34 UTC — merge default; getUpdates 242; C13 vikunja-tugas | — | — | — |
