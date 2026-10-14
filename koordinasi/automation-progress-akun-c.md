@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~20:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 5a2b54ae | selesai ~20:45 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~90 s); **C28 selesai 6/6** (kontrak-kerja-pkwt, kalender-pajak) | — | docs | ya |
 | 2026-10-14 ~20:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 20:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C28 (5–6) | — | — | — |
 | 2026-10-14 ~20:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 7002c253 | selesai ~20:15 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 403; **C28** hitung-ppn + hitung-thr (4/6) | — | docs | ya |
 | 2026-10-14 ~20:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 20:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C28 | — | — | — |
