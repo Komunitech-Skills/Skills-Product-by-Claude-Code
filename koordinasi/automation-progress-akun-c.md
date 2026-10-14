@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **ulang C24 G18** setelah router Ninerouter bukan HTTP 530 (topik 1482–1491 / pesan msgs-g18.json siap; smoke 12:30 UTC masih 530); opsional pantau-cron lokal C22.
+1. **Akun C** — **ulang C24 G18** setelah router Ninerouter bukan HTTP 530 (topik 1482–1491 / msgs-g18.json siap; smoke 13:00 UTC masih 530); opsional pantau-cron lokal C22.
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default (branch sudah disinkronkan fast-forward dari default di run 22:00 UTC).
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~13:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~13:02 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 — G18 tidak dilanjutkan | — | blocked | ya |
+| 2026-10-14 ~13:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 13:00 UTC — KEY/BOT/TESTER SET; merge default; C24 G18 ulang | — | — | — |
 | 2026-10-14 ~12:30 | `cursor/iterasi-otomatis-akun-c-8b42` | ce440ed9 | selesai ~12:38 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 — G18 tidak dilanjutkan | — | blocked | ya |
 | 2026-10-14 ~12:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 12:30 UTC — KEY/BOT/TESTER SET; merge default; C24 G18 ulang | — | — | — |
 | 2026-10-14 ~12:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~12:08 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 — G18 tidak dikirim | — | blocked | ya |
