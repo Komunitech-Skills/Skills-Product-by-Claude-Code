@@ -108,9 +108,9 @@
 
 ## Run berikutnya (C25)
 
-- Butir (d) `pph-final-umkm` — PMK 37/2025 & PP 20/2026  
+- **C25 selesai** (a–d). Bila router hidup → **C24 G18** (topik 1482–1491).
 
-Router model: smoke OpenClaw **HTTP 530** (~15:00 UTC, ~91 s) → C24 G18 tetap ditunda.
+Router model: smoke OpenClaw **HTTP 530** (~16:00 UTC, ~96 s) → C24 G18 tetap ditunda.
 
 ---
 
@@ -168,3 +168,44 @@ Router model: smoke OpenClaw **HTTP 530** (~15:00 UTC, ~91 s) → C24 G18 tetap 
 | Uji regresi K5 | Format contoh = Shopee; tetap valid |
 
 Router model: smoke OpenClaw **HTTP 530** (~15:30 UTC, ~92 s) → C24 G18 tetap ditunda.
+
+---
+
+## 9. Butir (d) — `pph-final-umkm` / PPh 22 marketplace & PP 20/2026
+
+**Run Akun C:** 2026-10-14 ~16:00 UTC  
+**Subjek:** Klaim di `references/regulasi.md` & perilaku script 1.0.4 (kredit PPh 22 per bulan; kelebihan tidak dipindah bulan; peralihan jangka waktu PT perorangan).
+
+### 9.1 PMK 37/2025 — FAQ DJP (Versi 2.0, 24 September 2026)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| PPh 22 dipungut marketplace = pengurang / pelunasan PPh final 0,5% (bukan pajak baru) | https://pajak.go.id/en/node/120044 ; FAQ PDF `FAQ PMK 37 Tahun 2025 bagi penjual_versi 2.0_24092026_1.pdf` (strings) | 2026-10-14 | «Pemungutan PPh Pasal 22 dapat menjadi pengurang PPh Final yang terutang»; «merupakan bagian dari pelunasan PPh yang bersifat final» | **COCOK** |
+| Selisih **kurang** (final > PPh 22) → wajib disetor sendiri pedagang | FAQ v2.0 (pertanyaan «Bagaimana jika terdapat selisih…») | 2026-10-14 | «selisih kurang … wajib disetor sendiri oleh Pedagang Dalam Negeri/Seller/Merchant» | **COCOK** — selaras script `kurang_setor` |
+| Selisih **lebih** (PPh 22 > final) → permohonan pengembalian, **bukan** kompensasi ke bulan berikutnya | FAQ v2.0 poin 2 pertanyaan selisih; juga «permohonan Pengembalian Pajak yang Seharusnya Tidak Terutang kepada KPP» | 2026-10-14 | «selisih lebih … dapat diajukan permohonan Pengembalian Pajak yang Seharusnya Tidak Terutang»; tidak ada frasa memindahkan kelebihan ke masa/bulan lain | **COCOK** — desain skill (kelebihan tidak dipindah antar bulan) selaras FAQ resmi; label **PERLU REVIEW konsultan** di `regulasi.md` untuk kompensasi antar bulan dapat **dilunakkan** menjadi «tidak diatur di FAQ; kelebihan via restitusi» |
+| Bukti tagihan marketplace = bukti pungut / pelunasan final | FAQ v2.0 | 2026-10-14 | «dokumen … dipersamakan dengan bukti Pemungutan PPh Pasal 22»; «bukti pelunasan PPh final» | **COCOK** |
+| Contoh dihitung per **masa/bulan** | FAQ v2.0 (contoh Tuan A Maret–April 2026) | 2026-10-14 | Pemungutan dan selisih dijelaskan per bulan transaksi | **COCOK** — kredit per bulan di script |
+
+**Usulan teks (Akun B):** Di `references/regulasi.md` baris keputusan desain v1.0.4, ganti «**PERLU REVIEW** konsultan (apakah boleh dikompensasikan)» dengan «FAQ DJP v2.0 (24 Sep 2026) hanya mengatur pengembalian untuk selisih lebih; tidak mengatur kompensasi ke bulan berikutnya.»
+
+### 9.2 PP 20/2026 — penghapusan batas tahun & ketentuan peralihan
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Pasal 59 PP 55/2022 **dihapus** → OP & PT perorangan tanpa batas 7/4 tahun (selama memenuhi kriteria) | Salindia DJP PP 20/2026 PDF (`Peraturan Pemerintah nomor 20 Tahun 2026.pdf`, pymupdf) | 2026-10-14 | Pasal I angka 6 menghapus Pasal 59; penjelasan «Penghapusan jangka waktu tertentu bagi WP OP dan PT OP» | **COCOK** |
+| Peralihan: jangka lama berakhir **2024** hanya **WP orang pribadi** → boleh 0,5% lagi **2025–2026** | idem, bagian «Ketentuan Peralihan» | 2026-10-14 | «a. Tahun 2024 untuk WP OP, dapat dikenai PPh Final 0,5% untuk Tahun Pajak 2025 dan 2026» | **COCOK** |
+| Peralihan: berakhir **2025** → **WP OP dan PT OP** → boleh **2026** | idem | 2026-10-14 | «b. Tahun 2025 untuk WP OP dan PT OP, dapat dikenai PPh Final 0,5% untuk Tahun Pajak 2026» | **COCOK** |
+| **PT perorangan** yang batas lamanya berakhir **2024** tidak disebut di huruf a/b | idem (huruf a hanya WP OP; huruf b butuh berakhir 2025) | 2026-10-14 | Tidak ada kalimat «Tahun 2024 untuk WP PT OP» | **COCOK arah skill** — script menyarankan cek DJP tetap benar; **PERLU REVIEW** sampai DJP/KPP memberi SKB atau FAQ lanjutan |
+| Koperasi 4 tahun + peralihan 2024–2029 | idem | 2026-10-14 | Koperasi terdaftar sebelum PP berlaku, batas 2024–2029 → final s.d. 2029 bila memenuhi kriteria | **COCOK** |
+
+**Usulan teks (Akun B):** Tambah di `regulasi.md` tabel peralihan: kutip singkat huruf a–b DJP; footnote «PT perorangan dengan batas 4 tahun berakhir 2024 tidak tercantum di huruf peralihan — arahkan ke Kring Pajak 1500200 sebelum mengklaim 0,5% untuk 2025+.»
+
+### 9.3 Ringkas vs implementasi script 1.0.4
+
+| Aspek | Kesimpulan |
+|---|---|
+| Kredit PPh 22 per bulan, kurang/lebih terpisah | **COCOK** dengan FAQ PMK 37 |
+| Kelebihan tidak net ke bulan lain | **COCOK** (FAQ: pengembalian) |
+| PT OP akhir masa 2024 | **PERLU REVIEW** (sumber resmi tidak eksplisit) — perilaku script (peringatan + arahkan DJP) **COCOK** |
+
+Router model: smoke OpenClaw **HTTP 530** (~16:00 UTC, ~96 s) → C24 G18 tetap ditunda.
