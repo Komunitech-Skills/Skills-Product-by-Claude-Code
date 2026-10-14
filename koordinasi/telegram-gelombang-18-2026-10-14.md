@@ -91,3 +91,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** 
 ## Percobaan ulang 2026-10-14 22:30 UTC
 
 Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~81 s, Ninerouter Error 1016, retry). Run mengerjakan **C29** verifikasi `simulasi-cicilan-pinjaman` + `harga-jual-marketplace` (**C29 selesai 6/6**) → `koordinasi/c29-verifikasi-aturan-2026-10-14.md`; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Percobaan ulang 2026-10-14 23:00 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~86 s, Ninerouter). **C25–C29 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
