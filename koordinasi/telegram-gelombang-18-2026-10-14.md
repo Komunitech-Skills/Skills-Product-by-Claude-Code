@@ -35,3 +35,11 @@ Hanya **1/10** pesan uji selesai diproses gateway:
 ## Percobaan ulang 2026-10-14 12:00 UTC
 
 Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (Ninerouter, sama seperti 11:30 UTC). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Percobaan ulang 2026-10-14 12:30 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** setelah retry gateway (~69 s). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Percobaan ulang 2026-10-14 13:00 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (7 retry Ninerouter, ~90 s). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
