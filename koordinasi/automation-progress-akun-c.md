@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-14 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~10:08 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 selesai 13/13 platform Cursor | — | uji | ya |
+| 2026-10-14 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 509b247f | selesai ~10:08 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 selesai 13/13 platform Cursor | — | uji | ya |
 | 2026-10-14 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 10:00 UTC — KEY/BOT/TESTER SET; merge default; C21 4 skill tersisa | — | — | — |
 | 2026-10-14 ~09:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 763254ab | selesai ~09:35 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 seleksi-cv-pelamar 9/13 | — | uji | ya |
 | 2026-10-14 ~09:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:30 UTC — KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C21 seleksi-cv-pelamar | — | — | — |
