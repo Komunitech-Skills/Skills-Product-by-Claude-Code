@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — C19 verifikasi `docs/instalasi.md` (prioritas 1), lalu C20–C23 (permintaan pemilik 2026-10-14).
+1. **Akun C** — C20 selesai; lanjut **C21** uji platform Cursor → C22 panduan beta run 3 → C23 konsistensi dokumen.
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default (branch sudah disinkronkan fast-forward dari default di run 22:00 UTC).
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~08:00 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit) | selesai ~08:12 UTC — LANGKAH NOL OK; merge default PR #123; getUpdates 242 kosong; C20 regresi 84/85 + bundle 9/10 | — | uji | ya |
+| 2026-10-14 ~08:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 08:00 UTC — KEY/BOT/TESTER SET; merge default; C20 | — | — | — |
 | 2026-10-14 ~07:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 09233bbc | selesai ~07:38 UTC — C19 verifikasi instalasi; validate OK | — | docs | ya |
 | 2026-10-14 ~07:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 07:30 UTC — KEY/BOT/TESTER SET; merge default (+G17); C19 | — | — | — |
 | 2026-10-14 ~07:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 0b5fc8fa | selesai ~07:02 UTC — LANGKAH NOL OK (>28 mnt sejak selesai 06:32); merge default mutakhir; getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
