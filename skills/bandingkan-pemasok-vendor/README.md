@@ -8,7 +8,8 @@
 - ✅ **Tahu uang yang benar-benar keluar**, bukan cuma harga satuan: harga grosir bertingkat, minimal order, isi per dus, ongkir, PPN, dan biaya lain dihitung untuk jumlah yang Anda butuhkan.
 - ✅ **Tidak tertipu harga "belum PPN"**: pemasok yang sudah PKP (memungut PPN) dan yang belum dibandingkan setara; bila usaha Anda sendiri PKP, PPN yang bisa dikreditkan ikut diperhitungkan.
 - ✅ **Pilihan terbaik dengan alasan jelas**: nilai gabungan biaya, kecepatan kirim, termin bayar (DP/tempo/COD), kualitas, dan fleksibilitas minimal order; bobotnya bisa Anda ubah sesuai prioritas.
-- ✅ **Tahu kapan pilihan berubah**: bila jumlah beli jadi 2 kali, bila pemasok termurah telat, atau bila pesanan dibagi ke dua pemasok supaya tidak bergantung pada satu pemasok.
+- ✅ **Tahu kapan pilihan berubah**: bila jumlah beli jadi 2 kali, bila pemasok termurah telat, bila pesanan dibagi ke dua pemasok, atau bila status PPN pemasok ternyata berbeda. Setiap selisih ditulis jelas: siapa lebih murah atau lebih mahal daripada siapa, dan berapa.
+- ✅ **Data belum lengkap tetap berguna**: bila ongkir belum diketahui, Anda diberi batas ongkir maksimal agar pemasok itu masih lebih murah (mis. "maksimal Rp700 per kg").
 - ✅ **Pesan WA siap kirim** untuk menanyakan ongkir/PPN/garansi dan menawar secara sopan, tanpa klaim palsu.
 
 ## Cocok untuk siapa
@@ -42,7 +43,7 @@ Salin folder `bandingkan-pemasok-vendor` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Status uji (jujur):** belum diuji di platform mana pun; hasil uji akan dicantumkan di sini setelah pengujian.
+**Status uji (jujur):** versi 1.0.0 diuji AI penguji independen di OpenClaw (uji otomatis agent), 14 Okt 2026: nilai tanpa skill 6,5 → dengan skill 7,0 dari 10, **belum** memenuhi acuan lulus internal kami. Hitungan angkanya cocok 100% dengan hitung ulang penguji; kelemahannya ada pada kalimat kesimpulan. Temuan itu diperbaiki di versi 1.0.1 dan belum diuji ulang. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah AI memilihkan pemasok yang paling murah?**
@@ -52,10 +53,10 @@ Belum tentu. Yang paling murah harga satuannya bisa jadi paling mahal setelah on
 Tidak. Penawaran pembanding harus asli dari pemasok sungguhan. Sebagai gantinya AI menyiapkan pesan permintaan penawaran tertulis ke 2-3 pemasok, lalu membandingkan semuanya dengan jujur. Begitu pula permintaan fee pribadi dari pemasok atau mengambil harga lewat login akun marketplace: ditolak, tetapi perbandingan dari data asli tetap dikerjakan.
 
 **Apakah perhitungan PPN-nya pasti sama dengan faktur?**
-PPN dihitung dengan aturan yang berlaku untuk barang biasa (efektif 11% dari harga sebelum PPN) dan dibulatkan ke bawah. Pembulatan bisa berbeda beberapa rupiah dengan faktur resmi; bila berbeda, ikuti faktur. Untuk barang mewah, impor, atau kasus pajak khusus, tanyakan ke konsultan pajak.
+PPN dihitung dengan aturan yang berlaku untuk barang biasa (efektif 11% dari harga sebelum PPN) dan dibulatkan ke bawah. Pembulatan bisa berbeda beberapa rupiah dengan faktur resmi; bila berbeda, ikuti faktur. Asumsi pajak ditulis terbuka di hasil: ongkir yang ditagih pemasok PKP dianggap ikut kena PPN; PPN hanya bisa dikreditkan bila usaha Anda PKP dan punya faktur pajak sah; beberapa bahan pokok (mis. beras, gula konsumsi, daging, telur) dibebaskan PPN. Ketiga hal ini masih **perlu dicek konsultan pajak** untuk kasus Anda. Untuk barang mewah, impor, atau kasus pajak khusus, tanyakan ke konsultan pajak.
 
 > **Catatan penting:** alat bantu keputusan pembelian, bukan nasihat pajak atau hukum. Angka hanya dihitung dari penawaran yang Anda berikan; pastikan harga, PPN, ongkir, dan syarat tertulis di penawaran resmi atau faktur pemasok. Merek dan nama usaha di contoh fiktif.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.0**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

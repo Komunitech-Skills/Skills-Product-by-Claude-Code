@@ -370,8 +370,10 @@ class TesBobotTenggat(unittest.TestCase):
 
     def test_tenggat_dilewati_tidak_direkomendasikan(self):
         h = jalan(self.DATA, "--butuh-hari", "14", "--bobot", "biaya=100,lead=1,termin=0,kualitas=0,moq=0")[1]
-        self.assertEqual(h["peringkat"][0], "Murah Lambat")  # skor tertinggi
-        self.assertEqual(h["rekomendasi"]["nama"], "Mahal Cepat")  # tapi telat -> bukan rekomendasi
+        # skor Murah Lambat lebih tinggi, tetapi telat -> diurutkan setelah yang tepat waktu
+        self.assertGreater(pem(h, "Murah Lambat")["skor_total"], pem(h, "Mahal Cepat")["skor_total"])
+        self.assertEqual(h["peringkat"], ["Mahal Cepat", "Murah Lambat"])
+        self.assertEqual(h["rekomendasi"]["nama"], "Mahal Cepat")
         self.assertEqual(h["melewati_tenggat"], ["Murah Lambat"])
         self.assertEqual(pem(h, "Murah Lambat")["skor"]["lead_time"], 0)
 
@@ -393,6 +395,184 @@ class TesBobotTenggat(unittest.TestCase):
         self.assertEqual(pem(h, "Dimuka")["biaya_dana_dp"], 1000000 * 2 // 100 // 2)   # 10.000
         self.assertEqual(pem(h, "Tempo")["biaya_pembanding"], 980000)
         self.assertEqual(h["termurah"], ["Tempo"])
+
+
+TEPUNG = {"kebutuhan": {"qty": 600, "satuan": "kg", "butuh_dalam_hari": 5}, "pemasok": [
+    {"nama": "Toko Tepung Sentosa", "harga": "118rb", "isi_kemasan": 10, "tingkat_harga": "51: 5%",
+     "ongkir": "100rb", "ppn": "?", "lead_time": "2-3 hari", "termin": "COD"},
+    {"nama": "PT Mitra Pangan Jaya", "harga": 11200, "moq": 300, "ongkir": 150000, "ppn": "belum",
+     "lead_time": "3-4 hari", "termin": "tempo 30 hari"},
+    {"nama": "CV Berkah Gandum", "harga": 11900, "ongkir": "franco", "ppn": "non-pkp", "lead_time": "5-7 hari",
+     "termin": "bayar di muka"}]}
+
+
+class TesV101ArahSelisih(unittest.TestCase):
+    """1.0.1 butir 1: kalimat bersubjek, arah selisih eksplisit, tidak ada 'Hemat vs'."""
+    @classmethod
+    def setUpClass(cls):
+        cls.k, cls.h = jalan(TEPUNG)
+        cls.r = cls.h["ringkasan_siap_salin"]
+        cls.t = jalan(TEPUNG, "--format", "teks")[1]
+
+    def test_total(self):
+        sentosa = 60 * 112100 + 100000
+        mitra = 600 * 11200 + 150000
+        self.assertEqual(pem(self.h, "Toko Tepung Sentosa")["total_bayar"], sentosa)            # 6.826.000
+        self.assertEqual(pem(self.h, "PT Mitra Pangan Jaya")["total_bayar"], mitra + ppn(mitra))  # 7.625.700
+        self.assertEqual(pem(self.h, "CV Berkah Gandum")["total_bayar"], 600 * 11900)            # 7.140.000
+
+    def test_tidak_ada_kalimat_menggantung(self):
+        self.assertNotIn("Hemat vs", self.t)
+        self.assertNotIn("+-", self.t)
+        for x in self.r:
+            if "daripada" in x:
+                self.assertTrue(any(w in x for w in ("lebih MURAH", "lebih MAHAL", "sama biayanya")), x)
+
+    def test_kalimat_termurah(self):
+        d = 7140000 - 6826000
+        self.assertTrue(any(f"Toko Tepung Sentosa lebih MURAH Rp{d:,}".replace(",", ".") + " daripada CV Berkah Gandum"
+                            in x for x in self.r), self.r)
+
+    def test_kalimat_telat_subjek_benar(self):
+        x = next(x for x in self.r if x.startswith("Bila Toko Tepung Sentosa (termurah) telat 7 hari"))
+        self.assertIn("rekomendasi pindah ke PT Mitra Pangan Jaya, yang lebih MAHAL Rp799.700 (11,7%) daripada "
+                      "Toko Tepung Sentosa", x)
+        self.assertIn("melewati tenggat 5 hari", x)
+
+    def test_skenario_pkp_belum_jelas_dihitung(self):
+        x = next(x for x in self.r if x.startswith("Bila Toko Tepung Sentosa ternyata PKP"))
+        naik = ppn(6826000)
+        self.assertIn(f"menjadi Rp{6826000 + naik:,}".replace(",", "."), x)                 # 7.576.860
+        self.assertIn("Toko Tepung Sentosa lebih MURAH Rp48.840", x)                         # tetap lebih murah dari Mitra
+        self.assertIn("rekomendasi berubah menjadi PT Mitra Pangan Jaya karena skor gabungannya lebih tinggi "
+                      "(unggul di termin)", x)
+
+    def test_peringkat_dan_rekomendasi(self):
+        self.assertEqual(self.h["peringkat"], ["Toko Tepung Sentosa", "PT Mitra Pangan Jaya", "CV Berkah Gandum"])
+        self.assertEqual(self.h["rekomendasi"]["nama"], self.h["peringkat"][0])
+        self.assertEqual(self.h["termurah_sementara"], ["Toko Tepung Sentosa"])
+        self.assertIn("termurah sementara", self.t)
+
+    def test_asumsi_ppn_ongkir_terbuka(self):
+        self.assertEqual(pem(self.h, "PT Mitra Pangan Jaya")["ppn_atas_ongkir"], ppn(6870000) - ppn(6720000))  # 16.500
+        self.assertTrue(any(x.startswith("Asumsi pajak: ongkir PT Mitra Pangan Jaya") and "Rp16.500" in x
+                            for x in self.r))
+
+
+class TesV101KamusPPN(unittest.TestCase):
+    """1.0.1 butir 2: 'belum' = PKP, harga belum termasuk PPN (bukan data kosong)."""
+    def test_template_csv(self):
+        with open(os.path.join(AKAR, "templates", "contoh-penawaran.csv"), encoding="utf-8") as f:
+            k, h = jalan(f.read(), "--qty", "300", "--satuan", "pcs", "--butuh-hari", "14")
+        self.assertEqual(k, 0)
+        cv = pem(h, "CV Kemasan Prima")
+        self.assertIs(cv["pkp"], True)
+        self.assertIs(cv["harga_termasuk_ppn"], False)
+        self.assertEqual(cv["ppn"], ppn(300 * 4200 + 85000))
+        self.assertNotIn("ppn_dianggap_belum_termasuk", cv["tanda"])
+        self.assertFalse(any(x["pemasok"] == "CV Kemasan Prima" and "PPN" in x["data"] for x in h["isian"]))
+        self.assertIs(pem(h, "UD Sumber Plastik")["pkp"], False)
+        self.assertIn("status_pkp_belum_jelas", pem(h, "Toko Grosir Abadi")["tanda"])
+
+    def test_kamus(self):
+        self.assertEqual(B.parse_ppn_status("termasuk"), (True, True, False))
+        self.assertEqual(B.parse_ppn_status("belum"), (True, False, False))
+        self.assertEqual(B.parse_ppn_status("blm termasuk"), (True, False, False))
+        self.assertEqual(B.parse_ppn_status("non-pkp"), (False, None, False))
+        self.assertEqual(B.parse_ppn_status("belum PKP"), (False, None, False))
+        self.assertEqual(B.parse_ppn_status("bebas"), (None, None, True))
+        self.assertEqual(B.parse_ppn_status("?"), (None, None, False))
+        self.assertEqual(B.parse_ppn_status(""), (None, None, False))
+        self.assertIs(B.parse_ya("belum"), False)        # kolom 'harga termasuk ppn' = belum
+        self.assertIsNone(B.parse_ya("belum tahu"))
+
+    def test_nilai_ppn_tak_dikenal_dilewati(self):
+        h = jalan({"kebutuhan": {"qty": 5}, "pemasok": [{"nama": "A", "harga": 1000, "ppn": "kadang-kadang"},
+                                                         {"nama": "B", "harga": 1000, "ppn": "non-pkp"}]})[1]
+        self.assertEqual([d["pemasok"] for d in h["dilewati"]], ["A"])
+
+    def test_bebas_ppn(self):
+        h = jalan({"kebutuhan": {"qty": 100}, "pemasok": [
+            {"nama": "P", "harga": 10000, "ppn": "belum", "ongkir": 0}]}, "--bebas-ppn", "ya")[1]
+        self.assertEqual(h["pemasok"][0]["ppn"], 0)
+        self.assertEqual(h["pemasok"][0]["total_bayar"], 1000000)
+
+    def test_contoh(self):
+        p = subprocess.run([sys.executable, SCRIPT, "--contoh"], capture_output=True, text=True)
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("belum    = PKP, harga BELUM termasuk PPN", p.stdout)
+
+
+class TesV101OngkirImpas(unittest.TestCase):
+    """1.0.1 butir 3: ongkir tak diketahui -> [isian] + ongkir impas, bukan dianggap Rp0 diam-diam."""
+    GULA = {"kebutuhan": {"qty": 10, "satuan": "kg"}, "pemasok": [
+        {"nama": "Toko Makmur", "harga": 15500},
+        {"nama": "Agen Sinar", "harga": 16200, "ongkir": "gratis"}]}
+
+    def test_gula_impas_dan_bahan_pokok(self):
+        h = jalan(self.GULA, "--barang", "gula pasir")[1]
+        x = next(x for x in h["ringkasan_siap_salin"] if x.startswith("Ongkir Toko Makmur belum diketahui"))
+        self.assertIn("maksimal Rp7.000 untuk 10 kg", x)       # (16.200 - 15.500) x 10
+        self.assertIn("Rp700 per kg", x)
+        self.assertIn("belum termasuk ongkir", x)
+        self.assertIsNone(pem(h, "Toko Makmur")["potensi_ppn"])  # gula: kemungkinan bebas PPN
+        self.assertTrue(any("bahan pokok yang dibebaskan PPN (PP 49/2022)" in x for x in h["ringkasan_siap_salin"]))
+        self.assertTrue(any(i["data"] == "ongkir ke alamat Anda" for i in h["isian"]))
+
+    def test_tanpa_barang_ada_catatan_pp49(self):
+        h = jalan(self.GULA)[1]
+        self.assertEqual(pem(h, "Toko Makmur")["potensi_ppn"], ppn(155000))
+        self.assertTrue(any(x.startswith("Beberapa bahan pokok") for x in h["ringkasan_siap_salin"]))
+
+    def test_impas_pemasok_pkp_brute_force(self):
+        h = jalan({"kebutuhan": {"qty": 100}, "pemasok": [
+            {"nama": "X", "harga": 10000, "ppn": "belum"},
+            {"nama": "Y", "harga": 11500, "ppn": "non-pkp", "ongkir": "franco"}]})[1]
+        target = 1150000
+        imp = max(o for o in range(0, 60000) if (1000000 + o) + ppn(1000000 + o) <= target)
+        x = next(x for x in h["ringkasan_siap_salin"] if x.startswith("Ongkir X belum diketahui"))
+        self.assertIn(f"maksimal Rp{imp:,}".replace(",", "."), x)
+
+    def test_sudah_lebih_mahal_walau_tanpa_ongkir(self):
+        h = jalan({"kebutuhan": {"qty": 10}, "pemasok": [
+            {"nama": "Mahal", "harga": 20000}, {"nama": "Murah", "harga": 15000, "ongkir": 0}]})[1]
+        x = next(x for x in h["ringkasan_siap_salin"] if x.startswith("Ongkir Mahal belum diketahui"))
+        self.assertIn("walau tanpa ongkir, Mahal lebih MAHAL Rp50.000", x)
+
+
+class TesV101RekomendasiDanBagi(unittest.TestCase):
+    """1.0.1 butir 4: rekomendasi = peringkat 1; pilihan pengguna dibandingkan terbuka; tanda bagi pesanan."""
+    KERTAS = {"kebutuhan": {"qty": 50, "satuan": "rim"}, "pemasok": [
+        {"nama": "CV Sinar ATK", "harga": 52000, "ongkir": "75rb", "ppn": "non-pkp", "lead_time": 2,
+         "termin": "tempo 14 hari"},
+        {"nama": "Toko Kertas Abadi", "harga": 54500, "ongkir": "gratis", "ppn": "non-pkp", "lead_time": "besok",
+         "termin": "COD"}]}
+
+    def test_rekomendasi_peringkat_1_dan_pilihan(self):
+        h = jalan(self.KERTAS, "--pilihan", "Sinar ATK")[1]
+        self.assertEqual(h["rekomendasi"]["nama"], h["peringkat"][0])
+        self.assertEqual(h["peringkat"][0], "Toko Kertas Abadi")
+        x = next(x for x in h["ringkasan_siap_salin"] if x.startswith("Pemasok yang Anda condongi"))
+        self.assertIn("CV Sinar ATK, ada di peringkat 2", x)
+        self.assertIn("CV Sinar ATK lebih MURAH Rp50.000 daripada Toko Kertas Abadi", x)
+        self.assertIn("kalah di lead time", x)
+        self.assertTrue(h["ringkasan_siap_salin"][1].startswith("Rekomendasi: Toko Kertas Abadi (peringkat 1)"))
+
+    def test_bagi_lebih_mahal(self):
+        h = jalan(self.KERTAS)[1]
+        x = next(x for x in h["ringkasan_siap_salin"] if x.startswith("Bila pesanan dibagi 70/30"))
+        total = 35 * 54500 + 15 * 52000 + 75000
+        self.assertIn(f"total Rp{total:,}".replace(",", ".") + ", lebih MAHAL Rp37.500", x)
+        self.assertIn("daripada membeli semua dari Toko Kertas Abadi", x)
+
+    def test_bagi_lebih_murah_tanpa_tanda_ganda(self):
+        data = {"kebutuhan": {"qty": 100}, "pemasok": [
+            {"nama": "A", "harga": 10000, "ongkir": 0, "ppn": "non-pkp", "lead_time": 1},
+            {"nama": "B", "harga": 9000, "ongkir": 0, "ppn": "non-pkp", "lead_time": 10}]}
+        k, t = jalan(data, "--bobot", "biaya=10,lead=90,termin=0,kualitas=0,moq=0", "--format", "teks")
+        self.assertIn("total Rp970.000, lebih MURAH Rp30.000 daripada membeli semua dari A", t)
+        self.assertNotIn("+-", t)
+        self.assertNotIn("Rp-", t)
 
 
 class TesParsing(unittest.TestCase):

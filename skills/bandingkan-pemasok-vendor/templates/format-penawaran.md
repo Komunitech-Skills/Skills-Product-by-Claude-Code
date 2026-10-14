@@ -25,8 +25,7 @@ Judul kolom bebas huruf besar/kecil. Kolom yang tidak ada boleh dihapus.
 | diskon | Diskon persen (`5%`) atau rupiah (`Rp25.000`) | 5% |
 | ongkir | Rupiah, `franco`/`gratis`, atau `loco`/`ambil sendiri` | 85rb |
 | ongkir ditagih pemasok | `tidak` bila ongkir dibayar langsung ke ekspedisi | ya |
-| pkp | Status pemasok: `ya`/`PKP` atau `tidak`/`non-PKP` | PKP |
-| harga termasuk ppn | `ya`/`sudah` atau `belum` | belum |
+| **ppn** | Kamus tetap (lihat di bawah): `termasuk`, `belum`, `non-pkp`, `bebas`, `?` | belum |
 | biaya lain | Biaya lain yang ditagih pemasok (packing kayu, setup cetak) | 50rb |
 | biaya sendiri | Biaya yang Anda keluarkan sendiri (ambil barang, bongkar) | 30rb |
 | lead time | Hari sampai barang tiba (`3-5 hari`, `2 minggu`, `5 hari kerja`) | 5-7 hari |
@@ -35,7 +34,21 @@ Judul kolom bebas huruf besar/kecil. Kolom yang tidak ada boleh dihapus.
 | garansi | Garansi/retur yang dijanjikan | retur cacat 7 hari |
 | catatan | Hal lain ("harga bisa berubah", "harga sampel") | harga berlaku s.d. 31 Okt |
 
-Contoh CSV siap pakai: `templates/contoh-penawaran.csv`.
+**Kamus kolom `ppn`** (sama di semua bagian skill ini):
+
+| Isi | Artinya | Dihitung |
+|---|---|---|
+| `termasuk` | Pemasok PKP, harga **sudah** termasuk PPN | PPN dipisahkan dari harga, total = harga |
+| `belum` | Pemasok PKP, harga **belum** termasuk PPN | Ditambah PPN 11% (12% × 11/12) |
+| `non-pkp` | Pemasok bukan PKP | Tanpa PPN |
+| `bebas` | Barang dibebaskan PPN (mis. bahan pokok tertentu) | Tanpa PPN |
+| `?` atau kosong | Belum jelas | Tanpa PPN + ditandai `[isian]` beserta dampaknya |
+
+Kolom lama `pkp` (`ya`/`tidak`) dan `harga termasuk ppn` (`sudah`/`belum`) masih dibaca; `belum` di kolom mana pun berarti "belum termasuk PPN" atau "belum PKP", bukan data kosong.
+
+**Ongkir kosong = belum diketahui** (bukan Rp0): hasil menyebut "belum termasuk ongkir" dan batas ongkir maksimal agar pemasok itu tetap tidak lebih mahal.
+
+Contoh CSV siap pakai: `templates/contoh-penawaran.csv`. Format lengkap juga bisa dicetak dengan `python3 scripts/banding_pemasok.py --contoh`.
 
 ## 3. JSON (untuk agent)
 ```json
@@ -44,14 +57,14 @@ Contoh CSV siap pakai: `templates/contoh-penawaran.csv`.
                 "bobot": {"biaya": 40, "lead_time": 20, "termin": 15, "kualitas": 15, "moq": 10}},
   "pemasok": [
     {"nama": "CV Kemasan Prima", "harga_satuan": "4.500", "tingkat_harga": "250: 4.200; 500: 3.900",
-     "moq": 100, "ongkir": "85rb", "pkp": "ya", "harga_termasuk_ppn": "belum", "lead_time": "5-7 hari",
+     "moq": 100, "ongkir": "85rb", "ppn": "belum", "lead_time": "5-7 hari",
      "termin": "DP 50%, pelunasan saat barang tiba", "nilai_kualitas": 4, "catatan": "sampel bagus"},
-    {"nama": "UD Sumber Plastik", "harga_satuan": 4300, "moq": 500, "ongkir": "franco", "pkp": "tidak",
+    {"nama": "UD Sumber Plastik", "harga_satuan": 4300, "moq": 500, "ongkir": "franco", "ppn": "non-pkp",
      "lead_time": 3, "termin": "tempo 30 hari", "nilai_kualitas": 3}
   ]
 }
 ```
-Kunci lain yang dikenali: `isi_kemasan`, `kelipatan`, `min_belanja`, `diskon_persen`, `diskon_rp`, `ongkir_per_unit`, `ongkir_ditagih_pemasok`, `biaya_lain`, `biaya_luar`, `dp_persen`, `tempo_hari`, `garansi`, `catatan`. Kebutuhan juga bisa lewat opsi baris perintah (`--qty`, `--butuh-hari`, `--pembeli-pkp`, `--bobot`).
+Kunci lain yang dikenali: `isi_kemasan`, `kelipatan`, `min_belanja`, `diskon_persen`, `diskon_rp`, `ongkir_per_unit`, `ongkir_ditagih_pemasok`, `biaya_lain`, `biaya_luar`, `dp_persen`, `tempo_hari`, `garansi`, `catatan`. Kebutuhan juga bisa lewat opsi baris perintah (`--qty`, `--butuh-hari`, `--pembeli-pkp`, `--bobot`, `--barang`, `--pilihan`).
 
 ## 4. Daftar yang sebaiknya diminta ke setiap pemasok
 Agar penawaran bisa dibandingkan setara, minta tertulis:

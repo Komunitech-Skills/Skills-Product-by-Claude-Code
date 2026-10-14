@@ -27,6 +27,10 @@ Rumus (Komunitech):
       kualitas = nilai 1-5 x 20 (belum dinilai = 3 -> 60)
       MOQ      = 100 x qty_butuh / qty_beli
   Skor total = jumlah(bobot x skor) / jumlah bobot (bobot dinormalisasi otomatis).
+  Peringkat: yang tepat waktu dulu (skor tertinggi), lalu yang melewati tenggat. Rekomendasi = peringkat 1.
+  Keluaran teks memuat RINGKASAN SIAP SALIN: kalimat bersubjek "A lebih MURAH/MAHAL RpX daripada B",
+  sensitivitas, batas ongkir (ongkir impas) untuk ongkir yang belum diketahui, skenario status PKP, dan
+  asumsi pajak yang ditulis terbuka. Kolom ppn: termasuk | belum | non-pkp | bebas | ? (lihat --contoh).
 Keluar kode 2 (JSON {"error","saran"} di stderr) bila data tidak bisa dihitung sama sekali.
 """
 import argparse
@@ -38,7 +42,7 @@ import sys
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.0"
+VERSI = "1.0.1"
 TARIF_PPN = Decimal(11) / Decimal(100)  # 12% x 11/12 (DPP nilai lain, barang non-mewah)
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, "
                "tanpa menyebut script/file/proses]")
@@ -47,6 +51,9 @@ DISCLAIMER = ("Perbandingan ini alat bantu keputusan pembelian, bukan nasihat pa
 CATATAN_PPN = ("PPN pemasok PKP dihitung 12% x 11/12 x DPP (efektif 11%, barang non-mewah, PMK 131/2024), "
                "dibulatkan ke bawah sekali; belum dicocokkan dengan Coretax.")
 KRITERIA = ["biaya", "lead_time", "termin", "kualitas", "moq"]
+# Barang kebutuhan pokok yang umumnya dibebaskan PPN (PP 49/2022) - PERLU REVIEW konsultan pajak.
+BAHAN_POKOK = (r"\b(beras|gabah|jagung|sagu|kedelai|garam|daging|telur|susu segar|susu murni|buah|sayur|sayuran|"
+               r"ubi|singkong|talas|bumbu|cabai|cabe|bawang|gula pasir|gula konsumsi|gula kristal|gula)\b")
 NAMA_KRITERIA = {"biaya": "biaya", "lead_time": "lead time", "termin": "termin", "kualitas": "kualitas",
                  "moq": "MOQ"}
 BOBOT_DEFAULT = {"biaya": Decimal(40), "lead_time": Decimal(20), "termin": Decimal(15),
@@ -144,6 +151,42 @@ def parse_qty(teks, nama, satuan_butuh, ada_isi, catatan):
     return v
 
 
+TIDAK_TAHU = {"belum tahu", "blm tahu", "belum jelas", "belum pasti", "tidak tahu", "tdk tahu", "?", "",
+              "-", "n/a", "null", "none", "tbd"}
+
+
+def parse_ppn_status(teks):
+    """Kolom 'ppn' (kamus tetap) -> (pkp, harga_termasuk_ppn, bebas_ppn).
+
+    termasuk / sudah / incl      -> pemasok PKP, harga SUDAH termasuk PPN
+    belum / blm / excl / +ppn    -> pemasok PKP, harga BELUM termasuk PPN (ditambah 11%)
+    non-pkp / tanpa ppn / tidak  -> bukan PKP, tanpa PPN
+    bebas                         -> barang dibebaskan PPN (tanpa PPN)
+    pkp / ya                      -> PKP, sudah/belum termasuk belum jelas (dianggap belum + [isian])
+    ? / kosong / belum tahu       -> belum jelas -> [isian]
+    """
+    if isinstance(teks, bool):
+        return (True, None, False) if teks else (False, None, False)
+    if teks is None:
+        return None, None, False
+    s = str(teks).strip().lower()
+    if s in TIDAK_TAHU:
+        return None, None, False
+    if "bebas" in s:
+        return None, None, True
+    if re.search(r"\bnon\b|bukan pkp|(belum|blm|tidak|tdk) pkp|tanpa ppn|(tidak|tdk|ga|gak|nggak) ada ppn|"
+                 r"\bno ppn\b|^(tidak|tdk|t|n|no|non)$", s):
+        return False, None, False
+    if re.search(r"\b(belum|blm|excl|exclude|ex)\b|\+\s*ppn|plus ppn", s):
+        return True, False, False
+    if re.search(r"termasuk|sudah|\bincl|include|\binc\b", s):
+        return True, True, False
+    if re.search(r"\bpkp\b|^(ya|y|iya)$", s):
+        return True, None, False
+    raise Galat(f"kolom PPN '{teks}' tidak dikenali",
+                "Isi salah satu: termasuk, belum, non-pkp, bebas, atau ? (belum jelas).")
+
+
 def parse_ya(teks):
     """ya/tidak/tidak diketahui -> True/False/None. 'non-PKP', 'belum termasuk' -> False."""
     if isinstance(teks, bool):
@@ -151,10 +194,14 @@ def parse_ya(teks):
     if teks is None:
         return None
     s = str(teks).strip().lower()
+    if s in TIDAK_TAHU:
+        return None
+    if re.search(r"\b(belum|blm)\b", s):
+        return False  # 'belum' = belum termasuk / belum PKP, BUKAN data kosong
     if s in KOSONG:
         return None
     if s in ("0", "n", "t") or re.search(
-            r"\b(non|bukan|tidak|tdk|tak|no|false|belum|exclude|excl|ex|ga|gak|nggak|tanpa)\b", s):
+            r"\b(non|bukan|tidak|tdk|tak|no|false|exclude|excl|ex|ga|gak|nggak|tanpa)\b", s):
         return False
     if s in ("1", "y") or re.search(r"\b(ya|iya|yes|true|sudah|termasuk|include|incl|inc|pkp)\b", s):
         return True
@@ -353,6 +400,7 @@ KOLOM = {
     "ongkir": ["ongkir", "ongkos kirim", "biaya kirim", "shipping", "ongkir rp", "biaya pengiriman"],
     "ongkir_per_unit": ["ongkir per unit", "ongkir unit", "ongkir per dus", "ongkir per pcs"],
     "ongkir_ditagih_pemasok": ["ongkir ditagih pemasok", "ongkir lewat pemasok", "ongkir via pemasok"],
+    "ppn": ["ppn", "status ppn", "pkp ppn", "pajak", "status pajak", "ppn?"],
     "pkp": ["pkp", "status pkp", "pemasok pkp", "kena ppn", "pkp?"],
     "harga_termasuk_ppn": ["harga termasuk ppn", "termasuk ppn", "incl ppn", "sudah ppn", "include ppn",
                            "harga sudah termasuk ppn", "ppn termasuk"],
@@ -548,7 +596,7 @@ def siapkan_pemasok(rec, no, satuan_butuh=""):
         "diskon_persen": disk_pct, "diskon_rp": disk_rp,
         "ongkir": ongkir, "jenis_ongkir": jenis_ongkir, "ongkir_per_unit": ong_unit,
         "ongkir_ditagih_pemasok": parse_ya(r.get("ongkir_ditagih_pemasok")),
-        "pkp": parse_ya(r.get("pkp")), "termasuk_ppn": parse_ya(r.get("harga_termasuk_ppn")),
+        "pkp": parse_ya(r.get("pkp")), "termasuk_ppn": parse_ya(r.get("harga_termasuk_ppn")), "bebas_ppn": False,
         "biaya_lain": angka("biaya_lain", "biaya lain"), "biaya_luar": angka("biaya_luar", "biaya sendiri"),
         "lead": lead, "dp": dp if dp is not None else Decimal(0), "tempo": tempo if tempo is not None else Decimal(0),
         "termin_diketahui": termin_diketahui, "kualitas": kual,
@@ -561,8 +609,18 @@ def siapkan_pemasok(rec, no, satuan_butuh=""):
         p["ongkir_ditagih_pemasok"] = True
     if p["tempo"] < 0:
         raise Galat(f"{nama}: tempo negatif", "Isi jumlah hari 0 atau lebih.")
+    if r.get("ppn") is not None:
+        try:
+            pkp_k, ter_k, bebas_k = parse_ppn_status(r.get("ppn"))
+        except Galat as e:
+            raise Galat(f"{nama}: {e.pesan}", e.saran)
+        if p["pkp"] is None:
+            p["pkp"] = pkp_k
+        if p["termasuk_ppn"] is None:
+            p["termasuk_ppn"] = ter_k
+        p["bebas_ppn"] = bebas_k
     # Status PPN: 'termasuk/belum termasuk PPN' tanpa status PKP -> dianggap PKP.
-    if p["pkp"] is None and p["termasuk_ppn"] is not None:
+    if p["pkp"] is None and p["termasuk_ppn"] is not None and not p["bebas_ppn"]:
         p["pkp"] = True
         p["catatan_input"].append("menyebut PPN tanpa status PKP; dianggap pemasok PKP")
     return p
@@ -637,21 +695,25 @@ def hitung(p, qty, ctx, paksa_qty=None):
     ong_luar = ong_total - ong_pemasok
     biaya_lain = bulat(p["biaya_lain"] or 0)
     tagihan = subtotal - diskon + ong_pemasok + biaya_lain
-    dpp, ppn, sisa, potensi_ppn = None, Decimal(0), Decimal(0), None
-    if p["pkp"] is True:
+    dpp, ppn, sisa, potensi_ppn, ppn_ongkir = None, Decimal(0), Decimal(0), None, Decimal(0)
+    bebas = bool(ctx.get("bebas_ppn") or p.get("bebas_ppn"))
+    if bebas:
+        bayar_pemasok = tagihan
+    elif p["pkp"] is True:
         if p["termasuk_ppn"] is True:
             dpp, ppn, sisa = pisah_termasuk_ppn(tagihan)
             bayar_pemasok = tagihan
         else:
             dpp, ppn = tagihan, ppn_dari_dpp(tagihan)
             bayar_pemasok = tagihan + ppn
+            ppn_ongkir = ppn - ppn_dari_dpp(tagihan - ong_pemasok)
     else:
         bayar_pemasok = tagihan
-        if p["pkp"] is None:
+        if p["pkp"] is None and not ctx.get("mungkin_bebas"):
             potensi_ppn = ppn_dari_dpp(tagihan)
     biaya_luar = bulat(p["biaya_luar"] or 0)
     total_bayar = bayar_pemasok + ong_luar + biaya_luar
-    ppn_kredit = ppn if (ctx["pembeli_pkp"] and p["pkp"] is True) else Decimal(0)
+    ppn_kredit = ppn if (ctx["pembeli_pkp"] and p["pkp"] is True and not bebas) else Decimal(0)
     biaya_bersih = total_bayar - ppn_kredit
     manfaat_tempo = biaya_dana_dp = Decimal(0)
     if ctx["bunga"]:
@@ -669,7 +731,8 @@ def hitung(p, qty, ctx, paksa_qty=None):
         "moq_efektif": moq_eff,
         "harga_berlaku": harga, "tingkat_min": tmin, "subtotal": subtotal, "diskon": diskon,
         "ongkir_pemasok": ong_pemasok, "ongkir_luar": ong_luar, "biaya_lain": biaya_lain, "tagihan": tagihan,
-        "dpp": dpp, "ppn": ppn, "sisa_pembulatan": sisa, "potensi_ppn": potensi_ppn,
+        "dpp": dpp, "ppn": ppn, "sisa_pembulatan": sisa, "potensi_ppn": potensi_ppn, "ppn_ongkir": ppn_ongkir,
+        "bebas_ppn": bebas,
         "bayar_pemasok": bayar_pemasok, "biaya_luar": biaya_luar, "total_bayar": total_bayar,
         "ppn_dikreditkan": ppn_kredit, "biaya_bersih": biaya_bersih, "manfaat_tempo": manfaat_tempo,
         "biaya_dana_dp": biaya_dana_dp, "biaya_pembanding": pembanding, "per_unit": per_unit,
@@ -729,15 +792,17 @@ def beri_skor(daftar, ctx, lead_ubah=None):
 
 
 def urutkan(daftar, skor):
+    """Peringkat: yang tepat waktu dulu (skor tertinggi), lalu yang melewati tenggat. Peringkat 1 = rekomendasi."""
     idx = sorted(range(len(daftar)),
-                 key=lambda i: (-satu_desimal(skor[i]["total"]), daftar[i][1]["biaya_pembanding"], daftar[i][0]["nama"]))
+                 key=lambda i: (skor[i]["telat"], -satu_desimal(skor[i]["total"]),
+                                daftar[i][1]["biaya_pembanding"], daftar[i][0]["nama"]))
     return idx
 
 
 def pilih_rekomendasi(daftar, skor, urut):
     tepat = [i for i in urut if not skor[i]["telat"]]
     calon = tepat or urut
-    return calon[0], calon, not tepat
+    return urut[0], calon, not tepat
 
 
 # ------------------------------------------------------------------ analisis lengkap
@@ -771,7 +836,13 @@ def analisis(keb_json, pemasok_raw, arg):
     if bagi is None or not (50 <= bagi < 100):
         raise Galat("persen bagi pesanan harus 50-99", "Mis. --bagi 70 (70% ke pemasok utama).")
     bobot = baca_bobot(ambil(arg.bobot, "bobot"))
-    ctx = {"pembeli_pkp": pembeli_pkp, "bunga": bunga, "tenggat": tenggat, "bobot": bobot}
+    barang = str(ambil(arg.barang, "barang", "nama barang", "produk") or "").strip()
+    bebas_ppn = parse_ya(ambil(arg.bebas_ppn, "bebas ppn")) is True
+    mungkin_bebas = bool(barang) and re.search(BAHAN_POKOK, barang.lower()) is not None
+    pilihan = str(ambil(arg.pilihan, "pilihan", "pilihan pengguna") or "").strip()
+    ctx = {"pembeli_pkp": pembeli_pkp, "bunga": bunga, "tenggat": tenggat, "bobot": bobot,
+           "bebas_ppn": bebas_ppn, "mungkin_bebas": mungkin_bebas and not bebas_ppn, "barang": barang,
+           "satuan": satuan}
 
     if not isinstance(pemasok_raw, list) or not pemasok_raw:
         raise Galat("tidak ada penawaran pemasok", "Beri minimal satu pemasok (idealnya 2-6).")
@@ -822,11 +893,13 @@ def analisis(keb_json, pemasok_raw, arg):
             flag.append("ambil_sendiri_belum_dihitung")
             isian.append({"pemasok": p["nama"], "data": "biaya ambil barang sendiri (loco)",
                           "dampak": "belum dihitung"})
-        if p["pkp"] is None:
+        if p["pkp"] is None and not h["bebas_ppn"]:
             flag.append("status_pkp_belum_jelas")
             isian.append({"pemasok": p["nama"], "data": "status PKP & apakah harga sudah termasuk PPN",
-                          "dampak": f"bila PKP dan harga belum termasuk PPN, total naik {rp(h['potensi_ppn'])}"})
-        elif p["pkp"] is True and p["termasuk_ppn"] is None:
+                          "dampak": (f"bila PKP dan harga belum termasuk PPN, total naik {rp(h['potensi_ppn'])}"
+                                     if h["potensi_ppn"] is not None else
+                                     "barang kemungkinan bebas PPN (bahan pokok); pastikan")})
+        elif p["pkp"] is True and p["termasuk_ppn"] is None and not h["bebas_ppn"]:
             flag.append("ppn_dianggap_belum_termasuk")
             isian.append({"pemasok": p["nama"], "data": "harga sudah/belum termasuk PPN",
                           "dampak": f"dianggap belum termasuk; bila sudah termasuk, total turun {rp(h['ppn'])}"})
@@ -858,7 +931,8 @@ def analisis(keb_json, pemasok_raw, arg):
             "subtotal": jnum(h["subtotal"]), "diskon": jnum(h["diskon"]),
             "ongkir_pemasok": jnum(h["ongkir_pemasok"]), "ongkir_ekspedisi": jnum(h["ongkir_luar"]),
             "jenis_ongkir": p["jenis_ongkir"], "biaya_lain": jnum(h["biaya_lain"]),
-            "pkp": p["pkp"], "harga_termasuk_ppn": p["termasuk_ppn"], "dpp": jnum(h["dpp"]), "ppn": jnum(h["ppn"]),
+            "pkp": p["pkp"], "harga_termasuk_ppn": p["termasuk_ppn"], "bebas_ppn": h["bebas_ppn"],
+            "dpp": jnum(h["dpp"]), "ppn": jnum(h["ppn"]), "ppn_atas_ongkir": jnum(h["ppn_ongkir"]),
             "sisa_pembulatan": jnum(h["sisa_pembulatan"]), "potensi_ppn": jnum(h["potensi_ppn"]),
             "bayar_ke_pemasok": jnum(h["bayar_pemasok"]), "biaya_sendiri": jnum(h["biaya_luar"]),
             "total_bayar": jnum(h["total_bayar"]), "ppn_dikreditkan": jnum(h["ppn_dikreditkan"]),
@@ -877,14 +951,14 @@ def analisis(keb_json, pemasok_raw, arg):
 
     # Rekomendasi & alasan
     p_rek = daftar[rek][0]
-    alasan = [f"skor tertinggi {fmt_d(skor[rek]['total'])}"]
+    alasan = [f"peringkat 1, skor {fmt_d(skor[rek]['total'])}"]
     if p_rek["nama"] in termurah:
         alasan.append("termurah")
     else:
         h_rek = daftar[rek][1]
-        alasan.append(f"lebih mahal {rp(h_rek['biaya_pembanding'] - min_biaya)} dari termurah")
+        alasan.append(f"lebih MAHAL {rp(h_rek['biaya_pembanding'] - min_biaya)} daripada termurah")
     hampir_seri = None
-    if len(calon) > 1:
+    if len(calon) > 1 and calon[0] == rek:
         kedua = calon[1]
         beda = satu_desimal(skor[rek]["total"]) - satu_desimal(skor[kedua]["total"])
         if beda < 2:
@@ -892,10 +966,13 @@ def analisis(keb_json, pemasok_raw, arg):
             alasan.append(f"skor sama dengan {hampir_seri}, dipilih yang lebih murah" if beda == 0 else
                           f"hampir seri dengan {hampir_seri} (beda {fmt_d(beda)} poin)")
     if semua_telat:
-        catatan.append("Semua pemasok melewati tenggat; rekomendasi tetap skor tertinggi, tanyakan percepatan kirim.")
+        catatan.append("Semua pemasok melewati tenggat; peringkat 1 = skor tertinggi, tanyakan percepatan kirim.")
     telat_list = [daftar[i][0]["nama"] for i in range(len(daftar)) if skor[i]["telat"]]
 
     sens = sensitivitas(daftar, skor, rek, calon, qty, ctx, telat_hari, biaya_telat, bagi, min_biaya)
+    sementara = sorted({p["nama"] for p, h in daftar if p["nama"] in termurah and termurah_belum_pasti(p, h)})
+    ringkasan = buat_ringkasan(daftar, skor, urut, rek, calon, qty, ctx, sens, min_biaya, termurah, sementara,
+                               semua_telat, hampir_seri, pilihan)
 
     asumsi = []
     asumsi.append("Pembeli PKP: PPN dari pemasok PKP dikreditkan (tidak dihitung sebagai biaya; uang keluar tetap "
@@ -914,17 +991,21 @@ def analisis(keb_json, pemasok_raw, arg):
         asumsi.append(f"Bunga modal {fmt_d(bunga)}% per bulan: tempo mengurangi biaya, DP menambah biaya dana.")
     if tenggat is None:
         asumsi.append("Tenggat belum disebut: lead time dinilai relatif (tercepat = 100).")
+    if bebas_ppn:
+        asumsi.append("Barang dinyatakan dibebaskan PPN: PPN tidak dihitung untuk semua pemasok.")
 
     return {
         "versi": VERSI,
         "kebutuhan": {"qty": jnum(qty), "satuan": satuan, "tenggat_hari": jnum(tenggat), "pembeli_pkp": pembeli_pkp,
-                      "bunga_modal_persen_per_bulan": jnum(bunga)},
+                      "bunga_modal_persen_per_bulan": jnum(bunga), "barang": barang or None,
+                      "bebas_ppn": bebas_ppn, "mungkin_bahan_pokok_bebas_ppn": ctx["mungkin_bebas"]},
         "bobot": {k: jnum(v) for k, v in bobot.items()},
         "dasar_pembanding": ("biaya bersih (PPN dikreditkan)" if pembeli_pkp else "total bayar")
                             + (" setelah nilai tempo/DP" if bunga else ""),
         "pemasok": sorted(pemasok_out, key=lambda x: x["peringkat"]),
         "peringkat": [daftar[i][0]["nama"] for i in urut],
-        "termurah": termurah,
+        "termurah": termurah, "termurah_sementara": sementara,
+        "ringkasan_siap_salin": ringkasan,
         "rekomendasi": {"nama": p_rek["nama"], "alasan": alasan, "hampir_seri_dengan": hampir_seri,
                         "semua_melewati_tenggat": semua_telat},
         "melewati_tenggat": telat_list,
@@ -932,6 +1013,278 @@ def analisis(keb_json, pemasok_raw, arg):
         "isian": isian, "asumsi": asumsi, "catatan": catatan, "dilewati": dilewati,
         "catatan_ppn": CATATAN_PPN, "disclaimer": DISCLAIMER,
     }
+
+
+def termurah_belum_pasti(p, h):
+    """Termurah 'sementara' bila ongkir/biaya ambil belum diketahui atau status PPN belum jelas."""
+    return ((p["ongkir"] is None and p["ongkir_per_unit"] is None)
+            or (p["jenis_ongkir"] == "loco" and not p["biaya_luar"])
+            or h["potensi_ppn"] is not None)
+
+
+def banding(a, biaya_a, b, biaya_b, akhiran=""):
+    """Kalimat bersubjek: 'A lebih MURAH RpX daripada B' / 'A lebih MAHAL RpX (y%) daripada B'.
+
+    Persen hanya pada 'lebih MAHAL' dan selalu terhadap yang lebih murah (B), sama dengan kolom tabel
+    "selisih vs termurah", agar tidak ada dua persen berbeda untuk selisih rupiah yang sama.
+    """
+    d = Decimal(biaya_a) - Decimal(biaya_b)
+    if d == 0:
+        return f"{a} sama biayanya dengan {b}{akhiran}"
+    if d < 0:
+        return f"{a} lebih MURAH {rp(-d)} daripada {b}{akhiran}"
+    pct = f" ({fmt_d(d * 100 / Decimal(biaya_b))}%)" if biaya_b else ""
+    return f"{a} lebih MAHAL {rp(d)}{pct} daripada {b}{akhiran}"
+
+
+def ongkir_impas(p, qty, ctx, target, kolom="ongkir"):
+    """Ongkir (atau biaya ambil sendiri, kolom='biaya_luar') terbesar agar biaya pemasok p masih <= target.
+    Ongkir yang ditagih pemasok PKP ikut kena PPN, jadi dihitung lewat hitung() penuh, bukan dikira."""
+    def biaya(o):
+        if kolom == "ongkir":
+            p2 = dict(p, ongkir=Decimal(o), ongkir_per_unit=None, jenis_ongkir=None)
+        else:
+            p2 = dict(p, biaya_luar=Decimal(o))
+        return hitung(p2, qty, ctx)["biaya_pembanding"]
+    if biaya(0) > target:
+        return None
+    lo, hi = 0, int(target) * 2 + 10
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if biaya(mid) <= target:
+            lo = mid
+        else:
+            hi = mid - 1
+    return Decimal(lo)
+
+
+def pembanding_terdekat(daftar, skor, j, calon):
+    """Pemasok lain termurah, utamakan yang tepat waktu."""
+    pool = [i for i in calon if i != j] or [i for i in range(len(daftar)) if i != j]
+    if not pool:
+        return None
+    return min(pool, key=lambda i: (daftar[i][1]["biaya_pembanding"], daftar[i][0]["nama"]))
+
+
+def kriteria_beda(sa, sb):
+    unggul = [NAMA_KRITERIA[k] for k in KRITERIA if sa["skor"][k] - sb["skor"][k] >= Decimal("0.05")]
+    kalah = [NAMA_KRITERIA[k] for k in KRITERIA if sb["skor"][k] - sa["skor"][k] >= Decimal("0.05")]
+    return unggul, kalah
+
+
+def buat_ringkasan(daftar, skor, urut, rek, calon, qty, ctx, sens, min_biaya, termurah, sementara,
+                   semua_telat, hampir_seri, pilihan):
+    """Kalimat utuh bersubjek, arah selisih eksplisit. Agent WAJIB menyalin apa adanya."""
+    sat = ctx["satuan"]
+    utk = f" untuk {fmt_q(qty)} {sat}"
+    nm = lambda i: daftar[i][0]["nama"]  # noqa: E731
+    by = lambda i: daftar[i][1]["biaya_pembanding"]  # noqa: E731
+    L = []
+    # 1) Peringkat & rekomendasi
+    L.append("Peringkat: " + ", ".join(
+        f"{k + 1}. {nm(i)} (skor {fmt_d(skor[i]['total'])}{', melewati tenggat' if skor[i]['telat'] else ''})"
+        for k, i in enumerate(urut)) + ".")
+    kal = f"Rekomendasi: {nm(rek)} (peringkat 1)."
+    if hampir_seri:
+        beda = satu_desimal(skor[rek]["total"]) - satu_desimal(skor[urut[1]]["total"])
+        kal += (f" Skornya sama dengan {hampir_seri}; dipilih yang lebih murah." if beda == 0 else
+                f" Skornya hampir seri dengan {hampir_seri} (beda {fmt_d(beda)} poin).")
+    if semua_telat:
+        kal += " Semua pemasok melewati tenggat; minta percepatan kirim sebelum memesan."
+    L.append(kal)
+    # 2) Biaya rekomendasi dibanding termurah / termurah berikutnya
+    i_ter = min(range(len(daftar)), key=lambda i: (by(i), nm(i)))
+    def tanda_sem(i):
+        p, h = daftar[i]
+        sebab = []
+        if p["ongkir"] is None and p["ongkir_per_unit"] is None:
+            sebab.append("ongkir belum diketahui")
+        if p["jenis_ongkir"] == "loco" and not p["biaya_luar"]:
+            sebab.append("biaya ambil belum dihitung")
+        if h["potensi_ppn"] is not None:
+            sebab.append("status PPN belum jelas")
+        return f" (sementara: {', '.join(sebab)})" if sebab else ""
+    if by(rek) == min_biaya:
+        lain = [i for i in range(len(daftar)) if i != rek]
+        if lain:
+            j = min(lain, key=lambda i: (by(i), nm(i)))
+            L.append(f"{nm(rek)} adalah yang termurah{tanda_sem(rek)}: "
+                     + banding(nm(rek), by(rek), nm(j), by(j), utk) + f", termurah berikutnya.")
+        else:
+            L.append(f"Hanya ada satu penawaran ({nm(rek)}); minta 2 penawaran lagi agar bisa dibandingkan.")
+    else:
+        alasan = (f"{nm(i_ter)} melewati tenggat" if skor[i_ter]["telat"] else
+                  "skor gabungannya lebih tinggi")
+        unggul, _ = kriteria_beda(skor[rek], skor[i_ter])
+        if not skor[i_ter]["telat"] and unggul:
+            alasan += " (unggul di " + ", ".join(unggul) + ")"
+        L.append(banding(nm(rek), by(rek), nm(i_ter), by(i_ter), utk)
+                 + f". {nm(i_ter)} adalah termurah{tanda_sem(i_ter)}; {nm(rek)} dipilih karena {alasan}.")
+        if skor[i_ter]["telat"] and not semua_telat:
+            i_ok = min(calon, key=lambda i: (by(i), nm(i)))
+            if i_ok == rek:
+                L.append(f"{nm(rek)} adalah yang termurah di antara pemasok yang tepat waktu.")
+            else:
+                unggul, _ = kriteria_beda(skor[rek], skor[i_ok])
+                L.append(banding(nm(rek), by(rek), nm(i_ok), by(i_ok), utk)
+                         + f". {nm(i_ok)} adalah termurah yang tepat waktu{tanda_sem(i_ok)}; {nm(rek)} dipilih karena "
+                         "skor gabungannya lebih tinggi" + (" (unggul di " + ", ".join(unggul) + ")" if unggul else "")
+                         + ".")
+    # 3) Sensitivitas: jumlah 2x
+    q2 = sens.get("qty_2x")
+    if q2:
+        biaya2 = {x["nama"]: Decimal(str(x["biaya_pembanding"])) for x in q2["pemasok"]}
+        t2 = q2["termurah"][0]
+        kal = (f"Bila jumlahnya 2x ({fmt_q(Decimal(str(q2['qty'])))} {sat}): termurah {t2} "
+               f"({rp(biaya2[t2])}); ")
+        if q2["rekomendasi_berubah"]:
+            kal += (f"rekomendasi berubah menjadi {q2['rekomendasi']} ("
+                    + banding(q2["rekomendasi"], biaya2[q2["rekomendasi"]], nm(rek), biaya2[nm(rek)],
+                              f" untuk {fmt_q(Decimal(str(q2['qty'])))} {sat}") + ").")
+        else:
+            kal += f"rekomendasi tetap {nm(rek)}."
+        L.append(kal)
+    # 4) Sensitivitas: termurah (tepat waktu) telat
+    t = sens.get("termurah_telat")
+    if t:
+        label = "termurah" if t["termurah_keseluruhan"] else "termurah yang tepat waktu"
+        tiba = (f"tiba hari ke-{fmt_q(Decimal(str(t['lead_time_menjadi'])))}" if t["lead_time_awal"] is not None
+                else f"baru tiba setelah {fmt_q(Decimal(str(t['lead_time_menjadi'])))} hari")
+        if t["melewati_tenggat"]:
+            tiba += f", melewati tenggat {fmt_q(Decimal(str(jnum(ctx['tenggat']))))} hari"
+        kal = f"Bila {t['pemasok']} ({label}) telat {fmt_q(Decimal(str(t['telat_hari'])))} hari ({tiba}): "
+        if t["rekomendasi_berubah"]:
+            kal += (f"rekomendasi pindah ke {t['rekomendasi_menjadi']}, yang "
+                    + banding("", Decimal(str(t["biaya_rekomendasi_baru"])), t["pemasok"],
+                              Decimal(str(t["biaya_pemasok"]))).strip() + ".")
+        else:
+            kal += f"rekomendasi tetap {t['rekomendasi_menjadi']}."
+        L.append(kal)
+        if "hari_impas" in t:
+            L.append(f"Bila kerugian akibat telat {rp(Decimal(str(t['biaya_telat_per_hari'])))} per hari: "
+                     f"{t['pemasok']} {rp(Decimal(str(t['hemat_vs_termurah_kedua'])))} lebih murah daripada "
+                     f"{t['termurah_kedua']}, dan keunggulan itu habis bila telat lebih dari "
+                     f"{fmt_q(Decimal(str(t['hari_impas'])))} hari (telat {fmt_q(Decimal(str(t['telat_hari'])))} "
+                     f"hari = rugi {rp(Decimal(str(t['kerugian_bila_telat'])))}).")
+    # 5) Bagi pesanan
+    b = sens.get("bagi_pesanan")
+    if b:
+        pu = Decimal(str(b["persen_utama"]))
+        bagian = (f"{b['utama']} {fmt_q(Decimal(str(b['qty_utama'])))} {sat} + {b['cadangan']} "
+                  f"{fmt_q(Decimal(str(b['qty_cadangan'])))} {sat}")
+        paksa = []
+        if b["beli_utama"] != b["qty_utama"]:
+            paksa.append(f"{b['utama']} wajib beli {fmt_q(Decimal(str(b['beli_utama'])))} {sat}")
+        if b["beli_cadangan"] != b["qty_cadangan"]:
+            paksa.append(f"{b['cadangan']} wajib beli {fmt_q(Decimal(str(b['beli_cadangan'])))} {sat}")
+        if paksa:
+            bagian += "; " + " dan ".join(paksa) + " karena minimal order/kelipatan"
+        tot = Decimal(str(b["total"]))
+        L.append(f"Bila pesanan dibagi {fmt_q(pu)}/{fmt_q(100 - pu)} ({bagian}): total {rp(tot)}, "
+                 + banding("", tot, f"membeli semua dari {b['utama']}", by(rek)).strip() + ".")
+    # 6) Data kosong: ongkir impas
+    n_ong = 0
+    for i in urut:
+        p, h = daftar[i]
+        if not (p["ongkir"] is None and p["ongkir_per_unit"] is None) or n_ong >= 3:
+            continue
+        j = pembanding_terdekat(daftar, skor, i, calon)
+        if j is None:
+            L.append(f"Ongkir {p['nama']} belum diketahui; total di atas belum termasuk ongkir.")
+            continue
+        n_ong += 1
+        imp = ongkir_impas(p, qty, ctx, by(j))
+        if imp is None:
+            L.append(f"Ongkir {p['nama']} belum diketahui; walau tanpa ongkir, "
+                     + banding(p["nama"], by(i), nm(j), by(j)) + ".")
+        else:
+            L.append(f"Ongkir {p['nama']} belum diketahui (total di atas belum termasuk ongkir): {p['nama']} tetap "
+                     f"tidak lebih mahal daripada {nm(j)} selama ongkirnya maksimal {rp(imp)}{utk} "
+                     f"(setara {rp_unit(imp / qty)} per {sat}).")
+    for i in urut:
+        p, h = daftar[i]
+        if not (p["jenis_ongkir"] == "loco" and not p["biaya_luar"]) or n_ong >= 3:
+            continue
+        j = pembanding_terdekat(daftar, skor, i, calon)
+        if j is None:
+            continue
+        n_ong += 1
+        imp = ongkir_impas(p, qty, ctx, by(j), kolom="biaya_luar")
+        if imp is None:
+            L.append(f"Biaya ambil sendiri ke {p['nama']} belum dihitung; walau tanpa biaya ambil, "
+                     + banding(p["nama"], by(i), nm(j), by(j)) + ".")
+        else:
+            L.append(f"Biaya ambil sendiri ke {p['nama']} belum dihitung: {p['nama']} tetap tidak lebih mahal daripada "
+                     f"{nm(j)} selama biaya ambilnya (bensin, sewa angkutan, waktu) maksimal {rp(imp)}{utk}.")
+    # 7) Data kosong: status PKP belum jelas (termurah & rekomendasi saja)
+    for i in sorted({i_ter, rek}, key=lambda x: urut.index(x)):
+        p, h = daftar[i]
+        if h["potensi_ppn"] is None:
+            continue
+        p2 = dict(p, pkp=True, termasuk_ppn=False)
+        h2 = hitung(p2, qty, ctx)
+        d2 = list(daftar)
+        d2[i] = (p2, h2)
+        sk2 = beri_skor(d2, ctx)
+        ur2 = urutkan(d2, sk2)
+        j = pembanding_terdekat(d2, sk2, i, [x for x in ur2 if not sk2[x]["telat"]])
+        kal = (f"Bila {p['nama']} ternyata PKP dan harga belum termasuk PPN: total {p['nama']} menjadi "
+               f"{rp(h2['biaya_pembanding'])} (naik {rp(h2['biaya_pembanding'] - h['biaya_pembanding'])})")
+        if j is not None:
+            kal += "; " + banding(p["nama"], h2["biaya_pembanding"], nm(j), d2[j][1]["biaya_pembanding"])
+        if d2[ur2[0]][0]["nama"] == nm(rek):
+            kal += f"; rekomendasi tetap {nm(rek)}."
+        else:
+            r2 = ur2[0]
+            kal += f"; rekomendasi berubah menjadi {d2[r2][0]['nama']} karena skor gabungannya lebih tinggi"
+            if r2 != i:
+                unggul, _ = kriteria_beda(sk2[r2], sk2[i])
+                if unggul:
+                    kal += " (unggul di " + ", ".join(unggul) + ")"
+            kal += "."
+        L.append(kal)
+    # 8) Asumsi pajak yang terbuka
+    for i in urut:
+        p, h = daftar[i]
+        if p["pkp"] is True and not h["bebas_ppn"] and h["ongkir_pemasok"] > 0:
+            if p["termasuk_ppn"] is True:
+                L.append(f"Asumsi pajak: ongkir {p['nama']} dianggap bagian dari harga yang sudah termasuk PPN.")
+            else:
+                L.append(f"Asumsi pajak: ongkir {p['nama']} ikut kena PPN karena ditagih di faktur pemasok PKP "
+                         f"(PPN atas ongkir {rp(h['ppn_ongkir'])}); bila ongkir itu hanya titipan biaya ekspedisi "
+                         f"atas nama Anda, total {p['nama']} turun {rp(h['ppn_ongkir'])}.")
+    if ctx["pembeli_pkp"] and any(h["ppn_dikreditkan"] > 0 for _, h in daftar):
+        L.append("Asumsi pajak: PPN pemasok PKP dianggap bisa dikreditkan karena usaha Anda PKP; syaratnya faktur "
+                 "pajak sah atas nama dan NPWP usaha Anda, dan pembelian dipakai untuk kegiatan usaha yang "
+                 "terutang PPN. Bila tidak memenuhi, PPN menjadi biaya.")
+    if ctx["mungkin_bebas"]:
+        L.append(f"{ctx['barang'][:1].upper()}{ctx['barang'][1:]} kemungkinan termasuk bahan pokok yang dibebaskan "
+                 "PPN (PP 49/2022), jadi PPN tidak ditambahkan untuk pemasok yang status PKP-nya belum jelas; "
+                 "cek status barang Anda.")
+    elif not ctx["barang"] and any(h["potensi_ppn"] is not None for _, h in daftar):
+        L.append("Beberapa bahan pokok (mis. beras, gula konsumsi, daging, telur) dibebaskan PPN menurut PP 49/2022; "
+                 "cek status barang Anda (bila dibebaskan, tambahan PPN di atas tidak berlaku).")
+    # 9) Pilihan pengguna
+    if pilihan:
+        cocok = [i for i in range(len(daftar)) if nm(i).lower() == pilihan.lower()] or \
+                [i for i in range(len(daftar)) if pilihan.lower() in nm(i).lower()]
+        if not cocok:
+            L.append(f"Pemasok '{pilihan}' tidak ada di penawaran yang dihitung.")
+        elif cocok[0] == rek:
+            L.append(f"Pemasok yang Anda condongi, {nm(rek)}, sama dengan peringkat 1.")
+        else:
+            i = cocok[0]
+            unggul, kalah = kriteria_beda(skor[i], skor[rek])
+            kal = (f"Pemasok yang Anda condongi, {nm(i)}, ada di peringkat {urut.index(i) + 1}"
+                   + (" (melewati tenggat)" if skor[i]["telat"] else "") + ": "
+                   + banding(nm(i), by(i), nm(rek), by(rek)) + f" (peringkat 1); skor {fmt_d(skor[i]['total'])} "
+                   f"vs {fmt_d(skor[rek]['total'])}")
+            if unggul:
+                kal += "; unggul di " + ", ".join(unggul)
+            if kalah:
+                kal += "; kalah di " + ", ".join(kalah)
+            L.append(kal + ".")
+    return L
 
 
 def sensitivitas(daftar, skor, rek, calon, qty, ctx, telat_hari, biaya_telat, bagi, min_biaya):
@@ -959,14 +1312,19 @@ def sensitivitas(daftar, skor, rek, calon, qty, ctx, telat_hari, biaya_telat, ba
                         for i in ur2],
         }
     # 2) Pemasok termurah telat
-    i_min = min(range(len(daftar)), key=lambda i: (daftar[i][1]["biaya_pembanding"], daftar[i][0]["nama"]))
+    # Subjek = pemasok termurah yang tepat waktu (yang termurah tapi sudah telat tidak relevan).
+    i_min = min(calon, key=lambda i: (daftar[i][1]["biaya_pembanding"], daftar[i][0]["nama"]))
     p_min, h_min = daftar[i_min]
     lead_baru = (p_min["lead"] or Decimal(0)) + telat_hari
     sk_t = beri_skor(daftar, ctx, lead_ubah={p_min["nama"]: lead_baru})
     ur_t = urutkan(daftar, sk_t)
     rek_t, _, _ = pilih_rekomendasi(daftar, sk_t, ur_t)
-    lain = sorted((h["biaya_pembanding"], p["nama"]) for j, (p, h) in enumerate(daftar) if j != i_min)
-    tel = {"pemasok": p_min["nama"], "telat_hari": jnum(telat_hari), "lead_time_menjadi": jnum(lead_baru),
+    pool = [j for j in calon if j != i_min] or [j for j in range(len(daftar)) if j != i_min]
+    lain = sorted((daftar[j][1]["biaya_pembanding"], daftar[j][0]["nama"]) for j in pool)
+    tel = {"pemasok": p_min["nama"], "termurah_keseluruhan": h_min["biaya_pembanding"] == min_biaya,
+           "lead_time_awal": jnum(p_min["lead"]), "biaya_pemasok": jnum(h_min["biaya_pembanding"]),
+           "biaya_rekomendasi_baru": jnum(daftar[rek_t][1]["biaya_pembanding"]),
+           "telat_hari": jnum(telat_hari), "lead_time_menjadi": jnum(lead_baru),
            "melewati_tenggat": ctx["tenggat"] is not None and lead_baru > ctx["tenggat"],
            "rekomendasi_menjadi": daftar[rek_t][0]["nama"],
            "rekomendasi_berubah": daftar[rek_t][0]["nama"] != daftar[rek][0]["nama"]}
@@ -1068,6 +1426,7 @@ def teks(h):
     sat = k["satuan"]
     L = [LABEL_AGENT]
     L.append(f"Kebutuhan: {fmt_q(Decimal(str(k['qty'])))} {sat}"
+             + (f" {k['barang']}" if k.get("barang") else "")
              + (f" | tenggat {fmt_q(Decimal(str(k['tenggat_hari'])))} hari" if k["tenggat_hari"] is not None else "")
              + (" | pembeli PKP" if k["pembeli_pkp"] else " | pembeli bukan PKP (PPN = biaya)")
              + " | bobot: " + ", ".join(f"{NAMA_KRITERIA[x]} {fmt_q(Decimal(str(h['bobot'][x])))}" for x in KRITERIA))
@@ -1076,18 +1435,25 @@ def teks(h):
     else:
         kepala = "Biaya setelah nilai tempo" if k["bunga_modal_persen_per_bulan"] else "Total bayar"
     L.append("")
-    L.append("TABEL SIAP TEMPEL (angka disalin apa adanya)")
+    L.append("TABEL SIAP TEMPEL (salin apa adanya; urut peringkat, peringkat 1 = rekomendasi)")
     L.append(f"| Pemasok | {kepala} (per {sat}) | Selisih vs termurah | Skor (peringkat) |")
     L.append("|---|---|---|---|")
     for p in h["pemasok"]:
-        sel = ("termurah" if p["selisih_vs_termurah_rp"] == 0 else
-               f"+{rp(Decimal(str(p['selisih_vs_termurah_rp'])))} (+{fmt_d(Decimal(str(p['selisih_vs_termurah_persen'])))}%)")
-        tanda = " (telat)" if "melewati_tenggat" in p["tanda"] else ""
+        if p["selisih_vs_termurah_rp"] == 0:
+            sel = "termurah sementara" if p["nama"] in h["termurah_sementara"] else "termurah"
+        else:
+            sel = (f"lebih mahal {rp(Decimal(str(p['selisih_vs_termurah_rp'])))} "
+                   f"({fmt_d(Decimal(str(p['selisih_vs_termurah_persen'])))}%)")
+        tanda = ", telat" if "melewati_tenggat" in p["tanda"] else ""
         L.append(f"| {p['nama']} | {rp(Decimal(str(p['biaya_pembanding'])))} "
                  f"({rp_unit(Decimal(str(p['per_unit'])))}) | {sel} | "
-                 f"{fmt_d(Decimal(str(p['skor_total'])))} ({p['peringkat']}){tanda} |")
+                 f"{fmt_d(Decimal(str(p['skor_total'])))} ({p['peringkat']}{tanda}) |")
     L.append("")
-    L.append("RINCIAN PER PEMASOK")
+    L.append("RINGKASAN SIAP SALIN (WAJIB disalin apa adanya; jangan dihitung ulang, dibalik, atau ditafsir sendiri)")
+    for x in h["ringkasan_siap_salin"]:
+        L.append(f"- {x}")
+    L.append("")
+    L.append("RINCIAN PER PEMASOK (bahan 1 baris per pemasok)")
     for p in h["pemasok"]:
         D = lambda key: Decimal(str(p[key])) if p[key] is not None else None  # noqa: E731
         L.append(f"{p['peringkat']}. {p['nama']}")
@@ -1096,27 +1462,33 @@ def teks(h):
             beli += f" (harga tingkat >= {fmt_q(D('tingkat_min_qty'))})"
         beli += f" = {rp(D('subtotal'))}"
         if p["kelebihan_unit"]:
-            beli += (f" | MOQ/kelipatan: kelebihan {fmt_q(D('kelebihan_unit'))} {sat}, modal tertahan ±"
+            beli += (f" | minimal order/kelipatan: sisa {fmt_q(D('kelebihan_unit'))} {sat}, modal tertahan "
                      f"{rp(D('nilai_kelebihan'))}")
         L.append(beli)
-        ong = "belum disebut" if "ongkir_belum_ada" in p["tanda"] else (
+        ong = "BELUM DIKETAHUI (belum dihitung)" if "ongkir_belum_ada" in p["tanda"] else (
             "gratis (franco)" if p["jenis_ongkir"] == "franco" else (
                 "ambil sendiri (loco)" if p["jenis_ongkir"] == "loco" else rp(D("ongkir_pemasok") + D("ongkir_ekspedisi"))))
-        if p["pkp"] is True:
+        if p["bebas_ppn"]:
+            ppn = "tanpa PPN (barang dibebaskan PPN)"
+        elif p["pkp"] is True:
             ppn = (f"PPN {rp(D('ppn'))} (DPP {rp(D('dpp'))}"
                    + (", sudah termasuk harga" if p["harga_termasuk_ppn"] else ", ditambahkan")
                    + (f", sisa pembulatan {rp(D('sisa_pembulatan'))}" if p["sisa_pembulatan"] else "") + ")")
         elif p["pkp"] is False:
             ppn = "tanpa PPN (bukan PKP)"
+        elif p["potensi_ppn"] is not None:
+            ppn = f"status PPN belum jelas (bila PKP & belum termasuk PPN: +{rp(D('potensi_ppn'))})"
         else:
-            ppn = f"status PKP belum jelas (potensi PPN {rp(D('potensi_ppn'))})"
-        L.append(f"   Diskon -{rp(D('diskon'))} | Ongkir {ong} | Biaya lain {rp(D('biaya_lain'))} | {ppn}"
+            ppn = "status PPN belum jelas (barang kemungkinan bebas PPN)"
+        diskon = f"Diskon {rp(D('diskon'))} | " if p["diskon"] else ""
+        lain = f" | Biaya lain {rp(D('biaya_lain'))}" if p["biaya_lain"] else ""
+        L.append(f"   {diskon}Ongkir {ong}{lain} | {ppn}"
                  + (f" | Biaya sendiri {rp(D('biaya_sendiri'))}" if p["biaya_sendiri"] else ""))
         tot = f"   Total bayar {rp(D('total_bayar'))}"
         if p["ppn_dikreditkan"]:
             tot += f" | PPN dikreditkan {rp(D('ppn_dikreditkan'))} -> biaya bersih {rp(D('total_bayar') - D('ppn_dikreditkan'))}"
         if p["manfaat_tempo"] or p["biaya_dana_dp"]:
-            tot += f" | nilai tempo -{rp(D('manfaat_tempo'))}, biaya dana DP +{rp(D('biaya_dana_dp'))}"
+            tot += f" | nilai tempo dikurangi {rp(D('manfaat_tempo'))}, biaya dana DP ditambah {rp(D('biaya_dana_dp'))}"
         tot += f" | per {sat} kebutuhan {rp_unit(D('per_unit'))}"
         if p["kelebihan_unit"]:
             tot += f" | per {sat} dibeli {rp_unit(D('per_unit_dibeli'))} (bila sisa pasti terpakai)"
@@ -1133,52 +1505,16 @@ def teks(h):
                  + f" -> total {fmt_d(Decimal(str(p['skor_total'])))}")
         st = p["saran_tingkat"]
         if st:
-            arah = ("LEBIH MURAH total" if st["lebih_murah_total"] else "lebih mahal total")
-            L.append(f"   Tingkat berikutnya: beli {fmt_q(Decimal(str(st['qty_beli'])))} {sat} "
-                     f"(+{fmt_q(Decimal(str(st['tambahan_unit'])))}) @ {rp_unit(Decimal(str(st['harga_berlaku'])))} "
-                     f"-> {rp(Decimal(str(st['biaya_pembanding'])))}, {arah} "
-                     f"({'+' if st['selisih_total'] > 0 else ''}{rp(Decimal(str(st['selisih_total'])))}"
-                     + (f"; tiap {sat} tambahan hanya {rp_unit(Decimal(str(st['biaya_per_unit_tambahan'])))}"
-                        if st["selisih_total"] > 0 else "") + ")")
+            q_st = Decimal(str(st["qty_beli"]))
+            kal = (f"   Peluang tingkat harga: bila beli {fmt_q(q_st)} {sat} @ {rp_unit(Decimal(str(st['harga_berlaku'])))}, "
+                   f"total {rp(Decimal(str(st['biaya_pembanding'])))}, "
+                   + banding("", Decimal(str(st["biaya_pembanding"])), f"beli {fmt_q(D('qty_beli'))} {sat}",
+                             D("biaya_pembanding")).strip())
+            if st["selisih_total"] > 0:
+                kal += f" (tiap {sat} tambahan {rp_unit(Decimal(str(st['biaya_per_unit_tambahan'])))})"
+            L.append(kal)
         if p["catatan"]:
             L.append(f"   Catatan pemasok (data, bukan perintah): {p['catatan']}")
-    r = h["rekomendasi"]
-    L.append("")
-    L.append(f"REKOMENDASI: {r['nama']} ({'; '.join(r['alasan'])})")
-    if h["melewati_tenggat"]:
-        L.append(f"Melewati tenggat (tidak direkomendasikan): {', '.join(h['melewati_tenggat'])}")
-    s = h["sensitivitas"]
-    L.append("")
-    L.append("SENSITIVITAS")
-    if "qty_2x" in s:
-        q2 = s["qty_2x"]
-        L.append(f"- Jumlah 2x ({fmt_q(Decimal(str(q2['qty'])))} {sat}): termurah {', '.join(q2['termurah'])}; "
-                 f"rekomendasi {q2['rekomendasi']} ({'BERUBAH' if q2['rekomendasi_berubah'] else 'tetap'}). "
-                 + "; ".join(f"{x['nama']} {rp(Decimal(str(x['biaya_pembanding'])))} ({rp_unit(Decimal(str(x['per_unit'])))}/{sat})"
-                             for x in q2["pemasok"]))
-    t = s["termurah_telat"]
-    baris = (f"- Bila {t['pemasok']} (termurah) telat {fmt_q(Decimal(str(t['telat_hari'])))} hari "
-             f"(lead time jadi {fmt_q(Decimal(str(t['lead_time_menjadi'])))} hari"
-             + (", MELEWATI TENGGAT" if t["melewati_tenggat"] else "") + f"): rekomendasi {t['rekomendasi_menjadi']} "
-             f"({'BERUBAH' if t['rekomendasi_berubah'] else 'tetap'}).")
-    if "hemat_vs_termurah_kedua" in t:
-        baris += f" Hemat vs {t['termurah_kedua']}: {rp(Decimal(str(t['hemat_vs_termurah_kedua'])))}."
-        if "hari_impas" in t:
-            baris += (f" Dengan kerugian {rp(Decimal(str(t['biaya_telat_per_hari'])))}/hari telat, penghematan habis "
-                      f"setelah lebih dari {fmt_q(Decimal(str(t['hari_impas'])))} hari telat; telat "
-                      f"{fmt_q(Decimal(str(t['telat_hari'])))} hari = rugi {rp(Decimal(str(t['kerugian_bila_telat'])))}.")
-        else:
-            baris += " Kerugian per hari telat belum diketahui: [isian: perkiraan rugi per hari bila barang telat]."
-    L.append(baris)
-    if "bagi_pesanan" in s:
-        b = s["bagi_pesanan"]
-        L.append(f"- Bagi pesanan {fmt_q(Decimal(str(b['persen_utama'])))}/{fmt_q(100 - Decimal(str(b['persen_utama'])))}: "
-                 f"{b['utama']} {fmt_q(Decimal(str(b['qty_utama'])))} {sat} (beli {fmt_q(Decimal(str(b['beli_utama'])))}) + "
-                 f"{b['cadangan']} {fmt_q(Decimal(str(b['qty_cadangan'])))} {sat} (beli {fmt_q(Decimal(str(b['beli_cadangan'])))}) "
-                 f"= {rp(Decimal(str(b['total'])))}, tambahan {rp(Decimal(str(b['tambahan_vs_satu_pemasok'])))}"
-                 + (f" (+{fmt_d(Decimal(str(b['tambahan_persen'])))}%)" if b["tambahan_persen"] is not None else "")
-                 + " dibanding semua ke pemasok utama"
-                 + (" (MOQ memaksa beli lebih)" if b["moq_memaksa_beli_lebih"] else "") + ".")
     if h["isian"]:
         L.append("")
         L.append("DATA BELUM ADA (tulis sebagai [isian: ...])")
@@ -1203,6 +1539,47 @@ def teks(h):
 
 
 # ------------------------------------------------------------------ CLI
+CONTOH = """FORMAT INPUT (cukup ini; tidak perlu membaca kode)
+Perintah: python3 scripts/banding_pemasok.py --data '<JSON atau CSV>' --format teks
+          (Windows: python atau py). Tambahan: --qty 300 --satuan pcs --butuh-hari 14 --barang "kemasan"
+
+JSON:
+{"kebutuhan": {"qty": 600, "satuan": "kg", "butuh_dalam_hari": 5},
+ "pemasok": [
+  {"nama": "Toko A", "harga": "118rb", "isi_kemasan": 10, "tingkat_harga": "51: 5%", "ongkir": "100rb",
+   "ppn": "?", "lead_time": "2-3 hari", "termin": "COD"},
+  {"nama": "PT B", "harga": 11200, "moq": 300, "ongkir": 150000, "ppn": "belum", "lead_time": "3-4 hari",
+   "termin": "tempo 30 hari"},
+  {"nama": "CV C", "harga": 11900, "ongkir": "franco", "ppn": "non-pkp", "lead_time": "5-7 hari",
+   "termin": "bayar di muka"}]}
+
+CSV (pemisah ; dan tingkat harga dipisah |):
+nama;harga;tingkat harga;moq;ongkir;ppn;lead time;termin;kualitas
+CV A;4.500;250: 4.200 | 500: 3.900;100;85rb;belum;5-7 hari;DP 50%;4
+
+KAMUS KOLOM
+nama            nama pemasok
+harga           harga satuan dasar (12.500 / 12,5rb / Rp12.500/pcs)
+tingkat_harga   'min: harga' dipisah ; atau | ('100: 11.000; 500: 10.000'); persen = diskon ('51: 5%')
+isi_kemasan     isi per dus/pak bila harga ditulis per dus (harga, MOQ, tingkat, ongkir '/dus' lalu dibaca per dus)
+moq / kelipatan / min_belanja   minimal order, kelipatan pesan, minimal belanja Rp ('2 lusin' = 24)
+diskon          '5%' (persen) atau 'Rp25.000' (rupiah)
+ongkir          Rp sekali kirim | 'franco'/'gratis' | 'loco'/'ambil sendiri' | 'Rp500/pcs', '15rb/dus' | kosong = BELUM DIKETAHUI
+ongkir_ditagih_pemasok  'tidak' bila ongkir dibayar langsung ke ekspedisi (tidak kena PPN pemasok)
+ppn             termasuk = PKP, harga SUDAH termasuk PPN
+                belum    = PKP, harga BELUM termasuk PPN (ditambah 11%)
+                non-pkp  = bukan PKP, tanpa PPN
+                bebas    = barang dibebaskan PPN
+                ? / kosong = belum jelas -> [isian]
+biaya_lain      biaya lain di faktur pemasok;  biaya_luar = biaya yang dikeluarkan sendiri (ambil barang)
+lead_time       '3', '3-5 hari' (diambil 5), '2 minggu', '5 hari kerja' (= 7 hari kalender)
+termin          'COD', 'tempo 30 hari', 'DP 50% sisa H+30', 'bayar di muka'
+kualitas        1-5 dari info pengguna (kosong = 3 netral);  garansi, catatan = teks bebas
+Opsi: --pembeli-pkp ya | --bobot "biaya=40,lead=20,termin=15,kualitas=15,moq=10" | --telat-hari 7
+      --biaya-telat-per-hari 200rb | --bunga-modal 1,5 | --bagi 70 | --barang "gula pasir" | --bebas-ppn ya
+      --pilihan "nama pemasok yang dicondongi pengguna"
+Keluaran --format teks: TABEL SIAP TEMPEL + RINGKASAN SIAP SALIN (disalin apa adanya) + rincian."""
+
 class Parser(argparse.ArgumentParser):
     def error(self, message):
         print(json.dumps({"error": message, "saran": "Lihat --help untuk contoh pemakaian."}, ensure_ascii=False),
@@ -1223,8 +1600,15 @@ def main(argv=None):
     ap.add_argument("--biaya-telat-per-hari", dest="biaya_telat_per_hari", help="Perkiraan rugi per hari telat (Rp)")
     ap.add_argument("--bunga-modal", dest="bunga_modal", help="Biaya modal %% per bulan (opsional)")
     ap.add_argument("--bagi", help="Persen ke pemasok utama saat dibagi dua (default 70)")
+    ap.add_argument("--barang", help="Nama barang, mis. 'gula pasir' (bahan pokok -> kemungkinan bebas PPN)")
+    ap.add_argument("--bebas-ppn", dest="bebas_ppn", help="ya bila barang dibebaskan PPN (PPN tidak dihitung)")
+    ap.add_argument("--pilihan", help="Pemasok yang dicondongi pengguna (dibandingkan dengan peringkat 1)")
+    ap.add_argument("--contoh", action="store_true", help="Cetak format input + kamus kolom, lalu keluar")
     ap.add_argument("--format", choices=["json", "teks"], default="json")
     a = ap.parse_args(argv)
+    if a.contoh:
+        print(CONTOH)
+        return
     try:
         if a.file:
             try:

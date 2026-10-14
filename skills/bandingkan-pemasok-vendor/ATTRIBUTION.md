@@ -19,4 +19,5 @@ Semua nama usaha, harga, dan penawaran di `SKILL.md`, `templates/`, `references/
 Karya orisinal Komunitech; penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian. Dasar aturan pajak yang dikutip (PMK 131/2024) adalah peraturan publik.
 
 ## Riwayat versi
-- 1.0.0 (2026-10-14): rilis awal (status draft, belum diuji penguji independen).
+- 1.0.0 (2026-10-14): rilis awal.
+- 1.0.1 (2026-10-14): revisi dari uji independen (ringkasan siap salin, kamus PPN, batas ongkir, rekomendasi = peringkat 1, asumsi pajak terbuka). Semua perubahan karya Komunitech.
