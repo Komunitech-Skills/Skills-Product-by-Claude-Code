@@ -1,4 +1,4 @@
-# Actual Budget Usaha — anggaran amplop lokal dikerjakan AI
+# Actual Budget — anggaran amplop lokal via AI
 
 **Mutasi bank jadi anggaran rapi, tanpa ketik ulang.**
 *Pakai Actual Budget (gratis, data di komputer sendiri); AI yang menyiapkan impor mutasi dan melaporkan sisa anggaran tiap "amplop" (pos per kategori, seperti amplop uang).*
