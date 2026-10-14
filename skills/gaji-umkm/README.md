@@ -95,4 +95,4 @@ Tidak, dan memang disengaja. Aplikasi hanya membuat file CSV daftar transfer. An
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
