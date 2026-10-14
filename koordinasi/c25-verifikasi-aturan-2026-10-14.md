@@ -108,7 +108,63 @@
 
 ## Run berikutnya (C25)
 
-- Butir (c) `rencana-restok-barang` — kolom ekspor Shopee/Tokopedia  
 - Butir (d) `pph-final-umkm` — PMK 37/2025 & PP 20/2026  
 
 Router model: smoke OpenClaw **HTTP 530** (~15:00 UTC, ~91 s) → C24 G18 tetap ditunda.
+
+---
+
+## 8. Butir (c) — `rencana-restok-barang` / kolom ekspor marketplace
+
+**Run Akun C:** 2026-10-14 ~15:30 UTC  
+**Subjek:** Nama kolom ekspor **pesanan** dan **stok** Shopee Seller Centre & Tokopedia Seller Centre vs pemetaan di `scripts/rencana_restok.py` dan `references/data-dan-tindakan.md`.
+
+### 8.1 Shopee — ekspor pesanan (Pesanan Saya → Export)
+
+| Klaim skill/script | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Tanggal: `Waktu Pesanan Dibuat` | https://seller.shopee.co.id/edu/article/15486 (filter Pesanan); pola kolom ekspor pesanan di dokumentasi penjual & laporan akademik berbasis file export Shopee (49 kolom, 2025) | 2026-10-14 | Filter pesanan memakai «Tanggal Dibuat»; file export pesanan umum memuat «Waktu Pesanan Dibuat» | **COCOK** — ada di alias `KOLOM_JUAL["tanggal"]` |
+| Status: `Status Pesanan` | idem + https://ngulikdata.com/blog/laporan-penjualan-shopee (ringkasan kolom export) | 2026-10-14 | «Status Pesanan: Selesai, Batal, …» | **COCOK** — script memfilter kata batal/belum bayar |
+| No pesanan: `No. Pesanan` | https://seller.shopee.co.id/edu/article/15486 | 2026-10-14 | Filter «No. Pesanan» | **COCOK** |
+| SKU varian: `Nomor Referensi SKU` (bukan SKU Induk untuk hitung per varian) | Uji regresi skill (K5); ngulikdata; jurnal RFM toserba (kolom export) | 2026-10-14 | «Nomor Referensi SKU: kode barang versi kamu»; baris export juga memuat «SKU Induk» terpisah | **COCOK arah** — script memetakan `sku` ke «Nomor Referensi SKU»; **PERLU UBAH** teks `data-dan-tindakan.md`: sebut eksplisit Shopee punya **dua** kolom SKU (Induk vs Referensi) dan restok memakai **Referensi** per varian |
+| Nama + varian: `Nama Produk`, `Nama Variasi` | Pola file export (jurnal/ringkasan kolom di atas) | 2026-10-14 | Dua kolom terpisah, digabung di script | **COCOK** |
+| Qty: `Jumlah` | ngulikdata; uji regresi K5–K7 | 2026-10-14 | «Jumlah: qty per item» | **COCOK** |
+| SKU Induk hanya di listing produk, bukan nama kolom wajib Tokopedia | https://seller.shopee.co.id/edu/article/16726 | 2026-10-14 | «SKU Induk adalah kode identifikasi produk … unik untuk tiap produk» | **COCOK** — jangan klaim «SKU Induk» = kolom SKU utama di semua platform |
+
+**Usulan teks (Akun B):** Di `references/data-dan-tindakan.md` §1, tambah baris: «Shopee (ekspor Pesanan): No. Pesanan, Status Pesanan, Waktu Pesanan Dibuat, Nomor Referensi SKU, Nama Produk, Nama Variasi, Jumlah — nama menu export bisa bergeser.»
+
+### 8.2 Shopee — stok / daftar produk (Mass Update / Mass Upload)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Stok dari template produk (bukan ekspor pesanan) | https://seller.shopee.co.id/edu/article/6944, https://seller.shopee.co.id/edu/article/1944 | 2026-10-14 | Mass Update: stok diubah lewat template **Informasi Penjualan**; Mass Upload: «Isi kolom stok …» per variasi | **PERLU UBAH** — skill belum menyebut bahwa stok Shopee diunduh lewat **Produk Saya → Mass Update** (bukan dari file pesanan); nama kolom persis bergantung template (sering «Stok» / stok per variasi, plus Kode Variasi) — jangan mengarang daftar kolom tanpa file contoh terbaru |
+
+**Usulan teks:** README/skill: «Stok Shopee: unduh template Mass Update (Informasi Penjualan), lalu tempel kolom stok + identitas varian ke tabel `--barang-data` (sku/nama/stok).»
+
+### 8.3 Tokopedia — ekspor pesanan (Manage Orders → Export Orders)
+
+| Klaim skill/script | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Tanggal/waktu pesanan | https://seller-id.tokopedia.com/university/essay?knowledge_id=4494325455079170&lang=id | 2026-10-14 | Dimensi «Order ID», «Order Status», «SKU ID», «Quantity», … | **PERLU UBAH** — kolom resmi **Order ID** (bukan «No. Pesanan»), **SKU ID** (bukan «Nomor Referensi SKU» / «SKU Induk») |
+| Status | idem | 2026-10-14 | «Order Status … To Ship, Shipped, Completed» | **COCOK arah** — alias `status pesanan`/`order status` sudah di script |
+| Qty | idem | 2026-10-14 | «Quantity» / dimensi kuantitas per SKU | **COCOK** — alias `quantity`, `jumlah` |
+| Nama produk + variasi | https://seller-id.tokopedia.com/university/essay?knowledge_id=3659692639586050 | 2026-10-14 | Spreadsheet export: «Order ID, SKU ID, Product Name, Variation, Quantity» | **COCOK arah** — script mengenali `product name` + `variation`; **PERLU UBAH** dokumentasi: sebut «Product Name» + «Variation» (bahasa Inggris di file export) |
+| «Seller SKU» di laporan order (rekap pihak ketiga) | https://rekapcepat.id/blog/perbedaan-data-transaksi-settlement-data-order-pesanan | 2026-10-14 | Data order: «Seller SKU (kode produk)» | **PERLU REVIEW** — pastikan apakah label export terbaru «SKU ID» saja atau juga «Seller SKU»; script sudah punya alias `seller sku` |
+
+**Usulan teks (Akun B):** Tambah di `data-dan-tindakan.md`: «Tokopedia/TikTok Shop Seller Centre (Export Orders): Order ID, Order Status, SKU ID, Product Name, Variation, Quantity — bahasa kolom Inggris; jangan asumsikan «SKU Induk» Shopee.»
+
+### 8.4 Tokopedia — stok produk
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Stok dari Seller Centre | https://seller-id.tokopedia.com/university/essay?knowledge_id=4494325455079170 (dimensi SKU ID) | 2026-10-14 | Export order fokus SKU ID & qty terjual, bukan stok gudang | **PERLU UBAH** — stok Tokopedia biasanya dari **kelola produk / export katalog**, bukan file pesanan; skill sudah benar meminta stok terpisah (`--barang-data`), tapi dokumentasi perlu menegaskan sumber stok ≠ file order |
+
+### 8.5 Ringkas vs implementasi script
+
+| Aspek | Kesimpulan |
+|---|---|
+| Alias kolom di `rencana_restok.py` | **COCOK** untuk Shopee pesanan + banyak kasir; Tokopedia terbaca via `order id`, `sku id`, `product name`, `variation`, `quantity` |
+| Dokumen `data-dan-tindakan.md` | **PERLU UBAH** — pisahkan contoh kolom **per platform** (Shopee vs Tokopedia), hilangkan kesan «SKU Induk» universal |
+| Uji regresi K5 | Format contoh = Shopee; tetap valid |
+
+Router model: smoke OpenClaw **HTTP 530** (~15:30 UTC, ~92 s) → C24 G18 tetap ditunda.

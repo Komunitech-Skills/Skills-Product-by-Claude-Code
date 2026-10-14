@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — router masih 530: lanjut **C25** butir (c) rencana-restok-barang; bila router hidup → **C24 G18** (topik 1482–1491).
+1. **Akun C** — router masih 530: lanjut **C25** butir (d) pph-final-umkm; bila router hidup → **C24 G18** (topik 1482–1491).
 2. **Akun B** — terapkan usulan teks C25 (a) di `aturan-pertanyaan.md`; uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~15:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 15:30 UTC — KEY/BOT/TESTER SET; merge default (+Akun B); getUpdates 242; smoke router; C25 (c) bila 530 | — | — | — |
 | 2026-10-14 ~15:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 87de9da9 | selesai ~15:12 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~91 s); **C25 (b)** bandingkan-pemasok-vendor → `c25-verifikasi-aturan-2026-10-14.md` | — | docs | ya |
 | 2026-10-14 ~15:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 15:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router; C25 (b) bila 530 | — | — | — |
 | 2026-10-14 ~14:30 | `cursor/iterasi-otomatis-akun-c-8b42` | ba86c8eb | selesai ~14:38 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530; **C25 (a)** verifikasi panduan-wawancara → `c25-verifikasi-aturan-2026-10-14.md` | — | docs | ya |
