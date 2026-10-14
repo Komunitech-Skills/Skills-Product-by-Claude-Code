@@ -6,14 +6,16 @@ Skill adalah **folder** berisi file `SKILL.md`. Cara memasangnya: **salin folder
 
 ## Pilih platform yang kamu pakai
 
-| Platform | Folder tujuan (Mac/Linux) | Folder tujuan (Windows) | Cek skill terpasang |
+| Platform | Folder tujuan global (Mac/Linux) | Folder tujuan proyek (opsional) | Cek skill terpasang |
 |---|---|---|---|
-| **Claude Code** | `~/.claude/skills/` | `%USERPROFILE%\.claude\skills\` | ketik `/skills` |
-| **OpenAI Codex** | `~/.agents/skills/` | `%USERPROFILE%\.agents\skills\` | ketik `/skills` |
-| **Cursor** | `~/.cursor/skills/` | `%USERPROFILE%\.cursor\skills\` | ketik `/` di chat, cari nama skill |
-| **OpenClaw** | `~/.openclaw/skills/` | lihat catatan OpenClaw di bawah | `openclaw skills list` |
+| **Claude Code** | `~/.claude/skills/` | `.claude/skills/` di repo | ketik `/skills` |
+| **OpenAI Codex** | `~/.agents/skills/` | `.agents/skills/` (dari folder kerja hingga root repo) | ketik `/skills` |
+| **Cursor** | `~/.cursor/skills/` atau `~/.agents/skills/` | `.cursor/skills/` atau `.agents/skills/` di repo | ketik `/nama-skill` di Agent chat, atau Settings → Rules |
+| **OpenClaw** | `~/.openclaw/skills/` | `skills/` di workspace OpenClaw | `openclaw skills list` |
 
-Memakai lebih dari satu platform? Salin folder skill ke **masing-masing** folder tujuan.
+**Windows (global):** `%USERPROFILE%\.claude\skills\`, `%USERPROFILE%\.agents\skills\`, `%USERPROFILE%\.cursor\skills\` — struktur sama, hanya lokasi home Windows.
+
+Memakai lebih dari satu platform? Salin folder skill ke **masing-masing** folder tujuan. Hindari memasang skill **identik** di banyak folder sekaligus pada **satu** platform (mis. `~/.cursor/skills` dan `~/.claude/skills` di Cursor), agar agent tidak memuat dobel.
 
 ## Cara termudah: lewat File Explorer / Finder
 
@@ -48,17 +50,17 @@ File `LISENSI.txt` dan `CARA-INSTAL.md` yang ikut terekstrak boleh dipindah/diha
 
 ## Catatan per platform
 
-**OpenClaw.** Cara paling andal (juga untuk Windows yang memakai WSL):
+**OpenClaw.** Cara paling andal untuk semua agent di mesin yang sama:
 ```bash
 openclaw skills install ./nama-skill --global
 ```
-Atau lewat halaman **Plugins → Skills** (impor ZIP/SKILL.md) jika tersedia di gateway kamu. Skill terbaca pada pesan berikutnya; cek dengan `openclaw skills check`.
+Skill masuk ke `~/.openclaw/skills/`. Untuk **satu workspace** saja, hilangkan `--global` (skill masuk folder `skills/` workspace). Alternatif: halaman **Plugins → Skills** di gateway, atau impor ZIP bila tersedia. Skill terbaca pada pesan berikutnya; cek dengan `openclaw skills check`.
 
-**Claude Code.** Skill terbaca otomatis. Jika folder `skills` baru saja dibuat, tutup dan buka lagi Claude Code.
+**Claude Code.** Skill di `~/.claude/skills/` atau `.claude/skills/` repo terbaca otomatis. Jika folder global baru dibuat saat sesi sudah jalan, jalankan `/reload-skills` atau buka sesi baru.
 
-**Codex.** Skill terbaca pada pesan berikutnya. Bisa juga dipanggil langsung dengan `$nama-skill`.
+**Codex.** Skill user di `~/.agents/skills/`; skill tim di `.agents/skills/` di repo. Skill terbaca pada pesan berikutnya. Bisa dipanggil langsung dengan `$nama-skill`.
 
-**Cursor.** Buka chat baru (atau restart Cursor) setelah memasang. Cursor juga membaca `~/.claude/skills` dan `~/.agents/skills`, jadi jangan pasang skill yang sama di beberapa folder itu sekaligus agar tidak dobel.
+**Cursor.** Agent memuat skill dari folder proyek (`.cursor/skills/`, `.agents/skills/`) dan folder user di komputer lokal. Untuk **Cursor Cloud Agent**, skill di `~/.cursor/skills/` **tidak otomatis ikut** — pasang skill di **repo** (`.cursor/skills/`) atau aktifkan **Sync Skills** di Settings → Agents bila ingin memakai skill pribadi di cloud. Setelah memasang, buka chat Agent baru. Cursor juga bisa membaca skill dari folder Claude/Codex (`~/.claude/skills`, `~/.codex/skills`) untuk kompatibilitas; jangan duplikasi skill yang sama di banyak folder.
 
 ## Skill yang memakai script
 
@@ -69,8 +71,9 @@ Beberapa skill menyertakan script Python (folder `scripts/`). Mac dan Linux umum
 | Masalah | Solusi |
 |---|---|
 | Skill tidak muncul | Pastikan `SKILL.md` ada **langsung** di dalam folder skill, bukan di dalam folder bertingkat. Buka sesi/chat baru. |
-| Skill tidak dipakai otomatis | Sebut kebutuhannya lebih jelas, atau panggil namanya langsung (mis. "pakai skill kasir-lokal"). |
+| Skill tidak dipakai otomatis | Sebut kebutuhannya lebih jelas, atau panggil namanya langsung (mis. "pakai skill kasir-lokal" atau `/kasir-lokal` di Cursor). |
 | Error "python not found" | Pasang Python (lihat di atas), lalu buka ulang aplikasi. |
+| Skill hilang di Cursor Cloud | Pasang di `.cursor/skills/` dalam repo, atau sync skill user lewat Settings → Agents. |
 
 ---
-*Lokasi folder diverifikasi 2026-09-23 dari dokumentasi/kode sumber resmi. Aplikasi bisa berubah; hubungi Komunitech bila ada kendala.*
+*Verifikasi lokasi folder: Cursor, Claude Code, Codex, OpenClaw — **2026-10-14** (sumber resmi; lihat `research/sources/platform-2026-10-14.md`). Platform sekunder (Antigravity, Hermes, Grok, Muse) belum terverifikasi. Hubungi Komunitech bila ada kendala.*
