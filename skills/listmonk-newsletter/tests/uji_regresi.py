@@ -872,7 +872,7 @@ class Uji(unittest.TestCase):
         d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
         for f in ("SKILL.md", "README.md"):
             t = open(os.path.join(d, f), encoding="utf-8").read().lower()
-            self.assertIn("akses shell", t, f)
+            self.assertTrue("akses shell" in t or "akses terminal" in t, f)
             self.assertIn("kelalaian agent", t, f)
 
     def test_versi(self):

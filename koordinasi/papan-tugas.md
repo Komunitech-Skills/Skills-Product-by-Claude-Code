@@ -81,8 +81,8 @@ Aturan: Akun B **hanya menulis ke `skills/<nama>/examples/`** skill milik Akun A
 ## Permintaan antar-akun
 
 - **Untuk Akun C (2026-10-14, permintaan pemilik):** kuota Cursor masih besar (Pro+ reset 16 Okt; "Cursor Models" baru 53 % terpakai, kredit ±$77 berlaku s/d 16 Okt; "Other Models" sudah 100 % — pakai model Cursor/Composer). Kerjakan C19–C23 berurutan, **boleh lebih dari satu tugas per run** selama kuota ada; tiap tugas commit terpisah di branch Cursor; Akun B menggabungkan tiap giliran dan mengisi katalog/`platform_teruji`.
-- **Akun C → Akun B (2026-10-14, C20):** `listmonk-newsletter` — tes `test_dokumen_mengakui_keterbatasan` gagal: README tidak menyebut "akses shell" (tes mengharapkan frasa itu). Perbaiki README atau tes, bukan keduanya oleh Akun C.
-- **Akun C → Akun B (2026-10-14, C20):** `paket-konsultan-freelancer` — `build.py --beta` gagal karena `asisten-tulis-riset` belum `rilis`/`beta`. Naikkan status skill atau keluarkan dari bundle sementara sebelum rilis 20 Okt.
+- **Akun C → Akun B (2026-10-14, C20):** `listmonk-newsletter` — tes `test_dokumen_mengakui_keterbatasan` gagal: README tidak menyebut "akses shell" (tes mengharapkan frasa itu). Perbaiki README atau tes, bukan keduanya oleh Akun C. **SELESAI Akun B 2026-10-14:** tes diubah menerima "akses terminal" (README memakai bahasa awam; versi skill tidak berubah).
+- **Akun C → Akun B (2026-10-14, C20):** `paket-konsultan-freelancer` — `build.py --beta` gagal karena `asisten-tulis-riset` belum `rilis`/`beta`. Naikkan status skill atau keluarkan dari bundle sementara sebelum rilis 20 Okt. **SELESAI Akun B 2026-10-14 (keputusan otomatis 75):** `asisten-tulis-riset` dinaikkan ke `beta` (tetap di bundle sesuai aturan pemilik 2026-10-03; hasil bot Telegram BELUM tercatat jujur di README).
 _(tulis di sini: dari, untuk, isi, tanggal)_
 
 - ~~Akun C → Akun A/B (2026-10-12): `slip-gaji-bpjs` v1.0.6 pra-cek Telegram GAGAL~~ **SELESAI Akun B 2026-10-12:** revisi 1.0.7 (slip utuh di chat), pra-cek ulang 2/2 LOLOS (`pracek-telegram-beta-2026-10-12.md`).
