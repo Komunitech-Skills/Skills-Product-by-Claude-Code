@@ -143,7 +143,49 @@
 
 ---
 
+## Run 3 (C22) — 2026-10-14 ~10:30 UTC
+
+**Skill:** `cek-privasi-openclaw`, `seleksi-cv-pelamar`, `satu-lawan-satu-dan-umpan-balik`, `pantau-cron-openclaw`, `bandingkan-pemasok-vendor`, `rencana-restok-barang`, `panduan-wawancara-kerja`  
+**HOME uji:** `c22-<skill>` (1 skill per HOME, `run-uji.sh`, tanpa Telegram)  
+**Paket:** skill disalin dari repo workspace (setara isi ZIP beta).
+
+### Hasil kalimat uji (tanda berhasil panduan)
+
+| Skill | Perintah (FIKSI) | Tanda berhasil | Waktu agent (perkiraan) | Catatan |
+|-------|------------------|----------------|-------------------------|---------|
+| `cek-privasi-openclaw` | Amankah OpenClaw saya? Cek privasi dong. | 🔴/🟡/🟢 + saran perbaikan + izin sebelum ubah | ~189 s | `security audit` + baca config; exec/read |
+| `satu-lawan-satu-dan-umpan-balik` | Saya nggak enak negur kasir yang sering telat. | WA ajakan + naskah empat mata + langkah tindak lanjut | ~25 s | `[isian]` wajar bila jam standar belum disebut |
+| `seleksi-cv-pelamar` | 3 CV FIKSI admin toko — pilih 2 + pertanyaan + draf WA | Tabel skor kriteria + shortlist + pertanyaan wawancara | ~99 s | 3 CV ringkas (bukan 12); format lengkap |
+| `bandingkan-pemasok-vendor` | 3 penawaran tepung 600 kg / 5 hari (FIKSI) | Rekomendasi + tabel peringkat + skor + risiko PPN/tenggat | ~54 s | Selaras contoh uji 01-normal |
+| `rencana-restok-barang` | CSV penjualan+stok di workspace — kulakan minggu ini | Blok PESAN SEKARANG + total Rp + per barang | ~52 s | `exec` script; file contoh dari `examples/data/` |
+| `panduan-wawancara-kerja` | Rubrik kasir kelontong 45 menit 2 pewawancara (FIKSI) | Kompetensi + pertanyaan STAR + rubrik 1–5 + aturan UU | ~118 s | Jawaban panjang (~12,7 rb karakter) |
+| `pantau-cron-openclaw` | Pantau laporan 21.00 & piutang 07.45… / Job terlambat? | Rencana pengawas + konfirmasi "ya" (panduan §5 skill 1) | **GAGAL** | Run 1: timeout router lalu HTTP 530; run 2: 530 langsung — **bukan** kegagalan skill. Kabar HILANG Telegram sudah LOLOS di **C18** (2026-10-13). |
+
+### Usulan kalimat §5 panduan (3 skill baru, belum ada di §5)
+
+**`bandingkan-pemasok-vendor`:** `Tolong bandingin 3 balasan WA supplier [bahan] ini — butuh [jumlah] paling lambat [N] hari lagi:` (tempel chat WA pemasok).
+
+**`rencana-restok-barang`:** `Ini penjualan 90 hari plus stok sekarang toko [jenis toko] — minggu ini harus kulakan apa, berapa?` (tempel CSV atau letakkan file di folder kerja bot).
+
+**`panduan-wawancara-kerja`:** `Buatkan pertanyaan wawancara dan rubrik skor untuk [posisi], wawancara [durasi] menit, [N] pewawancara.`
+
+### Friksi / temuan panduan
+
+| # | Temuan | Usulan |
+|---|--------|--------|
+| 1 | `pantau-cron-openclaw` di §5 sudah jujur soal alur chat→"ya" belum ujung ke ujung; C22 lokal gagal karena router model, bukan panduan | Tester VIP: ikuti §5 skill 1; tim: ulang C22 lokal bila router hidup |
+| 2 | Skill baru (bandingkan/restok/wawancara) belum masuk §5 — tester beta hanya lihat 10 skill fokus | Tambah sub-bagian opsional "Skill VIP lain di ZIP" atau tunggu rilis penuh |
+| 3 | `rencana-restok-barang` butuh file CSV di workspace — awam mungkin hanya tempel di chat | Panduan §5 skill baru: sebut "salin file contoh atau tempel tabel penjualan" |
+
+**Perubahan `docs/panduan-beta-tester.md`:** tidak ada (temuan belum terbukti salah langkah; usulan §5 dicatat di atas untuk Akun B).
+
+### Formulir masukan SIMULASI (§7) — Run 3 (ringkas)
+
+Semua: OpenClaw lokal Linux simulasi; instal Ya; 1× uji; kegunaan 4–5; Sering/Selalu setelah isi `[isian]`; tidak aneh (kecuali pantau: tidak teruji); harga wajar Rp49–99rb; testimoni Tidak (simulasi).
+
+---
+
 ## Run berikutnya
 
-- **C17 selesai** — idle menunggu baris tugas baru di papan atau keputusan 242.
-- `pantau-cron-openclaw` butuh gateway + Telegram nyata — delegasi ke tester VIP atau run manual terpisah, bukan automation 30 menit.
+- **C22 selesai** (6/7 kalimat uji OK; pantau-cron menunggu router / sudah tercover C18 Telegram).
+- **C23** konsistensi dokumen vs katalog.
