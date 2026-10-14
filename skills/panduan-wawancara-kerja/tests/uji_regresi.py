@@ -169,7 +169,7 @@ class SkorBermasalah(unittest.TestCase):
         self.assertIsNone(rata(k, "Layanan")["rata"])          # semua kosong
         self.assertEqual(rata(k, "Kecepatan")["rata"], 3)      # hanya P2
         self.assertEqual(k["kosong"], ["Layanan"])
-        self.assertEqual(k["saran"], sw.S_TUNDA)
+        self.assertEqual(k["saran"], sw.S_BELUM_SIMPULAN)
         self.assertEqual(sum("kosong" in p for p in h["peringatan"]), 3)
 
     def test_di_luar_rentang_atau_bukan_angka_diabaikan(self):
@@ -180,7 +180,7 @@ class SkorBermasalah(unittest.TestCase):
             k = cari(h, "C1")
             self.assertIsNone(rata(k, "Ketelitian")["rata"], repr(s))
             self.assertTrue(any("diabaikan" in p for p in h["peringatan"]), repr(s))
-            self.assertEqual(k["saran"], sw.S_TUNDA, repr(s))
+            self.assertEqual(k["saran"], sw.S_BELUM_SIMPULAN, repr(s))
 
     def test_batas_1_dan_5_diterima_koma_dan_teks(self):
         d = data({"C1": {"P1": [1, "5", "4,5"]}})
@@ -202,14 +202,6 @@ class SkorBermasalah(unittest.TestCase):
         h = hitung(d)
         self.assertTrue(any("Typo Kompetensi" in p and "tidak dikenal" in p for p in h["peringatan"]))
         self.assertEqual(rata(cari(h, "C1"), "Ketelitian")["rata"], 5)
-
-    def test_skor_diabaikan_diberi_catatan_di_kandidat_itu_saja(self):
-        d = data({"C1": {"P1": [4, 4, 4], "P2": [9, 4, 4]}, "C2": {"P1": [4, 4, 4]}})
-        h = hitung(d)
-        self.assertEqual(cari(h, "C1")["masalah"], 1)
-        self.assertIn("konfirmasi dulu", " ".join(cari(h, "C1")["alasan"]))
-        self.assertEqual(cari(h, "C2")["masalah"], 0)
-        self.assertNotIn("konfirmasi", " ".join(cari(h, "C2")["alasan"]))
 
     def test_semua_kompetensi_sama_tidak_menyebut_terkuat_terlemah(self):
         t = sw.teks_hasil(hitung(data({"C1": {"P1": [3, 3, 3]}})))
@@ -235,6 +227,155 @@ class SkorBermasalah(unittest.TestCase):
         d = {"kompetensi": ["A", "B"], "kandidat": [{"kode": "C1", "skor": {"A": 4, "P1": {"B": 2}}}]}
         with self.assertRaises(sw.Galat):
             hitung(d)
+
+
+def skenario_kasir_kafe():
+    """Data skor 3 kandidat x 2 pewawancara (fiktif) dengan hasil hitung independen 3,93 / 3,88 / 3,66."""
+    nama = ["Ketelitian uang", "Layanan pelanggan", "Kecepatan saat ramai", "Kejujuran", "Kerja sama tim"]
+    bobot = [(30, True), (25, False), (20, False), (15, True), (10, False)]
+    skor = {
+        "Dina": {"Lina": [4, 4, 3, 4, 3], "Arif": [4, 5, 3, 4, 4]},
+        "Rizal": {"Lina": [3, 4, 4, 4, 4], "Arif": [5, 4, 4, 3, 4]},
+        "Wulan": {"Lina": [3, 5, 4, 4, 5], "Arif": [2, "3,5", 4, 4, 4]},
+    }
+    return {"posisi": "Kasir kafe", "kompetensi": [{"nama": n, "bobot": b, "kritis": c} for n, (b, c) in zip(nama, bobot)],
+            "kandidat": [{"kode": f"C{i}", "nama": k, "skor": {pw: dict(zip(nama, v)) for pw, v in per.items()}}
+                         for i, (k, per) in enumerate(skor.items(), 1)]}
+
+
+class SeriDanDiperselisihkan(unittest.TestCase):
+    """Butir 4 (v1.0.1): jangan memilih kompetensi 'terkuat/terlemah' saat seri atau saat sedang diperselisihkan."""
+
+    def setUp(self):
+        self.h = hitung(skenario_kasir_kafe())
+        self.teks = sw.teks_hasil(self.h)
+
+    def test_angka_skenario_cocok_hitungan_independen(self):
+        self.assertEqual([(k["nama"], k["peringkat"], str(total2(k))) for k in self.h["kandidat"]],
+                         [("Rizal", 1, "3.93"), ("Dina", 2, "3.88"), ("Wulan", 3, "3.66")])
+        self.assertEqual([k["saran"] for k in self.h["kandidat"]], [sw.S_LANJUT, sw.S_LANJUT, sw.S_PERTIMBANGKAN])
+
+    def test_hanya_selisih_lebih_dari_1_5_ditandai(self):
+        ditandai = [(k["nama"], x["nama"], x["selisih"]) for k in self.h["kandidat"] for x in k["dibahas"]]
+        self.assertEqual(ditandai, [("Rizal", "Ketelitian uang", 2)])   # Wulan/Layanan 5 vs 3,5 = tepat 1,5: tidak ditandai
+
+    def test_rizal_seri_empat_kompetensi_tidak_ada_yang_dipilih(self):
+        rizal = cari(self.h, "C2")
+        e = rizal["terkuat"]
+        self.assertTrue(e["seri"] and e["tunda"])
+        self.assertEqual(e["nama"], ["Ketelitian uang", "Layanan pelanggan", "Kecepatan saat ramai", "Kerja sama tim"])
+        baris = next(b for b in self.teks.splitlines() if b.startswith("- C2 Rizal") and "total" in b)
+        self.assertIn("terkuat: seri \u2014 putuskan setelah pembahasan", baris)
+        self.assertNotIn("terkuat Ketelitian uang", baris)
+        self.assertIn("terlemah Kejujuran (3,50)", baris)    # terlemah tunggal dan tidak diperselisihkan: boleh disebut
+
+    def test_yang_tunggal_dan_tidak_diperselisihkan_tetap_disebut(self):
+        dina = next(b for b in self.teks.splitlines() if b.startswith("- C1 Dina") and "total" in b)
+        self.assertIn("terkuat Layanan pelanggan (4,50)", dina)
+        self.assertIn("terlemah Kecepatan saat ramai (3,00)", dina)
+        wulan = next(b for b in self.teks.splitlines() if b.startswith("- C3 Wulan") and "total" in b)
+        self.assertIn("terlemah Ketelitian uang (2,50)", wulan)
+
+    def test_terkuat_tunggal_tetapi_diperselisihkan_tidak_dipilih(self):
+        # Ketelitian: P1 5, P2 2 -> rata 3,5 (tertinggi tunggal) tetapi selisih 3 > 1,5
+        d = data({"C1": {"P1": [5, 3, 2], "P2": [2, 3, 2]}})
+        k = cari(hitung(d), "C1")
+        self.assertEqual(k["terkuat"]["nama"], ["Ketelitian"])
+        self.assertFalse(k["terkuat"]["seri"])
+        self.assertTrue(k["terkuat"]["tunda"])
+        t = sw.teks_hasil(hitung(d))
+        self.assertIn("sedang diperselisihkan \u2014 putuskan setelah pembahasan", t)
+        self.assertNotIn("terkuat Ketelitian", t)
+
+    def test_total_sama_dan_ada_penilaian_diperselisihkan_tidak_dipisah(self):
+        # bobot 40/35/25. C1 rata 5,2,4 -> 3,70 (tanpa selisih). C2 rata 3,5,3 -> 3,70; Ketelitian P1 4 vs P2 2 = selisih 2
+        d = data({"C1": {"P1": [5, 2, 4], "P2": [5, 2, 4]}, "C2": {"P1": [4, 5, 3], "P2": [2, 5, 3]}})
+        h = hitung(d)
+        self.assertEqual(total2(cari(h, "C1")), total2(cari(h, "C2")))
+        self.assertEqual([k["peringkat"] for k in h["kandidat"]], [1, 1])
+        self.assertTrue(all(k["seri"] for k in h["kandidat"]))
+        self.assertIn("Seri \u2014 putuskan setelah pembahasan", sw.teks_hasil(h))
+        # tanpa selisih, tie-break kompetensi berbobot terbesar tetap bekerja (C1 unggul di Ketelitian)
+        d2 = data({"C1": {"P1": [5, 2, 4], "P2": [5, 2, 4]}, "C2": {"P1": [3, 5, 3], "P2": [3, 5, 3]}})
+        h2 = hitung(d2)
+        self.assertEqual([(k["kode"], k["peringkat"], k["seri"]) for k in h2["kandidat"]], [("C1", 1, False), ("C2", 2, False)])
+
+    def test_kandidat_seri_diberi_catatan(self):
+        h = hitung(data({"C1": {"P1": [4, 3, 3]}, "C2": {"P1": [4, 3, 3]}}))
+        for k in h["kandidat"]:
+            self.assertTrue(k["seri"])
+            self.assertIn("seri dengan kandidat lain \u2014 putuskan setelah pembahasan", " ".join(k["alasan"]))
+
+    def test_json_memuat_penanda(self):
+        j = sw.json_hasil(self.h)
+        rizal = next(k for k in j["kandidat"] if k["nama"] == "Rizal")
+        self.assertTrue(rizal["terkuat"]["seri"])
+        self.assertTrue(rizal["terkuat"]["putuskan_setelah_pembahasan"])
+        self.assertEqual(rizal["terlemah"]["kompetensi"], ["Kejujuran"])
+        self.assertFalse(rizal["terlemah"]["putuskan_setelah_pembahasan"])
+
+
+class SkorDiabaikanTidakAdaRekomendasi(unittest.TestCase):
+    """Butir 5 (v1.0.1): kandidat dengan skor kosong/di luar 1-5/nama tak dikenal tidak diberi rekomendasi sampai dilengkapi."""
+
+    def test_skor_di_luar_rentang_tidak_disarankan_lanjut(self):
+        d = data({"C1": {"P1": [5, 5, 5], "P2": [6, 5, 5]}, "C2": {"P1": [3, 3, 3], "P2": [3, 3, 3]}})
+        h = hitung(d)
+        c1, c2 = cari(h, "C1"), cari(h, "C2")
+        # tanpa skor yang diabaikan C1 jelas "lanjut" (total 5,00); sekarang tidak ada rekomendasi
+        self.assertEqual(c1["saran"], sw.S_BELUM_SIMPULAN)
+        self.assertFalse(c1["siap"])
+        self.assertIsNone(c1["peringkat"])
+        self.assertEqual(c1["lengkapi"], ["P2 / Ketelitian (di luar 1-5)"])
+        self.assertIn("lengkapi skor: P2 / Ketelitian (di luar 1-5)", c1["saran_teks"])
+        self.assertEqual(c2["peringkat"], 1)
+        t = sw.teks_hasil(h)
+        self.assertIn("Belum bisa disimpulkan \u2014 lengkapi skor: P2 / Ketelitian (di luar 1-5)", t)
+        self.assertIn("Belum diperingkat: C1", t)
+        self.assertNotIn("Disarankan lanjut", t.split("RATA-RATA")[0])
+
+    def test_jenis_skor_yang_diabaikan_semuanya_ditangkap(self):
+        d = data({"C1": {"P1": [0, 4, 4], "P2": [4, "tiga", 4], "P3": [4, 4, None]}})
+        d["kandidat"][0]["skor"]["P1"]["Salah Ketik"] = 4
+        k = cari(hitung(d), "C1")
+        self.assertEqual(k["saran"], sw.S_BELUM_SIMPULAN)
+        self.assertEqual(sorted(k["lengkapi"]), sorted([
+            "P1 / Ketelitian (di luar 1-5)", "P2 / Layanan (bukan angka)", "P3 / Kecepatan (kosong)",
+            "P1 / 'Salah Ketik' (nama kompetensi tidak dikenal)"]))
+
+    def test_semua_skor_diabaikan_tetap_ada_catatan_lengkapi(self):
+        d = data({"C1": {"P1": [0, 6, 9]}})
+        k = cari(hitung(d), "C1")
+        self.assertIsNone(k["total"])
+        self.assertEqual(k["saran"], sw.S_BELUM_DINILAI)
+        self.assertIn("lengkapi skor", " ".join(k["alasan"]))
+
+    def test_setelah_dilengkapi_rekomendasi_muncul(self):
+        d = data({"C1": {"P1": [5, 5, 5], "P2": [5, 5, 5]}, "C2": {"P1": [3, 3, 3], "P2": [3, 3, 3]}})
+        h = hitung(d)
+        self.assertEqual(cari(h, "C1")["saran"], sw.S_LANJUT)
+        self.assertEqual([k["peringkat"] for k in h["kandidat"]], [1, 2])
+        self.assertTrue(all(k["siap"] for k in h["kandidat"]))
+
+    def test_semua_kandidat_bermasalah_peringkat_sementara(self):
+        d = data({"C1": {"P1": [5, 5, 5], "P2": [6, 5, 5]}, "C2": {"P1": [3, 3, 3], "P2": [3, 0, 3]}})
+        h = hitung(d)
+        self.assertTrue(h["peringkat_sementara"])
+        self.assertEqual([k["saran"] for k in h["kandidat"]], [sw.S_BELUM_SIMPULAN] * 2)
+        self.assertIn("SEMENTARA", sw.teks_hasil(h))
+
+    def test_kandidat_tunggal_dengan_skor_diabaikan(self):
+        d = data({"C1": {"P1": [5, 5, 5], "P2": [-1, 5, 5]}})
+        t = sw.teks_hasil(hitung(d))
+        self.assertIn("Belum bisa disimpulkan \u2014 lengkapi skor", t)
+        self.assertNotIn("Disarankan lanjut", t.split("RATA-RATA")[0])
+
+    def test_json_memuat_lengkapi_skor(self):
+        d = data({"C1": {"P1": [5, 5, 5], "P2": [6, 5, 5]}})
+        j = sw.json_hasil(hitung(d))["kandidat"][0]
+        self.assertFalse(j["siap_diputuskan"])
+        self.assertEqual(j["saran"], sw.S_BELUM_SIMPULAN)
+        self.assertEqual(j["lengkapi_skor"], ["P2 / Ketelitian (di luar 1-5)"])
 
 
 class Selisih(unittest.TestCase):
@@ -276,7 +417,7 @@ class Peringkat(unittest.TestCase):
         self.assertEqual([k["peringkat"] for k in h["kandidat"]], [1, 1, 3])
         self.assertTrue(cari(h, "C1")["seri"] and cari(h, "C2")["seri"])
         self.assertFalse(cari(h, "C3")["seri"])
-        self.assertIn("(seri)", sw.teks_hasil(h))
+        self.assertIn("Seri \u2014 putuskan setelah pembahasan", sw.teks_hasil(h))
 
     def test_seri_total_dipecah_kompetensi_berbobot_terbesar(self):
         # bobot 40/35/25. C1: 5,3,3 -> (200+105+75)/100 = 3,80. C2: 3,5,3 -> (120+175+75)/100 = 3,70 (bukan seri)
@@ -293,7 +434,7 @@ class Peringkat(unittest.TestCase):
         h = hitung(d)
         self.assertEqual(cari(h, "C1")["peringkat"], 1)
         self.assertIsNone(cari(h, "C2")["peringkat"])
-        self.assertEqual(cari(h, "C2")["saran"], sw.S_TUNDA)
+        self.assertEqual(cari(h, "C2")["saran"], sw.S_BELUM_SIMPULAN)
         self.assertEqual(h["kandidat"][-1]["kode"], "C2")
         self.assertFalse(h["peringkat_sementara"])
         # total sementara memakai bobot yang tersedia: (5*40 + 5*35)/75 = 5

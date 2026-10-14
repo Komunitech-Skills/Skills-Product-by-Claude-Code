@@ -7,6 +7,7 @@ Dipakai bila posisi tidak ada di `bank-kompetensi.md` atau perlu menyesuaikan is
 - Kompetensi yang diminta pengguna tetapi berupa atribut terlarang (penampilan menarik, belum menikah, muda, laki-laki/perempuan) **diganti perilaku kerja yang sah**: "berpenampilan menarik" menjadi "melayani pelanggan dengan rapi dan sopan"; "belum menikah" menjadi "bersedia lembur dan shift sesuai jadwal" (diperiksa sebagai ketersediaan, bukan skor).
 - Bobot kelipatan 5, jumlah 100, tidak ada yang di bawah 10 atau di atas 35. Pola awal: 4 kompetensi = 35/25/20/20; 5 = 30/25/20/15/10; 6 = 25/20/20/15/10/10. Urutkan dari yang paling penting ke yang paling ringan.
 - **Kritis** (maksimal 2): kompetensi yang bila lemah tidak boleh ditutup nilai tinggi lain (uang, keselamatan, kerahasiaan data). Tandai jelas di daftar.
+- **Syarat administratif dan ketersediaan kerja bukan kompetensi**: bersedia shift/lembur/akhir pekan, jam tiba dan jarak, SIM atau dokumen, tanggal mulai, ekspektasi gaji. Tanyakan sebagai ya/tidak ("ketersediaan kerja"), catat di baris syarat dasar kartu skor, dan jangan masukkan ke definisi, pertanyaan yang diberi skor, rubrik, atau bobot (mis. skor 1 tidak boleh berbunyi "menolak lembur").
 - Definisi satu kalimat: kata kerja + objek + ukuran mutu. Contoh: "Menghitung dan menyerahkan uang dengan benar serta melaporkan selisih sekecil apa pun."
 
 ## 2. Pertanyaan perilaku (pola STAR)
@@ -46,7 +47,7 @@ Skala: **1** belum memenuhi, **2** di bawah standar, **3** memenuhi standar (lay
 - Satu tes untuk satu paket, maksimal 15 sampai 20 menit, memakai **bahan contoh** (uang mainan, data fiktif, brief fiktif), bukan pekerjaan nyata usaha yang diambil gratis dari pelamar.
 - Diumumkan sebagai tes dan dijelaskan penilaiannya. **Tidak ada jebakan tersembunyi** (misalnya sengaja memberi kembalian berlebih tanpa memberi tahu).
 - Tulis: skenario, bahan yang disiapkan, durasi, **kunci/kriteria hasil** (angka dihitung teliti, sebutkan rumusnya), dan kompetensi yang dinilai oleh tiap bagian.
-- Ganti angka dan data tiap putaran wawancara supaya jawaban tidak beredar antar pelamar.
+- **Soal tes sama untuk semua kandidat dalam satu sesi/hari.** Angka dan data tes diganti per sesi atau per hari wawancara (bukan per kandidat) supaya kunci tidak bocor ke kandidat yang datang di hari lain; setiap kandidat pada hari yang sama mendapat soal yang sama atau setara (versi A/B yang tingkat kesulitannya sudah dicek). Tiap kali angka diganti, hitung kunci baru dengan teliti dan tulis rumusnya. Tes yang berbeda per kandidat membuat skor tidak bisa dibandingkan.
 
 ## 7. Mengurangi subjektivitas (diberi tahu ke pewawancara)
 - Tanyakan pertanyaan yang sama, dengan urutan sama, ke semua kandidat posisi yang sama. Lanjutan boleh berbeda, pertanyaan inti tidak.

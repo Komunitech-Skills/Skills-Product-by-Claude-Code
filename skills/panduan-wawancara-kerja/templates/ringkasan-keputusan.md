@@ -5,7 +5,7 @@ Dipakai setelah skor dihitung. Angka disalin dari hasil hitung, tidak diubah.
 Posisi: [isian] | Jumlah kandidat: [isian] | Pewawancara: [isian]
 
 **Peringkat**
-1. [kode nama]: total [x,xx] dari 5. Saran: [Disarankan lanjut / Pertimbangkan (cadangan) / Belum sesuai saat ini / Tunda]
+1. [kode nama]: total [x,xx] dari 5. Saran: [Disarankan lanjut / Pertimbangkan (cadangan) / Belum sesuai saat ini / Belum bisa disimpulkan, lengkapi skor X]
 2. ...
 
 **Kompetensi per kandidat** (daftar, bukan tabel lebar)

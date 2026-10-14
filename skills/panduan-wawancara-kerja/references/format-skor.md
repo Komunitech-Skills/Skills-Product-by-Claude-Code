@@ -40,9 +40,10 @@ Isi skor: angka 1 sampai 5 (boleh desimal, "4,5" diterima). Kosong (`null`, `""`
 1. **Rata-rata per kompetensi** = rata-rata skor valid dari semua pewawancara yang menilai kompetensi itu.
 2. **Total** = jumlah (rata-rata kompetensi x bobot) / jumlah bobot, dari rata-rata yang belum dibulatkan, lalu dibulatkan **sekali** ke 2 desimal (setengah ke atas; 4,275 menjadi 4,28). Hanya kompetensi yang sudah dinilai yang ikut (bobot dinormalkan ulang); kandidat dengan kompetensi belum dinilai ditandai "skor belum lengkap".
 3. **Selisih antar pewawancara** pada satu kompetensi = skor tertinggi dikurangi terendah. **Lebih dari 1,5 poin = perlu dibahas** (tepat 1,5 tidak ditandai). Perlu minimal 2 pewawancara.
-4. **Peringkat**: urut total (yang sudah dibulatkan), seri dipecah oleh skor kompetensi berbobot terbesar (lalu berikutnya); bila masih sama = peringkat sama ("seri"). Kandidat dengan skor belum lengkap tidak diperingkat bila ada yang lengkap. Satu kandidat saja = tanpa peringkat, dinilai terhadap standar (3 = memenuhi standar).
-5. **Saran** (alat bantu, keputusan tetap di pemilik/tim):
-   - Skor belum lengkap: **Tunda**.
+4. **Terkuat/terlemah per kandidat**: bila beberapa kompetensi seri di ujung, atau kompetensinya ditandai perlu dibahas, tertulis "seri — putuskan setelah pembahasan" dan tidak ada yang dipilih. Kandidat yang seri peringkat juga diberi catatan yang sama.
+5. **Peringkat**: urut total (yang sudah dibulatkan), seri dipecah oleh skor kompetensi berbobot terbesar (lalu berikutnya); bila masih sama = peringkat sama ("seri"). Bila total sama dan salah satu kandidat itu punya perbedaan penilaian > 1,5 poin, mereka tidak dipisahkan: peringkat sama, "seri — putuskan setelah pembahasan". Kandidat dengan skor belum lengkap tidak diperingkat bila ada yang lengkap. Satu kandidat saja = tanpa peringkat, dinilai terhadap standar (3 = memenuhi standar).
+6. **Saran** (alat bantu, keputusan tetap di pemilik/tim):
+   - Ada skor kandidat yang kosong, di luar 1-5, bukan angka, atau salah nama kompetensi, atau ada kompetensi yang belum dinilai: **Belum bisa disimpulkan, lengkapi skor X** (tidak ada rekomendasi dan tidak diperingkat sampai dilengkapi; tanyakan skor yang benar ke pengguna. Bila memang tidak dinilai oleh pewawancara itu, hapus barisnya, jangan isi "-" atau 0).
    - Total >= 3,5 dan tidak ada kompetensi di bawah 2,5 (kompetensi kritis: di bawah 3,0): **Disarankan lanjut**.
    - Total >= 2,75 (atau total tinggi tetapi ada kompetensi di bawah standar): **Pertimbangkan (cadangan)**.
    - Selain itu: **Belum sesuai saat ini**.

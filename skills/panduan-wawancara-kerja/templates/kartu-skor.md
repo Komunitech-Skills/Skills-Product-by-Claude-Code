@@ -19,11 +19,12 @@ Skala: 1 belum memenuhi | 2 di bawah standar | 3 memenuhi standar | 4 di atas st
 
 Tes praktik: [isian: hasil singkat dan kompetensi yang dinilainya]
 
-Syarat dasar (ya/tidak, tidak dinilai skor): [isian: mis. SIM berlaku, bersedia shift]
+Ketersediaan kerja dan syarat administratif (ya/tidak, TIDAK dinilai skor): [isian: mis. SIM berlaku, bersedia shift/lembur, tanggal mulai]
 
 Catatan perlu dicek lagi: [isian]
 
 Pengingat:
 - Pertanyaan yang sama ke semua kandidat posisi ini.
+- Syarat administratif dan ketersediaan (shift, lembur, SIM, tanggal mulai) hanya dicentang ya/tidak; tidak masuk skor dan tidak masuk rubrik.
 - Jangan menulis atau menilai: usia, status menikah/hamil/anak, agama, suku, penampilan, kesehatan yang tidak terkait tugas, media sosial pribadi.
 - Kartu ini data pribadi (UU 27/2022): simpan seperlunya, jangan bagikan di grup umum, hapus setelah proses selesai (masa simpan: [isian: kebijakan usaha]).

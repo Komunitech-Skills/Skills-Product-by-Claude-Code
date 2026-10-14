@@ -17,3 +17,4 @@ Aturan pakai:
 1. Beri skor sendiri-sendiri dulu, baru berdiskusi.
 2. Selisih lebih dari 1,5 poin antar pewawancara pada satu kompetensi = bahas bukti masing-masing sebelum memutuskan.
 3. Kompetensi kritis dengan rata-rata di bawah 3,0 menahan keputusan "lanjut", seberapa pun tinggi total skor.
+4. Syarat administratif dan ketersediaan kerja (SIM, dokumen, bersedia shift/lembur, tanggal mulai) tidak masuk rubrik; cukup dicentang ya/tidak di kartu skor.

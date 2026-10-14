@@ -17,6 +17,8 @@ Aturan hitung (persis, tanpa pembulatan selera):
     dibulatkan SEKALI ke 2 desimal (setengah ke atas). Bobot yang jumlahnya bukan 100 dinormalkan.
   - Selisih antar pewawancara pada satu kompetensi (skor tertinggi dikurangi terendah) lebih dari 1,5 poin
     ditandai "perlu dibahas".
+  - Kandidat yang punya skor kosong/diabaikan/belum lengkap: "Belum bisa disimpulkan" (tanpa rekomendasi, tanpa peringkat).
+  - Kompetensi terkuat/terlemah yang seri atau sedang diperselisihkan tidak dipilih ("seri - putuskan setelah pembahasan").
 """
 import argparse
 import json
@@ -31,12 +33,13 @@ BATAS_LANJUT = Fraction(7, 2)         # total >= 3,5 = disarankan lanjut
 BATAS_CADANGAN = Fraction(11, 4)      # total >= 2,75 = pertimbangkan (cadangan)
 LANTAI_KOMPETENSI = Fraction(5, 2)    # rata-rata kompetensi < 2,5 = di bawah standar
 LANTAI_KRITIS = Fraction(3)           # kompetensi kritis < 3,0 = di bawah standar
+VERSI = "1.0.1"
 KOSONG = {"", "-", "–", "—", "n/a", "na", "null", "none", "belum", "kosong", "tidak ada"}
 
 S_LANJUT = "Disarankan lanjut"
 S_PERTIMBANGKAN = "Pertimbangkan (cadangan)"
 S_BELUM_SESUAI = "Belum sesuai saat ini"
-S_TUNDA = "Tunda, skor belum lengkap"
+S_BELUM_SIMPULAN = "Belum bisa disimpulkan"
 S_BELUM_DINILAI = "Belum dinilai"
 
 
@@ -141,9 +144,9 @@ def baca_kompetensi(daftar, peringatan):
 
 
 def baca_skor_kandidat(label, skor, komp_index, peringatan):
-    """Kembalikan {pewawancara: {kunci_kompetensi: Fraction}} untuk satu kandidat."""
+    """Kembalikan ({pewawancara: {nama_kompetensi: Fraction}}, [skor yang diabaikan]) untuk satu kandidat."""
     if skor in (None, {}):
-        return {}
+        return {}, []
     if not isinstance(skor, dict):
         raise Galat(f"'skor' kandidat {label} harus berupa objek, bukan {type(skor).__name__}.")
     nilai_dict = [isinstance(v, dict) for v in skor.values()]
@@ -153,7 +156,7 @@ def baca_skor_kandidat(label, skor, komp_index, peringatan):
         per_pw = {"Pewawancara 1": skor}
     else:
         raise Galat(f"'skor' kandidat {label} campur: sebagian per pewawancara, sebagian langsung per kompetensi. Pilih satu bentuk.")
-    hasil = {}
+    hasil, diabaikan = {}, []
     for pw_raw, isi in per_pw.items():
         pw = rapikan(str(pw_raw)) or "Pewawancara"
         hasil.setdefault(pw, {})
@@ -161,21 +164,25 @@ def baca_skor_kandidat(label, skor, komp_index, peringatan):
             k = kunci(str(nama_raw))
             if k not in komp_index:
                 peringatan.append(f"{label} / {pw}: kompetensi '{rapikan(str(nama_raw))}' tidak dikenal, diabaikan (cek ejaan).")
+                diabaikan.append(f"{pw} / '{rapikan(str(nama_raw))}' (nama kompetensi tidak dikenal)")
                 continue
             nama = komp_index[k]
             if nilai is None or (isinstance(nilai, str) and kunci(nilai) in KOSONG):
                 peringatan.append(f"{label} / {pw} / {nama}: skor kosong, dilewati.")
+                diabaikan.append(f"{pw} / {nama} (kosong)")
                 continue
             try:
                 angka = ke_angka(nilai)
             except ValueError:
                 peringatan.append(f"{label} / {pw} / {nama}: skor {nilai!r} bukan angka, diabaikan.")
+                diabaikan.append(f"{pw} / {nama} (bukan angka)")
                 continue
             if not 1 <= angka <= 5:
                 peringatan.append(f"{label} / {pw} / {nama}: skor {rapikan(str(nilai))} di luar 1-5, diabaikan.")
+                diabaikan.append(f"{pw} / {nama} (di luar 1-5)")
                 continue
             hasil[pw][nama] = angka
-    return hasil
+    return hasil, diabaikan
 
 
 def baca_data(data, batas):
@@ -197,18 +204,35 @@ def baca_data(data, batas):
         kode_terlihat.add(kunci(kode))
         nama = rapikan(c.get("nama"))
         label = f"{kode} {nama}".strip()
-        sebelum = len(peringatan)
-        skor = baca_skor_kandidat(label, c.get("skor"), komp_index, peringatan)
-        n_masalah = len(peringatan) - sebelum
+        skor, diabaikan = baca_skor_kandidat(label, c.get("skor"), komp_index, peringatan)
         for pw in skor:
             if pw not in pewawancara:
                 pewawancara.append(pw)
-        kandidat.append({"kode": kode, "nama": nama, "label": label, "skor": skor, "masalah": n_masalah})
+        kandidat.append({"kode": kode, "nama": nama, "label": label, "skor": skor, "diabaikan": diabaikan})
     return {"posisi": rapikan(data.get("posisi")) or None, "kompetensi": komp, "kandidat": kandidat,
             "pewawancara": pewawancara, "peringatan": peringatan, "batas": batas}
 
 
 # ---------- hitung ----------
+def ekstrem(ada, terbesar):
+    """Kompetensi terkuat/terlemah. Bila seri, atau kompetensinya sedang diperselisihkan, jangan memilih satu."""
+    if not ada:
+        return None
+    nilai = max(b["rata"] for b in ada) if terbesar else min(b["rata"] for b in ada)
+    kena = [b for b in ada if b["rata"] == nilai]
+    return {"nama": [b["nama"] for b in kena], "rata": nilai, "seri": len(kena) > 1,
+            "tunda": len(kena) > 1 or kena[0]["dibahas"]}
+
+
+def kalimat_ekstrem(label, e):
+    rinci = ", ".join(e["nama"])
+    if e["seri"]:
+        return f"{label}: seri \u2014 putuskan setelah pembahasan ({rinci}, {f2(e['rata'])})"
+    if e["tunda"]:
+        return f"{label}: {rinci} ({f2(e['rata'])}) sedang diperselisihkan \u2014 putuskan setelah pembahasan"
+    return f"{label} {rinci} ({f2(e['rata'])})"
+
+
 def hitung_kandidat(k, komp, batas):
     total_bobot = sum(x["bobot"] for x in komp)
     baris, bobot_terisi, jumlah_tertimbang = [], Fraction(0), Fraction(0)
@@ -226,14 +250,16 @@ def hitung_kandidat(k, komp, batas):
     total = jumlah_tertimbang / bobot_terisi if bobot_terisi else None
     lemah = [b for b in ada if Fraction(bulat2(b["rata"])) < (LANTAI_KRITIS if b["kritis"] else batas["lantai"])]
     lengkap = not kosong
+    diabaikan = k["diabaikan"]
+    siap = lengkap and not diabaikan
     dibahas = [b for b in baris if b["dibahas"]]
     alasan = []
+    lengkapi = [f"{n} (belum dinilai)" for n in kosong] + diabaikan
     if total is None:
         saran = S_BELUM_DINILAI
         alasan.append("belum ada skor yang valid")
-    elif not lengkap:
-        saran = S_TUNDA
-        alasan.append("belum dinilai: " + ", ".join(kosong))
+    elif not siap:
+        saran = S_BELUM_SIMPULAN
     else:
         t2 = Fraction(bulat2(total))
         if t2 >= batas["lanjut"] and not lemah:
@@ -246,20 +272,23 @@ def hitung_kandidat(k, komp, batas):
             saran = S_BELUM_SESUAI
     if dibahas:
         alasan.append("bahas dulu perbedaan penilaian antar pewawancara: " + ", ".join(b["nama"] for b in dibahas))
-    if k["masalah"] and total is not None:
-        alasan.append(f"ada {k['masalah']} skor kosong atau diabaikan (lihat peringatan), konfirmasi dulu sebelum memutuskan")
-    urut = sorted(ada, key=lambda b: -b["rata"])
+    saran_teks = saran
+    if total is not None and not siap:
+        saran_teks = f"{saran} \u2014 lengkapi skor: " + "; ".join(lengkapi)
+    elif total is None and diabaikan:
+        alasan.append("lengkapi skor: " + "; ".join(lengkapi))
     return {"kode": k["kode"], "nama": k["nama"], "label": k["label"], "kompetensi": baris, "total": total,
             "lengkap": lengkap, "cakupan": bobot_terisi / total_bobot, "kosong": kosong, "lemah": lemah,
-            "dibahas": dibahas, "saran": saran, "alasan": alasan, "masalah": k["masalah"],
-            "terkuat": urut[0] if urut else None, "terlemah": urut[-1] if urut else None,
+            "dibahas": dibahas, "saran": saran, "saran_teks": saran_teks, "alasan": alasan,
+            "siap": siap, "diabaikan": diabaikan, "lengkapi": lengkapi,
+            "terkuat": ekstrem(ada, True), "terlemah": ekstrem(ada, False),
             "peringkat": None, "seri": False}
 
 
 def beri_peringkat(hasil_kandidat, komp):
     """Peringkat memakai total yang sudah dibulatkan; seri dipecah dengan skor kompetensi berbobot terbesar."""
     dinilai = [h for h in hasil_kandidat if h["total"] is not None]
-    dasar = [h for h in dinilai if h["lengkap"]]
+    dasar = [h for h in dinilai if h["siap"]]
     sementara = not dasar
     if sementara:
         dasar = dinilai
@@ -271,18 +300,30 @@ def beri_peringkat(hasil_kandidat, komp):
         return (-bulat2(h["total"]),) + tuple(-r for r in rata2)
 
     dasar.sort(key=kunci_urut)
-    sebelumnya, posisi = None, 0
-    for n, h in enumerate(dasar, 1):
-        kk = kunci_urut(h)
-        if kk != sebelumnya:
-            posisi = n
-        h["peringkat"] = posisi
-        sebelumnya = kk
+    i = 0
+    while i < len(dasar):
+        j = i
+        while j < len(dasar) and bulat2(dasar[j]["total"]) == bulat2(dasar[i]["total"]):
+            j += 1
+        grup = dasar[i:j]
+        sengketa = len(grup) > 1 and any(h["dibahas"] for h in grup)
+        sebelumnya, posisi = None, i + 1
+        for m, h in enumerate(grup):
+            kk = kunci_urut(h)
+            if sengketa:
+                posisi = i + 1            # total sama dan ada penilaian yang diperselisihkan: jangan dipisahkan
+            elif kk != sebelumnya:
+                posisi = i + m + 1
+            h["peringkat"] = posisi
+            sebelumnya = kk
+        i = j
     jumlah = {}
     for h in dasar:
         jumlah[h["peringkat"]] = jumlah.get(h["peringkat"], 0) + 1
     for h in dasar:
         h["seri"] = jumlah[h["peringkat"]] > 1
+        if h["seri"]:
+            h["alasan"].append("seri dengan kandidat lain \u2014 putuskan setelah pembahasan")
     return dasar, sementara
 
 
@@ -318,16 +359,16 @@ def teks_hasil(h):
     if h["tunggal"]:
         k = h["kandidat"][0]
         out += ["", "PERINGKAT", "- Hanya satu kandidat: tidak ada peringkat. Dinilai terhadap standar (3 = memenuhi standar), bukan terhadap kandidat lain.",
-                f"- {k['label']}: " + (f"total {f2(k['total'])} dari 5. {k['saran']}" if k["total"] is not None else "belum dinilai")]
+                f"- {k['label']}: " + (f"total {f2(k['total'])} dari 5. {k['saran_teks']}" if k["total"] is not None else "belum dinilai")]
     else:
-        out += ["", "PERINGKAT" + (" (SEMENTARA: belum ada kandidat yang skornya lengkap)" if h["peringkat_sementara"] else "")]
+        out += ["", "PERINGKAT" + (" (SEMENTARA: belum ada kandidat yang skornya lengkap dan terkonfirmasi)" if h["peringkat_sementara"] else "")]
         for k in h["kandidat"]:
             if k["total"] is None:
                 out.append(f"- {k['label']}: belum dinilai.")
             elif k["peringkat"] is None:
-                out.append(f"- Belum diperingkat: {k['label']}: total sementara {f2(k['total'])} dari 5 (belum dinilai: {', '.join(k['kosong'])}). {k['saran']}")
+                out.append(f"- Belum diperingkat: {k['label']}: total sementara {f2(k['total'])} dari 5. {k['saran_teks']}")
             else:
-                out.append(f"{k['peringkat']}. {k['label']}: total {f2(k['total'])} dari 5. {k['saran']}" + (" (seri)" if k["seri"] else ""))
+                out.append(f"{k['peringkat']}. {k['label']}: total {f2(k['total'])} dari 5. {k['saran']}" + (". Seri \u2014 putuskan setelah pembahasan" if k["seri"] else ""))
     out += ["", "RATA-RATA PER KOMPETENSI (1-5)"]
     for k in h["kandidat"]:
         bagian = []
@@ -350,8 +391,8 @@ def teks_hasil(h):
             continue
         kalimat = f"- {k['label']}: total {f2(k['total'])} dari 5"
         if k["terkuat"] and k["terlemah"] and k["terkuat"]["rata"] != k["terlemah"]["rata"]:
-            kalimat += f"; terkuat {k['terkuat']['nama']} ({f2(k['terkuat']['rata'])}), terlemah {k['terlemah']['nama']} ({f2(k['terlemah']['rata'])})"
-        kalimat += f". Saran: {k['saran']}"
+            kalimat += "; " + kalimat_ekstrem("terkuat", k["terkuat"]) + "; " + kalimat_ekstrem("terlemah", k["terlemah"])
+        kalimat += f". Saran: {k['saran_teks']}"
         if k["alasan"]:
             kalimat += "; " + "; ".join(k["alasan"])
         out.append(kalimat + ".")
@@ -359,6 +400,13 @@ def teks_hasil(h):
                 f"(kompetensi kritis: di bawah {fp(LANTAI_KRITIS)}); cadangan bila total >= {fp(b['cadangan'])}. "
                 "Saran adalah alat bantu; keputusan tetap di pemilik/tim."]
     return "\n".join(out)
+
+
+def ekstrem_json(e):
+    if e is None:
+        return None
+    return {"kompetensi": e["nama"], "rata_rata": angka_json(e["rata"]), "seri": e["seri"],
+            "putuskan_setelah_pembahasan": e["tunda"]}
 
 
 def json_hasil(h):
@@ -370,8 +418,9 @@ def json_hasil(h):
             "kode": k["kode"], "nama": k["nama"], "peringkat": k["peringkat"], "seri": k["seri"],
             "total": angka_json(k["total"]) if k["total"] is not None else None, "lengkap": k["lengkap"],
             "cakupan_persen": angka_json(k["cakupan"] * 100), "saran": k["saran"], "alasan": k["alasan"],
-            "skor_kosong_atau_diabaikan": k["masalah"],
+            "siap_diputuskan": k["siap"], "lengkapi_skor": k["lengkapi"],
             "belum_dinilai": k["kosong"],
+            "terkuat": ekstrem_json(k["terkuat"]), "terlemah": ekstrem_json(k["terlemah"]),
             "kompetensi": [{"nama": x["nama"], "rata_rata": angka_json(x["rata"]) if x["rata"] is not None else None,
                             "skor": {pw: angka_json(s) for pw, s in x["skor"].items()},
                             "selisih": angka_json(x["selisih"]) if x["selisih"] is not None else None,
@@ -440,7 +489,7 @@ def main(argv=None):
             s.reconfigure(encoding="utf-8")
         except (AttributeError, ValueError):
             pass
-    ap = argparse.ArgumentParser(description="Hitung skor wawancara atau bagi waktu wawancara.")
+    ap = argparse.ArgumentParser(description=f"Hitung skor wawancara atau bagi waktu wawancara (v{VERSI}).")
     ap.add_argument("berkas", nargs="?", help="berkas JSON berisi kompetensi, kandidat, dan skor")
     ap.add_argument("--format", choices=["ringkas", "json"], default="ringkas")
     ap.add_argument("--batas-selisih", default="1.5", help="selisih antar pewawancara yang ditandai (default 1.5)")

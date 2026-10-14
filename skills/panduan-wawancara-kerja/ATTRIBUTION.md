@@ -22,4 +22,5 @@ QRIS, WhatsApp, Instagram, Excel, Canva, CapCut, Shopee, dan nama sejenis hanya 
 Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian.
 
 ## Riwayat versi
-- 1.0.0 (2026-10-14): rilis awal (status draf, belum diuji).
+- 1.0.0 (2026-10-14): rilis awal (status draf).
+- 1.0.1 (2026-10-14): perbaikan dari temuan uji independen; tidak ada materi pihak ketiga yang ditambahkan.

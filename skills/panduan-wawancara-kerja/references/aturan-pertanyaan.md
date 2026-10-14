@@ -1,13 +1,13 @@
 # Aturan Pertanyaan Wawancara: Yang Tidak Boleh Ditanyakan dan Dasar Aturannya
 
-**Berlaku per: 14 Oktober 2026.** Ringkasan praktis, bukan nasihat hukum. Bagian bertanda **PERLU REVIEW** belum dicocokkan ke naskah resmi pasal per pasal; cek ulang sebelum dijadikan dasar sengketa. Aturan ini sejalan dengan skill `lowongan-kerja` (iklan) dan `seleksi-cv-pelamar` (CV).
+**Berlaku per: 14 Oktober 2026.** Ringkasan praktis, bukan nasihat hukum. Bagian bertanda **PERLU REVIEW** belum dicocokkan ke naskah resmi pasal per pasal; cek ulang sebelum dijadikan dasar sengketa. Aturan ini sejalan dengan ringkasan untuk iklan lowongan dan seleksi CV di pustaka Komunitech (catatan untuk agent: jangan menyebut nama skill atau berkas ke pengguna).
 
 ## Dasar aturan
 | Aturan | Isi yang dipakai | Catatan |
 |---|---|---|
 | UU 13/2003 tentang Ketenagakerjaan, Pasal 5 dan 6 | Pasal 5: setiap tenaga kerja memiliki kesempatan yang sama tanpa diskriminasi untuk memperoleh pekerjaan. Pasal 6: setiap pekerja/buruh berhak memperoleh perlakuan yang sama tanpa diskriminasi dari pengusaha. | UU 6/2023 (Cipta Kerja) mengubah banyak pasal UU 13/2003. Setahu kami Pasal 5 dan 6 tidak termasuk yang diubah. **PERLU REVIEW** (cek teks terkini di peraturan.bpk.go.id). |
 | SE Menaker M/6/HK.04/V/2025 (28 Mei 2025) tentang Larangan Diskriminasi dalam Proses Rekrutmen | Pemberi kerja dilarang menetapkan syarat diskriminatif seperti batasan usia, penampilan menarik, tinggi badan, status pernikahan, suku, warna kulit, dan sejenisnya, kecuali ada kepentingan khusus dari sifat pekerjaan yang nyata. | Sama dengan yang dipakai skill lain di pustaka ini. Surat Edaran bukan undang-undang; tetap dijadikan pegangan karena mencerminkan sikap resmi pemerintah. |
-| UU 8/2016 tentang Penyandang Disabilitas | Penyandang disabilitas berhak atas pekerjaan tanpa diskriminasi; perusahaan swasta diwajibkan memberi kesempatan (kuota sedikitnya 1% dari pegawai menurut ringkasan di skill `lowongan-kerja`). | Nomor pasal tidak dikutip di sini. **PERLU REVIEW** bila dikutip dalam surat resmi. |
+| UU 8/2016 tentang Penyandang Disabilitas | Penyandang disabilitas berhak atas pekerjaan tanpa diskriminasi; perusahaan swasta diwajibkan memberi kesempatan (kuota sedikitnya 1% dari pegawai untuk swasta, menurut ringkasan umum). | Nomor pasal tidak dikutip di sini. **PERLU REVIEW** bila dikutip dalam surat resmi. |
 | UU 27/2022 tentang Pelindungan Data Pribadi (PDP) | Data pelamar (jawaban wawancara, kartu skor, rekaman, catatan) adalah data pribadi: dikumpulkan seperlunya untuk tujuan seleksi yang diketahui pelamar, diamankan, dan tidak disimpan lebih lama dari perlu. Data kesehatan termasuk kategori data pribadi yang bersifat spesifik dengan perlindungan lebih ketat. | Rujukan umum: Pasal 4 ayat (2) untuk data spesifik. Pasal tentang dasar pemrosesan, hak subjek data, dan penghapusan: **PERLU REVIEW**. Masa penyesuaian 2 tahun sejak UU disahkan (17 Oktober 2022) sudah lewat; UU ini berlaku penuh. |
 | UU 13/2003 Pasal 153 (larangan PHK karena menikah, hamil, agama, dan sejenisnya) | Dipakai hanya sebagai alasan praktis: status menikah, kehamilan, dan agama bukan hal yang sah memengaruhi hubungan kerja, sehingga menanyakannya saat seleksi tidak berguna dan berisiko. | Rincian ayat/huruf dan perubahan oleh UU 6/2023: **PERLU REVIEW**. |
 
@@ -38,6 +38,7 @@ Jika kandidat **menyebut sendiri** hal pribadi (menikah, hamil, agama, penyakit)
 - **Riwayat hukum / SKCK**: catatan kejahatan termasuk data pribadi spesifik. Hanya untuk posisi yang memang menuntutnya (mis. memegang uang banyak), diminta setelah penawaran lewat dokumen resmi, dengan aturan yang sama untuk semua finalis. Bukan interogasi saat wawancara.
 - **Rekaman wawancara**: hanya dengan persetujuan kandidat yang diminta di awal; jelaskan tujuan dan lama simpan `[isian: kebijakan]`. Tidak merekam diam-diam.
 - **Cek referensi**: hanya dengan izin kandidat, kepada kontak yang ia berikan, dan hanya tentang kinerja kerja.
+- **Ketersediaan kerja (shift, lembur, akhir pekan, tanggal mulai)**: ditanyakan sebagai ya/tidak kepada semua kandidat, dengan jadwal yang jelas, dan **tidak diberi skor**. Lembur dilakukan dengan persetujuan pekerja dan dalam batas waktu yang diatur (UU 13/2003 Pasal 78 jo. UU 6/2023 dan aturan turunannya; **PERLU REVIEW** ayat dan batasnya), sehingga jawaban "belum bisa lembur" bukan tanda kompetensi yang kurang.
 - **Domisili dan jarak**: boleh ditanya sebagai logistik (perjalanan, ongkos, kesiapan datang tepat waktu), tidak boleh dipakai untuk memilih berdasarkan asal daerah.
 - **Syarat jenis kelamin atau usia karena sifat pekerjaan yang nyata** (mis. penjaga ruang ganti satu jenis kelamin): harus tertulis alasannya dan berlaku sesuai SE Menaker; konsultasikan ke ahli ketenagakerjaan bila ragu.
 
@@ -63,3 +64,4 @@ Kartu skor, catatan, dan rekaman adalah data pribadi: simpan di perangkat/akun m
 4. UU 8/2016: nomor pasal hak pekerjaan dan kuota.
 5. Status RUU Pelindungan Ketenagakerjaan dan dampaknya ke Pasal 5-6.
 6. Kebijakan SKCK/riwayat hukum, rekaman wawancara, dan cek referensi untuk usaha pengguna.
+7. Pasal 78 UU 13/2003 jo. UU 6/2023: persetujuan pekerja untuk lembur dan batas jam lembur.

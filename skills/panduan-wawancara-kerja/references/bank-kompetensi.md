@@ -8,7 +8,7 @@ Cara membaca setiap kompetensi:
 - **Kuat / Lemah** = ciri jawaban yang meyakinkan atau mengkhawatirkan. **Lanjut** = pertanyaan penggali bila jawaban masih umum.
 - **Jangkar** = contoh perilaku untuk skor 1, 3, dan 5. Skor 2 dan 4 ditulis sendiri sebagai tingkat antara (lihat `pola-penulisan.md`).
 - Pelamar yang belum pernah bekerja: pertanyaan Perilaku boleh dijawab dari magang, sekolah, organisasi, usaha keluarga, atau kegiatan relawan; kalau tetap kosong, pakai pertanyaan Situasional.
-- Syarat dasar yang sah (mis. SIM, bersedia shift) diperiksa sebagai pertanyaan ya/tidak dan **tidak dinilai skor**.
+- **Syarat administratif dan ketersediaan kerja** (mis. SIM, dokumen, tanggal mulai, bersedia shift/lembur/akhir pekan, jam tiba dan jarak) bukan kompetensi: diperiksa sebagai pertanyaan ya/tidak ("ketersediaan kerja") dan **tidak masuk definisi, pertanyaan yang diberi skor, rubrik, atau bobot**. Kompetensi "kedisiplinan" menilai perilaku nyata (hadir tepat waktu, serah terima rapi), bukan kesediaan menerima jam kerja.
 
 ---
 
@@ -46,7 +46,7 @@ Definisi: hadir tepat waktu sesuai shift, serah terima shift yang rapi, dan beke
 - Jangkar: 1 = sering terlambat tanpa kabar. 3 = hadir sesuai jadwal, mengabari bila berhalangan. 5 = konsisten tepat waktu, membantu menutup jadwal rekan, serah terima shift tertulis dan rapi.
 
 #### Tes praktik kasir (maks. 12 menit, bahan contoh, diumumkan sebagai tes)
-Bagian A (5 menit, tanpa kalkulator): hitung kembalian untuk 4 transaksi, uang mainan atau kartu angka. Contoh (**ganti angka tiap putaran**, hitung kunci jawaban dengan teliti dan tulis rumusnya):
+Bagian A (5 menit, tanpa kalkulator): hitung kembalian untuk 4 transaksi, uang mainan atau kartu angka. Contoh (**angka diganti per sesi/hari wawancara, bukan per kandidat**: semua kandidat di hari yang sama mendapat soal yang sama atau setara; hitung kunci jawaban dengan teliti dan tulis rumusnya):
 1. Belanja Rp68.500 (mi 5 x Rp3.500, minyak Rp18.000, gula 2 x Rp16.500), bayar Rp100.000, kembali **Rp31.500**.
 2. Belanja Rp40.750 (susu 2 x Rp14.750, roti Rp11.250), bayar Rp50.000, kembali **Rp9.250**.
 3. Belanja Rp86.900, bayar Rp100.000, kembali **Rp13.100**.
@@ -168,7 +168,7 @@ Definisi: menjaga barang usaha, melaporkan kerusakan atau kehilangan, dan bekerj
 - Jangkar: 1 = menyembunyikan masalah. 3 = melapor dan bekerja sama. 5 = proaktif membantu dan melaporkan, menjadi panutan tim.
 
 #### Tes praktik gudang (maks. 12 menit)
-Diberi catatan stok contoh (Kaos M 40, Kaos L 25, Celana 18) dan pesanan (Kaos M 12, Kaos L 30, Celana 6): buat daftar ambil (pick-list), tentukan sisa stok tiap barang, dan sebutkan yang kurang. Kunci: sisa Kaos M 28, Kaos L kurang 5 (hanya 25 untuk pesanan 30), sisa Celana 12. Lalu demonstrasi cara mengangkat kardus contoh (ringan) dan menyebut alat bantu yang akan dipakai. **Ganti angka tiap putaran.**
+Diberi catatan stok contoh (Kaos M 40, Kaos L 25, Celana 18) dan pesanan (Kaos M 12, Kaos L 30, Celana 6): buat daftar ambil (pick-list), tentukan sisa stok tiap barang, dan sebutkan yang kurang. Kunci: sisa Kaos M 28, Kaos L kurang 5 (hanya 25 untuk pesanan 30), sisa Celana 12. Lalu demonstrasi cara mengangkat kardus contoh (ringan) dan menyebut alat bantu yang akan dipakai. **Angka diganti per sesi/hari wawancara, bukan per kandidat**; semua kandidat di hari yang sama mendapat soal yang sama.
 Penilaian: daftar benar menilai 4.1 dan 4.3; demonstrasi menilai 4.2.
 
 ---
@@ -285,7 +285,7 @@ Definisi: menyelesaikan pencatatan harian/bulanan dan laporan sesuai jadwal.
 - Jangkar: 1 = sering terlambat. 3 = umumnya tepat waktu. 5 = punya kalender dan checklist, menagih proaktif.
 
 #### Tes praktik akuntansi junior (maks. 15 menit)
-Kas awal Rp5.000.000. Catat 6 transaksi dan hitung saldo kas: penjualan tunai Rp1.250.000; beli bahan Rp475.000; bayar listrik Rp380.000; penjualan tunai Rp2.100.000; bayar gaji Rp1.600.000; setor ke bank Rp1.000.000. **Kunci: saldo kas akhir Rp4.895.000** (pemasukan Rp3.350.000; keluar Rp3.455.000, termasuk setoran bank). Tambahan: uang fisik Rp4.870.000, sebutkan selisih (Rp25.000) dan langkah penelusuran. **Ganti angka tiap putaran** dan hitung kunci lagi.
+Kas awal Rp5.000.000. Catat 6 transaksi dan hitung saldo kas: penjualan tunai Rp1.250.000; beli bahan Rp475.000; bayar listrik Rp380.000; penjualan tunai Rp2.100.000; bayar gaji Rp1.600.000; setor ke bank Rp1.000.000. **Kunci: saldo kas akhir Rp4.895.000** (pemasukan Rp3.350.000; keluar Rp3.455.000, termasuk setoran bank). Tambahan: uang fisik Rp4.870.000, sebutkan selisih (Rp25.000) dan langkah penelusuran. **Angka diganti per sesi/hari wawancara, bukan per kandidat** (semua kandidat di hari yang sama mendapat soal yang sama); hitung kunci baru dengan teliti tiap kali angka diganti.
 Penilaian: menilai 7.1 (dan 7.3 bila memakai spreadsheet).
 
 ---
