@@ -88,3 +88,8 @@ Lain-lain: `test_thr.py` 38 tes OK · `validate.py` ✅ · `uji_openclaw.sh` (in
 **Total selisih: 0 dari 8 kasus.** Cacat baru: tidak ada. Catatan: kasus 8 (mantan pegawai) — PMK 105/2025 tidak memberi DTP bagi bukan pegawai; perlakuan konservatif skill wajar, tetap untuk review konsultan.
 
 **Skor: 9/10. Verdik: LULUS uji ulang angka DTP** (tetap **PERLU REVIEW konsultan pajak**).
+
+## Riwayat uji OpenClaw sebelum/sesudah per skill
+| Tanggal | Versi | Uji | Tanpa skill | Dengan skill | Selisih | Verdik | Catatan |
+|---|---|---|:-:|:-:|:-:|---|---|
+| 2026-10-14 | 1.0.9 | OpenClaw 2026.10.2 lokal, hanya skill ini vs tanpa skill; 5 skenario (3 normal + 1 Telegram + 1 input kurang); penguji independen | 6,1 | 8,0 | +1,9 | **LULUS** (tipis, tepat di ambang 8) | Rincian di `00-openclaw-sebelum-sesudah.md`. Semua angka DENGAN skill cocok dengan hitung ulang penguji. Cacat: input kurang dijawab 5 pertanyaan tanpa hitungan bersyarat; kata proses ("skill", "script") dan path sandbox bocor di 3 dari 5 balasan; nama usaha karangan di teks grup. |
