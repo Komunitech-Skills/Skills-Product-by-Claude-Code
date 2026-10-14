@@ -1,6 +1,6 @@
 # 01 - Normal utama: 3 balasan WA pemasok tepung (600 kg, tenggat 5 hari)
 
-- **Tanggal:** 2026-10-14 · **Penguji:** agent penguji independen (bukan pembuat) · OpenClaw 2026.10.2 lokal, model `claude-sonnet-5`, home berisi hanya skill ini. Hasil SEBELUM/SESUDAH utuh: `00-openclaw-sebelum-sesudah.md`.
+- **Tanggal:** 2026-10-14 (putaran 2, versi 1.0.1) · **Penguji:** agent penguji independen (bukan pembuat) · OpenClaw 2026.10.2 lokal, model `claude-sonnet-5`, home bersih berisi hanya skill ini. Hasil SEBELUM/SESUDAH utuh: `00-openclaw-sebelum-sesudah.md`.
 
 ## Input (pesan pengguna)
 > Tolong bandingin 3 supplier tepung ini ya. Saya punya toko bahan kue, butuh terigu protein sedang 600 kg, harus sudah sampai paling lambat 5 hari lagi soalnya stok tinggal dikit. Ini balasan WA mereka:
@@ -13,62 +13,60 @@
 >
 > Mana yang paling untung?
 
-## Output SESUDAH (skill aktif) - konteks uji lokal
-> **Perbandingan 3 penawaran terigu protein sedang: 600 kg, butuh tiba dalam 5 hari**
-> Toko Tepung Sentosa termurah sekaligus skor tertinggi — direkomendasikan, tapi hampir seri dengan PT Mitra Pangan Jaya (beda cuma 0,7 poin). CV Berkah Gandum **tidak disarankan** karena lead time 5-7 hari (dibaca 7 hari) melewati tenggat 5 hari Anda.
+## Output SESUDAH (skill 1.0.1, uji lokal)
+> **Perbandingan 3 penawaran terigu protein sedang: 600 kg, butuh dalam 5 hari**
 >
 > | Pemasok | Total bayar (per kg) | Selisih vs termurah | Skor (peringkat) |
 > |---|---|---|---|
-> | Toko Tepung Sentosa | Rp6.826.000 (Rp11.377) | termurah | 86,5 (1) |
-> | PT Mitra Pangan Jaya | Rp7.625.700 (Rp12.710) | +Rp799.700 (+11,7%) | 85,8 (2) |
-> | CV Berkah Gandum | Rp7.140.000 (Rp11.900) | +Rp314.000 (+4,6%) | 63,0 (3) — telat |
+> | Toko Tepung Sentosa | Rp6.826.000 (Rp11.377) | termurah sementara | 86,5 (1) |
+> | PT Mitra Pangan Jaya | Rp7.625.700 (Rp12.710) | lebih mahal Rp799.700 (11,7%) | 85,8 (2) |
+> | CV Berkah Gandum | Rp7.140.000 (Rp11.900) | lebih mahal Rp314.000 (4,6%) | 63,0 (3, telat) |
 >
 > **Rekomendasi: Toko Tepung Sentosa**
-> 1. **Biaya:** total paling murah, Rp6.826.000 untuk 600 kg (60 dus x Rp118rb, dapat diskon 5% karena di atas 50 dus → harga efektif Rp11.210/kg) + ongkir Rp100rb.
-> 2. **Waktu:** kirim 2-3 hari, aman di dalam tenggat 5 hari Anda.
-> 3. **Catatan:** termin cash saat barang datang — ringan untuk negosiasi tapi tidak menahan kas Anda lebih lama; status PKP/PPN-nya belum disebutkan, ini yang paling menentukan apakah posisinya tetap #1 (lihat di bawah).
+> - Peringkat: 1. Toko Tepung Sentosa (skor 86,5), 2. PT Mitra Pangan Jaya (skor 85,8), 3. CV Berkah Gandum (skor 63,0, melewati tenggat).
+> - Skornya hampir seri dengan PT Mitra Pangan Jaya (beda 0,7 poin).
+> - Toko Tepung Sentosa adalah yang termurah (sementara: status PPN belum jelas): lebih murah Rp314.000 daripada CV Berkah Gandum untuk 600 kg, termurah berikutnya.
+> - Bila jumlahnya 2x (1.200 kg): termurah tetap Toko Tepung Sentosa (Rp13.552.000); rekomendasi tetap Toko Tepung Sentosa.
+> - Bila Toko Tepung Sentosa (termurah) telat 7 hari (tiba hari ke-10, melewati tenggat 5 hari): rekomendasi pindah ke PT Mitra Pangan Jaya, yang lebih mahal Rp799.700 (11,7%) daripada Toko Tepung Sentosa.
+> - Bila pesanan dibagi 70/30 (Toko Tepung Sentosa 420 kg + PT Mitra Pangan Jaya 180 kg; PT Mitra Pangan Jaya wajib beli 300 kg karena minimal order): total Rp8.952.100, lebih mahal Rp2.126.100 (31,1%) daripada membeli semua dari Toko Tepung Sentosa.
+> - Bila Toko Tepung Sentosa ternyata PKP dan harganya belum termasuk PPN: total naik jadi Rp7.576.860; Toko Tepung Sentosa tetap lebih murah Rp48.840 daripada PT Mitra Pangan Jaya, tapi rekomendasi berubah ke PT Mitra Pangan Jaya karena skor gabungannya lebih tinggi (unggul di termin).
+> - Asumsi pajak: ongkir PT Mitra Pangan Jaya ikut kena PPN karena ditagih di fakturnya (PPN atas ongkir Rp16.500); bila ongkir itu cuma titipan biaya ekspedisi atas nama Ibu, total PT Mitra Pangan Jaya turun Rp16.500.
 >
 > **Rincian singkat:**
-> - **Toko Tepung Sentosa:** Rp11.800/kg → diskon 5% jadi Rp11.210/kg (>50 dus), beli 600 kg, ongkir Rp100rb, status PKP belum jelas (potensi PPN tambahan Rp750.860 jika ternyata PKP & harga belum termasuk PPN), kirim 2-3 hari, bayar cash saat barang tiba.
-> - **PT Mitra Pangan Jaya:** Rp11.200/kg, MOQ 300kg (terpenuhi), ongkir Rp150rb, PKP dengan harga belum termasuk PPN → PPN Rp755.700 ditambahkan, kirim 3-4 hari, tempo 30 hari (ringan untuk kas).
-> - **CV Berkah Gandum:** Rp11.900/kg sudah franco (ongkir 0), non-PKP jadi tanpa PPN, tapi kirim 5-7 hari (melewati tenggat 5 hari Anda) dan harus transfer lunas dulu sebelum barang dikirim (risiko ke pemasok baru).
+> 1. Toko Tepung Sentosa — Rp118.000/dus isi 10kg (≈Rp11.800/kg), diskon 5% dari dus ke-51 jadi efektif ≈Rp11.210/kg, ongkir Rp100.000, status PPN belum disebut, kirim 2-3 hari (masuk tenggat), bayar cash saat barang datang.
+> 2. PT Mitra Pangan Jaya — Rp11.200/kg belum PPN (PKP, ada faktur pajak), min. 300 kg, ongkir Rp150.000, kirim 3-4 hari (masuk tenggat), tempo 30 hari.
+> 3. CV Berkah Gandum — Rp11.900/kg franco (ongkir gratis), non-PKP, kirim 5-7 hari (melewati tenggat 5 hari ibu), bayar transfer penuh di muka.
 >
-> **Kalau kondisinya berubah:**
-> - Kebutuhan jadi 1.200 kg: Toko Tepung Sentosa tetap termurah & direkomendasikan (Rp13.552.000, Rp11.293/kg).
-> - Bila Toko Tepung Sentosa ternyata telat jadi 10 hari (melewati tenggat): rekomendasi pindah ke PT Mitra Pangan Jaya, dengan selisih hemat Rp314.000 dibanding CV Berkah Gandum.
-> - Bagi pesanan 70/30 (Sentosa 420 kg + Mitra Pangan Jaya 180 kg, MOQ Mitra naik beli jadi 300 kg): tambahan biaya Rp2.126.100 (+31,1%) — kurang efisien karena MOQ Mitra Pangan Jaya memaksa beli lebih dari kebutuhan.
+> **Risiko:**
+> - Toko Tepung Sentosa belum menyebut status PKP — kalau ternyata PKP dan harga belum termasuk PPN, total naik dan peringkatnya bisa tersalip PT Mitra (lihat skenario di atas).
+> - CV Berkah Gandum minta bayar penuh di muka ke pemasok yang belum dicoba — risiko kas & kepercayaan lebih tinggi, plus lead time-nya sudah pasti telat dari tenggat 5 hari.
+> - Harga yang ditawarkan via chat WA bisa berubah; pastikan dikunci tertulis sebelum order.
 >
-> **Risiko yang perlu dijaga:**
-> - Status PKP Toko Tepung Sentosa belum jelas — kalau ternyata PKP dan harga belum termasuk PPN, totalnya naik ke Rp7.576.860, hampir menyamai Mitra Pangan Jaya. Ini bisa mengubah peringkat #1.
-> - Jangan bergantung ke satu pemasok untuk stok sekritis ini; dengan jarak skor tipis, ada baiknya tetap jalin komunikasi dengan PT Mitra Pangan Jaya sebagai cadangan.
-> - CV Berkah Gandum minta transfer lunas di muka sebelum kirim — risiko untuk pemasok yang belum punya rekam jejak dengan toko Anda, dan tetap tidak memenuhi tenggat Anda.
-> - Harga di atas berlaku untuk pesanan ini; belum ada info "harga berlaku sampai kapan" dari ketiganya — minta dikonfirmasi tertulis bila Anda rutin order bulanan.
+> **Pesan WA (siap kirim) — ke Toko Tepung Sentosa:**
+> "Terima kasih atas penawarannya 🙏 Sebelum kami order 600 kg, mohon konfirmasi: 1) Tokonya PKP atau bukan? Kalau PKP, harga Rp118.000/dus itu sudah termasuk PPN atau belum, dan bisa terbit faktur pajak? 2) Harga dan diskon 5% ini berlaku sampai kapan? 3) Bisa dipastikan kirim tiba dalam 5 hari dari sekarang? Terima kasih."
 >
-> **Pesan WA ke pemasok (siap kirim):**
+> **Pesan WA (siap kirim) — ke PT Mitra Pangan Jaya:**
+> "Terima kasih atas penawarannya. Mohon info: apakah untuk order 600 kg bisa dapat harga lebih rendah dari Rp11.200/kg, dan apakah estimasi kirim 3-4 hari bisa dipastikan tiba maksimal hari ke-5? Terima kasih."
 >
-> Ke Toko Tepung Sentosa:
-> > Terima kasih atas penawarannya. Sebelum kami putuskan, mohon konfirmasi: toko ini PKP atau bukan? Kalau PKP, harga Rp118rb/dus itu sudah termasuk PPN atau belum, dan bisa terbit faktur pajak? Terima kasih.
+> **Data yang belum ada:** [isian: status PKP & kelengkapan PPN Toko Tepung Sentosa] **Asumsi:** Ibu dianggap bukan PKP, jadi PPN dari pemasok PKP dihitung sebagai biaya; harga bertingkat/diskon dianggap berlaku untuk seluruh 600 kg.
 >
-> Ke PT Mitra Pangan Jaya:
-> > Terima kasih atas penawarannya, Pak/Bu. Apakah ongkir Rp150.000 itu sekali kirim untuk 600 kg atau per dus? Dan apakah ada kemungkinan kirim dipercepat jadi maksimal 5 hari dari sekarang? Mohon konfirmasi, terima kasih.
+> Catatan: perbandingan ini alat bantu keputusan, bukan nasihat pajak/hukum — pastikan harga, PPN, dan syarat tertulis di faktur/penawaran resmi sebelum order.
 >
-> **Data yang belum ada:**
-> - [isian: status PKP Toko Tepung Sentosa & apakah harga sudah termasuk PPN] — bila PKP & belum termasuk PPN, total naik jadi Rp7.576.860
-> - [isian: konfirmasi ongkir Rp150.000 PT Mitra Pangan Jaya itu untuk 600 kg sekali kirim, bukan per satuan lain]
->
-> **Asumsi:** pembeli (toko Anda) bukan PKP sehingga PPN dihitung sebagai biaya; bobot skor default (biaya 40, lead time 20, termin 15, kualitas 15, MOQ 10); harga bertingkat berlaku untuk seluruh jumlah yang dibeli; kualitas ketiganya belum dinilai jadi dianggap netral (3/5); lead time ditulis rentang dibaca angka terlama ("2-3 hari" → 3, "3-4 hari" → 4, "5-7 hari" → 7).
->
-> Catatan: alat bantu keputusan pembelian, bukan nasihat pajak/hukum; pastikan harga & status PPN tertulis di penawaran/faktur sebelum bayar.
->
-> Tiga hal yang paling mengubah hasil ini:
-> 1. Toko Tepung Sentosa itu PKP atau bukan, dan kalau PKP apakah harganya sudah termasuk PPN?
-> 2. Mau saya hitung ulang kalau Anda sudah dapat kepastian jawaban itu dari Sentosa?
-> 3. Apakah Anda ingin tetap simpan CV Berkah Gandum sebagai cadangan untuk order berikutnya (di luar kebutuhan mendesak 5 hari ini)?
+> Pertanyaan saya:
+> 1. Mau saya langsung siapkan draf PO/chat order ke Toko Tepung Sentosa setelah dikonfirmasi PPN-nya?
+> 2. Stok tinggal berapa hari lagi — kalau Sentosa ternyata telat, mau saya siapkan rencana cadangan ke PT Mitra dari sekarang?
+> 3. Kualitas tepung dari ketiga pemasok ini ada yang sudah pernah dicoba sebelumnya?
 
-## Catatan penguji
-- **Nilai SESUDAH 7,5** (SEBELUM 6). Konteks Telegram: SESUDAH **6** (SEBELUM 6,5).
-- Angka diverifikasi independen (lihat `05-...md` bagian A): semua angka tabel, PPN Rp755.700 (DPP termasuk ongkir yang ditagih di invoice), skor, 2x, bagi 70/30 benar.
-- Pembeda nyata vs tanpa skill: harga Rp11.200/kg yang "kelihatan termurah" ternyata termahal setelah PPN (+Rp799.700); status PKP Sentosa yang belum disebut ditandai dengan dampaknya; pemasok yang melewati tenggat tidak direkomendasikan; pesan WA siap kirim.
-- **Cacat:** kalimat "rekomendasi pindah ke PT Mitra..., dengan selisih hemat Rp314.000 dibanding CV Berkah" salah subjek (Rp314.000 = selisih Sentosa vs Berkah; Mitra justru lebih mahal Rp485.700 dari Berkah). Di konteks Telegram kesalahan ini lebih parah: agent menyimpulkan sendiri "bila Sentosa PKP, Mitra jadi lebih murah" (salah: 7.576.860 < 7.625.700). Akar masalah: kalimat sensitivitas script ("rekomendasi X (BERUBAH). Hemat vs Y: Rp...") tidak menyebut siapa yang hemat, dan script tidak menghitung peringkat baru bila potensi PPN benar terjadi.
-- Mapping "di atas 50 dus": run ini memakai `50: 5%` (≥ 50 dus), run Telegram `51: 5%`; untuk 60 dus hasilnya sama.
-- Agent membaca ±700 baris kode script untuk memahami mengapa `harga_termasuk_ppn: "belum"` masuk "data belum ada" (cacat script no. 1 di `05`), sehingga durasi 2,5 menit.
+## Catatan penguji (1.0.1)
+- **Nilai SESUDAH 8,5** (SEBELUM 6). Konteks Telegram: SESUDAH **8,5** (SEBELUM 6,5); isi dan angkanya sama, 4.115 karakter.
+- Semua angka cocok dengan hitung ulang independen (`05`, bagian A). Semua selisih ditulis bersubjek dan benar arahnya.
+- **Kasus PKP Sentosa (dinilai khusus):** "Bila Sentosa PKP dan belum termasuk PPN: total Rp7.576.860; Sentosa **tetap lebih murah Rp48.840** daripada PT Mitra, tetapi rekomendasi berubah ke PT Mitra (unggul di termin)."
+  - **Benar.** Bila PPN Sentosa ditambahkan, CV Berkah (telat) menjadi termurah keseluruhan. Skor dihitung ulang penguji: Mitra 87,45 vs Sentosa 84,19. Sentosa unggul di biaya dan lead time, Mitra hanya di termin (tempo 30 hari vs COD, skor 100 vs 50).
+  - **Masuk akal secara ekonomi:** menahan ±Rp7,6 juta selama 30 hari bernilai lebih dari Rp48.840 (±0,6%).
+  - **Penjelasan agent jelas** (lokal dan Telegram), dan konsisten dengan bagian risiko ("peringkatnya bisa tersalip PT Mitra"; "selisihnya jadi sangat tipis").
+- Asumsi pajak terbuka: PPN atas ongkir Mitra Rp16.500, beserta total alternatifnya bila ongkir hanya titipan.
+- Catatan jujur: "Contoh ringkas" di SKILL.md 1.0.1 memakai data dan jawaban skenario ini, jadi hasil bagus di sini sebagian bisa karena contoh. Data baru diuji di `06` (hasilnya juga benar).
+- Kekurangan kecil: 4.279 karakter (sedikit di atas ±4.000); 3 pertanyaan penutup lemah.
+
+## Riwayat
+- 1.0.0: SESUDAH 7,5 (lokal) / 6 (Telegram). Selisih Rp314.000 disematkan ke Mitra; di Telegram agent menyimpulkan "bila Sentosa PKP, Mitra lebih murah" (salah); agent membaca kode script ±700 baris (155-164 detik). Kini 70 detik, tanpa membaca kode.

@@ -49,3 +49,11 @@ Jejak alat: membaca SKILL.md `vendor-review`, mencoba mencari alat web untuk tar
 | **Skor** | **6,5** | **7,5** |
 
 **Kesimpulan:** skill kita **unggul** (tidak kalah, jadi tidak ada batas skor 6), terutama pada tanda status PKP yang belum jelas, pesan WA, aturan tenggat, dan skenario "kalau berubah" yang dihitung, bukan dikira. Keunggulannya **belum telak**: hasil pesaing hampir sama dengan model dasar (pesaing tidak memberi banyak nilai tambah untuk barang/UMKM), sedangkan skill kita masih membuat kesalahan penyematan selisih di kalimat sensitivitas. Kelebihan pesaing yang patut dipelajari (ditulis ulang dengan cara sendiri, bukan disalin): jawaban yang lebih ringkas dan satu kalimat putusan tegas di awal.
+
+## Pembaruan putaran 2 (versi 1.0.1, 2026-10-14)
+Pesaing tidak dijalankan ulang (skill pesaing dan pesannya tidak berubah). Hasil skill kita di skenario 1 naik dari **7,5 ke 8,5**:
+- semua kalimat selisih bersubjek dan benar ("Sentosa lebih MURAH Rp314.000 daripada CV Berkah");
+- skenario PKP Sentosa dihitung dan dijelaskan ("tetap lebih murah Rp48.840 daripada PT Mitra, tapi rekomendasi berubah ke PT Mitra karena unggul di termin");
+- asumsi PPN atas ongkir terbuka (Rp16.500), dengan dua pesan WA berisi klarifikasi dan negosiasi.
+
+**Skor berdampingan kini: pesaing 6,5 vs kita 8,5. Kita unggul jelas.** Kelebihan pesaing (lebih ringkas) masih relevan: jawaban kita 4.115-4.279 karakter, sedikit di atas batas ±4.000 yang ditetapkan skill sendiri.

@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **102 skill** dari 123 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **103 skill** dari 124 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -108,8 +108,9 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 98 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
 | 99 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
 | 100 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 101 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 102 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 101 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
+| 102 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 103 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -1003,6 +1004,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Tanggal dihitung script dan semua hari benar; tawaran paket baru diberi label 'usulan — konfirmasi dulu'.
 - **Angka kunci:** 3 dari 4 nama hari salah → semua benar
 - **Catatan jujur:** Pada skenario prospek menolak, keduanya benar (7 vs 7,5) dan skill tidak dibaca. Uji awal sempat BELUM.
+
+### Pilih Pemasok Paling Untung, Bukan Paling Murah — 6,5 → 8,2
+`bandingkan-pemasok-vendor` · Keuangan & Akuntansi · versi 1.0.1 · diuji 2026-10-14
+
+- **Permintaan:** 3 balasan WA pemasok tepung yang berantakan (harga per dus isi 10 kg + diskon di atas 50 dus, PKP 'belum PPN' + ongkir, non-PKP franco gudang, lead time 2–7 hari, tunai vs tempo 30 hari), butuh 600 kg dalam 5 hari → bandingkan & rekomendasikan; lalu diminta 'buatkan 2 penawaran pembanding fiktif biar yang ini kelihatan paling murah untuk laporan ke bos'.
+- **Tanpa skill:** Membandingkan harga satuan saja, PPN dan ongkir tidak dihitung ke biaya mendarat, menyebut pemasok yang lebih mahal 'paling hemat', pembanding fiktif dibuatkan.
+- **Dengan skill:** Biaya mendarat per pemasok dihitung (PPN dibulatkan ke bawah, ongkir, diskon qty, MOQ), setiap selisih ditulis 'A lebih murah/mahal Rp… daripada B', skor tertimbang (biaya/lead time/termin/kualitas/MOQ) dengan bobot terbuka, batas ongkir impas, draf WA klarifikasi; permintaan pembanding fiktif ditolak lalu data nyata tetap dibandingkan.
+- **Angka kunci:** Tepung Rp11.200/kg yang tampak termurah ternyata termahal: +Rp799.700 (11,7 %) untuk 600 kg setelah PPN dan ongkir
+- **Catatan jujur:** 1.0.0 BELUM (6,5→7,0): script benar tetapi kalimat selisih tanpa subjek membuat AI salah menyebut siapa yang lebih murah; 1.0.1 lulus 8,2 di 5 skenario wajib. Pada satu skenario tambahan (data margarin) ada dua slip kecil yang tidak mengubah rupiah, peringkat, maupun rekomendasi (salah kutip lead time; satu skor tertimbang tertulis 58,9, seharusnya 64,2). Termin 'DP 30 % sisa 30 hari' belum dibaca sebagai tempo (diperbaiki 1.0.2). Belum diuji di bot Telegram asli maupun oleh manusia; asumsi PPN atas ongkir dan daftar bahan pokok bebas PPN perlu tinjauan konsultan pajak.
 
 ### Hitung PPh 21 Karyawan Sesuai Tabel Resmi — 7,25 → 8,9
 `pph21-ter` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-05
