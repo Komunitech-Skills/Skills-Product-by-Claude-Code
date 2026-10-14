@@ -24,7 +24,8 @@ Rumus (Komunitech; dijelaskan dengan bahasa awam di references/rumus-dan-istilah
   Stok target     : T   = mu x (lead time + horizon) + SS    (dibulatkan ke atas)
   Posisi stok     : stok sekarang + barang dalam pesanan
   PESAN SEKARANG  : posisi <= ROP, atau ROP tercapai < 1 hari lagi; jumlah = T - posisi
-  MINGGU DEPAN    : ROP tercapai dalam 1..7 hari; jumlah = T - perkiraan posisi pada tanggal pesan
+  PESAN 1-7 HARI  : ROP tercapai dalam 1..7 hari; jumlah = T - perkiraan posisi pada tanggal pesan. Label waktu nyata:
+                    1 hari = PESAN BESOK, 2-3 hari = PESAN n HARI LAGI, 4-7 hari = PESAN MINGGU DEPAN (+ tanggal)
   Pembulatan qty  : ke atas ke bilangan bulat -> naik ke minimal order -> ke atas ke kelipatan kemasan
   Habis dalam     : floor(stok / mu) hari. AKAN KOSONG bila stok / laju < lead time: kosong +-ceil(lead time -
                     stok / laju) hari sebelum barang datang (juga untuk barang data-pendek, memakai laju sementara)
@@ -46,7 +47,7 @@ from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, tanpa menyebut "
                "script/file/proses. Semua angka disalin persis dari sini.]")
 DISCLAIMER = ("Rencana ini perkiraan dari pola penjualan sebelumnya, bukan jaminan. Cocokkan dulu dengan stok fisik, "
@@ -65,7 +66,7 @@ BLN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "No
 
 URUTAN_KELOMPOK = ["PESAN_SEKARANG", "PESAN_MINGGU_DEPAN", "AMAN", "STOK_BELUM_DIKETAHUI",
                    "DATA_BELUM_CUKUP", "MUNGKIN_SAMA", "BARANG_MATI", "TIDAK_ADA_PENJUALAN"]
-LABEL_KELOMPOK = {"PESAN_SEKARANG": "PESAN SEKARANG", "PESAN_MINGGU_DEPAN": "PESAN MINGGU DEPAN", "AMAN": "AMAN",
+LABEL_KELOMPOK = {"PESAN_SEKARANG": "PESAN SEKARANG", "PESAN_MINGGU_DEPAN": "PESAN DALAM 7 HARI", "AMAN": "AMAN",
                   "STOK_BELUM_DIKETAHUI": "STOK BELUM DIKETAHUI", "DATA_BELUM_CUKUP": "DATA BELUM CUKUP",
                   "MUNGKIN_SAMA": "MUNGKIN BARANG YANG SAMA", "BARANG_MATI": "BARANG MATI",
                   "TIDAK_ADA_PENJUALAN": "TIDAK ADA PENJUALAN"}
@@ -258,6 +259,18 @@ def angka_json(x, d=2):
 
 def tgl_id(t):
     return f"{t.day} {BLN[t.month - 1]} {t.year}" if t else "-"
+
+
+def label_waktu(hari, tgl):
+    """Judul kelompok sesuai waktu nyata: 1 hari = BESOK, 2-3 hari = n HARI LAGI, >= 4 hari = MINGGU DEPAN."""
+    pendek = f"{tgl.day} {BLN[tgl.month - 1]}"
+    if hari <= 0:
+        return "PESAN SEKARANG"
+    if hari == 1:
+        return f"PESAN BESOK ({pendek})"
+    if hari <= 3:
+        return f"PESAN {hari} HARI LAGI ({pendek})"
+    return f"PESAN MINGGU DEPAN ({pendek})"
 
 
 # ------------------------------------------------------------------ baca tabel
@@ -1011,10 +1024,21 @@ def inti(harian, mulai, ctx, d):
         if kurang <= 0:
             kurang = Decimal(1)
         r["tanggal_pesan"] = ctx.acuan.isoformat()
+        r["hari_sampai_pesan"] = 0
+        r["label_waktu"] = "PESAN SEKARANG"
+        dasar = f"stok {des(stok)}" + (f" − dalam pesanan {des(dp)}" if dp else "")
+        rumus_awal = f"stok target {TGT} − {dasar}"
     elif hari_ke_rop <= JENDELA_MINGGU_DEPAN:
         r["kelompok"] = "PESAN_MINGGU_DEPAN"
-        kurang = TGT - (posisi - mu_p * hari_ke_rop)
-        r["tanggal_pesan"] = (ctx.acuan + timedelta(days=hari_ke_rop)).isoformat()
+        perkiraan = posisi - mu_p * hari_ke_rop
+        kurang = TGT - perkiraan
+        tgl_pesan = ctx.acuan + timedelta(days=hari_ke_rop)
+        r["tanggal_pesan"] = tgl_pesan.isoformat()
+        r["hari_sampai_pesan"] = hari_ke_rop
+        r["label_waktu"] = label_waktu(hari_ke_rop, tgl_pesan)
+        pos_txt = des(posisi) if not dp else f"stok {des(stok)} + dalam pesanan {des(dp)}"
+        rumus_awal = (f"stok target {TGT} − perkiraan stok saat pesan {des(perkiraan, 1)} "
+                      f"({pos_txt} − {des(mu_p)} × {hari_ke_rop} hari)")
     else:
         r["kelompok"] = "AMAN"
         r["tanggal_pesan_berikutnya"] = (ctx.acuan + timedelta(days=hari_ke_rop)).isoformat() if hari_ke_rop <= 365 else None
@@ -1032,6 +1056,16 @@ def inti(harian, mulai, ctx, d):
     r["jumlah_kemasan"] = angka_json(jumlah / kel) if kel and kel > 0 else None
     r["penyesuaian_jumlah"] = ket
     r["nilai_pesanan"] = bulat(jumlah * d["harga"]) if d["harga"] is not None else None
+    if kurang == Decimal(1) and r["kelompok"] == "PESAN_SEKARANG" and TGT - posisi <= 0:
+        r["rumus_jumlah"] = f"{rumus_awal} ≤ 0, posisi sudah di titik pesan ulang → pesan minimal {des(jumlah)}"
+    else:
+        k_rapi = kurang.quantize(PRESISI, rounding=ROUND_HALF_UP)
+        nilai_k = des(k_rapi, 0) if k_rapi == k_rapi.to_integral_value() else des(k_rapi, 1)
+        if not ket and k_rapi == jumlah:
+            r["rumus_jumlah"] = f"{rumus_awal} = pesan {des(jumlah)}"
+        else:
+            r["rumus_jumlah"] = (f"{rumus_awal} = {nilai_k} → pesan {des(jumlah)} ("
+                                 + ("; ".join(ket) if ket else "dibulatkan ke atas") + ")")
     return r
 
 
@@ -1230,21 +1264,26 @@ def susun_pemasok(hasil, ctx):
                                     "tanggal_pesan": h["tanggal_pesan"]})
             if g["minimal_belanja"] and g["harga_lengkap"] and g["total_nilai"] < g["minimal_belanja"]:
                 g["kurang_dari_minimal_belanja"] = g["minimal_belanja"] - g["total_nilai"]
-            if kel == "PESAN_SEKARANG":
-                g["draf_wa"] = draf_wa(nama, isi)
+            awal = min(isi, key=lambda h: h["tanggal_pesan"])
+            g["label_waktu"] = awal["label_waktu"]
+            g["draf_wa"] = draf_wa(nama, isi, None if kel == "PESAN_SEKARANG" else date.fromisoformat(awal["tanggal_pesan"]))
             out.append(g)
     return out
 
 
-def draf_wa(pemasok, isi):
+def draf_wa(pemasok, isi, tanggal_pesan=None):
+    """Draf WA ringkas (maks. 6 baris): sapaan, daftar barang (digabung per baris bila > 4 barang), penutup."""
     sapa = "[isian: nama pemasok]" if pemasok == "Pemasok belum diisi" else pemasok
-    L = [f"Halo {sapa}, saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut:"]
+    niat = "Mau pesan barang berikut:" if tanggal_pesan is None else f"Rencana pesan sekitar {tanggal_pesan.day} {BLN[tanggal_pesan.month - 1]}:"
+    L = [f"Halo {sapa}, saya [isian: nama Anda] dari [isian: nama toko]. {niat}"]
+    butir = []
     for i, h in enumerate(isi, start=1):
-        label = h["nama"] + (f" ({h['sku']})" if h["sku"] and h["sku"].lower() != h["nama"].lower() else "")
-        harga = f", harga terakhir {rp(h['harga_beli'])}/{h['satuan']}" if h["harga_beli"] is not None else ""
-        L.append(f"{i}. {label}: {des(h['jumlah_pesan'])} {h['satuan']}{harga}")
-    L.append("Mohon dikonfirmasi ketersediaan, total harga, dan perkiraan tanggal kirim. "
-             "Bila bisa, barang tiba paling lambat [isian: tanggal]. Terima kasih.")
+        kem = f" ({des(h['jumlah_kemasan'])} dus)" if h.get("jumlah_kemasan") else ""
+        harga = f", harga terakhir {rp(h['harga_beli'])}/{h['satuan']}" if h["harga_beli"] is not None and len(isi) <= 4 else ""
+        butir.append(f"{i}. {h['nama']}: {des(h['jumlah_pesan'])} {h['satuan']}{kem}{harga}")
+    per_baris = -(-len(butir) // 4)
+    L += ["; ".join(butir[i:i + per_baris]) for i in range(0, len(butir), per_baris)]
+    L.append("Mohon konfirmasi stok, total harga, dan tanggal kirim (paling lambat [isian: tanggal]). Terima kasih.")
     return "\n".join(L)
 
 
@@ -1495,6 +1534,7 @@ def baris_barang(h):
         bag.append(rp(h["nilai_pesanan"]) if h["nilai_pesanan"] is not None else "nilai: [isian: harga beli]")
         if h["kelompok"] == "PESAN_MINGGU_DEPAN":
             bag.append(f"pesan ±{tgl_id(date.fromisoformat(h['tanggal_pesan']))}")
+        bag.append(f"RUMUS: {h['rumus_jumlah']}")
     if h.get("titik_pesan_ulang") is not None:
         bag.append(f"pesan ulang bila stok ≤ {h['titik_pesan_ulang']}, stok pengaman {h['stok_pengaman']}, stok target {h['stok_target']}")
     if aktif:
@@ -1532,7 +1572,7 @@ def teks(hasil):
             return "[isian: harga beli belum ada]"
         return rp(n) + (", sebagian harga belum ada" if ring["harga_belum_lengkap"] else "")
     L.append(f"RINGKASAN: {ring['jumlah_barang']} barang | pesan sekarang {ring['PESAN_SEKARANG']} ({nilai_txt(ring['nilai_pesan_sekarang'])}"
-             f") | minggu depan {ring['PESAN_MINGGU_DEPAN']} "
+             f") | pesan dalam 1-7 hari {ring['PESAN_MINGGU_DEPAN']} "
              f"({nilai_txt(ring['nilai_pesan_minggu_depan'])}) | aman {ring['AMAN']} | barang mati {ring['BARANG_MATI']}"
              + (f" (modal tertahan {rp(ring['nilai_barang_mati'])})" if ring['BARANG_MATI'] else "")
              + f" | AKAN KOSONG sebelum barang datang {ring['AKAN_KOSONG']}")
@@ -1547,6 +1587,11 @@ def teks(hasil):
         isi = [h for h in hasil["barang"] if h["kelompok"] == kel]
         if not isi:
             continue
+        if kel == "PESAN_MINGGU_DEPAN":
+            for lab in sorted({h["label_waktu"] for h in isi}, key=lambda x: min(h["hari_sampai_pesan"] for h in isi if h["label_waktu"] == x)):
+                sub = [h for h in isi if h["label_waktu"] == lab]
+                L += ["", f"{lab} ({len(sub)})"] + [baris_barang(h) for h in sub]
+            continue
         L += ["", f"{LABEL_KELOMPOK[kel]} ({len(isi)})"]
         batas = 12 if kel == "AMAN" else len(isi)
         L += [baris_barang(h) for h in isi[:batas]]
@@ -1557,15 +1602,16 @@ def teks(hasil):
         for g in hasil["pesanan_per_pemasok"]:
             tot = ("[isian: harga beli belum ada]" if (g["total_nilai"] == 0 and not g["harga_lengkap"]) else
                    rp(g["total_nilai"]) + ("" if g["harga_lengkap"] else " + [isian: harga yang belum ada]"))
-            L.append(f"* {g['pemasok']} - {LABEL_KELOMPOK[g['kelompok']]} - total {tot}"
+            L.append(f"* {g['pemasok']} - {g['label_waktu']} - total {tot}"
                      + (f" | KURANG {rp(g['kurang_dari_minimal_belanja'])} dari minimal belanja {rp(g['minimal_belanja'])}"
                         if g.get("kurang_dari_minimal_belanja") else ""))
             for b in g["barang"]:
-                L.append(f"    {b['nama']}: {des(b['jumlah'])} {b['satuan']} = {rp(b['nilai']) if b['nilai'] is not None else '[isian: harga beli]'}")
+                L.append(f"    {b['nama']}: {des(b['jumlah'])} {b['satuan']} = {rp(b['nilai']) if b['nilai'] is not None else '[isian: harga beli]'}"
+                         + (f" (pesan ±{tgl_id(date.fromisoformat(b['tanggal_pesan']))})" if g["kelompok"] != "PESAN_SEKARANG" else ""))
             if g.get("draf_wa"):
-                L.append("  Draf WA:")
+                L.append("  Draf WA (wajib ada di balasan):")
                 L += ["    " + x for x in g["draf_wa"].split("\n")]
-    if hasil["barang_laris_untuk_bundling"]:
+    if hasil["barang_laris_untuk_bundling"] and hasil["ringkasan"]["BARANG_MATI"]:
         L += ["", "Barang paling laris (untuk paket bundling barang mati): " + ", ".join(hasil["barang_laris_untuk_bundling"])]
     if hasil["pertanyaan_usulan"]:
         L += ["", "PERTANYAAN USULAN (maks 3):"] + [f"  {i}. {q}" for i, q in enumerate(hasil["pertanyaan_usulan"], 1)]

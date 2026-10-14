@@ -509,6 +509,49 @@ p = subprocess.run([sys.executable, SCRIPT, "--contoh"], capture_output=True, te
 cek("W4 --contoh menampilkan cara pakai", p.returncode == 0 and "Cara pakai singkat" in p.stdout and "--barang-data" in p.stdout)
 cek("W5 ringkasan tanpa barang mati tidak menulis 'modal tertahan Rp0'", "modal tertahan Rp0" not in t["teks"])
 
+# ---------------------------------------------------------------- X. versi 1.0.3: label waktu nyata, rumus per barang, draf WA
+# X1. permintaan tetap 2/hari 28 hari, lead time 7, horizon 14 -> ROP 14, target 42; hari ke ROP = (stok - 14) / 2
+pola_x = {s: (lambda i: 2) for s in ("B1D", "H3", "H5", "H8")}
+jual_x = tulis("x.csv", deret_csv(M0, pola_x, 28))
+barang_x = tulis("x_barang.csv", "sku;nama;stok;pemasok;harga_beli\nB1D;Gula;16;Grosir X;1000\nH3;Minyak;20;Grosir X;1000\n"
+                 "H5;Tepung;24;Grosir Y;1000\nH8;Kecap;30;Grosir Y;1000\n")
+k, h = jalan("--file", jual_x, "--barang", barang_x)
+akhir_x = M0 + timedelta(days=27)
+pendek = lambda t: f"{t.day} {['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'][t.month - 1]}"  # noqa: E731
+cek("X1a ROP tercapai 1 hari lagi -> 'PESAN BESOK (tgl)'", brg(h, "Gula")["label_waktu"] == f"PESAN BESOK ({pendek(akhir_x + timedelta(days=1))})")
+cek("X1b 3 hari lagi -> 'PESAN 3 HARI LAGI (tgl)'", brg(h, "Minyak")["label_waktu"] == f"PESAN 3 HARI LAGI ({pendek(akhir_x + timedelta(days=3))})")
+cek("X1c 5 hari lagi -> 'PESAN MINGGU DEPAN (tgl)'", brg(h, "Tepung")["label_waktu"] == f"PESAN MINGGU DEPAN ({pendek(akhir_x + timedelta(days=5))})")
+cek("X1d 8 hari lagi -> AMAN", brg(h, "Kecap")["kelompok"] == "AMAN")
+k, t = jalan("--file", jual_x, "--barang", barang_x, "--format", "teks")
+cek("X1e teks: judul kelompok memakai waktu nyata, bukan 'PESAN MINGGU DEPAN' untuk besok",
+    f"PESAN BESOK ({pendek(akhir_x + timedelta(days=1))}) (1)" in t["teks"] and f"PESAN 3 HARI LAGI ({pendek(akhir_x + timedelta(days=3))}) (1)" in t["teks"]
+    and f"PESAN MINGGU DEPAN ({pendek(akhir_x + timedelta(days=5))}) (1)" in t["teks"])
+# X2. rumus ringkas per barang yang dipesan (angka pembanding dihitung terpisah)
+cek("X2a rumus besok: 42 - (16 - 2 x 1) = 28", brg(h, "Gula")["rumus_jumlah"] == "stok target 42 − perkiraan stok saat pesan 14 (16 − 2 × 1 hari) = pesan 28"
+    and brg(h, "Gula")["jumlah_pesan"] == 42 - (16 - 2 * 1))
+k, h = jalan("--file", jual_g, "--barang", barang_g, "--horizon", "11")
+cek("X2b rumus sekarang: 'stok target 18 − stok 5 = pesan 13'", brg(h, "G0")["rumus_jumlah"] == "stok target 18 − stok 5 = pesan 13")
+cek("X2c rumus dengan kelipatan: '= 13 → pesan 24 (dibulatkan ke kelipatan 12)'",
+    brg(h, "G1")["rumus_jumlah"] == "stok target 18 − stok 5 = 13 → pesan 24 (dibulatkan ke kelipatan 12)")
+k, h = jalan("--file", jual_q, "--barang", barang_q)
+cek("X2d rumus dengan barang dalam pesanan", brg(h, "Q4")["rumus_jumlah"] == "stok target 42 − perkiraan stok saat pesan 14 (stok 6 + dalam pesanan 10 − 2 × 1 hari) = pesan 28")
+k, h = jalan("--file", jual_q, "--barang-data", "sku;stok;dalam pesanan\nQ1;5;2")
+cek("X2g rumus sekarang dengan dalam pesanan: 42 − 5 − 2 = 35", brg(h, "Q1")["rumus_jumlah"] == "stok target 42 − stok 5 − dalam pesanan 2 = pesan 35")
+k, h = jalan("--file", jual_a, "--barang", barang_a)
+e = harapan(sa, 7, 14, 20)
+cek("X2e rumus barang A: target - stok = pesan", brg(h, "A1")["rumus_jumlah"] == f"stok target {e['tgt']} − stok 20 = pesan {e['tgt'] - 20}")
+k, t = jalan("--file", jual_a, "--barang", barang_a, "--format", "teks")
+cek("X2f teks memuat baris RUMUS", f"RUMUS: stok target {e['tgt']} − stok 20 = pesan {e['tgt'] - 20}" in t["teks"])
+# X3. draf WA untuk semua kelompok pesan, maks. 6 baris walau barang banyak
+k, h = jalan("--file", jual_x, "--barang", barang_x)
+cek("X3a draf WA juga untuk pesanan besok/minggu depan", all(g.get("draf_wa") for g in h["pesanan_per_pemasok"])
+    and any("Rencana pesan sekitar" in g["draf_wa"] for g in h["pesanan_per_pemasok"]))
+banyak = {f"S{i}": (lambda i: 2) for i in range(7)}
+k, h = jalan("--data", deret_csv(M0, banyak, 28), "--barang-data", "sku;stok;pemasok\n" + "\n".join(f"S{i};3;Grosir Z" for i in range(7)))
+g = h["pesanan_per_pemasok"][0]
+cek("X3b 7 barang ke satu pemasok -> draf WA <= 6 baris, semua barang tercantum",
+    len(g["draf_wa"].split("\n")) <= 6 and all(f"Barang S{i}:" in g["draf_wa"] for i in range(7)))
+
 print()
 print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'} ({len(GAGAL)} gagal)")
 sys.exit(1 if GAGAL else 0)

@@ -90,4 +90,4 @@ Angka dihitung dengan rumus tetap dari penjualan Anda, bukan ditebak, tetapi tet
 Alat bantu perencanaan stok, bukan nasihat keuangan dan bukan jaminan ketersediaan pemasok; keputusan belanja tetap di tangan Anda. Karya orisinal Komunitech. Nama marketplace dan aplikasi hanya disebut sebagai contoh sumber data dan tidak berafiliasi. Lihat `ATTRIBUTION.md`.
 
 ## Riwayat perubahan
-Versi terkini: 1.0.2. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: 1.0.3. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
