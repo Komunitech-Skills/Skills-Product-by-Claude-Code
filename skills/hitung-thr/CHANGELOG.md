@@ -20,3 +20,14 @@ Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
 ## Catatan revisi 1.0.9 (2026-10-05)
 - Pemeriksaan ulang PPh 21 DTP terhadap teks PMK 105/2025 (Pasal 2 ayat 1, Pasal 5, Pasal 6 ayat 6, Lampiran B): angka "THR diterima" **sudah benar** (sama dengan THR, tidak ditambah DTP). Kalimat penjelasan kini menulis jelas bahwa PPh 21 tetap dipotong, nilai yang sama dibayar tunai kembali, dan setoran ke negara untuk bagian DTP Rp 0. Tambah tes regresi dan ringkasan dasar hukum `references/dtp-pmk105.md`. **PERLU REVIEW konsultan pajak.**
+
+## Catatan revisi 1.0.11 (2026-10-14)
+- Uji ulang 1.0.10 (3 skenario, sisi dengan skill): rata-rata 8,0, tanpa salah angka; cacat "hanya bertanya" dan "istilah teknis" hilang. Sisa: pengumuman memakai "kami"/"Manajemen" bila nama usaha tidak diberikan → `thr.py` kini menulis `[isi: nama usaha]` (dan salinan `gaji-umkm/scripts/mesin/thr.py` disinkronkan).
+
+## Catatan revisi 1.0.10 (2026-10-14)
+Perbaikan dari uji OpenClaw sebelum/sesudah 1.0.9 (2026-10-14, 6,1 → 8,0, LULUS tipis). Rumus dan angka hitungan tidak berubah; `thr.py` tidak diubah (salinan di gaji-umkm tetap identik).
+- **Data kurang → hitung dulu, tanya di akhir (maks. 3).** Pola lama "tanyakan sekali, maks. 5 pertanyaan" diganti: hari raya tidak disebut → hitung untuk perkiraan Idul Fitri berikutnya (atau Natal bila konteksnya Natal) dengan asumsi disebut di kalimat pertama; tanggal masuk tidak ada → "sudah lama" dianggap ≥ 12 bulan, bulan masuk saja → rentang (tanggal 1 s.d. akhir bulan), tanpa keterangan → dua baris (≥ 12 bulan = 1 × upah; < 12 bulan = rumus proporsional dengan contoh angka); teks grup ditunda sampai tanggal pasti. (Temuan uji: skenario data kurang hanya berisi 5 pertanyaan tanpa angka, nilai 6,5.)
+- Opsi baru `scripts/tahun_hijriah.py <tanggal> --berikutnya idul-fitri|idul-adha`: perkiraan hari raya pertama pada/sesudah tanggal itu + batas H-7, tanpa web. 4 uji otomatis baru (42 lulus).
+- **Blok baru "UNTUK AGENT SAJA":** larangan kata proses di balasan (skill, script, nama file, path folder kerja, nama skill lain, "belum terpasang"); cara membersihkan baris keluaran script sebelum ditempel (baris "File rekap", "asumsi skill", nama kolom); rujukan pajak cukup kalimat awam ("Pajak THR dihitung terpisah, bisa saya bantu bila diminta."). Lokasi file tidak lagi disebut; tawaran hapus data gaji tanpa path; `--csv` hanya bila diminta. (Temuan uji: "pakai script resmi skill THR", "skill `pph21-ter` (belum terpasang di sini)", path sandbox muncul di 3 dari 5 balasan.)
+- **Nama usaha tidak dikarang:** jenis usaha ("bengkel motor", "toko bangunan") bukan nama usaha → `[isi: nama usaha]`; sama untuk nama pimpinan, tanggal pembayaran pasti, kontak HR. (Temuan uji: "Bengkel Motor", "Toko Bangunan" di teks grup.)
+- Belum diuji ulang di OpenClaw.

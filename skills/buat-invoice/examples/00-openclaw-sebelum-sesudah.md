@@ -1,5 +1,301 @@
 # Uji OpenClaw SEBELUM vs SESUDAH: buat-invoice
 
+## Uji ulang 1.0.6 (2026-10-14)
+
+**Penguji:** agent penguji independen (bukan pembuat patch 1.0.6). **Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`, satu giliran per panggilan), model router `ninerouter/komunitech`. Setiap sampel memakai home baru yang terisolasi dan hanya berisi `buat-invoice` 1.0.6 dari repo. **Yang diuji hanya sisi DENGAN skill.** Skor TANPA skill tetap memakai hasil uji 1.0.5 di bawah. Skenario 01–03 memakai pesan member yang sama persis dengan uji 1.0.5 (lihat di bawah). Ada tiga tambahan: (a) skenario 01 diulang di konteks kanal Telegram (`--channel telegram`, tanpa `--deliver`); (b) skenario 03 dijalankan dua kali karena sampel pertama memunculkan masalah lampiran; (c) percobaan sampel ketiga skenario 03 gagal 3× karena router error 530, jadi tidak dihitung. Lampiran dinilai dari payload `mediaUrl`/baris `MEDIA:` di keluaran JSON dan dicocokkan dengan berkas yang benar-benar ada di workspace agent.
+
+**Verifikasi angka independen:** Python `Fraction`, tanpa mengimpor script skill. PPN = ⌊12% × DPP × 11/12⌋, termin 30% dibulatkan ke rupiah terdekat, dan pelunasan = total − DP. Semua nominal Rupiah di 5 jawaban dicocokkan dengan himpunan angka acuan, dan **tidak ada nominal yang salah**. Isi HTML diperiksa sama dengan isi chat.
+
+| Skenario | Skor 1.0.5 | Skor 1.0.6 | (1) Penanda tangan | (2) Nama berkas = nomor | (3) HTML terlampir / disebut | Angka |
+|---|:-:|:-:|---|---|---|---|
+| 01 Catering non-PKP + diskon + DP (lokal) | 9 | **9** | `[isi nama penanda tangan]` dan `[isi kota]`. Tidak diambil dari "a.n. Rini Kusumawati", dan hal ini disampaikan ke pengguna ✓ | `invoice-INV-2026-10-0008.html` = INV/2026/10/0008 ✓ | Terlampir (`mediaUrl` mengarah ke berkas yang ada) ✓ | Total 8.075.000, DP 3.000.000, sisa 5.075.000, terbilang sisa benar, jatuh tempo 21 Okt, catatan meterai benar ✓ |
+| 01 konteks Telegram (tambahan) | 9 | 8 | Placeholder ✓ | Sama ✓ | Tidak dilampirkan. Nama berkas disebut + "Balas 'kirim file'" (cadangan yang diizinkan SKILL; di uji 1.0.5 berkas terlampir) | Angka dokumen benar, tetapi catatan meterai keliru: "DP Rp3jt dan sisa tagihan terpisah, **keduanya di bawah Rp5jt**", padahal sisa Rp5.075.000. Kesimpulannya tetap benar (invoice tidak wajib meterai, kuitansi pelunasan wajib) |
+| 02 CV PKP + diskon 3% + termin 30/70 | 9 | **9** | Hendra Wijaya, Direktur, Bekasi (disebut pengguna) ✓ | `invoice-001-INV-X-2026.html` = 001/INV/X/2026 ✓ (1.0.5: `invoice-INV-013.html`) | Terlampir ✓ | Subtotal 31.460.000, diskon 943.800, DPP 30.966.200, DPP nilai lain 28.385.683,33, PPN 3.406.282, total 34.372.482, DP 10.311.745, pelunasan 24.060.737 (13 Nov 2026), terbilang benar. **Cocok 100%** ✓ |
+| 03 Kuitansi DP 7,5 jt, sampel a | 8,5 | 7,5 | Placeholder ✓. "a.n." rekening BRI tidak lagi ditebak ✓ | `kuitansi-KWT-2026-10-0004.html` ✓ | **Gagal:** baris `MEDIA:` ditulis model dengan path salah ketik `/opt/ochome/.openchome/.openclaw/workspace/…` sehingga berkas tidak ada di path itu dan lampiran akan gagal. Teks hanya menyebut "di folder workspace" tanpa tawaran kirim file | Pesanan 17.100.000, diterima 7.500.000, sisa 9.600.000, satu terbilang untuk uang diterima, kotak meterai + catatan wajib meterai ✓ |
+| 03 Kuitansi DP 7,5 jt, sampel b | 8,5 | 8,5 | Placeholder ✓ | `kuitansi-KWT-2026-10-0004.html` ✓ | Tidak dilampirkan. Nama berkas disebut + "balas 'kirim file'" (cadangan) | Sama, benar ✓ |
+| **Rata-rata 3 skenario utama (lokal; 03 = rata-rata 2 sampel = 8,0)** | **8,8** (5 skenario) | **8,7** | | | | **0 salah angka** |
+
+**Status tiga cacat dari uji 1.0.5:**
+1. **Penanda tangan dari nama pemilik rekening: HILANG.** Di 4 dari 4 sampel tanpa penanda tangan, `[isi nama penanda tangan]`/`[isi kota]` dipakai dan disampaikan ke pengguna sebagai hal yang perlu diisi. Skenario 02 memakai nama yang memang disebut pengguna.
+2. **Nama berkas HTML tidak sama dengan nomor invoice: HILANG.** Di 5 dari 5 sampel, nama berkas sama dengan nomor di chat (`/` menjadi `-`).
+3. **Kuitansi tidak dilampirkan: BELUM HILANG (sebagian).** HTML kuitansi selalu dibuat dengan nama yang benar dan disebut ke pengguna, tetapi **tidak ada sampel yang benar-benar terlampir (0 dari 2)**. Sampel a mencoba melampirkan, tetapi path-nya dirangkai sendiri oleh model dan salah ketik. Sampel b memilih cadangan "balas 'kirim file'" padahal pelampiran tersedia (skenario 01/02 lokal melampirkan). Pola cadangan yang sama juga muncul di skenario 01 konteks Telegram.
+
+**Verdik: BELUM.** Rata-rata 8,7 ≥ 8, tidak ada salah angka dokumen, dan cacat 1 & 2 hilang, tetapi cacat 3 belum hilang. Catatan: bila kurator menerima cadangan "sebut nama berkas + tawarkan kirim file" sebagai sudah memenuhi aturan SKILL, yang tersisa hanya sampel a (path lampiran salah ketik).
+
+**Cacat baru (ringan):** (a) path lampiran salah ketik (sampel 03a). Script mencetak path HTML **relatif** (`kuitansi-KWT-2026-10-0004.html`), jadi agent merangkai path absolut sendiri. (b) Kalimat meterai di skenario 01 Telegram menyebut sisa Rp5.075.000 "di bawah Rp5jt". (c) Di sampel 03a, baris judul `| | |` tabel ringkasan dari output script terbuang saat disalin agent, sehingga ringkasan tidak tampil sebagai tabel.
+
+**Perbaikan, urut dari dampak terbesar:**
+1. Script mencetak path **absolut** berkas HTML (`os.path.abspath`) dengan kalimat "lampirkan berkas di path ini persis". Agent tidak perlu lagi merangkai path, dan ini menutup sumber salah ketik `.openchome`.
+2. SKILL.md: tegaskan bahwa cadangan "balas 'kirim file'" **hanya** dipakai bila kanal benar-benar tidak bisa mengirim berkas. Bila bisa, berkas langsung dilampirkan, termasuk untuk kuitansi dan di konteks Telegram.
+3. Catatan meterai untuk invoice dengan DP: script mencetak satu kalimat meterai siap salin yang membandingkan tiap penerimaan uang dengan Rp5 jt, dan agent menyalinnya apa adanya, bukan merangkum sendiri.
+4. (Ringan) Salin tabel ringkasan kuitansi apa adanya, termasuk baris judul. "Untuk pembayaran" sebaiknya "DP pesanan seragam batik 60 stel".
+
+**Pesan member (identik dengan uji 1.0.5)**
+
+<details><summary>Skenario 01 (pesan)</summary>
+
+````text
+tolong buatin invoice dong. dari Dapur Bu Rini Catering ke PT Kencana Fiktif Mandiri. nasi box ayam bakar 150 box @32.500, snack box 150 @15rb diskon 10%, air mineral botol 300 @3.500, ongkir 125rb. udah DP 3jt tgl 10 okt kemarin. jatuh tempo 7 hari. no invoice terakhir INV/2026/10/0007. rek Mandiri 1230009876543 a.n. Rini Kusumawati. saya blm pkp ya
+````
+
+</details>
+<details><summary>Skenario 02 (pesan)</summary>
+
+````text
+Saya CV Sumber Baja Fiktif, sudah PKP. Bikinin invoice ke PT Graha Konstruksi Fiktif: besi beton 10mm 250 batang @78.500, semen 50kg 120 sak @68.000, kawat bendrat 15 roll @245.000. Diskon 3% dari total belanja. Ongkir truk 450rb. Bayarnya 2 termin: DP 30% sekarang, pelunasan 70% 30 hari lagi. Nomor terakhir 012/INV/IX/2026. Rekening BCA 7770001234 a.n. CV Sumber Baja Fiktif. TTD Hendra Wijaya, direktur, Bekasi.
+````
+
+</details>
+<details><summary>Skenario 03 (pesan)</summary>
+
+````text
+bikinin kuitansi DP dong. Bu Anisa Fiktif barusan transfer DP 7,5jt buat pesanan seragam batik 60 stel @285rb. Dari Batik Lestari Fiktif. Masuk ke BRI saya hari ini. nomor kuitansi terakhir KWT/2026/10/0003
+````
+
+</details>
+
+**Jawaban DENGAN skill 1.0.6 (utuh, teks chat; lampiran tercatat di keterangan)**
+
+<details><summary>01 lokal: lampiran `invoice-INV-2026-10-0008.html` (ada)</summary>
+
+````text
+Invoice sudah jadi, nomor lanjut otomatis dari INV/2026/10/0007 → **INV/2026/10/0008**.
+
+# INVOICE
+
+**No.:** INV/2026/10/0008
+**Tanggal:** 14 Oktober 2026
+**Jatuh tempo:** 21 Oktober 2026
+**Status:** SEBAGIAN DIBAYAR
+
+**Dari:** Dapur Bu Rini Catering
+**Kepada:** PT Kencana Fiktif Mandiri
+
+| No | Deskripsi | Qty | Harga | Diskon | Jumlah |
+|---|---|---|---|---|---|
+| 1 | Nasi box ayam bakar | 150 box | Rp 32.500 | - | Rp 4.875.000 |
+| 2 | Snack box | 150 box | Rp 15.000 | Rp 225.000 (10%) | Rp 2.025.000 |
+| 3 | Air mineral botol | 300 botol | Rp 3.500 | - | Rp 1.050.000 |
+
+- Subtotal: Rp 7.950.000
+- Ongkos kirim: Rp 125.000
+- **TOTAL: Rp 8.075.000**
+- Sudah dibayar – DP (10 Oktober 2026): -Rp 3.000.000
+- **SISA TAGIHAN: Rp 5.075.000**
+
+Terbilang: *Lima Juta Tujuh Puluh Lima Ribu Rupiah*
+
+**Pembayaran ke:** Mandiri 1230009876543 a.n. Rini Kusumawati
+
+[isi kota], 14 Oktober 2026
+**[isi nama penanda tangan]**
+Dapur Bu Rini Catering
+
+---
+
+Catatan buat kamu (bukan buat dikirim ke klien):
+- Tidak PKP → tidak ada PPN, sesuai permintaan.
+- Meterai tidak wajib — DP Rp3.000.000 masih di bawah Rp5 juta. Tapi nanti saat pelunasan sisa Rp5.075.000, **kuitansi pelunasannya wajib meterai Rp10.000** karena di atas Rp5 juta.
+- Kota dan nama/jabatan penanda tangan belum diisi (aku nggak nebak dari nama rekening) — kasih tahu kalau mau dilengkapi, nanti aku update filenya.
+- Nomor invoice ini sudah tercatat di `nomor-invoice.json` biar nggak dobel di invoice berikutnya.
+
+File HTML siap cetak sudah dibuat di workspace:
+````
+
+</details>
+<details><summary>01 konteks Telegram: tanpa lampiran, tawaran "kirim file"</summary>
+
+````text
+Invoice udah jadi. Nomor lanjut otomatis dari INV/2026/10/0007 → **INV/2026/10/0008**.
+
+# INVOICE
+
+**No.:** INV/2026/10/0008
+**Tanggal:** 14 Oktober 2026
+**Jatuh tempo:** 21 Oktober 2026
+**Status:** SEBAGIAN DIBAYAR
+
+**Dari:** Dapur Bu Rini Catering
+**Kepada:** PT Kencana Fiktif Mandiri
+
+| No | Deskripsi | Qty | Harga | Diskon | Jumlah |
+|---:|---|---:|---:|---:|---:|
+| 1 | Nasi box ayam bakar | 150 box | Rp 32.500 | - | Rp 4.875.000 |
+| 2 | Snack box | 150 box | Rp 15.000 | Rp 225.000 (10%) | Rp 2.025.000 |
+| 3 | Air mineral botol | 300 botol | Rp 3.500 | - | Rp 1.050.000 |
+
+- Subtotal: Rp 7.950.000
+- Ongkos kirim: Rp 125.000
+- **TOTAL: Rp 8.075.000**
+- Sudah dibayar - DP (10 Oktober 2026): -Rp 3.000.000
+- **SISA TAGIHAN: Rp 5.075.000**
+
+Terbilang: Lima Juta Tujuh Puluh Lima Ribu Rupiah
+
+**Pembayaran ke:** Mandiri 1230009876543 a.n. Rini Kusumawati
+
+[isi kota], 14 Oktober 2026
+**[isi nama penanda tangan]**
+Dapur Bu Rini Catering
+
+---
+
+Catatan buat Mbak/Pak:
+- Karena belum PKP, invoice ini **tanpa PPN** — sesuai.
+- Bea meterai **tidak wajib** (DP Rp3jt dan sisa tagihan terpisah, keduanya di bawah Rp5jt; tapi kalau nanti bikin kuitansi pelunasan Rp5.075.000, itu udah di atas Rp5jt jadi **wajib meterai Rp10.000**).
+- Belum ada kota & nama penanda tangan — kalau mau diisi, kasih tahu nanti saya update.
+- File HTML siap cetak (buka → Print → Save as PDF) sudah dibuat: `invoice-INV-2026-10-0008.html`. Mau saya kirimkan filenya? Balas "kirim file" ya.
+````
+
+</details>
+<details><summary>02 lokal: lampiran `invoice-001-INV-X-2026.html` (ada)</summary>
+
+````text
+# INVOICE
+
+**No.:** 001/INV/X/2026
+**Tanggal:** 14 Oktober 2026
+**Jatuh tempo:** 13 November 2026
+**Status:** BELUM DIBAYAR
+
+**Dari:** CV Sumber Baja Fiktif
+**Kepada:** PT Graha Konstruksi Fiktif
+
+| No | Deskripsi | Qty | Harga | Diskon | Jumlah |
+|---:|---|---:|---:|---:|---:|
+| 1 | Besi beton 10mm | 250 batang | Rp 78.500 | - | Rp 19.625.000 |
+| 2 | Semen 50kg | 120 sak | Rp 68.000 | - | Rp 8.160.000 |
+| 3 | Kawat bendrat | 15 roll | Rp 245.000 | - | Rp 3.675.000 |
+
+| | |
+|---|---:|
+| Subtotal | Rp 31.460.000 |
+| Diskon | -Rp 943.800 (3%) |
+| Ongkos kirim | Rp 450.000 |
+| DPP | Rp 30.966.200 |
+| DPP nilai lain (11/12) | Rp 28.385.683,33 |
+| PPN 12% | Rp 3.406.282 |
+| **TOTAL** | **Rp 34.372.482** |
+
+Terbilang: *Tiga Puluh Empat Juta Tiga Ratus Tujuh Puluh Dua Ribu Empat Ratus Delapan Puluh Dua Rupiah*
+
+**Jadwal pembayaran**
+
+| Termin | Persen | Jumlah | Jatuh tempo |
+|---|---:|---:|---|
+| DP | 30% | Rp 10.311.745 | 14 Oktober 2026 |
+| Pelunasan | 70% | Rp 24.060.737 | 13 November 2026 |
+
+**Pembayaran ke:** BCA 7770001234 a.n. CV Sumber Baja Fiktif
+
+Bekasi, 14 Oktober 2026
+
+**Hendra Wijaya**
+Direktur — CV Sumber Baja Fiktif
+
+---
+
+Catatan buat Anda (tidak usah dikirim ke PT Graha Konstruksi):
+- **Nomor:** nomor terakhir Anda `012/INV/IX/2026` bulannya September, sementara invoice ini Oktober — jadi penomoran mulai ulang dari periode baru jadi **001/INV/X/2026**. Kalau usaha Anda biasanya melanjutkan urutan lintas bulan (jadi harusnya 013), bilang saja, saya buat ulang dengan nomor lanjut.
+- **PPN:** karena sudah PKP, saya langsung pakai **PPN 12% × DPP nilai lain 11/12** (PMK 131/2024) tanpa tanya dulu — kalau transaksi ini disepakati tanpa PPN, kabari saya.
+- **Meterai:** tidak wajib — DP yang diterima sekarang (Rp10.311.745) di atas Rp5 juta sebenarnya kena meterai untuk kuitansi penerimaan uangnya nanti (bukan invoice ini). Jadi saat Anda terima DP, siapkan kuitansi + meterai Rp10.000.
+- Sebaiknya cantumkan NPWP penjual di invoice (belum diisi karena tidak disebutkan).
+- Invoice ini bukan faktur pajak — faktur pajak resmi tetap dibuat terpisah di Coretax.
+
+File HTML siap cetak sudah dibuat, saya lampirkan:
+````
+
+</details>
+<details><summary>03 sampel a: MEDIA path salah ketik `/opt/ochome/.openchome/.openclaw/workspace/kuitansi-KWT-2026-10-0004.html` (tidak ada)</summary>
+
+````text
+Kuitansi DP sudah jadi, nomor lanjut benar (0003 → **0004**):
+
+# KUITANSI
+
+**No.:** KWT/2026/10/0004
+**Tanggal:** 14 Oktober 2026
+**Status:** SEBAGIAN DIBAYAR
+
+Telah terima dari: **Ibu Anisa Fiktif**
+Uang sejumlah: **Rp 7.500.000**
+Terbilang: _Tujuh Juta Lima Ratus Ribu Rupiah_
+Untuk pembayaran: Seragam batik
+Sisa yang belum dibayar: **Rp 9.600.000** dari total Rp 17.100.000
+
+**Dari:** Batik Lestari Fiktif
+**Kepada:** Ibu Anisa Fiktif
+
+| No | Deskripsi | Qty | Harga | Diskon | Jumlah |
+|---:|---|---:|---:|---:|---:|
+| 1 | Seragam batik | 60 stel | Rp 285.000 | - | Rp 17.100.000 |
+
+| Subtotal | Rp 17.100.000 |
+| **TOTAL** | **Rp 17.100.000** |
+| Diterima - DP (14 Oktober 2026) | -Rp 7.500.000 |
+| **Sisa belum dibayar** | **Rp 9.600.000** |
+
+**Catatan:** DP diterima via transfer ke rekening BRI pada 14 Oktober 2026.
+
+[isi kota], 14 Oktober 2026
+[ Meterai Rp10.000 ]
+
+**[isi nama penanda tangan]**
+Batik Lestari Fiktif
+
+
+Catatan buat Anda (bukan bagian kuitansi ke Bu Anisa):
+- DP Rp7,5jt > Rp5jt → **wajib bea meterai Rp10.000** (tempel/e-meterai sebelum tanda tangan).
+- Sisa tagihan: Rp9.600.000 dari total Rp17.100.000 (60 stel × Rp285.000).
+- Saya belum isi **kota** dan **nama penanda tangan** — sebutkan kalau mau diisi, biar nggak saya karang. Rekening BRI juga belum dicantumkan di kuitansi karena nomor rekeningnya belum disebutkan; kasih tahu kalau mau ditambahkan.
+- File HTML siap cetak (untuk PDF): `kuitansi-KWT-2026-10-0004.html` di folder workspace.
+````
+
+</details>
+<details><summary>03 sampel b: tanpa lampiran, tawaran "kirim file"</summary>
+
+````text
+Kuitansi DP sudah jadi. Nomor lanjut otomatis dari yang terakhir: KWT/2026/10/0003 + 1 = **KWT/2026/10/0004**.
+
+# KUITANSI
+
+**No.:** KWT/2026/10/0004
+**Tanggal:** 14 Oktober 2026
+**Status:** SEBAGIAN DIBAYAR
+
+Telah terima dari: **Bu Anisa Fiktif**
+Uang sejumlah: **Rp 7.500.000**
+Terbilang: _Tujuh Juta Lima Ratus Ribu Rupiah_
+Untuk pembayaran: Seragam batik
+
+**Dari:** Batik Lestari Fiktif
+**Kepada:** Bu Anisa Fiktif
+
+| No | Deskripsi | Qty | Harga | Jumlah |
+|---|---|---|---|---|
+| 1 | Seragam batik | 60 stel | Rp 285.000 | Rp 17.100.000 |
+
+- Subtotal / TOTAL: **Rp 17.100.000**
+- Diterima – DP (14 Okt 2026): -Rp 7.500.000
+- **Sisa belum dibayar: Rp 9.600.000**
+
+[isi kota], 14 Oktober 2026
+[ Meterai Rp10.000 ]
+**[isi nama penanda tangan]** — Batik Lestari Fiktif
+
+---
+
+Catatan buat Bos (jangan dikirim ke Bu Anisa):
+- **Meterai Rp10.000 wajib** ditempel/di-e-meterai sebelum ditandatangani, karena DP 7,5jt > 5jt.
+- Masih kosong: **kota** dan **nama penanda tangan** — isi sendiri sebelum cetak, saya nggak nebak-nebak.
+- Nomor dicatat di `nomor-invoice.json` biar nggak dobel nanti.
+- File HTML siap cetak: `kuitansi-KWT-2026-10-0004.html` di folder `kuitansi/` — balas "kirim file" kalau mau saya lampirkan.
+````
+
+</details>
+
+---
+
 ## Uji ulang per skill v1.0.5 (2026-10-14, penguji independen)
 
 **Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`, satu giliran per panggilan), model router Komunitech (`ninerouter/komunitech`). Setiap sampel memakai home baru yang terisolasi. **SEBELUM** = home tanpa skill. **SESUDAH** = home berisi `buat-invoice` 1.0.5 saja (folder skill dari repo). Ini **uji per skill**, bukan paket solusi 25 skill seperti uji 2026-10-01. Ada 5 skenario (3 normal, 1 info kurang, 1 permintaan yang harus ditolak), masing-masing 1 sampel per sisi, dan **kedua sisi dijalankan ulang**. Skenario 01 juga dijalankan dalam konteks kanal Telegram (`--channel telegram`, tanpa `--deliver`, tidak ada yang dikirim). Pesan member identik di kedua sisi dan datanya fiktif. Tidak ada sisi yang memakai giliran kedua.

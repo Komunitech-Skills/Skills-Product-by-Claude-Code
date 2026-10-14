@@ -1,13 +1,13 @@
 # Bank Opsi Tindakan Saat Kas Menipis
 
-Pilih 3–5 opsi yang **relevan dengan data pengguna** (ada pos yang bisa digeser). Urutkan: dampak terbesar dan paling mudah dijalankan dulu. Setiap opsi harus menyebut pos/pihak, nominal, minggu asal → tujuan, dan angka hasil simulasi script (atau hasil jalankan ulang setelah CSV diubah).
+Pilih 3–5 opsi yang **relevan dengan data pengguna** (ada pos yang bisa digeser). Urutkan: dampak terbesar dan paling mudah dijalankan dulu. Setiap opsi harus menyebut pos/pihak, nominal, minggu asal → tujuan, dan angka hasil simulasi script (opsi bawaan atau `--opsi`, semua dihitung dalam satu jalan). Kalimat perubahan disalin dari `deskripsi` keluaran script.
 
 ## A. Mempercepat uang masuk
 | Opsi | Kapan cocok | Cara konkret / contoh kalimat |
 |---|---|---|
 | Percepat tagihan piutang | Ada pelunasan piutang setelah minggu bermasalah | "Pak/Bu, apakah pembayaran invoice Rp … bisa dilakukan tanggal … ? Jika dilunasi minggu ini kami beri potongan 1–2%." Tawarkan skill `tagih-piutang` untuk menyusun pesan bertahap. |
 | Potongan bayar cepat (early payment discount) | Pelanggan B2B dengan termin 30 hari | Hitung biaya: potongan 2% dari Rp 15.000.000 = Rp 300.000 — bandingkan dengan biaya telat bayar gaji/denda. |
-| Minta uang muka (DP) pesanan baru | Usaha pesanan/produksi/jasa | DP 30–50% di depan untuk pesanan besar; masukkan sebagai baris `masuk` baru lalu jalankan ulang. |
+| Minta uang muka (DP) pesanan baru | Usaha pesanan/produksi/jasa | DP 30–50% di depan untuk pesanan besar; hitung dengan `--opsi "DP 50% | tambah masuk DP pesanan 9jt minggu 4; ubah Pelunasan pesanan jadi 9jt"`. |
 | Jual stok lambat laku | Ada persediaan menumpuk | Promo bundling/cuci gudang; masukkan perkiraan hasil sebagai penerimaan (konservatif, mis. 50% dari harga normal). |
 | Tagih langsung saat serah terima | Sering kirim dulu baru tagih | Ubah kebijakan: bayar saat barang diterima (COD/transfer sebelum kirim). |
 
@@ -16,7 +16,7 @@ Pilih 3–5 opsi yang **relevan dengan data pengguna** (ada pos yang bisa digese
 |---|---|---|
 | Negosiasi termin supplier | Ada pembayaran bahan rutin | "Kami pelanggan rutin sejak …; bisakah pembayaran bulan ini diberi termin 14 hari?" **Ingatkan:** utang tetap ada; lihat nilai `jatuh_setelah_horizon`. |
 | Tunda belanja non-kritis | Ada renovasi, alat baru, iklan besar, perjalanan, prive besar | Geser ke minggu setelah saldo pulih (lihat minggu saat saldo kembali di atas batas aman). |
-| Pecah pembayaran besar | Sewa tahunan, pembelian alat (bukan THR — THR wajib lunas paling lambat H-7) | Minta dibayar 2–3 kali; buat baris terpisah per termin di CSV. |
+| Pecah pembayaran besar | Sewa tahunan, pembelian alat (bukan THR — THR wajib lunas paling lambat H-7) | Minta dibayar 2–3 kali; hitung dengan `--opsi "cicil <pos> 3 kali mulai minggu N"`. |
 | Kurangi pembelian bahan sementara | Stok masih cukup untuk 1–2 minggu | Beli sesuai kebutuhan minggu itu saja (just-in-time) — hati-hati kehabisan stok. |
 | Kurangi prive (ambil uang pribadi) | Pemilik rutin mengambil uang usaha | Tetapkan jumlah prive tetap per bulan dan catat sebagai pengeluaran. |
 
@@ -37,6 +37,11 @@ Pilih 3–5 opsi yang **relevan dengan data pengguna** (ada pos yang bisa digese
 - Kewajiban musiman lain: sewa tahunan, perpanjangan izin, stok menjelang musim ramai (Lebaran/Natal/tahun ajaran baru). Untuk horizon "sampai Lebaran", pakai `--jumlah-minggu` (maks. 26).
 
 ## Cara menunjukkan dampak opsi
-1. Pakai `simulasi_opsi` dari script untuk opsi A1 (piutang), B1 (supplier), B2 (non-kritis), dan gabungan.
-2. Untuk opsi lain (DP, jual stok, pecah pembayaran): ubah CSV (tambah baris masuk / pecah baris keluar), jalankan ulang, lalu laporkan saldo terendah & minggu bermasalah yang baru.
-3. Tulis dampak dengan kalimat awam: "Minggu 8 yang tadinya tinggal Rp 0 menjadi Rp 9.000.000."
+1. Pakai `simulasi_opsi` dari jalan dasar untuk opsi A1 (piutang), B1 (supplier), B2 (non-kritis), dan gabungan. Salin `deskripsi`-nya utuh: opsi piutang bawaan memajukan **semua** pelunasan yang jatuh mulai minggu bermasalah pertama, bisa lebih dari satu pembayaran.
+2. Opsi lain (DP, jual stok, pecah pembayaran, pinjaman, pangkas biaya, hanya satu piutang) dihitung **sekaligus dalam satu jalan** dengan `--opsi` (maks. 4, termasuk gabungan) — jangan mengubah CSV dan menjalankan ulang per opsi. Contoh:
+   - `--opsi "Tagih DP saja | percepat Pelunasan piutang dari minggu 5 ke minggu 3"`
+   - `--opsi "Cicil renovasi | cicil Renovasi etalase 3 kali mulai minggu 5 setiap 2 minggu"`
+   - `--opsi "Jual stok lambat | tambah masuk Cuci gudang 4jt minggu 3"`
+   - `--opsi "Pangkas bahan | kurangi Bahan baku 10%"`
+3. Laporkan per opsi: salinan `deskripsi` + titik terendah (minggu & saldo), minggu minus, saldo akhir; bila `jatuh_setelah_horizon` > 0 sebut juga `saldo_setelah_kewajiban_tertunda`.
+4. Tulis dampak dengan kalimat awam: "Minggu 8 yang tadinya tinggal Rp 0 menjadi Rp 9.000.000."

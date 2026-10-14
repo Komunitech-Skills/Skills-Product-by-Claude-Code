@@ -229,6 +229,92 @@ class UjiNomorTidakDobel(unittest.TestCase):
         self.assertEqual(self.jalan(self.data("PT A Fiktif"), "--counter-file", c)[0], 2)
 
 
+class UjiNamaBerkasDanRekening(unittest.TestCase):
+    """v1.0.6 (uji OpenClaw 2026-10-14): nama berkas HTML harus sama dengan nomor yang tampil di chat
+    (invoice-INV-013.html vs 001/INV/X/2026), dan 'a.n.' rekening tidak boleh ditebak."""
+
+    setUp, tearDown, jalan = UjiCLI.setUp, UjiCLI.tearDown, UjiCLI.jalan
+
+    def data_oktober(self):
+        d = copy.deepcopy(CONTOH)
+        d["tanggal"] = "2026-10-02"
+        d["pembayaran"] = []
+        return d
+
+    def test_nama_aman_dari_nomor(self):
+        self.assertEqual(B.nama_berkas_dari_nomor("001/INV/X/2026"), "001-INV-X-2026")
+        self.assertEqual(B.nama_berkas_dari_nomor("INV/2026/10/0013"), "INV-2026-10-0013")
+        self.assertEqual(B.nama_berkas_dari_nomor("KWT\\2026/10/0004"), "KWT-2026-10-0004")
+        self.assertEqual(B.nama_berkas_dari_nomor("///"), "tanpa-nomor")
+
+    def test_placeholder_nomor_romawi_ganti_bulan(self):
+        # nomor terakhir 012/INV/IX/2026 + tanggal Oktober -> 001/INV/X/2026; berkas HARUS bernama dari nomor itu
+        pola = os.path.join(self.dir, "invoice-{nomor}.html")
+        kode, out, _ = self.jalan(self.data_oktober(), "--nomor-terakhir", "012/INV/IX/2026", "--html", pola,
+                                  "--format", "json")
+        self.assertEqual(kode, 0)
+        h = json.loads(out)
+        self.assertEqual(h["nomor"], "001/INV/X/2026")
+        harapan = os.path.join(self.dir, "invoice-001-INV-X-2026.html")
+        self.assertEqual(h["html_disimpan_ke"], harapan)
+        self.assertTrue(os.path.isfile(harapan))
+        with open(harapan, encoding="utf-8") as fh:
+            self.assertIn("001/INV/X/2026", fh.read())
+        self.assertNotIn("012", os.path.basename(harapan))      # tidak mengulang nomor terakhir pengguna
+
+    def test_folder_nama_otomatis_invoice_dan_kuitansi(self):
+        kode, out, _ = self.jalan(self.data_oktober(), "--nomor-terakhir", "INV/2026/10/0012", "--html", self.dir)
+        self.assertEqual(kode, 0)
+        self.assertTrue(os.path.isfile(os.path.join(self.dir, "invoice-INV-2026-10-0013.html")))
+        self.assertIn("invoice-INV-2026-10-0013.html", out)
+        d = self.data_oktober()
+        d["jenis_dokumen"], d["prefix"] = "kuitansi", "KWT"
+        d["pembayaran"] = [{"tanggal": "2026-10-02", "jumlah": "7.500.000", "keterangan": "DP"}]
+        kode, out, _ = self.jalan(d, "--nomor-terakhir", "KWT/2026/10/0003", "--html", self.dir + os.sep)
+        self.assertEqual(kode, 0)
+        self.assertTrue(os.path.isfile(os.path.join(self.dir, "kuitansi-KWT-2026-10-0004.html")))
+        self.assertIn("Lampirkan berkas ini ke chat untuk setiap dokumen (invoice maupun kuitansi)", out)
+        self.assertIn("kirim file", out)
+
+    def test_path_biasa_tetap_dipakai_apa_adanya(self):
+        f = os.path.join(self.dir, "invoice-saya.html")
+        self.assertEqual(self.jalan(CONTOH, "--html", f)[0], 0)
+        self.assertTrue(os.path.isfile(f))
+
+    def test_peringatan_nomor_sama_dengan_nomor_terakhir(self):
+        d = copy.deepcopy(CONTOH)
+        d["nomor"] = "INV/2026/09/0012"
+        kode, out, _ = self.jalan(d, "--nomor-terakhir", "INV/2026/09/0012", "--format", "json")
+        self.assertEqual(kode, 0)
+        self.assertTrue(any("sama dengan nomor terakhir" in w for w in json.loads(out)["peringatan"]))
+
+    def test_rekening_tanpa_atas_nama_tidak_ditebak(self):
+        d = copy.deepcopy(CONTOH)
+        d["rekening"] = [{"bank": "BRI", "nomor": "0000000001"}]
+        f = os.path.join(self.dir, "inv.html")
+        kode, out, _ = self.jalan(d, "--html", f)
+        self.assertEqual(kode, 0)
+        self.assertIn("- BRI 0000000001\n", out)
+        self.assertNotIn("a.n.", out)
+        with open(f, encoding="utf-8") as fh:
+            isi = fh.read()
+        self.assertIn("BRI 0000000001", isi)
+        self.assertNotIn("a.n.", isi)
+        # atas nama diberikan pengguna -> tetap tampil
+        d["rekening"][0]["atas_nama"] = "Nama Fiktif"
+        self.assertIn("BRI 0000000001 a.n. Nama Fiktif", self.jalan(d)[1])
+
+    def test_penanda_tangan_tidak_diambil_dari_rekening(self):
+        # script tidak pernah mengisi penanda tangan dari data lain (rekening/penjual): tetap placeholder
+        d = copy.deepcopy(CONTOH)
+        d["tanda_tangan"] = {}
+        d["rekening"] = [{"bank": "BCA", "nomor": "0000000002", "atas_nama": "Rini Fiktif"}]
+        kode, out, _ = self.jalan(d)
+        self.assertEqual(kode, 0)
+        self.assertIn("**[isi nama penanda tangan]**", out)
+        self.assertNotIn("**Rini Fiktif**", out)
+
+
 class UjiPPh23(unittest.TestCase):
     """v1.0.3 (uji OpenClaw 2026-10-01): PPh 23 jasa 2% sebagai info, total tagihan tidak berubah.
     Skenario: 8.750.000 + 2 x 2.375.000 = 13.500.000; PPN 12% x 11/12 x 13.500.000 = 1.485.000 -> total 14.985.000;

@@ -10,10 +10,15 @@ Contoh:
   python3 tahun_hijriah.py 2027-03-10
   python3 tahun_hijriah.py 2027-03-10 --format json
   python3 tahun_hijriah.py 2027-03-20 --cek idul-fitri   # cek tanggal Lebaran dari pengguna (v1.0.5)
+  python3 tahun_hijriah.py 2026-10-14 --berikutnya idul-fitri   # perkiraan Lebaran berikutnya (v1.0.10)
 
 --cek idul-fitri|idul-adha: membandingkan tanggal dari pengguna dengan perkiraan 1 Syawal / 10 Zulhijah
 (kalender tabular). Bila selisih > 2 hari, script mencetak PERINGATAN berisi perkiraan tanggal hari raya
 dan batas bayar THR H-7 menurut perkiraan itu (tanggal resmi tetap menunggu penetapan pemerintah/SKB).
+
+--berikutnya idul-fitri|idul-adha (v1.0.10): perkiraan hari raya pertama yang jatuh PADA/SESUDAH tanggal yang
+diberikan (biasanya tanggal hari ini), plus batas bayar H-7. Dipakai bila pengguna tidak menyebut hari raya:
+THR dihitung dulu dengan tanggal ini sebagai ASUMSI yang disebut, lalu tanggal pastinya ditanyakan di akhir.
 
 Hanya library standar Python 3.8+. Keluar dengan kode 2 bila input salah.
 """
@@ -97,11 +102,29 @@ def cek_hari_raya(t, jenis):
     return out
 
 
+def hari_raya_berikutnya(t, jenis):
+    """Perkiraan Idul Fitri/Idul Adha (kalender tabular) pertama yang jatuh pada/sesudah tanggal t."""
+    nama, bln, hari = HARI_RAYA[jenis]
+    y = ke_hijriah(t)[0]
+    tgl = masehi_dari_jd(jd_dari_hijriah(y, bln, hari))
+    if tgl < t:
+        tgl = masehi_dari_jd(jd_dari_hijriah(y + 1, bln, hari))
+    h = hasil(tgl)
+    return {"hari_raya": nama, "sejak": t.isoformat(), "perkiraan": tgl.isoformat(),
+            "tahun_hijriah": h["tahun_hijriah"], "tahun_pasti": h["tahun_pasti"],
+            "nama_hari_raya": "{} {}".format(nama, h["label_tahun"] if h["tahun_pasti"] else tgl.year),
+            "batas_bayar_h7_perkiraan": (tgl - datetime.timedelta(days=7)).isoformat(),
+            "catatan": ("Perkiraan kalender tabular, bisa berbeda 1-2 hari dari penetapan resmi. Tanggal resmi "
+                        "menunggu penetapan pemerintah/SKB libur nasional: tulis sebagai ASUMSI di balasan.")}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="Perkiraan tanggal & tahun Hijriah dari tanggal Masehi.")
     p.add_argument("tanggal", help="Tanggal Masehi YYYY-MM-DD, mis. 2027-03-10")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
     p.add_argument("--cek", choices=sorted(HARI_RAYA), help="Cek apakah tanggal ini cocok dengan perkiraan hari raya")
+    p.add_argument("--berikutnya", choices=sorted(HARI_RAYA),
+                   help="Perkiraan hari raya pertama pada/sesudah tanggal ini (mis. tanggal hari ini) + batas H-7")
     a = p.parse_args(argv)
     try:
         t = datetime.date.fromisoformat(a.tanggal.strip())
@@ -111,6 +134,16 @@ def main(argv=None):
     if not 1900 <= t.year <= 2200:
         print("ERROR: tahun {} di luar rentang 1900-2200".format(t.year), file=sys.stderr)
         return 2
+    if a.berikutnya:
+        b = hari_raya_berikutnya(t, a.berikutnya)
+        if a.format == "json":
+            print(json.dumps(b, ensure_ascii=False, indent=2))
+        else:
+            print("{} berikutnya sejak {} (perkiraan): {}".format(b["hari_raya"], b["sejak"], b["perkiraan"]))
+            print("Nama hari raya untuk hitungan: {}".format(b["nama_hari_raya"]))
+            print("Batas bayar THR (H-7) menurut perkiraan ini: {}".format(b["batas_bayar_h7_perkiraan"]))
+            print("Catatan: " + b["catatan"])
+        return 0
     h = hasil(t)
     if a.cek:
         h["cek_hari_raya"] = cek_hari_raya(t, a.cek)

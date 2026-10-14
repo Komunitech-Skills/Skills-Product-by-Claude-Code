@@ -17,8 +17,8 @@
     "thr.py": {
       "skill_sumber": "hitung-thr",
       "path_sumber": "scripts/thr.py",
-      "versi_skill_sumber": "1.0.9",
-      "sha256": "991d6ca1254b2cdd58b62d3db59764e7f8b16a69c85eada2c2b4046d26fb2aae"
+      "versi_skill_sumber": "1.0.11",
+      "sha256": "1491c620b18900bfd47ce0df83c6e7c651538b8b58d5fb24bb41906a098beebc"
     },
     "ter_core.py": {
       "skill_sumber": "slip-gaji-bpjs",
