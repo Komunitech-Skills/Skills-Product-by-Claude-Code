@@ -55,3 +55,9 @@ Uji A/B: dengan skill jelas lebih baik (terbilang, status, meterai, HTML siap ce
 5. Interpretasi meterai untuk invoice yang **mencantumkan** DP > Rp5 juta (S1) masuk akal tetapi bisa diperdebatkan (DP biasanya sudah punya kuitansi sendiri). Saran: di pesan "Info untuk penjual", tambahkan alternatif "bila DP sudah dibuatkan kuitansi bermeterai, baris DP dapat dihapus dari invoice — konfirmasi ke konsultan".
 6. `nomor_berikutnya()` mempertahankan bulan/tahun dari nomor terakhir (INV/2026/09/0012 → …/09/0013) walaupun tanggal invoice sudah bulan berikutnya. Saran: bila pola `PREFIX/YYYY/MM/NNNN` dan bulan berbeda dari tanggal dokumen, beri peringatan atau reset ke 0001.
 7. Kuitansi: terbilang tercetak dua kali (blok penerimaan & bawah tabel). Saran: hilangkan yang di bawah untuk kuitansi lunas.
+
+## Riwayat
+
+| Tanggal | Versi | Penguji | Uji | Hasil |
+|---|---|---|---|---|
+| 2026-10-14 | 1.0.6 | agent penguji independen | Uji ulang singkat OpenClaw 2026.10.2 lokal, hanya sisi DENGAN skill: skenario 01–03 dari uji 1.0.5 dengan pesan sama persis, + 01 konteks Telegram, + 03 sampel kedua | Skor 01=9, 02=9, 03=8,0 (7,5 & 8,5), rata-rata **8,7**; 0 salah angka (PPN 3.406.282, total 34.372.482, termin 10.311.745/24.060.737, kuitansi sisa 9.600.000 diverifikasi independen). Cacat 1.0.5: penanda tangan ditebak **hilang**, nama berkas ≠ nomor **hilang**, kuitansi tidak terlampir **belum hilang** (0/2 terlampir: path MEDIA salah ketik / cadangan "kirim file"). **Verdik: BELUM.** Saran utama: script cetak path HTML absolut untuk dilampirkan persis. Rincian: `00-openclaw-sebelum-sesudah.md` bagian "Uji ulang 1.0.6". |
