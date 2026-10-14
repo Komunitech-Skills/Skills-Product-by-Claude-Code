@@ -379,8 +379,7 @@ Pasang yang Anda butuhkan saja: `openclaw skills install ./<nama-skill> --global
   22 skill) karena `agen-cs-toko` merujuknya untuk "satu chat". Ditambahkan blok "Aturan toko
   Komunitech" (§2) untuk menutup celah broadcast WhatsApp Business, izin promo pembeli marketplace,
   dan bot WA auto-reply. Rujukan `broadcast-wa` dihapus dari §5f (skill itu tidak ada di paket ini).
-- **Usulan komposisi bundle (perlu persetujuan pemilik, `bundles/` TIDAK diubah):**
-  `bundles/paket-toko-online.txt` saat ini tidak memuat beberapa skill inti panduan ini (mis.
-  `balas-chat-cs`, `crm-wa`, `rekap-penjualan-csv`, `pesan-prospek-wa`). Usul: tambahkan minimal
-  `balas-chat-cs` (gratis) dan `crm-wa` ke bundle agar pembeli eceran bundle mendapat jalur CS
-  satu-chat dan pencatatan izin promo. Member VIP sudah mendapat semuanya lewat ZIP VIP.
+- **Komposisi bundle ecer (2026-10-14, sinkron `bundles/paket-toko-online.txt`, 16 skill):**
+  sudah memuat `balas-chat-cs`, `crm-wa`, `rencana-restok-barang`, plus skill inti listing/CS/stok
+  (lihat `bundles/README.md`). Skill otomasi VIP seperti `rekap-penjualan-csv`, `pesan-prospek-wa`,
+  `konten-mingguan` tetap **hanya** di panduan §5 (akses penuh VIP), bukan di file bundle ecer.
