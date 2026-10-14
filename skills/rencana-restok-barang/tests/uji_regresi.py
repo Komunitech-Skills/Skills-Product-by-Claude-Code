@@ -370,7 +370,8 @@ m1 = brg(h, "Sabun")
 mu_m = 122 / 61
 cek("L3 bulanan 2 bulan: sd diasumsikan akar rata-rata", m1["asumsi_simpangan"] is True and abs(m1["simpangan_harian"] - round(math.sqrt(mu_m), 2)) < 0.006)
 k, h = jalan("--data", data_m)
-cek("L4 data bulanan tanpa --data-per -> catatan", any("hanya berisi bulan" in c for c in h["catatan"]))
+cek("L4 data bulanan tanpa --data-per -> otomatis per bulan, hasil sama", k == 0 and h["granularitas"]["data_per"] == "bulan"
+    and h["granularitas"]["otomatis"] is True and brg(h, "Sabun")["simpangan_harian"] == m1["simpangan_harian"])
 
 # ---------------------------------------------------------------- M. lonjakan & retur
 data_mx = deret_csv(M0, {"P1": lambda i: 40 if i == 20 else 2}, 42)
@@ -551,6 +552,60 @@ k, h = jalan("--data", deret_csv(M0, banyak, 28), "--barang-data", "sku;stok;pem
 g = h["pesanan_per_pemasok"][0]
 cek("X3b 7 barang ke satu pemasok -> draf WA <= 6 baris, semua barang tercantum",
     len(g["draf_wa"].split("\n")) <= 6 and all(f"Barang S{i}:" in g["draf_wa"] for i in range(7)))
+
+# ---------------------------------------------------------------- Y. versi 1.0.4: granularitas otomatis
+# Y1. tabel warung sembako persis seperti ditempel di chat (baris = minggu tanpa tahun, kolom = barang), TANPA --data-per
+warung = "\n".join([
+    "Minggu | Beras 5 kg (karung) | Minyak Goreng 2 L | Gula Pasir 1 kg | Telur (kg) | Mie Instan (dus)",
+    "17 Agu | 20 | 30 | 40 | 55 | 6", "24 Agu | 22 | 32 | 38 | 50 | 5", "31 Agu | 19 | 35 | 41 | 58 | 7",
+    "7 Sep | 23 | 33 | 39 | 52 | 6", "14 Sep | 21 | 38 | 42 | 60 | 8", "21 Sep | 24 | 40 | 40 | 57 | 6",
+    "28 Sep | 22 | 42 | 37 | 54 | 7", "5 Okt | 25 | 45 | 41 | 59 | 9"])
+stok_w = "nama_barang;stok_sekarang\nBeras 5 kg (karung);9\nMinyak Goreng 2 L;25\nGula Pasir 1 kg;30"
+umum = ["--data", warung, "--barang-data", stok_w, "--lead-time", "2-3", "--hari-ini", "2026-10-14"]
+k, auto = jalan(*umum)
+k2, paksa = jalan(*umum, "--data-per", "minggu")
+cek("Y1a tanpa flag: terdeteksi per minggu (judul 'Minggu' + jarak 7 hari)", k == 0 and auto["granularitas"]["data_per"] == "minggu"
+    and auto["granularitas"]["otomatis"] is True and "judul kolom 'Minggu'" in auto["granularitas"]["dasar"]
+    and "7 hari" in auto["granularitas"]["dasar"])
+cek("Y1b kalimat 'Data dibaca sebagai total per MINGGU (8 minggu, 17 Agu–11 Okt 2026)'",
+    auto["granularitas"]["kalimat"] == "Data dibaca sebagai total per MINGGU (8 minggu, 17 Agu–11 Okt 2026)")
+cek("Y1c jumlah pesan 47 / 82 / 75 seperti uji (Beras / Minyak / Gula)", [brg(auto, n)["jumlah_pesan"] for n in
+    ("Beras 5 kg (karung)", "Minyak Goreng 2 L", "Gula Pasir 1 kg")] == [47, 82, 75])
+cek("Y1d hasil identik dengan --data-per minggu", k2 == 0 and auto["barang"] == paksa["barang"] and auto["rentang_data"] == paksa["rentang_data"])
+cek("Y1e gula stabil (bukan 'turun 20 %')", brg(auto, "Gula Pasir 1 kg")["tren"] == "stabil")
+cek("Y1f tanggal tanpa tahun dianggap 2026 + dicatat", auto["rentang_data"]["dari"] == "2026-08-17" and any("tanpa tahun" in c for c in auto["catatan"]))
+k, t = jalan(*umum, "--format", "teks")
+cek("Y1g teks memuat baris DATA DIBACA", "DATA DIBACA: Data dibaca sebagai total per MINGGU (8 minggu, 17 Agu–11 Okt 2026)" in t["teks"])
+# Y2. mingguan format panjang tanpa judul khusus -> dari jarak 7 hari
+panjang = "tanggal;nama;qty\n" + "\n".join(f"{(date(2026, 8, 17) + timedelta(days=7 * i)).isoformat()};Minyak;{q}"
+                                         for i, q in enumerate([30, 32, 35, 33, 38, 40, 42, 45]))
+k, h = jalan("--data", panjang)
+cek("Y2 jarak 7 hari tanpa judul 'Minggu' -> per minggu", k == 0 and h["granularitas"]["data_per"] == "minggu"
+    and "jarak antar tanggal 7 hari" in h["granularitas"]["dasar"] and "judul" not in h["granularitas"]["dasar"])
+# Y3. bulanan tanpa flag: tanggal awal bulan
+bulanan = "tanggal;nama;qty\n2026-06-01;Sabun;60\n2026-07-01;Sabun;64\n2026-08-01;Sabun;62\n2026-09-01;Sabun;66"
+k, h = jalan("--data", bulanan)
+cek("Y3 jarak ±1 bulan -> per bulan, rentang 1 Jun–30 Sep", k == 0 and h["granularitas"]["data_per"] == "bulan"
+    and h["rentang_data"]["dari"] == "2026-06-01" and h["rentang_data"]["sampai"] == "2026-09-30")
+# Y4. harian 90 hari tetap harian
+k, h = jalan("--file", jual_a, "--barang", barang_a)
+cek("Y4 data harian tetap per hari", h["granularitas"]["data_per"] == "hari" and h["granularitas"]["kalimat"].startswith("Data dibaca sebagai penjualan per HARI (56 hari"))
+# Y5. ambigu -> berhenti (kode 3), tidak menghitung
+for nama, d in [("Y5a dua tanggal berjarak 14 hari", "tanggal;nama;qty\n2026-09-01;Kopi;30\n2026-09-15;Kopi;28"),
+                ("Y5b satu tanggal saja", "tanggal;nama;qty\n2026-09-01;Kopi;30\n2026-09-01;Teh;12"),
+                ("Y5c jarak tidak konsisten (3, 10, 20 hari)", "tanggal;nama;qty\n2026-08-01;Kopi;3\n2026-08-04;Kopi;5\n2026-08-14;Kopi;9\n2026-09-03;Kopi;4"),
+                ("Y5d judul 'Bulan' tetapi tanggal harian", "bulan;nama;qty\n2026-09-01;Kopi;3\n2026-09-02;Kopi;5\n2026-09-03;Kopi;4")]:
+    k, e = jalan("--data", d)
+    cek(nama + " -> kode 3 + 'granularitas tidak jelas' + perlu tanya", k == 3 and "granularitas tidak jelas" in e.get("error", "")
+        and e.get("perlu_tanya_pengguna") is True and "--data-per" in e.get("error", ""))
+k, h = jalan("--data", "tanggal;nama;qty\n2026-09-01;Kopi;30\n2026-09-15;Kopi;28", "--data-per", "minggu")
+cek("Y5e setelah pengguna menjawab (--data-per minggu) tetap dihitung", k == 0 and h["granularitas"]["otomatis"] is False
+    and h["granularitas"]["dasar"] == "sesuai permintaan")
+k, h = jalan("--data", "tanggal;nama;qty\n2026-09-01;Kopi;30\n2026-09-15;Kopi;28", "--data-per", "mingguan")
+cek("Y5f alias --data-per mingguan diterima", k == 0 and h["granularitas"]["data_per"] == "minggu")
+# Y6. tanggal tanpa tahun yang jatuh sesudah hari ini -> tahun sebelumnya
+k, h = jalan("--data", "tanggal;nama;qty\n" + "\n".join(f"{d} Des;Kopi;2" for d in range(1, 21)), "--hari-ini", "2026-01-10")
+cek("Y6 '1 Des' dengan hari ini 10 Jan 2026 -> 1 Des 2025", k == 0 and h["rentang_data"]["dari"] == "2025-12-01")
 
 print()
 print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'} ({len(GAGAL)} gagal)")

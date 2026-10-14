@@ -20,3 +20,4 @@ Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian.
 - 1.0.1 (2026-10-14): perbaikan lima temuan uji; uji ulang terbatas 6,1 → 8,7.
 - 1.0.2 (2026-10-14): perbaikan presisi hari habis dan kalimat batas tren (lihat `CHANGELOG.md`).
 - 1.0.3 (2026-10-14): judul kelompok waktu nyata, rumus per barang, draf WA wajib (lihat `CHANGELOG.md`).
+- 1.0.4 (2026-10-14): deteksi otomatis data per hari/minggu/bulan (lihat `CHANGELOG.md`).

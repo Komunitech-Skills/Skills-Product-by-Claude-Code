@@ -34,6 +34,9 @@ Rumus (Komunitech; dijelaskan dengan bahasa awam di references/rumus-dan-istilah
   Barang mati     : tidak terjual >= 60 hari dan stok > 0 (atau stok belum diketahui)
   Data belum cukup: rentang data barang < 14 hari, atau barang baru tercatat < 14 hari terakhir
 Rupiah: jumlah x harga beli, dibulatkan ke rupiah terdekat (0,5 ke atas).
+Granularitas: tanpa --data-per dideteksi otomatis (judul kolom Minggu/Bulan, tanggal berisi bulan saja, jarak antar
+                    tanggal: 1 hari = harian, kelipatan 7 dengan median 7 = mingguan, +-1 bulan = bulanan). Ambigu ->
+                    berhenti dengan kode keluar 3 (tanyakan ke pengguna, jangan menebak).
 """
 import argparse
 import csv
@@ -47,7 +50,7 @@ from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.3"
+VERSI = "1.0.4"
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, tanpa menyebut "
                "script/file/proses. Semua angka disalin persis dari sini.]")
 DISCLAIMER = ("Rencana ini perkiraan dari pola penjualan sebelumnya, bukan jaminan. Cocokkan dulu dengan stok fisik, "
@@ -76,6 +79,10 @@ class Galat(Exception):
     def __init__(self, pesan, saran=""):
         super().__init__(pesan)
         self.pesan, self.saran = pesan, saran
+
+
+class GalatAmbigu(Galat):
+    """Granularitas data tidak jelas: agent wajib bertanya ke pengguna (kode keluar 3)."""
 
 
 # ------------------------------------------------------------------ angka, hari, tanggal
@@ -165,7 +172,7 @@ def _buat(y, m, d):
         return None
 
 
-def ke_tanggal(teks, bulan_dulu=False):
+def ke_tanggal(teks, bulan_dulu=False, acuan=None):
     """-> (date|None, catatan). catatan: None | 'bulan-dulu' | 'ambigu' | 'bulan-saja'.
     bulan_dulu=True: tanggal yang bisa dibaca dua arah (mis. 02/09/2026) dibaca bulan/tanggal (gaya AS)."""
     if teks is None:
@@ -208,6 +215,20 @@ def ke_tanggal(teks, bulan_dulu=False):
     if m and m.group(1) in BULAN:
         y = int(m.group(2))
         return _buat(y + 2000 if y < 100 else y, BULAN[m.group(1)], 1), "bulan-saja"
+    if acuan is not None:  # tanpa tahun: "17 Agu", "17/08" -> tahun acuan (tahun sebelumnya bila jatuh sesudah acuan)
+        m = re.fullmatch(r"(\d{1,2})[\s\-]*([a-z]+)\.?", s)
+        d = mo = None
+        if m and m.group(2) in BULAN:
+            d, mo = int(m.group(1)), BULAN[m.group(2)]
+        m2 = re.fullmatch(r"(\d{1,2})/(\d{1,2})", s)
+        if m2:
+            a, b = int(m2.group(1)), int(m2.group(2))
+            d, mo = (b, a) if (bulan_dulu or (b > 12 and a <= 12)) else (a, b)
+        if d is not None:
+            t = _buat(acuan.year, mo, d)
+            if t is not None and t > acuan:
+                t = _buat(acuan.year - 1, mo, d)
+            return t, ("tanpa-tahun" if t else None)
     m = re.fullmatch(r"(\d{5})(\.\d+)?", s)  # nomor seri tanggal Excel
     if m and 30000 <= int(m.group(1)) <= 80000:
         return date(1899, 12, 30) + timedelta(days=int(m.group(1))), None
@@ -307,7 +328,8 @@ KOLOM_JUAL = {
     "tanggal": ["tanggal", "tgl", "date", "tanggal transaksi", "tanggal penjualan", "tanggal pesanan", "tgl transaksi",
                 "tgl penjualan", "tanggal order", "waktu pesanan dibuat", "waktu transaksi", "waktu", "created time",
                 "order created time", "order date", "tanggal pembayaran", "waktu pembayaran dilakukan", "paid time",
-                "hari", "periode", "minggu", "minggu mulai", "bulan"],
+                "hari", "periode", "minggu", "minggu mulai", "minggu ke", "periode minggu", "mgg", "pekan", "week", "w",
+                "bulan", "bln", "month", "periode bulan"],
     "sku": A_SKU, "nama": A_NAMA, "varian": A_VARIAN,
     "qty": ["qty", "kuantitas", "quantity", "jumlah terjual", "qty terjual", "terjual", "jumlah", "jml", "jumlah barang",
             "jumlah produk", "jumlah produk dibeli", "jumlah produk di pesan", "banyak", "pcs", "sold", "qty sold",
@@ -515,7 +537,8 @@ class Konteks:
         self.catatan = []
         self.status_lewat = {}
         self.dobel = 0
-        self.bulan_dulu = self.ambigu = self.bulan_saja = 0
+        self.bulan_dulu = self.ambigu = self.bulan_saja = self.tanpa_tahun = 0
+        self.label_tanggal = None
         self.di_luar = 0
         self.pemetaan = {}
         self.pemasok = {}
@@ -645,7 +668,7 @@ def ubah_lebar_barang(rows):
             return False
     if sum(1 for r, i in isi if angka_ok(r[i])) * 10 < len(isi) * 8:
         return None
-    out = [["tanggal", "nama", "qty"]]
+    out = [[header[kt] if str(header[kt]).strip() else "tanggal", "nama", "qty"]]
     for r, i in isi:
         out.append([r[kt] if kt < len(r) else "", header[i], r[i]])
     return out
@@ -676,6 +699,7 @@ def olah_penjualan(ctx, rows, lebar_dicoba=False):
                     "Ganti judul kolom bila namanya lain, mis. 'Tgl Nota' -> 'tanggal'.")
     header = rows[hi]
     ctx.pemetaan["penjualan"] = {f: header[i] for f, i in sorted(peta.items(), key=lambda x: x[1])}
+    ctx.label_tanggal = str(header[peta["tanggal"]]).strip()
     buku_stok = "arah" in peta and "jenis" in peta
     pakai_jenis = False
     if "jenis" in peta:
@@ -706,7 +730,7 @@ def olah_penjualan(ctx, rows, lebar_dicoba=False):
         if not sku and kunci_nama(nama) in ("total", "jumlah", "grand total", "subtotal", "total penjualan"):
             ctx.lewati(no, "baris total")
             continue
-        tgl, ket = ke_tanggal(ambil("tanggal"), bulan_dulu=ctx.gaya_as)
+        tgl, ket = ke_tanggal(ambil("tanggal"), bulan_dulu=ctx.gaya_as, acuan=ctx.ref_tanggal)
         if tgl is None:
             ctx.lewati(no, "tanggal tidak terbaca", ambil("tanggal"))
             continue
@@ -719,6 +743,8 @@ def olah_penjualan(ctx, rows, lebar_dicoba=False):
             ctx.ambigu += 1
         elif ket == "bulan-saja":
             ctx.bulan_saja += 1
+        elif ket == "tanpa-tahun":
+            ctx.tanpa_tahun += 1
         try:
             q = ke_angka(ambil("qty"), "jumlah")
         except Galat:
@@ -1330,6 +1356,62 @@ def susun_pertanyaan(hasil, ctx):
     return q
 
 
+LABEL_MINGGU = {"minggu", "mgg", "pekan", "week", "w", "minggu ke", "minggu mulai", "periode minggu"}
+LABEL_BULAN = {"bulan", "bln", "month", "periode bulan"}
+NAMA_MODE = {"hari": "HARI", "minggu": "MINGGU", "bulan": "BULAN"}
+
+
+def deteksi_granularitas(ctx):
+    """-> (mode, dasar). Raise GalatAmbigu bila tidak jelas."""
+    label = kunci_kolom(ctx.label_tanggal or "")
+    dari_label = "minggu" if label in LABEL_MINGGU else ("bulan" if label in LABEL_BULAN else None)
+    tgl = sorted(set(ctx.tanggal))
+    jarak = [(b - a).days for a, b in zip(tgl, tgl[1:])]
+    dasar, dari_tgl = [], None
+    if dari_label:
+        dasar.append(f"judul kolom '{ctx.label_tanggal}'")
+    if ctx.bulan_saja and ctx.bulan_saja >= len(ctx.tanggal):
+        dari_tgl = "bulan"
+        dasar.append("tanggal hanya berisi bulan")
+    elif jarak and min(jarak) == 1:
+        dari_tgl = "hari"
+        dasar.append("ada tanggal berurutan (jarak 1 hari)")
+    elif len(tgl) >= 3 and all(g % 7 == 0 for g in jarak) and median(jarak) == 7:
+        dari_tgl = "minggu"
+        dasar.append("jarak antar tanggal 7 hari" + (" (selalu hari yang sama)" if len({t.weekday() for t in tgl}) == 1 else ""))
+    elif len(tgl) >= 3 and 28 <= median(jarak) <= 31 and all(any(abs(g - Decimal("30.44") * k) <= Decimal("3.5") for k in (1, 2, 3)) for g in jarak):
+        dari_tgl = "bulan"
+        dasar.append("jarak antar tanggal sekitar 1 bulan")
+    elif len(tgl) >= 3 and max(jarak) < 7:
+        dari_tgl = "hari"
+        dasar.append("jarak antar tanggal 2-6 hari (penjualan harian yang tidak setiap hari)")
+    saran = ("Tanyakan SATU KALI ke pengguna: angka per baris itu penjualan per hari, per minggu, atau per bulan? "
+             "Lalu jalankan ulang dengan --data-per hari|minggu|bulan sesuai jawabannya. Jangan menebak.")
+    if dari_label and dari_tgl and dari_label != dari_tgl:
+        raise GalatAmbigu(f"granularitas tidak jelas: judul kolom '{ctx.label_tanggal}' menandakan per {dari_label}, "
+                          f"tetapi jarak tanggal menandakan per {dari_tgl}. Tambahkan --data-per hari|minggu|bulan", saran)
+    mode = dari_label or dari_tgl
+    if mode is None:
+        contoh = ", ".join(tgl_id(t) for t in tgl[:4])
+        raise GalatAmbigu(f"granularitas tidak jelas ({len(tgl)} tanggal: {contoh}"
+                          + (f"; jarak {', '.join(str(g) for g in jarak[:5])} hari" if jarak else "")
+                          + "): tambahkan --data-per hari|minggu|bulan", saran)
+    return mode, dasar
+
+
+def kalimat_granularitas(mode, awal, akhir, otomatis, dasar):
+    hari = (akhir - awal).days + 1
+    rentang = f"{awal.day} {BLN[awal.month - 1]}" + (f" {awal.year}" if awal.year != akhir.year else "") + f"–{tgl_id(akhir)}"
+    if mode == "minggu":
+        isi = f"total per MINGGU ({-(-hari // 7)} minggu, {rentang})"
+    elif mode == "bulan":
+        n = (akhir.year - awal.year) * 12 + akhir.month - awal.month + 1
+        isi = f"total per BULAN ({n} bulan, {rentang})"
+    else:
+        isi = f"penjualan per HARI ({hari} hari, {rentang})"
+    return f"Data dibaca sebagai {isi}", ("otomatis: " + "; ".join(dasar)) if otomatis else "sesuai permintaan"
+
+
 def jalankan(args):
     ctx = Konteks(args)
     if args.layanan not in Z_LAYANAN:
@@ -1344,7 +1426,6 @@ def jalankan(args):
     ctx.faktor_musim = ke_angka(args.faktor_musim, "faktor musim")
     if ctx.faktor_musim is None or ctx.faktor_musim <= 0:
         raise Galat("faktor musim harus lebih dari 0", "Contoh: 1,5 bila menjelang musim ramai diperkirakan naik 50%.")
-    ctx.mode = args.data_per
     for nama in ("dari", "sampai", "hari_ini"):
         v = getattr(args, nama)
         if v:
@@ -1352,6 +1433,7 @@ def jalankan(args):
             if t is None:
                 raise Galat(f"tanggal --{nama.replace('_', '-')} '{v}' tidak terbaca", "Contoh: 2026-10-14")
             setattr(args, nama, t)
+    ctx.ref_tanggal = args.hari_ini or date.today()
     gabungan = None
     if args.file:
         rows, gabungan = baca_sumber(path=args.file)
@@ -1379,6 +1461,12 @@ def jalankan(args):
                     "Periksa format tanggal (mis. 2026-09-01 atau 01/09/2026; nama hari saja seperti 'Senin' tidak cukup) "
                     "dan kolom jumlah terjual.")
 
+    peta_mode = {"hari": "hari", "harian": "hari", "minggu": "minggu", "mingguan": "minggu", "bulan": "bulan", "bulanan": "bulan"}
+    if args.data_per:
+        ctx.mode, ctx.mode_otomatis, dasar_mode = peta_mode[args.data_per], False, []
+    else:
+        ctx.mode, dasar_mode = deteksi_granularitas(ctx)
+        ctx.mode_otomatis = True
     awal, akhir = min(ctx.tanggal), max(ctx.tanggal)
     if ctx.mode == "minggu":
         akhir = akhir + timedelta(days=6)
@@ -1393,6 +1481,7 @@ def jalankan(args):
         raise Galat("rentang tanggal terbalik (sampai lebih awal dari dari)", "Periksa --dari dan --sampai.")
     ctx.awal, ctx.akhir = awal, akhir
     ctx.acuan = args.hari_ini or akhir
+    kal_g, dasar_g = kalimat_granularitas(ctx.mode, awal, akhir, ctx.mode_otomatis, dasar_mode)
     ctx.ada_dalam_pesanan = any("dalam_pesanan" in it["master"] for it in ctx.barang.values())
 
     daftar_saja = [it for it in ctx.barang.values() if not it["ada_baris"]]
@@ -1407,6 +1496,9 @@ def jalankan(args):
 
     # catatan umum
     c = ctx.catatan
+    if ctx.tanpa_tahun:
+        c.append(f"{ctx.tanpa_tahun} tanggal tanpa tahun dianggap tahun {ctx.ref_tanggal.year} "
+                 f"(tahun sebelumnya bila jatuh sesudah {tgl_id(ctx.ref_tanggal)}).")
     if ctx.mode == "hari" and ctx.bulan_saja:
         c.append(f"{ctx.bulan_saja} baris hanya berisi bulan (tanpa tanggal). Bila datanya total per bulan, hitung ulang dengan data per bulan.")
     if ctx.bulan_dulu:
@@ -1492,6 +1584,7 @@ def jalankan(args):
                       "batas_pengali_tren": [str(FAKTOR_MIN), str(FAKTOR_MAKS)],
                       "lead_time_dari_pengguna": ctx.lead_dari_pengguna, "batas_barang_mati_hari": args.batas_mati,
                       "jendela_pesan_minggu_depan_hari": JENDELA_MINGGU_DEPAN},
+        "granularitas": {"data_per": ctx.mode, "otomatis": ctx.mode_otomatis, "dasar": dasar_g, "kalimat": kal_g},
         "rentang_data": {"dari": awal.isoformat(), "sampai": akhir.isoformat(), "jumlah_hari": rentang,
                          "tanggal_acuan": ctx.acuan.isoformat()},
         "pemetaan_kolom": ctx.pemetaan,
@@ -1561,6 +1654,7 @@ def teks(hasil):
     L = [LABEL_AGENT,
          f"RENCANA RESTOK per {tgl_id(date.fromisoformat(r['tanggal_acuan']))} | data {tgl_id(date.fromisoformat(r['dari']))} - "
          f"{tgl_id(date.fromisoformat(r['sampai']))} ({r['jumlah_hari']} hari, per {p['data_per']})",
+         f"DATA DIBACA: {hasil['granularitas']['kalimat']} ({hasil['granularitas']['dasar']}) - WAJIB disalin kalimat 'Data dibaca sebagai ...' ke balasan",
          f"Asumsi: tingkat layanan {p['tingkat_layanan_persen']}% (z {p['z'].replace('.', ',')}), lead time "
          f"{'umum dari pengguna' if p['lead_time_dari_pengguna'] else 'default'} "
          f"{des(p['lead_time_default_hari'])} hari, stok cukup {des(p['horizon_hari'])} hari setelah barang datang, "
@@ -1634,7 +1728,7 @@ CONTOH = """Cara pakai singkat (Windows: python atau py):
   python3 rencana_restok.py --file penjualan.csv --barang barang.csv --hari-ini 2026-10-14 --format teks
   python3 rencana_restok.py --data "tanggal;nama_barang;qty\\n2026-09-01;Gula 1 kg;6" \\
       --barang-data "nama_barang;stok_sekarang;lead_time_hari;harga_beli;pemasok;kelipatan\\nGula 1 kg;18;2;15500;Grosir A;20" --format teks
-  Data per minggu/bulan: --data-per minggu | bulan. Lead time umum: --lead-time 3. Faktor musim dari pengguna: --faktor-musim 1,5
+  Per hari/minggu/bulan dideteksi otomatis; kode keluar 3 = tidak jelas -> tanya pengguna lalu --data-per hari|minggu|bulan. Lead time umum: --lead-time 3. Faktor musim dari pengguna: --faktor-musim 1,5
 Penjualan (minimal): tanggal, nama barang atau sku, qty. Boleh ekspor marketplace/kasir, mutasi buku-stok, XLSX, JSON,
   tabel lebar (kolom = tanggal, atau baris = tanggal/minggu dan kolom = barang).
 Data barang (opsional): sku/nama_barang, stok_sekarang, harga_beli, pemasok, lead_time_hari, kelipatan, minimal_order,
@@ -1653,8 +1747,9 @@ def main(argv=None):
     ap.add_argument("--lead-time", default=None, help="lead time default (hari) bila tidak ada per barang/pemasok (default 7)")
     ap.add_argument("--layanan", type=int, default=95, help="tingkat layanan persen: 90, 95 (default), 99; juga 80, 85, 97, 98")
     ap.add_argument("--horizon", default="14", help="berapa hari stok harus cukup setelah barang datang (default 14)")
-    ap.add_argument("--data-per", choices=["hari", "minggu", "bulan"], default="hari",
-                    help="baris data = penjualan per transaksi/hari (default), total per minggu, atau total per bulan")
+    ap.add_argument("--data-per", choices=["hari", "harian", "minggu", "mingguan", "bulan", "bulanan"], default=None,
+                    help="baris data = penjualan per hari/transaksi, total per minggu, atau total per bulan "
+                         "(tanpa opsi ini dideteksi otomatis; bila tidak jelas script berhenti dengan kode 3)")
     ap.add_argument("--faktor-musim", default="1", help="pengali permintaan dari pengguna, mis. 1,5 menjelang musim ramai")
     ap.add_argument("--tanpa-tren", action="store_true", help="jangan pakai tren 4 minggu terakhir")
     ap.add_argument("--abaikan-lonjakan", action="store_true", help="ganti hari lonjakan (borongan sekali) dengan nilai biasanya")
@@ -1670,6 +1765,9 @@ def main(argv=None):
         return 0
     try:
         hasil = jalankan(args)
+    except GalatAmbigu as g:
+        print(json.dumps({"error": g.pesan, "saran": g.saran, "perlu_tanya_pengguna": True}, ensure_ascii=False), file=sys.stderr)
+        return 3
     except Galat as g:
         print(json.dumps({"error": g.pesan, "saran": g.saran}, ensure_ascii=False), file=sys.stderr)
         return 2
