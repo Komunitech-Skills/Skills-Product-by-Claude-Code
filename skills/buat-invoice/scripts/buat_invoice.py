@@ -20,6 +20,8 @@ Hanya library standar Python 3.8+. Tidak ada akses jaringan. File hanya ditulis 
 Contoh:
   python3 buat_invoice.py --file invoice.json
   python3 buat_invoice.py --file invoice.json --html invoice.html
+  python3 buat_invoice.py --file invoice.json --html invoice-{nomor}.html     (nama berkas dari nomor invoice)
+  python3 buat_invoice.py --file invoice.json --html .                        (folder: invoice-<nomor>.html)
   python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007
   python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
   (--counter-file mencatat setiap nomor yang dibuat + nama pembeli agar invoice berikutnya tidak bernomor dobel)
@@ -40,7 +42,7 @@ from hitung_ppn import hitung_ppn_dari_dpp, parse_angka, format_rp, format_angka
 BATAS_METERAI = Decimal(5000000)
 TARIF_METERAI = Decimal(10000)
 TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.5"
+VERSI = "1.0.6"
 TARIF_PPH23_JASA = Decimal(2)   # UU PPh Pasal 23 ayat (1) huruf c; tanpa NPWP 100% lebih tinggi (ayat 1a)
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
               "Oktober", "November", "Desember"]
@@ -230,6 +232,26 @@ def nomor_dari_counter(path, prefix, tgl, data=None):
     urut = int(data.get(kunci, 0)) + 1
     data[kunci] = urut
     return "{}/{:04d}".format(kunci, urut), data
+
+
+def nama_berkas_dari_nomor(nomor):
+    """v1.0.6: nomor invoice -> potongan nama berkas aman ('/' dan karakter lain -> '-').
+    '001/INV/X/2026' -> '001-INV-X-2026'."""
+    t = re.sub(r"[^A-Za-z0-9._]+", "-", str(nomor)).strip("-.")
+    return t or "tanpa-nomor"
+
+
+def path_html(arg, jenis_dokumen, nomor):
+    """v1.0.6: nama berkas HTML SELALU diturunkan dari nomor dokumen yang dicetak di chat.
+    - arg memuat '{nomor}'  -> diganti nomor aman ('invoice-{nomor}.html' -> 'invoice-001-INV-X-2026.html')
+    - arg folder (sudah ada, atau berakhir '/' atau '\\') -> '<jenis>-<nomor aman>.html' di folder itu
+    - selain itu dipakai apa adanya (kompatibel dengan versi lama)."""
+    aman = nama_berkas_dari_nomor(nomor)
+    if "{nomor}" in arg:
+        return arg.replace("{nomor}", aman)
+    if arg.endswith(("/", "\\")) or os.path.isdir(arg):
+        return os.path.join(arg, "{}-{}.html".format(jenis_dokumen, aman))
+    return arg
 
 
 def cegah_dobel(data, nomor, pembeli, manual=False):
@@ -476,6 +498,13 @@ def kolom_kosong(h):
 
 
 # ---------------------------------------------------------------- output Markdown
+def teks_rekening(r, esc):
+    """v1.0.6: 'a.n. ...' hanya bila nama pemilik rekening diberikan pengguna (tidak ditebak dari nama usaha)."""
+    teks = "{} {}".format(esc(r.get("bank", "")), esc(r.get("nomor", ""))).strip()
+    an = str(r.get("atas_nama") or "").strip()
+    return "{} a.n. {}".format(teks, esc(an)) if an else teks
+
+
 def md(x):
     """Escape ringan karakter Markdown dari teks pengguna agar tabel/format tidak rusak."""
     t = str(x if x is not None else "").replace("\r", " ").replace("\n", " ")
@@ -591,8 +620,7 @@ def markdown(h, nomor):
     if h["rekening"] and h["sisa"] > 0:
         out += ["", "**Pembayaran ke:**"]
         for r in h["rekening"]:
-            out.append("- {} {} a.n. {}".format(md(r.get("bank", "")), md(r.get("nomor", "")),
-                                                md(r.get("atas_nama", ""))))
+            out.append("- " + teks_rekening(r, md))
     if h["catatan"]:
         out += ["", "**Catatan:** " + md(h["catatan"])]
     tt = h["tanda_tangan"]
@@ -692,8 +720,7 @@ def html_dok(h, nomor):
     rek = ""
     if h["rekening"] and h["sisa"] > 0:
         rek = "<p class='label'>Pembayaran ke</p><p class='kecil'>" + "<br>".join(
-            "{} {} a.n. {}".format(e(r.get("bank", "")), e(r.get("nomor", "")), e(r.get("atas_nama", "")))
-            for r in h["rekening"]) + "</p>"
+            teks_rekening(r, e) for r in h["rekening"]) + "</p>"
     cat = "<p class='kecil'><strong>Catatan:</strong> {}</p>".format(e(h["catatan"])) if h["catatan"] else ""
     tt = h["tanda_tangan"]
     meterai = "<div class='meterai'>Meterai<br>Rp10.000</div><br>" if h["meterai"]["wajib"] else "<br><br><br>"
@@ -725,7 +752,9 @@ class ParserID(argparse.ArgumentParser):
 def main(argv=None):
     p = ParserID(description="Buat invoice/kuitansi (Markdown + HTML siap cetak) dari file JSON.")
     p.add_argument("--file", required=True, help="File JSON data invoice (lihat templates/contoh-invoice.json)")
-    p.add_argument("--html", help="Simpan juga versi HTML siap cetak ke path ini")
+    p.add_argument("--html", help="Simpan juga versi HTML siap cetak ke path ini. Boleh memuat {nomor} "
+                   "(diganti nomor invoice, '/' jadi '-'), mis. invoice-{nomor}.html; atau berupa folder "
+                   "(nama berkas otomatis dari nomor)")
     p.add_argument("--nomor-terakhir", help="Nomor invoice terakhir, mis. INV/2026/09/0007 -> dibuat 0008")
     p.add_argument("--urut-lanjut", action="store_true",
                    help="Dengan --nomor-terakhir: saat bulan/tahun berganti, urut dilanjutkan (bukan mulai 0001)")
@@ -775,9 +804,13 @@ def main(argv=None):
 
     if catatan_nomor:
         h["peringatan"].append(catatan_nomor)
+    if a.nomor_terakhir and nomor.strip() == a.nomor_terakhir.strip():
+        h["peringatan"].append("Nomor {} sama dengan nomor terakhir yang Anda sebut. Nomor dokumen baru harus "
+                               "nomor terakhir + 1; pakai ini hanya bila memang revisi.".format(nomor))
+    path_berkas = path_html(a.html, h["jenis_dokumen"], nomor) if a.html else None
     try:
-        if a.html:
-            with open(a.html, "w", encoding="utf-8") as f:
+        if path_berkas:
+            with open(path_berkas, "w", encoding="utf-8") as f:
                 f.write(html_dok(h, nomor))
         if data_counter is not None:
             sementara = a.counter_file + ".tmp"   # tulis dulu ke file sementara agar counter tidak rusak setengah jalan
@@ -793,7 +826,7 @@ def main(argv=None):
         h2["nomor"] = nomor
         h2["keterangan_nomor"] = keterangan_nomor
         h2["perlu_diisi"] = kolom_kosong(h)
-        h2["html_disimpan_ke"] = a.html
+        h2["html_disimpan_ke"] = path_berkas
         print(json.dumps(h2, default=lambda x: x.isoformat() if isinstance(x, datetime.date) else ke_json(x),
                          ensure_ascii=False, indent=2))
     else:
@@ -829,8 +862,10 @@ def main(argv=None):
         if kosong:
             print("- PERLU DIISI: {} belum diberikan, ditulis \"{}\" di dokumen. Tanyakan ke pengguna atau "
                   "biarkan ia mengisi sendiri; jangan dikarang.".format(", ".join(kosong), ISI))
-        if a.html:
-            print("- Versi HTML siap cetak disimpan di: {}".format(a.html))
+        if path_berkas:
+            print("- Versi HTML siap cetak disimpan di: {} (nama berkas dari nomor {}). Lampirkan berkas ini ke chat "
+                  "untuk setiap dokumen (invoice maupun kuitansi); bila kanal tidak bisa melampirkan, sebut nama "
+                  "berkasnya dan tawarkan \"balas 'kirim file'\".".format(path_berkas, nomor))
     return 0
 
 

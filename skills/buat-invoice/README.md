@@ -2,7 +2,7 @@
 
 **Sebut item dan harganya, dapat invoice profesional yang angkanya dihitung skrip (bukan dikira-kira) dan siap dicetak.**
 
-*Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada satu skenario invoice jasa (tanpa skill masih menulis "PPN 11%"; dengan skill tarif terbaru dan potongan pajak dari klien ikut dihitung; skor 9 didapat setelah perbaikan, sisi tanpa skill tidak diulang).*
+*Diuji AI penguji independen di OpenClaw: **6,0 → 8,8 dari 10 (versi 1.0.5, 2026-10-14)**, rata-rata 5 skenario. Tanpa skill, PPN 12% dipungut dari harga penuh (lebih Rp309.662) dan nomor invoice terulang; dengan skill semua angka benar dan berkas siap kirim.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -60,10 +60,10 @@ Salin folder `buat-invoice` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
-- **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario invoice jasa konsultan): skor tanpa skill 7 → dengan skill 8 pada uji pertama, lalu 9 setelah perbaikan v1.0.4. Pembedanya: tanpa skill menulis "PPN 11%"; dengan skill PPN 12% (dihitung dari 11/12 harga sebelum PPN), potongan PPh 23 (pajak 2% yang dipotong klien perusahaan) Rp270.000, dan estimasi diterima bersih Rp14.715.000 dihitung skrip. Catatan jujur: pada skor 9 hanya sisi "dengan skill" yang diulang; sisi "tanpa skill" memakai skor uji pertama.
+- **Uji OpenClaw, 14 Oktober 2026, versi 1.0.5** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): 5 skenario (3 normal, 1 info kurang, 1 permintaan yang harus ditolak), rata-rata **6,0 tanpa skill → 8,8 dengan skill**. Angkanya dicocokkan dengan hitungan independen. Pembedanya: tanpa skill, invoice PKP memungut PPN 12% dari harga penuh (lebih Rp309.662), memakai ulang nomor invoice terakhir, dan kuitansi DP Rp7,5 juta tanpa peringatan meterai; dengan skill semua angka cocok (PPN 12% dari DPP nilai lain 11/12 = Rp3.406.282, termin Rp10.311.745 dan Rp24.060.737), nomor dicatat agar tidak dobel, dan setiap dokumen dilengkapi terbilang, penanda meterai, serta berkas HTML siap cetak. Catatan jujur: satu sampel per sisi per skenario; lampiran berkas dinilai dari keluaran kanal Telegram tiruan, bukan dari aplikasi Telegram sungguhan. Uji sebelumnya (1 Oktober 2026, invoice jasa PKP dengan potongan PPh 23 Rp270.000 dan estimasi diterima bersih Rp14.715.000): 7 → 9.
 - **Uji simulasi agent, 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`, invoice konveksi seragam, DP Rp6.000.000, sisa tagihan Rp13.530.000): agent tanpa skill menulis angka yang benar tetapi tanpa terbilang, tanpa penanda bea meterai, dan tanpa file siap cetak. Dengan skill semuanya ada, dan permintaan PPN dari penjual non-PKP ditolak.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Bot Telegram asli belum diuji. Invoice non-PKP, termin, dan PPh 23 tanpa NPWP belum diuji di OpenClaw.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk invoice non-PKP, termin, dan kuitansi) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Bot Telegram asli belum diuji. PPh 23 tanpa NPWP belum diuji di OpenClaw. **Versi 1.0.6 adalah perbaikan kecil (penanda tangan tidak lagi ditebak dari nama pemilik rekening, nama berkas HTML mengikuti nomor invoice, berkas dilampirkan juga untuk kuitansi) dan belum diuji ulang.**
 
 ## FAQ
 **Bagaimana cara membuat PDF-nya?**
@@ -79,4 +79,4 @@ Bila dokumen menyatakan uang yang diterima lebih dari Rp5.000.000, misalnya kuit
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
