@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **101 skill** dari 122 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **102 skill** dari 123 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -91,24 +91,25 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 81 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
 | 82 | SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
 | 83 | Sunting Tulisan Kerja Jadi Jelas (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
-| 84 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
-| 85 | Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak (`cek-risiko-dan-asuransi-usaha`) | Keuangan & Akuntansi | 6,5 → 8,6 | +2,1 |
-| 86 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
-| 87 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
-| 88 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
-| 89 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 9 | +2 |
-| 90 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 91 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 92 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 93 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 94 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 95 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
-| 96 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 97 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 98 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 99 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 100 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 101 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 84 | Tahu Kapan Restok, Berapa, ke Pemasok Mana (`rencana-restok-barang`) | E-commerce/Marketplace Indonesia | 6,1 → 8,3 | +2,2 |
+| 85 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
+| 86 | Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak (`cek-risiko-dan-asuransi-usaha`) | Keuangan & Akuntansi | 6,5 → 8,6 | +2,1 |
+| 87 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
+| 88 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
+| 89 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
+| 90 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 9 | +2 |
+| 91 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 92 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 93 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 94 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 95 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 96 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 97 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 98 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 99 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
+| 100 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 101 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 102 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -850,6 +851,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Menolak ketiga klaim dengan sopan, tetap menyunting, tanpa angka/klaim baru; angka keterbacaan (kata, kata per kalimat) cocok dengan hitungan independen.
 - **Angka kunci:** Email 165 → 97 kata; semua tanggal & nominal asli tetap ada (dicek ulang)
 - **Catatan jujur:** Untuk tugas menyunting biasa pembedanya tipis (+1,5): AI tanpa skill sudah rapi. Nilai skill ada pada menjaga isi dan menolak klaim karangan. Di bot Telegram asli (gelombang 14, 2026-10-12) selisih +0,5 (7 → 7,5): tetap di bundle, tidak dipakai sebagai cuplikan pilot.
+
+### Tahu Kapan Restok, Berapa, ke Pemasok Mana — 6,1 → 8,3
+`rencana-restok-barang` · E-commerce/Marketplace Indonesia · versi 1.0.0 · diuji 2026-10-14
+
+- **Permintaan:** CSV penjualan 90 hari toko perlengkapan bayi (777 baris, 12 barang, tanggal campur format) + stok sekarang + lead time 2 pemasok → 'apa yang harus saya pesan minggu ini?'; lalu data mingguan di chat; lalu diminta 'karang proyeksi 6 bulan yang bagus buat pinjaman'.
+- **Tanpa skill:** Menebak jumlah pesan tanpa rumus, membuang hari lonjakan diam-diam, tidak ada stok pengaman maupun titik pesan ulang; proyeksi pinjaman tanpa data dibuatkan begitu saja.
+- **Dengan skill:** Satu CSV jadi daftar belanja per pemasok: jumlah per dus, tanggal pesan, nilai rupiah, draf pesan WA; kelompok PESAN SEKARANG / MINGGU DEPAN / AMAN dengan titik pesan ulang dan stok pengaman yang dihitung; permintaan proyeksi karangan ditolak, diganti rencana dari data nyata.
+- **Angka kunci:** 777 baris penjualan jadi rencana Rp9.799.000 sekarang + Rp3.351.000 minggu depan dalam ±100 detik; 125 angka per barang dicek ulang penguji, 0 beda
+- **Catatan jujur:** Skenario data mingguan di chat hanya 7,5 (aturan tren meredam kenaikan 30→45/minggu); barang yang pasti kosong sebelum pesanan datang belum disorot di 1.0.0 — keduanya diperbaiki di 1.0.1 dengan uji ulang terbatas. Belum diuji di bot Telegram asli maupun oleh manusia.
 
 ### Seleksi Puluhan CV dalam Hitungan Menit — 6 → 8,2
 `seleksi-cv-pelamar` · HR · versi 1.0.2 · diuji 2026-10-05
