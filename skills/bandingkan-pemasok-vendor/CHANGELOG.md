@@ -2,6 +2,11 @@
 
 Catatan teknis per versi (dipisah dari README agar halaman pembeli ringkas).
 
+## 1.0.3 (2026-10-14)
+Rujukan aturan dicocokkan ke sumber resmi 14 Okt 2026; tanpa perubahan hitungan (rumus, script, dan tes sama dengan 1.0.2; hanya konstanta versi).
+- `references/membaca-penawaran.md`: ongkir di faktur pemasok PKP = Harga Jual/DPP (UU PPN Pasal 1 angka 18); titipan murni ke ekspedisi tanpa mark-up tetap PERLU REVIEW konsultan pajak. Pengkreditan Pajak Masukan merujuk UU PPN Pasal 9 ayat (2), (2b), (8) huruf b, faktur sah Pasal 13. Pembebasan gula PP 49/2022 Pasal 6 hanya gula kristal putih tebu tanpa perasa/pewarna. Bagian sumber + tanggal akses ditambahkan.
+- SKILL.md (Batasan) dan README (catatan kaki di FAQ PPN, status uji) diselaraskan.
+
 ## 1.0.2 (2026-10-14)
 Patch dari uji ulang 1.0.1 (LULUS, 6,5 → 8,2; dua slip kecil di skenario tambahan tanpa dampak rupiah/peringkat).
 - **Termin DP + sisa ditempokan dikenali:** "DP 30% sisa 30 hari", "30% di muka, sisa 2 minggu", "DP 40% lunas dalam 14 hari", "sisa/pelunasan saat kirim/terima". DP tanpa keterangan sisa ditulis terbuka "(diasumsikan)". Termin tak terbaca (mis. konsinyasi) → `[isian]`, skor netral, tidak lagi disebut "tunai". Cara pembacaan termin/hari kerja ditulis di ringkasan ("Dibaca dari penawaran").

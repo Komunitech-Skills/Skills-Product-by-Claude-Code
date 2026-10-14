@@ -72,7 +72,7 @@ Angka kunci dari uji: terigu Rp11.200/kg yang tampak termurah per kg ternyata te
 - Diuji otomatis oleh agent di OpenClaw. Versi 1.0.0 belum lulus; versi 1.0.1 lulus.
 - Pada skenario tambahan ada dua slip kecil tanpa dampak ke rupiah, peringkat, maupun rekomendasi: salah kutip lama kirim, dan satu skor pemasok yang telat (58,9; seharusnya 64,2) karena termin "DP 30% sisa 30 hari" terbaca tanpa tempo. Pembacaan termin itu diperbaiki di versi 1.0.2, yang belum diuji ulang.
 - Versi 1.0.2 sudah dicoba sekali di bot Telegram asli untuk kasus terigu (lihat bagian di bawah); kasus termin DP di atas belum diuji ulang. Belum diuji manusia dan belum melalui program beta. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
-- Asumsi bahwa ongkir yang ditagih pemasok PKP ikut kena PPN, dan daftar bahan pokok yang dibebaskan PPN, masih perlu dicek konsultan pajak.
+- Versi 1.0.3 hanya mencocokkan rujukan aturan pajak ke sumber resmi (14 Oktober 2026); hitungannya sama dengan 1.0.2. Yang masih perlu dicek konsultan pajak: ongkir yang hanya dititipkan pemasok ke ekspedisi tanpa tambahan biaya.
 
 ## Bukti uji di bot Telegram
 
@@ -88,8 +88,10 @@ Tidak bisa. Penawaran pembanding harus asli dari pemasok sungguhan, jadi AI meny
 **Apakah perhitungan PPN-nya sama dengan faktur?**
 PPN dihitung dengan aturan untuk barang biasa (efektif 11% dari harga sebelum PPN) dan dibulatkan ke bawah, sehingga bisa berbeda beberapa rupiah dengan faktur resmi; bila berbeda, ikuti faktur. Asumsi pajak ditulis terbuka di hasil: ongkir yang ditagih pemasok PKP dianggap ikut kena PPN, PPN hanya bisa dikreditkan bila usaha Anda PKP dan punya faktur pajak sah, dan beberapa bahan pokok (mis. beras, gula pasir, telur) dibebaskan PPN. Untuk kasus Anda, ketiga hal ini sebaiknya dicek ke konsultan pajak.
 
+*Dasar aturan (dicocokkan 14 Okt 2026): ongkir di faktur pemasok PKP termasuk Harga Jual (UU PPN Pasal 1 angka 18); pengkreditan PPN masukan UU PPN Pasal 9 ayat (2b) dan (8) huruf b, faktur pajak sah menurut Pasal 13; pembebasan gula PP 49/2022 Pasal 6 hanya untuk gula kristal putih dari tebu tanpa perasa/pewarna, bukan semua jenis gula.*
+
 > **Catatan penting:** alat bantu keputusan pembelian, bukan nasihat pajak atau hukum. Angka hanya dihitung dari penawaran yang Anda berikan; pastikan harga, PPN, ongkir, dan syarat tertulis di penawaran resmi atau faktur pemasok. Nama usaha di contoh fiktif.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
