@@ -78,7 +78,7 @@ Diuji di bot OpenClaw asli (grup uji internal Komunitech, 14 Okt 2026) tiga kali
 
 - **Versi 1.0.2:** dengan skill skor **8**. Angka benar, tetapi selisih dengan tanpa skill kecil (1,0; acuan kami minimal 1,5). Draf WA ke grosir tidak muncul, dan judul "pesan minggu depan" untuk gula sebenarnya berarti pesan besok.
 - **Versi 1.0.3:** skor **4**. Draf WA dan baris hitungan sudah muncul, tetapi data mingguan dibaca sebagai penjualan harian, sehingga jumlah pesan terlalu besar 40-60% (beras 75 karung, seharusnya 47).
-- **Versi 1.0.4 (terbaru):** dengan skill skor **9**, lulus acuan kami (selisih 2,0 dari tanpa skill). Jawaban langsung menulis "Data dibaca sebagai total per MINGGU". Beras ditandai akan kosong ±1 hari sebelum kiriman datang. Jumlah pesan pasti dengan baris hitungannya: beras 47 karung (stok target 56 − stok 9), minyak goreng 82 (laku naik 27%), gula 75 dengan judul "pesan besok (15 Okt)". Telur dan mie mendapat batas kapan pesan dan rumus jumlahnya (139 − stok, 20 − stok). Ada dua draf WA ke grosir siap kirim. Semua angka cocok dengan hitung ulang terpisah, dan jawaban muat dalam satu pesan Telegram.
+- **Versi 1.0.4 (terbaru yang diuji; versi 1.0.5 hanya merapikan panduan data marketplace, tanpa perubahan hitungan):** dengan skill skor **9**, lulus acuan kami (selisih 2,0 dari tanpa skill). Jawaban langsung menulis "Data dibaca sebagai total per MINGGU". Beras ditandai akan kosong ±1 hari sebelum kiriman datang. Jumlah pesan pasti dengan baris hitungannya: beras 47 karung (stok target 56 − stok 9), minyak goreng 82 (laku naik 27%), gula 75 dengan judul "pesan besok (15 Okt)". Telur dan mie mendapat batas kapan pesan dan rumus jumlahnya (139 − stok, 20 − stok). Ada dua draf WA ke grosir siap kirim. Semua angka cocok dengan hitung ulang terpisah, dan jawaban muat dalam satu pesan Telegram.
 
 Catatan jujur: kesalahan versi 1.0.3 kini dicegah oleh deteksi otomatis data per minggu atau per bulan. Bila jenis datanya tidak jelas, AI berhenti dan bertanya dulu. Skor tanpa skill diambil dari uji pertama dan tidak diulang. Kekurangan kecil yang tersisa: satuan minyak dan gula sempat ditulis "pcs" (bukan botol/kg), dan masih ada istilah seperti "lead time" (lama kirim).
 
@@ -87,7 +87,7 @@ Catatan jujur: kesalahan versi 1.0.3 kini dicegah oleh deteksi otomatis data per
 Minimal 2 minggu, dan paling bagus 2–3 bulan. Barang yang datanya kurang dari 2 minggu (misalnya barang baru) ditandai "data belum cukup" dan jumlah pesannya tidak dikarang. Anda tetap melihat laju penjualan sementaranya, dan bila barang itu akan habis sebelum kiriman datang, peringatannya ditaruh paling atas.
 
 **Bisakah AI mengambil data langsung dari akun Shopee atau Tokopedia saya?**
-Tidak. AI tidak masuk ke akun toko, tidak memakai kata sandi atau kode OTP, dan tidak mengambil data lewat scraping, karena berisiko akun dibatasi dan data login bocor. Unduh sendiri file pesanan dari menu ekspor di pusat penjual (nama menunya bisa berbeda), lalu kirim filenya.
+Tidak. AI tidak masuk ke akun toko, tidak memakai kata sandi atau kode OTP, dan tidak mengambil data lewat scraping, karena berisiko akun dibatasi dan data login bocor. Unduh sendiri file pesanan dari menu ekspor di pusat penjual (nama menunya bisa berbeda), lalu kirim filenya. File pesanan Shopee berjudul kolom bahasa Indonesia, sedangkan Tokopedia/TikTok Shop berbahasa Inggris; keduanya dikenali. Stok tidak ikut di file pesanan: di Shopee, unduh template Mass Update bagian Informasi Penjualan dari menu Produk Saya; di Tokopedia/TikTok Shop, ambil dari menu kelola produk atau ekspor katalog. Kirim juga file itu, atau ketik stok per barang.
 
 **Seberapa tepat angkanya?**
 Angka dihitung dengan rumus tetap dari penjualan Anda, bukan ditebak, tetapi tetap berupa perkiraan. Promo, barang viral, atau libur panjang bisa membuat penjualan berbeda dari biasanya. Cocokkan dengan stok fisik dan kesanggupan pemasok sebelum memesan. Bila ada lonjakan sehari, AI menunjukkan hasil dengan dan tanpa lonjakan itu lalu menanyakannya kepada Anda.
@@ -96,4 +96,4 @@ Angka dihitung dengan rumus tetap dari penjualan Anda, bukan ditebak, tetapi tet
 Alat bantu perencanaan stok, bukan nasihat keuangan dan bukan jaminan ketersediaan pemasok; keputusan belanja tetap di tangan Anda. Karya orisinal Komunitech. Nama marketplace dan aplikasi hanya disebut sebagai contoh sumber data dan tidak berafiliasi. Lihat `ATTRIBUTION.md`.
 
 ## Riwayat perubahan
-Versi terkini: 1.0.4. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: 1.0.5. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

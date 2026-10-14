@@ -2,6 +2,12 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.5 (2026-10-14)
+Rujukan dicocokkan ke sumber resmi 14 Okt 2026; tanpa perubahan hitungan (perilaku script 1.0.4 tetap: PPh 22 dikreditkan per bulan, lebih dipungut dicatat untuk pengembalian).
+- `references/regulasi.md`: catatan "PERLU REVIEW konsultan (apakah boleh dikompensasikan)" diganti. FAQ DJP PMK 37/2025 versi 2.0 (24 September 2026) hanya mengatur pengembalian untuk selisih lebih dan tidak mengatur kompensasi ke bulan berikutnya; URL pajak.go.id + tanggal akses dicantumkan. Isi FAQ versi 1 yang dipakai skill dicocokkan ulang ke versi 2.0.
+- Tabel ketentuan peralihan PP 20/2026 (salindia DJP): butir a, batas lama berakhir 2024 untuk orang pribadi → boleh 0,5% tahun 2025–2026; butir b, berakhir 2025 untuk orang pribadi & PT perorangan → boleh 2026; koperasi 4 tahun dengan peralihan s.d. 2029. Catatan: PT perorangan yang batas lamanya berakhir 2024 tidak tercantum → arahkan ke Kring Pajak 1500200 (tetap PERLU REVIEW).
+- SKILL.md (dasar aturan, peralihan, batasan) dan README (FAQ PPh 22, catatan penting, status uji) diselaraskan. Konstanta versi script 1.0.5; tes versi disesuaikan.
+
 ## Catatan revisi 1.0.4 (2026-10-14)
 Perbaikan dari uji OpenClaw sebelum/sesudah penguji independen 14 Oktober 2026 atas versi 1.0.3 (belum lolos: rata-rata tanpa skill 6,8, dengan skill 6,1).
 - **PPh 22 marketplace kini dikreditkan** sesuai FAQ DJP PMK 37/2025 versi 1 Juli 2026 (no. 14–15): per bulan dihitung kurang setor (disetor sendiri) atau lebih dipungut (dapat diajukan pengembalian), selisih dibulatkan ke bawah. Status "SUDAH LEWAT" hanya untuk bulan yang masih kurang setor. Pengingat surat pernyataan omzet ke marketplace (FAQ no. 9 & 16).

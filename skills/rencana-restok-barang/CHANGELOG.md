@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (ringkasan pembeli ada di README).
 
+## 1.0.5 (2026-10-14)
+- Rujukan dicocokkan ke sumber resmi 14 Okt 2026; tanpa perubahan hitungan. `references/data-dan-tindakan.md` §1a kini memisahkan kolom ekspor per platform: Shopee ekspor Pesanan (No. Pesanan, Status Pesanan, Waktu Pesanan Dibuat, Nomor Referensi SKU, Nama Produk, Nama Variasi, Jumlah; dua kolom SKU, restok memakai Nomor Referensi SKU, bukan SKU Induk), stok Shopee dari template Mass Update «Informasi Penjualan», Tokopedia/TikTok Shop Export Orders (Order ID, Order Status, SKU ID, Product Name, Variation, Quantity; kolom berbahasa Inggris), stok Tokopedia dari kelola produk/ekspor katalog. Sumber pusat bantuan penjual + tanggal akses dicantumkan. «Seller SKU» Tokopedia ditandai PERLU REVIEW (hanya sumber pihak ketiga). SKILL.md langkah 1 dan README (FAQ data marketplace) diselaraskan. Alias kolom script tidak berubah (sudah mengenali semua kolom di atas); uji regresi +2 cek untuk contoh ekspor Tokopedia/TikTok Shop (182 cek).
+
 ## 1.0.4 (2026-10-14)
 - Perbaikan serius dari kirim ulang bot Telegram asli (1.0.3): tabel mingguan yang dihitung tanpa `--data-per minggu` terbaca sebagai harian (jumlah pesan +40–60 %). Kini per hari/minggu/bulan dideteksi otomatis (judul kolom Minggu/Mgg/Bulan, tanggal berisi bulan saja, jarak antar tanggal 1 / 7 / ±30 hari); kalimat "Data dibaca sebagai …" dicetak dan wajib disalin; bila tidak jelas script berhenti dengan kode keluar 3 dan SKILL.md mewajibkan bertanya ke pengguna, bukan menebak. `--data-per` menerima juga harian/mingguan/bulanan. Tanggal tanpa tahun ("17 Agu", "17/08") terbaca dengan tahun dari `--hari-ini`. Tabel warung (examples) tanpa flag kini menghasilkan 47/82/75, sama dengan `--data-per minggu`. Uji regresi: 180 cek.
 

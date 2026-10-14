@@ -36,7 +36,7 @@ import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 TANGGAL_ATURAN = "2026-10-14"
 DASAR_ATURAN = ("PP 55/2022 jo. PP 20/2026 (PPh final UMKM 0,5%); PMK 37/2025 dan FAQ DJP versi 1 Juli 2026 "
                 "(PPh 22 marketplace); PMK 81/2024 (batas setor)")

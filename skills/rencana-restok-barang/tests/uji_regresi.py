@@ -325,6 +325,17 @@ k, h = jalan("--data", mp)
 cek("K5 ekspor marketplace: baris judul dicari, SKU varian dipakai", k == 0 and h["pemetaan_kolom"]["penjualan"]["sku"] == "Nomor Referensi SKU")
 cek("K6 batal & belum bayar tidak dihitung", brg(h, "KAOS-HT-M")["data"]["total_terjual"] == 3 and all(x["sku"] != "KAOS-PT-M" for x in h["barang"]))
 cek("K7 nama + variasi digabung", brg(h, "KAOS-HT-M")["nama"] == "Kaos Polos Hitam M")
+tp = "\n".join(["Order ID,Order Status,SKU ID,Product Name,Variation,Quantity,Created Time",
+                "5770001,Completed,1729001,Kaos Polos,Hitam M,2,01/09/2026 10:11:00",
+                "5770002,Canceled,1729001,Kaos Polos,Hitam M,5,01/09/2026 11:00:00",
+                "5770003,Shipped,1729001,Kaos Polos,Hitam M,1,02/09/2026 09:00:00",
+                "5770004,Unpaid,1729002,Kaos Polos,Putih M,4,02/09/2026 09:30:00"])
+k, h = jalan("--data", tp)
+pk = h.get("pemetaan_kolom", {}).get("penjualan", {}) if isinstance(h, dict) else {}
+cek("K7b ekspor Tokopedia/TikTok Shop (kolom Inggris) terbaca", k == 0 and pk.get("no_pesanan") == "Order ID" and pk.get("sku") == "SKU ID"
+    and pk.get("nama") == "Product Name" and pk.get("varian") == "Variation" and pk.get("qty") == "Quantity" and pk.get("status") == "Order Status")
+cek("K7c Tokopedia: Canceled & Unpaid tidak dihitung, nama + variasi digabung", k == 0 and brg(h, "1729001")["data"]["total_terjual"] == 3
+    and brg(h, "1729001")["nama"] == "Kaos Polos Hitam M" and all(x["sku"] != "1729002" for x in h["barang"]))
 
 
 def xlsx(path, rows):

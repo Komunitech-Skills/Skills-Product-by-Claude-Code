@@ -50,7 +50,7 @@ from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, tanpa menyebut "
                "script/file/proses. Semua angka disalin persis dari sini.]")
 DISCLAIMER = ("Rencana ini perkiraan dari pola penjualan sebelumnya, bukan jaminan. Cocokkan dulu dengan stok fisik, "
