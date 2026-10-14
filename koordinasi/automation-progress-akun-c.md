@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-14 ~16:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai — (commit di bawah) LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~96 s); **C25 (d)** pph-final-umkm PMK 37 & PP 20 → c25 §9 | — | docs | ya |
+| 2026-10-14 ~16:00 | `cursor/iterasi-otomatis-akun-c-8b42` | d24bc4d3 | selesai ~16:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~96 s); **C25 (d)** pph-final-umkm → c25 §9; **C25 selesai a–d** | — | docs | ya |
 | 2026-10-14 ~16:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 16:00 UTC — KEY/BOT/TESTER SET; merge default; getUpdates 242; smoke router; C25 (d) bila 530 | — | — | — |
 | 2026-10-14 ~15:30 | `cursor/iterasi-otomatis-akun-c-8b42` | a1372b89 | selesai ~15:48 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~92 s); **C25 (c)** rencana-restok kolom Shopee/Tokopedia → c25 §8 | — | docs | ya |
 | 2026-10-14 ~15:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 15:30 UTC — KEY/BOT/TESTER SET; merge default (+Akun B); getUpdates 242; smoke router; C25 (c) bila 530 | — | — | — |
