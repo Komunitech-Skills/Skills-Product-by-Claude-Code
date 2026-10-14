@@ -1,0 +1,6 @@
+{"kebutuhan": {"qty": 600, "satuan": "kg", "butuh_dalam_hari": 5},
+ "pemasok": [
+  {"nama": "Toko Tepung Sentosa", "harga_satuan": "118rb", "isi_kemasan": 10, "tingkat_harga": "51: 5%", "ongkir": "100rb", "lead_time": "2-3 hari", "termin": "bayar cash pas barang datang"},
+  {"nama": "PT Mitra Pangan Jaya", "harga_satuan": "Rp11.200/kg", "moq": 300, "ongkir": "Rp150.000", "pkp": "ya", "harga_termasuk_ppn": "belum", "lead_time": "3-4 hari", "termin": "tempo 30 hari setelah barang diterima"},
+  {"nama": "CV Berkah Gandum", "harga_satuan": "11.900", "ongkir": "franco", "pkp": "tidak", "lead_time": "5-7 hari", "termin": "transfer full dulu baru kirim"}
+ ]}
