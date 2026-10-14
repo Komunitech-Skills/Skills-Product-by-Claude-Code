@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — C21 lanjut (5 skill tersisa platform Cursor) → C22 panduan beta run 3 → C23 konsistensi dokumen.
+1. **Akun C** — C22 panduan beta run 3 → C23 konsistensi dokumen → C24 gelombang G18 (setelah persetujuan).
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default (branch sudah disinkronkan fast-forward dari default di run 22:00 UTC).
 
@@ -41,6 +41,10 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 509b247f | selesai ~10:08 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 selesai 13/13 platform Cursor | — | uji | ya |
+| 2026-10-14 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 10:00 UTC — KEY/BOT/TESTER SET; merge default; C21 4 skill tersisa | — | — | — |
+| 2026-10-14 ~09:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 763254ab | selesai ~09:35 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 seleksi-cv-pelamar 9/13 | — | uji | ya |
+| 2026-10-14 ~09:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:30 UTC — KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C21 seleksi-cv-pelamar | — | — | — |
 | 2026-10-14 ~09:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b894d852 | selesai ~09:05 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 platform Cursor 8/13 skill | — | uji | ya |
 | 2026-10-14 ~09:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:00 UTC — KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C21 batch 4 skill | — | — | — |
 | 2026-10-14 ~08:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 35db8360 | selesai ~08:45 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 platform Cursor 4/13 skill | — | uji | ya |
