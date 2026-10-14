@@ -59,3 +59,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~89 s,
 ## Run 15:00 UTC (Akun C)
 
 Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~91 s, 7 retry). Run mengerjakan **C25 butir (b)** `bandingkan-pemasok-vendor` (bukan G18).
+
+## Run 17:00 UTC (Akun C)
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~65 s, 6 retry Ninerouter). **C25 selesai (a–d)**; gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
