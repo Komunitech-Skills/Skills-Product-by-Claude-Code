@@ -253,9 +253,11 @@ data_i = deret_csv(M0, {"N1": lambda i: 4 if i < 42 else 8, "N2": lambda i: 2 if
 k, h = jalan("--data", data_i)
 n1, n2, n3 = brg(h, "N1"), brg(h, "N2"), brg(h, "N3")
 cek("I1 rata-rata keseluruhan 5,6", n1["rata_rata_harian"] == 5.6)
-cek("I2 tren naik, dipakai rata-rata 4 minggu (8)", n1["tren"] == "naik" and n1["rata_rata_dipakai"] == 8)
+cek("I2 tren naik (8 vs 4 = +100 %), dipakai rata-rata 4 minggu (8), tidak dibatasi", n1["tren"] == "naik" and n1["rata_rata_dipakai"] == 8
+    and n1["faktor_tren"] == 2 and n1["tren_dibatasi"] is False)
 mu2 = (42 * 2 + 28 * 20) / 70
-cek("I3 tren naik dibatasi 1,5x", n2["faktor_tren_dipakai"] == 1.5 and abs(n2["rata_rata_dipakai"] - round(mu2 * 1.5, 2)) < 0.006)
+cek("I3 tren naik dibatasi 2x rata-rata seluruh data + disebut terbuka", n2["tren_dibatasi"] is True
+    and abs(n2["rata_rata_dipakai"] - round(mu2 * 2, 2)) < 0.006 and "dibatasi" in n2["kalimat_tren"] and "20/hari" in n2["kalimat_tren"].replace(",00", ""))
 mu3 = (42 * 6 + 28 * 3) / 70
 cek("I4 tren turun (3/4,8 = 0,625)", n3["tren"] == "turun" and abs(n3["rata_rata_dipakai"] - 3) < 0.006 and abs(mu3 - 4.8) < 1e-9)
 k, h = jalan("--data", data_i, "--tanpa-tren")
@@ -388,6 +390,87 @@ k, h = jalan("--data", data_n)
 cek("N1 seluruh file bulan/tanggal -> 1-30 Sep", k == 0 and h["rentang_data"]["dari"] == "2026-09-01" and h["rentang_data"]["sampai"] == "2026-09-30")
 cek("N2 catatan gaya Amerika", any("gaya Amerika" in c for c in h["catatan"]))
 cek("N3 rata-rata 2/hari", brg(h, "Kopi Susu")["rata_rata_harian"] == 2)
+
+# ---------------------------------------------------------------- V. versi 1.0.1: akan kosong, tren, nama, lonjakan
+# V1. AKAN KOSONG sebelum barang datang (dihitung script)
+k, h = jalan("--file", jual_a, "--barang", barang_a)
+ak = {x["nama"]: x for x in h["akan_kosong_sebelum_barang_datang"]}
+cek("V1a barang normal: habis 20/4 = 5 hari < lead time 7 -> kosong ±2 hari", ak.get("Kaos Hitam M", {}).get("hari_kosong") == 2
+    and brg(h, "A1")["akan_kosong_hari"] == 2 and h["ringkasan"]["AKAN_KOSONG"] == len(ak))
+cek("V1b saran: pesan hari ini, pemasok lebih cepat, terima kosong", any("pesan hari ini" in x for x in ak["Kaos Hitam M"]["saran"])
+    and any("lebih cepat" in x for x in ak["Kaos Hitam M"]["saran"]) and any("terima kosong" in x for x in ak["Kaos Hitam M"]["saran"]))
+tee = [4, 3, 4, 4, 3, 4, 4, 3, 4, 4]
+data_v = deret_csv(M0, {"LAMA": lambda i: 2, "TEE": lambda i: tee[i - 50] if i >= 50 else 0}, 60)
+k, h = jalan("--data", data_v, "--barang-data", "sku;nama;stok;lead_time;kelipatan\nLAMA;Lama;500;3;\nTEE;Teether Buah;24;10;12")
+tv = brg(h, "TEE")
+habis_x = 24 / (37 / 10)
+cek("V1c barang data pendek: laju sementara 3,7, habis 6,49 hari, lead time 10 -> kosong ±4 hari",
+    tv["kelompok"] == "DATA_BELUM_CUKUP" and tv["akan_kosong_hari"] == math.ceil(10 - habis_x) == 4 and tv["jumlah_pesan"] is None)
+akv = h["akan_kosong_sebelum_barang_datang"]
+cek("V1d data pendek masuk daftar akan kosong + saran pesan kecil 12 pcs", len(akv) == 1 and akv[0]["nama"] == "Teether Buah"
+    and "laju sementara" in akv[0]["dasar_laju"] and "12" in akv[0]["saran"][0] and "pesan kecil" in akv[0]["saran"][0])
+cek("V1e stok cukup sampai barang datang -> tidak ditandai", brg(h, "LAMA").get("akan_kosong_hari") is None)
+k, t = jalan("--data", data_v, "--barang-data", "sku;nama;stok;lead_time;kelipatan\nLAMA;Lama;500;3;\nTEE;Teether Buah;24;10;12", "--format", "teks")
+cek("V1f teks: bagian AKAN KOSONG muncul sebelum PESAN SEKARANG", "AKAN KOSONG SEBELUM BARANG DATANG" in t["teks"]
+    and t["teks"].index("AKAN KOSONG SEBELUM") < t["teks"].index("DATA BELUM CUKUP ("))
+
+# V2. tren: 4 minggu terakhir vs sebelumnya (data mingguan seperti warung), batas 0,5-2x disebut terbuka
+mingguan_v = "Minggu;Beras 5 kg (karung);Minyak Goreng 2 L;Gula Pasir 1 kg\n" + "\n".join(
+    f"{(date(2026, 8, 17) + timedelta(days=7 * i)).isoformat()};{b};{m};{g}" for i, (b, m, g) in enumerate(
+        [(20, 30, 40), (22, 32, 38), (19, 35, 41), (23, 33, 39), (21, 38, 42), (24, 40, 40), (22, 42, 37), (25, 45, 41)]))
+k, h = jalan("--data", mingguan_v, "--data-per", "minggu", "--barang-data", "nama_barang;stok\nBeras 5 kg (karung);9\nMinyak Goreng 2 L;25\nGula Pasir 1 kg;30")
+mv, gv, bv = brg(h, "Minyak Goreng 2 L"), brg(h, "Gula Pasir 1 kg"), brg(h, "Beras 5 kg (karung)")
+cek("V2a tabel lebar baris=minggu, kolom=barang terbaca", k == 0 and len(h["barang"]) == 3)
+cek("V2b minyak 130 -> 165 per 4 minggu = naik 27 %", mv["tren"] == "naik" and abs(mv["faktor_tren"] - round(165 / 130, 2)) < 0.006)
+cek("V2c minyak dipakai laju 4 minggu terakhir 165/28", abs(mv["rata_rata_dipakai"] - round(165 / 28, 2)) < 0.006)
+cek("V2d kalimat tren minyak tidak menyebut stabil", "stabil" not in mv["kalimat_tren"] and "naik 27" in mv["kalimat_tren"])
+cek("V2e gula stabil memakai rata-rata seluruh data", gv["tren"] == "stabil" and abs(gv["rata_rata_dipakai"] - round(318 / 56, 2)) < 0.006
+    and "stabil" in gv["kalimat_tren"])
+cek("V2f catatan tren per barang menaruh minyak di 'naik'", any("naik: Minyak Goreng 2 L" in c for c in h["catatan"]))
+cek("V2g satuan diambil dari nama '(karung)'", bv["satuan"] == "karung")
+lama = deret_csv(M0, {"T1": lambda i: 10 if i < 36 else (4 if i < 92 else 5)}, 120)
+k, h = jalan("--data", lama)
+t1 = brg(h, "T1")
+cek("V2h pembanding hanya 8 minggu sebelum 4 minggu terakhir (5 vs 4 = +25 %), laju 5", t1["tren"] == "naik"
+    and t1["faktor_tren"] == 1.25 and t1["rata_rata_dipakai"] == 5)
+
+# V3. pencocokan nama: tanda kurung/huruf/tanda baca; nama mirip ditandai, bukan barang mati
+data_n3 = deret_csv(M0, {"x": lambda i: 0}, 1).split("\n")[:1] + [
+    f"{(M0 + timedelta(days=i)).isoformat()};;{'Kaos Kaki Bayi isi 3' if i % 2 else 'kaos kaki bayi ISI 3'};2" for i in range(70)] + [
+    f"{(M0 + timedelta(days=i)).isoformat()};;Kaos Polos Hitam M;3" for i in range(70)] + [
+    f"{(M0 + timedelta(days=i)).isoformat()};;Popok M isi 34;5" for i in range(70)]
+k, h = jalan("--data", "\n".join(data_n3), "--barang-data",
+             "nama;stok;harga_beli\nKaos Kaki Bayi (isi 3);60;15000\nKaos Hitam M;30;35000\nPopok L isi 34;20;60000")
+kk = brg(h, "Kaos Kaki Bayi (isi 3)")
+cek("V3a '(isi 3)' = 'isi 3' = 'ISI 3': satu barang, stok 60, bukan barang mati", kk["stok_sekarang"] == 60
+    and kk["data"]["total_terjual"] == 140 and kk["kelompok"] != "BARANG_MATI" and h["ringkasan"]["nilai_barang_mati"] == 1200000)
+km = brg(h, "Kaos Hitam M")
+cek("V3b nama mirip -> MUNGKIN BARANG YANG SAMA, bukan barang mati", km["kelompok"] == "MUNGKIN_SAMA"
+    and km["mungkin_sama_dengan"] == ["Kaos Polos Hitam M"] and km.get("nilai_tertahan") is None)
+cek("V3c pertanyaan apakah barang yang sama", any("barang yang sama" in q and "Kaos Hitam M" in q for q in h["pertanyaan_usulan"]))
+cek("V3d ukuran beda (Popok L vs M) tidak dianggap mirip", brg(h, "Popok L isi 34")["kelompok"] == "BARANG_MATI")
+k, h = jalan("--data", deret_csv(M0, {"kaos-ht-m": lambda i: 2}, 28), "--barang-data", "sku;stok\nKAOS HT M;10")
+cek("V3e SKU 'kaos-ht-m' = 'KAOS HT M'", k == 0 and len(h["barang"]) == 1 and h["barang"][0]["stok_sekarang"] == 10)
+
+# V4. lonjakan: tren karena lonjakan disebut, hasil tanpa lonjakan sebagai pembanding, ditanya promo
+pola_s = [3, 5, 4, 4, 3, 5, 4]
+data_s = deret_csv(M0, {"SBN": lambda i: 65 if i == 70 else pola_s[i % 7]}, 90)
+k, h = jalan("--data", data_s, "--barang-data", "sku;nama;stok;harga_beli;lead_time\nSBN;Sabun Cair;70;19500;3")
+sb = brg(h, "Sabun Cair")
+cek("V4a lonjakan 65 terdeteksi", len(sb["lonjakan"]) == 1 and sb["lonjakan"][0]["terjual"] == 65)
+cek("V4b dengan lonjakan tren naik; tanpa lonjakan stabil", sb["tren"] == "naik" and sb["tanpa_lonjakan"]["tren"] == "stabil")
+cek("V4c catatan: termasuk lonjakan + tren naik karena lonjakan", any("TERMASUK lonjakan" in c and "karena lonjakan" in c for c in sb["catatan"]))
+seri_tanpa = [4 if i == 70 else pola_s[i % 7] for i in range(90)]  # hari lonjakan diganti median hari laku (4)
+cek("V4d pembanding tanpa lonjakan: hari lonjakan diganti median 4 (361/90)", sb["tanpa_lonjakan"]["rata_rata_dipakai"] == round(sum(seri_tanpa) / 90, 2) == 4.01)
+cek("V4e pertanyaan promo/borongan + dua hasil", any("promo" in q and "tanpa lonjakan" in q for q in h["pertanyaan_usulan"]))
+pola_k = [1, 2, 3, 2, 1, 2, 3]
+k, h = jalan("--data", deret_csv(M0, {"KK": lambda i: 7 if i == 60 else pola_k[i % 7]}, 90))
+cek("V4f angka kecil biasa (7 vs biasanya 2) tidak dianggap lonjakan", brg(h, "KK")["lonjakan"] == [])
+
+# V5. lead time umum dari pengguna tidak ditanya ulang
+k, h = jalan("--file", jual_c, "--barang", barang_c, "--lead-time", "5")
+cek("V5 --lead-time dari pengguna dilabeli & tidak ditanya lagi", brg(h, "W")["sumber_lead_time"] == "lead time umum dari pengguna"
+    and not any("berapa hari barang datang" in q for q in h["pertanyaan_usulan"]))
 
 print()
 print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'} ({len(GAGAL)} gagal)")

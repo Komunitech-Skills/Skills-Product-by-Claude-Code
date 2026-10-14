@@ -16,4 +16,5 @@ Semua nama barang, pemasok, toko, kode, angka, dan tanggal di `templates/`, `ref
 Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian.
 
 ## Riwayat versi
-- 1.0.0 (2026-10-14): rilis awal (draf, belum diuji penguji independen).
+- 1.0.0 (2026-10-14): rilis awal; diuji penguji independen di OpenClaw (6,1 → 8,3).
+- 1.0.1 (2026-10-14): perbaikan lima temuan uji (lihat `CHANGELOG.md`).
