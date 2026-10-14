@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C28** lanjut: `hitung-ppn` + `hitung-thr` (2 skill). **C24 G18** menunggu router (terakhir HTTP 530 ~19:30 UTC). Run berikutnya: smoke router → G18 bila bukan 530.
+1. **Akun C** — **C28** lanjut: `kontrak-kerja-pkwt` + `kalender-pajak` (2 skill). **C24 G18** menunggu router (terakhir HTTP 403 ~20:00 UTC; sebelumnya 530). Run berikutnya: smoke router → G18 bila HTTP 200.
 2. **Akun B** — terapkan usulan C25/C28 di skill pajak-BPJS; uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~20:00 | `cursor/iterasi-otomatis-akun-c-8b42` | TBD | selesai ~20:15 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 403; **C28** hitung-ppn + hitung-thr (4/6) | — | docs | ya |
+| 2026-10-14 ~20:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 20:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C28 | — | — | — |
 | 2026-10-14 ~19:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 9d16e532 | selesai ~19:45 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; smoke router HTTP 530 (~83 s); **C28** pph21-ter + slip-gaji-bpjs | — | docs | ya |
 | 2026-10-14 ~19:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 19:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila hidup else C28 | — | — | — |
 | 2026-10-14 ~19:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 1325904b | selesai ~19:12 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~69 s); **C27 set L** 10/10; **C27 selesai** | — | docs | ya |

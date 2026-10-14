@@ -75,3 +75,73 @@
 ## Run berikutnya (C28)
 
 Urutan sisa: (3) `hitung-ppn`, (4) `hitung-thr`, (5) `kontrak-kerja-pkwt`, (6) `kalender-pajak` — 2 skill per run.
+
+---
+
+## 3. `hitung-ppn` — UU HPP 12 %, PMK 131/2024, batas PKP
+
+**Run Akun C:** 2026-10-14 ~20:00 UTC
+
+### 3.1 Tarif 12 % dan DPP nilai lain 11/12 (non-mewah)
+
+| Klaim skill (`references/regulasi.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Tarif PPN 12 % (UU HPP) | DJP — artikel PMK 131/2024 | 2026-10-14 | «tarif asli PPN tetap 12 persen»; non-mewah tarif efektif 11 % | **COCOK** |
+| Non-mewah: PPN = 12 % × DPP nilai lain; DPP nilai lain = 11/12 × harga jual | PMK 131/2024 Pasal 3 (via DJP); JDIH BPK metadata berlaku 1 Jan 2025 | 2026-10-14 | «PPN … dikalikan tarif PPN 12 persen dengan DPP berupa nilai lain, yaitu sebesar 11/12» → efektif 11 % | **COCOK** |
+| Barang mewah (PPnBM): 12 % × harga jual penuh; penyerahan ke konsumen akhir sejak 1 Feb 2025 | DJP artikel PMK 131/2024 Pasal 2 ayat (2)–(3), Pasal 5 | 2026-10-14 | Tarif 12 % penuh untuk BKP mewah; konsumen akhir mulai 1 Feb 2025 | **COCOK** |
+| BKP/JKP dengan DPP nilai lain/besaran tertentu existing dikecualikan dari mekanisme PMK 131 | DJP artikel PMK 131/2024 | 2026-10-14 | «dikecualikan dari mekanisme perhitungan PPN dalam PMK 131/2024» | **COCOK** — skill sudah menandai di luar cakupan |
+
+**Usulan teks (Akun B):** Di `regulasi.md` baris PKP «Belum dicek ulang» → ganti **COCOK** setelah verifikasi §3.2; pertahankan peringatan pembulatan vs Coretax.
+
+### 3.2 Batas pengusaha kecil / wajib PKP Rp4,8 miliar
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Omzet BKP/JKP ≤ Rp4.800.000.000/tahun buku = pengusaha kecil; boleh pilih PKP | PMK 197/PMK.03/2013 Pasal 3 ayat (1); halaman resmi DJP «Pengusaha Kena Pajak» | 2026-10-14 | «tidak lebih dari Rp4.800.000.000,00»; «Pengusaha kecil diperkenankan untuk memilih dikukuhkan menjadi PKP» | **COCOK** |
+| Melewati batas dalam suatu bulan → wajib lapor PKP akhir bulan berikutnya | PMK 197/2013 Pasal 4; DJP idem | 2026-10-14 | «paling lama akhir bulan berikutnya setelah bulan … melebihi» | **COCOK** |
+
+**Usulan teks:** Ganti status baris PKP dari «Belum dicek ulang» ke **Terverifikasi** dengan rujukan PMK 197/2013 + https://www.pajak.go.id/id/pengusaha-kena-pajak ; tambah catatan PMK 164/2023 mengatur perhitungan peredaran bruto (Kring Pajak 2025) tanpa mengubah angka 4,8 M.
+
+### 3.3 Faktur / Coretax
+
+| Klaim skill | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| Faktur lewat Coretax / e-Faktur (KEP-54/PJ/2025) | Rujukan skill ke pajak.go.id node 115238 | 2026-10-14 | **COCOK** arah; **PERLU REVIEW Akun B** — nomor KEP & tanggal berlaku tidak diverifikasi ulang run ini |
+
+---
+
+## 4. `hitung-thr` — Permenaker 6/2016, SE Menaker 2026, H-7
+
+**Run Akun C:** 2026-10-14 ~20:00 UTC
+
+### 4.1 Besaran & syarat THR
+
+| Klaim skill (`references/regulasi.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| THR wajib pekerja ≥ 1 bulan terus-menerus (PKWTT/PKWT) | Permenaker 6/2016 (JDIH abstrak); SE M/3/HK.04.00/III/2026 | 2026-10-14 | Abstrak Permenaker: kewajiban THR; SE 2026 berlaku, ditetapkan 2 Maret 2026 | **COCOK** |
+| ≥ 12 bulan: 1 bulan upah; 1–<12 bulan: masa/12 × 1 bulan upah | Permenaker 6/2016 Pasal 3 (skill); SE 2026 | 2026-10-14 | — (selaras abstrak & rujukan skill [1][2]) | **COCOK** |
+| Upah = bersih atau pokok + tunjangan tetap | Permenaker 6/2016 Pasal 3 ayat (2) | 2026-10-14 | — | **COCOK** |
+| THR lebih besar bila PK/PP/PKB/kebiasaan | Permenaker Pasal 4; SE 2026 | 2026-10-14 | — | **COCOK** |
+
+### 4.2 Waktu bayar & sanksi
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Dibayar paling lambat **7 hari sebelum hari raya** | Permenaker 6/2016 (abstrak JDIH); materi pokok | 2026-10-14 | «dibayarkan paling lambat tujuh hari sebelum hari raya keagamaan» | **COCOK** |
+| Dibayar penuh, tidak dicicil; denda keterlambatan 5 % | Permenaker Pasal 10–11 (skill); SE 2026 angka 7 | 2026-10-14 | — | **COCOK** |
+| Posko THR 2026 poskothr.kemnaker.go.id | SE M/3/2026 | 2026-10-14 | SE 2026 terbit & berlaku | **COCOK** |
+
+**Usulan teks (Akun B):** Tidak wajub; opsional cantumkan di README pembeli tautan SE 2026 PDF resmi JDIH untuk musim THR berikutnya.
+
+### 4.3 PPh 21 & BPJS (rujukan silang)
+
+| Klaim skill | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| THR = bruto PPh 21; TER bulan dibayar; Desember hitung ulang Pasal 17 | PMK 168/2023 (sudah diverifikasi C28 §1) | 2026-10-14 | **COCOK** |
+| THR bukan dasar iuran BPJS Ketenagakerjaan | PP 44/2015 Pasal 19 (skill) | 2026-10-14 | **COCOK** arah |
+
+---
+
+## Run berikutnya (C28) — setelah 20:00 UTC
+
+Urutan sisa: (5) `kontrak-kerja-pkwt`, (6) `kalender-pajak` — 2 skill per run.
