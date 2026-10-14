@@ -57,15 +57,20 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    ```bash
    python3 <folder-skill-ini>/scripts/buat_invoice.py --file invoice.json --html invoice-{nomor}.html --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
    ```
-   Tulis `{nomor}` apa adanya (jangan diganti tangan): script menggantinya dengan nomor dokumen yang sama dengan yang tampil di chat (`/` menjadi `-`; `001/INV/X/2026` → `invoice-001-INV-X-2026.html`). Untuk kuitansi pakai `kuitansi-{nomor}.html`. Nama berkas tidak boleh dikarang atau ditebak dari nomor lain; sebut ke pengguna nama yang dicetak script ("Versi HTML siap cetak disimpan di: …").
+   Tulis `{nomor}` apa adanya (jangan diganti tangan): script menggantinya dengan nomor dokumen yang sama dengan yang tampil di chat (`/` menjadi `-`; `001/INV/X/2026` → `invoice-001-INV-X-2026.html`). Untuk kuitansi pakai `kuitansi-{nomor}.html`. Nama berkas tidak boleh dikarang atau ditebak dari nomor lain; nama dan lokasi berkas hanya yang dicetak script pada baris `BERKAS: <path absolut>` (lihat langkah 3).
    - `--nomor-terakhir` → nomor terakhir + 1 (aturan ganti bulan/tahun di atas; `--urut-lanjut` bila nomor tidak di-reset).
    - `--counter-file nomor-invoice.json` → mencatat nomor yang sudah dibuat (+ nama pembeli) dan nomor urut per bulan; tanpa `--nomor-terakhir`, nomor diambil dari file ini. Nomor yang sudah dipakai pembeli lain tidak pernah dipakai ulang.
    - `--html <file>` → versi HTML siap cetak (buka di browser → Cetak → Simpan sebagai PDF); path boleh memuat `{nomor}` atau berupa folder (nama berkas otomatis dari nomor).
    - `--format json` → angka mentah.
    - Kuitansi DP/cicilan: isi `pembayaran` dengan uang yang diterima sekarang; kuitansi menampilkan uang diterima, baris diterima & sisa belum dibayar, dan **satu** terbilang untuk uang yang diterima.
-3. **Tulis invoice lengkap di balasan chat** (bagian Markdown di atas garis `---`, apa adanya: nomor, item, subtotal, DPP, PPN, TOTAL, info PPh 23 & estimasi diterima bersih, terbilang, rekening). Pengguna di Telegram/WhatsApp **tidak bisa membuka path file lokal**, jadi jangan hanya menyebut lokasi file. **Berkas HTML dibuat dan dilampirkan untuk SETIAP dokumen, invoice maupun kuitansi** (kuitansi DP/pelunasan tidak dikecualikan). Lampirkan ke chat bila platform mendukung kirim file; bila kanal tidak bisa melampirkan, sebut nama berkasnya saja dan tawarkan "balas 'kirim file'" (jangan hanya memberi path). Bagian "Info untuk penjual" **jangan** ikut dikirim ke pembeli; sampaikan ke pengguna sebagai catatan (meterai, PPN, PPh 23, peringatan) — salin angkanya apa adanya.
-4. Bila meterai wajib: ingatkan untuk menempel meterai Rp10.000 atau e-meterai sebelum tanda tangan.
+3. **Tulis invoice lengkap di balasan chat** (bagian Markdown di atas garis `---`, apa adanya: nomor, item, subtotal, DPP, PPN, TOTAL, info PPh 23 & estimasi diterima bersih, terbilang, rekening). Pengguna di Telegram/WhatsApp **tidak bisa membuka path file lokal**, jadi jangan hanya menyebut lokasi file. **Berkas HTML dibuat dan dilampirkan untuk SETIAP dokumen, invoice maupun kuitansi** (kuitansi DP/pelunasan tidak dikecualikan). Script mencetak path **absolut** berkas pada baris tersendiri `BERKAS: /path/absolut/invoice-….html` (atau `kuitansi-….html`): **lampirkan berkas dengan path persis dari baris itu** (salin huruf demi huruf; jangan menyusun, menebak, atau memperbaiki path sendiri). **Lampirkan dulu, di setiap kanal (Telegram/WhatsApp juga) dan untuk invoice maupun kuitansi.** Tawaran "balas 'kirim file'" hanya boleh bila percobaan melampirkan benar-benar gagal; jangan menawarkannya sebagai pengganti mencoba. Salin tabel ringkasan dari script apa adanya, termasuk baris judulnya. Bagian "Info untuk penjual" **jangan** ikut dikirim ke pembeli; sampaikan ke pengguna sebagai catatan (meterai, PPN, PPh 23, peringatan) — salin angkanya apa adanya.
+4. Meterai: salin kalimat "Bea meterai: …" dari script **apa adanya**; jangan membandingkan nominal dengan Rp5 juta sendiri atau merangkumnya ("di bawah/di atas" sudah dihitung script dari angka). Bila meterai wajib di dokumen ini, ingatkan menempel meterai Rp10.000 atau e-meterai sebelum tanda tangan.
 5. **Fallback tanpa Python:** hitung dengan rumus di bawah, tulis invoice dengan format yang sama, dan beri tahu pengguna bahwa angka dihitung manual (cek ulang sebelum dikirim).
+
+## UNTUK AGENT SAJA — lampiran & meterai (jangan dibacakan ke pengguna)
+- Lampiran: path berkas = isi baris `BERKAS:` dari keluaran script, apa adanya. Percobaan melampirkan dilakukan lebih dulu; "balas 'kirim file'" hanya setelah percobaan itu gagal. Berlaku untuk invoice dan kuitansi, di kanal chat mana pun.
+- Meterai: wajib bila nilai penerimaan uang **> Rp5.000.000** (Rp5.075.000 = di atas, kena; Rp5.000.000 pas = tidak). Kalimat meterai (termasuk penilaian sisa tagihan atau tiap termin) dihitung script; salin apa adanya ke catatan untuk pengguna, jangan menulis "di bawah Rp5 juta" dari kira-kira.
+- Angka hasil script disalin apa adanya; jangan menghitung ulang atau membulatkan sendiri.
 
 ## Rumus (untuk hitung manual)
 ```
@@ -80,9 +85,10 @@ PPh 23 (info)  = 2% × nilai jasa tanpa PPN (default subtotal setelah diskon, ta
                  dasar: UU PPh Pasal 23 ayat (1) huruf c & ayat (1a))
 sisa tagihan   = TOTAL − pembayaran yang sudah diterima
 termin persen  = TOTAL × persen, dibulatkan ke rupiah terdekat; termin terakhir = sisa agar jumlahnya pas
-Bea meterai    = wajib Rp10.000 bila dokumen menyatakan penerimaan uang > Rp5.000.000
+Bea meterai    = wajib Rp10.000 bila dokumen menyatakan penerimaan uang > Rp5.000.000 (DI ATAS Rp5 juta)
                  (kuitansi senilai uang diterima; invoice yang mencantumkan DP/pembayaran diterima)
-                 tepat Rp5.000.000 → tidak wajib
+                 Rp5.075.000 → di atas Rp5 juta → wajib; tepat Rp5.000.000 atau kurang → tidak wajib
+                 sisa tagihan juga dibandingkan dengan Rp5.000.000 untuk kuitansi pelunasan (dihitung script)
 ```
 Dasar aturan & sumber: `references/regulasi.md` (berlaku per 2026-09-23).
 
@@ -117,13 +123,13 @@ Catatan ke pengguna: DP Rp3.000.000 tidak melewati Rp5 juta, jadi meterai tidak 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka dari script; total, sisa tagihan, dan terbilang cocok.
 - [ ] Klien badan + jasa + disebut "potong PPh 23" → PPh 23 & estimasi diterima bersih ikut tampil (dari script).
-- [ ] Invoice lengkap ditulis di chat; file HTML dibuat & dilampirkan untuk setiap dokumen (invoice dan kuitansi) bila bisa; bila tidak, nama berkas disebut + tawaran "balas 'kirim file'" (bukan hanya path).
+- [ ] Invoice lengkap ditulis di chat; file HTML dilampirkan untuk setiap dokumen (invoice dan kuitansi) memakai path persis dari baris `BERKAS:`; tawaran "balas 'kirim file'" hanya bila percobaan lampir gagal (bukan hanya path).
 - [ ] Nama berkas HTML berasal dari nomor yang tampil di chat (`invoice-{nomor}.html`), bukan nomor lain.
 - [ ] PPN hanya muncul bila penjual PKP; tidak ada PPN untuk non-PKP.
 - [ ] Pengguna menyebut PKP → PPN 12% (DPP nilai lain 11/12) langsung dipakai tanpa bertanya, asumsi disebut; tidak ada tulisan "PPN 11%".
 - [ ] Nomor = nomor terakhir dari pengguna + 1 (cek baris "Nomor terakhir dibaca"), tidak dobel dengan invoice lain (`--counter-file` dipakai, PERHATIAN nomor disampaikan); jatuh tempo tidak lebih awal dari tanggal dokumen.
 - [ ] Tidak ada data karangan/tebakan: kota, nama & jabatan penanda tangan, alamat, dan "a.n." rekening yang tidak disebut tetap kosong/`[isi ...]` dan disampaikan ke pengguna (bukan diambil dari nama pemilik rekening atau nama usaha).
-- [ ] Penanda meterai sesuai (> Rp5.000.000 penerimaan uang).
+- [ ] Penanda meterai sesuai (> Rp5.000.000 penerimaan uang); kalimat meterai disalin dari script, bukan ditulis dari perkiraan (sisa Rp5.075.000 = di atas Rp5 juta).
 - [ ] Rekening & nama penerima benar; tidak ada data pribadi yang tidak diminta.
 - [ ] Bagian "Info untuk penjual" tidak ikut dikirim ke pembeli.
 

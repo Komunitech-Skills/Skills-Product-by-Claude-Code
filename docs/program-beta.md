@@ -3,9 +3,9 @@
 Tujuan: menguji skill di tangan **pengguna sungguhan** (pengusaha & profesional awam) sebelum dijual.
 
 ## Alur
-1. **Pilih skill**: status `beta` di `catalog.csv` (sudah lulus uji agent + uji platform asli).
+1. **Pilih skill**: status `beta` di `catalog.csv` (sudah lulus uji agent; uji platform asli dicatat di `platform_teruji` / `examples/UJI-PLATFORM.md`). **Batch VIP Oktober 2026:** fokus **10 skill** bernama di `docs/panduan-beta-tester.md` §5 (bukan seluruh baris `beta` di katalog).
 2. **Rekrut 5–10 member VIP** yang cocok dengan target skill (mis. skill marketplace → pemilik toko online). Campur pengguna OpenClaw, Codex, Claude Code, Cursor, dan Windows/Mac.
-3. **Kirim paket**: `python3 scripts/build.py --pembeli "Beta - <nama>" --skill <nama> --beta` (satu paket per orang; watermark tetap berlaku).
+3. **Kirim paket**: `python3 scripts/build.py --pembeli "Beta - <nama>" --vip --beta` (seluruh library + panduan tester; watermark tetap berlaku). Untuk uji satu skill saja: `--skill <nama> --beta`.
 4. **Masa uji ±7 hari.** Minta mereka memakai skill untuk pekerjaan nyata minimal 3 kali.
 5. **Kumpulkan masukan** dengan formulir di bawah (Google Form / WA).
 6. **Rangkum** di `skills/<nama>/examples/MASUKAN-BETA.md` (tanpa data pribadi: pakai "Beta 1", "Beta 2", dst.).

@@ -25,6 +25,7 @@ Contoh:
   python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007
   python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
   (--counter-file mencatat setiap nomor yang dibuat + nama pembeli agar invoice berikutnya tidak bernomor dobel)
+  (dengan --html, baris terakhir keluaran 'BERKAS: <path absolut>' = path yang dilampirkan ke chat; v1.0.7)
 """
 import argparse
 import datetime
@@ -42,7 +43,7 @@ from hitung_ppn import hitung_ppn_dari_dpp, parse_angka, format_rp, format_angka
 BATAS_METERAI = Decimal(5000000)
 TARIF_METERAI = Decimal(10000)
 TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.6"
+VERSI = "1.0.7"
 TARIF_PPH23_JASA = Decimal(2)   # UU PPh Pasal 23 ayat (1) huruf c; tanpa NPWP 100% lebih tinggi (ayat 1a)
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
               "Oktober", "November", "Desember"]
@@ -239,6 +240,27 @@ def nama_berkas_dari_nomor(nomor):
     '001/INV/X/2026' -> '001-INV-X-2026'."""
     t = re.sub(r"[^A-Za-z0-9._]+", "-", str(nomor)).strip("-.")
     return t or "tanpa-nomor"
+
+
+def kalimat_meterai_sisa(total, dibayar, sisa, termin):
+    """v1.0.7: kalimat meterai untuk uang yang MASIH akan diterima, dihitung dari angka (bukan dikira).
+    Pembanding: meterai Rp10.000 wajib bila nilai dokumen > Rp5.000.000 (di atas); tepat Rp5.000.000 tidak wajib.
+    Contoh: sisa Rp5.075.000 -> 'di atas Rp5.000.000' -> wajib. Agent menyalin kalimat ini apa adanya."""
+    if sisa <= 0 or total <= BATAS_METERAI:
+        return ""
+
+    def banding(nilai):
+        return "di atas Rp5.000.000" if nilai > BATAS_METERAI else "tidak lebih dari Rp5.000.000"
+
+    def akibat(nilai):
+        return "wajib bermeterai Rp10.000" if nilai > BATAS_METERAI else "tidak wajib meterai"
+
+    if termin:
+        bagian = ["{} {} ({}: {})".format(t["nama"], format_rp(t["jumlah"]), banding(t["jumlah"]),
+                                          akibat(t["jumlah"])) for t in termin]
+        return "Kuitansi tiap termin dinilai sendiri-sendiri: " + "; ".join(bagian) + "."
+    return "Sisa tagihan {} {}, jadi kuitansi pelunasan sekali bayar untuk sisa ini {}.".format(
+        format_rp(sisa), banding(sisa), akibat(sisa))
 
 
 def path_html(arg, jenis_dokumen, nomor):
@@ -446,18 +468,20 @@ def hitung(d):
     else:
         status = "BELUM DIBAYAR"
 
-    # bea meterai
+    # bea meterai (wajib bila penerimaan uang di dokumen > Rp5.000.000; tepat Rp5.000.000 tidak wajib)
     peringatan = []
+    kalimat_sisa = kalimat_meterai_sisa(total, dibayar, sisa, termin)
     if dibayar > BATAS_METERAI:
-        meterai = {"wajib": True, "nilai_penerimaan": dibayar,
-                   "pesan": "Dokumen ini menyatakan penerimaan uang {} (> Rp5.000.000). Bea meterai Rp10.000 "
-                            "terutang (UU 10/2020): tempel meterai atau bubuhkan e-meterai sebelum ditandatangani."
-                   .format(format_rp(dibayar))}
+        pesan = ("Dokumen ini menyatakan penerimaan uang {} (di atas Rp5.000.000). Bea meterai Rp10.000 "
+                 "terutang (UU 10/2020): tempel meterai atau bubuhkan e-meterai sebelum ditandatangani."
+                 .format(format_rp(dibayar)))
+        if kalimat_sisa:
+            pesan += " " + kalimat_sisa
+        meterai = {"wajib": True, "nilai_penerimaan": dibayar, "pesan": pesan}
     else:
         pesan = "Tidak perlu meterai: dokumen tidak menyatakan penerimaan uang di atas Rp5.000.000."
-        if total > BATAS_METERAI and dibayar < total:
-            pesan += (" Catatan: kuitansi/bukti lunas untuk pembayaran lebih dari Rp5.000.000 nanti wajib "
-                      "bermeterai Rp10.000.")
+        if kalimat_sisa:
+            pesan += " Catatan: " + kalimat_sisa
         meterai = {"wajib": False, "nilai_penerimaan": dibayar, "pesan": pesan}
     if sisa < 0:
         peringatan.append("Pembayaran ({}) melebihi total ({}). Kelebihan {} perlu dikembalikan atau dicatat "
@@ -826,7 +850,7 @@ def main(argv=None):
         h2["nomor"] = nomor
         h2["keterangan_nomor"] = keterangan_nomor
         h2["perlu_diisi"] = kolom_kosong(h)
-        h2["html_disimpan_ke"] = path_berkas
+        h2["html_disimpan_ke"] = os.path.abspath(path_berkas) if path_berkas else None
         print(json.dumps(h2, default=lambda x: x.isoformat() if isinstance(x, datetime.date) else ke_json(x),
                          ensure_ascii=False, indent=2))
     else:
@@ -863,9 +887,11 @@ def main(argv=None):
             print("- PERLU DIISI: {} belum diberikan, ditulis \"{}\" di dokumen. Tanyakan ke pengguna atau "
                   "biarkan ia mengisi sendiri; jangan dikarang.".format(", ".join(kosong), ISI))
         if path_berkas:
-            print("- Versi HTML siap cetak disimpan di: {} (nama berkas dari nomor {}). Lampirkan berkas ini ke chat "
-                  "untuk setiap dokumen (invoice maupun kuitansi); bila kanal tidak bisa melampirkan, sebut nama "
-                  "berkasnya dan tawarkan \"balas 'kirim file'\".".format(path_berkas, nomor))
+            print("- Versi HTML siap cetak sudah dibuat (nama berkas dari nomor {}). Lampirkan berkas ini ke chat "
+                  "untuk setiap dokumen (invoice maupun kuitansi) dengan path PERSIS seperti di baris BERKAS di "
+                  "bawah; jangan menyusun atau menebak path. Tawarkan \"balas 'kirim file'\" hanya bila "
+                  "percobaan melampirkan gagal.".format(nomor))
+            print("BERKAS: " + os.path.abspath(path_berkas))
     return 0
 
 

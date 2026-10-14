@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — C22 panduan beta run 3 → C23 konsistensi dokumen → C24 gelombang G18 (setelah persetujuan).
+1. **Akun C** — C24 gelombang G18 (satu gelombang per run); ulang pantau-cron lokal C22 bila router hidup (opsional).
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default (branch sudah disinkronkan fast-forward dari default di run 22:00 UTC).
 
@@ -41,6 +41,10 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~11:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 0a262790 | selesai ~11:12 UTC — LANGKAH NOL OK; merge default (+PR #130); getUpdates 242 kosong; C23 konsistensi 4 perbaikan teks | — | docs | ya |
+| 2026-10-14 ~11:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 11:00 UTC — KEY/BOT/TESTER SET; merge default (+PR #130); getUpdates 242 kosong; C23 | — | — | — |
+| 2026-10-14 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 150a000c | selesai ~10:55 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C22 6/7 skill panduan beta OK | — | docs | ya |
+| 2026-10-14 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 10:30 UTC — KEY/BOT/TESTER SET; merge default; C22 panduan beta run 3 | — | — | — |
 | 2026-10-14 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 509b247f | selesai ~10:08 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 selesai 13/13 platform Cursor | — | uji | ya |
 | 2026-10-14 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 10:00 UTC — KEY/BOT/TESTER SET; merge default; C21 4 skill tersisa | — | — | — |
 | 2026-10-14 ~09:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 763254ab | selesai ~09:35 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C21 seleksi-cv-pelamar 9/13 | — | uji | ya |
