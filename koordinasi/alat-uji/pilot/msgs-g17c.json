@@ -1,0 +1,10 @@
+[
+ {
+  "skill": "rencana-restok-barang",
+  "sisi": "sesudah",
+  "topic": 1471,
+  "text": "@KTclaude2bot Ini penjualan warung sembako saya per minggu, 8 minggu terakhir (minggu mulai hari Senin):\n\nMinggu | Beras 5 kg (karung) | Minyak Goreng 2 L | Gula Pasir 1 kg | Telur (kg) | Mie Instan (dus)\n17 Agu | 20 | 30 | 40 | 55 | 6\n24 Agu | 22 | 32 | 38 | 50 | 5\n31 Agu | 19 | 35 | 41 | 58 | 7\n7 Sep | 23 | 33 | 39 | 52 | 6\n14 Sep | 21 | 38 | 42 | 60 | 8\n21 Sep | 24 | 40 | 40 | 57 | 6\n28 Sep | 22 | 42 | 37 | 54 | 7\n5 Okt | 25 | 45 | 41 | 59 | 9\n\nStok sekarang: beras 9 karung, minyak 25, gula 30. Telur sama mie belum sempat saya hitung. Grosir langganan antar 2-3 hari. Saya harus belanja apa dan berapa?",
+  "gel": 17,
+  "note": "ulang kedua (terakhir) setelah patch 1.0.4 deteksi data mingguan (keputusan 74); pesan identik dengan topik 1444/1466"
+ }
+]
