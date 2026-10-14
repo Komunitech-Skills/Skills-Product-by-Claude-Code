@@ -69,8 +69,76 @@ Inventaris dari `references/sumber-pedoman.md` (tidak mengubah skill). Setiap ba
 
 ---
 
-## Run berikutnya (C29)
+## 3. `lowongan-kerja` — SE Menaker, UU PDP, UMK/PP 36/2021
 
-Urutan sisa: (3) `lowongan-kerja`, (4) `pengajuan-kur` (ganti slot kontrak — sudah C28), (5) `simulasi-cicilan-pinjaman`, (6) `harga-jual-marketplace` — 2 skill per run bila router masih 530.
+**Run Akun C:** 2026-10-14 ~22:00 UTC
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| SE Menaker **M/6/HK.04/V/2025** (28 Mei 2025), larangan syarat diskriminatif rekrutmen | https://jdih.kemnaker.go.id/peraturan/detail/2686/surat-edaran-menteri-nomor-6-tahun-2025 | 2026-10-14 | «Surat Edaran Menteri … M/6/HK.04/V/2025 … Tanggal Penetapan 28 Mei 2025 … LARANGAN - DISKRIMINASI - REKRUTMEN» | **COCOK** — selaras `references/anti-diskriminasi.md` & SKILL.md |
+| UU 13/2003 Pasal 5–6 (kesempatan/perlakuan sama) | C25 §1 + BPK UU 13/2003 | 2026-10-14 | Pasal 5–6 tidak diubah UU 6/2023 klaster ketenagakerjaan | **COCOK** |
+| UU 27/2022 — data pelamar = data pribadi; pemrosesan rekrutmen | C25 §4 (Pasal 4 ayat 2 data kesehatan); UU 27/2022 | 2026-10-14 | Skill merujuk UU PDP untuk retensi/hapus data pelamar | **COCOK** arah; **PERLU UBAH** (Akun B): cantum Pasal 20 (dasar pemrosesan) & Pasal 37–39 (hak/hapus) bila dipakai di SKILL, seperti usulan C25 |
+| Larangan upah di bawah UMK (UU 13/2003 Ps. 88E ayat 2 s.t.d.d. UU 6/2023) | UU 13/2003 (diubah UU 6/2023); PP 36/2021 Ps. 36–37 (pengecualian mikro/kecil) | 2026-10-14 | Skill sudah bedakan larangan umum vs pengecualian usaha mikro/kecil; angka UMK tidak dikarang | **COCOK** — tetap wajib `[isi: UMK]` & cek Disnaker setempat |
+| UU 8/2016 (disabilitas, kuota 1%/2%) | BPK UU 8/2016 (metadata skill) | 2026-10-14 | — | **COCOK** (nomor & arah); detail kuota **PERLU REVIEW** Akun B bila angka persen disebut di README |
+
+**Usulan teks (Akun B):** (1) Di `anti-diskriminasi.md`, tambah tautan JDIH resmi SE 2686 sebagai sumber primer. (2) Perkuat footnote UU PDP dengan pasal spesifik dari C25 §4. (3) README sudah benar menolak mengarang UMK — pertahankan.
+
+---
+
+## 4. `pengajuan-kur` — Permenko Perekonomian 1/2026
+
+**Run Akun C:** 2026-10-14 ~22:00 UTC (silang cek teks BPK PDF `2026PemenkoEkon001` + metadata JDIH BPK 342969)
+
+| Klaim skill (`references/regulasi.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Plafon KUR Mikro > Rp10 jt s.d. Rp100 jt per akad | Permenko 1/2026 Pasal 36 ayat (1) | 2026-10-14 | «… di atas Rp10.000.000 … paling banyak Rp100.000.000 … per akad» | **COCOK** |
+| Perdagangan non-ekspor: **maks. 2 akad**; akad ke-1 **6%**, ke-2 **7%** efektif/tahun | Pasal 36 ayat (3) huruf b; Pasal 37 ayat (1) huruf b | 2026-10-14 | «paling banyak 2 (dua) kali akad»; «6% … akad pertama» / «7% … akad kedua» | **COCOK** — inti jebakan skenario 2 skill |
+| Bunga = **efektif**; flat harus setara (bukan 6% flat = 6% efektif) | Pasal 37 ayat (1) (frasa flat/anuitas setara) | 2026-10-14 | Sama teks skill & script `--kur` | **COCOK** |
+| Tenor awal Mikro: modal kerja **3 th**, investasi **5 th** | Pasal 38 ayat (1) | 2026-10-14 | «paling lama 3 … modal kerja» / «5 … investasi» | **COCOK** |
+| Plafon ≤ Rp100 jt: **tanpa agunan tambahan** | Pasal 20 ayat (1) | 2026-10-14 | «Penyalur KUR tidak diperbolehkan mensyaratkan … agunan tambahan» | **COCOK** |
+| Nilai cair = nilai akad (tolak potongan/calo) | Pasal 13 ayat (2) | 2026-10-14 | «Jumlah KUR … harus sesuai dengan jumlah yang tercantum dalam akad» | **COCOK** |
+| NPWP wajib pinjaman Mikro **> Rp50 juta** | Pasal 34 ayat (1) huruf d | 2026-10-14 | «… di atas Rp50.000.000 … nomor pokok wajib pajak» | **COCOK** |
+| Usaha berjalan **≥ 6 bulan** (syarat calon) | Pasal 34 ayat (1) huruf a | 2026-10-14 | «… paling singkat 6 (enam) bulan» | **COCOK** |
+| Berlaku sejak **13 Januari 2026** | JDIH BPK Permenko 342969 | 2026-10-14 | «mulai berlaku pada tanggal 13 Januari 2026» | **COCOK** — skill sudah catat 2026-09-23 |
+
+**Usulan teks (Akun B):** Tidak wajub ubah angka; opsional perbarui tanggal «dicek» di `regulasi.md` ke 2026-10-14 setelah silang cek ini. Tetap cantumkan «tanpa biaya provisi» hanya sebagai **BELUM TERVERIFIKASI** (kata provisi tidak di teks Permenko) — sudah benar di skill.
+
+---
+
+## 5. `simulasi-cicilan-pinjaman` — Bunga flat vs efektif, OJK/BI
+
+**Run Akun C:** 2026-10-14 ~22:30 UTC
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Definisi flat vs efektif/anuitas; bandingkan lewat **bunga efektif setara (EIR/APR)** termasuk biaya di muka | `references/istilah-dan-jebakan.md`, `SKILL.md` | — | Skill memaksa konversi flat ke efektif setara sebelum membandingkan penawaran | **COCOK** arah edukasi konsumen |
+| Batas manfaat ekonomi pinjol/LPBBTI konsumtif **0,1%/hari** sejak 1 Jan 2026 (tenor > 6 bulan di catatan skill) | SEOJK **19/SEOJK.06/2023** Pasal VI angka 3 huruf b (PDF OJK) | 2026-10-14 | Konsumtif tenor **< 1 tahun**: 0,3%→0,2%→**0,1% per hari kalender** berlaku sejak **1 Januari 2026**; produktif **0,067%/hari** sejak 1 Jan 2026 | **COCOK** angka 0,1% & 0,067%; **PERLU UBAH** teks skill: batas konsumtif di SEOJK = tenor **kurang dari 1 tahun**, bukan hanya «> 6 bulan» (penyesuaian tenor ≤6 vs >6 bulan ada di FAQ OJK terpisah — skill sudah arahkan «cek ojk.go.id» bila ragu) |
+| Manfaat ekonomi = bunga + admin/komisi/fee + biaya lain (selain denda, meterai, pajak) | SEOJK 19/2023 Pasal VI angka 2 | 2026-10-14 | Sama definisi agregat | **COCOK** |
+| Bank/leasing wajib transparansi **konversi flat → efektif** di offering letter | POJK **13/2024** Pasal 12 & ketentuan offering letter (transparansi SBDK BUK) | 2026-10-14 | «…pemberitahuan konversi suku bunga flat setara efektif» | **COCOK** — skill selaras untuk kredit bank/KPR; **usulan Akun B:** satu kalimat rujuk POJK 13/2024 di `istilah-dan-jebakan.md` (bukan wajib untuk leasing non-bank) |
+| SEOJK 34/2017 transparansi bunga kredit | OJK halaman regulasi SEOJK 34/2017 | 2026-10-14 | Masih tersedia sebagai regulasi transparansi (POJK 13/2024 melengkapi SBDK) | **COCOK** sebagai konteks historis |
+
+**Usulan teks (Akun B):** (1) Sesuaikan baris pinjol di `istilah-dan-jebakan.md`: «konsumtif tenor < 1 tahun» + tetap «cek aturan OJK terbaru» untuk tenor ≤6 bulan. (2) Opsional: footnote POJK 13/2024 untuk kredit perbankan.
+
+---
+
+## 6. `harga-jual-marketplace` — Biaya platform & PPh 22
+
+**Run Akun C:** 2026-10-14 ~22:30 UTC
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Skill **tidak menyimpan** tarif admin Shopee/Tokopedia; pengguna isi dari Seller Centre | `references/regulasi.md`, `SKILL.md` | — | «Semua persentase … diisi pengguna dari Seller Center» | **COCOK** — menghindari angka usang |
+| Shopee Non-Star: Biaya Administrasi Final **2,50%–10,00%** per kategori (× harga setelah diskon penjual); berlaku mulai **1 Agustus 2026** untuk upload produk pertama ≥ 1 Agt 2026; ada juga Biaya Proses Pesanan & program opsional | Pusat Edukasi Penjual Shopee — artikel **3273** & **28137** (Kalkulator Biaya) | 2026-10-14 | «Biaya Administrasi Final … x 10,00%/…/2,50%»; «Mulai 1 Agustus 2026»; komponen wajib = Biaya Administrasi + Biaya Proses Pesanan | **COCOK** — skill benar mengarahkan ke Seller Centre/Kalkulator Biaya, bukan mengarang satu angka |
+| Tokopedia: tarif komisi per kategori | Seller Tokopedia | 2026-10-14 | Halaman edu Tokopedia tidak terbaca otomatis run ini (SPA/kosong) | **PERLU REVIEW** — pertahankan kebijakan «isi manual dari Seller Centre»; Akun B boleh tambah URL edu resmi bila ditemukan |
+| PPh 22 marketplace **0,5%** peredaran bruto; mulai **1 Oktober 2026**; pemungut Shopee, Tokopedia, Lazada, Blibli; omzet OP ≤ **Rp500 juta**/tahun + surat pernyataan = tidak dipungut | DJP Siaran Pers **SP-23/2026** (1 Okt 2026); PMK 37/2025 (rujukan skill) | 2026-10-14 | «…0,5 persen dari peredaran bruto…»; «…mulai dilaksanakan pada 1 Oktober 2026»; empat PT pemungut; pengecualian omzet ≤ Rp500 juta | **COCOK** dengan `regulasi.md` skill |
+| Dasar pungutan PPh 22 vs voucher/diskon | PMK 37/2025 + FAQ DJP v2.0 (skill sudah tandai PERLU REVIEW) | 2026-10-14 | Skill jujur «Belum tegas — PERLU REVIEW» | **COCOK** — jangan ubah hitungan sampai penegasan resmi |
+
+**Usulan teks (Akun B):** (1) Di README, sebut contoh Shopee: «cek artikel Biaya Administrasi Non-Star & Kalkulator Biaya di seller.shopee.co.id/edu» (tanpa menempel persentase tetap). (2) Setelah Tokopedia edu terbaca, tambah pointer serupa. (3) Pertahankan disclaimer PPh 22 dasar bruto/voucher.
+
+---
+
+## C29 selesai (6/6)
+
+**2026-10-14 ~22:30 UTC** — semua skill urutan C29 terverifikasi laporan. Revisi teks skill/katalog tetap **Akun B**.
 
 Smoke router → **C24 G18** bila HTTP 200 (pesan 2–10 `msgs-g18.json` belum terkirim).
