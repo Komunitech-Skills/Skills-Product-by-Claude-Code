@@ -1,0 +1,6 @@
+{"kebutuhan": {"qty": 180, "satuan": "kg", "butuh_dalam_hari": 6},
+ "pemasok": [
+  {"nama": "CV Lancar Jaya", "harga": "385rb", "isi_kemasan": 15, "tingkat_harga": "12: 380rb", "moq": 10, "ongkir": "8rb/karton", "ppn": "termasuk", "lead_time": "2 hari", "termin": "tempo 14 hari"},
+  {"nama": "Toko Sumber Rejeki", "harga": "24.900", "ppn": "non-pkp", "lead_time": "besok", "termin": "COD"},
+  {"nama": "PT Margarindo Prima", "harga": "23.800", "moq": 200, "ongkir": "franco", "ppn": "belum", "lead_time": "4-5 hari kerja", "termin": "DP 30% pelunasan 30 hari setelah barang diterima"}
+ ]}

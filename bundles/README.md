@@ -6,10 +6,10 @@ tidak boleh masuk bundle ecer (dicek otomatis oleh build.py).
 
 | Bundle | Isi (jumlah skill) | Total harga ecer usulan | Harga bundle usulan | Untuk siapa |
 |---|---|---|---|---|
-| paket-toko-online | 15 | Rp1.486.000 | Rp449.000 | Seller marketplace & toko online |
-| paket-admin-keuangan | 14 | Rp1.367.000 | Rp449.000 | Admin/pemilik yang mengurus invoice, piutang, pajak UMKM |
-| paket-gaji-hr | 7 | Rp893.000 | Rp349.000 | Usaha dengan karyawan (gaji, PPh 21, THR, absensi) |
-| paket-kafe-warung | 8 | Rp892.000 | Rp349.000 | Kafe, warung, kedai (kasir lokal + stok + konten) |
+| paket-toko-online | 16 | Rp1.575.000 | Rp449.000 | Seller marketplace & toko online |
+| paket-admin-keuangan | 15 | Rp1.446.000 | Rp449.000 | Admin/pemilik yang mengurus invoice, piutang, pajak UMKM |
+| paket-gaji-hr | 8 | Rp972.000 | Rp349.000 | Usaha dengan karyawan (gaji, PPh 21, THR, absensi) |
+| paket-kafe-warung | 10 | Rp1.060.000 | Rp349.000 | Kafe, warung, kedai (kasir lokal + stok + konten) |
 | paket-kantor | 8 | Rp593.000 | Rp199.000 | Admin kantor & sekretaris |
 | paket-klinik | 7 | Rp594.000 | Rp249.000 | Klinik pratama/gigi/kecantikan, praktik mandiri |
 | paket-konsultan-freelancer | 10 | Rp940.000 | Rp349.000 | Konsultan, agensi, freelancer B2B |
@@ -35,6 +35,8 @@ Penjualan nyata menunggu: status skill `rilis` + `tier_final`/`harga_final_idr` 
 - `paket-toko-online` + `balas-chat-cs`, `crm-wa` (kini 15 skill); `paket-kantor-manajemen` + `slip-gaji-bpjs`, `pph21-ter` (kini 20 skill). Harga bundle tetap: **disetujui pemilik 2026-10-03**.
 - `caption-sosmed-umkm` dan `brainstorming-ide-usaha` diarsipkan (status `arsip`); `caption-sosmed-umkm` dikeluarkan dari `paket-kafe-warung` (kini 8 skill, harga tetap Rp349.000).
 - Jumlah & total ecer di tabel untuk bundle yang berubah dihitung ulang dari `harga_usulan_idr` (`paket-kafe-warung` sebelumnya tercatat 7/Rp694.000, tidak sesuai isi file; kini disinkronkan).
+
+**Keputusan otomatis 71 (2026-10-14, mode no. 30):** tiga skill baru yang lulus uji sebelum/sesudah ditempatkan ke bundle tanpa mengubah harga bundle: `panduan-wawancara-kerja` → `paket-gaji-hr` (kini 8 skill); `rencana-restok-barang` → `paket-toko-online` (16) & `paket-kafe-warung`; `bandingkan-pemasok-vendor` → `paket-admin-keuangan` (15) & `paket-kafe-warung` (kini 10). Status ketiganya `beta` (build bundle menolak anggota `lulus`); tampil di bot Telegram uji direncanakan gelombang 17. Batalkan dengan "batal 71".
 
 Bundle baru (2026-09-29, harga bundle belum diusulkan — menunggu pemilik):
 - `paket-kantor-manajemen` (20 skill) adalah **subset** dari `solusi-vip/kantor-manajemen/`.

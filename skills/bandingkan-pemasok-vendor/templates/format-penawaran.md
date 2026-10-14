@@ -29,7 +29,7 @@ Judul kolom bebas huruf besar/kecil. Kolom yang tidak ada boleh dihapus.
 | biaya lain | Biaya lain yang ditagih pemasok (packing kayu, setup cetak) | 50rb |
 | biaya sendiri | Biaya yang Anda keluarkan sendiri (ambil barang, bongkar) | 30rb |
 | lead time | Hari sampai barang tiba (`3-5 hari`, `2 minggu`, `5 hari kerja`) | 5-7 hari |
-| termin | `COD`, `tempo 30 hari`, `DP 50% sisa H+30`, `bayar di muka` | DP 50% |
+| termin | Tulis apa adanya: `COD`, `tempo 30 hari`, `DP 30% sisa 30 hari`, `DP 50% pelunasan saat barang tiba`, `bayar di muka` | DP 50% |
 | kualitas | Penilaian Anda 1-5 (sampel, pengalaman, garansi) | 4 |
 | garansi | Garansi/retur yang dijanjikan | retur cacat 7 hari |
 | catatan | Hal lain ("harga bisa berubah", "harga sampel") | harga berlaku s.d. 31 Okt |

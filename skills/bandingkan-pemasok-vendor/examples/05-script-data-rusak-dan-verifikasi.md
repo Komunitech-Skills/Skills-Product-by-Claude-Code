@@ -1,54 +1,64 @@
-# 05 - Script: data skenario 1 & 2, data rusak, kasus batas, verifikasi angka independen
+# 05 - Script 1.0.1: data skenario, data rusak, kasus batas, verifikasi angka independen
 
-- **Tanggal:** 2026-10-14 · **Penguji:** agent penguji independen Komunitech (bukan pembuat)
-- **Regresi:** `python3 tests/uji_regresi.py` → **47 uji OK** (2,3 detik).
-- **Cara verifikasi:** semua angka dihitung ulang dengan `data/verifikasi-penguji.py` (tulisan penguji, `decimal.Decimal`, tidak memakai kode skill): biaya sampai di tempat, per unit, PPN 11% (= 12% × 11/12) dibulatkan ke bawah sekali, pemecahan harga termasuk PPN, selisih %, skor tertimbang, sensitivitas 2×, bagi 70/30.
+- **Tanggal:** 2026-10-14 (putaran 2) · **Penguji:** agent penguji independen Komunitech (bukan pembuat)
+- **Audit keamanan 1.0.1:** tidak ada impor baru (argparse, csv, io, json, re, sys, decimal); hanya membaca `--file`/`--data`/stdin; tanpa jaringan, tanpa menulis file, tanpa eval/exec/subprocess.
+- **Regresi:** `python3 tests/uji_regresi.py` → **66 uji OK** (3,6 detik).
+- **Cara verifikasi:** `data/verifikasi-penguji-1.0.1.py` (+ `data/verifikasi-penguji.py` putaran 1), ditulis penguji dengan `decimal.Decimal` tanpa memakai kode skill.
 
-## A. Data skenario 1 (tepung 600 kg, tenggat 5 hari) - `data/s1-tepung-penguji.json`
-Pemetaan penguji: Sentosa `harga 118rb, isi_kemasan 10, tingkat "51: 5%"` ("di atas 50 dus" = mulai 51 dus), ongkir 100rb, 2-3 hari, COD; Mitra PKP belum PPN, MOQ 300, ongkir 150rb ditagih di invoice, 3-4 hari, tempo 30; Berkah non-PKP franco, 5-7 hari, transfer penuh di muka.
-
-| Angka | Script | Hitung ulang penguji | Cocok |
+## A. Skenario 1 (tepung 600 kg, tenggat 5 hari) - `data/s1-tepung-penguji.json`
+| Angka | Script 1.0.1 | Hitung ulang penguji | Cocok |
 |---|---|---|---|
-| Sentosa: 60 dus × 118.000 = 7.080.000; diskon 5% 354.000; + ongkir 100.000 | Rp6.826.000 (Rp11.377/kg) | 6.826.000 (11.376,67) | ✔ |
-| Mitra: DPP 6.720.000 + 150.000 = 6.870.000; PPN ⌊11%⌋ | PPN Rp755.700 → Rp7.625.700 (Rp12.710/kg) | 755.700 (12%×11/12 juga 755.700) → 7.625.700 | ✔ |
-| Berkah: 600 × 11.900 | Rp7.140.000 | 7.140.000 | ✔ |
-| Selisih vs termurah | +Rp799.700 (+11,7%); +Rp314.000 (+4,6%) | 799.700 (11,7%); 314.000 (4,6%) | ✔ |
-| Skor (40/20/15/15/10) | 86,5 / 85,8 / 63,0 (Berkah telat → lead 0) | 86,50 / 85,81 / 62,99 | ✔ |
-| Potensi PPN Sentosa (status PKP tidak disebut) | Rp750.860 | 750.860 | ✔ |
-| Jumlah 2× (1.200 kg) | 13.552.000 / 15.084.900 / 14.280.000 | sama | ✔ |
-| Bagi 70/30 (Sentosa 420 kg tanpa diskon + Mitra 180 kg → beli 300 MOQ) | Rp8.952.100, tambahan Rp2.126.100 (+31,1%) | 5.056.000 + 3.896.100 = 8.952.100; +31,1% | ✔ |
-| Sentosa telat 7 hari → 10 hari > 5 | rekomendasi BERUBAH ke Mitra | benar (Berkah juga telat) | ✔ |
+| Total Sentosa / Mitra / Berkah | 6.826.000 / 7.625.700 / 7.140.000 | sama | ✔ |
+| Kolom selisih | "termurah sementara" / "lebih mahal Rp799.700 (11,7%)" / "lebih mahal Rp314.000 (4,6%)" | 799.700 (11,7%); 314.000 (4,6%) | ✔ |
+| Skor | 86,5 / 85,8 / 63,0 | 86,50 / 85,81 / 62,99 | ✔ |
+| "Sentosa lebih MURAH Rp314.000 daripada CV Berkah" | arah & nilai | benar | ✔ |
+| "Bila Sentosa telat 7 hari → pindah ke PT Mitra, yang lebih MAHAL Rp799.700 (11,7%) daripada Sentosa" | arah & nilai | benar (Berkah juga telat) | ✔ |
+| Bagi 70/30 | Rp8.952.100, "lebih MAHAL Rp2.126.100 (31,1%)" | 5.056.000 + 3.896.100; 31,1% | ✔ |
+| **Bila Sentosa PKP & belum PPN** | total 7.576.860 (naik 750.860); "Sentosa lebih MURAH Rp48.840 daripada PT Mitra; rekomendasi berubah menjadi PT Mitra (unggul di termin)" | 6.826.000 + ⌊11% × 6.826.000⌋ = 7.576.860; 7.625.700 − 7.576.860 = 48.840; skor Mitra 87,45 vs Sentosa 84,19 (CV Berkah jadi termurah keseluruhan tetapi telat); Mitra unggul hanya di termin (100 vs 50) | ✔ benar dan masuk akal (tempo 30 hari atas ±Rp7,6 jt > Rp48.840) |
+| Asumsi pajak PPN atas ongkir Mitra | Rp16.500 | ⌊11% × 6.870.000⌋ − ⌊11% × 6.720.000⌋ = 755.700 − 739.200 | ✔ |
 
-Bila ongkir Mitra **tidak** ikut DPP (ditagih sebagai penggantian biaya ekspedisi), PPN = 739.200 dan total 7.609.200 (beda Rp16.500). Ini yang dipakai model dasar di sisi SEBELUM; lihat PERLU REVIEW di HASIL-UJI.
-
-## B. Data skenario 2 (box kue 1.000 pcs, tenggat 7 hari) - `data/penawaran-box-kue.csv`
-
-| Pemasok | Script | Penguji | Catatan |
+## B. Skenario 2 (box kue 1.000 pcs, tenggat 7 hari, bobot cepat 20/50/10/10/10) - `data/penawaran-box-kue.csv`
+| Angka | Script | Penguji | Cocok |
 |---|---|---|---|
-| Percetakan Box Mandiri (PKP, sudah termasuk PPN, tingkat 1.000 tepat di batas) | 1.000 × 2.100 + 120.000 = Rp2.220.000; DPP 2.000.000, PPN 220.000, sisa 0; **telat** (10 > 7) | sama | ✔ tingkat tepat di batas berlaku |
-| Toko Kemasan Kilat (Rp135.000/pak isi 50, MOQ 5 pak, ongkir 15rb/pak) | 1.000 × 2.700 + 20 pak × 15.000 = Rp3.000.000 | 3.000.000 | ✔ per pak → per pcs benar |
-| UD Karton Jaya (loco, "3-5 hari kerja") | Rp2.400.000 + `[isian: biaya ambil]`; 5 hari kerja → 7 hari kalender (masuk tenggat) | sama | ✔ |
-| CV Pack Nusantara (PKP belum PPN, franco) | 2.300.000 + PPN 253.000 = Rp2.553.000 | sama | ✔ |
-| Skor bobot default | Pack 76,8 · Kilat 76,1 · Karton 72,0 · Mandiri 68,3 → rekomendasi Pack ("hampir seri" 0,7) | 76,78 / 76,10 / 72,00 / 68,25 | ✔ |
-| Skor bobot "cepat" (lead 40, biaya 30, termin 10, kualitas 15, MOQ 5) | Kilat 81,2 · Pack 63,1 · Karton 59,1 · Mandiri 51,2 → rekomendasi Kilat | 81,20 / 63,09 / 59,08 / 51,17 | ✔ |
+| Total Kilat / Pack / Karton / Mandiri | 3.000.000 / 2.553.000 / 2.400.000 / 2.220.000 (telat, DPP 2.000.000) | sama | ✔ |
+| Skor | 85,8 / 57,9 / 54,3 / 42,2 | 85,80 / 57,89 / 54,33 / 42,17 | ✔ |
+| "Kilat lebih MAHAL Rp600.000 (25,0%) daripada Karton Jaya" | | 600.000 ÷ 2.400.000 = 25,0% | ✔ |
+| Batas biaya ambil Karton Jaya vs CV Pack Nusantara | Rp153.000 | 2.553.000 − 2.400.000 | ✔ |
+| Bagi 70/30 | Rp2.820.000, "lebih MURAH Rp180.000" (tanda "+-" sudah hilang) | 2.100.000 + 720.000 | ✔ |
+| CSV `belum` (CV Pack Nusantara) | PKP belum termasuk PPN; **tidak** masuk `DATA BELUM ADA` | | ✔ (cacat 1.0.0 diperbaiki) |
 
-## C. Data rusak & kasus batas
+## C. Skenario 1V (data baru: margarin 180 kg, tenggat 6 hari) - `data/s1v-margarin-penguji.json`
+| Angka | Script | Penguji | Cocok |
+|---|---|---|---|
+| Lancar Jaya: 12 karton × 380.000 + 12 × 8.000, PPN termasuk | 4.656.000; DPP 4.194.595, PPN 461.405, sisa 0 | sama (DPP 4.194.596 akan melebihi) | ✔ |
+| Sumber Rejeki: 180 × 24.900, ongkir belum diketahui | 4.482.000 "termurah sementara" | 4.482.000 | ✔ |
+| Margarindo: MOQ 200 × 23.800 + PPN | 5.283.600; sisa 20 kg, modal tertahan 528.360; "4-5 hari kerja" = 7 hari → telat | 4.760.000 + 523.600; 26.418 × 20 | ✔ |
+| Selisih & skor | +174.000 (3,9%), +801.600 (17,9%); 86,5 / 81,8 / 64,2 | 3,9% / 17,9%; 86,50 / 81,84 / 64,16 | ✔ |
+| **Batas ongkir Sumber Rejeki** | maks. Rp174.000 untuk 180 kg (Rp966,67/kg) | 4.656.000 − 4.482.000 (non-PKP, ongkir tanpa PPN) | ✔ |
+| 2x / bagi 70/30 | 8.964.000; 7.067.400, lebih MAHAL 2.585.400 (57,7%) | Lancar Jaya 54 kg → wajib 10 karton (150 kg, tanpa harga tingkat) | ✔ |
 
-| Uji | Hasil script | Penilaian |
+## D. Skenario 3 & 4
+- Gula, `--qty 1 --barang "gula pasir"`: Makmur Rp15.500 "termurah sementara", Sinar lebih mahal Rp700 (4,5%), batas ongkir Rp700 per kg, tanpa potensi PPN + catatan PP 49/2022. ✔ (10 kg → Rp7.000; 50 kg → Rp35.000)
+- Kertas, `--pilihan "Sinar ATK"`: peringkat 1 Toko Kertas Abadi (85,8). "CV Sinar ATK ... peringkat 2: lebih MURAH Rp50.000 daripada Toko Kertas Abadi; skor 83,3 vs 85,8; unggul di biaya, termin; kalah di lead time". Bagi 70/30 Rp2.762.500 = lebih MAHAL Rp37.500 daripada semua dari Abadi. ✔ (penguji: 85,77 / 83,33; 1.907.500 + 855.000)
+
+## E. Data rusak & kasus batas (1.0.1)
+| Uji | Hasil | Penilaian |
 |---|---|---|
-| Kolom kosong (hanya nama + harga) | dihitung; ongkir, status PKP (potensi PPN Rp396.000), lead time, termin masuk `DATA BELUM ADA` | ✔ |
-| Harga kosong pada 1 baris | baris itu `DILEWATI` + alasan; lainnya tetap dihitung | ✔ |
-| MOQ 500 untuk kebutuhan 300 | beli 500, kelebihan 200 kg, modal tertahan Rp2.120.000, per kg kebutuhan Rp17.667 | ✔ (10.600 × 200) |
-| Tingkat tepat di batas (300 → Rp10.000) | 300 kg pakai harga tingkat | ✔ |
-| 1 di bawah batas (299) | "beli 300 (+1) LEBIH MURAH total (-Rp289.000)" | ✔ 3.289.000 − 3.000.000 |
-| Diskon % per dus di batas (Sentosa 500 / 505 / 510 kg) | 500 kg = 50 dus tanpa diskon Rp6.000.000 + saran 510 kg lebih murah (Rp5.817.100); 505 → naik ke 510 (kelipatan dus) | ✔ |
-| Minimal belanja Rp1 jt + diskon 5% + MOQ "2 lusin" | beli 43 pcs (1.075.000 − 53.750 ≥ 1 jt), total Rp1.041.250 | ✔ |
-| PKP "sudah termasuk PPN" 77 × 12.345 = 950.565 | DPP 856.365, PPN 94.200, sisa 0 (DPP terbesar) | ✔ (856.366 akan melebihi) |
-| PKP vs non-PKP, pembeli PKP | PPN dikreditkan; biaya bersih 856.365 / 872.000 / 885.500; +1,8% / +3,4% | ✔ |
-| JSON rusak, qty 0, data kosong, bobot "murah=50" | kode keluar 2 + `error` + `saran` bahasa awam | ✔ |
-| Semua baris rusak (harga negatif, DP 150%, MOQ "5 dus" tanpa isi) | kode 2, ketiga alasan disebut | ✔ |
+| `templates/contoh-penawaran.csv` (kolom `ppn` = `belum`) | `DATA BELUM ADA` hanya untuk Toko Grosir Abadi (ongkir, status PKP); CV Kemasan Prima tidak lagi ditanya | ✔ |
+| Kolom `ppn` tidak dikenal ("mungkin") | baris `DILEWATI` + saran kamus (termasuk/belum/non-pkp/bebas/?) | ✔ |
+| Kolom kosong, MOQ 500 untuk 300, tingkat tepat di batas, harga kosong | sama dengan putaran 1 (3.000.000 / 3.600.000 / 5.300.000; D dilewati); "walau tanpa ongkir, A Kosong lebih MAHAL Rp600.000" | ✔ |
+| PKP termasuk vs belum vs non-PKP, pembeli PKP | 856.365 / 872.000 / 885.500; asumsi PPN atas ongkir Rp2.750 + syarat pengkreditan ditulis | ✔ |
+| `--bebas-ppn ya` | PPN tidak ditambahkan untuk pemasok `belum` | ✔ |
+| JSON rusak, qty 0, semua baris rusak, bobot "murah=50" | kode 2 + `error` + `saran` | ✔ |
 
-## D. Cacat script yang ditemukan (angka tetap benar)
-1. **"belum" dibaca "tidak diketahui".** Kolom `harga termasuk ppn` = `belum` (persis seperti di `templates/contoh-penawaran.csv` dan contoh JSON di `templates/format-penawaran.md`) masuk daftar KOSONG, sehingga muncul `DATA BELUM ADA: harga sudah/belum termasuk PPN` padahal pemasok sudah menulis "belum termasuk PPN". Angka tidak berubah (default = belum termasuk), tetapi agent bisa mengajukan pertanyaan yang tidak perlu ke pengguna/pemasok. Terjadi juga pada CSV skenario 2 (CV Pack Nusantara). Teks `belum termasuk` terbaca benar.
-2. **Bagi pesanan lebih murah ditulis "tambahan -Rp45.900 (+-1,8%)"** (skenario 2, bobot default; bobot cepat: "-Rp180.000 (+-6,0%)"). Angkanya benar, tetapi tanda "+-" membingungkan; seharusnya "lebih hemat Rp45.900 (1,8%)". Pada kasus ini cadangan (UD Karton Jaya) loco dan biaya ambilnya belum dihitung, jadi "lebih hemat" pun belum pasti.
-3. Pemasok yang status PKP-nya tidak disebut tetap diberi "potensi PPN". Untuk barang kebutuhan pokok yang dibebaskan PPN (mis. gula konsumsi, beras, telur) baris ini bisa menyesatkan; lihat PERLU REVIEW.
+## F. Cacat script yang tersisa (1.0.1)
+1. **Termin "DP 30% sisa 30 hari" / "DP 30% pelunasan 30 hari" (tanpa kata "tempo"/"setelah") dibaca diam-diam sebagai pelunasan saat barang tiba.** Tempo hilang tanpa peringatan dan tanpa catatan "termin tidak terbaca". Ini terjadi nyata di skenario 1V Telegram: skor Margarindo 58,9, seharusnya 64,2. Rupiah dan peringkat tidak berubah. Varian "sisa tempo 30 hari" dan "30 hari setelah barang diterima" terbaca benar.
+2. Baris rincian menampilkan harga per kg yang sudah dibulatkan, sehingga perkaliannya tidak cocok. Contoh: "Beli 180 kg x Rp25.333 = Rp4.560.000", padahal 180 × 25.333 = 4.559.940. Subtotal benar (380.000/15 tidak dibulatkan dalam hitungan); hanya tampilannya yang membingungkan bila disalin.
+3. Tanpa `--barang`, catatan umum PP 49/2022 ("beberapa bahan pokok dibebaskan PPN") muncul untuk barang yang jelas bukan bahan pokok (contoh: kertas/kolom kosong). Tidak salah, tetapi menambah kebisingan.
+4. Untuk input per 1 satuan tanpa lead time (skenario 3), baris "jumlah 2x" dan "telat 7 hari" tidak bermakna.
+
+## Riwayat: putaran 1 (1.0.0)
+Regresi 47 uji OK; semua angka script 1.0.0 cocok 100%. Tiga cacat script, semuanya **sudah diperbaiki di 1.0.1**:
+1. Nilai `belum` dibaca "tidak diketahui".
+2. Bagi pesanan yang lebih murah ditulis "tambahan -Rp… (+-…%)".
+3. Potensi PPN ditambahkan untuk bahan pokok yang dibebaskan PPN.

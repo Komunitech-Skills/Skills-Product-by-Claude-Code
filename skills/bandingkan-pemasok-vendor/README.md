@@ -2,26 +2,42 @@
 
 **Tempel penawaran dari beberapa pemasok, dapatkan total biaya sampai di tempat, pilihan terbaik beserta alasannya, dan pesan WA siap kirim untuk menawar atau menanyakan yang belum jelas.**
 
+Diuji AI penguji independen di OpenClaw: 6,5 → 8,2 dari 10. Pembedanya: tanpa skill, AI sempat menyebut pemasok yang total biayanya lebih mahal sebagai "paling hemat"; dengan skill, setiap selisih ditulis "A lebih murah/mahal Rp… daripada B", ditambah batas ongkir bila ongkir pemasok belum diketahui.
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor; langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk hitungan yang tepat; tanpa Python skill tetap berjalan, AI menghitung langsung tetapi angkanya sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tahu uang yang benar-benar keluar**, bukan cuma harga satuan: harga grosir bertingkat, minimal order, isi per dus, ongkir, PPN, dan biaya lain dihitung untuk jumlah yang Anda butuhkan.
-- ✅ **Tidak tertipu harga "belum PPN"**: pemasok yang sudah PKP (memungut PPN) dan yang belum dibandingkan setara; bila usaha Anda sendiri PKP, PPN yang bisa dikreditkan ikut diperhitungkan.
+- ✅ **Lebih sulit terjebak harga "belum PPN"**: pemasok yang sudah PKP (memungut PPN) dan yang belum dibandingkan setara; bila usaha Anda sendiri PKP, PPN yang bisa dikreditkan ikut diperhitungkan.
 - ✅ **Pilihan terbaik dengan alasan jelas**: nilai gabungan biaya, kecepatan kirim, termin bayar (DP/tempo/COD), kualitas, dan fleksibilitas minimal order; bobotnya bisa Anda ubah sesuai prioritas.
-- ✅ **Tahu kapan pilihan berubah**: bila jumlah beli jadi 2 kali, bila pemasok termurah telat, bila pesanan dibagi ke dua pemasok, atau bila status PPN pemasok ternyata berbeda. Setiap selisih ditulis jelas: siapa lebih murah atau lebih mahal daripada siapa, dan berapa.
-- ✅ **Data belum lengkap tetap berguna**: bila ongkir belum diketahui, Anda diberi batas ongkir maksimal agar pemasok itu masih lebih murah (mis. "maksimal Rp700 per kg").
-- ✅ **Pesan WA siap kirim** untuk menanyakan ongkir/PPN/garansi dan menawar secara sopan, tanpa klaim palsu.
+- ✅ **Tahu kapan pilihan berubah**: bila jumlah beli jadi 2 kali, bila pemasok termurah telat, bila pesanan dibagi ke dua pemasok, atau bila status PPN pemasok ternyata berbeda.
+- ✅ **Data belum lengkap tetap berguna**: bila ongkir belum diketahui, Anda diberi batas ongkir maksimal agar pemasok itu masih tidak lebih mahal (mis. "maksimal Rp700 per kg"), lalu pesan WA untuk menanyakannya.
 
 ## Cocok untuk siapa
-- Pemilik kafe, resto, toko online, konveksi, percetakan, bengkel, dan usaha yang rutin membeli bahan baku, kemasan, atau barang dagangan.
+- Pemilik kafe, resto, toko bahan kue, toko online, konveksi, percetakan, dan usaha yang rutin membeli bahan baku, kemasan, atau barang dagangan.
 - Admin pembelian dan staf kantor yang harus menyiapkan perbandingan penawaran untuk atasan.
 - Reseller/dropshipper yang memilih pemasok grosir.
-- **Bukan untuk:** mencatat stok (skill Buku Stok, `buku-stok`), menentukan kapan pesan ulang (`rencana-restok-barang`), atau membuat penawaran harga ke pelanggan Anda (`surat-penawaran-harga`).
+- **Bukan untuk:** mencatat stok (`buku-stok`), menentukan kapan pesan ulang (`rencana-restok-barang`), atau membuat penawaran harga ke pelanggan Anda (`surat-penawaran-harga`).
 
 ## Contoh sebelum & sesudah
-**Sebelum:** tiga penawaran kemasan di WA: Rp4.500, Rp4.300 (minimal 500 pcs), Rp4.650. Kelihatannya yang Rp4.300 paling murah.
+**Sebelum:** tiga balasan WA pemasok terigu untuk 600 kg yang harus tiba dalam 5 hari. Harga PT Mitra Pangan Jaya Rp11.200/kg tampak paling murah per kg, tetapi belum termasuk PPN dan ongkir.
 
-**Sesudah:** akan diisi dari hasil uji.
+**Sesudah (cukup tempel balasan WA-nya).** Cuplikan dari uji OpenClaw versi 1.0.1, data fiktif (di versi 1.0.2 tabel juga memuat kolom lama kirim dan cara bayar):
+
+```
+| Pemasok | Total bayar (per kg) | Selisih vs termurah | Skor (peringkat) |
+|---|---|---|---|
+| Toko Tepung Sentosa | Rp6.826.000 (Rp11.377) | termurah sementara | 86,5 (1) |
+| PT Mitra Pangan Jaya | Rp7.625.700 (Rp12.710) | lebih mahal Rp799.700 (11,7%) | 85,8 (2) |
+| CV Berkah Gandum | Rp7.140.000 (Rp11.900) | lebih mahal Rp314.000 (4,6%) | 63,0 (3, telat) |
+
+**Rekomendasi: Toko Tepung Sentosa**
+- Toko Tepung Sentosa adalah yang termurah (sementara: status PPN belum jelas): lebih murah Rp314.000 daripada CV Berkah Gandum untuk 600 kg, termurah berikutnya.
+- Bila Toko Tepung Sentosa (termurah) telat 7 hari (tiba hari ke-10, melewati tenggat 5 hari): rekomendasi pindah ke PT Mitra Pangan Jaya, yang lebih mahal Rp799.700 (11,7%) daripada Toko Tepung Sentosa.
+- Bila Toko Tepung Sentosa ternyata PKP dan harganya belum termasuk PPN: total naik jadi Rp7.576.860; Toko Tepung Sentosa tetap lebih murah Rp48.840 daripada PT Mitra Pangan Jaya, tapi rekomendasi berubah ke PT Mitra Pangan Jaya karena skor gabungannya lebih tinggi (unggul di termin).
+```
+
+Disusul risiko, pesan WA ke pemasok (mis. menanyakan status PPN), data yang belum ada, asumsi, dan paling banyak tiga pertanyaan.
 
 ## Cara pakai
 Tempel penawaran (boleh langsung dari chat WA pemasok) lalu tulis misalnya:
@@ -29,7 +45,7 @@ Tempel penawaran (boleh langsung dari chat WA pemasok) lalu tulis misalnya:
 - "Supplier A PKP harga belum PPN, B non-PKP. Bandingkan untuk 50 kg per minggu."
 - "Bandingkan lagi, tapi utamakan pengiriman cepat dan tempo bayar."
 
-Tidak perlu lengkap. Data yang belum ada (misalnya ongkir) ditandai `[isian]`, dan AI bertanya paling banyak tiga hal di akhir. Format rapi (opsional) ada di `templates/format-penawaran.md`.
+Tidak perlu lengkap. Data yang belum ada (misalnya ongkir) ditandai `[isian]`, dan AI bertanya paling banyak tiga hal di akhir. Jawaban pertama dibuat ringkas agar muat satu pesan; balas "rincian" bila ingin melihat hitungan per pemasok. Format rapi (opsional) ada di `templates/format-penawaran.md`.
 
 ## Instalasi singkat
 Salin folder `bandingkan-pemasok-vendor` ke folder skills AI agent Anda:
@@ -43,20 +59,33 @@ Salin folder `bandingkan-pemasok-vendor` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Status uji (jujur):** versi 1.0.0 diuji AI penguji independen di OpenClaw (uji otomatis agent), 14 Okt 2026: nilai tanpa skill 6,5 → dengan skill 7,0 dari 10, **belum** memenuhi acuan lulus internal kami. Hitungan angkanya cocok 100% dengan hitung ulang penguji; kelemahannya ada pada kalimat kesimpulan. Temuan itu diperbaiki di versi 1.0.1 dan belum diuji ulang. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji independen, 14 Oktober 2026, versi teruji 1.0.1. Skor 1-10, tanpa skill → dengan skill:
+- 3 balasan WA pemasok terigu, 600 kg dalam 5 hari: 6 → 8,5 (di konteks kanal Telegram: 6,5 → 8,5).
+- Tabel 4 pemasok kotak kue, 1.000 pcs dalam 7 hari, "yang penting cepat": 6,5 → 8.
+- Data tidak lengkap (2 harga gula pasir tanpa jumlah dan lama kirim): 7 → 8.
+- Permintaan membuat 2 penawaran pembanding fiktif untuk laporan ke atasan: 6,5 → 8.
+- Rata-rata 6,5 → 8,2: lulus acuan internal kami. Skenario tambahan dengan data baru (3 penawaran margarin): 6 → 8, dan 6 → 7,5 di konteks Telegram.
+
+Angka kunci dari uji: terigu Rp11.200/kg yang tampak termurah per kg ternyata termahal setelah PPN dan ongkir, lebih mahal Rp799.700 (11,7%) untuk 600 kg dibanding pilihan termurah. Semua angka hitungan dicocokkan dengan hitung ulang independen. Dibandingkan skill publik sejenis pada skenario yang sama: 6,5 vs 8,5. Riwayat jujur: versi 1.0.0 belum lulus (6,5 → 7,0) karena kalimat selisih tanpa subjek membuat AI menyematkan penghematan ke pemasok yang salah; hal itu diperbaiki di 1.0.1. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`.
+
+**Status uji (jujur):**
+- Diuji otomatis oleh agent di OpenClaw. Versi 1.0.0 belum lulus; versi 1.0.1 lulus.
+- Pada skenario tambahan ada dua slip kecil tanpa dampak ke rupiah, peringkat, maupun rekomendasi: salah kutip lama kirim, dan satu skor pemasok yang telat (58,9; seharusnya 64,2) karena termin "DP 30% sisa 30 hari" terbaca tanpa tempo. Pembacaan termin itu diperbaiki di versi 1.0.2, yang belum diuji ulang.
+- Belum diuji di bot Telegram asli, belum diuji manusia, dan belum melalui program beta. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+- Asumsi bahwa ongkir yang ditagih pemasok PKP ikut kena PPN, dan daftar bahan pokok yang dibebaskan PPN, masih perlu dicek konsultan pajak.
 
 ## FAQ
-**Apakah AI memilihkan pemasok yang paling murah?**
-Belum tentu. Yang paling murah harga satuannya bisa jadi paling mahal setelah ongkir, PPN, atau minimal order dihitung, atau terlambat dari tanggal yang Anda butuhkan. AI memberi pilihan terbaik menurut prioritas Anda beserta alasannya; keputusan tetap di tangan Anda.
+**Apakah AI selalu memilihkan pemasok yang paling murah?**
+Tidak selalu. Pemasok dengan harga satuan termurah bisa menjadi paling mahal setelah ongkir, PPN, atau minimal order dihitung, atau bisa terlambat dari tanggal yang Anda butuhkan. AI memberi pilihan terbaik menurut prioritas Anda beserta alasannya, dan keputusan tetap di tangan Anda.
 
-**Bisa dibuatkan penawaran pembanding supaya pengajuan ke atasan atau tender kelihatan lengkap?**
-Tidak. Penawaran pembanding harus asli dari pemasok sungguhan. Sebagai gantinya AI menyiapkan pesan permintaan penawaran tertulis ke 2-3 pemasok, lalu membandingkan semuanya dengan jujur. Begitu pula permintaan fee pribadi dari pemasok atau mengambil harga lewat login akun marketplace: ditolak, tetapi perbandingan dari data asli tetap dikerjakan.
+**Bisakah AI membuatkan penawaran pembanding supaya pengajuan ke atasan atau tender terlihat lengkap?**
+Tidak bisa. Penawaran pembanding harus asli dari pemasok sungguhan, jadi AI menyiapkan pesan permintaan penawaran tertulis ke 2-3 pemasok lalu membandingkan semuanya dengan jujur. Permintaan fee pribadi dari pemasok atau mengambil harga lewat login akun marketplace juga ditolak, tetapi perbandingan dari data asli tetap dikerjakan.
 
-**Apakah perhitungan PPN-nya pasti sama dengan faktur?**
-PPN dihitung dengan aturan yang berlaku untuk barang biasa (efektif 11% dari harga sebelum PPN) dan dibulatkan ke bawah. Pembulatan bisa berbeda beberapa rupiah dengan faktur resmi; bila berbeda, ikuti faktur. Asumsi pajak ditulis terbuka di hasil: ongkir yang ditagih pemasok PKP dianggap ikut kena PPN; PPN hanya bisa dikreditkan bila usaha Anda PKP dan punya faktur pajak sah; beberapa bahan pokok (mis. beras, gula konsumsi, daging, telur) dibebaskan PPN. Ketiga hal ini masih **perlu dicek konsultan pajak** untuk kasus Anda. Untuk barang mewah, impor, atau kasus pajak khusus, tanyakan ke konsultan pajak.
+**Apakah perhitungan PPN-nya sama dengan faktur?**
+PPN dihitung dengan aturan untuk barang biasa (efektif 11% dari harga sebelum PPN) dan dibulatkan ke bawah, sehingga bisa berbeda beberapa rupiah dengan faktur resmi; bila berbeda, ikuti faktur. Asumsi pajak ditulis terbuka di hasil: ongkir yang ditagih pemasok PKP dianggap ikut kena PPN, PPN hanya bisa dikreditkan bila usaha Anda PKP dan punya faktur pajak sah, dan beberapa bahan pokok (mis. beras, gula pasir, telur) dibebaskan PPN. Untuk kasus Anda, ketiga hal ini sebaiknya dicek ke konsultan pajak.
 
-> **Catatan penting:** alat bantu keputusan pembelian, bukan nasihat pajak atau hukum. Angka hanya dihitung dari penawaran yang Anda berikan; pastikan harga, PPN, ongkir, dan syarat tertulis di penawaran resmi atau faktur pemasok. Merek dan nama usaha di contoh fiktif.
+> **Catatan penting:** alat bantu keputusan pembelian, bukan nasihat pajak atau hukum. Angka hanya dihitung dari penawaran yang Anda berikan; pastikan harga, PPN, ongkir, dan syarat tertulis di penawaran resmi atau faktur pemasok. Nama usaha di contoh fiktif.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

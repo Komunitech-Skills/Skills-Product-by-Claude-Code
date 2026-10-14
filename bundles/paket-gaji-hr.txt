@@ -5,3 +5,4 @@ absensi-lokal
 lowongan-kerja
 surat-peringatan-karyawan
 gaji-umkm
+panduan-wawancara-kerja
