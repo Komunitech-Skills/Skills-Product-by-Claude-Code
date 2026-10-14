@@ -2,7 +2,7 @@
 
 **Kirim catatan penjualan Anda, dapatkan daftar belanja siap kirim: barang yang harus dipesan sekarang, jumlahnya, perkiraan biayanya, dan draf WA ke pemasok.**
 
-Diuji AI penguji independen di OpenClaw: 6,1 → 8,3 dari 10. Pembedanya: tanpa skill, AI menebak jumlah pesan dengan rumus yang berubah-ubah dan membuang lonjakan penjualan diam-diam; dengan skill, satu file penjualan langsung jadi daftar belanja per pemasok berisi jumlah per dus, tanggal pesan, Rupiah, dan draf WA siap kirim.
+Diuji AI penguji independen di OpenClaw: 6,1 → 8,7 dari 10. Pembedanya: tanpa skill, AI menebak jumlah pesan dengan rumus yang berubah-ubah dan membuang lonjakan penjualan diam-diam; dengan skill, satu file penjualan langsung jadi daftar belanja per pemasok (jumlah per dus, tanggal pesan, Rupiah, draf WA) dengan barang yang akan kosong sebelum kiriman datang di paling atas.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip hitung pendukung skill ini; tanpa Python skill tetap berjalan, AI menghitungnya langsung dan menunjukkan baris hitungannya, tetapi angkanya sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -20,7 +20,7 @@ Diuji AI penguji independen di OpenClaw: 6,1 → 8,3 dari 10. Pembedanya: tanpa 
 - **Bukan untuk:** mencatat stok masuk/keluar dan stock opname (pakai skill Buku Stok; hasil ekspornya bisa langsung dipakai di sini), memilih pemasok termurah, atau membuat angka ramalan penjualan untuk pinjaman/investor tanpa data.
 
 ## Contoh sebelum & sesudah
-Cuplikan dari uji, data fiktif (toko perlengkapan bayi online, file penjualan 90 hari, dua pemasok; versi 1.0.0 yang diuji).
+Cuplikan dari uji, data fiktif (toko perlengkapan bayi online, file penjualan 90 hari, dua pemasok; versi 1.0.1).
 
 **Sebelum (AI tanpa skill):**
 ```
@@ -30,15 +30,16 @@ harian cuma ~5. Ini saya anggap salah input dan saya koreksi ke angka wajar (4) 
 
 **Sesudah (dengan skill):**
 ```
-Dari 12 barang: 4 pesan sekarang (±Rp9.799.000), 3 pesan minggu depan (±Rp3.351.000), 3 aman,
-1 barang mati (modal tertahan Rp2.775.000), dan 1 barang datanya belum cukup.
+Dari 12 barang: 4 dipesan sekarang (±Rp10.879.000), 3 minggu depan (±Rp3.351.000), 3 aman,
+1 barang mati (modal nganggur Rp2.775.000), dan 3 barang berisiko kosong sebelum kiriman tiba.
+⚠️ AKAN KOSONG SEBELUM BARANG DATANG — urus duluan
+- Bedak Bayi 150g: stok 9, habis ±2 hari, CV Grosir Bunda kirim 3 hari → bisa kosong ±1 hari. Pesan hari ini.
+- Botol Susu Anti Kolik 250ml: stok 38, habis ±8 hari, PT Ceria 10 hari → bisa kosong ±2 hari. Pesan hari ini.
 | Barang | Stok | Laku/hari | Habis ± | Pesan | Nilai |
-| Bedak Bayi 150g | 9 | 3,11 | 2 hari (16 Okt) | 49 pcs | Rp539.000 |
-| Tisu Basah Bayi 50 lembar | 110 | 9,2 | 11 hari (25 Okt) | 132 pcs = 11 dus × 12 | Rp1.122.000 |
-Catatan: Sabun Cair ada lonjakan 1 hari (20 Sep, terjual 65 vs biasanya ±4) — kemungkinan borongan
-sekali. Dihitung tetap masuk, jadi angka ini agak konservatif ke atas. Beri tahu saya kalau itu memang
-borongan, bisa dihitung ulang tanpa lonjakan itu.
-Halo CV Grosir Bunda, saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut: …
+| Tisu Basah Bayi 50 lembar | 110 | 9,2 (stabil) | 11 hari (25 Okt) | 132 pcs = 11 dus | Rp1.122.000 |
+Catatan Sabun Cair: ada lonjakan 20 Sep (terjual 65, biasanya ±4). Hitungan di atas termasuk lonjakan itu —
+tanpa lonjakan tren-nya stabil dan barang ini sebetulnya AMAN, bukan minggu depan. Kalau 20 Sep itu
+borongan/promo sekali, saya bisa hitung ulang tanpa lonjakan tersebut.
 ```
 
 ## Cara pakai
@@ -62,14 +63,14 @@ Salin folder `rencana-restok-barang` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Hitungan berjalan di komputer Anda dengan Python standar; tidak perlu internet, akun, atau API key.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agen penguji independen, 14 Okt 2026, versi yang diuji 1.0.0, skor 1–10 (tanpa skill → dengan skill):
-- Toko perlengkapan bayi online, file penjualan 90 hari (777 baris, tanggal campur format), stok 12 barang, dua pemasok: 7 → 8,5; dengan tampilan khusus chat Telegram: 6 → 8,5.
-- Warung sembako, penjualan per minggu selama 8 minggu diketik di chat, stok dua barang belum dihitung: 6,5 → 7,5.
-- Info minim ("stok tepung tinggal 20, sehari laku 3-5, kapan pesan?"): 7 → 8.
-- Permintaan membuat angka proyeksi karangan untuk pinjaman, sekaligus pertanyaan restok yang sah: 4 → 9.
-- Rata-rata **6,1 → 8,3**. File 777 baris menjadi rencana Rp9.799.000 untuk dipesan sekarang dan Rp3.351.000 minggu depan dalam sekitar 100 detik; 125 angka per barang dihitung ulang terpisah oleh penguji dan tidak ada yang berbeda. Pada tugas yang sama, dua skill publik lain mendapat nilai 5 dan 6,5; salah satunya menyarankan belanja Rp44,3 juta sekaligus.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agen penguji independen, 14 Okt 2026, skor 1–10 (tanpa skill → dengan skill versi 1.0.1):
+- Toko perlengkapan bayi online, file penjualan 90 hari (777 baris, tanggal campur format), stok 12 barang, dua pemasok: 7 → 9; dengan tampilan khusus chat Telegram: 6 → 8,5.
+- Warung sembako, penjualan per minggu selama 8 minggu diketik di chat, stok dua barang belum dihitung: 6,5 → 9.
+- Info minim ("stok tepung tinggal 20, sehari laku 3-5, kapan pesan?"): 7 → 8 (diuji pada versi 1.0.0).
+- Permintaan membuat angka proyeksi karangan untuk pinjaman, sekaligus pertanyaan restok yang sah: 4 → 9 (diuji pada versi 1.0.0).
+- Rata-rata **6,1 → 8,7**. File 777 baris menjadi rencana Rp10.879.000 untuk dipesan sekarang dan Rp3.351.000 minggu depan dalam sekitar 100 detik, dengan 3 barang ditandai akan kosong ±1–4 hari sebelum pesanan datang. Penguji menghitung ulang 182 angka secara terpisah: 180 cocok (dua sisanya berasal dari satu selisih pembulatan, diperbaiki di versi 1.0.2). Pada tugas yang sama, dua skill publik lain mendapat nilai 5 dan 6,5; salah satunya menyarankan belanja Rp44,3 juta sekaligus.
 
-**Status uji (jujur):** sejauh ini diuji otomatis oleh agen AI di OpenClaw (termasuk tampilan khusus chat Telegram tanpa mengirim pesan). Belum diuji di bot Telegram asli, belum diuji manusia, dan belum melalui program beta. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Catatan jujur dari uji: AI tanpa skill pun sudah cukup pandai di soal sehari-hari (menyatukan nama, menghitung Rupiah); pembeda terbesar ada di permintaan angka karangan (4 → 9) dan di tampilan Telegram. Lima temuan penguji diperbaiki di versi 1.0.1 (barang yang akan kosong sebelum kiriman datang kini disorot, tren dibandingkan dengan minggu-minggu sebelumnya, nama beda tulis disamakan, lonjakan dibandingkan, hitungan manual ditampilkan); perbaikan ini baru diuji dengan tes otomatis skrip, belum diuji ulang di OpenClaw. Karena aturan tren berubah, jumlah pesan barang yang sedang naik bisa lebih besar daripada angka uji di atas.
+**Status uji (jujur):** diuji otomatis oleh agen AI di OpenClaw (termasuk tampilan khusus chat Telegram tanpa mengirim pesan). Versi 1.0.0 mendapat rata-rata 8,3; versi 1.0.1 mendapat 8,7 dari uji ulang terbatas (hanya dua skenario pertama diulang; dua skenario lain memakai nilai versi 1.0.0). Dua ketidaktepatan kecil dari uji ulang, yaitu hari habis satu barang tertulis ±139 padahal tepat 140 dan kalimat "dibatasi 2×" untuk barang yang tidak kena batas, diperbaiki di versi 1.0.2 tanpa uji ulang OpenClaw (baru tes otomatis skrip). Belum diuji di bot Telegram asli, belum diuji manusia, dan belum melalui program beta. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Catatan jujur: AI tanpa skill pun sudah cukup pandai di soal sehari-hari (menyatukan nama, menghitung Rupiah); pembeda terbesar ada di permintaan angka karangan (4 → 9), data mingguan dengan tren naik (6,5 → 9), dan penanda barang yang akan kosong sebelum kiriman datang.
 
 ## FAQ
 **Berapa lama data penjualan yang dibutuhkan?**
@@ -85,4 +86,4 @@ Angka dihitung dengan rumus tetap dari penjualan Anda, bukan ditebak, tetapi tet
 Alat bantu perencanaan stok, bukan nasihat keuangan dan bukan jaminan ketersediaan pemasok; keputusan belanja tetap di tangan Anda. Karya orisinal Komunitech. Nama marketplace dan aplikasi hanya disebut sebagai contoh sumber data dan tidak berafiliasi. Lihat `ATTRIBUTION.md`.
 
 ## Riwayat perubahan
-Versi terkini: 1.0.1. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: 1.0.2. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -2,6 +2,15 @@
 
 Catatan teknis per versi (ringkasan pembeli ada di README).
 
+## 1.0.2 (2026-10-14)
+Perbaikan kecil dari uji ulang 1.0.1 (6,1 → 8,7, LULUS; skenario 1: 180 dari 182 angka cocok). Alur tidak berubah.
+- **Presisi hari habis:** laju yang tidak kena batas kini dipakai langsung (laju 4 minggu terakhir), bukan rata-rata × (laju baru ÷ rata-rata); semua pembulatan ke atas/bawah dirapikan dulu ke 12 desimal. Contoh: stok 260 dengan laju 52/28 kini tepat 140 hari (sebelumnya 139,999… → 139).
+- **Kalimat batas tren:** `kalimat_tren` menyebut "dibatasi" hanya bila batas 0,5–2× benar-benar terpakai; selain itu "(tidak kena batas)". SKILL.md: batas disebut hanya bila `tren_dibatasi` benar; contoh yang menyesatkan diganti.
+- **Hari habis dengan laju dibatasi:** bila laju dibatasi, hasil menyertakan `habis_dalam_hari_laju_terbaru` dan teks "(laju dibatasi; dengan laju 4 minggu terakhir …: ±X hari)"; penanda akan kosong memakai yang lebih cepat habis.
+- **SKILL.md:** lokasi script ditulis di aturan kerja (folder yang sama dengan SKILL.md + jalur umum per platform); larangan mencari file di luar folder skill/data pengguna, membaca kode script, dan membuka `examples/`; simbol "μ" diganti kata biasa.
+- Script: opsi `--contoh` (ringkasan cara pakai); ringkasan tidak lagi menulis "modal tertahan Rp0" bila tidak ada barang mati.
+- Uji regresi: 149 cek (10 cek baru, termasuk kasus tepat kelipatan 260 ÷ 52/28 = 140 yang gagal di cara lama).
+
 ## 1.0.1 (2026-10-14)
 Revisi dari uji OpenClaw penguji independen (versi 1.0.0: 6,1 → 8,3, LULUS); lima temuan diperbaiki:
 - **Akan kosong sebelum barang datang:** script menghitung `akan_kosong_hari` = ⌈lead time − stok ÷ laku/hari⌉ untuk semua barang yang stoknya diketahui, termasuk barang "data belum cukup" (memakai laju sementara). Daftar `akan_kosong_sebelum_barang_datang` + jumlahnya di ringkasan, dengan saran (pesan hari ini / pesanan kecil untuk barang data pendek, pemasok lebih cepat, atau terima kosong ±X hari). Ditulis paling atas di balasan.

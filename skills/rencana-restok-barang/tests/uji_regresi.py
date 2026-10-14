@@ -472,6 +472,43 @@ k, h = jalan("--file", jual_c, "--barang", barang_c, "--lead-time", "5")
 cek("V5 --lead-time dari pengguna dilabeli & tidak ditanya lagi", brg(h, "W")["sumber_lead_time"] == "lead time umum dari pengguna"
     and not any("berapa hari barang datang" in q for q in h["pertanyaan_usulan"]))
 
+# ---------------------------------------------------------------- W. versi 1.0.2: presisi, kalimat batas, hari habis laju dibatasi
+# W1. tepat kelipatan: tren naik tidak kena batas, laju 52/28, stok 260 -> tepat 140 hari (bukan 139)
+pola_d = [2, 2, 2, 2, 2, 2, 1]
+data_w = deret_csv(M0, {"DOT": lambda i: 1 if i < 42 else pola_d[(i - 42) % 7]}, 70)
+k, h = jalan("--data", data_w, "--barang-data", "sku;nama;stok;harga_beli;lead_time\nDOT;Dot Bayi;260;9000;10")
+dt = brg(h, "Dot Bayi")
+akhir_w = M0 + timedelta(days=69)
+cek("W1a laju 52/28, stok 260 -> habis tepat 140 hari", dt["tren"] == "naik" and dt["tren_dibatasi"] is False
+    and 260 * 28 / 52 == 140 and dt["habis_dalam_hari"] == 140)
+cek("W1b tanggal habis = acuan + 140 hari", dt["perkiraan_tanggal_habis"] == (akhir_w + timedelta(days=140)).isoformat())
+# W1c. stabil dengan rata-rata 2/3 (20 terjual / 30 hari), stok 20 -> tepat 30 hari
+k, h = jalan("--data", deret_csv(M0, {"TIGA": lambda i: [1, 0, 1][i % 3]}, 30), "--barang-data", "sku;stok\nTIGA;20")  # hari 1 & 30 ada penjualan
+cek("W1c rata-rata 2/3, stok 20 -> habis tepat 30 hari", brg(h, "TIGA")["habis_dalam_hari"] == 30)
+# W2. kalimat batas hanya bila batas aktif
+cek("W2a naik tanpa batas: kalimat 'tidak kena batas', tanpa 'dibatasi'", "tidak kena batas" in dt["kalimat_tren"]
+    and "dibatasi" not in dt["kalimat_tren"])
+k, h = jalan("--data", data_i)
+cek("W2b naik kena batas 2x: kalimat 'dibatasi'", brg(h, "N2")["tren_dibatasi"] is True and "dibatasi" in brg(h, "N2")["kalimat_tren"]
+    and "tidak kena batas" not in brg(h, "N2")["kalimat_tren"])
+# W3. turun kena batas 0,5x: hari habis menyebut laju dibatasi + hari habis dengan laju terbaru
+data_w3 = deret_csv(M0, {"PEL": lambda i: 3 if i < 62 else (1 if i % 2 else 0)}, 90)
+k, h = jalan("--data", data_w3, "--barang-data", "sku;nama;stok;lead_time\nPEL;Pelampung;55;10")
+pl = brg(h, "Pelampung")
+mu_pl = (62 * 3 + 14) / 90
+laju_pl = 0.5 * mu_pl
+cek("W3a turun kena batas 0,5x rata-rata", pl["tren"] == "turun" and pl["tren_dibatasi"] is True
+    and abs(pl["rata_rata_dipakai"] - round(laju_pl, 2)) < 0.006)
+cek("W3b hari habis dengan laju dibatasi & dengan laju terbaru (14/28 = 0,5 -> 110 hari)",
+    pl["habis_dalam_hari"] == math.floor(55 / laju_pl) and pl["habis_dengan_laju_dibatasi"] is True
+    and pl["habis_dalam_hari_laju_terbaru"] == 110)
+k, t = jalan("--data", data_w3, "--barang-data", "sku;nama;stok;lead_time\nPEL;Pelampung;55;10", "--format", "teks")
+cek("W3c teks: '(laju dibatasi; dengan laju 4 minggu terakhir ...: ±110 hari)'", "(laju dibatasi; dengan laju 4 minggu terakhir 0,5/hari: ±110 hari)" in t["teks"])
+# W4. --contoh
+p = subprocess.run([sys.executable, SCRIPT, "--contoh"], capture_output=True, text=True, encoding="utf-8")
+cek("W4 --contoh menampilkan cara pakai", p.returncode == 0 and "Cara pakai singkat" in p.stdout and "--barang-data" in p.stdout)
+cek("W5 ringkasan tanpa barang mati tidak menulis 'modal tertahan Rp0'", "modal tertahan Rp0" not in t["teks"])
+
 print()
 print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'} ({len(GAGAL)} gagal)")
 sys.exit(1 if GAGAL else 0)

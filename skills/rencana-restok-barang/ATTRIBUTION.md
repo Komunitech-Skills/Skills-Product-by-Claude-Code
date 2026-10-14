@@ -17,4 +17,5 @@ Penggunaan tunduk pada `LISENSI.txt` yang disertakan dalam paket pembelian.
 
 ## Riwayat versi
 - 1.0.0 (2026-10-14): rilis awal; diuji penguji independen di OpenClaw (6,1 → 8,3).
-- 1.0.1 (2026-10-14): perbaikan lima temuan uji (lihat `CHANGELOG.md`).
+- 1.0.1 (2026-10-14): perbaikan lima temuan uji; uji ulang terbatas 6,1 → 8,7.
+- 1.0.2 (2026-10-14): perbaikan presisi hari habis dan kalimat batas tren (lihat `CHANGELOG.md`).

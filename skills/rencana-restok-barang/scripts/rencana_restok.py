@@ -46,7 +46,7 @@ from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, tanpa menyebut "
                "script/file/proses. Semua angka disalin persis dari sini.]")
 DISCLAIMER = ("Rencana ini perkiraan dari pola penjualan sebelumnya, bukan jaminan. Cocokkan dulu dengan stok fisik, "
@@ -218,12 +218,17 @@ def bulat(x):
     return int(Decimal(x).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
+PRESISI = Decimal("1e-12")
+
+
 def atas(x):
-    return int(Decimal(x).to_integral_value(rounding=ROUND_CEILING))
+    """Pembulatan ke atas setelah dirapikan ke 12 desimal (agar 30,000...01 akibat pembagian tidak jadi 31)."""
+    return int(Decimal(x).quantize(PRESISI, rounding=ROUND_HALF_UP).to_integral_value(rounding=ROUND_CEILING))
 
 
 def bawah(x):
-    return int(Decimal(x).to_integral_value(rounding=ROUND_FLOOR))
+    """Pembulatan ke bawah setelah dirapikan ke 12 desimal (agar 139,999...9 akibat pembagian tetap 140)."""
+    return int(Decimal(x).quantize(PRESISI, rounding=ROUND_HALF_UP).to_integral_value(rounding=ROUND_FLOOR))
 
 
 def rp(n):
@@ -926,12 +931,14 @@ def inti(harian, mulai, ctx, d):
             rasio_baru = mu_baru / mu
             f_pakai = min(max(rasio_baru, FAKTOR_MIN), FAKTOR_MAKS)
             dibatasi = f_pakai != rasio_baru
-            laju = mu * f_pakai
+            laju = mu * f_pakai if dibatasi else mu_baru
             kalimat = (f"baru laku dalam {label_baru} ({des(mu_baru)}/hari, sebelumnya 0)" if faktor is None else
                        f"{tren} {des(abs(faktor - 1) * 100, 0)} % ({banding})") + f"; dipakai {des(laju)}/hari"
             if dibatasi:
                 kalimat += (f" karena laju dibatasi {des(f_pakai)}× rata-rata seluruh data ({des(mu)}/hari), padahal laju "
                             f"{label_baru} {des(mu_baru)}/hari — cek sendiri apakah perubahan ini akan bertahan")
+            else:
+                kalimat += " (tidak kena batas)"
     if ctx.faktor_musim != 1:
         kalimat += f"; dikali faktor musim {des(ctx.faktor_musim)} dari Anda"
     rasio = (laju / mu) if mu > 0 else Decimal(1)
@@ -984,9 +991,19 @@ def inti(harian, mulai, ctx, d):
     habis = bawah(habis_x)
     r["habis_dalam_hari"] = habis
     r["perkiraan_tanggal_habis"] = (ctx.acuan + timedelta(days=habis)).isoformat()
-    r["kosong_sebelum_barang_datang"] = habis_x < L
-    if habis_x < L:
-        r["akan_kosong_hari"] = atas(L - habis_x)
+    habis_kosong = habis_x
+    if dibatasi:
+        r["habis_dengan_laju_dibatasi"] = True
+        laju_baru = mu_baru * ctx.faktor_musim
+        if laju_baru > 0:
+            hb = Decimal(0) if stok <= 0 else stok / laju_baru
+            r["habis_dalam_hari_laju_terbaru"] = bawah(hb)
+            habis_kosong = min(habis_x, hb)  # untuk penanda kosong pakai laju yang lebih cepat habis
+        else:
+            r["habis_dalam_hari_laju_terbaru"] = None
+    r["kosong_sebelum_barang_datang"] = habis_kosong.quantize(PRESISI, rounding=ROUND_HALF_UP) < L
+    if r["kosong_sebelum_barang_datang"]:
+        r["akan_kosong_hari"] = atas(L - habis_kosong)
     hari_ke_rop = 0 if posisi <= ROP else bawah((posisi - ROP) / mu_p)
     if hari_ke_rop < 1:
         r["kelompok"] = "PESAN_SEKARANG"
@@ -1463,8 +1480,13 @@ def baris_barang(h):
     if h.get("rata_rata_dipakai") is not None and aktif:
         bag.append(f"laku ±{des(h['rata_rata_dipakai'])}/hari (TREN: {h['kalimat_tren']})")
     if h.get("habis_dalam_hari") is not None:
-        bag.append("sudah habis" if h["habis_dalam_hari"] == 0 else
-                   f"habis ±{h['habis_dalam_hari']} hari ({tgl_id(date.fromisoformat(h['perkiraan_tanggal_habis']))})")
+        hb = ("sudah habis" if h["habis_dalam_hari"] == 0 else
+              f"habis ±{h['habis_dalam_hari']} hari ({tgl_id(date.fromisoformat(h['perkiraan_tanggal_habis']))})")
+        if h.get("habis_dengan_laju_dibatasi"):
+            lt = h.get("habis_dalam_hari_laju_terbaru")
+            hb += (f" (laju dibatasi; dengan laju 4 minggu terakhir {des(h['rata_rata_terbaru'])}/hari: "
+                   + (f"±{lt} hari)" if lt is not None else "tidak laku)"))
+        bag.append(hb)
     if h.get("akan_kosong_hari"):
         bag.append(f"AKAN KOSONG ±{h['akan_kosong_hari']} HARI sebelum barang datang")
     if h.get("jumlah_pesan"):
@@ -1511,8 +1533,9 @@ def teks(hasil):
         return rp(n) + (", sebagian harga belum ada" if ring["harga_belum_lengkap"] else "")
     L.append(f"RINGKASAN: {ring['jumlah_barang']} barang | pesan sekarang {ring['PESAN_SEKARANG']} ({nilai_txt(ring['nilai_pesan_sekarang'])}"
              f") | minggu depan {ring['PESAN_MINGGU_DEPAN']} "
-             f"({nilai_txt(ring['nilai_pesan_minggu_depan'])}) | aman {ring['AMAN']} | barang mati {ring['BARANG_MATI']} "
-             f"(modal tertahan {rp(ring['nilai_barang_mati'])}) | AKAN KOSONG sebelum barang datang {ring['AKAN_KOSONG']}")
+             f"({nilai_txt(ring['nilai_pesan_minggu_depan'])}) | aman {ring['AMAN']} | barang mati {ring['BARANG_MATI']}"
+             + (f" (modal tertahan {rp(ring['nilai_barang_mati'])})" if ring['BARANG_MATI'] else "")
+             + f" | AKAN KOSONG sebelum barang datang {ring['AKAN_KOSONG']}")
     if hasil["akan_kosong_sebelum_barang_datang"]:
         L += ["", f"AKAN KOSONG SEBELUM BARANG DATANG ({ring['AKAN_KOSONG']}) - sorot paling atas di balasan"]
         for x in hasil["akan_kosong_sebelum_barang_datang"]:
@@ -1561,6 +1584,18 @@ def teks(hasil):
     return "\n".join(L)
 
 
+CONTOH = """Cara pakai singkat (Windows: python atau py):
+  python3 rencana_restok.py --file penjualan.csv --barang barang.csv --hari-ini 2026-10-14 --format teks
+  python3 rencana_restok.py --data "tanggal;nama_barang;qty\\n2026-09-01;Gula 1 kg;6" \\
+      --barang-data "nama_barang;stok_sekarang;lead_time_hari;harga_beli;pemasok;kelipatan\\nGula 1 kg;18;2;15500;Grosir A;20" --format teks
+  Data per minggu/bulan: --data-per minggu | bulan. Lead time umum: --lead-time 3. Faktor musim dari pengguna: --faktor-musim 1,5
+Penjualan (minimal): tanggal, nama barang atau sku, qty. Boleh ekspor marketplace/kasir, mutasi buku-stok, XLSX, JSON,
+  tabel lebar (kolom = tanggal, atau baris = tanggal/minggu dan kolom = barang).
+Data barang (opsional): sku/nama_barang, stok_sekarang, harga_beli, pemasok, lead_time_hari, kelipatan, minimal_order,
+  dalam_pesanan, mulai_jual, satuan. Data pemasok (opsional, --pemasok): pemasok, lead_time_hari, minimal_belanja.
+Keluaran: --format teks (ringkas untuk dibaca agent) atau JSON (default). Kode keluar 2 = data tidak terbaca (lihat error + saran)."""
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Rencana restok dari riwayat penjualan (Decimal, Rupiah).")
     ap.add_argument("--file", help="riwayat penjualan: CSV/TSV/teks tabel/XLSX/JSON (kolom minimal tanggal, sku/nama, qty)")
@@ -1582,7 +1617,11 @@ def main(argv=None):
     ap.add_argument("--sampai", help="data dianggap mencakup sampai tanggal ini (hari tanpa penjualan dihitung 0)")
     ap.add_argument("--hari-ini", help="tanggal acuan stok sekarang (default: tanggal terakhir data)")
     ap.add_argument("--format", choices=["json", "teks"], default="json")
+    ap.add_argument("--contoh", action="store_true", help="tampilkan contoh perintah & format data, lalu selesai")
     args = ap.parse_args(argv)
+    if args.contoh:
+        print(CONTOH)
+        return 0
     try:
         hasil = jalankan(args)
     except Galat as g:

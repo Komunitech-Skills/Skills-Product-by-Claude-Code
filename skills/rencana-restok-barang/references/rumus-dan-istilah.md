@@ -23,16 +23,16 @@ Dimuat bila perlu. Isi ini untuk agent; sampaikan ke pengguna dengan kata-kata s
 | Ukuran | Rumus |
 |---|---|
 | Deret harian | penjualan bersih per hari di rentang data; hari tanpa penjualan = 0; retur/batal mengurangi penjualan di tanggal itu lalu hari sebelumnya; pesanan berstatus batal/belum bayar/retur di ekspor marketplace tidak dihitung |
-| Rata-rata μ | total terjual ÷ jumlah hari rentang |
-| Simpangan sd | simpangan baku sampel (dibagi n − 1) dari deret harian. Data mingguan/bulanan: dari laju per periode × √(panjang periode); kurang dari 4 periode penuh → sd = √μ (asumsi, disebut) |
+| Rata-rata seluruh data | total terjual ÷ jumlah hari rentang |
+| Simpangan | simpangan baku sampel (dibagi n − 1) dari deret harian. Data mingguan/bulanan: dari laju per periode × √(panjang periode); kurang dari 4 periode penuh → simpangan = √rata-rata (asumsi, disebut) |
 | Faktor tren | laju 28 hari terakhir ÷ laju sampai 56 hari sebelumnya (perlu data ≥ 42 hari). Mingguan: 4 minggu terakhir ÷ sampai 8 minggu sebelumnya (≥ 6 minggu). Bulanan: bulan terakhir ÷ sampai 2 bulan sebelumnya (≥ 3 bulan). ≥ 1,2 = naik, ≤ 0,8 = turun, selain itu stabil |
-| Laku/hari yang dipakai | naik/turun: laju 4 minggu terakhir, tetapi paling banyak 2× dan paling sedikit 0,5× μ (bila batas terpakai, disebut terbuka); stabil: μ. Lalu × faktor musim. Simpangan dikali perbandingan yang sama (laku/hari dipakai ÷ μ) |
+| Laku/hari yang dipakai | naik/turun: laju 4 minggu terakhir, tetapi paling banyak 2× dan paling sedikit 0,5× rata-rata seluruh data (batas disebut hanya bila benar-benar terpakai; selain itu kalimat tren berbunyi "tidak kena batas"); stabil: rata-rata seluruh data. Lalu × faktor musim. Simpangan dikali perbandingan yang sama (laku/hari dipakai ÷ rata-rata seluruh data) |
 | z | 90 % = 1,28; 95 % = 1,65; 99 % = 2,33 (tersedia juga 80 % = 0,84; 85 % = 1,04; 97 % = 1,88; 98 % = 2,05) |
 | Stok pengaman SS | z × sd × √lead time → dibulatkan ke atas |
 | Titik pesan ulang ROP | laku/hari × lead time + SS → dibulatkan ke atas |
 | Stok target T | laku/hari × (lead time + horizon) + SS → dibulatkan ke atas |
 | Posisi stok | stok sekarang + dalam pesanan |
-| Habis dalam | stok ÷ laku/hari, dibulatkan ke bawah (hari) |
+| Habis dalam | stok ÷ laku/hari, dibulatkan ke bawah (hari). Hasil bagi dirapikan ke 12 desimal sebelum dibulatkan, sehingga kelipatan tepat (mis. 260 ÷ 52/28 = 140) tidak menjadi 139. Bila laju dibatasi, ditampilkan juga hari habis dengan laju 4 minggu terakhir, dan penanda "akan kosong" memakai yang lebih cepat habis |
 | Akan kosong sebelum barang datang | stok ÷ laku/hari < lead time → kosong ±(lead time − stok ÷ laku/hari) hari, dibulatkan ke atas. Barang "data belum cukup" memakai laju sementara (terjual ÷ hari tercatat) |
 | PESAN SEKARANG | posisi ≤ ROP, atau ROP tercapai kurang dari 1 hari lagi. Jumlah = T − posisi |
 | PESAN MINGGU DEPAN | ROP tercapai dalam 1–7 hari (hari = (posisi − ROP) ÷ laku/hari, dibulatkan ke bawah). Jumlah = T − (posisi − laku/hari × hari) |
