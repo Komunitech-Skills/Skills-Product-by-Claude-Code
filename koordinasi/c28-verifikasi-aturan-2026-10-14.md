@@ -145,3 +145,64 @@ Urutan sisa: (3) `hitung-ppn`, (4) `hitung-thr`, (5) `kontrak-kerja-pkwt`, (6) `
 ## Run berikutnya (C28) — setelah 20:00 UTC
 
 Urutan sisa: (5) `kontrak-kerja-pkwt`, (6) `kalender-pajak` — 2 skill per run.
+
+---
+
+## 5. `kontrak-kerja-pkwt` — PP 35/2021, Putusan MK 168, kompensasi
+
+**Run Akun C:** 2026-10-14 ~20:30 UTC
+
+### 5.1 Jangka waktu PKWT maksimal 5 tahun (termasuk perpanjangan)
+
+| Klaim skill (`references/dasar-hukum.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| PKWT berdasarkan jangka waktu paling lama **5 tahun**; perpanjangan total tidak melebihi 5 tahun; masa kerja perpanjangan dihitung sejak awal PKWT | PP 35/2021 Pasal 8 ayat (1)–(3) (PDF BPK https://peraturan.bpk.go.id/Download/154582/PP%20Nomor%2035%20Tahun%202021.pdf) | 2026-10-14 | «PKWT … paling lama 5 (lima) tahun»; perpanjangan «tidak lebih dari 5 (lima) tahun»; masa kerja perpanjangan dihitung sejak hubungan kerja PKWT | **COCOK** |
+| Tafsir MK 168: Pasal 56 ayat (3) UU 6/2023 — pekerjaan tertentu selesai **tidak melebihi paling lama 5 tahun** termasuk perpanjangan | Putusan MK 168/PUU-XXI/2023 (skill sudah baca Sep 2026) | 2026-10-14 | — (tidak diunduh ulang run ini; selaras PP Pasal 8 & skill) | **COCOK** (selaras verifikasi Sep 2026) |
+
+**Usulan teks (Akun B):** Pertahankan peringatan UU Ketenagakerjaan baru (target Okt 2026) di disclaimer; tidak wajib ubah angka.
+
+### 5.2 Uang kompensasi akhir PKWT
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Wajib saat PKWT berakhir; minimal masa kerja **1 bulan terus-menerus** | PP 35/2021 Pasal 15 ayat (1)–(3) (PDF BPK) | 2026-10-14 | «wajib memberikan uang kompensasi»; «paling sedikit 1 (satu) bulan secara terus menerus» | **COCOK** |
+| Perpanjangan: kompensasi saat jangka sebelum perpanjangan selesai + lagi setelah perpanjangan berakhir | PP 35/2021 Pasal 15 ayat (4) | 2026-10-14 | Bunyi ayat (4) selaras skill | **COCOK** |
+| Rumus: 12 bulan = 1 upah; 1–<12 = masa/12 × upah; >12 = masa/12 × upah | PP 35/2021 Pasal 16 ayat (1) | 2026-10-14 | Huruf a–c Pasal 16 | **COCOK** |
+| Dasar upah = pokok + tunjangan tetap (ayat 2); usaha mikro/kecil = **kesepakatan** (ayat 6) | PP 35/2021 Pasal 16 ayat (2) & (6) | 2026-10-14 | «Upah pokok dan tunjangan tetap»; «usaha mikro dan usaha kecil … berdasarkan kesepakatan» | **COCOK** |
+| Pengakhiran dini: ganti rugi Pasal 62 UU 13/2003 = upah sampai akhir jangka (terpisah dari kompensasi) | UU 13/2003 Pasal 62 (skill Sep 2026) | 2026-10-14 | — | **COCOK** arah |
+
+**Usulan teks (Akun B):** Tetap tandai ⚠️ PERLU REVIEW: (a) cara hitung «bulan» pecahan hari; (b) periode berurutan <1 bulan; (c) upah satuan hasil untuk kompensasi — belum diatur rinci di Pasal 16.
+
+---
+
+## 6. `kalender-pajak` — PMK 81/2024 (setor/lapor masa & tahunan)
+
+**Run Akun C:** 2026-10-14 ~20:30 UTC
+
+### 6.1 Tenggat bulanan (PPh 21, unifikasi/PPh 23, PPh 25, PPN)
+
+| Klaim skill (`references/aturan-tenggat.md`, `scripts/kalender_pajak.py`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Setor PPh 21/22/23/25/26 dll. **tgl 15** bulan berikutnya | PMK 81/2024 Pasal 94 ayat (2) (https://www.pajak.go.id/en/node/113110) | 2026-10-14 | «wajib dilakukan paling lambat tanggal 15 (lima belas) bulan berikutnya setelah Masa Pajak berakhir» | **COCOK** |
+| Lapor SPT Masa PPh 21/26 & Unifikasi **tgl 20** | PMK 81/2024 Pasal 171 (naskah DJP node 113110) | 2026-10-14 | «paling lama 20 (dua puluh) hari setelah Masa Pajak berakhir» | **COCOK** |
+| Setor & lapor PPN **akhir bulan berikutnya** | PMK 81/2024 Pasal 94 ayat (3) & Pasal 171 ayat (13) (skill Sep 2026 + ringkasan Coretaxpedia https://pajak.go.id/coretaxpedia/batas-waktu-pelaporan-pembayaran) | 2026-10-14 | Tabel resmi DJP: PPh setor 15/lapor 20; PPN akhir bulan | **COCOK** |
+| PPh 25: setor tgl 15; setoran tervalidasi dianggap sudah lapor (tidak perlu acara lapor terpisah) | PMK 81/2024 Pasal 171 ayat (10)–(11) (skill Sep 2026) | 2026-10-14 | — | **COCOK** |
+| Setor/lapor masa jatuh libur → **hari kerja berikutnya** (Ps. 100 / Ps. 173) | PMK 81/2024 Pasal 100 ayat (1); Coretaxpedia & Ortax ringkas PMK 81 | 2026-10-14 | «dapat dilakukan paling lambat pada hari kerja berikutnya» | **COCOK** |
+
+**Usulan teks (Akun B):** Tidak wajub; opsional perbarui `TANGGAL_CEK` di script/README bila merge.
+
+### 6.2 SPT Tahunan & kebijakan khusus 2026
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| SPT Tahunan OP **3 bulan** (31 Maret); Badan **4 bulan** (30 April tahun buku Jan–Des) | PMK 81/2024 Pasal 169 ayat (1)–(2) (node 113110) | 2026-10-14 | Batas 3 bulan / akhir bulan ke-4 | **COCOK** |
+| SPT Tahunan **tidak bergeser** walau hari libur (Ps. 169; Ps. 173 hanya Ps. 171–172) | PMK 81/2024 (skill Sep 2026) | 2026-10-14 | — | **COCOK** |
+| KEP-55/PJ/2026: jatuh tempo OP TP 2025 tetap **31 Mar 2026**; penghapusan sanksi s.d. 30 Apr 2026 (bukan perpanjangan) | https://pajak.go.id/en/node/119611 (skill) | 2026-10-14 | — (tidak dibaca ulang penuh run ini) | **COCOK** arah |
+
+**Usulan teks (Akun B):** Tetap ⚠️ PERLU REVIEW butir bukti potong BPA1 (PER-2/PJ/2024) bila jatuh libur; unggah faktur tgl 20 (PER-11/PJ/2025) tidak bergeser — sudah selaras `aturan-tenggat.md` #21.
+
+---
+
+## C28 selesai
+
+**6/6 skill** terverifikasi laporan 2026-10-14. Revisi teks skill/katalog tetap **Akun B**. Run berikutnya: smoke router → **C24 G18** bila HTTP 200.
