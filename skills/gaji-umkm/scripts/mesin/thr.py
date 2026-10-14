@@ -352,7 +352,7 @@ def baca_csv(path):
 
 def pengumuman(cfg, perusahaan):
     return "\n".join([
-        "Yth. Rekan-rekan karyawan {},".format(perusahaan or "kami"),
+        "Yth. Rekan-rekan karyawan {},".format(perusahaan or "[isi: nama usaha]"),
         "",
         ("Menyambut {}, perusahaan akan membayarkan Tunjangan Hari Raya (THR) Keagamaan paling lambat {} (7 hari "
          "sebelum hari raya).".format(cfg["nama_hari_raya"], format_tanggal(cfg["batas_bayar"]))
@@ -373,7 +373,7 @@ def pengumuman(cfg, perusahaan):
         "Selamat menyambut hari raya. Terima kasih atas kerja keras Bapak/Ibu.",
         "",
         "Salam,",
-        "Manajemen {}".format(perusahaan or ""),
+        "Manajemen {}".format(perusahaan or "[isi: nama usaha]"),
     ]).rstrip()
 
 

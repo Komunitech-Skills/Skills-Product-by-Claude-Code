@@ -30,7 +30,7 @@ Menghasilkan invoice atau kuitansi yang rapi, angkanya pasti benar (dihitung scr
 | Item: nama, jumlah, harga satuan (+ diskon per item) | Ya | — (tanyakan) |
 | Jenis dokumen: invoice atau kuitansi | Tidak | Invoice |
 | Nomor terakhir / nomor yang diinginkan | Tidak | `INV/<tahun>/<bulan>/0001` + pengingat |
-| Kota & nama penanda tangan | Tidak | `[isi kota]`, `[isi nama penanda tangan]` — **jangan dikarang** |
+| Kota, nama & jabatan penanda tangan | Tidak | `[isi kota]`, `[isi nama penanda tangan]` — **jangan dikarang atau ditebak dari data lain** (nama pemilik rekening, nama usaha, nama pengirim pesan bukan nama penanda tangan) |
 | Tanggal & jatuh tempo | Tidak | Hari ini; jatuh tempo 14 hari |
 | Diskon total, ongkir | Tidak | 0 |
 | Status PKP penjual (+ jenis PPN umum/mewah) | Tidak | Pengguna menyebut **PKP** → `"pkp": true` + `"ppn": true` (PPN 12% × DPP nilai lain 11/12, jenis umum) **tanpa bertanya**, sebut asumsinya. Tidak menyebut PKP → tanpa PPN |
@@ -42,9 +42,9 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 **PKP = PPN aktif secara default (jangan bertanya ulang).** Bila pengguna sudah menyebut dirinya PKP ("saya sudah PKP", "usaha kami PKP"), langsung buat invoice ber-PPN: **PPN 12% dengan DPP nilai lain 11/12** (PMK 131/2024, barang/jasa non-mewah). Tulis asumsinya di akhir balasan (mis. "PPN 12% × DPP nilai lain 11/12 karena Anda PKP; bila transaksi ini disepakati tanpa PPN, beri tahu saya"). Jangan pernah menanyakan atau menyebut "PPN 11%" ke pengguna — sebut selalu "PPN 12% (DPP nilai lain 11/12)". Nomor (default `0001`), kota, dan penanda tangan yang tidak disebut cukup jadi placeholder; itu juga bukan alasan untuk bertanya bila item, pembeli, dan penjual sudah lengkap.
 
-**Jangan mengarang data.** Kota, nama penanda tangan, alamat, rekening, NPWP hanya diisi bila pengguna menyebutnya. Bila tidak, biarkan kosong di JSON: script menulis `[isi kota]` / `[isi nama penanda tangan]` dan baris "PERLU DIISI" — sampaikan ke pengguna.
+**Jangan mengarang atau menebak data.** Kota, nama dan jabatan penanda tangan, nama usaha, alamat, rekening (termasuk nama pemilik rekening "a.n."), NPWP hanya diisi bila pengguna **menyebutnya langsung** untuk keperluan itu. Contoh yang dilarang: "BCA 123 a.n. Rini Kusumawati" lalu menulis Rini Kusumawati sebagai penanda tangan, atau menulis "a.n. <nama usaha>" padahal pemilik rekening tidak disebut. Bila tidak disebut, kosongkan kolomnya di JSON: script menulis `[isi kota]` / `[isi nama penanda tangan]` dan baris "PERLU DIISI" (jabatan, alamat, dan "a.n." yang kosong dibiarkan kosong/tidak ditampilkan) — sampaikan ke pengguna sebagai hal yang perlu diisi.
 
-**Penomoran (wajib persis):** salin nomor terakhir **huruf demi huruf** dari pesan pengguna ke `--nomor-terakhir` (jangan dikurangi/ditebak). Nomor baru = nomor terakhir **+ 1** (`INV/2026/09/0012` → `INV/2026/09/0013`). Cocokkan baris `Nomor terakhir dibaca: X -> nomor baru: Y` di output script dengan pesan pengguna sebelum menampilkan invoice.
+**Penomoran (wajib persis):** salin nomor terakhir **huruf demi huruf** dari pesan pengguna ke `--nomor-terakhir` (jangan dikurangi/ditebak). Nomor baru = nomor terakhir **+ 1** (`INV/2026/09/0012` → `INV/2026/09/0013`) dan **tidak pernah sama** dengan nomor terakhir yang disebut pengguna (script memberi PERHATIAN bila sama; kecuali memang revisi, perbaiki). Cocokkan baris `Nomor terakhir dibaca: X -> nomor baru: Y` di output script dengan pesan pengguna sebelum menampilkan invoice.
 - Bulan/tahun dokumen berganti dari nomor terakhir → script mengganti periode dan mulai lagi dari `0001` (`INV/2026/09/0012` + tanggal Oktober → `INV/2026/10/0001`). Jika usaha pengguna melanjutkan nomor lintas bulan, tambah `--urut-lanjut` (→ `INV/2026/10/0013`). Bila tidak jelas, sebutkan aturan yang dipakai.
 - Format lain dikenali: `012/INV/IX/2026` (bulan Romawi, urut di depan), `INV-2026-0012` (nomor tahunan).
 - Tanggal dokumen lebih lama dari periode nomor terakhir → script menolak (nomor mundur); tanyakan ke pengguna.
@@ -55,14 +55,15 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
    - PPh 23: `"pph23": true` (default 2% × subtotal setelah diskon, tanpa PPN & ongkir) atau `{"tanpa_npwp": true}` (4%) / `{"dasar": "<nilai jasa saja>"}` bila invoice juga berisi barang. Ini **info** "estimasi diterima bersih"; total tagihan tidak berubah. Penjual PPh final 0,5% yang sudah memberi Surat Keterangan PP 55 ke klien → jangan diaktifkan.
 2. Jalankan script. Script ada di subfolder `scripts/` di folder yang sama dengan SKILL.md ini (folder skill); jalankan dari sana, jangan mencari ke seluruh disk (`find /`). Windows: `python` atau `py`:
    ```bash
-   python3 <folder-skill-ini>/scripts/buat_invoice.py --file invoice.json --html invoice-INV-0008.html --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
+   python3 <folder-skill-ini>/scripts/buat_invoice.py --file invoice.json --html invoice-{nomor}.html --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
    ```
+   Tulis `{nomor}` apa adanya (jangan diganti tangan): script menggantinya dengan nomor dokumen yang sama dengan yang tampil di chat (`/` menjadi `-`; `001/INV/X/2026` → `invoice-001-INV-X-2026.html`). Untuk kuitansi pakai `kuitansi-{nomor}.html`. Nama berkas tidak boleh dikarang atau ditebak dari nomor lain; sebut ke pengguna nama yang dicetak script ("Versi HTML siap cetak disimpan di: …").
    - `--nomor-terakhir` → nomor terakhir + 1 (aturan ganti bulan/tahun di atas; `--urut-lanjut` bila nomor tidak di-reset).
    - `--counter-file nomor-invoice.json` → mencatat nomor yang sudah dibuat (+ nama pembeli) dan nomor urut per bulan; tanpa `--nomor-terakhir`, nomor diambil dari file ini. Nomor yang sudah dipakai pembeli lain tidak pernah dipakai ulang.
-   - `--html <file>` → versi HTML siap cetak (buka di browser → Cetak → Simpan sebagai PDF).
+   - `--html <file>` → versi HTML siap cetak (buka di browser → Cetak → Simpan sebagai PDF); path boleh memuat `{nomor}` atau berupa folder (nama berkas otomatis dari nomor).
    - `--format json` → angka mentah.
    - Kuitansi DP/cicilan: isi `pembayaran` dengan uang yang diterima sekarang; kuitansi menampilkan uang diterima, baris diterima & sisa belum dibayar, dan **satu** terbilang untuk uang yang diterima.
-3. **Tulis invoice lengkap di balasan chat** (bagian Markdown di atas garis `---`, apa adanya: nomor, item, subtotal, DPP, PPN, TOTAL, info PPh 23 & estimasi diterima bersih, terbilang, rekening). Pengguna di Telegram/WhatsApp **tidak bisa membuka path file lokal**, jadi jangan hanya menyebut lokasi file. File HTML: **lampirkan ke chat bila platform mendukung kirim file**; bila tidak, sebut lokasinya sebagai tambahan dan cara mencetaknya. Bagian "Info untuk penjual" **jangan** ikut dikirim ke pembeli; sampaikan ke pengguna sebagai catatan (meterai, PPN, PPh 23, peringatan) — salin angkanya apa adanya.
+3. **Tulis invoice lengkap di balasan chat** (bagian Markdown di atas garis `---`, apa adanya: nomor, item, subtotal, DPP, PPN, TOTAL, info PPh 23 & estimasi diterima bersih, terbilang, rekening). Pengguna di Telegram/WhatsApp **tidak bisa membuka path file lokal**, jadi jangan hanya menyebut lokasi file. **Berkas HTML dibuat dan dilampirkan untuk SETIAP dokumen, invoice maupun kuitansi** (kuitansi DP/pelunasan tidak dikecualikan). Lampirkan ke chat bila platform mendukung kirim file; bila kanal tidak bisa melampirkan, sebut nama berkasnya saja dan tawarkan "balas 'kirim file'" (jangan hanya memberi path). Bagian "Info untuk penjual" **jangan** ikut dikirim ke pembeli; sampaikan ke pengguna sebagai catatan (meterai, PPN, PPh 23, peringatan) — salin angkanya apa adanya.
 4. Bila meterai wajib: ingatkan untuk menempel meterai Rp10.000 atau e-meterai sebelum tanda tangan.
 5. **Fallback tanpa Python:** hitung dengan rumus di bawah, tulis invoice dengan format yang sama, dan beri tahu pengguna bahwa angka dihitung manual (cek ulang sebelum dikirim).
 
@@ -116,11 +117,12 @@ Catatan ke pengguna: DP Rp3.000.000 tidak melewati Rp5 juta, jadi meterai tidak 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua angka dari script; total, sisa tagihan, dan terbilang cocok.
 - [ ] Klien badan + jasa + disebut "potong PPh 23" → PPh 23 & estimasi diterima bersih ikut tampil (dari script).
-- [ ] Invoice lengkap ditulis di chat; file HTML dilampirkan bila bisa (bukan hanya path).
+- [ ] Invoice lengkap ditulis di chat; file HTML dibuat & dilampirkan untuk setiap dokumen (invoice dan kuitansi) bila bisa; bila tidak, nama berkas disebut + tawaran "balas 'kirim file'" (bukan hanya path).
+- [ ] Nama berkas HTML berasal dari nomor yang tampil di chat (`invoice-{nomor}.html`), bukan nomor lain.
 - [ ] PPN hanya muncul bila penjual PKP; tidak ada PPN untuk non-PKP.
 - [ ] Pengguna menyebut PKP → PPN 12% (DPP nilai lain 11/12) langsung dipakai tanpa bertanya, asumsi disebut; tidak ada tulisan "PPN 11%".
 - [ ] Nomor = nomor terakhir dari pengguna + 1 (cek baris "Nomor terakhir dibaca"), tidak dobel dengan invoice lain (`--counter-file` dipakai, PERHATIAN nomor disampaikan); jatuh tempo tidak lebih awal dari tanggal dokumen.
-- [ ] Tidak ada data karangan: kota/penanda tangan yang tidak disebut tetap `[isi ...]` dan disampaikan ke pengguna.
+- [ ] Tidak ada data karangan/tebakan: kota, nama & jabatan penanda tangan, alamat, dan "a.n." rekening yang tidak disebut tetap kosong/`[isi ...]` dan disampaikan ke pengguna (bukan diambil dari nama pemilik rekening atau nama usaha).
 - [ ] Penanda meterai sesuai (> Rp5.000.000 penerimaan uang).
 - [ ] Rekening & nama penerima benar; tidak ada data pribadi yang tidak diminta.
 - [ ] Bagian "Info untuk penjual" tidak ikut dikirim ke pembeli.

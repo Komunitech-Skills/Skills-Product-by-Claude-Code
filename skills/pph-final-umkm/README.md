@@ -1,45 +1,49 @@
 # Hitung Pajak UMKM 0,5% Tiap Bulan
 
-**Masukkan omzet, langsung tahu pajak per bulan dan kapan batas Rp500 juta terlewati.**
+**Masukkan omzet, langsung tahu pajak per bulan, sisa yang harus disetor setelah dipotong marketplace, dan batas setornya.**
 
-*Diuji AI penguji independen di OpenClaw: 8 → 9 dari 10 (satu skenario; uji pertama skill sempat kalah 7 lawan 8, lalu 9 setelah perbaikan. Angka pajak sama-sama benar; dengan skill ada tabel per bulan lengkap dengan tanggal setor, dan aturan yang belum pasti disebut apa adanya).*
+*Angka pajak dihitung program kecil (bukan dikira-kira) dan dicocokkan dengan hitungan independen. Versi terbaru belum diuji ulang oleh penguji independen; hasil uji terakhir dijelaskan apa adanya di bagian "Hasil uji" di bawah.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Tabel PPh final (pajak penghasilan tetap 0,5% dari omzet) per bulan lengkap dengan omzet kumulatif (dijumlah sejak Januari) dan batas setor
+- ✅ Tabel PPh final (pajak penghasilan tetap 0,5% dari omzet) per bulan lengkap dengan omzet kumulatif (dijumlah sejak Januari) dan batas setor yang sudah digeser ke hari kerja bila tanggal 15 jatuh hari libur
 - ✅ Otomatis menerapkan Rp500 juta pertama bebas pajak untuk orang pribadi, termasuk bulan saat batas terlewati
-- ✅ Mencatat PPh 22 (pajak yang dipungut marketplace dari penjual) supaya tidak tercecer
-- ✅ Mengingatkan bila omzet mendekati batas Rp4,8 miliar
-- ✅ Angka dihitung program kecil (script), bukan dikira-kira, dan disertai dasar aturan
+- ✅ PPh 22 yang sudah dipotong marketplace (Shopee, Tokopedia, Lazada, Blibli) langsung diperhitungkan: terlihat per bulan berapa yang masih harus disetor sendiri dan berapa yang kelebihan dan bisa diminta kembali
+- ✅ Langsung terlihat bulan mana yang batas setornya sudah lewat, mana yang jatuh besok, plus perkiraan pajak sampai akhir tahun
+- ✅ Dasar aturan terbaru disebut (PP 20/2026: orang pribadi dan PT perorangan tidak lagi dibatasi 7/4 tahun)
 
 ## Cocok untuk siapa
-- Penjual online, warung, katering, dan UMKM perorangan yang memakai tarif 0,5%
+- Penjual online, warung, katering, bengkel, dan UMKM perorangan yang memakai tarif 0,5%
 - PT perorangan dan koperasi
 - Admin atau keluarga yang membantu mengurus pajak usaha
 
 ## Contoh sebelum & sesudah
-**Sebelum:** Menjumlah omzet di buku, bingung bulan mana mulai bayar pajak dan berapa persisnya.
+**Sebelum:** Menjumlah omzet di buku, bingung bulan mana mulai bayar pajak, dan tidak tahu apakah potongan PPh 22 dari Shopee sudah cukup atau masih harus setor lagi.
 
-**Sesudah (cukup ketik):** "Saya jualan baju online, atas nama pribadi (bukan PT). Omzet 2026: Jan 38jt, Feb 42jt, Mar 55jt, Apr 61jt, Mei 70jt, Jun 88jt, Jul 95jt, Agu 102jt. Pajaknya berapa per bulan?"
+**Sesudah (cukup ketik):** "Saya jualan baju di Shopee sama toko kecil di rumah, atas nama pribadi. Omzet 2026: Jan 52jt, Feb 48,5jt, Mar 95jt, Apr 61jt, Mei 58jt, Jun 64jt, Jul 70jt, Agu 73jt, Sep 66jt. Shopee potong PPh 22 Agu 180rb, Sep 165rb. Ada yang telat?"
 
-*Cuplikan hasil nyata dari `examples/01-olshop-pribadi-lewat-500-juta.md` (baris Februari–Juli dan catatan dasar aturan dipotong):*
+*Cuplikan hasil hitungan versi 1.0.4 untuk pesan di atas (data fiktif, tanggal acuan 14 Oktober 2026; baris Januari–Juli dan catatan dipotong):*
 ```
-| Bulan | Omzet | Omzet kumulatif | Omzet kena pajak | PPh final 0,5% | PPh 22 marketplace (info) | Setor paling lambat | Keterangan |
-|---|---:|---:|---:|---:|---:|---|---|
-| Januari | Rp 38.000.000 | Rp 38.000.000 | Rp 0 | Rp 0 | - | 2026-02-15 | masih dalam Rp500 juta bebas |
+| Bulan | Omzet | Omzet kumulatif | Omzet kena pajak | PPh final 0,5% | PPh 22 dipungut marketplace | Kurang/lebih setor | Setor paling lambat | Keterangan |
+|---|---:|---:|---:|---:|---:|---|---|---|
 …
-| Agustus | Rp 102.000.000 | Rp 551.000.000 | Rp 51.000.000 | Rp 255.000 | - | 2026-09-15 | melewati Rp500 juta; hanya Rp 51.000.000 yang kena pajak |
-| **Total** | **Rp 551.000.000** | | | **Rp 255.000** | - | | |
+| Agustus | Rp73.000.000 | Rp521.500.000 | Rp21.500.000 | Rp107.500 | Rp180.000 | lebih Rp72.500 | - | melewati Rp500 juta; hanya Rp21.500.000 yang kena pajak; PPh 22 lebih dipungut, bisa diminta kembali |
+| September | Rp66.000.000 | Rp587.500.000 | Rp66.000.000 | Rp330.000 | Rp165.000 | kurang Rp165.000 (setor sendiri) | Kamis 15 Okt 2026 - BESOK | - |
+| **Total (Januari–September)** | **Rp587.500.000** |  |  | **Rp437.500** | Rp345.000 | kurang Rp165.000; lebih Rp72.500 |  |  |
 
-**Penjelasan singkat:** Januari–Juli Anda belum bayar PPh final karena omzet kumulatif masih di bawah Rp500 juta. Di **Agustus** omzet kumulatif menjadi Rp551 juta, jadi **hanya Rp51 juta** (bagian di atas Rp500 juta) yang kena 0,5% → **Rp255.000**. Mulai September, seluruh omzet tiap bulan kena 0,5%.
+- Total kurang setor (disetor sendiri): Rp165.000
+- Total lebih dipungut (dapat diajukan pengembalian): Rp72.500
+- Batas setor terdekat yang belum lewat: Kamis 15 Oktober 2026 (besok), masa September, setor sendiri Rp165.000
 ```
+Artinya: tidak ada yang telat. Agustus sudah tertutup potongan Shopee (malah lebih Rp72.500), September tinggal Rp165.000 yang disetor sendiri paling lambat besok. Tanpa memperhitungkan PPh 22, Anda bisa menyetor Rp272.500 lebih banyak dari yang perlu.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Hitung PPh final UMKM saya dari file omzet-2026.csv."
 - "PT perorangan saya omzet Agustus 120 juta, pajaknya berapa?"
-- "Sisa omzet bebas pajak saya tahun ini tinggal berapa?"
+- "Shopee sudah potong PPh 22 bulan ini 250 ribu, saya masih harus setor berapa?"
+- "Pajak UMKM saya bulan ini berapa? Omzet Oktober kira-kira 85 juta." (AI langsung memberi kemungkinan hasilnya, lalu menanyakan data yang kurang)
 
 ## Instalasi singkat
 Salin folder `pph-final-umkm` ke folder skills AI agent Anda:
@@ -53,24 +57,24 @@ Salin folder `pph-final-umkm` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
-- **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario orang pribadi dengan NPWP, yaitu nomor pokok wajib pajak, sejak 2021): skor tanpa skill 8 → dengan skill 7 pada uji pertama (skill kalah), lalu 9 setelah perbaikan v1.0.3. Selisih akhir +1 poin dan terutama pada tabel per bulan dengan tanggal setor serta sikap jujur soal batas 7 tahun, bukan angka pajaknya (kedua sisi sama-sama benar). Usaha berbentuk badan dan aturan PP 20/2026 belum diuji di OpenClaw.
-- **Uji simulasi agent (perbandingan tanpa dan dengan skill), 23 September 2026** (`examples/00-pembanding-tanpa-skill.md` dan `examples/HASIL-UJI.md`): olshop perorangan dengan omzet Januari–Agustus 2026 sebesar Rp551.000.000. Angka inti sama-sama benar (Januari–Juli Rp0, Agustus Rp255.000), tetapi tanpa skill tidak ada tabel per bulan dan tanggal setor, dan jawabannya menyatakan pasti bahwa tarif 0,5% "maksimal 7 tahun", padahal batas itu mungkin berubah oleh PP 20/2026 dan belum terverifikasi. Dengan skill status aturan itu disebut jujur dan Anda diarahkan ke DJP (Direktorat Jenderal Pajak). Angka skill juga cocok dengan hitungan independen pada 400 kasus acak (0 selisih).
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10.
+- **Uji ulang di OpenClaw, 14 Oktober 2026 (versi 1.0.3, 5 skenario):** rata-rata tanpa skill 6,8 → dengan skill 6,1, jadi versi itu **belum lolos**. Angka PPh final dari hitungan selalu benar dan tabel batas setor per bulan unggul, tetapi versi 1.0.3 belum memperhitungkan PPh 22 marketplace sebagai bagian pelunasan PPh final (aturan yang dipakai sudah usang; di salah satu contoh pembeli bisa menyetor Rp272.500 lebih banyak dari yang perlu), masih menyebut batas 7 tahun yang sudah dihapus PP 20/2026, dan AI sempat menulis tanggal "hari ini" serta satu subtotal sendiri yang keliru. **Versi 1.0.4 memperbaiki ketiganya** (PPh 22 dikurangkan per bulan, aturan batas waktu mengikuti naskah resmi PP 20/2026, tanggal acuan dan subtotal dicetak oleh hitungan sehingga AI tidak menjumlah sendiri), tetapi **belum diuji ulang**.
+- Uji yang lebih lama: OpenClaw 1 Oktober 2026 (versi 1.0.3, satu skenario orang pribadi) tanpa skill 8 → dengan skill 9; uji simulasi agent 23 September 2026, angka cocok dengan hitungan independen pada 400 kasus acak (0 selisih). Keduanya sebelum aturan PPh 22 dan PP 20/2026 diperbarui, jadi bukan bukti untuk versi terbaru.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** versi 1.0.4 belum diuji ulang di OpenClaw maupun platform lain; uji ulang 14 Oktober 2026 atas versi 1.0.3 belum lolos karena aturan PPh 22 usang. Versi sebelumnya pernah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Aturan pajak dicek ke naskah resmi pada 14 Oktober 2026.
 
 ## FAQ
 **Apakah hasil ini bisa langsung dipakai untuk setor pajak?**
 Hasilnya adalah hitungan bantu. Setoran dan pelaporan tetap lewat Coretax (sistem pajak online) atau DJP. Untuk kasus khusus, konfirmasi ke DJP (Kring Pajak 1500200) atau konsultan pajak.
 
-**Saya CV, masih bisa pakai tarif 0,5%?**
-Aturan baru (PP 20/2026) mengeluarkan CV, firma, dan PT biasa dari skema ini dengan masa transisi. Skill akan menghitung simulasinya, tapi pastikan dulu ke DJP apakah usaha Anda masih boleh memakai 0,5%.
-
 **PPh 22 yang dipotong Shopee/Tokopedia mengurangi pajak saya?**
-Pungutan itu dicatat di tabel sebagai informasi. Cara memperhitungkannya dengan PPh final perlu ditanyakan ke DJP atau konsultan, jadi skill tidak menguranginya otomatis.
+Ya. Menurut FAQ DJP tentang PMK 37/2025 (versi 1 Juli 2026), potongan itu bagian dari pelunasan PPh final 0,5% Anda. Bila potongannya kurang, sisanya disetor sendiri; bila lebih, kelebihannya bisa diajukan permohonan pengembalian ke DJP. Skill menghitungnya per bulan.
 
-> **Catatan penting:** alat bantu hitung, bukan nasihat pajak. Dasar aturan (PP = Peraturan Pemerintah, PMK = Peraturan Menteri Keuangan; berlaku per 23 September 2026): PP 55/2022 sebagaimana diubah PP 20/2026 (PPh final 0,5%; omzet Rp500 juta pertama bebas untuk orang pribadi; batas omzet Rp4,8 miliar); batas setor tanggal 15 bulan berikutnya dan digeser ke hari kerja bila libur (PMK 81/2024 Pasal 94 dan 100); PPh 22 marketplace PMK 37/2025 (berlaku 1 Agustus 2026). Batas jangka waktu tarif 0,5% dan masa transisi CV/firma/PT belum terverifikasi, jadi tidak disampaikan sebagai kepastian. PPh dibulatkan ke bawah dan pembulatan ini belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Kepastian: DJP (Kring Pajak 1500200) atau konsultan pajak.
+**NPWP saya sudah lebih dari 7 tahun, atau usaha saya CV. Masih bisa pakai 0,5%?**
+Orang pribadi dan PT perorangan: bisa, karena PP 20/2026 menghapus batas 7 tahun (orang pribadi) dan 4 tahun (PT perorangan), selama omzet setahun tidak melebihi Rp4,8 miliar. CV, firma, dan PT biasa sudah dikeluarkan dari skema 0,5%; yang terdaftar sebelum 22 April 2026 hanya boleh meneruskan sisa jangka waktu lamanya. Sebutkan tahun NPWP terdaftar, AI akan menghitung sampai tahun berapa.
+
+> **Catatan penting:** alat bantu hitung, bukan nasihat pajak. Dasar aturan (PP = Peraturan Pemerintah, PMK = Peraturan Menteri Keuangan; dicek ke sumber resmi 14 Oktober 2026): PP 55/2022 sebagaimana diubah PP 20/2026 (PPh final 0,5%; omzet Rp500 juta pertama bebas untuk orang pribadi; batas omzet Rp4,8 miliar; batas waktu orang pribadi dan PT perorangan dihapus); PPh 22 marketplace PMK 37/2025 dan FAQ DJP versi 1 Juli 2026 (potongan = bagian pelunasan PPh final); batas setor tanggal 15 bulan berikutnya dan digeser ke hari kerja bila libur (PMK 81/2024 Pasal 94 dan 100). PPh dan selisihnya dengan PPh 22 dibulatkan ke bawah; pembulatan ini belum dicocokkan dengan Coretax, bila berbeda ikuti Coretax. Kepastian: DJP (Kring Pajak 1500200) atau konsultan pajak.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

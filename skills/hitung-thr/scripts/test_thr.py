@@ -314,6 +314,49 @@ class TesCekTanggalLebaran(unittest.TestCase):
         self.assertIn("COCOK", p.stdout)
 
 
+class TesHariRayaBerikutnya(unittest.TestCase):
+    """v1.0.10 (uji OpenClaw 2026-10-14): hari raya tidak disebut -> hitung dulu dengan perkiraan Lebaran
+    berikutnya sebagai asumsi (bukan hanya bertanya)."""
+
+    def test_lebaran_berikutnya_dari_oktober_2026(self):
+        import tahun_hijriah as th
+        b = th.hari_raya_berikutnya(datetime.date(2026, 10, 14), "idul-fitri")
+        self.assertEqual(b["perkiraan"], "2027-03-10")
+        self.assertEqual(b["batas_bayar_h7_perkiraan"], "2027-03-03")
+        self.assertEqual(b["nama_hari_raya"], "Idul Fitri 1448 H")
+        self.assertIn("ASUMSI", b["catatan"])
+
+    def test_pada_dan_sesudah_hari_raya(self):
+        import tahun_hijriah as th
+        self.assertEqual(th.hari_raya_berikutnya(datetime.date(2027, 3, 10), "idul-fitri")["perkiraan"], "2027-03-10")
+        b = th.hari_raya_berikutnya(datetime.date(2027, 3, 11), "idul-fitri")
+        self.assertGreater(b["perkiraan"], "2027-03-11")
+        self.assertEqual(b["tahun_hijriah"], 1449)
+        self.assertTrue(th.cek_hari_raya(datetime.date.fromisoformat(b["perkiraan"]), "idul-fitri")["sesuai"])
+
+    def test_selalu_dalam_satu_tahun_ke_depan(self):
+        import tahun_hijriah as th
+        t = datetime.date(2026, 1, 1)
+        while t < datetime.date(2030, 1, 1):
+            for jenis in ("idul-fitri", "idul-adha"):
+                p = datetime.date.fromisoformat(th.hari_raya_berikutnya(t, jenis)["perkiraan"])
+                self.assertTrue(0 <= (p - t).days <= 355, (t, jenis, p))
+            t += datetime.timedelta(days=13)
+
+    def test_cli_berikutnya(self):
+        s = os.path.join(FOLDER, "tahun_hijriah.py")
+        p = subprocess.run([sys.executable, s, "2026-10-14", "--berikutnya", "idul-fitri"], capture_output=True,
+                           text=True, timeout=60)
+        self.assertEqual(p.returncode, 0)
+        self.assertIn("2027-03-10", p.stdout)
+        self.assertIn("2027-03-03", p.stdout)
+        self.assertIn("Idul Fitri 1448 H", p.stdout)
+        self.assertNotIn("Jumadilawal", p.stdout)   # tanggal hari ini tidak dicampur dengan nama hari raya
+        p = subprocess.run([sys.executable, s, "2026-10-14", "--berikutnya", "idul-adha", "--format", "json"],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(json.loads(p.stdout)["perkiraan"], "2027-05-17")
+
+
 class TesPrivasiDanTanggalMasaDepan(unittest.TestCase):
     """v1.0.6 (uji OpenClaw 2026-10-02): nominal per orang bocor ke pengumuman grup; tanggal masuk masa depan lolos."""
 

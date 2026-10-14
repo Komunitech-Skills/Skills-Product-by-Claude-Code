@@ -2,14 +2,14 @@
 
 **Perkiraan (proyeksi) kas 13 minggu ke depan, lengkap dengan tanda bahaya dan jalan keluarnya — cukup ceritakan pemasukan dan pengeluaran Anda.**
 
-*Diuji AI penguji independen: 7,5 → 9 dari 10 (minggu kas menipis ketemu, lengkap dengan pilihan tindakan yang dihitung ulang berangka).*
+*Uji sebelum/sesudah di OpenClaw (14 Oktober 2026, versi 1.0.4): rata-rata 6,75 → 8,5 dari 10 pada 4 skenario. Tabel 13 minggu cocok 100% dengan hitungan ulang independen, dan setiap pilihan tindakan disertai angkanya.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Tahu **minggu ke berapa** uang usaha diperkirakan kurang dan berapa kurangnya (dari angka yang Anda berikan)
 - ✅ Tanggal gajian, sewa, cicilan, dan pajak otomatis ditempatkan di minggu yang benar
-- ✅ 3–5 jalan keluar konkret (tagih lebih cepat, atur termin supplier, tunda belanja) **beserta hitungan dampaknya**
+- ✅ 3–5 jalan keluar konkret (tagih lebih cepat, atur termin supplier, tunda belanja, pinjaman) **beserta hitungan dampaknya**, dibandingkan berdampingan
 - ✅ File tabel (CSV) siap buka di Excel/Google Sheets untuk dipantau tiap minggu
 - ✅ Angka dihitung script, bukan dikira-kira
 
@@ -57,11 +57,13 @@ Salin folder `arus-kas-13minggu` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** penguji AI independen, skor 1–10, dua sumber yang terpisah.
+**Hasil uji (angka nyata):** penguji AI independen, skor 1–10.
+- **Uji sebelum/sesudah OpenClaw, 14 Oktober 2026 (versi 1.0.4)** (`examples/00-openclaw-sebelum-sesudah.md`, 5 skenario fiktif: usaha kue, CV dengan file CSV, bengkel yang menimbang order besar, laundry dengan info kurang, toko sembako yang bertanya soal menunda pajak/gaji atau pinjol): rata-rata **6,75 tanpa skill → 8,5 dengan skill** pada 4 skenario yang bisa dinilai. Tabel 13 minggu cocok 100% dengan hitungan ulang independen; contoh beda: tanpa skill satu jawaban menyimpulkan "kas aman, tidak pernah minus" karena gajian terlewat, padahal minggu ke-3 minus Rp700.000. Skenario toko sembako **tidak bisa dinilai**: dengan skill, AI menghitung terlalu banyak simulasi terpisah dan habis waktu sebelum menjawab. Penguji juga mencatat waktu jawab yang lama (sampai lebih dari 10 menit) dan satu kesalahan baca file CSV.
+- **Versi 1.0.5** memperbaiki temuan itu: semua pilihan tindakan dihitung dalam satu kali jalan (lebih cepat), setiap pilihan menyebut persis pos mana yang digeser, dan file CSV dengan tanda `;` berlebih kini terbaca. **Versi 1.0.5 belum diuji ulang.**
 - **Uji OpenClaw, 1 Oktober 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`, satu skenario: saldo awal Rp380 juta, info dilengkapi setelah ditanya sekali): skor tanpa skill 7,5 → dengan skill 8,5 pada uji pertama, lalu 9 setelah perbaikan v1.0.3.
 - **Uji simulasi agent (perbandingan tanpa dan dengan skill), 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`, usaha katering dengan kas Rp 35 juta): jawaban tanpa skill per bulan: "aman, saldo terendah sekitar Rp 14,9 juta". Padahal di minggu ke-6 (2–8 November) saldo tinggal Rp 6.300.000 karena freezer, sewa, dan bahan jatuh di minggu yang sama. Dengan skill titik kritis itu ketemu, lengkap dengan 5 opsi tindakan berangka; saldo 13 minggu cocok dengan hitungan independen (13 dari 13 minggu).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, terakhir 14 Oktober 2026 pada versi 1.0.4) dan Claude Code (simulasi agent). Versi 1.0.5 (perbaikan waktu jalan & pembacaan CSV) belum diuji ulang; satu skenario uji 14 Oktober perlu dijalankan ulang. Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Saya tidak punya data rapi, hanya perkiraan. Bisa?**
@@ -77,4 +79,4 @@ Script berjalan di komputer Anda sendiri tanpa internet. Isi percakapan tetap di
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

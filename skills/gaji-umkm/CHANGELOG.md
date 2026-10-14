@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.12 (2026-10-14)
+- Salinan mesin `thr.py` disinkronkan dengan hitung-thr 1.0.11 (teks pengumuman memakai `[isi: nama usaha]` bila nama tidak diberikan); sha256 di `SUMBER.json` diperbarui. Rumus tidak berubah.
+
 ## Catatan revisi 1.0.6 (2026-10-01)
 - AI tidak lagi berhenti untuk menanyakan tanggal masuk di giliran terpisah (temuan uji OpenClaw). Bila nama, status, dan gaji pokok sudah ada, AI langsung menghitung dengan default wajar (tanggal masuk 1 Januari tahun berjalan, JKK 0,24%, ikut semua BPJS) dan menyebut asumsinya. Semua hal yang perlu dicek — tanggal masuk, **UMK daerah**, tarif JKK — digabung dalam **satu** pesan.
 - Pemakaian pertama: angka langsung keluar di balasan pertama lewat mesin hitung yang sama (hitungan sementara, tanpa menyimpan), lalu database dibuat setelah Anda setuju.
