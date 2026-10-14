@@ -1,0 +1,18 @@
+HASIL SKOR WAWANCARA
+Kandidat: 1 | Pewawancara: 1 (Pewawancara 1)
+Bobot: A 50%; B 50%
+
+PERINGKAT
+- Hanya satu kandidat: tidak ada peringkat. Dinilai terhadap standar (3 = memenuhi standar), bukan terhadap kandidat lain.
+- C1 Tunggal: total 3,25 dari 5. Pertimbangkan (cadangan)
+
+RATA-RATA PER KOMPETENSI (1-5)
+- C1 Tunggal: A 4,00; B 2,50
+
+PERLU DIBAHAS (selisih antar pewawancara lebih dari 1,5 poin)
+- Tidak bisa dicek: hanya satu pewawancara.
+
+RINGKASAN KEPUTUSAN
+- C1 Tunggal: total 3,25 dari 5; terkuat A (4,00), terlemah B (2,50). Saran: Pertimbangkan (cadangan).
+
+Aturan saran: lanjut bila total >= 3,5 dan tidak ada kompetensi di bawah 2,5 (kompetensi kritis: di bawah 3); cadangan bila total >= 2,75. Saran adalah alat bantu; keputusan tetap di pemilik/tim.

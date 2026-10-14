@@ -1,0 +1,92 @@
+{
+ "posisi": "Kasir kafe (data uji fiktif)",
+ "kompetensi": [
+  {
+   "nama": "Ketelitian uang",
+   "bobot": 30,
+   "kritis": true
+  },
+  {
+   "nama": "Layanan pelanggan",
+   "bobot": 25,
+   "kritis": false
+  },
+  {
+   "nama": "Kecepatan saat ramai",
+   "bobot": 20,
+   "kritis": false
+  },
+  {
+   "nama": "Kejujuran",
+   "bobot": 15,
+   "kritis": true
+  },
+  {
+   "nama": "Kerja sama tim",
+   "bobot": 10,
+   "kritis": false
+  }
+ ],
+ "kandidat": [
+  {
+   "kode": "C1",
+   "nama": "Dina",
+   "skor": {
+    "Lina": {
+     "Ketelitian uang": 4,
+     "Layanan pelanggan": 4,
+     "Kecepatan saat ramai": 3,
+     "Kejujuran": 4,
+     "Kerja sama tim": 3
+    },
+    "Arif": {
+     "Ketelitian uang": 4,
+     "Layanan pelanggan": 5,
+     "Kecepatan saat ramai": 3,
+     "Kejujuran": 4,
+     "Kerja sama tim": 4
+    }
+   }
+  },
+  {
+   "kode": "C2",
+   "nama": "Rizal",
+   "skor": {
+    "Lina": {
+     "Ketelitian uang": 3,
+     "Layanan pelanggan": 4,
+     "Kecepatan saat ramai": 4,
+     "Kejujuran": 4,
+     "Kerja sama tim": 4
+    },
+    "Arif": {
+     "Ketelitian uang": 5,
+     "Layanan pelanggan": 4,
+     "Kecepatan saat ramai": 4,
+     "Kejujuran": 3,
+     "Kerja sama tim": 4
+    }
+   }
+  },
+  {
+   "kode": "C3",
+   "nama": "Wulan",
+   "skor": {
+    "Lina": {
+     "Ketelitian uang": 3,
+     "Layanan pelanggan": 5,
+     "Kecepatan saat ramai": 4,
+     "Kejujuran": 4,
+     "Kerja sama tim": 5
+    },
+    "Arif": {
+     "Ketelitian uang": 2,
+     "Layanan pelanggan": "3,5",
+     "Kecepatan saat ramai": 4,
+     "Kejujuran": 4,
+     "Kerja sama tim": 4
+    }
+   }
+  }
+ ]
+}
