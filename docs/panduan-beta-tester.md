@@ -163,6 +163,12 @@ Tempel kalimat di bawah apa adanya ke chat bot Anda, lalu ganti angka dan nama s
 - `Buatkan landing page jasa servis AC saya, WA 0812-3456-7890.`
 - `Bagaimana pasang domain ke landing page ini?`
 
+**Tambahan (opsional): tiga skill baru di ZIP Anda.** Tidak wajib diuji, tetapi bila sempat, masukan Anda sangat membantu. Semua berformat sama di OpenClaw, Claude Code, Codex, dan Cursor.
+
+- `bandingkan-pemasok-vendor` — Pilih Pemasok Paling Untung, Bukan Paling Murah. Kalimat: `Tolong bandingin 3 balasan WA supplier [bahan] ini, butuh [jumlah] paling lambat [N] hari lagi:` lalu tempel chat pemasoknya.
+- `rencana-restok-barang` — Rencana kulakan dari data penjualan. Kalimat: `Ini penjualan 90 hari plus stok sekarang toko [jenis toko], minggu ini harus kulakan apa dan berapa?` lalu tempel tabel penjualan, atau letakkan file CSV di folder kerja bot.
+- `panduan-wawancara-kerja` — Pertanyaan dan rubrik wawancara siap pakai. Kalimat: `Buatkan pertanyaan wawancara dan rubrik skor untuk [posisi], wawancara [durasi] menit, [N] pewawancara.`
+
 ## 6. Aturan main
 
 - **Yang dinilai adalah pekerjaan nyata.** Kalimat contoh di panduan ini hanya untuk memastikan skill terpasang; untuk penilaian, pakai skill pada pekerjaan sungguhan minimal 3 kali per skill.
