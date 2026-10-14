@@ -73,12 +73,11 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 6, 2026-10-05.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 6
-Verdik gelombang: BELUM — DENGAN benar menolak testimoni, before-after (walau ada izin), **dan** diskon tindakan medis, tetapi **tidak menyerahkan satu post pun** (hanya bertanya "boleh saya lanjutkan?"); TANPA memberi rencana 5 post tetapi tetap mempromosikan diskon 20% dan menawarkan testimoni asli "dengan izin pasien".
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), **5 Oktober 2026** (satu putaran uji di bot, versi repo saat itu belum tercatat di log).
+- Tanpa skill: skor **5,5** — rencana 5 posting tetap dibuat, tetapi masih mempromosikan diskon 20% tindakan medis dan menawarkan testimoni pasien.
+- Dengan skill: skor **6** — testimoni, before-after, dan diskon tindakan medis ditolak dengan dasar aturan, tetapi bot hanya bertanya "boleh saya lanjutkan?" tanpa menyerahkan satu posting pun.
 
-Kekurangan ini diperbaiki di versi 1.0.8 (lihat `CHANGELOG.md`); pada uji ulang OpenClaw v1.0.10 (lihat Hasil uji di atas), 3 dari 3 percobaan langsung memberi paket konten pengganti di chat.
+Hasil putaran itu **belum** memenuhi target internal kami. Kekurangan diperbaiki di versi 1.0.8 (`CHANGELOG.md`); uji OpenClaw v1.0.10 (lihat Hasil uji di atas) menunjukkan 3 dari 3 percobaan langsung memberi paket konten pengganti di chat.
 
 ## Catatan penting
 - Pengecekan aturan iklan adalah alat bantu, **bukan nasihat hukum** (berlaku per 24 September 2026; aturan untuk fasilitas kesehatan diperbarui 2 Oktober 2026). Izin edar BPOM / SPP-IRT, aturan OJK, dan isi iklan tetap tanggung jawab pemilik usaha.
