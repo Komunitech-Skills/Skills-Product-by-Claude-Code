@@ -33,7 +33,7 @@ BATAS_LANJUT = Fraction(7, 2)         # total >= 3,5 = disarankan lanjut
 BATAS_CADANGAN = Fraction(11, 4)      # total >= 2,75 = pertimbangkan (cadangan)
 LANTAI_KOMPETENSI = Fraction(5, 2)    # rata-rata kompetensi < 2,5 = di bawah standar
 LANTAI_KRITIS = Fraction(3)           # kompetensi kritis < 3,0 = di bawah standar
-VERSI = "1.0.1"
+VERSI = "1.0.2"
 KOSONG = {"", "-", "–", "—", "n/a", "na", "null", "none", "belum", "kosong", "tidak ada"}
 
 S_LANJUT = "Disarankan lanjut"

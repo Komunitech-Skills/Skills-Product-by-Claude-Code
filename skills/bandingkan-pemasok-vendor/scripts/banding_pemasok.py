@@ -42,7 +42,7 @@ import sys
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.2"
+VERSI = "1.0.3"
 TARIF_PPN = Decimal(11) / Decimal(100)  # 12% x 11/12 (DPP nilai lain, barang non-mewah)
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, "
                "tanpa menyebut script/file/proses]")
