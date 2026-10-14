@@ -69,8 +69,44 @@ Inventaris dari `references/sumber-pedoman.md` (tidak mengubah skill). Setiap ba
 
 ---
 
+## 3. `lowongan-kerja` — SE Menaker, UU PDP, UMK/PP 36/2021
+
+**Run Akun C:** 2026-10-14 ~22:00 UTC
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| SE Menaker **M/6/HK.04/V/2025** (28 Mei 2025), larangan syarat diskriminatif rekrutmen | https://jdih.kemnaker.go.id/peraturan/detail/2686/surat-edaran-menteri-nomor-6-tahun-2025 | 2026-10-14 | «Surat Edaran Menteri … M/6/HK.04/V/2025 … Tanggal Penetapan 28 Mei 2025 … LARANGAN - DISKRIMINASI - REKRUTMEN» | **COCOK** — selaras `references/anti-diskriminasi.md` & SKILL.md |
+| UU 13/2003 Pasal 5–6 (kesempatan/perlakuan sama) | C25 §1 + BPK UU 13/2003 | 2026-10-14 | Pasal 5–6 tidak diubah UU 6/2023 klaster ketenagakerjaan | **COCOK** |
+| UU 27/2022 — data pelamar = data pribadi; pemrosesan rekrutmen | C25 §4 (Pasal 4 ayat 2 data kesehatan); UU 27/2022 | 2026-10-14 | Skill merujuk UU PDP untuk retensi/hapus data pelamar | **COCOK** arah; **PERLU UBAH** (Akun B): cantum Pasal 20 (dasar pemrosesan) & Pasal 37–39 (hak/hapus) bila dipakai di SKILL, seperti usulan C25 |
+| Larangan upah di bawah UMK (UU 13/2003 Ps. 88E ayat 2 s.t.d.d. UU 6/2023) | UU 13/2003 (diubah UU 6/2023); PP 36/2021 Ps. 36–37 (pengecualian mikro/kecil) | 2026-10-14 | Skill sudah bedakan larangan umum vs pengecualian usaha mikro/kecil; angka UMK tidak dikarang | **COCOK** — tetap wajib `[isi: UMK]` & cek Disnaker setempat |
+| UU 8/2016 (disabilitas, kuota 1%/2%) | BPK UU 8/2016 (metadata skill) | 2026-10-14 | — | **COCOK** (nomor & arah); detail kuota **PERLU REVIEW** Akun B bila angka persen disebut di README |
+
+**Usulan teks (Akun B):** (1) Di `anti-diskriminasi.md`, tambah tautan JDIH resmi SE 2686 sebagai sumber primer. (2) Perkuat footnote UU PDP dengan pasal spesifik dari C25 §4. (3) README sudah benar menolak mengarang UMK — pertahankan.
+
+---
+
+## 4. `pengajuan-kur` — Permenko Perekonomian 1/2026
+
+**Run Akun C:** 2026-10-14 ~22:00 UTC (silang cek teks BPK PDF `2026PemenkoEkon001` + metadata JDIH BPK 342969)
+
+| Klaim skill (`references/regulasi.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Plafon KUR Mikro > Rp10 jt s.d. Rp100 jt per akad | Permenko 1/2026 Pasal 36 ayat (1) | 2026-10-14 | «… di atas Rp10.000.000 … paling banyak Rp100.000.000 … per akad» | **COCOK** |
+| Perdagangan non-ekspor: **maks. 2 akad**; akad ke-1 **6%**, ke-2 **7%** efektif/tahun | Pasal 36 ayat (3) huruf b; Pasal 37 ayat (1) huruf b | 2026-10-14 | «paling banyak 2 (dua) kali akad»; «6% … akad pertama» / «7% … akad kedua» | **COCOK** — inti jebakan skenario 2 skill |
+| Bunga = **efektif**; flat harus setara (bukan 6% flat = 6% efektif) | Pasal 37 ayat (1) (frasa flat/anuitas setara) | 2026-10-14 | Sama teks skill & script `--kur` | **COCOK** |
+| Tenor awal Mikro: modal kerja **3 th**, investasi **5 th** | Pasal 38 ayat (1) | 2026-10-14 | «paling lama 3 … modal kerja» / «5 … investasi» | **COCOK** |
+| Plafon ≤ Rp100 jt: **tanpa agunan tambahan** | Pasal 20 ayat (1) | 2026-10-14 | «Penyalur KUR tidak diperbolehkan mensyaratkan … agunan tambahan» | **COCOK** |
+| Nilai cair = nilai akad (tolak potongan/calo) | Pasal 13 ayat (2) | 2026-10-14 | «Jumlah KUR … harus sesuai dengan jumlah yang tercantum dalam akad» | **COCOK** |
+| NPWP wajib pinjaman Mikro **> Rp50 juta** | Pasal 34 ayat (1) huruf d | 2026-10-14 | «… di atas Rp50.000.000 … nomor pokok wajib pajak» | **COCOK** |
+| Usaha berjalan **≥ 6 bulan** (syarat calon) | Pasal 34 ayat (1) huruf a | 2026-10-14 | «… paling singkat 6 (enam) bulan» | **COCOK** |
+| Berlaku sejak **13 Januari 2026** | JDIH BPK Permenko 342969 | 2026-10-14 | «mulai berlaku pada tanggal 13 Januari 2026» | **COCOK** — skill sudah catat 2026-09-23 |
+
+**Usulan teks (Akun B):** Tidak wajub ubah angka; opsional perbarui tanggal «dicek» di `regulasi.md` ke 2026-10-14 setelah silang cek ini. Tetap cantumkan «tanpa biaya provisi» hanya sebagai **BELUM TERVERIFIKASI** (kata provisi tidak di teks Permenko) — sudah benar di skill.
+
+---
+
 ## Run berikutnya (C29)
 
-Urutan sisa: (3) `lowongan-kerja`, (4) `pengajuan-kur` (ganti slot kontrak — sudah C28), (5) `simulasi-cicilan-pinjaman`, (6) `harga-jual-marketplace` — 2 skill per run bila router masih 530.
+Urutan sisa: (5) `simulasi-cicilan-pinjaman`, (6) `harga-jual-marketplace` — 2 skill per run bila router masih 530.
 
 Smoke router → **C24 G18** bila HTTP 200 (pesan 2–10 `msgs-g18.json` belum terkirim).
