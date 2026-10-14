@@ -1,4 +1,4 @@
-# Odoo Usaha: Tanya Odoo Lewat Chat, Laporan Harian Siap Pakai
+# Tanya Odoo Lewat Chat, Laporan Siap Pakai
 
 **Tanya "penjualan hari ini berapa?", "siapa yang belum bayar?", atau "stok apa yang mau habis?" — AI Anda langsung membaca Odoo milik usaha Anda dan menjawab dengan angka yang dihitung, bukan dikira. Laporan harian bisa dikirim otomatis ke Telegram pemilik (jadwal otomatis belum diuji langsung), dan penawaran (quotation) bisa disiapkan sebagai draf tanpa membuka menu Odoo.**
 

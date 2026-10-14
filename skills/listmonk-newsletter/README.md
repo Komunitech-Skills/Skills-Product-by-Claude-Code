@@ -1,4 +1,4 @@
-# listmonk Newsletter: Kirim Email ke Pelanggan Tanpa Mailchimp
+# Newsletter Email Tanpa Biaya per Kontak
 
 **Suruh AI Anda menyiapkan kontak, menulis email promo dalam bahasa Indonesia, mengujinya ke diri sendiri, menjadwalkan, dan membaca berapa yang membuka dan mengklik. Semua lewat listmonk, aplikasi newsletter gratis yang jalan di komputer/server Anda sendiri, tanpa biaya bulanan per jumlah kontak (biaya server, domain, dan layanan pengirim email tetap ada).**
 
