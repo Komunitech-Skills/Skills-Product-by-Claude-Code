@@ -6,3 +6,5 @@ balas-ulasan-pelanggan
 promo-kalender
 kas-umkm
 dasbor-lokal
+rencana-restok-barang
+bandingkan-pemasok-vendor

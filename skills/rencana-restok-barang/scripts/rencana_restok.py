@@ -12,9 +12,12 @@ Rumus (Komunitech; dijelaskan dengan bahasa awam di references/rumus-dan-istilah
   Simpangan (sd)  : simpangan baku sampel (n-1) deret harian.
                     Data mingguan/bulanan: sd harian = sd laju per periode x akar(panjang periode);
                     < 4 periode penuh -> sd = akar(mu) (asumsi, disebut di catatan).
-  Tren            : faktor = rata-rata 28 hari terakhir / mu (data >= 42 hari; mingguan >= 6 minggu;
-                    bulanan >= 3 bulan, bulan terakhir). >= 1,2 naik; <= 0,8 turun; selain itu stabil.
-                    Naik/turun: mu dan sd dikali faktor yang dibatasi 0,5..1,5 (--tanpa-tren mematikan).
+  Tren            : faktor = laju 28 hari terakhir / laju s.d. 56 hari sebelumnya (data >= 42 hari; mingguan:
+                    4 minggu terakhir vs s.d. 8 minggu sebelumnya, >= 6 minggu; bulanan: bulan terakhir vs s.d.
+                    2 bulan sebelumnya, >= 3 bulan). >= 1,2 naik; <= 0,8 turun; selain itu stabil.
+                    Naik/turun: laju dipakai = mu x (laju 28 hari terakhir / mu) dibatasi 0,5..2,0 (= laju terbaru
+                    bila tidak kena batas; batas yang terpakai disebut terbuka). Stabil: rata-rata seluruh data.
+                    sd dikali (laju dipakai / mu). --tanpa-tren mematikan.
   Faktor musim    : dari pengguna (--faktor-musim, default 1), dikalikan ke mu dan sd.
   Stok pengaman   : SS  = z x sd x akar(lead time)     z: 90% = 1,28 | 95% = 1,65 | 99% = 2,33
   Titik pesan     : ROP = mu x lead time + SS                (dibulatkan ke atas)
@@ -23,13 +26,17 @@ Rumus (Komunitech; dijelaskan dengan bahasa awam di references/rumus-dan-istilah
   PESAN SEKARANG  : posisi <= ROP, atau ROP tercapai < 1 hari lagi; jumlah = T - posisi
   MINGGU DEPAN    : ROP tercapai dalam 1..7 hari; jumlah = T - perkiraan posisi pada tanggal pesan
   Pembulatan qty  : ke atas ke bilangan bulat -> naik ke minimal order -> ke atas ke kelipatan kemasan
-  Habis dalam     : floor(stok / mu) hari
+  Habis dalam     : floor(stok / mu) hari. AKAN KOSONG bila stok / laju < lead time: kosong +-ceil(lead time -
+                    stok / laju) hari sebelum barang datang (juga untuk barang data-pendek, memakai laju sementara)
+  Lonjakan        : hari > rata-rata + 3 simpangan, >= 4x median hari laku, >= median + 8. Ditandai; hasil
+                    tanpa lonjakan dihitung sebagai pembanding (dihapus hanya dengan --abaikan-lonjakan)
   Barang mati     : tidak terjual >= 60 hari dan stok > 0 (atau stok belum diketahui)
   Data belum cukup: rentang data barang < 14 hari, atau barang baru tercatat < 14 hari terakhir
 Rupiah: jumlah x harga beli, dibulatkan ke rupiah terdekat (0,5 ke atas).
 """
 import argparse
 import csv
+import difflib
 import io
 import json
 import re
@@ -39,7 +46,7 @@ from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.0"
+VERSI = "1.0.2"
 LABEL_AGENT = ("[UNTUK AGENT SAJA - jangan disalin apa adanya; sampaikan dengan bahasa awam, tanpa menyebut "
                "script/file/proses. Semua angka disalin persis dari sini.]")
 DISCLAIMER = ("Rencana ini perkiraan dari pola penjualan sebelumnya, bukan jaminan. Cocokkan dulu dengan stok fisik, "
@@ -51,16 +58,17 @@ MIN_HARI_DATA = 14
 HARI_TREN = 28
 MIN_HARI_TREN = 42
 TREN_NAIK, TREN_TURUN = Decimal("1.2"), Decimal("0.8")
-FAKTOR_MIN, FAKTOR_MAKS = Decimal("0.5"), Decimal("1.5")
+FAKTOR_MIN, FAKTOR_MAKS = Decimal("0.5"), Decimal("2.0")
 JENDELA_MINGGU_DEPAN = 7
 HARI_STOK_BERLEBIH = 90
 BLN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 
 URUTAN_KELOMPOK = ["PESAN_SEKARANG", "PESAN_MINGGU_DEPAN", "AMAN", "STOK_BELUM_DIKETAHUI",
-                   "DATA_BELUM_CUKUP", "BARANG_MATI", "TIDAK_ADA_PENJUALAN"]
+                   "DATA_BELUM_CUKUP", "MUNGKIN_SAMA", "BARANG_MATI", "TIDAK_ADA_PENJUALAN"]
 LABEL_KELOMPOK = {"PESAN_SEKARANG": "PESAN SEKARANG", "PESAN_MINGGU_DEPAN": "PESAN MINGGU DEPAN", "AMAN": "AMAN",
                   "STOK_BELUM_DIKETAHUI": "STOK BELUM DIKETAHUI", "DATA_BELUM_CUKUP": "DATA BELUM CUKUP",
-                  "BARANG_MATI": "BARANG MATI", "TIDAK_ADA_PENJUALAN": "TIDAK ADA PENJUALAN"}
+                  "MUNGKIN_SAMA": "MUNGKIN BARANG YANG SAMA", "BARANG_MATI": "BARANG MATI",
+                  "TIDAK_ADA_PENJUALAN": "TIDAK ADA PENJUALAN"}
 
 
 class Galat(Exception):
@@ -210,12 +218,17 @@ def bulat(x):
     return int(Decimal(x).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
+PRESISI = Decimal("1e-12")
+
+
 def atas(x):
-    return int(Decimal(x).to_integral_value(rounding=ROUND_CEILING))
+    """Pembulatan ke atas setelah dirapikan ke 12 desimal (agar 30,000...01 akibat pembagian tidak jadi 31)."""
+    return int(Decimal(x).quantize(PRESISI, rounding=ROUND_HALF_UP).to_integral_value(rounding=ROUND_CEILING))
 
 
 def bawah(x):
-    return int(Decimal(x).to_integral_value(rounding=ROUND_FLOOR))
+    """Pembulatan ke bawah setelah dirapikan ke 12 desimal (agar 139,999...9 akibat pembagian tetap 140)."""
+    return int(Decimal(x).quantize(PRESISI, rounding=ROUND_HALF_UP).to_integral_value(rounding=ROUND_FLOOR))
 
 
 def rp(n):
@@ -455,11 +468,28 @@ def baca_sumber(path=None, teks=None):
 
 # ------------------------------------------------------------------ olah data
 def kunci_sku(s):
-    return re.sub(r"\s+", " ", str(s).strip()).upper()
+    """'kaos-ht m' -> 'KAOSHTM': huruf besar, tanda baca & spasi dibuang (hanya untuk mencocokkan)."""
+    return re.sub(r"[^0-9A-Z]+", "", str(s).strip().upper())
 
 
 def kunci_nama(s):
-    return re.sub(r"\s+", " ", str(s).strip()).lower()
+    """'Kaos Kaki Bayi (isi 3)' -> 'kaos kaki bayi isi 3': huruf kecil, tanda kurung/baca dibuang, spasi dirapikan."""
+    return re.sub(r"\s+", " ", re.sub(r"[^0-9a-z]+", " ", str(s).strip().lower())).strip()
+
+
+UKURAN = {"xs", "s", "m", "l", "xl", "xxl", "xxxl", "2xl", "3xl", "4xl"}
+
+
+def nama_mirip(a, b):
+    """Nama hampir sama (beda tulis) tanpa beda angka/ukuran: 'Kaos Hitam M' ~ 'Kaos Polos Hitam M'."""
+    ka, kb = kunci_nama(a), kunci_nama(b)
+    ta, tb = set(ka.split()), set(kb.split())
+    angka = lambda t: {re.sub(r"\D", "", x) for x in t if re.search(r"\d", x)}  # noqa: E731
+    if angka(ta) != angka(tb) or (ta & UKURAN) != (tb & UKURAN):
+        return False
+    if len(ta) >= 2 and len(tb) >= 2 and (ta <= tb or tb <= ta):
+        return True
+    return difflib.SequenceMatcher(None, ka, kb).ratio() >= 0.85
 
 
 class Konteks:
@@ -495,7 +525,7 @@ class Konteks:
                 return None
             kunci = kunci_sku(sku) if sku else "N:" + kunci_nama(label)
             it = {"kunci": kunci, "sku": sku, "nama": label or sku, "jual": {}, "kurang": [], "pertama": None,
-                  "saldo_awal": None, "master": {}, "ada_baris": False}
+                  "saldo_awal": None, "master": {}, "ada_baris": False, "dari_daftar": False}
             self.barang[kunci] = it
         if sku and not it["sku"]:
             it["sku"] = sku
@@ -585,6 +615,29 @@ def ubah_lebar(rows):
     return None
 
 
+def ubah_lebar_barang(rows):
+    """Tabel lebar (baris = tanggal/minggu, kolom = barang) -> tabel panjang tanggal;nama;qty."""
+    hi, peta = cari_header(rows, {"tanggal": KOLOM_JUAL["tanggal"]})
+    if hi is None or "tanggal" not in peta:
+        return None
+    header, kt = rows[hi], peta["tanggal"]
+    kolom = [i for i in range(len(header)) if i != kt and str(header[i]).strip()]
+    isi = [(r, i) for r in rows[hi + 1:] for i in kolom if i < len(r) and str(r[i]).strip()]
+    if not kolom or not isi:
+        return None
+    def angka_ok(v):
+        try:
+            return ke_angka(v) is not None
+        except Galat:
+            return False
+    if sum(1 for r, i in isi if angka_ok(r[i])) * 10 < len(isi) * 8:
+        return None
+    out = [["tanggal", "nama", "qty"]]
+    for r, i in isi:
+        out.append([r[kt] if kt < len(r) else "", header[i], r[i]])
+    return out
+
+
 def olah_penjualan(ctx, rows, lebar_dicoba=False):
     a = ctx.args
     if not rows:
@@ -596,6 +649,11 @@ def olah_penjualan(ctx, rows, lebar_dicoba=False):
             if lebar:
                 ctx.catatan.append("Tabel berbentuk lebar (kolom = tanggal) dibaca sebagai penjualan per tanggal.")
                 return olah_penjualan(ctx, lebar, lebar_dicoba=True)
+            if "qty" not in peta and not ({"sku", "nama"} & set(peta)):
+                lebar = ubah_lebar_barang(rows)
+                if lebar:
+                    ctx.catatan.append("Tabel berbentuk lebar (baris = tanggal/minggu, kolom = barang) dibaca per barang.")
+                    return olah_penjualan(ctx, lebar, lebar_dicoba=True)
         kurang = [k for k, lab in (("tanggal", "tanggal"), ("qty", "jumlah terjual")) if k not in peta]
         if not ({"sku", "nama"} & set(peta)):
             kurang.append("nama barang/SKU")
@@ -717,6 +775,7 @@ def olah_barang(ctx, rows):
         if not ambil("sku") and not ambil("nama"):
             continue
         it = ctx.item(ambil("sku"), ambil("nama"), ambil("varian"))
+        it["dari_daftar"] = True
         label = (ambil("nama") + (" " + ambil("varian") if ambil("varian") else "")).strip()
         if label:
             it["nama"] = label  # nama di daftar barang lebih diutamakan daripada judul produk di ekspor penjualan
@@ -800,11 +859,200 @@ def bulatkan_pesan(q, kelipatan, moq):
     return n, ket
 
 
+SATUAN_NAMA = re.compile(r"\((karung|kg|dus|pak|pack|botol|liter|sak|ikat|rim|lusin|kodi|bal|krat|galon|tabung|renteng|"
+                         r"ons|gram|lembar|pcs|buah|bungkus|kotak|box|roll|meter|porsi|cup|pasang|set)\)\s*$")
+
+
+def tren_dari(harian, emb, mode):
+    """-> (laju_terbaru, laju_sebelumnya) atau None. Harian: 28 hari terakhir vs s.d. 56 hari sebelumnya
+    (perlu data >= 42 hari). Mingguan: 4 minggu terakhir vs s.d. 8 minggu sebelumnya (>= 6 minggu).
+    Bulanan: bulan terakhir vs s.d. 2 bulan sebelumnya (>= 3 bulan)."""
+    if mode == "hari":
+        n = len(harian)
+        if n < MIN_HARI_TREN:
+            return None
+        return rata(harian[-HARI_TREN:]), rata(harian[max(0, n - HARI_TREN - 2 * HARI_TREN):n - HARI_TREN])
+    if mode == "minggu":
+        if len(emb) < 6:
+            return None
+        b, s = emb[-4:], emb[max(0, len(emb) - 12):-4]
+    else:
+        if len(emb) < 3:
+            return None
+        b, s = emb[-1:], emb[-3:-1]
+    laju = lambda xs: sum((t for t, _, _ in xs), Decimal(0)) / sum(n for _, n, _ in xs)  # noqa: E731
+    return laju(b), laju(s)
+
+
+def inti(harian, mulai, ctx, d):
+    """Hitung laju, stok pengaman, titik pesan ulang, kelompok, jumlah pesan dari satu deret harian.
+    d: info barang (stok, dp, L, kel, moq, harga, tanpa_jual, terakhir_jual, satuan, N)."""
+    a = ctx.args
+    N, stok, dp, L = d["N"], d["stok"], d["dp"], d["L"]
+    total = sum(harian, Decimal(0))
+    mu = total / N
+    emb = ember(harian, mulai, ctx.mode) if ctx.mode != "hari" else None
+    r = {"catatan": [], "asumsi_simpangan": False}
+    if ctx.mode == "hari":
+        sd = simpangan(harian)
+    else:
+        penuh = [(t, n) for t, n, p in emb if p]
+        if len(penuh) >= 4:
+            sd = simpangan([t / n for t, n in penuh]) * (Decimal(sum(n for _, n in penuh)) / len(penuh)).sqrt()
+        else:
+            sd = mu.sqrt()
+            r["asumsi_simpangan"] = True
+            r["catatan"].append("simpangan diasumsikan = akar rata-rata (periode data < 4)")
+
+    label_baru = "bulan terakhir" if ctx.mode == "bulan" else "4 minggu terakhir"
+    tr = tren_dari(harian, emb, ctx.mode)
+    laju = mu
+    faktor, dibatasi, tren = None, False, "tidak dihitung"
+    mu_baru = mu_seb = None
+    if tr is None:
+        kalimat = f"tren belum dihitung (data kurang dari {'6 minggu' if ctx.mode != 'bulan' else '3 bulan'}); dipakai rata-rata seluruh data {des(mu)}/hari"
+    else:
+        mu_baru, mu_seb = tr
+        if mu_seb > 0:
+            faktor = mu_baru / mu_seb
+            tren = "naik" if faktor >= TREN_NAIK else ("turun" if faktor <= TREN_TURUN else "stabil")
+        elif mu_baru > 0:
+            tren = "naik"
+        else:
+            tren = "stabil"
+        banding = f"{label_baru} {des(mu_baru)}/hari vs sebelumnya {des(mu_seb)}/hari"
+        if tren == "stabil":
+            beda = abs(faktor - 1) * 100 if faktor is not None else Decimal(0)
+            kalimat = f"stabil ({banding}, beda {des(beda, 0)} %, di bawah 20 %); dipakai rata-rata seluruh data {des(mu)}/hari"
+        elif a.tanpa_tren:
+            kalimat = (f"{tren} {des(abs(faktor - 1) * 100, 0) + ' % ' if faktor is not None else ''}({banding}), "
+                       f"tetapi tren tidak dipakai atas permintaan; dipakai rata-rata seluruh data {des(mu)}/hari")
+        else:
+            rasio_baru = mu_baru / mu
+            f_pakai = min(max(rasio_baru, FAKTOR_MIN), FAKTOR_MAKS)
+            dibatasi = f_pakai != rasio_baru
+            laju = mu * f_pakai if dibatasi else mu_baru
+            kalimat = (f"baru laku dalam {label_baru} ({des(mu_baru)}/hari, sebelumnya 0)" if faktor is None else
+                       f"{tren} {des(abs(faktor - 1) * 100, 0)} % ({banding})") + f"; dipakai {des(laju)}/hari"
+            if dibatasi:
+                kalimat += (f" karena laju dibatasi {des(f_pakai)}× rata-rata seluruh data ({des(mu)}/hari), padahal laju "
+                            f"{label_baru} {des(mu_baru)}/hari — cek sendiri apakah perubahan ini akan bertahan")
+            else:
+                kalimat += " (tidak kena batas)"
+    if ctx.faktor_musim != 1:
+        kalimat += f"; dikali faktor musim {des(ctx.faktor_musim)} dari Anda"
+    rasio = (laju / mu) if mu > 0 else Decimal(1)
+    mu_p = laju * ctx.faktor_musim
+    sd_p = sd * rasio * ctx.faktor_musim
+    r.update({"rata_rata_harian": angka_json(mu), "simpangan_harian": angka_json(sd),
+              "rata_rata_terbaru": angka_json(mu_baru), "rata_rata_sebelumnya": angka_json(mu_seb), "tren": tren,
+              "faktor_tren": angka_json(faktor, 2) if faktor is not None else None, "tren_dibatasi": dibatasi,
+              "kalimat_tren": kalimat, "faktor_musim": angka_json(ctx.faktor_musim),
+              "rata_rata_dipakai": angka_json(mu_p), "simpangan_dipakai": angka_json(sd_p)})
+    if ctx.mode in ("hari", "minggu") and tren not in ("naik",) and mu > 0 and len(harian) >= 14:
+        mu7 = rata(harian[-7:])
+        if mu7 >= mu * TREN_NAIK and (mu7 - mu) * 7 >= 5:
+            r["catatan"].append(f"7 hari terakhir lebih ramai {des((mu7 / mu - 1) * 100, 0)} % ({des(mu7)}/hari) dari rata-rata; "
+                                "belum dipakai di hitungan, pantau minggu depan")
+
+    # barang mati / tanpa penjualan
+    if d["tanpa_jual"] >= a.batas_mati:
+        if stok is None or stok > 0:
+            r["kelompok"] = "BARANG_MATI"
+            r["alasan"] = (f"belum pernah terjual selama {d['tanpa_jual']} hari data" if d["terakhir_jual"] is None else
+                           f"tidak terjual {d['tanpa_jual']} hari (terakhir {tgl_id(d['terakhir_jual'])})")
+            if stok is None:
+                r["alasan"] += "; stok belum diketahui (bila masih ada stok, ini barang mati)"
+            r["nilai_tertahan"] = d["nilai_stok"]
+        else:
+            r["kelompok"] = "TIDAK_ADA_PENJUALAN"
+            r["alasan"] = f"tidak terjual {d['tanpa_jual']} hari dan stok sudah habis: tidak perlu dipesan ulang dulu"
+        return r
+    if mu_p <= 0:
+        r["kelompok"] = "TIDAK_ADA_PENJUALAN"
+        r["alasan"] = f"belum ada penjualan bersih selama {N} hari data (belum {a.batas_mati} hari, jadi belum disebut barang mati)"
+        return r
+
+    ss = ctx.z * sd_p * L.sqrt()
+    SS, ROP, TGT = atas(ss), atas(mu_p * L + ss), atas(mu_p * (L + ctx.horizon) + ss)
+    r.update({"stok_pengaman": SS, "titik_pesan_ulang": ROP, "stok_target": TGT})
+    if stok is None:
+        r["kelompok"] = "STOK_BELUM_DIKETAHUI"
+        r["alasan"] = (f"pesan bila stok tinggal {ROP} atau kurang; jumlah pesan = {TGT} - stok sekarang"
+                       + (f" - {des(dp)} dalam pesanan" if dp else ""))
+        return r
+
+    posisi = stok + dp
+    r["posisi_stok"] = angka_json(posisi)
+    if stok < 0:
+        r["catatan"].append(f"stok minus ({des(stok)}): kemungkinan terlanjur terjual melebihi stok atau salah catat; "
+                            "jumlah pesan ikut menutup kekurangan itu, cocokkan dengan stok fisik")
+    habis_x = Decimal(0) if stok <= 0 else stok / mu_p
+    habis = bawah(habis_x)
+    r["habis_dalam_hari"] = habis
+    r["perkiraan_tanggal_habis"] = (ctx.acuan + timedelta(days=habis)).isoformat()
+    habis_kosong = habis_x
+    if dibatasi:
+        r["habis_dengan_laju_dibatasi"] = True
+        laju_baru = mu_baru * ctx.faktor_musim
+        if laju_baru > 0:
+            hb = Decimal(0) if stok <= 0 else stok / laju_baru
+            r["habis_dalam_hari_laju_terbaru"] = bawah(hb)
+            habis_kosong = min(habis_x, hb)  # untuk penanda kosong pakai laju yang lebih cepat habis
+        else:
+            r["habis_dalam_hari_laju_terbaru"] = None
+    r["kosong_sebelum_barang_datang"] = habis_kosong.quantize(PRESISI, rounding=ROUND_HALF_UP) < L
+    if r["kosong_sebelum_barang_datang"]:
+        r["akan_kosong_hari"] = atas(L - habis_kosong)
+    hari_ke_rop = 0 if posisi <= ROP else bawah((posisi - ROP) / mu_p)
+    if hari_ke_rop < 1:
+        r["kelompok"] = "PESAN_SEKARANG"
+        kurang = TGT - posisi
+        if kurang <= 0:
+            kurang = Decimal(1)
+        r["tanggal_pesan"] = ctx.acuan.isoformat()
+    elif hari_ke_rop <= JENDELA_MINGGU_DEPAN:
+        r["kelompok"] = "PESAN_MINGGU_DEPAN"
+        kurang = TGT - (posisi - mu_p * hari_ke_rop)
+        r["tanggal_pesan"] = (ctx.acuan + timedelta(days=hari_ke_rop)).isoformat()
+    else:
+        r["kelompok"] = "AMAN"
+        r["tanggal_pesan_berikutnya"] = (ctx.acuan + timedelta(days=hari_ke_rop)).isoformat() if hari_ke_rop <= 365 else None
+        if habis > HARI_STOK_BERLEBIH:
+            lebih = stok - TGT
+            r["stok_berlebih"] = True
+            r["kelebihan_stok"] = angka_json(lebih) if lebih > 0 else 0
+            r["nilai_kelebihan"] = bulat(lebih * d["harga"]) if (d["harga"] is not None and lebih > 0) else None
+            r["catatan"].append(f"stok cukup untuk ±{habis} hari: jangan ditambah dulu")
+        return r
+    jumlah, ket = bulatkan_pesan(kurang, d["kel"], d["moq"])
+    kel = d["kel"]
+    r["jumlah_pesan_hitungan"] = atas(kurang)
+    r["jumlah_pesan"] = angka_json(jumlah)
+    r["jumlah_kemasan"] = angka_json(jumlah / kel) if kel and kel > 0 else None
+    r["penyesuaian_jumlah"] = ket
+    r["nilai_pesanan"] = bulat(jumlah * d["harga"]) if d["harga"] is not None else None
+    return r
+
+
+def cari_lonjakan(harian):
+    """Hari lonjakan: > rata-rata + 3 simpangan DAN >= 4x median hari laku DAN >= median + 8 (perlu >= 5 hari laku)."""
+    isi = [x for x in harian if x > 0]
+    if len(isi) < 5:
+        return [], None
+    med = median(isi)
+    batas = rata(harian) + 3 * simpangan(harian)
+    return [i for i, x in enumerate(harian) if x > batas and x >= 4 * med and x >= med + 8], med
+
+
 def hitung_barang(it, ctx):
     a = ctx.args
     akhir, awal = ctx.akhir, ctx.awal
     h = {"sku": it["sku"], "nama": it["nama"], "catatan": []}
-    satuan = nilai_master(it, "satuan") or "pcs"
+    satuan = nilai_master(it, "satuan")
+    if not satuan:
+        m = SATUAN_NAMA.search(it["nama"].lower())
+        satuan = m.group(1) if m else "pcs"
     h["satuan"] = satuan
     pemasok = nilai_master(it, "pemasok")
     h["pemasok"] = pemasok
@@ -823,7 +1071,7 @@ def hitung_barang(it, ctx):
     if L is None and pemasok and kunci_nama(pemasok) in ctx.pemasok and "lead_time" in ctx.pemasok[kunci_nama(pemasok)]:
         L, sumber_L = ctx.pemasok[kunci_nama(pemasok)]["lead_time"], "data pemasok"
     if L is None:
-        L, sumber_L = ctx.lead_default, "default"
+        L, sumber_L = ctx.lead_default, ("lead time umum dari pengguna" if ctx.lead_dari_pengguna else "default")
     if L < 1:
         h["catatan"].append(f"lead time {des(L)} hari dinaikkan ke 1 hari")
         L = Decimal(1)
@@ -858,7 +1106,6 @@ def hitung_barang(it, ctx):
     harian = [jual.get(mulai + timedelta(days=i), Decimal(0)) for i in range(max(N, 0))]
     total = sum(harian, Decimal(0))
     tgl_jual = sorted(t for t, q in jual.items() if q > 0 and mulai <= t <= akhir)
-    pertama_jual = tgl_jual[0] if tgl_jual else None
     terakhir_jual = tgl_jual[-1] if tgl_jual else None
     if terakhir_jual and ctx.mode == "minggu":
         terakhir_jual = min(terakhir_jual + timedelta(days=6), akhir)
@@ -875,11 +1122,22 @@ def hitung_barang(it, ctx):
         h["catatan"].append(f"{des(sebelum)} {satuan} terjual sebelum tanggal mulai dijual tidak dihitung")
 
     nilai_stok = bulat(stok * harga) if (stok is not None and harga is not None and stok > 0) else None
-    kosong = {"rata_rata_harian": None, "simpangan_harian": None, "tren": "tidak dihitung", "faktor_tren": None,
-              "rata_rata_dipakai": None, "stok_pengaman": None, "titik_pesan_ulang": None, "stok_target": None,
-              "habis_dalam_hari": None, "perkiraan_tanggal_habis": None, "tanggal_pesan": None,
-              "jumlah_pesan": None, "nilai_pesanan": None, "posisi_stok": None, "lonjakan": []}
-    h.update(kosong)
+    h.update({"rata_rata_harian": None, "simpangan_harian": None, "tren": "tidak dihitung", "faktor_tren": None,
+              "kalimat_tren": None, "rata_rata_dipakai": None, "stok_pengaman": None, "titik_pesan_ulang": None,
+              "stok_target": None, "habis_dalam_hari": None, "perkiraan_tanggal_habis": None, "tanggal_pesan": None,
+              "jumlah_pesan": None, "nilai_pesanan": None, "posisi_stok": None, "lonjakan": [], "nilai_stok": nilai_stok})
+
+    # 0. mungkin barang yang sama dengan nama lain di data penjualan
+    if not it["ada_baris"] and it.get("mungkin_sama"):
+        h["kelompok"] = "MUNGKIN_SAMA"
+        h["mungkin_sama_dengan"] = it["mungkin_sama"]
+        h["alasan"] = ("tidak ada di data penjualan, tetapi namanya mirip " + ", ".join(f"'{x}'" for x in it["mungkin_sama"])
+                       + "; mungkin barang yang sama (beda tulis). Belum dianggap barang mati")
+        return h
+    if it.get("mungkin_sama"):
+        h["mungkin_sama_dengan"] = it["mungkin_sama"]
+        h["catatan"].append("di daftar stok mungkin tertulis " + ", ".join(f"'{x}'" for x in it["mungkin_sama"])
+                            + " (nama mirip); bila sama, samakan nama agar stoknya terbaca")
 
     # 1. data belum cukup
     baru = (mj is None and it["pertama"] is not None and sumber_mulai == "awal data"
@@ -898,137 +1156,44 @@ def hitung_barang(it, ctx):
         h["data_pendek"] = rentang < MIN_HARI_DATA
         tot_amat = sum((q for t, q in jual.items() if t >= max(mulai, it["pertama"] or mulai) and t <= akhir), Decimal(0))
         laju = (tot_amat / hari_amat) if hari_amat > 0 else None
+        habis_x = (Decimal(0) if stok <= 0 else stok / laju) if (stok is not None and laju) else None
         h["pengamatan"] = {"hari": max(hari_amat, 0), "terjual": angka_json(tot_amat),
                            "laju_sementara_per_hari": angka_json(laju) if laju is not None else None,
-                           "habis_dalam_hari_laju_sementara": (0 if stok <= 0 else bawah(stok / laju))
-                           if (stok is not None and laju) else None}
-        h["nilai_stok"] = nilai_stok
+                           "habis_dalam_hari_laju_sementara": bawah(habis_x) if habis_x is not None else None}
+        if habis_x is not None and habis_x < L:
+            h["kosong_sebelum_barang_datang"] = True
+            h["akan_kosong_hari"] = atas(L - habis_x)
         return h
 
-    # lonjakan (hanya data harian)
-    if ctx.mode == "hari":
-        isi = [x for x in harian if x > 0]
-        if len(isi) >= 5:
-            med = median(isi)
-            for i, x in enumerate(harian):
-                if x >= 4 * med and x >= med + 10:
-                    t = mulai + timedelta(days=i)
-                    h["lonjakan"].append({"tanggal": t.isoformat(), "terjual": angka_json(x), "biasanya": angka_json(med)})
-                    if a.abaikan_lonjakan:
-                        harian[i] = med
-            if h["lonjakan"] and a.abaikan_lonjakan:
-                total = sum(harian, Decimal(0))
-                h["catatan"].append("lonjakan diganti nilai biasanya (median hari laku) sebelum dihitung")
-
-    mu = total / N
-    emb = ember(harian, mulai, ctx.mode) if ctx.mode != "hari" else None
-    asumsi_sd = False
-    if ctx.mode == "hari":
-        sd = simpangan(harian)
-    else:
-        penuh = [(t, n) for t, n, p in emb if p]
-        if len(penuh) >= 4:
-            laju = [t / n for t, n in penuh]
-            sd = simpangan(laju) * (Decimal(sum(n for _, n in penuh)) / len(penuh)).sqrt()
-        else:
-            sd = mu.sqrt()
-            asumsi_sd = True
-            h["catatan"].append("simpangan diasumsikan = akar rata-rata (periode data < 4)")
-    h["asumsi_simpangan"] = asumsi_sd
-
-    mu_baru = None
-    if ctx.mode == "hari" and N >= MIN_HARI_TREN:
-        mu_baru = sum(harian[-HARI_TREN:], Decimal(0)) / HARI_TREN
-    elif ctx.mode == "minggu" and len(emb) >= 6:
-        mu_baru = sum((t for t, _, _ in emb[-4:]), Decimal(0)) / sum(n for _, n, _ in emb[-4:])
-    elif ctx.mode == "bulan" and len(emb) >= 3:
-        mu_baru = emb[-1][0] / emb[-1][1]
-    faktor = (mu_baru / mu) if (mu_baru is not None and mu > 0) else None
-    tren = "tidak dihitung" if faktor is None else ("naik" if faktor >= TREN_NAIK else "turun" if faktor <= TREN_TURUN else "stabil")
-    f_pakai = Decimal(1)
-    if tren in ("naik", "turun") and not a.tanpa_tren:
-        f_pakai = min(max(faktor, FAKTOR_MIN), FAKTOR_MAKS)
-    mu_p = mu * f_pakai * ctx.faktor_musim
-    sd_p = sd * f_pakai * ctx.faktor_musim
-    h.update({"rata_rata_harian": angka_json(mu), "simpangan_harian": angka_json(sd),
-              "rata_rata_terbaru": angka_json(mu_baru), "tren": tren,
-              "faktor_tren": angka_json(faktor, 2) if faktor is not None else None,
-              "faktor_tren_dipakai": angka_json(f_pakai), "faktor_musim": angka_json(ctx.faktor_musim),
-              "rata_rata_dipakai": angka_json(mu_p), "simpangan_dipakai": angka_json(sd_p)})
-    h["nilai_stok"] = nilai_stok
-
-    # 2. barang mati / tanpa penjualan
-    if tanpa_jual >= a.batas_mati:
-        if stok is None or stok > 0:
-            h["kelompok"] = "BARANG_MATI"
-            h["alasan"] = (f"belum pernah terjual selama {tanpa_jual} hari data" if terakhir_jual is None else
-                           f"tidak terjual {tanpa_jual} hari (terakhir {tgl_id(terakhir_jual)})")
-            if stok is None:
-                h["alasan"] += "; stok belum diketahui (bila masih ada stok, ini barang mati)"
-            h["nilai_tertahan"] = nilai_stok
-        else:
-            h["kelompok"] = "TIDAK_ADA_PENJUALAN"
-            h["alasan"] = f"tidak terjual {tanpa_jual} hari dan stok sudah habis: tidak perlu dipesan ulang dulu"
-        return h
-    if mu_p <= 0:
-        h["kelompok"] = "TIDAK_ADA_PENJUALAN"
-        h["alasan"] = (f"belum ada penjualan bersih selama {N} hari data (belum {a.batas_mati} hari, jadi belum disebut barang mati)")
-        return h
-
-    ss = ctx.z * sd_p * L.sqrt()
-    rop_x = mu_p * L + ss
-    tgt_x = mu_p * (L + ctx.horizon) + ss
-    SS, ROP, TGT = atas(ss), atas(rop_x), atas(tgt_x)
-    h.update({"stok_pengaman": SS, "titik_pesan_ulang": ROP, "stok_target": TGT})
-
-    if stok is None:
-        h["kelompok"] = "STOK_BELUM_DIKETAHUI"
-        h["alasan"] = (f"pesan bila stok tinggal {ROP} atau kurang; jumlah pesan = {TGT} - stok sekarang"
-                       + (f" - {des(dp)} dalam pesanan" if dp else ""))
-        return h
-
-    posisi = stok + dp
-    h["posisi_stok"] = angka_json(posisi)
-    if stok < 0:
-        h["catatan"].append(f"stok minus ({des(stok)}): kemungkinan terlanjur terjual melebihi stok atau salah catat; "
-                            "jumlah pesan ikut menutup kekurangan itu, cocokkan dengan stok fisik")
-    habis = 0 if stok <= 0 else bawah(stok / mu_p)
-    h["habis_dalam_hari"] = habis
-    h["perkiraan_tanggal_habis"] = (ctx.acuan + timedelta(days=habis)).isoformat()
-    if posisi <= ROP:
-        hari_ke_rop = 0
-    else:
-        hari_ke_rop = bawah((posisi - ROP) / mu_p)
-    if hari_ke_rop < 1:
-        h["kelompok"] = "PESAN_SEKARANG"
-        kurang = TGT - posisi
-        if kurang <= 0:
-            kurang = Decimal(1)
-        h["tanggal_pesan"] = ctx.acuan.isoformat()
-        h["kosong_sebelum_barang_datang"] = Decimal(habis) < L
-        if h["kosong_sebelum_barang_datang"]:
-            h["catatan"].append(f"stok diperkirakan habis ±{habis} hari lagi, sebelum barang datang ({des(L)} hari)"
-                                + ("; kecuali barang yang sedang dipesan datang lebih dulu" if dp else ""))
-    elif hari_ke_rop <= JENDELA_MINGGU_DEPAN:
-        h["kelompok"] = "PESAN_MINGGU_DEPAN"
-        kurang = TGT - (posisi - mu_p * hari_ke_rop)
-        h["tanggal_pesan"] = (ctx.acuan + timedelta(days=hari_ke_rop)).isoformat()
-    else:
-        h["kelompok"] = "AMAN"
-        h["tanggal_pesan_berikutnya"] = (ctx.acuan + timedelta(days=hari_ke_rop)).isoformat() if hari_ke_rop <= 365 else None
-        if habis > HARI_STOK_BERLEBIH:
-            lebih = stok - TGT
-            h["stok_berlebih"] = True
-            h["kelebihan_stok"] = angka_json(lebih) if lebih > 0 else 0
-            h["nilai_kelebihan"] = bulat(lebih * harga) if (harga is not None and lebih > 0) else None
-            h["catatan"].append(f"stok cukup untuk ±{habis} hari: jangan ditambah dulu")
-        return h
-    jumlah, ket = bulatkan_pesan(kurang, kel, moq)
-    h["jumlah_pesan_hitungan"] = atas(kurang)
-    h["jumlah_pesan"] = angka_json(jumlah)
-    h["jumlah_kemasan"] = angka_json(jumlah / kel) if kel and kel > 0 else None
-    h["penyesuaian_jumlah"] = ket
-    h["nilai_pesanan"] = bulat(jumlah * harga) if harga is not None else None
+    d = {"N": N, "stok": stok, "dp": dp, "L": L, "kel": kel, "moq": moq, "harga": harga,
+         "tanpa_jual": tanpa_jual, "terakhir_jual": terakhir_jual, "nilai_stok": nilai_stok}
+    idx, med = cari_lonjakan(harian) if ctx.mode == "hari" else ([], None)
+    tanpa = list(harian)
+    for i in idx:
+        tanpa[i] = med
+        h["lonjakan"].append({"tanggal": (mulai + timedelta(days=i)).isoformat(), "terjual": angka_json(harian[i]),
+                              "biasanya": angka_json(med)})
+    utama = inti(tanpa if (idx and a.abaikan_lonjakan) else harian, mulai, ctx, d)
+    catatan_inti = utama.pop("catatan")
+    h.update(utama)
+    h["catatan"] += catatan_inti
+    if idx and a.abaikan_lonjakan:
+        h["catatan"].append("lonjakan diganti nilai biasanya (median hari laku) sebelum dihitung, atas konfirmasi pengguna")
+    elif idx:
+        alt = inti(tanpa, mulai, ctx, d)
+        h["tanpa_lonjakan"] = {k: alt.get(k) for k in ("kelompok", "tren", "kalimat_tren", "rata_rata_dipakai",
+                                                         "titik_pesan_ulang", "stok_target", "habis_dalam_hari",
+                                                         "tanggal_pesan", "jumlah_pesan", "nilai_pesanan")}
+        lj = "; ".join(f"{tgl_id(date.fromisoformat(x['tanggal']))} ({des(x['terjual'])} {satuan}, biasanya ±{des(x['biasanya'])})"
+                       for x in h["lonjakan"])
+        ringkas = LABEL_KELOMPOK[alt["kelompok"]]
+        if alt.get("jumlah_pesan"):
+            ringkas += f", pesan {des(alt['jumlah_pesan'])} {satuan}" + (f" ({rp(alt['nilai_pesanan'])})" if alt.get("nilai_pesanan") is not None else "")
+        teks_l = (f"ada lonjakan {lj}; hitungan di atas TERMASUK lonjakan (tren {h['tren']}). Tanpa lonjakan: tren {alt['tren']}, "
+                  f"laku ±{des(alt['rata_rata_dipakai'])}/hari, {ringkas}")
+        if h["tren"] == "naik" and alt["tren"] != "naik":
+            teks_l += ". Tren naik barang ini terjadi karena lonjakan tersebut"
+        h["catatan"].append(teks_l)
     return h
 
 
@@ -1084,24 +1249,37 @@ def draf_wa(pemasok, isi):
 
 
 def susun_pertanyaan(hasil, ctx):
+    """Urut dampak: data pendek, stok belum diketahui, nama mirip, lonjakan, lead time default, harga, barang baru,
+    barang dalam pesanan, pemasok."""
     q = []
+    if any(h.get("data_pendek") for h in hasil):
+        q.append(f"Ada catatan penjualan yang lebih panjang (minimal {MIN_HARI_DATA} hari, idealnya 2-3 bulan)? "
+                 "Dengan itu jumlah pesan per barang bisa dihitung.")
     aktif = [h for h in hasil if h["kelompok"] in ("PESAN_SEKARANG", "PESAN_MINGGU_DEPAN", "AMAN", "STOK_BELUM_DIKETAHUI")]
-    tanpa_stok = [h["nama"] for h in hasil if h["kelompok"] == "STOK_BELUM_DIKETAHUI"]
+    tanpa_stok = [h["nama"] for h in hasil if h["kelompok"] == "STOK_BELUM_DIKETAHUI" and not h.get("mungkin_sama_dengan")]
     if tanpa_stok:
         q.append("Berapa stok sekarang untuk: " + ", ".join(tanpa_stok[:6]) + (f" dan {len(tanpa_stok) - 6} lainnya" if len(tanpa_stok) > 6 else "") + "?")
+    mirip = [h for h in hasil if h["kelompok"] == "MUNGKIN_SAMA"]
+    if mirip:
+        q.append("Apakah ini barang yang sama (beda tulis)? " + "; ".join(
+            f"'{h['nama']}' di daftar stok = " + " / ".join(f"'{x}'" for x in h["mungkin_sama_dengan"]) + " di penjualan"
+            for h in mirip[:4]) + ". Bila ya, nama akan disamakan dan dihitung ulang.")
+    lonj = [h for h in hasil if h.get("lonjakan")]
+    if lonj:
+        h = lonj[0]
+        x = h["lonjakan"][0]
+        t = f"Tanggal {tgl_id(date.fromisoformat(x['tanggal']))} {h['nama']} terjual {des(x['terjual'])} (biasanya ±{des(x['biasanya'])}). Itu promo atau borongan sekali?"
+        alt = h.get("tanpa_lonjakan")
+        if alt:
+            dengan = LABEL_KELOMPOK[h["kelompok"]] + (f" {des(h['jumlah_pesan'])} {h['satuan']}" if h.get("jumlah_pesan") else "")
+            tanpa = LABEL_KELOMPOK[alt["kelompok"]] + (f" {des(alt['jumlah_pesan'])} {h['satuan']}" if alt.get("jumlah_pesan") else "")
+            t += f" Dengan lonjakan: {dengan}; tanpa lonjakan: {tanpa}."
+        q.append(t)
     if any(h["sumber_lead_time"] == "default" for h in aktif):
         q.append(f"Biasanya berapa hari barang datang sejak dipesan, per pemasok? (sementara dipakai {des(ctx.lead_default)} hari)")
     tanpa_harga = [h["nama"] for h in hasil if h.get("jumlah_pesan") and h["harga_beli"] is None]
     if tanpa_harga:
         q.append("Berapa harga beli terakhir untuk: " + ", ".join(tanpa_harga[:6]) + "?")
-    lonj = [(h["nama"], x) for h in hasil for x in h.get("lonjakan", [])]
-    if lonj:
-        n, x = lonj[0]
-        q.append(f"Tanggal {tgl_id(date.fromisoformat(x['tanggal']))} {n} terjual {des(x['terjual'])} (biasanya ±{des(x['biasanya'])}). "
-                 "Itu pesanan borongan sekali? Bila ya, hitungan bisa diulang tanpa lonjakan itu.")
-    if any(h.get("data_pendek") for h in hasil):
-        q.insert(0, f"Ada catatan penjualan yang lebih panjang (minimal {MIN_HARI_DATA} hari, idealnya 2-3 bulan)? "
-                    "Dengan itu jumlah pesan per barang bisa dihitung.")
     baru = [h["nama"] for h in hasil if h["kelompok"] == "DATA_BELUM_CUKUP" and not h.get("data_pendek")]
     if baru:
         q.append("Apakah " + ", ".join(baru[:4]) + " barang baru? Bila barang lama yang jarang laku, sebutkan agar dihitung dari awal data.")
@@ -1119,7 +1297,8 @@ def jalankan(args):
         raise Galat(f"tingkat layanan {args.layanan}% tidak tersedia",
                     "Pilih salah satu: " + ", ".join(f"{k}%" for k in Z_LAYANAN) + " (umum: 90, 95, 99).")
     ctx.z = Z_LAYANAN[args.layanan]
-    ctx.lead_default = ke_hari(args.lead_time, "lead time default")
+    ctx.lead_dari_pengguna = args.lead_time is not None
+    ctx.lead_default = ke_hari(args.lead_time if args.lead_time is not None else "7", "lead time default")
     ctx.horizon = ke_hari(args.horizon, "horizon")
     if ctx.lead_default is None or ctx.horizon is None or ctx.horizon < 1:
         raise Galat("lead time/horizon tidak valid", "Contoh: --lead-time 7 --horizon 14")
@@ -1177,6 +1356,13 @@ def jalankan(args):
     ctx.acuan = args.hari_ini or akhir
     ctx.ada_dalam_pesanan = any("dalam_pesanan" in it["master"] for it in ctx.barang.values())
 
+    daftar_saja = [it for it in ctx.barang.values() if not it["ada_baris"]]
+    jual_tanpa_daftar = [it for it in ctx.barang.values() if it["ada_baris"] and not it["dari_daftar"]]
+    for it in daftar_saja:
+        for lain in jual_tanpa_daftar:
+            if nama_mirip(it["nama"], lain["nama"]):
+                it.setdefault("mungkin_sama", []).append(lain["nama"])
+                lain.setdefault("mungkin_sama", []).append(it["nama"])
     hasil = [hitung_barang(it, ctx) for it in ctx.barang.values()]
     hasil.sort(key=urut_kunci)
 
@@ -1201,7 +1387,7 @@ def jalankan(args):
         c.append("Tanggal hari ini lebih awal dari akhir data; perkiraan tanggal memakai tanggal hari ini.")
     if ctx.mode != "hari":
         c.append(f"Data dibaca sebagai total per {ctx.mode}; simpangan harian diturunkan dari variasi antar-{ctx.mode}.")
-    tanpa_jual = [it["nama"] for it in ctx.barang.values() if not it["ada_baris"]]
+    tanpa_jual = [it["nama"] for it in ctx.barang.values() if not it["ada_baris"] and not it.get("mungkin_sama")]
     if tanpa_jual:
         c.append(f"{len(tanpa_jual)} barang di daftar barang tidak muncul sama sekali di data penjualan: "
                  + ", ".join(tanpa_jual[:8]) + (" dan lainnya" if len(tanpa_jual) > 8 else "")
@@ -1210,7 +1396,34 @@ def jalankan(args):
     if rentang < 28:
         c.append(f"Rentang data hanya {rentang} hari: hasil kasar. Data 2-3 bulan memberi hasil lebih andal.")
 
+    per_tren = {}
+    for h in hasil:
+        if h["kelompok"] not in ("BARANG_MATI", "TIDAK_ADA_PENJUALAN", "DATA_BELUM_CUKUP", "MUNGKIN_SAMA") and h["tren"] != "tidak dihitung":
+            per_tren.setdefault(h["tren"], []).append(
+                h["nama"] + (f" ({'+' if h['faktor_tren'] > 1 else '-'}{des(abs(Decimal(str(h['faktor_tren'])) - 1) * 100, 0)} %)"
+                             if h["tren"] in ("naik", "turun") and h["faktor_tren"] is not None else ""))
+    if per_tren:
+        c.append("Tren per barang (4 minggu terakhir vs sebelumnya, ambang 20 %): " + "; ".join(
+            f"{k}: {', '.join(v)}" for k, v in sorted(per_tren.items(), key=lambda x: ["naik", "turun", "stabil"].index(x[0]))))
+    akan_kosong = []
+    for h in hasil:
+        if h.get("akan_kosong_hari"):
+            data_pendek = h["kelompok"] == "DATA_BELUM_CUKUP"
+            habis = h["pengamatan"]["habis_dalam_hari_laju_sementara"] if data_pendek else h["habis_dalam_hari"]
+            saran = ["pesan hari ini"]
+            if data_pendek:
+                minim = h.get("minimal_order") or h.get("kelipatan")
+                saran = ["pesan kecil hari ini" + (f" (paling sedikit {des(minim)} {h['satuan']} sesuai kemasan/minimal order)" if minim else "")
+                         + "; jumlah pasti belum bisa dihitung"]
+            saran += ["cari pemasok yang lebih cepat atau ambil sebagian di pemasok terdekat",
+                      f"atau terima kosong ±{h['akan_kosong_hari']} hari (batasi jumlah per pembeli, tandai stok menyusul bila aturan platform mengizinkan)"]
+            akan_kosong.append({"nama": h["nama"], "sku": h["sku"], "kelompok": h["kelompok"], "habis_dalam_hari": habis,
+                                "lead_time_hari": h["lead_time_hari"], "hari_kosong": h["akan_kosong_hari"],
+                                "dasar_laju": "laju sementara (data belum cukup)" if data_pendek else "laju yang dipakai",
+                                "dalam_pesanan": h.get("dalam_pesanan") or 0, "pemasok": h["pemasok"], "saran": saran})
+    akan_kosong.sort(key=lambda x: (-x["hari_kosong"], x["nama"].lower()))
     ringkas = {k: sum(1 for h in hasil if h["kelompok"] == k) for k in URUTAN_KELOMPOK}
+    ringkas["AKAN_KOSONG"] = len(akan_kosong)
     def jumlah_nilai(kel):
         return sum(h["nilai_pesanan"] or 0 for h in hasil if h["kelompok"] == kel)
     ringkas.update({
@@ -1236,13 +1449,16 @@ def jalankan(args):
         "versi": VERSI,
         "parameter": {"tingkat_layanan_persen": args.layanan, "z": str(ctx.z), "lead_time_default_hari": angka_json(ctx.lead_default),
                       "horizon_hari": angka_json(ctx.horizon), "data_per": ctx.mode, "faktor_musim": angka_json(ctx.faktor_musim),
-                      "tren_dipakai": not args.tanpa_tren, "batas_barang_mati_hari": args.batas_mati,
+                      "tren_dipakai": not args.tanpa_tren, "batas_tren_persen": 20,
+                      "batas_pengali_tren": [str(FAKTOR_MIN), str(FAKTOR_MAKS)],
+                      "lead_time_dari_pengguna": ctx.lead_dari_pengguna, "batas_barang_mati_hari": args.batas_mati,
                       "jendela_pesan_minggu_depan_hari": JENDELA_MINGGU_DEPAN},
         "rentang_data": {"dari": awal.isoformat(), "sampai": akhir.isoformat(), "jumlah_hari": rentang,
                          "tanggal_acuan": ctx.acuan.isoformat()},
         "pemetaan_kolom": ctx.pemetaan,
         "ringkasan": ringkas,
         "barang": hasil,
+        "akan_kosong_sebelum_barang_datang": akan_kosong,
         "pesanan_per_pemasok": susun_pemasok(hasil, ctx),
         "barang_laris_untuk_bundling": [h["nama"] for h in laris],
         "pertanyaan_usulan": susun_pertanyaan(hasil, ctx)[:3],
@@ -1260,16 +1476,19 @@ def baris_barang(h):
     bag = []
     if h.get("stok_sekarang") is not None:
         bag.append(f"stok {des(h['stok_sekarang'])}" + (f" + {des(h['dalam_pesanan'])} dalam pesanan" if h.get("dalam_pesanan") else ""))
-    aktif = h["kelompok"] not in ("BARANG_MATI", "TIDAK_ADA_PENJUALAN", "DATA_BELUM_CUKUP")
+    aktif = h["kelompok"] not in ("BARANG_MATI", "TIDAK_ADA_PENJUALAN", "DATA_BELUM_CUKUP", "MUNGKIN_SAMA")
     if h.get("rata_rata_dipakai") is not None and aktif:
-        tr = h["tren"]
-        trs = ""
-        if tr in ("naik", "turun"):
-            trs = f", tren {tr} {des((Decimal(str(h['faktor_tren'])) - 1) * 100, 0)}%" + ("" if h["faktor_tren_dipakai"] != 1 else " (tidak dipakai)")
-        bag.append(f"laku ±{des(h['rata_rata_dipakai'])}/hari{trs}")
+        bag.append(f"laku ±{des(h['rata_rata_dipakai'])}/hari (TREN: {h['kalimat_tren']})")
     if h.get("habis_dalam_hari") is not None:
-        bag.append("sudah habis" if h["habis_dalam_hari"] == 0 else
-                   f"habis ±{h['habis_dalam_hari']} hari ({tgl_id(date.fromisoformat(h['perkiraan_tanggal_habis']))})")
+        hb = ("sudah habis" if h["habis_dalam_hari"] == 0 else
+              f"habis ±{h['habis_dalam_hari']} hari ({tgl_id(date.fromisoformat(h['perkiraan_tanggal_habis']))})")
+        if h.get("habis_dengan_laju_dibatasi"):
+            lt = h.get("habis_dalam_hari_laju_terbaru")
+            hb += (f" (laju dibatasi; dengan laju 4 minggu terakhir {des(h['rata_rata_terbaru'])}/hari: "
+                   + (f"±{lt} hari)" if lt is not None else "tidak laku)"))
+        bag.append(hb)
+    if h.get("akan_kosong_hari"):
+        bag.append(f"AKAN KOSONG ±{h['akan_kosong_hari']} HARI sebelum barang datang")
     if h.get("jumlah_pesan"):
         kem = f" = {des(h['jumlah_kemasan'])} x {des(h['kelipatan'])}" if h.get("jumlah_kemasan") else ""
         bag.append(f"PESAN {des(h['jumlah_pesan'])} {s}{kem}" + (f" ({'; '.join(h['penyesuaian_jumlah'])})" if h.get("penyesuaian_jumlah") else ""))
@@ -1293,8 +1512,6 @@ def baris_barang(h):
         bag.append(f"modal tertahan {rp(h['nilai_tertahan'])}")
     if h.get("stok_berlebih"):
         bag.append(f"STOK BERLEBIH, kelebihan {des(h['kelebihan_stok'])} {s}" + (f" ({rp(h['nilai_kelebihan'])})" if h.get("nilai_kelebihan") else ""))
-    for x in h.get("lonjakan", []):
-        bag.append(f"LONJAKAN {x['tanggal']}: {des(x['terjual'])} (biasanya {des(x['biasanya'])})")
     bag += h["catatan"]
     return teks + " | " + " | ".join(bag)
 
@@ -1304,14 +1521,28 @@ def teks(hasil):
     L = [LABEL_AGENT,
          f"RENCANA RESTOK per {tgl_id(date.fromisoformat(r['tanggal_acuan']))} | data {tgl_id(date.fromisoformat(r['dari']))} - "
          f"{tgl_id(date.fromisoformat(r['sampai']))} ({r['jumlah_hari']} hari, per {p['data_per']})",
-         f"Asumsi: tingkat layanan {p['tingkat_layanan_persen']}% (z {p['z'].replace('.', ',')}), lead time default "
+         f"Asumsi: tingkat layanan {p['tingkat_layanan_persen']}% (z {p['z'].replace('.', ',')}), lead time "
+         f"{'umum dari pengguna' if p['lead_time_dari_pengguna'] else 'default'} "
          f"{des(p['lead_time_default_hari'])} hari, stok cukup {des(p['horizon_hari'])} hari setelah barang datang, "
          f"faktor musim {des(p['faktor_musim'])}, barang mati = tidak laku >= {p['batas_barang_mati_hari']} hari", ""]
     ring = hasil["ringkasan"]
-    L.append(f"RINGKASAN: {ring['jumlah_barang']} barang | pesan sekarang {ring['PESAN_SEKARANG']} ({rp(ring['nilai_pesan_sekarang'])}"
-             f"{', sebagian harga belum ada' if ring['harga_belum_lengkap'] else ''}) | minggu depan {ring['PESAN_MINGGU_DEPAN']} "
-             f"({rp(ring['nilai_pesan_minggu_depan'])}) | aman {ring['AMAN']} | barang mati {ring['BARANG_MATI']} "
-             f"(modal tertahan {rp(ring['nilai_barang_mati'])})")
+
+    def nilai_txt(n):
+        if n == 0 and ring["harga_belum_lengkap"]:
+            return "[isian: harga beli belum ada]"
+        return rp(n) + (", sebagian harga belum ada" if ring["harga_belum_lengkap"] else "")
+    L.append(f"RINGKASAN: {ring['jumlah_barang']} barang | pesan sekarang {ring['PESAN_SEKARANG']} ({nilai_txt(ring['nilai_pesan_sekarang'])}"
+             f") | minggu depan {ring['PESAN_MINGGU_DEPAN']} "
+             f"({nilai_txt(ring['nilai_pesan_minggu_depan'])}) | aman {ring['AMAN']} | barang mati {ring['BARANG_MATI']}"
+             + (f" (modal tertahan {rp(ring['nilai_barang_mati'])})" if ring['BARANG_MATI'] else "")
+             + f" | AKAN KOSONG sebelum barang datang {ring['AKAN_KOSONG']}")
+    if hasil["akan_kosong_sebelum_barang_datang"]:
+        L += ["", f"AKAN KOSONG SEBELUM BARANG DATANG ({ring['AKAN_KOSONG']}) - sorot paling atas di balasan"]
+        for x in hasil["akan_kosong_sebelum_barang_datang"]:
+            L.append(f"- {x['nama']}: habis ±{x['habis_dalam_hari']} hari, barang datang {des(x['lead_time_hari'])} hari setelah pesan "
+                     f"-> kosong ±{x['hari_kosong']} hari ({x['dasar_laju']}"
+                     + (f"; kecuali {des(x['dalam_pesanan'])} yang sedang dipesan datang lebih dulu" if x["dalam_pesanan"] else "")
+                     + "). Saran: " + "; ".join(x["saran"]))
     for kel in URUTAN_KELOMPOK:
         isi = [h for h in hasil["barang"] if h["kelompok"] == kel]
         if not isi:
@@ -1324,7 +1555,8 @@ def teks(hasil):
     if hasil["pesanan_per_pemasok"]:
         L += ["", "PESANAN PER PEMASOK"]
         for g in hasil["pesanan_per_pemasok"]:
-            tot = rp(g["total_nilai"]) + ("" if g["harga_lengkap"] else " + [isian: harga yang belum ada]")
+            tot = ("[isian: harga beli belum ada]" if (g["total_nilai"] == 0 and not g["harga_lengkap"]) else
+                   rp(g["total_nilai"]) + ("" if g["harga_lengkap"] else " + [isian: harga yang belum ada]"))
             L.append(f"* {g['pemasok']} - {LABEL_KELOMPOK[g['kelompok']]} - total {tot}"
                      + (f" | KURANG {rp(g['kurang_dari_minimal_belanja'])} dari minimal belanja {rp(g['minimal_belanja'])}"
                         if g.get("kurang_dari_minimal_belanja") else ""))
@@ -1352,6 +1584,18 @@ def teks(hasil):
     return "\n".join(L)
 
 
+CONTOH = """Cara pakai singkat (Windows: python atau py):
+  python3 rencana_restok.py --file penjualan.csv --barang barang.csv --hari-ini 2026-10-14 --format teks
+  python3 rencana_restok.py --data "tanggal;nama_barang;qty\\n2026-09-01;Gula 1 kg;6" \\
+      --barang-data "nama_barang;stok_sekarang;lead_time_hari;harga_beli;pemasok;kelipatan\\nGula 1 kg;18;2;15500;Grosir A;20" --format teks
+  Data per minggu/bulan: --data-per minggu | bulan. Lead time umum: --lead-time 3. Faktor musim dari pengguna: --faktor-musim 1,5
+Penjualan (minimal): tanggal, nama barang atau sku, qty. Boleh ekspor marketplace/kasir, mutasi buku-stok, XLSX, JSON,
+  tabel lebar (kolom = tanggal, atau baris = tanggal/minggu dan kolom = barang).
+Data barang (opsional): sku/nama_barang, stok_sekarang, harga_beli, pemasok, lead_time_hari, kelipatan, minimal_order,
+  dalam_pesanan, mulai_jual, satuan. Data pemasok (opsional, --pemasok): pemasok, lead_time_hari, minimal_belanja.
+Keluaran: --format teks (ringkas untuk dibaca agent) atau JSON (default). Kode keluar 2 = data tidak terbaca (lihat error + saran)."""
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Rencana restok dari riwayat penjualan (Decimal, Rupiah).")
     ap.add_argument("--file", help="riwayat penjualan: CSV/TSV/teks tabel/XLSX/JSON (kolom minimal tanggal, sku/nama, qty)")
@@ -1360,7 +1604,7 @@ def main(argv=None):
     ap.add_argument("--barang-data", help="data barang sebagai teks")
     ap.add_argument("--pemasok", help="data pemasok: pemasok, lead_time, minimal_belanja")
     ap.add_argument("--pemasok-data", help="data pemasok sebagai teks")
-    ap.add_argument("--lead-time", default="7", help="lead time default (hari) bila tidak ada per barang/pemasok (default 7)")
+    ap.add_argument("--lead-time", default=None, help="lead time default (hari) bila tidak ada per barang/pemasok (default 7)")
     ap.add_argument("--layanan", type=int, default=95, help="tingkat layanan persen: 90, 95 (default), 99; juga 80, 85, 97, 98")
     ap.add_argument("--horizon", default="14", help="berapa hari stok harus cukup setelah barang datang (default 14)")
     ap.add_argument("--data-per", choices=["hari", "minggu", "bulan"], default="hari",
@@ -1373,7 +1617,11 @@ def main(argv=None):
     ap.add_argument("--sampai", help="data dianggap mencakup sampai tanggal ini (hari tanpa penjualan dihitung 0)")
     ap.add_argument("--hari-ini", help="tanggal acuan stok sekarang (default: tanggal terakhir data)")
     ap.add_argument("--format", choices=["json", "teks"], default="json")
+    ap.add_argument("--contoh", action="store_true", help="tampilkan contoh perintah & format data, lalu selesai")
     args = ap.parse_args(argv)
+    if args.contoh:
+        print(CONTOH)
+        return 0
     try:
         hasil = jalankan(args)
     except Galat as g:

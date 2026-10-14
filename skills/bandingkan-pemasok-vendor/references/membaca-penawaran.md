@@ -9,8 +9,9 @@
 | Bayar di muka, transfer dulu, CBD (*cash before delivery*), lunas di depan | Bayar penuh sebelum barang dikirim | DP 100% |
 | DP 30%/50%, pelunasan saat kirim/terima | Uang muka saat pesan, sisanya saat barang tiba | DP 30/50, tempo 0 |
 | Tempo 14/30 hari, TOP 30, Net 30, H+30 | Bayar sekian hari setelah barang/faktur diterima | DP 0, tempo 14/30 |
-| DP 50% sisa tempo 30 hari | Gabungan | DP 50, tempo 30 |
-| Konsinyasi / titip jual | Bayar setelah barang laku | Di luar hitungan; jelaskan terpisah |
+| DP 50% sisa tempo 30 hari, DP 30% sisa 30 hari, 30% di muka + pelunasan 30 hari | Gabungan: uang muka, sisanya ditempokan | DP 50/30, tempo 30 (skor termin dihitung dari bagian yang ditempokan) |
+| DP 50% saja (sisa tidak disebut) | Belum jelas kapan sisanya dibayar | DP 50, sisa **dianggap** saat terima; ditulis terbuka "(diasumsikan)" dan sebaiknya ditanyakan |
+| Konsinyasi / titip jual, cicilan tidak jelas | Tidak bisa dibaca sebagai DP/tempo | Ditandai `[isian]`, skor termin netral (bukan dianggap tunai); jelaskan terpisah |
 
 Cara menilai: makin lama Anda boleh menahan uang, makin ringan untuk kas. **DP ke pemasok baru adalah risiko** (barang belum terbukti datang); untuk pemasok baru sarankan DP kecil, rekening atas nama usaha (bukan pribadi), dan bukti penawaran tertulis. "Diskon tunai 2% atau tempo 30 hari" setara biaya modal sekitar 2% per bulan; bila usaha Anda meminjam modal di bawah itu, tempo biasanya lebih untung (opsi bunga modal di hitungan menilainya dalam rupiah).
 
@@ -22,7 +23,7 @@ Cara menilai: makin lama Anda boleh menahan uang, makin ringan untuk kas. **DP k
 - Pemasok non-PKP yang menagih "PPN" → minta klarifikasi dan rincian; jangan dibayar sebagai PPN tanpa faktur pajak.
 - **Kamus kolom `ppn`** (sama di template, SKILL.md, dan hitungan): `termasuk` = PKP, harga sudah termasuk PPN · `belum` = PKP, harga belum termasuk PPN (+11%) · `non-pkp` = tanpa PPN · `bebas` = barang dibebaskan PPN · `?`/kosong = belum jelas → `[isian]`. Kata "belum" tidak pernah berarti data kosong.
 - Ongkir/biaya lain yang ditagih pemasok PKP di faktur yang sama **diasumsikan** ikut kena PPN (Harga Jual dalam UU PPN mencakup biaya yang diminta penjual karena penyerahan barang). Ongkir yang Anda bayar langsung ke ekspedisi tidak ikut PPN pemasok. Pengecualian yang mungkin: ongkir yang hanya diteruskan sebagai penggantian biaya ekspedisi dengan dokumen atas nama pembeli. Asumsi ini ditulis terbuka di hasil beserta besarnya ("PPN atas ongkir Rp…"). **PERLU REVIEW konsultan pajak.**
-- **Barang kebutuhan pokok yang dibebaskan PPN:** menurut PP 49/2022, beberapa bahan pokok (mis. beras, gabah, jagung, kedelai, garam, daging, telur, susu segar, buah, sayur, ubi, bumbu, gula konsumsi) dibebaskan PPN. Untuk barang seperti ini jangan menulis "potensi PPN": isi `--barang "gula pasir"` (dikenali sebagai kemungkinan bahan pokok) atau `--bebas-ppn ya` / kolom `ppn` = `bebas`. Daftar pastinya dan syaratnya ikuti aturan resmi. **PERLU REVIEW konsultan pajak.**
+- **Barang kebutuhan pokok yang dibebaskan PPN:** menurut PP 49/2022, beberapa bahan pokok (mis. beras, gabah, jagung, kedelai, garam, daging, telur, susu segar, buah, sayur, ubi, bumbu, gula konsumsi) dibebaskan PPN. Untuk barang seperti ini jangan menulis "potensi PPN": isi `--barang "gula pasir"` atau `--bebas-ppn ya` / kolom `ppn` = `bebas`. Hitungan hanya mengenali frasa sempit (mis. beras, gula pasir, gula konsumsi, gula kristal putih, telur, daging segar, sayur/buah segar); gula aren, gula cair, gula industri/rafinasi, barang olahan/kalengan/premium **tidak** dianggap bebas, PPN tetap dihitung, dan hasil menulis "belum tentu termasuk; cek status barang Anda". Daftar pastinya dan syaratnya ikuti aturan resmi. **PERLU REVIEW konsultan pajak.**
 - Pembulatan di hitungan: PPN dari DPP persis, dibulatkan ke bawah sekali; harga termasuk PPN dipecah dengan DPP rupiah bulat terbesar. Belum dicocokkan dengan Coretax; bila faktur berbeda, ikuti faktur.
 
 ## 3. Franco vs loco (istilah pengiriman lokal)

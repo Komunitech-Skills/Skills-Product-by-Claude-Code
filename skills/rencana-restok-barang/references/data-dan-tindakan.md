@@ -31,8 +31,8 @@ Pilih 1–2 yang paling cocok per barang, sebut modal tertahannya, dan jangan sa
 6. **Perbaiki tampilan**: foto ulang, judul produk, pindah ke rak depan, sebelum memutuskan diskon besar.
 Stok berlebih (> 90 hari): hentikan pesan dulu, promo ringan, dan alihkan modal ke barang yang sering habis.
 
-## 5. Bila barang bisa kosong sebelum kiriman datang
-Sorot di balasan, lalu beri pilihan: pesan sebagian ke pemasok yang lebih dekat/cepat walau sedikit lebih mahal, minta kiriman dipercepat (draf WA), batasi jumlah per pembeli, atau tandai pre-order/stok menyusul **bila aturan platform mengizinkan** (pengguna yang mengecek aturannya).
+## 5. Bila barang akan kosong sebelum kiriman datang
+Jumlah hari kosong dihitung (stok ÷ laku/hari dibanding lead time), termasuk untuk barang baru dengan laju sementara. Tulis paling atas di balasan, lalu beri pilihan: pesan hari ini (barang data pendek: pesanan kecil, misalnya satu dus atau minimal order, tanpa jumlah pasti), pesan sebagian ke pemasok yang lebih dekat/cepat walau sedikit lebih mahal, minta kiriman dipercepat (draf WA), batasi jumlah per pembeli, atau tandai pre-order/stok menyusul **bila aturan platform mengizinkan** (pengguna yang mengecek aturannya).
 
 ## 6. Data pribadi
 File ekspor marketplace sering memuat nama, nomor HP, dan alamat pembeli. Itu tidak diperlukan untuk rencana restok: jangan dikutip, diringkas, atau disimpan di balasan.
