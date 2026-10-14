@@ -2,7 +2,7 @@
 
 **Sebutkan tanggal hari raya dan data karyawan, langsung dapat rincian THR, potongan pajaknya, batas bayar, dan pengumuman siap kirim.**
 
-Diuji AI penguji independen: 9 dari 10 (uji ulang di OpenClaw, hanya dengan skill: 8,5 dari 10); tanpa skill, masa kerja bisa salah hitung (kelebihan Rp 400.000) dan pajak tidak dihitung.
+Diuji AI penguji independen di OpenClaw: 6,1 → 8,0 dari 10 (versi 1.0.9, 2026-10-14; tanpa skill, THR karyawan baru dihitung dari masa kerja "sampai hari ini" dan nominal tiap orang ditulis di pengumuman grup; dengan skill, masa kerja dihitung sampai hari raya, batas bayar H-7 disebut lengkap dengan tanggalnya, dan teks grup tanpa nominal pribadi).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -42,6 +42,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Hitung THR Lebaran untuk karyawan di file karyawan.csv, Lebaran tanggal 10 Maret 2027." (file daftar karyawan dari Excel yang disimpan sebagai CSV, yaitu file tabel sederhana)
 - "Karyawan masuk 1 Mei, gaji 4 juta, THR Natal 25 Desember berapa?"
 - "Buatkan pengumuman THR untuk karyawan."
+- Data belum lengkap? Ketik saja, mis. "THR karyawan saya berapa? Dedi 3 juta sudah lama, Lina baru masuk bulan lalu 2,8 juta." AI langsung menghitung dengan asumsi yang disebut jelas, lalu menanyakan paling banyak 3 hal supaya angkanya pasti.
 
 ## Instalasi singkat
 Salin folder `hitung-thr` ke folder skills AI agent Anda:
@@ -57,12 +58,13 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Hasil uji (jujur)
 
-**Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; 4 karyawan: tetap, kontrak, harian lepas, dan yang di-PHK).
-- Tanpa skill: bila masa kerja Rina dihitung per bulan kalender, THR-nya kelebihan Rp 400.000 (yang benar 8 bulan penuh = Rp 3.200.000); Joko (harian lepas) hanya "sekitar Rp 3 juta" (yang benar rata-rata 12 bulan = Rp 3.008.333); Wati yang di-PHK 20 Februari 2027 sering dianggap tidak berhak padahal berhak Rp 5.200.000; pajak tidak dihitung.
-- Dengan skill: angka-angka di atas cocok dengan hitungan penguji, lengkap dengan batas bayar Rabu, 3 Maret 2027, tambahan PPh 21 per orang, dan pengumuman tanpa nominal pribadi.
-- Skor penguji independen: 9 dari 10 (v1.0.1; 4.000 kasus acak dibandingkan dengan kalkulator terpisah, selisih 0). Uji ulang di OpenClaw (1 Okt 2026, hanya dengan skill): 8,5 dari 10.
+**Hasil uji (angka nyata):** uji sebelum/sesudah oleh AI penguji independen di OpenClaw (uji otomatis, versi 1.0.9, 14 Oktober 2026, data fiktif). Pertanyaan yang sama dikirim tanpa dan dengan skill dalam 5 skenario: bengkel dengan 4 karyawan untuk Lebaran 2027 (juga dalam konteks bot Telegram), THR Natal kafe plus pertanyaan pajaknya, tukang harian lepas yang upahnya berubah-ubah plus permintaan "sebut nominal tiap orang di grup", dan data yang belum lengkap. Rata-rata nilai **6,1 tanpa skill → 8,0 dengan skill** (dari 10).
+- Tanpa skill: karyawan yang baru masuk dihitung dari masa kerja "sampai hari ini", sehingga THR-nya hanya Rp233.333 (bila untuk Lebaran 2027, seharusnya 5–6 bulan sampai hari raya: Rp1.166.667–Rp1.400.000); pajak THR yang dibayar Desember ditebak dengan tarif bulanan, padahal Desember wajib dihitung ulang setahun; pengumuman grup memuat nama dan nominal tiap orang.
+- Dengan skill: semua angka cocok dengan hitungan ulang penguji (total THR 4 karyawan bengkel Rp12.441.666; batas bayar Rabu, 3 Maret 2027 untuk Lebaran dan Jumat, 18 Desember 2026 untuk Natal); pajak THR Desember diarahkan ke hitung ulang setahun; teks grup selalu tanpa nominal pribadi.
+- Catatan jujur: nilainya tepat di ambang lulus. Saat data belum lengkap (tanpa tanggal hari raya dan tanggal masuk), AI hanya mengajukan 5 pertanyaan tanpa memberi angka (nilai 6,5); di beberapa balasan masih muncul istilah teknis dan nama usaha karangan di teks grup. Ketiganya diperbaiki di versi 1.0.10 (lihat status di bawah).
+- Uji hitungan sebelumnya (versi 1.0.1): 4.000 kasus acak dibandingkan dengan kalkulator terpisah, selisih 0.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia; terakhir versi 1.0.9, 14 Oktober 2026) dan Claude Code (simulasi agen penguji). Versi 1.0.10 berisi perbaikan teks instruksi (data kurang tetap dihitung dulu dengan asumsi yang disebut lalu paling banyak 3 pertanyaan, tanpa istilah teknis di balasan, nama usaha tidak dikarang) ditambah satu opsi bantu perkiraan tanggal Lebaran berikutnya (lulus uji otomatis); versi ini **belum diuji ulang** di OpenClaw. Rumus dan angka hitungan tidak berubah. Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
 ## Catatan penting
 - Alat bantu hitung, **bukan nasihat hukum atau pajak**. Dasar aturan: Permenaker 6/2016, SE Menaker M/3/HK.04.00/III/2026 (SE Menaker THR 2026), serta PP 58/2023 dan PMK 168/2023 (PPh 21 tarif TER); berlaku per 23 September 2026. Untuk hari raya tahun berikutnya, cek SE Menaker THR yang terbit menjelang hari raya.
@@ -77,8 +79,8 @@ Tidak, bila sifatnya tidak tetap (tergantung kehadiran). Dasar THR adalah gaji p
 THR digabung dengan gaji di bulan dibayar, sehingga tarif PPh 21 (TER) naik ke baris tabel yang lebih tinggi. Skill menunjukkan berapa tambahan potongannya. Kelebihan/kekurangan akan disesuaikan saat hitung ulang di bulan Desember.
 
 **Tanggal hari raya diambil dari mana?**
-Anda yang menyebutkan tanggalnya (sesuai kalender libur nasional resmi). Untuk Idul Fitri/Idul Adha, skill mengecek tanggal itu dengan perkiraan kalender Hijriah dan mengingatkan bila meleset, lalu menghitung batas bayar H-7 secara otomatis.
+Anda yang menyebutkan tanggalnya (sesuai kalender libur nasional resmi). Bila belum Anda sebutkan, AI menghitung dulu untuk perkiraan Lebaran berikutnya (disebut jelas sebagai asumsi), lalu menanyakan tanggal pastinya. Untuk Idul Fitri/Idul Adha, skill mengecek tanggal itu dengan perkiraan kalender Hijriah dan mengingatkan bila meleset, lalu menghitung batas bayar H-7 secara otomatis.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
