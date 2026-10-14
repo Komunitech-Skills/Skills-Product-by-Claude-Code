@@ -2,6 +2,12 @@
 
 Catatan teknis per versi (ringkasan pembeli ada di README).
 
+## 1.0.4 (2026-10-14)
+- Perbaikan serius dari kirim ulang bot Telegram asli (1.0.3): tabel mingguan yang dihitung tanpa `--data-per minggu` terbaca sebagai harian (jumlah pesan +40–60 %). Kini per hari/minggu/bulan dideteksi otomatis (judul kolom Minggu/Mgg/Bulan, tanggal berisi bulan saja, jarak antar tanggal 1 / 7 / ±30 hari); kalimat "Data dibaca sebagai …" dicetak dan wajib disalin; bila tidak jelas script berhenti dengan kode keluar 3 dan SKILL.md mewajibkan bertanya ke pengguna, bukan menebak. `--data-per` menerima juga harian/mingguan/bulanan. Tanggal tanpa tahun ("17 Agu", "17/08") terbaca dengan tahun dari `--hari-ini`. Tabel warung (examples) tanpa flag kini menghasilkan 47/82/75, sama dengan `--data-per minggu`. Uji regresi: 180 cek.
+
+## 1.0.3 (2026-10-14)
+- Dari uji bot Telegram asli (gelombang 17, 1.0.2: 7 → 8, angka benar): judul kelompok memakai waktu nyata (PESAN BESOK / PESAN n HARI LAGI untuk ≤ 3 hari, PESAN MINGGU DEPAN hanya ≥ 4 hari, + tanggal); baris rumus jumlah pesan per barang (`rumus_jumlah`, mis. "stok target 56 − stok 9 = pesan 47"); draf WA ringkas (≤ 6 baris) untuk setiap pemasok di semua kelompok pesan dan wajib ada di balasan; SKILL.md menetapkan keluaran minimum yang tidak boleh dipangkas dan batas ringkasan Telegram ≤ 3.500 karakter. Alur tidak berubah. Uji regresi: 163 cek.
+
 ## 1.0.2 (2026-10-14)
 Perbaikan kecil dari uji ulang 1.0.1 (6,1 → 8,7, LULUS; skenario 1: 180 dari 182 angka cocok). Alur tidak berubah.
 - **Presisi hari habis:** laju yang tidak kena batas kini dipakai langsung (laju 4 minggu terakhir), bukan rata-rata × (laju baru ÷ rata-rata); semua pembulatan ke atas/bawah dirapikan dulu ke 12 desimal. Contoh: stok 260 dengan laju 52/28 kini tepat 140 hari (sebelumnya 139,999… → 139).
