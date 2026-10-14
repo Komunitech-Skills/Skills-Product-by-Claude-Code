@@ -71,27 +71,27 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 61 | Draf Chat Jadi Word Rapi (`ubah-draf-ke-dokumen`) | Legal & Dokumen | 5,63 → 8,28 | +2,65 |
 | 62 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 5,6 → 8,25 | +2,65 |
 | 63 | Siapkan Usaha Anda Siap Dijual atau Diwariskan (`persiapan-jual-atau-wariskan-usaha`) | Keuangan & Akuntansi | 6,1 → 8,7 | +2,6 |
-| 64 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 5,9 → 8,5 | +2,6 |
-| 65 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
-| 66 | Cek Layak Investasi Sebelum Keluar Uang (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
-| 67 | Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
-| 68 | Strategi Konten & Anggaran Iklan - konten jelas, uang iklan tidak bocor (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
-| 69 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
-| 70 | Cek Kesehatan Akun Iklan, Tanpa Login (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
-| 71 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
-| 72 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
-| 73 | Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet (`presentasi-instan`) | Produktivitas | 6 → 8,5 | +2,5 |
-| 74 | Surat Penawaran Harga Rapi, Cepat Dibuat (`surat-penawaran-harga`) | Sales | 6 → 8,5 | +2,5 |
-| 75 | Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
-| 76 | Pilah Inbox, Balas yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
-| 77 | Balas Chat Pelanggan Ramah, Minim Salah Janji (`balas-chat-cs`) | Customer Service | 6,4 → 8,8 | +2,4 |
-| 78 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
-| 79 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
-| 80 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 81 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
-| 82 | SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 83 | Sunting Tulisan Kerja Jadi Jelas (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
-| 84 | Tahu Kapan Restok, Berapa, ke Pemasok Mana (`rencana-restok-barang`) | E-commerce/Marketplace Indonesia | 6,1 → 8,3 | +2,2 |
+| 64 | Tahu Kapan Restok, Berapa, ke Pemasok Mana (`rencana-restok-barang`) | E-commerce/Marketplace Indonesia | 6,1 → 8,7 | +2,6 |
+| 65 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 5,9 → 8,5 | +2,6 |
+| 66 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
+| 67 | Cek Layak Investasi Sebelum Keluar Uang (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
+| 68 | Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
+| 69 | Strategi Konten & Anggaran Iklan - konten jelas, uang iklan tidak bocor (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
+| 70 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
+| 71 | Cek Kesehatan Akun Iklan, Tanpa Login (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
+| 72 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
+| 73 | CV & Lamaran yang Cocok dengan Lowongan (`cv-lamaran-ats`) | HR | 6 → 8,5 | +2,5 |
+| 74 | Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet (`presentasi-instan`) | Produktivitas | 6 → 8,5 | +2,5 |
+| 75 | Surat Penawaran Harga Rapi, Cepat Dibuat (`surat-penawaran-harga`) | Sales | 6 → 8,5 | +2,5 |
+| 76 | Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
+| 77 | Pilah Inbox, Balas yang Penting Dulu (`triase-email-masuk`) | Produktivitas | 5,5 → 8 | +2,5 |
+| 78 | Balas Chat Pelanggan Ramah, Minim Salah Janji (`balas-chat-cs`) | Customer Service | 6,4 → 8,8 | +2,4 |
+| 79 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
+| 80 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
+| 81 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 82 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
+| 83 | SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 84 | Sunting Tulisan Kerja Jadi Jelas (`sunting-tulisan-jelas`) | Produktivitas | 6,25 → 8,5 | +2,25 |
 | 85 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
 | 86 | Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak (`cek-risiko-dan-asuransi-usaha`) | Keuangan & Akuntansi | 6,5 → 8,6 | +2,1 |
 | 87 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
@@ -677,6 +677,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Nilai usaha Rp96,9–251,9 jt vs kebutuhan pensiun Rp192 jt (bisa kurang Rp95,1 jt di harga rendah); 30% saham bengkel las Rp15,4–19,2 jt; 9/9 tes script, angka cocok hitungan independen
 - **Catatan jujur:** Bukan appraisal resmi atau nasihat hukum/pajak; aturan waris/pajak/NIB diarahkan ke notaris dan konsultan (PERLU REVIEW, belum dicek ke naskah resmi). Jawaban skenario 1 panjang (±9,5 rb karakter); uji konteks Telegram belum dijalankan. Ide dari materi domain publik (FDIC), ditulis ulang bersih. Di bot Telegram asli (gelombang 13, 2026-10-12) selisih +0,5 (7 → 7,5): tetap di bundle, tidak dipakai sebagai cuplikan pilot.
 
+### Tahu Kapan Restok, Berapa, ke Pemasok Mana — 6,1 → 8,7
+`rencana-restok-barang` · E-commerce/Marketplace Indonesia · versi 1.0.1 · diuji 2026-10-14
+
+- **Permintaan:** CSV penjualan 90 hari toko perlengkapan bayi (777 baris, 12 barang, tanggal campur format) + stok sekarang + lead time 2 pemasok → 'apa yang harus saya pesan minggu ini?'; lalu data mingguan di chat; lalu diminta 'karang proyeksi 6 bulan yang bagus buat pinjaman'.
+- **Tanpa skill:** Menebak jumlah pesan tanpa rumus, membuang hari lonjakan diam-diam, tidak ada stok pengaman maupun titik pesan ulang; proyeksi pinjaman tanpa data dibuatkan begitu saja.
+- **Dengan skill:** Satu CSV jadi daftar belanja per pemasok: jumlah per dus, tanggal pesan, nilai rupiah, draf pesan WA; kelompok PESAN SEKARANG / MINGGU DEPAN / AMAN dengan titik pesan ulang dan stok pengaman yang dihitung; permintaan proyeksi karangan ditolak, diganti rencana dari data nyata.
+- **Angka kunci:** 777 baris penjualan jadi rencana Rp10.879.000 sekarang + Rp3.351.000 minggu depan; 3 barang ditandai akan kosong sebelum pesanan datang (±1–4 hari); 180 dari 182 angka cocok hitung ulang penguji
+- **Catatan jujur:** 1.0.0 lulus 8,3 dengan 5 temuan (barang yang pasti kosong tidak disorot, aturan tren meredam kenaikan, nama '(isi 3)' dianggap barang mati) → diperbaiki di 1.0.1, uji ulang terbatas 8,7. Sisa dua slip kecil tanpa dampak keputusan (hari habis ±139 vs 140; kalimat batas tren yang tidak terpakai) diperbaiki di 1.0.2 tanpa uji ulang. Belum diuji di bot Telegram asli maupun oleh manusia.
+
 ### Dari Keluhan Jadi Perbaikan Tiap Bulan — 5,9 → 8,5
 `iterasi-dari-masukan-pelanggan` · Produktivitas · versi 1.0.11 · diuji 2026-10-13
 
@@ -852,15 +861,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Menolak ketiga klaim dengan sopan, tetap menyunting, tanpa angka/klaim baru; angka keterbacaan (kata, kata per kalimat) cocok dengan hitungan independen.
 - **Angka kunci:** Email 165 → 97 kata; semua tanggal & nominal asli tetap ada (dicek ulang)
 - **Catatan jujur:** Untuk tugas menyunting biasa pembedanya tipis (+1,5): AI tanpa skill sudah rapi. Nilai skill ada pada menjaga isi dan menolak klaim karangan. Di bot Telegram asli (gelombang 14, 2026-10-12) selisih +0,5 (7 → 7,5): tetap di bundle, tidak dipakai sebagai cuplikan pilot.
-
-### Tahu Kapan Restok, Berapa, ke Pemasok Mana — 6,1 → 8,3
-`rencana-restok-barang` · E-commerce/Marketplace Indonesia · versi 1.0.0 · diuji 2026-10-14
-
-- **Permintaan:** CSV penjualan 90 hari toko perlengkapan bayi (777 baris, 12 barang, tanggal campur format) + stok sekarang + lead time 2 pemasok → 'apa yang harus saya pesan minggu ini?'; lalu data mingguan di chat; lalu diminta 'karang proyeksi 6 bulan yang bagus buat pinjaman'.
-- **Tanpa skill:** Menebak jumlah pesan tanpa rumus, membuang hari lonjakan diam-diam, tidak ada stok pengaman maupun titik pesan ulang; proyeksi pinjaman tanpa data dibuatkan begitu saja.
-- **Dengan skill:** Satu CSV jadi daftar belanja per pemasok: jumlah per dus, tanggal pesan, nilai rupiah, draf pesan WA; kelompok PESAN SEKARANG / MINGGU DEPAN / AMAN dengan titik pesan ulang dan stok pengaman yang dihitung; permintaan proyeksi karangan ditolak, diganti rencana dari data nyata.
-- **Angka kunci:** 777 baris penjualan jadi rencana Rp9.799.000 sekarang + Rp3.351.000 minggu depan dalam ±100 detik; 125 angka per barang dicek ulang penguji, 0 beda
-- **Catatan jujur:** Skenario data mingguan di chat hanya 7,5 (aturan tren meredam kenaikan 30→45/minggu); barang yang pasti kosong sebelum pesanan datang belum disorot di 1.0.0 — keduanya diperbaiki di 1.0.1 dengan uji ulang terbatas. Belum diuji di bot Telegram asli maupun oleh manusia.
 
 ### Seleksi Puluhan CV dalam Hitungan Menit — 6 → 8,2
 `seleksi-cv-pelamar` · HR · versi 1.0.2 · diuji 2026-10-05

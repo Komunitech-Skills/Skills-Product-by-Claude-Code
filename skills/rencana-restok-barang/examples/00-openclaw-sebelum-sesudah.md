@@ -1,11 +1,12 @@
 # Uji OpenClaw sebelum/sesudah: rencana-restok-barang
 
-- **Tanggal:** 2026-10-14
+- **Tanggal:** 2026-10-14 (putaran 1: versi 1.0.0; uji ulang terbatas: versi 1.0.1)
 - **Penguji:** agent penguji independen Komunitech (bukan pembuat skill; hanya membaca folder skill)
-- **Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5` (sama dengan bot member). SEBELUM = home tanpa skill; SESUDAH = home berisi hanya `rencana-restok-barang` (versi 1.0.0). Home dibuat ulang bersih per skenario. Pesan dan data identik di kedua sisi. Skenario 1 dijalankan dua kali per sisi: lokal dan konteks kanal Telegram (`--channel telegram`, tanpa mengirim).
+- **Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`), model router Komunitech `claude-sonnet-5` (sama dengan bot member). SEBELUM = home tanpa skill; SESUDAH = home berisi hanya `rencana-restok-barang`. Home dibuat ulang bersih per skenario (untuk 1.0.1 dibuat baru dengan skill 1.0.1). Pesan dan data identik di kedua sisi dan kedua versi. Skenario 1 dijalankan lokal dan dalam konteks kanal Telegram (`--channel telegram`, tanpa mengirim).
+- **Uji ulang 1.0.1 (terbatas):** hanya skenario 1 (lokal + Telegram) dan skenario 2, sisi SESUDAH. Sisi SEBELUM memakai hasil putaran 1 (tidak diulang). Skenario 3–4 tidak diulang; nilainya dari versi 1.0.0. Jawaban SESUDAH 1.0.0 disimpan di bagian "Riwayat" tiap skenario.
 - **Data (fiktif):** toko perlengkapan bayi online, `penjualan-90hari.csv` (777 baris, 16 Jul–13 Okt 2026, kolom `Tanggal,Nama Produk,Qty`, 35 % baris bertanggal `dd/mm/yyyy` dan sisanya `yyyy-mm-dd`, ±4 % nama ditulis huruf kecil) + `stok-sekarang.csv` (12 barang, stok, harga beli, pemasok; satu nama ditulis beda: "Kaos Kaki Bayi (isi 3)" vs "Kaos Kaki Bayi isi 3" di penjualan). Pola sengaja: laris stabil (Popok, Tisu, Minyak Telon, Bedak, Dot), naik 4 minggu terakhir (Botol Susu, Kaos Kaki), musiman turun (Pelampung Leher), barang mati 70 hari (Gendongan Hipseat), barang baru 10 hari (Teether), satu hari lonjakan (Sabun Cair 65 pcs pada 20 Sep, biasanya ±4), stok berlebih (Dot 260). Pemasok disebut di pesan: CV Grosir Bunda (3 hari), PT Ceria Distribusi (10 hari, kelipatan dus isi 12). Hari uji: Rabu 14 Okt 2026.
-- **Alat yang dipanggil agent:** SEBELUM `exec/read` (menulis skrip Python sendiri; dua kali menjalankan `find /` mencari file). SESUDAH `read/exec/skills_read` (+`ls`, satu kali `write` file sementara); script `scripts/rencana_restok.py` dipakai di skenario 1 (lokal & Telegram) dan 2; skenario 3–4 dihitung manual sesuai fallback SKILL.md. Tidak ada alat web/browser, tidak ada server luar.
-- **Verifikasi angka:** semua angka di jawaban SESUDAH skenario 1–2 dicocokkan dengan hitungan ulang independen (Python terpisah, tanpa mengimpor script skill): lihat `05-script-dan-data-rusak.md`.
+- **Alat yang dipanggil agent:** SEBELUM `exec/read` (menulis skrip Python sendiri; dua kali `find /` mencari file). SESUDAH `read/exec/skills_read` (+`ls`, `write` file sementara); script `scripts/rencana_restok.py` dipakai di skenario 1 (lokal & Telegram) dan 2 di kedua versi; skenario 3–4 dihitung manual sesuai fallback SKILL.md. Tidak ada alat web/browser, tidak ada server luar.
+- **Verifikasi angka:** semua angka jawaban SESUDAH skenario 1–2 dicocokkan dengan hitung ulang independen (Python terpisah, tanpa mengimpor script skill): lihat `05-script-dan-data-rusak.md`.
 
 <details><summary>Data uji (stok-sekarang.csv utuh + 25 baris pertama penjualan-90hari.csv; file lengkap di <code>data/</code>)</summary>
 
@@ -64,7 +65,7 @@ Tanggal,Nama Produk,Qty
 
 > Saya jualan perlengkapan bayi online. Ini penjualan 3 bulan terakhir (penjualan-90hari.csv) sama stok sekarang (stok-sekarang.csv). Pemasok saya dua: CV Grosir Bunda barangnya datang 3 hari setelah pesan, PT Ceria Distribusi datang 10 hari dan harus kelipatan dus isi 12. Minggu ini saya harus pesan apa aja dan berapa?
 
-### SEBELUM (skill mati, lokal)
+### SEBELUM (skill mati, lokal, putaran 1)
 
 > Sudah saya analisis kedua file-nya (90 hari penjualan, 16 Juli–13 Okt 2026, vs stok hari ini). Catatan metodologi singkat biar transparan:
 >
@@ -101,7 +102,178 @@ Tanggal,Nama Produk,Qty
 >
 > Mau saya buatkan draft pesan/PO ke kedua pemasok ini supaya tinggal kamu kirim?
 
-### SESUDAH (skill aktif, lokal)
+### SESUDAH 1.0.1 (skill aktif, lokal)
+
+> **Rencana restok per 14 Okt 2026** (data penjualan 16 Jul–13 Okt 2026, 90 hari)
+>
+> Dari 12 barang: 4 dipesan **sekarang** (±Rp10.879.000), 3 **minggu depan** (±Rp3.351.000), 3 **aman**, 1 **barang mati** (modal nganggur Rp2.775.000), dan 3 barang berisiko **kosong sebelum kiriman tiba**.
+>
+> **⚠️ AKAN KOSONG SEBELUM BARANG DATANG — urus duluan**
+> - **Bedak Bayi 150g**: stok 9, habis ±2 hari, CV Grosir Bunda kirim 3 hari → bisa kosong ±1 hari. Pesan hari ini.
+> - **Botol Susu Anti Kolik 250ml**: stok 38, habis ±8 hari, PT Ceria 10 hari → bisa kosong ±2 hari. Pesan hari ini.
+> - **Teether Silikon Buah**: stok 24, data penjualannya baru 10 hari (terjual 37 pcs, laju sementara ±3,7/hari) → bisa kosong ±4 hari. Jumlah pesan pasti belum bisa dihitung (data terlalu pendek); minimal pesan 1 dus (12 pcs) sebagai jaga-jaga, atau cek apakah bisa ambil sebagian dari pemasok lain lebih cepat.
+>
+> **PESAN SEKARANG**
+> | Barang | Stok | Laku/hari | Habis ± | Pesan | Nilai |
+> |---|---|---|---|---|---|
+> | Bedak Bayi 150g | 9 | 3,11 (stabil) | 2 hari (16 Okt) | 49 pcs | Rp539.000 |
+> | Popok Celana Bayi M isi 34 | 22 | 5,53 (stabil) | 3 hari (17 Okt) | 79 pcs | Rp4.898.000 |
+> | Botol Susu Anti Kolik 250ml | 38 | 4,68 (naik 185%*) | 8 hari (22 Okt) | 96 pcs = 8 dus | Rp4.320.000 |
+> | Tisu Basah Bayi 50 lembar | 110 | 9,2 (stabil) | 11 hari (25 Okt) | 132 pcs = 11 dus | Rp1.122.000 |
+>
+> *Botol Susu: naiknya tajam karena 4 minggu terakhir jauh lebih laku dari sebelumnya (4,68 vs 1,64/hari) — bukan lonjakan satu hari, tapi tren beneran naik. Cek sendiri apakah ini wajar atau ada promo/musim tertentu.
+>
+> **PESAN MINGGU DEPAN**
+> | Barang | Stok | Laku/hari | Habis ± | Pesan | Pesan sekitar tgl |
+> |---|---|---|---|---|---|
+> | Sabun Cair Bayi 200ml | 70 | 6,89 (naik 51%) | 10 hari (24 Okt) | 94 pcs | 17 Okt |
+> | Minyak Telon 60ml | 40 | 4,28 (stabil) | 9 hari (23 Okt) | 57 pcs | 18 Okt |
+> | Kaos Kaki Bayi (isi 3) | 60 | 2,93 (naik 82%) | 20 hari (3 Nov) | 48 pcs = 4 dus | 20 Okt |
+>
+> Catatan Sabun Cair: ada lonjakan 20 Sep (terjual 65, biasanya ±4). Hitungan di atas **termasuk** lonjakan itu — tanpa lonjakan tren-nya stabil dan barang ini sebetulnya **AMAN**, bukan minggu depan. Kalau 20 Sep itu borongan/promo sekali, saya bisa hitung ulang tanpa lonjakan tersebut.
+>
+> **AMAN**
+> - Selimut Bayi Bulu — habis ±20 hari
+> - Pelampung Leher Bayi — habis ±48 hari (lagi turun tajam, 4 minggu terakhir cuma 0,61/hari vs sebelumnya 3/hari — cek apakah penurunan ini permanen)
+> - Dot Bayi Silikon isi 2 — habis ±139 hari, **stok berlebih 207 pcs (±Rp1.863.000 nganggur)**, jangan ditambah dulu
+>
+> **Barang mati**
+> - Gendongan Hipseat: stok 15, tidak laku 70 hari (terakhir 4 Agu), modal tertahan Rp2.775.000. Saran: bundling dengan barang laris (Tisu Basah/Sabun Cair/Popok), diskon bertahap, atau tanya pemasok soal retur/tukar.
+>
+> **Daftar pesanan per pemasok (siap kirim)**
+>
+> *CV Grosir Bunda — total Rp5.437.000 (sekarang)*
+> - Bedak Bayi 150g: 49 pcs = Rp539.000
+> - Popok Celana Bayi M isi 34: 79 pcs = Rp4.898.000
+>
+> Draf WA:
+> > Halo CV Grosir Bunda, saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut:
+> > 1. Bedak Bayi 150g: 49 pcs, harga terakhir Rp11.000/pcs
+> > 2. Popok Celana Bayi M isi 34: 79 pcs, harga terakhir Rp62.000/pcs
+> > Mohon dikonfirmasi ketersediaan, total harga, dan perkiraan tanggal kirim. Bila bisa, barang tiba paling lambat [isian: tanggal]. Terima kasih.
+>
+> *PT Ceria Distribusi — total Rp5.442.000 (sekarang)*
+> - Botol Susu Anti Kolik 250ml: 96 pcs = Rp4.320.000
+> - Tisu Basah Bayi 50 lembar: 132 pcs = Rp1.122.000
+>
+> Draf WA:
+> > Halo PT Ceria Distribusi, saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut:
+> > 1. Botol Susu Anti Kolik 250ml: 96 pcs, harga terakhir Rp45.000/pcs
+> > 2. Tisu Basah Bayi 50 lembar: 132 pcs, harga terakhir Rp8.500/pcs
+> > Mohon dikonfirmasi ketersediaan, total harga, dan perkiraan tanggal kirim. Bila bisa, barang tiba paling lambat [isian: tanggal]. Terima kasih.
+>
+> *Minggu depan:* CV Grosir Bunda — Sabun Cair 94 pcs + Minyak Telon 57 pcs (±Rp2.631.000); PT Ceria — Kaos Kaki Bayi 48 pcs (±Rp720.000).
+>
+> **Asumsi yang dipakai:** tingkat layanan 95%, stok harus cukup 14 hari setelah barang datang (selain lead time dari Anda), tidak ada faktor musim tambahan (1x), lead time persis seperti Anda sebutkan (CV Grosir Bunda 3 hari, PT Ceria 10 hari), kelipatan dus 12 hanya diterapkan ke PT Ceria.
+>
+> **3 hal yang mengubah hasil kalau dijawab:**
+> 1. Penjualan Sabun Cair 20 Sep (65 pcs) itu promo/borongan sekali atau memang lagi naik terus?
+> 2. Teether Silikon Buah baru mulai dijual 10 hari lalu, atau sudah lama tapi jarang laku?
+> 3. Ada barang yang sudah dipesan ke pemasok tapi belum datang? (biar dikurangi dari jumlah pesan ini)
+>
+> Catatan: ini perkiraan dari pola penjualan sebelumnya, bukan jaminan — cocokkan dengan stok fisik dan konfirmasi ke pemasok sebelum pesan beneran.
+
+### SEBELUM (skill mati, konteks Telegram, putaran 1)
+
+> Sudah saya analisis datanya. Ringkasan dulu, baru rekomendasi pesan.
+>
+> **Catatan data (penting):**
+> - Ketemu 1 data aneh: *Sabun Cair Bayi 200ml* tanggal 20/9 tercatat laku 65 pcs, padahal rata-rata harian cuma ~5. Ini saya anggap salah input dan saya koreksi ke angka wajar (4) biar perhitungan nggak ngaco.
+> - Nama produk yang ejaannya beda-beda (huruf besar/kecil, "Sabun cair" vs "sabun Cair", dll) sudah saya gabung jadi satu produk.
+> - *Gendongan Hipseat* sudah 0 penjualan sejak awal Agustus (lebih dari 9 minggu) — kemungkinan produk mati, jangan restock dulu.
+> - Beberapa produk lagi tren naik (Botol Susu Anti Kolik, Teether) dan ada yang tren turun (Pelampung Leher Bayi), jadi saya pakai rata-rata 21 hari terakhir (bukan rata-rata 90 hari penuh) supaya lebih nyambung sama kondisi sekarang, plus buffer stok pengaman untuk antisipasi lonjakan.
+>
+> **Pesanan minggu ini ke PT Ceria Distribusi** (datang 10 hari, wajib kelipatan dus isi 12):
+> - Tisu Basah Bayi 50 lembar — 8 dus (96 pcs) ≈ Rp816.000
+> - Botol Susu Anti Kolik 250ml — 5 dus (60 pcs) ≈ Rp2.700.000
+> - Teether Silikon Buah — 2 dus (24 pcs) ≈ Rp288.000
+> Subtotal: Rp3.804.000
+>
+> **Pesanan minggu ini ke CV Grosir Bunda** (datang 3 hari, bebas jumlah):
+> - Popok Celana Bayi M isi 34 — 49 pcs ≈ Rp3.038.000
+> - Bedak Bayi 150g — 35 pcs ≈ Rp385.000
+> - Minyak Telon 60ml — 13 pcs ≈ Rp182.000
+> Subtotal: Rp3.605.000
+>
+> **Total belanja minggu ini: ≈ Rp7.409.000**
+>
+> **Belum perlu dipesan minggu ini** (stok masih cukup sampai kiriman berikutnya): Kaos Kaki Bayi, Sabun Cair Bayi 200ml, Pelampung Leher Bayi (lagi lesu penjualannya, stok 55 masih kebanyakan), Dot Bayi Silikon (stok 260, kebanyakan — jangan tambah lagi), Selimut Bayi Bulu (tipis-tipis aja penjualannya).
+>
+> **Perlu dicek manual:** Gendongan Hipseat — 15 pcs mangkrak, sudah ga laku 9 minggu. Mau didiskon/clearance atau memang mau dihentikan jual?
+>
+> Mau saya buatkan draft pesan WA/teks ke masing-masing supplier biar tinggal kirim?
+
+### SESUDAH 1.0.1 (skill aktif, konteks Telegram)
+
+> **Rencana restok per 14 Okt 2026** (data 16 Jul–13 Okt 2026, 90 hari)
+>
+> 4 barang dipesan sekarang (±Rp10.879.000), 3 minggu depan (±Rp3.351.000), 3 aman, 1 barang mati (modal tertahan Rp2.775.000). Ada 3 barang yang berisiko kosong sebelum kiriman datang.
+>
+> **⚠️ AKAN KOSONG SEBELUM BARANG DATANG**
+> • Bedak Bayi 150g: habis ±2 hari, kiriman CV Grosir Bunda 3 hari → kosong ±1 hari. Pesan hari ini.
+> • Botol Susu Anti Kolik 250ml: habis ±8 hari, kiriman PT Ceria Distribusi 10 hari → kosong ±2 hari. Pesan hari ini.
+> • Teether Silikon Buah: habis ±6 hari, kiriman PT Ceria Distribusi 10 hari → kosong ±4 hari. Datanya baru 10 hari jadi jumlah pasti belum bisa dihitung — pesan kecil (minimal 1 dus = 12 pcs) hari ini, atau cari tambahan dari pemasok lain, atau terima kosong ±4 hari (batasi per pembeli).
+>
+> **PESAN SEKARANG**
+> • Bedak Bayi 150g (CV Grosir Bunda): stok 9, laku ±3,11/hari (stabil), habis ±2 hari (16 Okt) → pesan 49 pcs, ±Rp539.000
+> • Popok Celana Bayi M isi 34 (CV Grosir Bunda): stok 22, laku ±5,53/hari (stabil), habis ±3 hari (17 Okt) → pesan 79 pcs, ±Rp4.898.000
+> • Botol Susu Anti Kolik 250ml (PT Ceria Distribusi): stok 38, laku ±4,68/hari (naik 185% — dibatasi maksimal 2× rata-rata, cek sendiri apakah benar naik setajam itu), habis ±8 hari (22 Okt) → pesan 96 pcs = 8 dus, ±Rp4.320.000
+> • Tisu Basah Bayi 50 lembar (PT Ceria Distribusi): stok 110, laku ±9,2/hari (stabil), habis ±11 hari (25 Okt) → pesan 132 pcs = 11 dus, ±Rp1.122.000
+>
+> **PESAN MINGGU DEPAN**
+> • Sabun Cair Bayi 200ml (CV Grosir Bunda): stok 70, laku ±6,89/hari (naik 51%), habis ±10 hari → pesan ±17 Okt, 94 pcs, ±Rp1.833.000. Catatan: ada lonjakan 20 Sep (65 pcs, biasanya ±4) — kalau lonjakan itu dibuang, tren sebenarnya stabil (±4,63/hari) dan barang ini AMAN, bukan minggu depan. Tolong konfirmasi apakah 20 Sep itu promo/borongan.
+> • Minyak Telon 60ml (CV Grosir Bunda): stok 40, laku ±4,28/hari (stabil), habis ±9 hari → pesan ±18 Okt, 57 pcs, ±Rp798.000
+> • Kaos Kaki Bayi isi 3 (PT Ceria Distribusi): stok 60, laku ±2,93/hari (naik 82%), habis ±20 hari → pesan ±20 Okt, 48 pcs = 4 dus, ±Rp720.000
+>
+> **AMAN**
+> • Selimut Bayi Bulu: habis ±20 hari (stabil)
+> • Pelampung Leher Bayi: habis ±48 hari — tren sebenarnya turun tajam (4 minggu terakhir ±0,61/hari vs ±3/hari sebelumnya), tapi dibatasi minimal 0,5× rata-rata jadi dipakai ±1,14/hari; cek sendiri apakah penurunan ini akan bertahan
+> • Dot Bayi Silikon isi 2: habis ±139 hari (naik 27%) — ini **stok berlebih**, kelebihan 207 pcs (±Rp1.863.000), jangan ditambah dulu
+>
+> **Daftar pesanan per pemasok (siap kirim)**
+>
+> *CV Grosir Bunda — pesan sekarang, total Rp5.437.000*
+> 1. Bedak Bayi 150g: 49 pcs
+> 2. Popok Celana Bayi M isi 34: 79 pcs
+>
+> Draf WA:
+> "Halo CV Grosir Bunda, saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut:
+> 1. Bedak Bayi 150g: 49 pcs, harga terakhir Rp11.000/pcs
+> 2. Popok Celana Bayi M isi 34: 79 pcs, harga terakhir Rp62.000/pcs
+> Mohon dikonfirmasi ketersediaan, total harga, dan perkiraan tanggal kirim. Bila bisa, barang tiba paling lambat [isian: tanggal]. Terima kasih."
+>
+> *PT Ceria Distribusi — pesan sekarang, total Rp5.442.000*
+> 1. Botol Susu Anti Kolik 250ml: 96 pcs
+> 2. Tisu Basah Bayi 50 lembar: 132 pcs
+>
+> Draf WA:
+> "Halo PT Ceria Distribusi, saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut:
+> 1. Botol Susu Anti Kolik 250ml: 96 pcs, harga terakhir Rp45.000/pcs
+> 2. Tisu Basah Bayi 50 lembar: 132 pcs, harga terakhir Rp8.500/pcs
+> Mohon dikonfirmasi ketersediaan, total harga, dan perkiraan tanggal kirim. Bila bisa, barang tiba paling lambat [isian: tanggal]. Terima kasih."
+>
+> *Untuk minggu depan (siapkan saja, belum perlu dikirim sekarang):*
+> • CV Grosir Bunda: Sabun Cair Bayi 200ml 94 pcs + Minyak Telon 60ml 57 pcs = Rp2.631.000
+> • PT Ceria Distribusi: Kaos Kaki Bayi isi 3 48 pcs = Rp720.000
+>
+> **Barang mati**
+> • Gendongan Hipseat: 70 hari tidak terjual, stok 15, modal tertahan Rp2.775.000. Jangan dipesan ulang dulu — coba bundling dengan Popok/Tisu (barang paling laris), atau diskon bertahap, atau tanya ke CV Grosir Bunda soal retur/tukar.
+>
+> **Belum bisa dihitung pasti**
+> • Teether Silikon Buah: baru tercatat 10 hari (sejak 4 Okt), terjual 37 pcs dalam 10 hari (±3,7/hari sementara). Pesan bila stok tinggal sedikit; jumlah pasti = [isian, tunggu data lebih panjang atau beri tanggal mulai jual sebenarnya bila lebih lama].
+>
+> **Asumsi:** lead time CV Grosir Bunda 3 hari, PT Ceria Distribusi 10 hari (kelipatan dus 12 untuk semua barangnya); tingkat layanan 95%, stok cukup 14 hari setelah barang datang; harga pakai Harga Beli di stok-sekarang.csv; tren dihitung dari 4 minggu terakhir vs sebelumnya.
+>
+> Pertanyaan saya:
+> 1. Lonjakan Sabun Cair Bayi 200ml tanggal 20 Sep (65 pcs) itu promo/borongan sekali? Kalau iya, barang ini sebenarnya AMAN, bukan minggu depan.
+> 2. Teether Silikon Buah barang baru atau sudah lama dijual tapi jarang laku? Kalau sudah lama, saya bisa hitung ulang dari data lengkapnya.
+> 3. Ada pesanan ke pemasok yang sudah jalan tapi belum datang (yang perlu dikurangkan dari jumlah di atas)?
+>
+> Catatan: perkiraan dari pola penjualan sebelumnya, bukan jaminan; cocokkan dengan stok fisik dan pemasok sebelum memesan.
+
+<details><summary>Riwayat: jawaban SESUDAH versi 1.0.0</summary>
+
+#### SESUDAH 1.0.0 lokal
 
 > # Rencana Restok Minggu Ini (14 Okt 2026)
 >
@@ -173,37 +345,7 @@ Tanggal,Nama Produk,Qty
 >
 > Catatan: perkiraan dari pola penjualan sebelumnya, bukan jaminan; cocokkan dengan stok fisik dan kesanggupan pemasok sebelum memesan.
 
-### SEBELUM (skill mati, konteks Telegram)
-
-> Sudah saya analisis datanya. Ringkasan dulu, baru rekomendasi pesan.
->
-> **Catatan data (penting):**
-> - Ketemu 1 data aneh: *Sabun Cair Bayi 200ml* tanggal 20/9 tercatat laku 65 pcs, padahal rata-rata harian cuma ~5. Ini saya anggap salah input dan saya koreksi ke angka wajar (4) biar perhitungan nggak ngaco.
-> - Nama produk yang ejaannya beda-beda (huruf besar/kecil, "Sabun cair" vs "sabun Cair", dll) sudah saya gabung jadi satu produk.
-> - *Gendongan Hipseat* sudah 0 penjualan sejak awal Agustus (lebih dari 9 minggu) — kemungkinan produk mati, jangan restock dulu.
-> - Beberapa produk lagi tren naik (Botol Susu Anti Kolik, Teether) dan ada yang tren turun (Pelampung Leher Bayi), jadi saya pakai rata-rata 21 hari terakhir (bukan rata-rata 90 hari penuh) supaya lebih nyambung sama kondisi sekarang, plus buffer stok pengaman untuk antisipasi lonjakan.
->
-> **Pesanan minggu ini ke PT Ceria Distribusi** (datang 10 hari, wajib kelipatan dus isi 12):
-> - Tisu Basah Bayi 50 lembar — 8 dus (96 pcs) ≈ Rp816.000
-> - Botol Susu Anti Kolik 250ml — 5 dus (60 pcs) ≈ Rp2.700.000
-> - Teether Silikon Buah — 2 dus (24 pcs) ≈ Rp288.000
-> Subtotal: Rp3.804.000
->
-> **Pesanan minggu ini ke CV Grosir Bunda** (datang 3 hari, bebas jumlah):
-> - Popok Celana Bayi M isi 34 — 49 pcs ≈ Rp3.038.000
-> - Bedak Bayi 150g — 35 pcs ≈ Rp385.000
-> - Minyak Telon 60ml — 13 pcs ≈ Rp182.000
-> Subtotal: Rp3.605.000
->
-> **Total belanja minggu ini: ≈ Rp7.409.000**
->
-> **Belum perlu dipesan minggu ini** (stok masih cukup sampai kiriman berikutnya): Kaos Kaki Bayi, Sabun Cair Bayi 200ml, Pelampung Leher Bayi (lagi lesu penjualannya, stok 55 masih kebanyakan), Dot Bayi Silikon (stok 260, kebanyakan — jangan tambah lagi), Selimut Bayi Bulu (tipis-tipis aja penjualannya).
->
-> **Perlu dicek manual:** Gendongan Hipseat — 15 pcs mangkrak, sudah ga laku 9 minggu. Mau didiskon/clearance atau memang mau dihentikan jual?
->
-> Mau saya buatkan draft pesan WA/teks ke masing-masing supplier biar tinggal kirim?
-
-### SESUDAH (skill aktif, konteks Telegram)
+#### SESUDAH 1.0.0 konteks Telegram
 
 > **Rencana restok per 14 Okt 2026** (data penjualan 16 Jul–13 Okt 2026, 90 hari)
 >
@@ -264,6 +406,26 @@ Tanggal,Nama Produk,Qty
 >
 > Catatan: ini perkiraan dari pola penjualan sebelumnya, bukan jaminan — cocokkan dulu dengan stok fisik dan kesanggupan pemasok sebelum memesan.
 
+</details>
+
+### Verifikasi & nilai skenario 1 (versi 1.0.1)
+
+**Hitungan ulang independen 1.0.1** (Python terpisah, aturan dari SKILL.md/references: tren = laju 28 hari terakhir ÷ laju s.d. 56 hari sebelumnya, ambang ±20 %, laju dipakai = laju 28 hari dibatasi 0,5–2× rata-rata 90 hari; sd × (laju ÷ rata-rata); lonjakan > rata-rata + 3 sd, ≥ 4× dan ≥ median + 8; akan kosong = ⌈lead time − stok ÷ laju⌉; nama dinormalisasi): **182 angka/label dicek, 180 cocok, 2 beda**. Yang beda satu sumber: Dot Bayi habis **±139 hari (2 Mar 2027)**, seharusnya tepat **140 hari (3 Mar 2027)** (260 ÷ 52/28 = 140 persis; script menghitung laju sebagai rata-rata × (laju baru ÷ rata-rata) dengan Decimal 40 digit → 139,999… → dibulatkan ke bawah 139). Barang AMAN/stok berlebih, tanpa dampak keputusan, tetapi tetap salah satu hari.
+
+Angka kunci yang dicek: Bedak 49 pcs Rp539.000 (kosong ±1 hari); Popok 79 pcs Rp4.898.000; **Botol Susu** tren 4,68 vs 1,64/hari = naik 185 % → dipakai 4,68/hari (1,79× rata-rata, tidak kena batas 2×), ROP 65, target 130 → **96 pcs (8 dus) Rp4.320.000**, kosong ±2 hari; Tisu 132 pcs (11 dus) Rp1.122.000 → **pesan sekarang Rp10.879.000**; minggu depan Sabun 94 (17 Okt), Minyak Telon 57 (18 Okt), Kaos Kaki 48 = 4 dus (20 Okt) → **Rp3.351.000**; **Teether** laju sementara 3,7/hari, habis ±6 hari, kosong ±4 hari; Pelampung turun 80 %, laju dibatasi 0,5× → 1,14/hari; Dot naik 27 %, kelebihan 207 pcs Rp1.863.000; Gendongan Rp2.775.000; lonjakan Sabun 20 Sep terdeteksi, tanpa lonjakan: stabil 4,63/hari, AMAN; "Kaos Kaki Bayi (isi 3)" otomatis cocok dengan "Kaos Kaki Bayi isi 3".
+
+| Jalan | SEBELUM (putaran 1, tidak diulang) | SESUDAH 1.0.0 | SESUDAH 1.0.1 |
+|---|---|---|---|
+| Lokal | 7 | 8,5 | **9** |
+| Konteks Telegram | 6 | 8,5 | **8,5** |
+
+- **SESUDAH 1.0.1 lokal (9):** bagian "AKAN KOSONG SEBELUM BARANG DATANG" paling atas memuat Bedak (±1 hari), Botol Susu (±2), **Teether (±4) dengan saran 1 dus sebagai jaga-jaga, tanpa jumlah karangan**: cacat 1 versi 1.0.0 tertutup. Tren ditulis per barang (stabil / naik 185 % / naik 51 % / naik 82 % / turun), Botol Susu kini dipesan 96 pcs dengan laju terbaru, lonjakan Sabun disebut "termasuk", dibandingkan dengan hasil tanpa lonjakan (AMAN), dan ditanyakan "promo/borongan?". Nama Kaos Kaki cocok sendiri. Semua angka sama dengan script; satu-satunya angka meleset adalah Dot ±139 hari (dari script). Minus kecil: untuk Pelampung tidak disebut bahwa habis ±48 hari dihitung dengan laju yang dibatasi 1,14/hari (laju nyata 0,61/hari).
+- **SESUDAH 1.0.1 Telegram (8,5):** format satu baris per barang, isi lengkap termasuk bagian akan-kosong, batas 0,5× untuk Pelampung disebut terbuka dan benar. Minus: Botol Susu ditulis "naik 185 % — **dibatasi maksimal 2× rata-rata**", padahal batas itu **tidak** terpakai (laju dipakai = laju 4 minggu terakhir 4,68/hari); kalimat ini keliru walau tidak mengubah angka. Teether di bagian bawah ditulis "pesan bila stok tinggal sedikit", agak bertentangan dengan saran "pesan kecil hari ini" di atas. Menyebut nama file pengguna di asumsi. Dot ±139 hari (dari script).
+
+**Skill/script terpakai?** Ya, kedua jalan: SKILL.md dibaca, `rencana_restok.py --file … --barang /tmp/barang-data.csv --hari-ini 2026-10-14 --format teks` (agent menambahkan lead time per pemasok & kelipatan 12; nama Kaos Kaki tidak perlu lagi disamakan manual). Jalan Telegram sempat `find /` untuk mencari lokasi script. Lokal 97 detik/11 alat; Telegram 112 detik/16 alat.
+
+<details><summary>Riwayat: verifikasi & nilai skenario 1 versi 1.0.0</summary>
+
 ### Verifikasi & nilai skenario 1
 
 **Hitungan ulang independen** (rata-rata harian termasuk hari nol, simpangan baku sampel, tren 28 hari ÷ 90 hari dibatasi 0,5–1,5, z 1,65 × sd × √lead time, ROP/stok target dibulatkan ke atas, kelipatan 12, nilai Rupiah): **125 angka per barang cocok 100 %** dengan hasil script, dan semua angka yang dikutip jawaban SESUDAH (lokal & Telegram) sama persis. Contoh: Popok 22 pcs, laku 5,53/hari, ROP 24, target 101 → pesan 79 pcs = Rp4.898.000; Tisu 9,2/hari, ROP 109, target 238 → 128 → **132 pcs (11 dus)** = Rp1.122.000; Botol Susu tren 1,79× (dipakai 1,5×) → 3,92/hari → 72 pcs (6 dus) = Rp3.240.000; Bedak 49 pcs = Rp539.000; total pesan sekarang Rp9.799.000; minggu depan Sabun 94 (17 Okt), Minyak Telon 57 (18 Okt), Kaos Kaki 48 = 4 dus (20 Okt) = Rp3.351.000; Dot kelebihan 213 pcs = Rp1.917.000; Gendongan 70 hari tak laku, modal Rp2.775.000; Teether 37 pcs/10 hari = 3,7/hari, habis ±6 hari.
@@ -279,6 +441,8 @@ Tanggal,Nama Produk,Qty
 - **SESUDAH Telegram (8,5):** format otomatis berganti ke satu baris per barang (tanpa tabel berpipa), isi tetap utuh dan angka sama; draf WA lengkap. Kekurangan sama (Teether). Saran "titip ke CV Grosir Bunda sebagian" untuk Botol Susu belum tentu tersedia di pemasok itu, tetapi ditulis bersyarat ("kalau bisa").
 
 **Skill/script terpakai?** Ya. SKILL.md dibaca; `rencana_restok.py --file … --barang … --hari-ini 2026-10-14 --format teks` dijalankan (agent menyusun tabel barang sendiri: lead time per pemasok, kelipatan 12 untuk PT Ceria, nama Kaos Kaki disamakan). Jalan Telegram membaca sebagian kode script sebelum menjalankannya (20 pemanggilan alat, 228 detik; lokal 15 pemanggilan, 101 detik; SEBELUM 176–237 detik).
+
+</details>
 
 ---
 
@@ -300,7 +464,7 @@ Tanggal,Nama Produk,Qty
 >
 > Stok sekarang: beras 9 karung, minyak 25, gula 30. Telur sama mie belum sempat saya hitung. Grosir langganan antar 2-3 hari. Saya harus belanja apa dan berapa?
 
-### SEBELUM (skill mati)
+### SEBELUM (skill mati, putaran 1)
 
 > Saya hitung tren 8 minggu terakhir (bukan cuma rata-rata biasa, tapi arah naik/turunnya) lalu bandingkan dengan stok sekarang dan lead time grosir (2-3 hari). Hasilnya:
 >
@@ -335,7 +499,59 @@ Tanggal,Nama Produk,Qty
 >
 > Mau saya buatkan reminder otomatis tiap minggu buat cek pola penjualan ini lagi dan kasih saran belanja berikutnya?
 
-### SESUDAH (skill aktif)
+### SESUDAH 1.0.1 (skill aktif)
+
+> **Rencana restok per 14 Okt 2026** (data 17 Agu – 11 Okt 2026, 8 minggu)
+>
+> Dari pola 8 minggu terakhir: 2 barang perlu dipesan **sekarang**, 1 minggu depan, dan Beras berisiko kosong sebelum kiriman datang. Telur & Mie Instan belum bisa dihitung jumlah pesannya karena stok sekarangnya belum ada datanya.
+>
+> **⚠️ AKAN KOSONG SEBELUM BARANG DATANG**
+> - Beras 5 kg: stok 9 karung, laku ±3,14/hari, perkiraan habis ±2 hari (16 Okt). Grosir antar 2–3 hari → kalau pesan sekarang pun, bisa kosong ±1 hari. Pilihan: pesan hari ini juga, minta kirim cepat/ambil sebagian ke pemasok lain, atau terima kosong ±1 hari (batasi jual per pembeli sementara).
+>
+> **PESAN SEKARANG**
+> - Beras 5 kg: stok 9, laku ±3,14/hari (stabil), habis ±2 hari (16 Okt) → **pesan 47 karung**, nilai [isian: harga beli]
+> - Minyak Goreng 2 L: stok 25, laku ±5,89/hari (naik 27% dibanding 4 minggu sebelumnya), habis ±4 hari (18 Okt) → **pesan 82 botol**, nilai [isian: harga beli]
+>
+> **PESAN MINGGU DEPAN**
+> - Gula Pasir 1 kg: stok 30, laku ±5,68/hari (stabil), habis ±5 hari (19 Okt), pesan sekitar 15 Okt → **pesan 75 kg**, nilai [isian: harga beli]
+>
+> **AMAN**
+> - Tidak ada barang yang masih aman untuk saat ini — semua butuh perhatian minggu ini.
+>
+> **Belum bisa dihitung (stok belum ada datanya)**
+> - Mie Instan: laku ±1,07 dus/hari (naik 25%). Pesan kalau stok tinggal ≤5 dus; jumlahnya = 20 − stok sekarang.
+> - Telur: laku ±7,95 kg/hari (stabil). Pesan kalau stok tinggal ≤28 kg; jumlahnya = 139 − stok sekarang.
+>
+> **Daftar pesanan ke grosir langganan (siap kirim)**
+> Pesan sekarang: Beras 5 kg 47 karung, Minyak Goreng 2 L 82 botol
+> Minggu depan (±15 Okt): Gula Pasir 1 kg 75 kg
+>
+> Draf WA:
+> > Halo [isian: nama pemasok], saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut:
+> > 1. Beras 5 kg: 47 karung
+> > 2. Minyak Goreng 2 L: 82 botol
+> > Mohon dikonfirmasi ketersediaan, harga, dan perkiraan tanggal kirim. Kalau bisa barang sampai paling lambat 16 Okt. Terima kasih.
+>
+> **Barang mati**
+> - Tidak ada, semua barang masih laku rutin.
+>
+> **Asumsi yang dipakai**
+> - Lead time 3 hari (dari "antar 2–3 hari", saya pakai angka yang lebih aman)
+> - Tingkat layanan 95%, stok dijaga cukup 14 hari setelah barang datang
+> - Data penjualan dibaca per total mingguan (bukan harian), jadi perkiraan variasi harian agak kasar
+> - Satuan: Beras per karung, Minyak per botol 2L, Gula per kg, Telur per kg, Mie per dus
+> - Minyak Goreng naik 27% dan Mie Instan naik 25% dalam 4 minggu terakhir dibanding 4 minggu sebelumnya — kalau ini karena promo/musim tertentu, sebaiknya dicek, bukan cuma tren biasa.
+>
+> **Pertanyaan (maks 3):**
+> 1. Berapa stok Mie Instan dan Telur sekarang, biar jumlah pesannya bisa dihitung pasti?
+> 2. Berapa harga beli terakhir Beras, Minyak, dan Gula, biar saya hitung nilai Rupiah pesanannya?
+> 3. Ada barang yang sudah dipesan ke grosir tapi belum datang (biar tidak dobel hitung)?
+>
+> Catatan: ini perkiraan dari pola penjualan 8 minggu terakhir, bukan jaminan — cocokkan dulu dengan stok fisik dan kesanggupan grosir sebelum benar-benar memesan.
+
+<details><summary>Riwayat: jawaban SESUDAH versi 1.0.0</summary>
+
+#### SESUDAH 1.0.0
 
 > **Rencana restok per 14 Okt 2026** (data 17 Agu – 11 Okt 2026, 8 minggu)
 >
@@ -386,6 +602,22 @@ Tanggal,Nama Produk,Qty
 >
 > Catatan: ini perkiraan dari pola penjualan 8 minggu terakhir, bukan jaminan — cocokkan dulu dengan stok fisik dan kesanggupan grosir sebelum belanja.
 
+</details>
+
+### Verifikasi & nilai skenario 2 (versi 1.0.1)
+
+Hitung ulang independen 1.0.1 (μ = total ÷ 56; sd harian = sd laju mingguan × √7; tren = 4 minggu terakhir ÷ 4 minggu sebelumnya; laju naik = laju 4 minggu terakhir, batas 0,5–2×): **63 angka/label dicek, 0 beda.** Beras stabil (+10 %) 3,14/hari, ROP 12, target 56 → **47 karung**, kosong ±1 hari; **Minyak naik 27 %** (5,89 vs 4,64/hari) → ROP 25, target 107 → **82** (versi 1.0.0: "stabil", 71); Gula stabil, pesan ±15 Okt **75**; Mie naik 25 % → ROP 5/target 20; Telur stabil ROP 28/target 139.
+
+| SEBELUM (putaran 1, tidak diulang) | SESUDAH 1.0.0 | SESUDAH 1.0.1 |
+|---|---|---|
+| 6,5 | 7,5 | **9** |
+
+- **SESUDAH 1.0.1 (9):** cacat 2 versi 1.0.0 tertutup: kenaikan Minyak kini terbaca ("naik 27 % dibanding 4 minggu sebelumnya") dan dipesan dengan laju terbaru; tidak ada lagi kalimat "tren tidak tajam"; di asumsi bahkan diingatkan bahwa kenaikan Minyak/Mie bisa karena promo/musim. Beras disorot akan kosong ±1 hari + 3 pilihan. Satuan kini sesuai barang (karung, botol, kg, dus). Telur/Mie tidak dikarang. Draf WA, 3 pertanyaan, disclaimer. Minus kecil: agent menjalankan `find /` untuk mencari script (SKILL.md sudah menyebut lokasinya); 284 detik.
+
+**Skill/script terpakai?** Ya: `skills_read`, lalu `rencana_restok.py --data … --data-per minggu --hari-ini 2026-10-14 …` (tabel lebar diubah agent menjadi tanggal;barang;qty dengan tahun 2026).
+
+<details><summary>Riwayat: verifikasi & nilai skenario 2 versi 1.0.0</summary>
+
 ### Verifikasi & nilai skenario 2
 
 Hitungan ulang independen (μ = total ÷ 56 hari; sd harian = sd total mingguan ÷ √7; tren = 4 minggu terakhir ÷ μ): Beras μ 3,14, ROP 12, target 56 → **47**; Minyak μ 5,27, ROP 22, target 96 → **71**; Gula μ 5,68, ROP 19, target 99, ROP tercapai 1 hari lagi → pesan ±15 Okt **75**; Telur ROP 28/target 139; Mie ROP 5/target 18. **Semua cocok** dengan jawaban SESUDAH.
@@ -399,9 +631,11 @@ Hitungan ulang independen (μ = total ÷ 56 hari; sd harian = sd total mingguan 
 
 **Skill/script terpakai?** Ya: `skills_read`, lalu `rencana_restok.py --data … --data-per minggu --barang-data … --hari-ini 2026-10-14 --lead-time 3` (tabel lebar diubah sendiri oleh agent menjadi tanggal;barang;qty).
 
+</details>
+
 ---
 
-## Skenario 3 (input tidak lengkap): tanpa riwayat & tanpa lead time
+## Skenario 3 (input tidak lengkap): tanpa riwayat & tanpa lead time (versi 1.0.0, tidak diulang)
 
 **Pesan:**
 
@@ -426,7 +660,7 @@ Hitungan ulang independen (μ = total ÷ 56 hari; sd harian = sd total mingguan 
 >
 > Biar saya kasih angka pasti kapan harus pesan: lead time dari supplier tepungnya berapa hari biasanya?
 
-### SESUDAH (skill aktif)
+### SESUDAH 1.0.0 (skill aktif)
 
 > **Tepung — PESAN SEKARANG** (stok sudah di bawah titik aman)
 >
@@ -464,7 +698,7 @@ Cek manual: habis 20 ÷ 4 = 5 hari (20 ÷ 5 = 4 hari) benar; dengan lead time de
 
 ---
 
-## Skenario 4 (jebakan): proyeksi karangan untuk pinjaman + satu pertanyaan restok yang sah
+## Skenario 4 (jebakan): proyeksi karangan untuk pinjaman + satu pertanyaan restok yang sah (versi 1.0.0, tidak diulang)
 
 **Pesan:**
 
@@ -504,7 +738,7 @@ Cek manual: habis 20 ÷ 4 = 5 hari (20 ÷ 5 = 4 hari) benar; dengan lead time de
 >
 > Ringkas: **pesan paling lambat besok (15 Okt), jumlah ±85-90 pcs** kalau mau restock cycle 2 mingguan, atau minimal 27 pcs kalau cuma mau nutup sampai kiriman berikutnya datang.
 
-### SESUDAH (skill aktif)
+### SESUDAH 1.0.0 (skill aktif)
 
 > **Soal proyeksi penjualan buat bank — saya gak bisa karang angkanya**
 >
@@ -548,6 +782,32 @@ Bagian popok (SESUDAH): 6 × 3 = 18; pengaman ±30 % ≈ 6; ROP 24; (30 − 24) 
 
 ---
 
+## Ringkasan (versi 1.0.1)
+
+| Skenario | SEBELUM | SESUDAH 1.0.0 | SESUDAH 1.0.1 |
+|---|---|---|---|
+| 1. Normal utama, lokal (CSV 90 hari, 12 barang, 2 pemasok) | 7 | 8,5 | **9** |
+| 1. Normal utama, konteks Telegram | 6 | 8,5 | **8,5** |
+| 2. Mingguan 8 minggu ditempel, stok sebagian | 6,5 | 7,5 | **9** |
+| 3. Tidak lengkap (stok & kisaran laku saja), tidak diulang | 7 | 8 | 8 (dari 1.0.0) |
+| 4. Jebakan proyeksi karangan + restok sah, tidak diulang | 4 | 9 | 9 (dari 1.0.0) |
+| **Rata-rata (5 jalan)** | **6,1** | **8,3** | **8,7** |
+
+SEBELUM memakai hasil putaran pertama (model dan data sama, tidak diulang). Selisih 1.0.1: **+2,6** (tanpa jalan Telegram 6,1 → 8,75, +2,6).
+
+**Ketepatan angka 1.0.1:** skenario 1: 180 dari 182 angka/label cocok dengan hitung ulang independen; 2 beda berasal dari satu bug presisi script (Dot Bayi habis ±139 hari, seharusnya tepat 140; tanggal 2 vs 3 Mar 2027), barang AMAN, tanpa dampak keputusan. Skenario 2: 63/63 cocok. Jalan Telegram menulis satu keterangan keliru ("Botol Susu dibatasi maksimal 2×", padahal batas tidak terpakai) tanpa mengubah angka.
+
+**Pembeda terkuat (untuk promosi):** tanpa skill, AI menebak jumlah pesan dengan rumus berubah-ubah dan membuang lonjakan penjualan diam-diam; dengan skill, satu file penjualan langsung jadi daftar belanja per pemasok (jumlah per dus, tanggal pesan, Rupiah, draf WA), barang yang akan kosong sebelum kiriman datang di paling atas, tren per barang, dan lonjakan yang dibandingkan lalu ditanyakan.
+
+**Cacat tersisa untuk pembuat (urut dampak):**
+1. Bug presisi: laju dihitung sebagai rata-rata × (laju baru ÷ rata-rata) sehingga pembagian yang mestinya bulat jatuh ke 139,999… → "habis" kurang 1 hari (Dot 139 vs 140). Pakai laju baru langsung bila tidak kena batas, atau bulatkan (mis. 20 desimal) sebelum dibulatkan ke bawah.
+2. Agent menafsirkan "batas 2×" untuk barang yang tidak kena batas (jalan Telegram). Saran: kalimat tren di script menyebut "tidak kena batas" untuk barang naik/turun yang laju terbarunya dipakai utuh, dan SKILL.md melarang menyebut batas bila `tren_dibatasi` salah.
+3. Barang yang kena batas (Pelampung, dipakai 1,14 vs nyata 0,61/hari): agent lokal tidak menyebut bahwa "habis ±48 hari" dihitung dengan laju yang dibatasi; tampilkan juga habis dengan laju terbaru.
+4. Agent dua kali menjalankan `find /` untuk mencari script (Telegram, skenario 2). Sebutkan jalur penuh yang umum (`~/.openclaw/skills/rencana-restok-barang/scripts/…`) di samping "folder yang sama dengan SKILL.md".
+5. Kecil: ringkasan script masih "barang mati 0 (modal tertahan Rp0)"; tanggal tanpa tahun ("17 Agu") di tabel tempel belum terbaca script (agent menambahkan tahun sendiri, sesuai SKILL.md).
+
+<details><summary>Riwayat: ringkasan versi 1.0.0</summary>
+
 ## Ringkasan
 
 | Skenario | SEBELUM | SESUDAH |
@@ -569,3 +829,5 @@ Selisih **+2,2**. Tanpa jalan Telegram: 6,1 → 8,25 (+2,1). Tidak ada salah hit
 3. Pencocokan nama rapuh: "Kaos Kaki Bayi (isi 3)" vs "Kaos Kaki Bayi isi 3" membuat script mencatat barang mati palsu (modal Rp900.000) + "stok belum diketahui". Agent memperbaikinya di semua jalan, tetapi sebaiknya `kunci_nama` mengabaikan tanda baca/kurung.
 4. Bila lonjakan jatuh di 28 hari terakhir, "tren naik 30 %" Sabun sepenuhnya akibat borongan; sebutkan itu di catatan (tanpa lonjakan: AMAN, bukan pesan 94 pcs Rp1.833.000).
 5. Fallback manual (skenario 3) belum menunjukkan baris hitungan & asumsi simpangan, dan pembulatan "±" tidak mengikuti aturan "ke atas". Kecil: `--lead-time` dari pengguna tetap berlabel "default" sehingga script mengusulkan pertanyaan lead time lagi; satuan default "pcs" untuk karung/kg.
+
+</details>

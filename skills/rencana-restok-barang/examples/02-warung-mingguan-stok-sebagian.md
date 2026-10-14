@@ -1,6 +1,6 @@
 # Contoh 2: warung sembako, total mingguan 8 minggu ditempel di chat, stok sebagian belum dihitung
 
-> Hasil uji penguji independen di OpenClaw 2026.10.2 (model claude-sonnet-5), 14 Okt 2026. Data fiktif. Jawaban SEBELUM (tanpa skill) dan penilaian lengkap ada di `00-openclaw-sebelum-sesudah.md`.
+> Hasil uji penguji independen di OpenClaw 2026.10.2 (model claude-sonnet-5), 14 Okt 2026, **versi 1.0.1** (uji ulang terbatas). Data fiktif. Jawaban SEBELUM (tanpa skill, putaran 1) dan penilaian lengkap ada di `00-openclaw-sebelum-sesudah.md`.
 
 ## Masukan pengguna
 > Ini penjualan warung sembako saya per minggu, 8 minggu terakhir (minggu mulai hari Senin):
@@ -19,7 +19,67 @@
 
 Tabel lebar ditempel di chat (kolom = barang, baris = minggu mulai Senin, tanpa tahun).
 
-## Keluaran di chat (SESUDAH, skill aktif)
+## Keluaran di chat (SESUDAH, versi 1.0.1)
+
+> **Rencana restok per 14 Okt 2026** (data 17 Agu – 11 Okt 2026, 8 minggu)
+>
+> Dari pola 8 minggu terakhir: 2 barang perlu dipesan **sekarang**, 1 minggu depan, dan Beras berisiko kosong sebelum kiriman datang. Telur & Mie Instan belum bisa dihitung jumlah pesannya karena stok sekarangnya belum ada datanya.
+>
+> **⚠️ AKAN KOSONG SEBELUM BARANG DATANG**
+> - Beras 5 kg: stok 9 karung, laku ±3,14/hari, perkiraan habis ±2 hari (16 Okt). Grosir antar 2–3 hari → kalau pesan sekarang pun, bisa kosong ±1 hari. Pilihan: pesan hari ini juga, minta kirim cepat/ambil sebagian ke pemasok lain, atau terima kosong ±1 hari (batasi jual per pembeli sementara).
+>
+> **PESAN SEKARANG**
+> - Beras 5 kg: stok 9, laku ±3,14/hari (stabil), habis ±2 hari (16 Okt) → **pesan 47 karung**, nilai [isian: harga beli]
+> - Minyak Goreng 2 L: stok 25, laku ±5,89/hari (naik 27% dibanding 4 minggu sebelumnya), habis ±4 hari (18 Okt) → **pesan 82 botol**, nilai [isian: harga beli]
+>
+> **PESAN MINGGU DEPAN**
+> - Gula Pasir 1 kg: stok 30, laku ±5,68/hari (stabil), habis ±5 hari (19 Okt), pesan sekitar 15 Okt → **pesan 75 kg**, nilai [isian: harga beli]
+>
+> **AMAN**
+> - Tidak ada barang yang masih aman untuk saat ini — semua butuh perhatian minggu ini.
+>
+> **Belum bisa dihitung (stok belum ada datanya)**
+> - Mie Instan: laku ±1,07 dus/hari (naik 25%). Pesan kalau stok tinggal ≤5 dus; jumlahnya = 20 − stok sekarang.
+> - Telur: laku ±7,95 kg/hari (stabil). Pesan kalau stok tinggal ≤28 kg; jumlahnya = 139 − stok sekarang.
+>
+> **Daftar pesanan ke grosir langganan (siap kirim)**
+> Pesan sekarang: Beras 5 kg 47 karung, Minyak Goreng 2 L 82 botol
+> Minggu depan (±15 Okt): Gula Pasir 1 kg 75 kg
+>
+> Draf WA:
+> > Halo [isian: nama pemasok], saya [isian: nama Anda] dari [isian: nama toko]. Mau pesan barang berikut:
+> > 1. Beras 5 kg: 47 karung
+> > 2. Minyak Goreng 2 L: 82 botol
+> > Mohon dikonfirmasi ketersediaan, harga, dan perkiraan tanggal kirim. Kalau bisa barang sampai paling lambat 16 Okt. Terima kasih.
+>
+> **Barang mati**
+> - Tidak ada, semua barang masih laku rutin.
+>
+> **Asumsi yang dipakai**
+> - Lead time 3 hari (dari "antar 2–3 hari", saya pakai angka yang lebih aman)
+> - Tingkat layanan 95%, stok dijaga cukup 14 hari setelah barang datang
+> - Data penjualan dibaca per total mingguan (bukan harian), jadi perkiraan variasi harian agak kasar
+> - Satuan: Beras per karung, Minyak per botol 2L, Gula per kg, Telur per kg, Mie per dus
+> - Minyak Goreng naik 27% dan Mie Instan naik 25% dalam 4 minggu terakhir dibanding 4 minggu sebelumnya — kalau ini karena promo/musim tertentu, sebaiknya dicek, bukan cuma tren biasa.
+>
+> **Pertanyaan (maks 3):**
+> 1. Berapa stok Mie Instan dan Telur sekarang, biar jumlah pesannya bisa dihitung pasti?
+> 2. Berapa harga beli terakhir Beras, Minyak, dan Gula, biar saya hitung nilai Rupiah pesanannya?
+> 3. Ada barang yang sudah dipesan ke grosir tapi belum datang (biar tidak dobel hitung)?
+>
+> Catatan: ini perkiraan dari pola penjualan 8 minggu terakhir, bukan jaminan — cocokkan dulu dengan stok fisik dan kesanggupan grosir sebelum benar-benar memesan.
+
+## Catatan penguji
+- Angka 63/63 cocok dengan hitung ulang independen: Beras ROP 12, target 56 → 47 karung (kosong ±1 hari); **Minyak naik 27 %** (5,89 vs 4,64/hari) → ROP 25, target 107 → **82**; Gula ROP 19, target 99, pesan ±15 Okt → 75; Mie naik 25 % → ROP 5/target 20; Telur ROP 28/target 139.
+- Perbaikan dari 1.0.0: kenaikan Minyak kini terbaca dan dipakai (1.0.0 menulis "tren tidak naik/turun tajam" dan memesan 71); Beras disorot akan kosong; satuan sesuai barang (karung, botol, kg, dus).
+- Barang tanpa stok (Telur, Mie) tetap tidak dikarang jumlahnya.
+- Kekurangan kecil: agent menjalankan `find /` untuk mencari lokasi script.
+- Nilai: SEBELUM 6,5 → SESUDAH 1.0.1 **9** (versi 1.0.0: 7,5).
+
+## Riwayat
+- Versi 1.0.0: angka benar menurut rumus lama, tetapi Minyak (30→45 per minggu) dinilai "stabil" dan asumsi menulis "tren tidak naik/turun tajam"; Minyak dipesan 71. Nilai 7,5.
+
+<details><summary>Keluaran SESUDAH versi 1.0.0</summary>
 
 > **Rencana restok per 14 Okt 2026** (data 17 Agu – 11 Okt 2026, 8 minggu)
 >
@@ -69,9 +129,4 @@ Tabel lebar ditempel di chat (kolom = barang, baris = minggu mulai Senin, tanpa 
 > 3. Lead time grosirnya pasti 2 atau 3 hari? (saya pakai 3 hari, kalau bisa 2 hari risiko Beras kosong sedikit lebih kecil)
 >
 > Catatan: ini perkiraan dari pola penjualan 8 minggu terakhir, bukan jaminan — cocokkan dulu dengan stok fisik dan kesanggupan grosir sebelum belanja.
-
-## Catatan penguji
-- Angka cocok dengan hitungan independen: Beras ROP 12, target 56 → 47 karung; Minyak ROP 22, target 96 → 71; Gula ROP 19, target 99, pesan ±15 Okt → 75; Telur ROP 28/target 139; Mie ROP 5/target 18.
-- Barang tanpa stok (Telur, Mie) tidak dikarang jumlahnya; diberi aturan "pesan bila stok ≤ …; jumlah = … − stok".
-- **Kekurangan penting:** asumsi menulis "tren tidak naik/turun tajam", padahal Minyak naik terus 30→45 per minggu. Aturan tren skill (4 minggu terakhir ÷ rata-rata 8 minggu = 1,12) menilai itu "stabil", sehingga Minyak dipesan dengan laju 5,27/hari padahal minggu terakhir 6,43/hari. Model tanpa skill justru menangkap kenaikan ini.
-- Nilai: SEBELUM 6,5 → SESUDAH 7,5.
+</details>
