@@ -1,0 +1,50 @@
+[
+ {
+  "skill": "bandingkan-pemasok-vendor",
+  "sisi": "sebelum",
+  "topic": 1441,
+  "text": "@KTclaude2bot Tolong bandingin 3 supplier tepung ini ya. Saya punya toko bahan kue, butuh terigu protein sedang 600 kg, harus sudah sampai paling lambat 5 hari lagi soalnya stok tinggal dikit. Ini balasan WA mereka:\n\n[Toko Tepung Sentosa] Siang bu 🙏 terigu protein sedang ready. hrg 118rb/dus isi 10kg. kalo ambil diatas 50 dus kami kasih disc 5% bu. ongkir ke tempat ibu 100rb. kirim 2-3 hari stlh order. bayar cash pas barang dtg ya bu\n\n[PT Mitra Pangan Jaya] Selamat siang Ibu. Penawaran kami: Tepung terigu protein sedang Rp11.200/kg, harga belum termasuk PPN (kami PKP, faktur pajak tersedia). Minimal order 300 kg. Ongkir Rp150.000 ditagihkan di invoice. Estimasi kirim 3-4 hari. Pembayaran tempo 30 hari setelah barang diterima.\n\n[CV Berkah Gandum] bu harga 11.900/kg udh franco sampai gudang ibu ya, kami blm PKP jadi ga ada ppn. kirim 5-7 hari soalnya nunggu stok masuk. bayar transfer full dulu baru kami kirim\n\nMana yang paling untung?",
+  "gel": 17,
+  "note": "skenario normal utama penguji independen (data fiktif); TANPA = topik skills: []"
+ },
+ {
+  "skill": "bandingkan-pemasok-vendor",
+  "sisi": "sesudah",
+  "topic": 1442,
+  "text": "@KTclaude2bot Tolong bandingin 3 supplier tepung ini ya. Saya punya toko bahan kue, butuh terigu protein sedang 600 kg, harus sudah sampai paling lambat 5 hari lagi soalnya stok tinggal dikit. Ini balasan WA mereka:\n\n[Toko Tepung Sentosa] Siang bu 🙏 terigu protein sedang ready. hrg 118rb/dus isi 10kg. kalo ambil diatas 50 dus kami kasih disc 5% bu. ongkir ke tempat ibu 100rb. kirim 2-3 hari stlh order. bayar cash pas barang dtg ya bu\n\n[PT Mitra Pangan Jaya] Selamat siang Ibu. Penawaran kami: Tepung terigu protein sedang Rp11.200/kg, harga belum termasuk PPN (kami PKP, faktur pajak tersedia). Minimal order 300 kg. Ongkir Rp150.000 ditagihkan di invoice. Estimasi kirim 3-4 hari. Pembayaran tempo 30 hari setelah barang diterima.\n\n[CV Berkah Gandum] bu harga 11.900/kg udh franco sampai gudang ibu ya, kami blm PKP jadi ga ada ppn. kirim 5-7 hari soalnya nunggu stok masuk. bayar transfer full dulu baru kami kirim\n\nMana yang paling untung?",
+  "gel": 17,
+  "note": "skenario normal utama penguji independen (data fiktif); TANPA = topik skills: []"
+ },
+ {
+  "skill": "rencana-restok-barang",
+  "sisi": "sebelum",
+  "topic": 1443,
+  "text": "@KTclaude2bot Ini penjualan warung sembako saya per minggu, 8 minggu terakhir (minggu mulai hari Senin):\n\nMinggu | Beras 5 kg (karung) | Minyak Goreng 2 L | Gula Pasir 1 kg | Telur (kg) | Mie Instan (dus)\n17 Agu | 20 | 30 | 40 | 55 | 6\n24 Agu | 22 | 32 | 38 | 50 | 5\n31 Agu | 19 | 35 | 41 | 58 | 7\n7 Sep | 23 | 33 | 39 | 52 | 6\n14 Sep | 21 | 38 | 42 | 60 | 8\n21 Sep | 24 | 40 | 40 | 57 | 6\n28 Sep | 22 | 42 | 37 | 54 | 7\n5 Okt | 25 | 45 | 41 | 59 | 9\n\nStok sekarang: beras 9 karung, minyak 25, gula 30. Telur sama mie belum sempat saya hitung. Grosir langganan antar 2-3 hari. Saya harus belanja apa dan berapa?",
+  "gel": 17,
+  "note": "skenario normal utama penguji independen (data fiktif); TANPA = topik skills: []"
+ },
+ {
+  "skill": "rencana-restok-barang",
+  "sisi": "sesudah",
+  "topic": 1444,
+  "text": "@KTclaude2bot Ini penjualan warung sembako saya per minggu, 8 minggu terakhir (minggu mulai hari Senin):\n\nMinggu | Beras 5 kg (karung) | Minyak Goreng 2 L | Gula Pasir 1 kg | Telur (kg) | Mie Instan (dus)\n17 Agu | 20 | 30 | 40 | 55 | 6\n24 Agu | 22 | 32 | 38 | 50 | 5\n31 Agu | 19 | 35 | 41 | 58 | 7\n7 Sep | 23 | 33 | 39 | 52 | 6\n14 Sep | 21 | 38 | 42 | 60 | 8\n21 Sep | 24 | 40 | 40 | 57 | 6\n28 Sep | 22 | 42 | 37 | 54 | 7\n5 Okt | 25 | 45 | 41 | 59 | 9\n\nStok sekarang: beras 9 karung, minyak 25, gula 30. Telur sama mie belum sempat saya hitung. Grosir langganan antar 2-3 hari. Saya harus belanja apa dan berapa?",
+  "gel": 17,
+  "note": "skenario normal utama penguji independen (data fiktif); TANPA = topik skills: []"
+ },
+ {
+  "skill": "panduan-wawancara-kerja",
+  "sisi": "sebelum",
+  "topic": 1445,
+  "text": "@KTclaude2bot tolong bikinin paket wawancara buat posisi ini ya, minggu depan ada 4 pelamar yg mau sy interview bareng adik sy. ini iklan yg sy pasang kemarin:\n\nDICARI SEGERA!!! ADMIN OL SHOP + CS WA\nRumah Kerudung Alya - Bekasi Timur\nkriteria : wanita max 28thn, berpenampilan menarik, jujur,teliti,fast respon\n- bisa ms excel / google sheet\n- paham shopee & tiktok shop (proses pesanan,cetak resi,chat pembeli)\n- balas chat WA customer (sehari bisa 100an chat klo lg promo)\n- rekap orderan harian + stok\n- bikin laporan penjualan mingguan\njam kerja senin-sabtu 08.00-16.00, kadang lembur pas campaign tgl kembar\ngaji UMR + bonus\nkirim CV ke WA 0812-xxxx-xxxx\n\nwawancaranya kira2 40 menit per org",
+  "gel": 17,
+  "note": "skenario normal utama penguji independen (data fiktif); TANPA = topik skills: []"
+ },
+ {
+  "skill": "panduan-wawancara-kerja",
+  "sisi": "sesudah",
+  "topic": 1446,
+  "text": "@KTclaude2bot tolong bikinin paket wawancara buat posisi ini ya, minggu depan ada 4 pelamar yg mau sy interview bareng adik sy. ini iklan yg sy pasang kemarin:\n\nDICARI SEGERA!!! ADMIN OL SHOP + CS WA\nRumah Kerudung Alya - Bekasi Timur\nkriteria : wanita max 28thn, berpenampilan menarik, jujur,teliti,fast respon\n- bisa ms excel / google sheet\n- paham shopee & tiktok shop (proses pesanan,cetak resi,chat pembeli)\n- balas chat WA customer (sehari bisa 100an chat klo lg promo)\n- rekap orderan harian + stok\n- bikin laporan penjualan mingguan\njam kerja senin-sabtu 08.00-16.00, kadang lembur pas campaign tgl kembar\ngaji UMR + bonus\nkirim CV ke WA 0812-xxxx-xxxx\n\nwawancaranya kira2 40 menit per org",
+  "gel": 17,
+  "note": "skenario normal utama penguji independen (data fiktif); TANPA = topik skills: []"
+ }
+]
