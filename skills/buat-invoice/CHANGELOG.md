@@ -2,6 +2,13 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.7 (2026-10-14)
+Patch kecil dari uji ulang OpenClaw 1.0.6 (rata-rata 8,7, semua angka benar; dua cacat 1.0.5 hilang). Rumus PPN/DPP/diskon/termin tidak berubah.
+- **Path lampiran dicetak script.** Setelah menulis HTML, script mencetak `BERKAS: <path absolut>` (`os.path.abspath`) pada baris tersendiri, untuk invoice maupun kuitansi; `--format json` juga mengisi `html_disimpan_ke` dengan path absolut. Penyebab: path relatif membuat agent merangkai path sendiri (sampel uji: `/opt/ochome/.openchome/...` salah ketik, lampiran kuitansi gagal).
+- **Lampirkan dulu, tawar kemudian.** SKILL.md: berkas dilampirkan dengan path persis dari baris `BERKAS:` (tidak disusun/ditebak), di semua kanal dan untuk kuitansi juga; tawaran "balas 'kirim file'" hanya bila percobaan lampir gagal. Tabel ringkasan dari script disalin apa adanya (termasuk baris judul). Ditambah blok "UNTUK AGENT SAJA".
+- **Catatan meterai dihitung dari angka.** Uji 1.0.6 menemukan agent menulis sisa Rp5.075.000 "di bawah Rp5jt". Script kini menulis sendiri kalimat sisa tagihan: sisa di atas Rp5.000.000 -> "di atas Rp5.000.000 ... wajib bermeterai Rp10.000"; sisa Rp5.000.000 atau kurang -> "tidak lebih dari Rp5.000.000 ... tidak wajib meterai"; untuk invoice bertermin, tiap termin dinilai sendiri. Aturan tetap: wajib bila nilai penerimaan uang lebih dari Rp5.000.000 (tepat Rp5.000.000 tidak wajib). SKILL.md meminta kalimat itu disalin apa adanya.
+- 41 uji otomatis lulus (8 uji baru: baris `BERKAS:` absolut untuk invoice, kuitansi, dan JSON; meterai sisa Rp5.075.000, tepat Rp5.000.000, di bawahnya, DP di atas batas, termin). Belum diuji ulang oleh penguji independen di OpenClaw.
+
 ## Catatan revisi 1.0.6 (2026-10-14)
 Perbaikan tiga cacat kecil dari uji OpenClaw sebelum/sesudah 2026-10-14 (versi 1.0.5: 6,0 -> 8,8, LULUS). Rumus PPN/DPP/termin tidak berubah (semua angka cocok dengan hitungan penguji).
 - **Penanda tangan tidak ditebak.** Nama penanda tangan (juga jabatan, nama usaha, alamat, dan "a.n." rekening) hanya diisi bila pengguna menyebutnya langsung; sebelumnya agent pernah memakai nama pemilik rekening sebagai penanda tangan. Tanpa itu, dokumen memakai `[isi nama penanda tangan]`. Script kini tidak menulis "a.n." bila nama pemilik rekening kosong (tidak ada lagi "a.n. " kosong atau tebakan).

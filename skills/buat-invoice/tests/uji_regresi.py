@@ -370,5 +370,111 @@ class UjiPPh23(unittest.TestCase):
             self.assertIn("Estimasi diterima bersih: Rp 14.715.000", fh.read())
 
 
+class UjiBerkasAbsolutDanMeterai(unittest.TestCase):
+    """v1.0.7 (uji ulang OpenClaw 2026-10-14): (a) script mencetak baris 'BERKAS: <path absolut>' supaya agent tidak
+    menyusun path sendiri (path salah ketik -> lampiran gagal); (b) kalimat meterai dihitung dari angka:
+    sisa Rp5.075.000 = DI ATAS Rp5 juta (bukan 'di bawah')."""
+
+    setUp, tearDown, jalan = UjiCLI.setUp, UjiCLI.tearDown, UjiCLI.jalan
+
+    def data_catering(self):
+        # skenario uji 1.0.6: total 8.075.000, DP 3.000.000 -> sisa 5.075.000
+        d = copy.deepcopy(CONTOH)
+        d["tanggal"] = "2026-10-14"
+        d["items"] = [{"nama": "Nasi box", "qty": 150, "satuan": "box", "harga": "32.500"},
+                      {"nama": "Snack box", "qty": 150, "satuan": "box", "harga": "15.000", "diskon": "10%"},
+                      {"nama": "Air mineral", "qty": 300, "satuan": "botol", "harga": "3.500"}]
+        d["ongkir"] = "125.000"
+        d["pembayaran"] = [{"tanggal": "2026-10-10", "jumlah": "3.000.000", "keterangan": "DP"}]
+        return d
+
+    def baris_berkas(self, out):
+        baris = [x for x in out.splitlines() if x.startswith("BERKAS: ")]
+        self.assertEqual(len(baris), 1)
+        return baris[0][len("BERKAS: "):]
+
+    def test_baris_berkas_absolut_invoice(self):
+        cwd = os.getcwd()
+        os.chdir(self.dir)
+        try:
+            # path RELATIF diberikan; baris BERKAS harus tetap absolut dan menunjuk berkas yang ada
+            kode, out, _ = self.jalan(self.data_catering(), "--nomor-terakhir", "INV/2026/10/0007",
+                                      "--html", "invoice-{nomor}.html")
+        finally:
+            os.chdir(cwd)
+        self.assertEqual(kode, 0)
+        path = self.baris_berkas(out)
+        self.assertTrue(os.path.isabs(path))
+        self.assertEqual(os.path.basename(path), "invoice-INV-2026-10-0008.html")
+        self.assertTrue(os.path.isfile(path))
+        self.assertIn("jangan menyusun atau menebak path", out)
+
+    def test_baris_berkas_absolut_kuitansi_dan_json(self):
+        d = self.data_catering()
+        d["jenis_dokumen"], d["prefix"] = "kuitansi", "KWT"
+        d["pembayaran"] = [{"tanggal": "2026-10-14", "jumlah": "7.500.000", "keterangan": "DP"}]
+        kode, out, _ = self.jalan(d, "--nomor-terakhir", "KWT/2026/10/0003", "--html", self.dir)
+        self.assertEqual(kode, 0)
+        path = self.baris_berkas(out)
+        self.assertTrue(os.path.isabs(path) and os.path.isfile(path))
+        self.assertEqual(os.path.basename(path), "kuitansi-KWT-2026-10-0004.html")
+        kode, out, _ = self.jalan(d, "--nomor-terakhir", "KWT/2026/10/0003", "--html", self.dir, "--format", "json")
+        self.assertTrue(os.path.isabs(json.loads(out)["html_disimpan_ke"]))
+
+    def test_tanpa_html_tanpa_baris_berkas(self):
+        kode, out, _ = self.jalan(CONTOH)
+        self.assertEqual(kode, 0)
+        self.assertNotIn("BERKAS:", out)
+
+    def test_meterai_sisa_5075000_di_atas_batas(self):
+        kode, out, _ = self.jalan(self.data_catering(), "--nomor-terakhir", "INV/2026/10/0007", "--format", "json")
+        self.assertEqual(kode, 0)
+        h = json.loads(out)
+        self.assertEqual(int(h["total"]), 8075000)
+        self.assertEqual(int(h["sisa"]), 5075000)
+        m = h["meterai"]
+        self.assertFalse(m["wajib"])                        # DP 3 juta: invoice ini sendiri tidak wajib meterai
+        self.assertIn("Sisa tagihan Rp 5.075.000 di atas Rp5.000.000", m["pesan"])
+        self.assertIn("wajib bermeterai Rp10.000", m["pesan"])
+        self.assertNotIn("di bawah", m["pesan"])
+        self.assertNotIn("tidak lebih dari", m["pesan"])
+
+    def test_meterai_sisa_pas_5jt_dan_di_bawah_tidak_wajib(self):
+        d = self.data_catering()
+        d["pembayaran"] = [{"tanggal": "2026-10-10", "jumlah": "3.075.000", "keterangan": "DP"}]   # sisa 5.000.000 pas
+        pesan = json.loads(self.jalan(d, "--format", "json")[1])["meterai"]["pesan"]
+        self.assertIn("Sisa tagihan Rp 5.000.000 tidak lebih dari Rp5.000.000", pesan)
+        self.assertIn("tidak wajib meterai", pesan)
+        d["pembayaran"] = [{"tanggal": "2026-10-10", "jumlah": "4.000.000", "keterangan": "DP"}]   # sisa 4.075.000
+        pesan = json.loads(self.jalan(d, "--format", "json")[1])["meterai"]["pesan"]
+        self.assertIn("Sisa tagihan Rp 4.075.000 tidak lebih dari Rp5.000.000", pesan)
+
+    def test_meterai_dp_di_atas_5jt_wajib_dan_sisa_dinilai(self):
+        d = self.data_catering()
+        d["pembayaran"] = [{"tanggal": "2026-10-14", "jumlah": "5.000.001", "keterangan": "DP"}]
+        m = json.loads(self.jalan(d, "--format", "json")[1])["meterai"]
+        self.assertTrue(m["wajib"])
+        self.assertIn("di atas Rp5.000.000", m["pesan"])
+        self.assertIn("Sisa tagihan Rp 3.074.999 tidak lebih dari Rp5.000.000", m["pesan"])
+
+    def test_meterai_total_kecil_tanpa_catatan_sisa(self):
+        pesan = json.loads(self.jalan(CONTOH, "--format", "json")[1])["meterai"]["pesan"]   # total 6,75 jt, sisa 3,75 jt
+        self.assertIn("Sisa tagihan Rp 3.750.000 tidak lebih dari Rp5.000.000", pesan)
+        d = copy.deepcopy(CONTOH)
+        d["items"], d["ongkir"], d["pembayaran"] = [{"nama": "Kaos", "qty": 10, "harga": "100.000"}], "", []
+        pesan = json.loads(self.jalan(d, "--format", "json")[1])["meterai"]["pesan"]       # total 1 juta
+        self.assertNotIn("Sisa tagihan", pesan)
+
+    def test_meterai_termin_dinilai_per_termin(self):
+        d = self.data_catering()
+        d["pembayaran"] = []
+        d["termin"] = [{"nama": "DP", "persen": 30, "jatuh_tempo": "2026-10-14"},
+                       {"nama": "Pelunasan", "persen": 70, "jatuh_tempo": "2026-11-14"}]
+        pesan = json.loads(self.jalan(d, "--format", "json")[1])["meterai"]["pesan"]
+        # total 8.075.000: DP 30% = 2.422.500 (tidak lebih dari 5 juta), pelunasan 5.652.500 (di atas 5 juta)
+        self.assertIn("DP Rp 2.422.500 (tidak lebih dari Rp5.000.000: tidak wajib meterai)", pesan)
+        self.assertIn("Pelunasan Rp 5.652.500 (di atas Rp5.000.000: wajib bermeterai Rp10.000)", pesan)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
