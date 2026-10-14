@@ -9,3 +9,6 @@ koordinasi/alat-uji/pilot/updates-*.jsonl
 koordinasi/alat-uji/pilot/sent-*.jsonl
 koordinasi/alat-uji/pilot/*.log
 catalog.csv.bak-*
+
+# symlink uji Cursor (lokal VM Cursor, jangan di-commit)
+.cursor/skills/
