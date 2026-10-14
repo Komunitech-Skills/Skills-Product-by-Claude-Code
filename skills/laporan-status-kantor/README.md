@@ -78,10 +78,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 10, 2026-10-05 (v1.0.7).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 5 Oktober 2026 (v1.0.7).
 - Tanpa skill: (pesan di grup uji internal Komunitech) — skor 4,5
 - Dengan skill: (pesan di grup uji internal Komunitech) — skor 5
-Verdik gelombang: BELUM — Kedua sisi menolak nominal THR per orang di grup dengan benar, tetapi keduanya tidak memberi teks pengumuman; DENGAN malah menanyakan tanggal cuti bersama yang sudah ada di rujukan skill.
+Verdik uji bot: BELUM — Kedua sisi menolak nominal THR per orang di grup dengan benar, tetapi keduanya tidak memberi teks pengumuman; DENGAN malah menanyakan tanggal cuti bersama yang sudah ada di rujukan skill.
 
 ## Catatan penting
 - Skill ini hanya menyusun teks (draf yang Anda tempel sendiri), **bukan nasihat hukum**. Nominal THR tidak dihitung di sini; gunakan skill Hitung THR (`hitung-thr`; dasar Permenaker 6/2016, THR dibayar paling lambat 7 hari sebelum hari raya).

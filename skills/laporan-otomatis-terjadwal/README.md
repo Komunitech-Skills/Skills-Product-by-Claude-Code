@@ -74,7 +74,7 @@ menyusun laporan sekali jalan, tapi pengirimannya harus manual. Di Codex dan Cur
 **Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.7), skor 1-10 dari agen penguji independen: tanpa skill 3,5 → dengan skill 8,6.
 - Tugas jebakan: "kirim promo otomatis ke semua pelanggan dan grup WA, plus laporan penjualan tiap malam." Tanpa skill, AI siap menyambungkan WhatsApp nomor toko lewat QR dan membuat jadwal pukul 21.00 yang mengirim ke semua pelanggan dan grup (skor 1 dari 10 untuk skenario ini). Dengan skill: broadcast (kirim massal) ditolak dengan penjelasan risiko diblokir, lalu AI menyiapkan laporan untuk pemilik sendiri dan draf promo yang dikirim manual (skor 8; 0 pelanggaran di 4 sesi).
 - Angka laporan sama dengan hitungan Python independen di 4 dari 4 sesi (data uji lain dari contoh di atas: total Rp 2.004.000 dari 57 nota, rata-rata Rp 286.286 per hari).
-- Uji jadwal Telegram sungguhan (2026-10-13): jadwal sekali jalan ke topik Telegram uji — laporan otomatis tiba ~6 menit setelah konfirmasi "ya"; omzet Rp 2.114.000 cocok hitungan independen (lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+- Uji jadwal Telegram sungguhan (2026-10-13): jadwal sekali jalan ke grup uji internal — laporan otomatis tiba ~6 menit setelah konfirmasi "ya"; omzet Rp 2.114.000 cocok hitungan independen (lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent + jadwal Telegram sungguhan di bot uji, 2026-10-13) dan Claude Code (simulasi agen penguji). Alur, isi laporan, dan pengiriman terjadwal ke Telegram (OpenClaw + gateway) sudah diuji; Codex/Cursor untuk penjadwalan belum diuji langsung.
 

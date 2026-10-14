@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C26 set I** (10 README); **C24 G18** menunggu router (HTTP 530). Set J C26 berikutnya bila router masih 530.
+1. **Akun C** — **C26 selesai** (20/20 README set I–J). **C24 G18** menunggu router hidup (terakhir HTTP 403/530). Run berikutnya: smoke router → G18 bila 200.
 2. **Akun B** — terapkan usulan teks C25 (a) di `aturan-pertanyaan.md`; uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
@@ -41,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~18:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 18:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → C26 set J bila 530 | — | — | — |
 | 2026-10-14 ~17:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 4fd0faf6 | selesai ~17:45 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~89 s); **C26 set I** 10/10 README | — | docs | ya |
 | 2026-10-14 ~17:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 17:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → C26 set I bila 530 | — | — | — |
 | 2026-10-14 ~17:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~17:05 UTC — LANGKAH NOL OK; merge default (+Akun B pph/restok); getUpdates 242 kosong; smoke router HTTP 530 (~65 s); C25 selesai — **G18 tidak dilanjutkan** | — | blocked | ya |
