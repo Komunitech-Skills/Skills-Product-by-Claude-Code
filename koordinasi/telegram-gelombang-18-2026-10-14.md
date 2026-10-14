@@ -31,3 +31,7 @@ Hanya **1/10** pesan uji selesai diproses gateway:
 1. Cek router (bukan 530) → restart gateway bila config berubah.
 2. Topik 1482–1491 masih bisa dipakai ulang atau buat topik baru (hindari riwayat error).
 3. Lanjut kirim `msgs-g18.json` indeks 0–9; kumpulkan `updates-g2.jsonl` → laporan skor seperti G17.
+
+## Percobaan ulang 2026-10-14 12:00 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (Ninerouter, sama seperti 11:30 UTC). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
