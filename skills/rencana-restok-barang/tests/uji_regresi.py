@@ -1,0 +1,394 @@
+#!/usr/bin/env python3
+"""Uji regresi rencana_restok.py. Jalankan dari folder skill: python3 tests/uji_regresi.py (Windows: python / py).
+
+Angka pembanding dihitung ulang secara independen di file ini (float, math, statistics),
+bukan disalin dari keluaran script.
+"""
+import json
+import math
+import os
+import statistics
+import subprocess
+import sys
+import tempfile
+import zipfile
+from datetime import date, timedelta
+
+DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT = os.path.join(DIR, "..", "scripts", "rencana_restok.py")
+TMP = tempfile.mkdtemp()
+GAGAL = []
+Z95 = 1.65
+
+
+def cek(nama, kondisi):
+    print(("OK    " if kondisi else "GAGAL ") + nama)
+    if not kondisi:
+        GAGAL.append(nama)
+
+
+def tulis(nama, isi, biner=False):
+    p = os.path.join(TMP, nama)
+    with open(p, "wb" if biner else "w", encoding=None if biner else "utf-8") as f:
+        f.write(isi)
+    return p
+
+
+def jalan(*arg):
+    p = subprocess.run([sys.executable, SCRIPT] + list(arg), capture_output=True, text=True, encoding="utf-8")
+    if p.returncode == 0:
+        try:
+            return 0, json.loads(p.stdout)
+        except ValueError:
+            return 0, {"teks": p.stdout}
+    try:
+        return p.returncode, json.loads(p.stderr)
+    except ValueError:
+        return p.returncode, {"error": p.stderr}
+
+
+def brg(h, kunci):
+    return next(x for x in h["barang"] if x["sku"] == kunci or x["nama"] == kunci)
+
+
+def deret_csv(mulai, pola_per_sku, hari):
+    """pola_per_sku: {sku: fungsi(i)->qty}. Hari qty 0 tidak ditulis (seperti ekspor kasir)."""
+    rows = ["tanggal;sku;nama;qty"]
+    for i in range(hari):
+        t = mulai + timedelta(days=i)
+        for sku, f in pola_per_sku.items():
+            q = f(i)
+            if q:
+                rows.append(f"{t.isoformat()};{sku};Barang {sku};{q}")
+    return "\n".join(rows)
+
+
+def harapan(series, L, H, stok, dp=0, z=Z95):
+    mu = sum(series) / len(series)
+    sd = statistics.stdev(series)
+    ss = z * sd * math.sqrt(L)
+    rop = math.ceil(mu * L + ss)
+    tgt = math.ceil(mu * (L + H) + ss)
+    return {"mu": mu, "sd": sd, "ss": math.ceil(ss), "rop": rop, "tgt": tgt, "posisi": stok + dp}
+
+
+M0 = date(2026, 8, 3)
+
+# ---------------------------------------------------------------- A. kasus normal (pola stabil)
+POLA_A = [3, 5, 2, 0, 4, 6, 8]
+POLA_B = [1, 0, 2, 1, 0, 1, 2]
+jual_a = tulis("a.csv", deret_csv(M0, {"A1": lambda i: POLA_A[i % 7], "B1": lambda i: POLA_B[i % 7]}, 56))
+barang_a = tulis("a_barang.csv", "sku;nama;stok;harga_beli;pemasok\nA1;Kaos Hitam M;20;Rp 10.000;Toko P1\nB1;Tote Bag;25;5rb;Toko P1\n")
+k, h = jalan("--file", jual_a, "--barang", barang_a)
+cek("A0 jalan", k == 0)
+sa = [POLA_A[i % 7] for i in range(56)]
+e = harapan(sa, 7, 14, 20)
+a1 = brg(h, "A1")
+cek("A1 rata-rata harian = 4", a1["rata_rata_harian"] == 4)
+cek("A2 simpangan sampel", abs(a1["simpangan_harian"] - round(e["sd"], 2)) < 0.006)
+cek("A3 tren stabil (faktor 1)", a1["tren"] == "stabil" and a1["faktor_tren"] == 1)
+cek("A4 stok pengaman = ceil(1,65 x sd x akar 7)", a1["stok_pengaman"] == e["ss"])
+cek("A5 titik pesan ulang", a1["titik_pesan_ulang"] == e["rop"])
+cek("A6 stok target", a1["stok_target"] == e["tgt"])
+cek("A7 kelompok PESAN SEKARANG", a1["kelompok"] == "PESAN_SEKARANG")
+cek("A8 jumlah pesan = target - stok", a1["jumlah_pesan"] == e["tgt"] - 20)
+cek("A9 nilai pesanan = jumlah x Rp10.000", a1["nilai_pesanan"] == (e["tgt"] - 20) * 10000)
+cek("A10 habis dalam floor(20/4) = 5 hari", a1["habis_dalam_hari"] == 5)
+cek("A11 kosong sebelum barang datang (5 < 7)", a1["kosong_sebelum_barang_datang"] is True)
+sb = [POLA_B[i % 7] for i in range(56)]
+eb = harapan(sb, 7, 14, 25)
+b1 = brg(h, "B1")
+hari_ke_rop = math.floor((25 - eb["rop"]) / 1)
+kel_b = "PESAN_SEKARANG" if 25 <= eb["rop"] or hari_ke_rop < 1 else ("PESAN_MINGGU_DEPAN" if hari_ke_rop <= 7 else "AMAN")
+cek("A12 barang B: ROP & kelompok", b1["titik_pesan_ulang"] == eb["rop"] and b1["kelompok"] == kel_b)
+g = h["pesanan_per_pemasok"][0]
+cek("A13 pesanan per pemasok", g["pemasok"] == "Toko P1" and g["total_nilai"] == a1["nilai_pesanan"] + (b1["nilai_pesanan"] or 0))
+cek("A14 draf WA berisi pemasok, jumlah, isian", "Toko P1" in g["draf_wa"] and f"{e['tgt'] - 20} pcs" in g["draf_wa"] and "[isian:" in g["draf_wa"])
+cek("A15 acuan = tanggal terakhir data", h["rentang_data"]["tanggal_acuan"] == (M0 + timedelta(days=55)).isoformat())
+k, t = jalan("--file", jual_a, "--barang", barang_a, "--format", "teks")
+cek("A16 teks berlabel UNTUK AGENT SAJA", k == 0 and t["teks"].startswith("[UNTUK AGENT SAJA") and "PESAN SEKARANG" in t["teks"])
+k, h90 = jalan("--file", jual_a, "--barang", barang_a, "--layanan", "99")
+cek("A17 layanan 99% -> z 2,33", brg(h90, "A1")["stok_pengaman"] == math.ceil(2.33 * e["sd"] * math.sqrt(7)))
+k, h14 = jalan("--file", jual_a, "--barang", barang_a, "--hari-ini", (M0 + timedelta(days=70)).isoformat())
+cek("A18 hari ini jauh dari akhir data -> catatan", any("hari sebelum hari ini" in c for c in h14["catatan"]))
+
+# ---------------------------------------------------------------- C. lead time beda per barang
+pola = {s: (lambda i: POLA_A[i % 7]) for s in ("X", "Y", "Z", "W")}
+jual_c = tulis("c.csv", deret_csv(M0, pola, 56))
+barang_c = tulis("c_barang.csv", "sku;stok;lead time (hari);pemasok\nX;100;3;\nY;100;2 minggu;\nZ;100;;Grosir Zed\nW;100;;\n")
+pemasok_c = tulis("c_pemasok.csv", "pemasok;lead_time_hari\nGrosir Zed;10\n")
+k, h = jalan("--file", jual_c, "--barang", barang_c, "--pemasok", pemasok_c)
+cek("C0 jalan", k == 0)
+for sku, L, sumber in (("X", 3, "data barang"), ("Y", 14, "data barang"), ("Z", 10, "data pemasok"), ("W", 7, "default")):
+    e = harapan(sa, L, 14, 100)
+    x = brg(h, sku)
+    cek(f"C1 {sku}: lead time {L} ({sumber})", x["lead_time_hari"] == L and x["sumber_lead_time"] == sumber)
+    cek(f"C2 {sku}: stok pengaman & ROP sesuai lead time {L}", x["stok_pengaman"] == e["ss"] and x["titik_pesan_ulang"] == e["rop"])
+k, h = jalan("--file", jual_c, "--barang", barang_c, "--lead-time", "5")
+cek("C3 --lead-time 5 untuk barang tanpa lead time", brg(h, "W")["lead_time_hari"] == 5)
+
+# ---------------------------------------------------------------- D. stok sekarang tidak ada
+k, h = jalan("--file", jual_a)
+d = brg(h, "A1")
+e = harapan(sa, 7, 14, 0)
+cek("D1 kelompok STOK BELUM DIKETAHUI", d["kelompok"] == "STOK_BELUM_DIKETAHUI")
+cek("D2 jumlah pesan tidak dikira", d["jumlah_pesan"] is None and d["nilai_pesanan"] is None)
+cek("D3 ROP & target tetap dihitung", d["titik_pesan_ulang"] == e["rop"] and d["stok_target"] == e["tgt"])
+cek("D4 pertanyaan pertama soal stok", "stok sekarang" in h["pertanyaan_usulan"][0])
+cek("D5 isian kosong stok", any("stok sekarang" in x for x in h["isian_kosong"]))
+cek("D6 maksimal 3 pertanyaan", len(h["pertanyaan_usulan"]) <= 3)
+
+# ---------------------------------------------------------------- E. data rusak & tanggal campur
+excel = 46268  # nomor seri Excel
+tgl_excel = date(1899, 12, 30) + timedelta(days=excel)
+data_e = "\n".join([
+    "No. Pesanan;Tanggal;SKU;Nama Barang;Qty;Status",
+    "INV-1;2026-09-01;K1;Kopi Susu;3;Selesai",
+    "INV-2;02/09/2026;K1;Kopi Susu;2 pcs;Selesai",
+    "INV-3;3 Sep 2026;K1;Kopi Susu;4;Selesai",
+    "INV-4;04-09-2026 13:22;K1;Kopi Susu;1;Selesai",
+    "INV-5;Kamis, 5 September 2026;K1;Kopi Susu;5;Selesai",
+    "INV-6;2026/09/06;K1;Kopi Susu;2;Selesai",
+    f"INV-7;{excel};K1;Kopi Susu;1;Selesai",
+    "INV-8;09/13/2026;K1;Kopi Susu;6;Selesai",
+    "INV-9;kemarin;K1;Kopi Susu;3;Selesai",
+    "INV-10;2026-09-07;K1;Kopi Susu;abc;Selesai",
+    "INV-11;2026-09-08;K1;Kopi Susu;;Selesai",
+    "INV-12;2026-09-09;K1;Kopi Susu;10;Batal",
+    "INV-1;2026-09-01;K1;Kopi Susu;3;Selesai",
+    "INV-13;2026-09-10;;;2;Selesai",
+])
+k, h = jalan("--data", data_e)
+cek("E0 jalan walau ada baris rusak", k == 0)
+e1 = brg(h, "K1")
+cek("E1 total terjual hanya baris sah", e1["data"]["total_terjual"] == 3 + 2 + 4 + 1 + 5 + 2 + 1 + 6)
+cek("E2 nomor seri Excel terbaca", h["rentang_data"]["dari"] == min(date(2026, 9, 1), tgl_excel).isoformat())
+cek("E3 tanggal bulan/hari (09/13/2026) -> 13 Sep", h["rentang_data"]["sampai"] == "2026-09-13")
+cek("E4 baris dilewati: tanggal, jumlah, kosong, barang", h["dilewati"]["jumlah"] == 4)
+cek("E5 catatan status batal", any("Batal".lower() in c.lower() and "status" in c for c in h["catatan"]))
+cek("E6 catatan baris dobel", any("dobel" in c for c in h["catatan"]))
+cek("E7 catatan format bulan/tanggal", any("bulan/tanggal" in c for c in h["catatan"]))
+cek("E8 data < 14 hari -> DATA BELUM CUKUP", e1["kelompok"] == "DATA_BELUM_CUKUP")
+for nama, arg in [("E9 kosong", ["--data", ""]),
+                  ("E10 tanpa kolom qty", ["--data", "tanggal;nama\n2026-09-01;Kopi"]),
+                  ("E11 semua tanggal rusak", ["--data", "tanggal;nama;qty\nkemarin;Kopi;2\nbesok;Kopi;3"]),
+                  ("E12 layanan 93%", ["--file", jual_a, "--layanan", "93"]),
+                  ("E13 faktor musim 0", ["--file", jual_a, "--faktor-musim", "0"]),
+                  ("E14 file .xls lama", ["--file", tulis("lama.xls", "x")]),
+                  ("E15 file tidak ada", ["--file", os.path.join(TMP, "tidak-ada.csv")])]:
+    k, e = jalan(*arg)
+    cek(nama + " -> kode 2 + saran", k == 2 and "error" in e and "saran" in e)
+
+# ---------------------------------------------------------------- F. permintaan nol / barang mati
+data_f = deret_csv(M0, {"L1": lambda i: 2, "OLD": lambda i: 3 if i < 5 else 0, "OLD0": lambda i: 1 if i < 5 else 0}, 70)
+barang_f = tulis("f_barang.csv", "sku;nama;stok;harga_beli\nL1;Laris;100;1000\nOLD;Lama;25;34rb\nOLD0;Lama Habis;0;5000\nNOL;Tidak Pernah Laku;10;20.000\n")
+k, h = jalan("--data", data_f, "--barang", barang_f)
+cek("F0 jalan", k == 0)
+nol = brg(h, "NOL")
+cek("F1 tidak pernah laku 70 hari + stok -> BARANG MATI", nol["kelompok"] == "BARANG_MATI" and nol["nilai_tertahan"] == 200000)
+old = brg(h, "OLD")
+cek("F2 terakhir laku 65 hari lalu -> BARANG MATI", old["kelompok"] == "BARANG_MATI" and old["data"]["hari_tanpa_penjualan"] == 65)
+cek("F3 modal tertahan = 25 x Rp34.000", old["nilai_tertahan"] == 850000)
+cek("F4 stok habis + tidak laku -> TIDAK ADA PENJUALAN (tidak dipesan)", brg(h, "OLD0")["kelompok"] == "TIDAK_ADA_PENJUALAN" and brg(h, "OLD0")["jumlah_pesan"] is None)
+cek("F5 total modal tertahan", h["ringkasan"]["nilai_barang_mati"] == 1050000)
+cek("F6b catatan barang daftar yang tidak ada di penjualan", any("Tidak Pernah Laku" in c and "tidak muncul" in c for c in h["catatan"]))
+cek("F6 barang mati tidak ikut daftar laris", "Lama" not in h["barang_laris_untuk_bundling"] and "Laris" in h["barang_laris_untuk_bundling"])
+data_f2 = deret_csv(M0, {"L1": lambda i: 2}, 30)
+k, h = jalan("--data", data_f2, "--barang-data", "sku;nama;stok\nL1;Laris;5\nBARU;Belum Laku;8")
+cek("F7 belum laku tapi data < 60 hari -> TIDAK ADA PENJUALAN (bukan barang mati)", brg(h, "BARU")["kelompok"] == "TIDAK_ADA_PENJUALAN")
+k, h = jalan("--data", data_f2, "--barang-data", "sku;stok\nL1;5", "--batas-mati", "20")
+cek("F8 --batas-mati diubah", k == 0 and h["parameter"]["batas_barang_mati_hari"] == 20)
+
+# ---------------------------------------------------------------- G. MOQ & kelipatan (permintaan tetap 1/hari -> simpangan 0)
+pola_g = {s: (lambda i: 1) for s in ("G0", "G1", "G2", "G3", "G4")}
+jual_g = tulis("g.csv", deret_csv(M0, pola_g, 28))
+barang_g = tulis("g_barang.csv", "sku;stok;kelipatan;moq;harga_beli\nG0;5;;;7500\nG1;5;12;;7500\nG2;5;12;50;7500\nG3;5;;20;7500\nG4;5;0,5;;7500\n")
+k, h = jalan("--file", jual_g, "--barang", barang_g, "--horizon", "11")
+cek("G0 jalan", k == 0)
+g0 = brg(h, "G0")
+cek("G1 simpangan 0 -> stok pengaman 0, ROP 7, target 18", g0["stok_pengaman"] == 0 and g0["titik_pesan_ulang"] == 7 and g0["stok_target"] == 18)
+cek("G2 tanpa kemasan: pesan 13", g0["jumlah_pesan"] == 13 and g0["nilai_pesanan"] == 13 * 7500)
+cek("G3 kelipatan 12: 13 -> 24", brg(h, "G1")["jumlah_pesan"] == 24 and brg(h, "G1")["nilai_pesanan"] == 180000)
+cek("G3b jumlah kemasan 24/12 = 2", brg(h, "G1")["jumlah_kemasan"] == 2 and brg(h, "G0")["jumlah_kemasan"] is None)
+cek("G4 MOQ 50 + kelipatan 12 -> 60", brg(h, "G2")["jumlah_pesan"] == 60)
+cek("G5 MOQ 20 -> 20 + keterangan", brg(h, "G3")["jumlah_pesan"] == 20 and any("minimal order" in x for x in brg(h, "G3")["penyesuaian_jumlah"]))
+cek("G6 kelipatan 0,5 -> tetap 13", brg(h, "G4")["jumlah_pesan"] == 13)
+pemasok_g = tulis("g_pemasok.csv", "pemasok;lead_time;minimal belanja\nToko Gx;7;Rp500.000\n")
+barang_g2 = tulis("g_barang2.csv", "sku;stok;harga_beli;pemasok\nG0;5;7500;Toko Gx\n")
+k, h = jalan("--file", jual_g, "--barang", barang_g2, "--horizon", "11", "--pemasok", pemasok_g)
+gp = h["pesanan_per_pemasok"][0]
+cek("G7 kurang dari minimal belanja", gp["minimal_belanja"] == 500000 and gp["kurang_dari_minimal_belanja"] == 500000 - 13 * 7500)
+
+# ---------------------------------------------------------------- Q. minggu depan, aman, stok berlebih, dalam pesanan
+pola_q = {s: (lambda i: 2) for s in ("Q1", "Q2", "Q3", "Q4")}
+jual_q = tulis("q.csv", deret_csv(M0, pola_q, 28))
+barang_q = tulis("q_barang.csv", "sku;stok;dalam pesanan;harga beli\nQ1;20;;1000\nQ2;40;;1000\nQ3;300;;1000\nQ4;6;10;1000\n")
+k, h = jalan("--file", jual_q, "--barang", barang_q)
+akhir_q = M0 + timedelta(days=27)
+q1 = brg(h, "Q1")
+cek("Q1 ROP 14, ROP tercapai 3 hari lagi -> MINGGU DEPAN", q1["kelompok"] == "PESAN_MINGGU_DEPAN" and q1["tanggal_pesan"] == (akhir_q + timedelta(days=3)).isoformat())
+cek("Q2 jumlah minggu depan = 42 - (20 - 2x3)", q1["jumlah_pesan"] == 42 - (20 - 6))
+cek("Q3 ROP 13 hari lagi -> AMAN", brg(h, "Q2")["kelompok"] == "AMAN")
+q3 = brg(h, "Q3")
+cek("Q4 stok 150 hari -> stok berlebih, kelebihan 258", q3.get("stok_berlebih") is True and q3["kelebihan_stok"] == 258 and q3["nilai_kelebihan"] == 258000)
+q4 = brg(h, "Q4")
+k, hm = jalan("--file", jual_q, "--barang-data", "sku;stok\nQ1;-3")
+cek("Q6 stok minus: jumlah = 42 - (-3) = 45 + catatan", brg(hm, "Q1")["jumlah_pesan"] == 45 and any("stok minus" in c for c in brg(hm, "Q1")["catatan"]))
+cek("Q5 dalam pesanan ikut posisi stok (6+10=16 -> ROP 1 hari lagi -> minggu depan)", q4["posisi_stok"] == 16 and q4["kelompok"] == "PESAN_MINGGU_DEPAN")
+
+# ---------------------------------------------------------------- H. data belum cukup / barang baru / mulai jual
+data_h = deret_csv(M0, {"LAMA": lambda i: 2, "BARU": lambda i: 3 if i >= 51 else 0}, 60)
+k, h = jalan("--data", data_h, "--barang-data", "sku;stok\nLAMA;50\nBARU;4")
+bh = brg(h, "BARU")
+cek("H1 barang baru 9 hari -> DATA BELUM CUKUP", bh["kelompok"] == "DATA_BELUM_CUKUP" and bh["jumlah_pesan"] is None)
+cek("H2 laju sementara 27/9 = 3, stok 4 habis 1 hari", bh["pengamatan"]["laju_sementara_per_hari"] == 3 and bh["pengamatan"]["habis_dalam_hari_laju_sementara"] == 1)
+cek("H3 pertanyaan barang baru", any("barang baru" in q for q in h["pertanyaan_usulan"]))
+mulai = (M0 + timedelta(days=40)).isoformat()
+k, h = jalan("--data", data_h, "--barang-data", f"sku;stok;mulai jual\nLAMA;50;\nBARU;4;{mulai}")
+bh = brg(h, "BARU")
+cek("H4 mulai jual diisi -> dihitung dari tanggal itu (27/20 hari)", bh["kelompok"] != "DATA_BELUM_CUKUP" and abs(bh["rata_rata_harian"] - round(27 / 20, 2)) < 0.006)
+
+# ---------------------------------------------------------------- I. tren
+data_i = deret_csv(M0, {"N1": lambda i: 4 if i < 42 else 8, "N2": lambda i: 2 if i < 42 else 20, "N3": lambda i: 6 if i < 42 else 3}, 70)
+k, h = jalan("--data", data_i)
+n1, n2, n3 = brg(h, "N1"), brg(h, "N2"), brg(h, "N3")
+cek("I1 rata-rata keseluruhan 5,6", n1["rata_rata_harian"] == 5.6)
+cek("I2 tren naik, dipakai rata-rata 4 minggu (8)", n1["tren"] == "naik" and n1["rata_rata_dipakai"] == 8)
+mu2 = (42 * 2 + 28 * 20) / 70
+cek("I3 tren naik dibatasi 1,5x", n2["faktor_tren_dipakai"] == 1.5 and abs(n2["rata_rata_dipakai"] - round(mu2 * 1.5, 2)) < 0.006)
+mu3 = (42 * 6 + 28 * 3) / 70
+cek("I4 tren turun (3/4,8 = 0,625)", n3["tren"] == "turun" and abs(n3["rata_rata_dipakai"] - 3) < 0.006 and abs(mu3 - 4.8) < 1e-9)
+k, h = jalan("--data", data_i, "--tanpa-tren")
+cek("I5 --tanpa-tren memakai rata-rata keseluruhan", brg(h, "N1")["rata_rata_dipakai"] == 5.6)
+k, h = jalan("--data", data_i, "--tanpa-tren", "--faktor-musim", "1,5")
+cek("I6 faktor musim 1,5 dikalikan", brg(h, "N1")["rata_rata_dipakai"] == 8.4)
+k, h = jalan("--data", deret_csv(M0, {"S1": lambda i: 4 if i < 20 else 8}, 30))
+cek("I7 data < 42 hari -> tren tidak dihitung", brg(h, "S1")["tren"] == "tidak dihitung")
+
+# ---------------------------------------------------------------- J. ekspor mutasi buku-stok
+rows_j = ["tanggal;sku;arah;jenis;qty;harga;hpp;stok_sesudah;ref;catatan",
+          "2026-08-01;LAIN;masuk;saldo-awal;50;;10000;50;;"]
+stok = 0
+mulai_j = date(2026, 8, 11)
+rows_j.append(f"{mulai_j.isoformat()};KAOS-HT-M;masuk;saldo-awal;100;;35000;100;;")
+stok = 100
+hpp = 35000
+for i in range(30):
+    t = mulai_j + timedelta(days=i)
+    stok -= 2
+    rows_j.append(f"{t.isoformat()};KAOS-HT-M;keluar;jual-mp;-2;59000;{hpp};{stok};SHP-{i};")
+    if i == 10:
+        stok += 2
+        rows_j.append(f"{t.isoformat()};KAOS-HT-M;masuk;batal-pesanan;2;;{hpp};{stok};SHP-{i};batal")
+    if i == 20:
+        stok += 50
+        hpp = 34662
+        rows_j.append(f"{t.isoformat()};KAOS-HT-M;masuk;beli;50;34000;{hpp};{stok};NOTA-1;")
+    rows_j.append(f"{t.isoformat()};LAIN;keluar;jual;-1;20000;10000;0;;")
+k, h = jalan("--data", "\n".join(rows_j))
+j = brg(h, "KAOS-HT-M")
+cek("J0 jalan", k == 0)
+cek("J1 jual-mp negatif dibaca sebagai penjualan, batal mengurangi (60-2=58)", j["data"]["total_terjual"] == 58)
+cek("J2 stok sekarang dari stok sesudah terakhir", j["stok_sekarang"] == stok)
+cek("J3 harga beli dari HPP terakhir", j["harga_beli"] == 34662)
+cek("J4 rentang barang mulai dari saldo awal", j["data"]["mulai"] == mulai_j.isoformat() and j["data"]["jumlah_hari"] == 30)
+cek("J5 pembelian (beli) tidak dihitung penjualan", brg(h, "LAIN")["data"]["total_terjual"] == 30)
+stok_bs = tulis("laporan-stok.csv", "\ufefflokasi;sku;nama;varian;satuan;stok;stok_min;hpp_rata2;nilai_persediaan;harga_jual;status\n"
+                "A1;KAOS-HT-M;Kaos Polos Cotton 30s;Hitam M;pcs;12;10;34662;415944;59000;aman\n")
+k, h = jalan("--data", "\n".join(rows_j), "--barang", stok_bs)
+j = brg(h, "KAOS-HT-M")
+cek("J6 ekspor laporan stok buku-stok sebagai data barang (stok 12, HPP, nama+varian)",
+    k == 0 and j["stok_sekarang"] == 12 and j["harga_beli"] == 34662 and j["nama"] == "Kaos Polos Cotton 30s Hitam M"
+    and "harga_jual" not in h["pemetaan_kolom"]["barang"].values())
+
+# ---------------------------------------------------------------- K. tabel lebar, markdown, JSON, marketplace, XLSX
+k, h = jalan("--data", "Nama Barang;01/09/2026;02/09/2026;03/09/2026\nKopi;3;;5\nTeh;1;2;0")
+cek("K1 tabel lebar (kolom = tanggal)", k == 0 and brg(h, "Kopi")["data"]["total_terjual"] == 8 and brg(h, "Teh")["data"]["total_terjual"] == 3)
+k, h = jalan("--data", "| Tanggal | Barang | Terjual |\n|---|---|---|\n| 1 Sep 2026 | Gula 1kg | 4 |\n| 2 Sep 2026 | Gula 1kg | 6 |")
+cek("K2 tabel markdown tempelan chat", k == 0 and brg(h, "Gula 1kg")["data"]["total_terjual"] == 10)
+k, h = jalan("--data", json.dumps([{"tanggal": "2026-09-01", "sku": "J1", "qty": 3}, {"tanggal": "2026-09-02", "sku": "J1", "qty": 2}]))
+cek("K3 input JSON daftar objek", k == 0 and brg(h, "J1")["data"]["total_terjual"] == 5)
+gab = tulis("gab.json", json.dumps({"penjualan": [{"tanggal": (M0 + timedelta(days=i)).isoformat(), "sku": "J2", "qty": 2} for i in range(28)],
+                                    "barang": [{"sku": "J2", "stok": 10, "harga_beli": 1000, "pemasok": "PT Uji"}],
+                                    "pemasok": [{"pemasok": "PT Uji", "lead_time": 3}]}))
+k, h = jalan("--file", gab)
+cek("K4 JSON gabungan penjualan+barang+pemasok", k == 0 and brg(h, "J2")["lead_time_hari"] == 3 and brg(h, "J2")["stok_sekarang"] == 10)
+mp = "\n".join(["Laporan Pesanan Toko Contoh Fiktif", "",
+                "No. Pesanan,Status Pesanan,Waktu Pesanan Dibuat,SKU Induk,Nomor Referensi SKU,Nama Produk,Nama Variasi,Jumlah",
+                "260901AAA,Selesai,2026-09-01 10:11,KAOS,KAOS-HT-M,Kaos Polos,Hitam M,2",
+                "260901BBB,Batal,2026-09-01 11:00,KAOS,KAOS-HT-M,Kaos Polos,Hitam M,5",
+                "260902CCC,Sedang Dikirim,2026-09-02 09:00,KAOS,KAOS-HT-M,Kaos Polos,Hitam M,1",
+                "260902DDD,Belum Bayar,2026-09-02 09:30,KAOS,KAOS-PT-M,Kaos Polos,Putih M,4"])
+k, h = jalan("--data", mp)
+cek("K5 ekspor marketplace: baris judul dicari, SKU varian dipakai", k == 0 and h["pemetaan_kolom"]["penjualan"]["sku"] == "Nomor Referensi SKU")
+cek("K6 batal & belum bayar tidak dihitung", brg(h, "KAOS-HT-M")["data"]["total_terjual"] == 3 and all(x["sku"] != "KAOS-PT-M" for x in h["barang"]))
+cek("K7 nama + variasi digabung", brg(h, "KAOS-HT-M")["nama"] == "Kaos Polos Hitam M")
+
+
+def xlsx(path, rows):
+    ss = []
+    def idx(s):
+        if s not in ss:
+            ss.append(s)
+        return ss.index(s)
+    sheet = ['<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>']
+    for r, row in enumerate(rows, 1):
+        sheet.append(f'<row r="{r}">')
+        for c, v in enumerate(row):
+            ref = chr(65 + c) + str(r)
+            if isinstance(v, (int, float)):
+                sheet.append(f'<c r="{ref}"><v>{v}</v></c>')
+            else:
+                sheet.append(f'<c r="{ref}" t="s"><v>{idx(v)}</v></c>')
+        sheet.append("</row>")
+    sheet.append("</sheetData></worksheet>")
+    sst = ['<?xml version="1.0" encoding="UTF-8"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">']
+    sst += [f"<si><t>{s}</t></si>" for s in ss] + ["</sst>"]
+    with zipfile.ZipFile(path, "w") as z:
+        z.writestr("xl/worksheets/sheet1.xml", "".join(sheet))
+        z.writestr("xl/sharedStrings.xml", "".join(sst))
+
+
+px = os.path.join(TMP, "jual.xlsx")
+seri0 = (date(2026, 9, 1) - date(1899, 12, 30)).days
+xlsx(px, [["Tanggal", "Nama Barang", "Qty"]] + [[seri0 + i, "Beras 5kg", 3] for i in range(20)])
+k, h = jalan("--file", px)
+cek("K8 XLSX (tanggal nomor seri) terbaca", k == 0 and brg(h, "Beras 5kg")["data"]["total_terjual"] == 60 and h["rentang_data"]["dari"] == "2026-09-01")
+
+# ---------------------------------------------------------------- L. data per minggu / per bulan
+mingguan = [28, 30, 26, 28, 32, 24, 28, 28]
+data_l = "tanggal;nama;qty\n" + "\n".join(f"{(M0 + timedelta(days=7 * i)).isoformat()};Minyak 1L;{q}" for i, q in enumerate(mingguan))
+k, h = jalan("--data", data_l, "--data-per", "minggu")
+l1 = brg(h, "Minyak 1L")
+cek("L1 mingguan: rata-rata harian = total / 56", abs(l1["rata_rata_harian"] - round(sum(mingguan) / 56, 2)) < 0.006)
+cek("L2 mingguan: simpangan harian = sd mingguan / akar 7", abs(l1["simpangan_harian"] - round(statistics.stdev(mingguan) / math.sqrt(7), 2)) < 0.006)
+data_m = "bulan;nama;qty\nAgustus 2026;Sabun;62\nSeptember 2026;Sabun;60"
+k, h = jalan("--data", data_m, "--data-per", "bulan")
+m1 = brg(h, "Sabun")
+mu_m = 122 / 61
+cek("L3 bulanan 2 bulan: sd diasumsikan akar rata-rata", m1["asumsi_simpangan"] is True and abs(m1["simpangan_harian"] - round(math.sqrt(mu_m), 2)) < 0.006)
+k, h = jalan("--data", data_m)
+cek("L4 data bulanan tanpa --data-per -> catatan", any("hanya berisi bulan" in c for c in h["catatan"]))
+
+# ---------------------------------------------------------------- M. lonjakan & retur
+data_mx = deret_csv(M0, {"P1": lambda i: 40 if i == 20 else 2}, 42)
+k, h = jalan("--data", data_mx)
+p1 = brg(h, "P1")
+cek("M1 lonjakan terdeteksi (40 vs biasanya 2)", len(p1["lonjakan"]) == 1 and p1["lonjakan"][0]["terjual"] == 40)
+cek("M2 pertanyaan lonjakan", any("borongan" in q for q in h["pertanyaan_usulan"]))
+k, h2 = jalan("--data", data_mx, "--abaikan-lonjakan")
+cek("M3 --abaikan-lonjakan: rata-rata jadi 2", brg(h2, "P1")["rata_rata_harian"] == 2)
+data_r = deret_csv(M0, {"R1": lambda i: 2}, 28) + f"\n{(M0 + timedelta(days=27)).isoformat()};R1;Barang R1;-3"
+k, h = jalan("--data", data_r)
+cek("M4 qty negatif = retur mengurangi penjualan (56-3=53)", brg(h, "R1")["data"]["total_terjual"] == 53 and brg(h, "R1")["retur_batal_dikurangkan"] == 3)
+
+# ---------------------------------------------------------------- N. ekspor bergaya AS (bulan/tanggal) seluruhnya
+data_n = "Date,Item,Qty\n" + "\n".join(f"09/{d:02d}/2026,Kopi Susu,2" for d in range(1, 31))
+k, h = jalan("--data", data_n)
+cek("N1 seluruh file bulan/tanggal -> 1-30 Sep", k == 0 and h["rentang_data"]["dari"] == "2026-09-01" and h["rentang_data"]["sampai"] == "2026-09-30")
+cek("N2 catatan gaya Amerika", any("gaya Amerika" in c for c in h["catatan"]))
+cek("N3 rata-rata 2/hari", brg(h, "Kopi Susu")["rata_rata_harian"] == 2)
+
+print()
+print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'} ({len(GAGAL)} gagal)")
+sys.exit(1 if GAGAL else 0)

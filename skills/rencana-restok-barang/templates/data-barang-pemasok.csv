@@ -1,0 +1,5 @@
+sku;nama_barang;stok_sekarang;harga_beli;pemasok;lead_time_hari;kelipatan;minimal_order;dalam_pesanan;mulai_jual
+GULA-1KG;Gula Pasir 1 kg;18;Rp15.500;Grosir Sinar Fiktif;2;20;;0;
+MINYAK-1L;Minyak Goreng 1 L;10;Rp17.000;Grosir Sinar Fiktif;2;12;;12;
+KOPI-SCH;Kopi Sachet Renteng;25;Rp13.000;CV Distribusi Contoh;7;10;50;0;
+SABUN-CUCI;Sabun Cuci Piring 800 ml;14;Rp11.500;CV Distribusi Contoh;7-10;24;;0;2026-09-02
