@@ -67,3 +67,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~65 s,
 ## Percobaan ulang 2026-10-14 19:00 UTC
 
 Smoke `openclaw agent -m "balas satu kata: OK" --json` (gateway) → **HTTP 530** (~69 s, Ninerouter). Run mengerjakan **C27 set L** (10 README, semua sudah memenuhi checklist); G18 tidak dilanjutkan.
+
+## Percobaan ulang 2026-10-14 19:30 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~83 s, Ninerouter Error 1016). Run mengerjakan **C28** verifikasi `pph21-ter` + `slip-gaji-bpjs` → `koordinasi/c28-verifikasi-aturan-2026-10-14.md`; G18 tidak dilanjutkan.
