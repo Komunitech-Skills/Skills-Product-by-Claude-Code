@@ -75,3 +75,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** 
 ## Percobaan ulang 2026-10-14 20:30 UTC
 
 Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~90 s, Ninerouter Error 1016 origin DNS). Run mengerjakan **C28** verifikasi `kontrak-kerja-pkwt` + `kalender-pajak` (**C28 selesai 6/6**); G18 tidak dilanjutkan.
+
+## Percobaan ulang 2026-10-14 21:00 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~77 s, Ninerouter Error 1016 origin DNS, 7 retry). **C28 sudah selesai**; tidak ada pekerjaan tanpa-router tersisa; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
