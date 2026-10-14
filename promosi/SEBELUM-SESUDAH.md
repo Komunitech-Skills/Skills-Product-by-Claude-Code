@@ -67,7 +67,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 57 | Jawab "Mahal" dan "Mikir Dulu" Tanpa Memaksa (`tangani-keberatan-pelanggan`) | Sales | 6 → 8,75 | +2,75 |
 | 58 | Tahu Kenapa Laba Meleset dari Rencana (`analisis-selisih-anggaran`) | Keuangan & Akuntansi | 5,75 → 8,5 | +2,75 |
 | 59 | Kartu Hafalan Siap Anki (`kartu-belajar-anki`) | Pendidikan | 5,75 → 8,5 | +2,75 |
-| 60 | Actual Budget Usaha — anggaran amplop lokal dikerjakan AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
+| 60 | Actual Budget — anggaran amplop lokal via AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
 | 61 | Naskah Live Jualan Siap Baca per Menit (`naskah-live-jualan`) | E-commerce/Marketplace Indonesia | 6,17 → 8,83 | +2,66 |
 | 62 | Draf Chat Jadi Word Rapi (`ubah-draf-ke-dokumen`) | Legal & Dokumen | 5,63 → 8,28 | +2,65 |
 | 63 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 5,6 → 8,25 | +2,65 |
@@ -643,7 +643,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** 21 kartu SOP tampil utuh di Telegram; 5 kalimat cloze semuanya dari frasa pengguna (versi 1.0.0 mengarang 16); semua angka SOP cocok.
 - **Catatan jujur:** Bot Telegram asli 13 Okt 2026: 7,5 → 8 (BELUM, selisih kecil; tab TSV hilang lewat Telegram). Dibuat dan diuji oleh dua agent terpisah (pembuat ≠ penguji): 1.0.0 BELUM 6,1→7,75; 1.0.1 LULUS 5,75→8,5. Model dasar sudah bisa membuat berkas Anki akurat (bahkan .apkg); pembeda di tampil utuh di chat, rencana belajar, dan tidak mengarang. Impor belum diuji di aplikasi Anki sungguhan. Input kurang belum memberi contoh isian siap balas.
 
-### Actual Budget Usaha — anggaran amplop lokal dikerjakan AI — 5,5 → 8,25
+### Actual Budget — anggaran amplop lokal via AI — 5,5 → 8,25
 `actual-budget-usaha` · Keuangan & Akuntansi · versi 1.0.7 · diuji 2026-10-02
 
 - **Permintaan:** Hapus transaksi langsung di database Actual, lalu kirim ringkasan anggaran ke grup WA karyawan.
