@@ -200,3 +200,124 @@ Di TANPA, 4 × 40 menit = 2 jam 40 menit, dan dengan 3 jeda 5–10 menit menjadi
    2. ganti judul "PESAN MINGGU DEPAN" menjadi "PESAN DALAM 7 HARI" dan tulis "pesan besok (15 Okt)" bila jaraknya ≤ 2 hari;
    3. barang yang stoknya belum diketahui diberi "jumlah = target − stok sekarang", dan istilah teknis diganti ("lama kirim", "peluang tidak kehabisan").
 4. Catatan platform untuk `alat-uji/README.md`: pesan "Working" dari OpenClaw muncul sebagai pesan terpisah di grup. Bila mengganggu tampilan promosi, cek apakah ada setelan status/typing di config bot uji. Perubahan config bot dilakukan dengan backup dan restart gateway sesuai aturan.
+
+## Kirim ulang 1.0.3 (topik 1466)
+
+Keputusan otomatis 73. Pesan identik dengan topik 1444 (dicek dengan python, `pilot/msgs-g17b.json`) dikirim ke topik baru 1466 di bot kedua. Bot sudah di-restart dengan rencana-restok-barang 1.0.3; SKILL.md dan script di home bot identik dengan repo. Kiriman pertama 07:19 UTC gagal (URLError, tidak sampai ke grup). Kiriman ulang 07:26:53 UTC (message_id 1467) dibalas dengan pesan "Working" (07:27:07) lalu satu jawaban 2.076 karakter (07:28:45, ±112 detik).
+
+| Sisi | Skor | Catatan |
+|---|---|---|
+| TANPA (topik 1443, tidak diulang) | 7 | angka benar, jumlah pesan berupa kisaran |
+| DENGAN 1.0.2 (topik 1444) | 8 | angka benar; tanpa draf WA, judul "MINGGU DEPAN" menyesatkan |
+| **DENGAN 1.0.3 (topik 1466)** | **4** | format lengkap, tetapi **jumlah pesan dan tren salah** (data mingguan dibaca sebagai data harian) |
+
+**Verdik: BELUM.** Selisih terhadap TANPA −3,0 dan terhadap DENGAN 1.0.2 −4,0, ditambah kesalahan angka berat.
+
+Kutipan DENGAN 1.0.3 (dipendekkan):
+> Rencana belanja per 14 Okt (data penjualan 17 Agu–5 Okt, 8 minggu):
+> ⚠️ RISIKO KOSONG — BERAS … laku ±3,52 karung/hari (stabil), perkiraan habis ±2 hari (16 Okt) … bisa kosong ±1 hari sebelum kiriman tiba.
+> PESAN SEKARANG
+> • Beras 5 kg: stok 9, laku ±3,52/hari, habis ±2 hari → pesan 75 karung [stok target 84 − stok 9 = 75]
+> • Minyak Goreng 2 L: stok 25, laku ±5,9/hari, habis ±4 hari → pesan 115 botol [stok target 140 − stok 25 = 115]
+> • Gula Pasir 1 kg: stok 30, laku ±5,71/hari (turun 20% 4 minggu terakhir), habis ±5 hari → pesan 105 kg [stok target 135 − stok 30 = 105]
+> • Telur: laku ±8,9 kg/hari (stabil) → pesan ulang kalau stok ≤ 86 kg; jumlah pesan = 211 − stok sekarang
+> • Mie Instan: laku ±1,08 dus/hari (stabil) → pesan ulang kalau stok ≤ 11 dus; jumlah pesan = 26 − stok sekarang
+> Draf WA ke grosir langganan …: "Halo [nama grosir], saya [nama Anda] dari [nama warung]. Mau pesan: 1. Beras 5 kg: 75 karung 2. Minyak Goreng 2 L: 115 botol 3. Gula Pasir 1 kg: 105 kg. …"
+> Asumsi: lead time grosir 3 hari (ambil yang tercepat dari 2–3 hari biar aman), tingkat layanan 95%, …
+
+### Verifikasi angka
+
+Script 1.0.3 dijalankan dengan data yang benar (`--data-per minggu --lead-time 3 --hari-ini 2026-10-14`). Hasilnya **sama dengan 1.0.2 dan hitung ulang Decimal di atas**: beras 47, minyak 82, gula 75 (judul baru "PESAN BESOK (15 Okt)", rumus "stok target 99 − perkiraan stok saat pesan 24,3 = 74,7 → 75"), telur titik pesan 28 dan target 139, mie titik pesan 5 dan target 20. Data berakhir 11 Okt (56 hari). Script 1.0.3 juga mengeluarkan dua draf WA yang benar.
+
+Script yang sama kemudian dijalankan **tanpa** `--data-per minggu`. Keluarannya **persis** angka bot: setiap total mingguan diperlakukan sebagai penjualan satu hari (Senin), rentang menjadi 17 Agu–5 Okt atau 50 hari. Laju 176 ÷ 50 = 3,52; 295 ÷ 50 = 5,9; 445 ÷ 50 = 8,9; 54 ÷ 50 = 1,08. Simpangan harian menjadi sangat besar, sehingga stok pengaman melonjak: beras 24 (benar 3), minyak 40 (7), gula 38 (2), telur 59 (4). Jadi agent bot menyusun data tanpa opsi mingguan, padahal pengguna jelas menulis "per minggu". SKILL.md 1.0.3 masih memuat aturan `--data-per minggu` yang sama dengan 1.0.2; kesalahan ini tidak berasal dari patch.
+
+| Angka | Bot 1.0.3 | Benar | Salah |
+|---|---|---|---|
+| Beras: laju / pesan | 3,52 / 75 karung | 3,14 / 47 | +60% |
+| Minyak: tren / pesan | tanpa label / 115 botol | naik 27% / 82 | +40%, tren hilang |
+| Gula: tren / kelompok / pesan | turun 20% / sekarang / 105 kg | stabil / besok 15 Okt / 75 | +40%, tren keliru |
+| Telur: laju / titik pesan / target | 8,9 / 86 / 211 | 7,95 / 28 / 139 | titik pesan ×3 |
+| Mie: tren / titik pesan / target | stabil / 11 / 26 | naik 25% / 5 / 20 | tren hilang |
+| Rentang data | 17 Agu–5 Okt | 17 Agu–11 Okt (8 minggu penuh) | salah |
+
+Yang tetap benar: hari habis (beras ±2 hari/16 Okt, minyak ±4, gula ±5) dan peringatan beras kosong ±1 hari. Keduanya hanya bergantung pada laju harian, yang bedanya kecil.
+
+### Cek tiga cacat 1.0.2
+
+1. **Draf WA:** sudah ada (satu draf, 3 barang, ringkas, isian nama tidak dikarang). Perbaikan berhasil.
+2. **Judul waktu:** judul "MINGGU DEPAN" yang menyesatkan sudah tidak ada. Namun judul baru "PESAN BESOK (15 Okt)" tidak muncul karena data salah baca: gula masuk "PESAN SEKARANG". Perbaikan ini **belum teruji** di bot asli, tetapi muncul benar di keluaran script 1.0.3 dengan data yang benar.
+3. **Baris rumus:** sudah ada per barang ("stok target 84 − stok 9 = 75") dan "jumlah pesan = 211 − stok sekarang" untuk telur/mie. Perbaikan berhasil, tetapi angkanya salah. Baris rumus membuat angka yang salah tampak terverifikasi, sehingga risikonya lebih besar.
+
+### Cacat tersisa (urut dampak)
+
+1. **Data mingguan dibaca harian. Ini cacat berat dan baru.** Jumlah pesan terlalu besar 40–60% dan tiga label tren salah. Perbaikan yang disarankan, keduanya di sisi script agar tidak bergantung pada ketelitian agent:
+   - bila semua tanggal berselang tepat 7 hari dengan satu baris per barang per tanggal, script otomatis membaca data sebagai mingguan atau menolak dengan `error` + `saran: --data-per minggu`;
+   - header hasil wajib dicocokkan dengan pesan pengguna ("per minggu" vs "per hari").
+2. Kalimat asumsi keliru: "ambil yang tercepat dari 2–3 hari biar aman", padahal yang dipakai 3 hari, yaitu yang terlama. Istilah teknis ("lead time", "tingkat layanan 95%") masih ada.
+3. Rentang data salah tulis (berakhir 5 Okt, seharusnya 11 Okt).
+
+### Rekomendasi
+
+Tidak dipromosikan sebagai tampilan Telegram. Status di bundle/`beta` tetap, karena uji internal LULUS dan 1.0.2 di bot asli angkanya benar. Namun kurator sebaiknya memperbaiki butir 1 di script, misalnya sebagai 1.0.4 dengan tes regresi "8 tanggal berjarak 7 hari", **sebelum batch rilis 20 Okt**. Alasannya, kesalahan ini menghasilkan belanja berlebih nyata tanpa tanda apa pun bagi pembeli. Sesudah perbaikan, satu kirim ulang (DENGAN saja, pesan sama) cukup untuk memastikan judul "PESAN BESOK (15 Okt)" dan angka 47/82/75 tampil di bot asli.
+
+## Kirim ulang kedua 1.0.4 (topik 1471)
+
+Keputusan otomatis 74; ini kirim ulang terakhir. Pesan identik dengan topik 1444/1466 (dicek dengan python, `pilot/msgs-g17c.json`) dikirim ke topik baru 1471 (message_id 1472, 07:39:55 UTC). SKILL.md dan script di home bot identik dengan repo 1.0.4. Balasan: pesan "Working" (07:40:08), lalu satu jawaban 2.344 karakter (07:40:35, ±40 detik), satu pesan, tanpa file.
+
+| Sisi | Skor | Catatan |
+|---|---|---|
+| TANPA (topik 1443, tidak diulang) | 7 | angka benar, jumlah pesan berupa kisaran |
+| DENGAN 1.0.2 (topik 1444) | 8 | angka benar; tanpa draf WA, judul "MINGGU DEPAN" menyesatkan |
+| DENGAN 1.0.3 (topik 1466) | 4 | data mingguan dibaca harian, pesan +40–60% |
+| **DENGAN 1.0.4 (topik 1471)** | **9** | angka benar, semua cacat 1.0.2 dan 1.0.3 tertutup |
+
+**Verdik: LOLOS.** DENGAN 9 ≥ 8, selisih terhadap TANPA +2,0 ≥ 1,5, tanpa kesalahan angka.
+
+Kutipan DENGAN 1.0.4 (dipendekkan):
+> Rencana restok warung per 14 Okt 2026 (data 17 Agu–11 Okt 2026, 8 minggu)
+> Data dibaca sebagai total per MINGGU (8 minggu, 17 Agu–11 Okt 2026).
+> ⚠️ AKAN KOSONG SEBELUM BARANG DATANG • Beras 5 kg: habis ±2 hari (16 Okt), kiriman 3 hari → kosong ±1 hari. …
+> • Beras 5 kg (karung): stok 9, laku ±3,14/hari (stabil) → habis ±2 hari (16 Okt) → pesan 47 karung [stok target 56 − stok 9 = 47]
+> • Minyak Goreng 2 L: stok 25, laku ±5,89/hari (naik 27%) → habis ±4 hari (18 Okt) → pesan 82 pcs [stok target 107 − stok 25 = 82]
+> PESAN BESOK (15 Okt)
+> • Gula Pasir 1 kg: stok 30, laku ±5,68/hari (stabil) → habis ±5 hari (19 Okt) → pesan 75 pcs [stok target 99 − perkiraan stok saat pesan 24,3 = 74,7 → 75]
+> • Telur (kg): laku ±7,95/hari (stabil) → pesan bila stok ≤ 28; jumlah = 139 − stok sekarang
+> • Mie Instan (dus): laku ±1,07/hari (naik 25%) → pesan bila stok ≤ 5; jumlah = 20 − stok sekarang
+> Draf WA: Halo [nama grosir], … 1. Beras 5 kg: 47 karung 2. Minyak Goreng 2 L: 82 pcs Mohon konfirmasi stok, total harga, dan tanggal kirim (paling lambat 15–16 Okt). …
+> Besok (15 Okt): Gula Pasir 75 pcs … Draf WA: … Rencana pesan sekitar 15 Okt: 1. Gula Pasir 1 kg: 75 pcs …
+> 3 hal yang bisa ubah angka: 1. Stok telur & mie instan sekarang berapa? 2. Harga beli terakhir … 3. Ada yang sudah dipesan tapi belum datang?
+
+### Verifikasi angka
+
+Script 1.0.4 dijalankan **tanpa** `--data-per` pada tabel mingguan (`--lead-time 3 --hari-ini 2026-10-14`). Script otomatis mencetak "Data dibaca sebagai total per MINGGU (8 minggu, 17 Agu–11 Okt 2026) (otomatis: jarak antar tanggal 7 hari)". Keluarannya **sama persis** dengan balasan bot dan dengan hitung ulang Decimal di bagian "Verifikasi angka" atas:
+
+| Barang | Laju | Tren | Habis | Titik pesan / target | Pesan |
+|---|---|---|---|---|---|
+| Beras | 3,14 | stabil (+9,5%) | ±2 hari (16 Okt), kosong ±1 hari | 12 / 56 | 47 |
+| Minyak | 5,89 | naik 27% | ±4 hari (18 Okt) | 25 / 107 | 82 |
+| Gula | 5,68 | stabil (+1,3%) | ±5 hari (19 Okt); pesan besok 15 Okt | 19 / 99 | 75 (99 − 24,3 = 74,7) |
+| Telur | 7,95 | stabil (+7%) | stok belum ada | 28 / 139 | 139 − stok |
+| Mie | 1,07 | naik 25% | stok belum ada | 5 / 20 | 20 − stok |
+
+Dua draf WA (pesan sekarang: 47 + 82; besok: gula 75) sama dengan keluaran script. **Tidak ada kesalahan angka.**
+
+### Cek cacat sebelumnya
+
+| Cacat | Asal | Status di 1.0.4 |
+|---|---|---|
+| Draf WA / daftar pesanan tidak muncul | 1.0.2 | **tertutup**: dua daftar dan dua draf WA |
+| Judul "PESAN MINGGU DEPAN" padahal besok | 1.0.2 | **tertutup**: "PESAN BESOK (15 Okt)" |
+| Tanpa "jumlah = target − stok" untuk telur/mie, tanpa rumus | 1.0.2 | **tertutup**: rumus per barang dan "139 − stok" / "20 − stok" |
+| Data mingguan dibaca harian | 1.0.3 | **tertutup**: terdeteksi otomatis, kalimat "Data dibaca sebagai total per MINGGU" tersalin |
+| Rentang data salah (berakhir 5 Okt) | 1.0.3 | **tertutup**: 17 Agu–11 Okt |
+| Asumsi "ambil yang tercepat dari 2–3 hari" | 1.0.3 | **tertutup**: kini "lead time grosir 2–3 hari"; kiriman 3 hari disebut di bagian akan kosong |
+
+### Cacat tersisa (kecil, tidak mengubah verdik)
+
+1. Satuan minyak dan gula ditulis "pcs" (82 pcs, 75 pcs), padahal di 1.0.2 tertulis botol dan kg. Di draf WA ke grosir sebaiknya botol dan kg (atau bungkus 1 kg).
+2. Istilah teknis masih ada: "lead time", "tingkat layanan 95%", "stok target".
+3. Rentang data ditulis dua kali (judul dan baris "Data dibaca sebagai …"). "Paling lambat 15–16 Okt" di draf WA adalah permintaan yang wajar karena beras habis 16 Okt, tetapi lebih awal daripada kiriman 3 hari (17 Okt); pembeli perlu tahu itu permintaan percepatan.
+
+### Kesimpulan akhir rencana-restok-barang di bot asli
+
+Skill ini melewati tiga putaran DENGAN dengan pesan yang sama: 1.0.2 = 8 (angka benar, selisih +1,0, BELUM), 1.0.3 = 4 (salah baca data mingguan), 1.0.4 = **9 (LOLOS, +2,0)**. Versi yang dirilis adalah 1.0.4. Bila dipromosikan, sebut jujur bahwa sisi TANPA (7) diambil dari putaran pertama dan tidak diulang. Sebut juga bahwa kesalahan 1.0.3 sudah ditutup di tingkat hitungan: deteksi otomatis per minggu, ditambah berhenti dan bertanya bila jenis data ambigu. Dengan begitu kebenaran angka tidak lagi bergantung pada agent memberi opsi yang benar. Selisih +2,0 sedikit di bawah uji internal skenario yang sama (6,5 → 9, +2,5). Ini kirim ulang terakhir; tidak ada putaran lagi.
