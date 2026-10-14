@@ -20,30 +20,46 @@ PP 20/2026 ditetapkan dan diundangkan 22 April 2026 (LN 2026 No. 43, TLN 7173), 
 | Bentuk | Setelah PP 20/2026 | Dasar | Status |
 |---|---|---|---|
 | Orang pribadi | **Tanpa batas tahun** (dulu 7 tahun) selama memenuhi kriteria dan tidak memilih tarif umum. Yang batas lamanya berakhir 2024 boleh 0,5% lagi untuk 2025–2026; yang berakhir 2025 untuk 2026 | Pasal I angka 6 (**Pasal 59 dihapus**); Pasal II angka 1 huruf a | Terverifikasi (naskah resmi + salindia DJP "Penghapusan jangka waktu tertentu bagi WP OP dan PT OP") |
-| PT perorangan | **Tanpa batas tahun** (dulu 4 tahun). Peralihan menyebut yang berakhir 2025 → boleh 2026 | sama | Terverifikasi. PT perorangan yang batas lamanya berakhir **2024** tidak disebut di aturan peralihan → script menyarankan cek DJP — **PERLU REVIEW** |
+| PT perorangan | **Tanpa batas tahun** (dulu 4 tahun). Peralihan menyebut yang berakhir 2025 → boleh 2026 | sama | Terverifikasi. PT perorangan yang batas lamanya berakhir **2024** tidak disebut di aturan peralihan (lihat tabel peralihan, catatan ¹) → script menyarankan cek DJP — **PERLU REVIEW** |
 | Koperasi | 4 tahun pajak sejak terdaftar. Terdaftar sebelum PP berlaku dan batas lama berakhir 2024–2029 → 0,5% s.d. tahun pajak 2029 | Pasal 57 ayat (2) huruf f; Pasal II angka 1 huruf b | Terverifikasi (naskah resmi) |
 | CV, firma, PT selain perorangan, BUMDes | Dikeluarkan dari subjek. Yang terdaftar sebelum PP berlaku boleh meneruskan sisa jangka waktu lama (CV/firma 4 tahun, PT 3 tahun sejak terdaftar; terdaftar sebelum 2018 → dihitung sejak 2018) | Pasal 57 ayat (1); Pasal II angka 1 huruf e; PP 55/2022 Pasal 59 (lama) | Terverifikasi (naskah resmi + contoh CV AB di penjelasan) |
 | Orang pribadi/PT perorangan yang karena PP 20/2026 tidak lagi memenuhi kriteria (Pasal 57 ayat (2) huruf b & e) | Masih boleh 0,5% s.d. akhir tahun pajak 2026 | Pasal II angka 1 huruf f | Terverifikasi (naskah resmi) |
 
+### Ketentuan peralihan PP 20/2026 (dicocokkan ke salindia DJP, diakses 2026-10-14)
+Huruf a/b di kolom pertama mengikuti penomoran bagian «Ketentuan Peralihan» di salindia DJP, bukan huruf di naskah PP (pasal naskah ada di kolom Dasar tabel di atas: orang pribadi & PT perorangan Pasal II angka 1 huruf a, koperasi huruf b).
+
+| Butir | Batas lama berakhir | Berlaku untuk | Boleh PPh final 0,5% untuk | Contoh (batas lama dihitung menurut PP 55/2022 Pasal 59 lama, paling awal sejak 2018) | Status |
+|---|---|---|---|---|---|
+| a | Tahun pajak 2024 | Wajib pajak **orang pribadi** | Tahun pajak **2025 dan 2026** | Orang pribadi terdaftar 2018 atau sebelumnya (7 tahun: 2018–2024) | Terverifikasi |
+| b | Tahun pajak 2025 | Wajib pajak **orang pribadi dan PT perorangan** | Tahun pajak **2026** | Orang pribadi terdaftar 2019 (2019–2025); PT perorangan terdaftar 2022 (4 tahun: 2022–2025) | Terverifikasi |
+| Koperasi | Tahun pajak 2024–2029 (koperasi tetap dibatasi 4 tahun) | Koperasi yang terdaftar sebelum PP 20/2026 berlaku (22 April 2026) | Sampai tahun pajak **2029**, selama memenuhi kriteria | Koperasi terdaftar 2021 s.d. sebelum 22 April 2026 | Terverifikasi |
+| — ¹ | Tahun pajak 2024 | **PT perorangan** | **Tidak tercantum** di butir a maupun b | PT perorangan terdaftar 2021 (2021–2024) | **PERLU REVIEW** |
+
+¹ PT perorangan dengan batas 4 tahun yang berakhir 2024 tidak tercantum di huruf peralihan: butir a hanya untuk wajib pajak orang pribadi, butir b mensyaratkan batas lama berakhir 2025. Jangan menyimpulkan boleh atau tidak; arahkan pengguna ke Kring Pajak 1500200 (atau KPP terdaftar) sebelum mengklaim 0,5% untuk tahun pajak 2025 dan sesudahnya. Tetap **PERLU REVIEW** sampai DJP/KPP memberi penegasan tertulis atau FAQ lanjutan. Perilaku script (peringatan + saran memastikan ke DJP) sudah sesuai.
+
+Sumber: salindia DJP "PP Nomor 20 Tahun 2026", bagian Ketentuan Peralihan (URL di daftar Sumber di bawah), diakses 2026-10-14; selaras dengan naskah resmi PP 20/2026 Pasal I angka 6 dan Pasal II angka 1.
+
 ### Batas setor
 Tanggal 15 bulan berikutnya (PMK 81/2024 Pasal 94); jatuh hari libur (Sabtu, Minggu, libur nasional, cuti bersama) → paling lambat hari kerja berikutnya (Pasal 100 ayat (1)). Pasal dicocokkan dengan naskah resmi oleh skill kalender-pajak (2026-09-26). Data libur `libur-nasional-2026.csv` & `-2027.csv` disalin dari kalender-pajak (SKB 3 menteri; 2027 **PERLU REVIEW** terhadap lampiran resmi). Tahun tanpa data → hanya Sabtu/Minggu + peringatan.
 
-## PPh 22 Marketplace (PMK 37/2025; FAQ DJP versi 1, 1 Juli 2026)
-- Marketplace yang ditunjuk DJP memungut 0,5% dari omzet bruto pedagang dalam negeri yang tercantum di dokumen tagihan (tidak termasuk PPN/PPnBM); terutang saat pembayaran diterima marketplace (FAQ no. 13). Pemungutan dimulai awal bulan setelah keputusan penunjukan (FAQ no. 22). Dilaporkan berlaku 1 Agustus 2026 untuk Tokopedia, Shopee, Lazada, Blibli (marketplace lain bertahap).
+## PPh 22 Marketplace (PMK 37/2025; FAQ DJP versi 1, 1 Juli 2026; dicocokkan ulang ke versi 2.0, 24 September 2026)
+- Marketplace yang ditunjuk DJP memungut 0,5% dari omzet bruto pedagang dalam negeri yang tercantum di dokumen tagihan (tidak termasuk PPN/PPnBM); terutang saat pembayaran diterima marketplace (FAQ no. 13). Pemungutan dimulai awal bulan setelah keputusan penunjukan (FAQ no. 22). Pemungutan oleh Shopee, Tokopedia, Lazada, Blibli dimulai **1 Oktober 2026** (rencana awal 1 Agustus 2026 ditunda; Siaran Pers DJP SP-23/2026, sama dengan catatan skill harga-jual-marketplace); marketplace lain bertahap.
 - **Bukan pajak baru** (FAQ no. 5). Bagi pedagang yang memenuhi kriteria PP 20/2026, pungutan PPh 22 **menjadi pengurang PPh final yang terutang** (FAQ no. 5) dan **merupakan bagian dari pelunasan PPh final** (FAQ no. 14, 21, 23).
 - **Selisih kurang** antara PPh final yang seharusnya terutang dan PPh 22 yang dipungut → **wajib disetor sendiri**; **selisih lebih** → **dapat diajukan permohonan pengembalian** pajak yang seharusnya tidak terutang (FAQ no. 15). Contoh FAQ dihitung per masa (bulan).
 - Orang pribadi dengan omzet setahun ≤ Rp500 juta tidak dipungut **bila menyampaikan surat pernyataan bermeterai** ke marketplace (FAQ no. 16); satu surat untuk semua toko/marketplace (FAQ no. 12). Bila omzet setahun melewati Rp500 juta, wajib menyampaikan surat pernyataan bermeterai paling lambat **akhir bulan saat omzet melewati Rp500 juta** (FAQ no. 9). Omzet dihitung dari seluruh toko online dan offline (FAQ no. 10).
 - Dokumen tagihan dari marketplace dipersamakan dengan bukti pungut dan dapat dipakai sebagai bukti pelunasan PPh final (FAQ no. 24).
+- Nomor FAQ di atas mengikuti versi 1. **FAQ versi 2.0 (24 September 2026)**, diakses 2026-10-14, memuat isi yang sama untuk: PPh 22 sebagai pengurang dan bagian pelunasan PPh final, selisih kurang disetor sendiri, selisih lebih diajukan permohonan Pengembalian Pajak yang Seharusnya Tidak Terutang ke KPP, dokumen tagihan dipersamakan dengan bukti pungut, dan contoh hitungan per bulan transaksi. FAQ versi 2.0 **tidak** mengatur pemindahan (kompensasi) kelebihan ke bulan berikutnya. Butir surat pernyataan dan mulai pemungutan belum dicocokkan ulang ke versi 2.0.
 
-## Keputusan desain skill (v1.0.4)
+## Keputusan desain skill (v1.0.4, tetap di v1.0.5)
 - PPh per bulan dibulatkan ke bawah ke rupiah penuh; omzet kumulatif per tahun pajak (Januari–Desember).
-- PPh 22 dikreditkan **per bulan**: kurang setor = maks(0, PPh final − PPh 22); lebih dipungut = maks(0, PPh 22 − PPh final); keduanya dibulatkan ke bawah (tidak pernah menyetor/meminta kembali melebihi selisih sebenarnya). Kelebihan tidak dipindah ke bulan lain karena FAQ hanya menyebut permohonan pengembalian — **PERLU REVIEW** konsultan (apakah boleh dikompensasikan).
+- PPh 22 dikreditkan **per bulan**: kurang setor = maks(0, PPh final − PPh 22); lebih dipungut = maks(0, PPh 22 − PPh final); keduanya dibulatkan ke bawah (tidak pernah menyetor/meminta kembali melebihi selisih sebenarnya). Kelebihan tidak dipindah ke bulan lain: FAQ DJP PMK 37/2025 versi 2.0 (24 September 2026) hanya mengatur pengembalian untuk selisih lebih (permohonan Pengembalian Pajak yang Seharusnya Tidak Terutang ke KPP) dan tidak mengatur kompensasi ke bulan berikutnya. Sumber: https://pajak.go.id/sites/default/files/2026-09/FAQ%20PMK%2037%20Tahun%202025%20bagi%20penjual_versi%202.0_24092026_1.pdf dan https://pajak.go.id/en/node/120044 , diakses 2026-10-14.
 - Status "SUDAH LEWAT" hanya untuk bulan yang masih ada kurang setor.
 - Script mencetak sendiri tanggal acuan ("hari ini"), "besok", subtotal data nyata vs proyeksi, dan batas setor terdekat agar AI tidak menghitung sendiri.
 
 ## Sumber (diakses 14 Oktober 2026)
 - **Naskah resmi PP 20/2026 (salinan)** — JDIH Kementerian Keuangan: https://jdih.kemenkeu.go.id/dok/pp-20-tahun-2026 (berkas PDF `2026pp020.pdf`). Dibaca langsung: Pasal I angka 3–6 dan Pasal II beserta penjelasannya.
-- Salindia DJP "PP Nomor 20 Tahun 2026" (Direktorat P2Humas, versi 20260605): https://www.pajak.go.id/sites/default/files/2026-06/Peraturan%20Pemerintah%20nomor%2020%20Tahun%202026.pdf
+- Salindia DJP "PP Nomor 20 Tahun 2026" (Direktorat P2Humas, versi 20260605; bagian Ketentuan Peralihan dicocokkan ulang 2026-10-14): https://www.pajak.go.id/sites/default/files/2026-06/Peraturan%20Pemerintah%20nomor%2020%20Tahun%202026.pdf
+- **FAQ PMK 37 Tahun 2025 bagi penjual, Versi 2.0 tanggal 24 September 2026** — DJP: https://pajak.go.id/sites/default/files/2026-09/FAQ%20PMK%2037%20Tahun%202025%20bagi%20penjual_versi%202.0_24092026_1.pdf (diakses 2026-10-14; bagian pengurang/pelunasan PPh final, selisih kurang/lebih, bukti pungut, dan contoh per bulan dicocokkan).
 - **FAQ PMK 37 Tahun 2025, Versi 1 tanggal 1 Juli 2026** — DJP: https://pajak.go.id/sites/default/files/2026-07/FAQ%20PMK%2037%20Tahun%202025_Versi%201_tanggal%201%20Juli%202026.pdf (no. 5, 9, 10, 12–16, 21–24 dibaca langsung).
 - DJP — PP 20/2026: https://www.pajak.go.id/en/node/119950
 - DJP — PMK 37/2025: https://pajak.go.id/en/node/120044

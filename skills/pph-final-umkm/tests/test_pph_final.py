@@ -39,7 +39,7 @@ class TesHitunganDasar(unittest.TestCase):
         self.assertEqual(kode, 0)
         self.assertEqual([b["pph_final"] for b in h["bulan"]][-2:], [225000, 350000])
         self.assertEqual(h["ringkasan"]["total_pph_final"], 575000)
-        self.assertEqual(h["versi"], "1.0.4")
+        self.assertEqual(h["versi"], "1.0.5")
 
     def test_skenario_warung_batas_libur(self):
         kode, h = jalankan("--jenis", "op", "--tahun", "2026", "--tahun-terdaftar", "2021",

@@ -77,8 +77,8 @@ Lebih dipungut= maks(0, PPh 22 − PPh final), dibulatkan ke bawah            �
 Batas setor   = tanggal 15 bulan berikutnya; jatuh libur → hari kerja berikutnya.
                 "Sudah lewat" hanya bila bulan itu masih ada kurang setor.
 ```
-Dasar (dicek ke naskah resmi 14 Oktober 2026, rincian & URL di `references/regulasi.md`): PP 55/2022 jo. PP 20/2026; FAQ DJP PMK 37/2025 versi 1 Juli 2026 no. 14–15 (PPh 22 = bagian pelunasan PPh final); PMK 81/2024 Pasal 94 & 100.
-Jangka waktu tarif 0,5% menurut PP 20/2026: orang pribadi & PT perorangan **tanpa batas tahun** (Pasal 59 PP 55/2022 dihapus); koperasi 4 tahun (peralihan s.d. 2029); CV/firma/PT biasa hanya meneruskan sisa jangka waktu lama.
+Dasar (dicek ke naskah resmi 14 Oktober 2026, rincian & URL di `references/regulasi.md`): PP 55/2022 jo. PP 20/2026; FAQ DJP PMK 37/2025 versi 1 Juli 2026 no. 14–15 (PPh 22 = bagian pelunasan PPh final), isinya dicocokkan ulang dengan FAQ versi 2.0 (24 September 2026); PMK 81/2024 Pasal 94 & 100.
+Jangka waktu tarif 0,5% menurut PP 20/2026: orang pribadi & PT perorangan **tanpa batas tahun** (Pasal 59 PP 55/2022 dihapus); koperasi 4 tahun (peralihan s.d. 2029); CV/firma/PT biasa hanya meneruskan sisa jangka waktu lama. Peralihan: batas lama orang pribadi berakhir 2024 → boleh 0,5% tahun pajak 2025–2026; berakhir 2025 (orang pribadi & PT perorangan) → boleh 2026. PT perorangan yang batas lamanya berakhir 2024 tidak tercantum di aturan peralihan: jangan menyimpulkan, arahkan ke Kring Pajak 1500200 (tabel peralihan di `references/regulasi.md`).
 
 ## Format output
 ```
@@ -117,6 +117,6 @@ Hari ini (tanggal acuan hitungan): <dari hasil hitungan>
 ## Batasan & penanganan error
 - Kode keluar 2 + `ERROR: ...`: omzet bukan angka/negatif, bulan ganda/di luar 1–12, lebih dari 12 bulan, `--pph22` lebih banyak dari omzet, bulan proyeksi tidak ada di data, `--kemungkinan` dengan lebih dari satu bulan, file tanpa kolom `bulan`/`omzet`. Perbaiki sendiri bila jelas (mis. `25,000,000` → `25jt`); selain itu jelaskan sebabnya dengan bahasa sederhana dan minta data yang benar.
 - Omzet negatif di baris perintah (`-5jt`) dibaca sebagai opsi dan ditolak; minta angka positif.
-- Kurang/lebih PPh 22 dihitung per bulan; kelebihan tidak dipindah ke bulan lain karena FAQ DJP hanya menyebut permohonan pengembalian.
+- Kurang/lebih PPh 22 dihitung per bulan; kelebihan tidak dipindah ke bulan lain karena FAQ DJP (versi 2.0, 24 September 2026) hanya mengatur permohonan pengembalian untuk selisih lebih dan tidak mengatur kompensasi ke bulan berikutnya.
 - Suami-istri pisah harta/NPWP sendiri (omzet digabung), PT perorangan milik orang berkeahlian khusus yang menjual jasa sejenis pekerjaan bebas, omzet orang pribadi + PT perorangannya > Rp4,8 miliar, atau beberapa NPWP/NITKU → arahkan ke konsultan/DJP (PP 20/2026 Pasal 57–58).
 - Pembulatan belum dicocokkan dengan Coretax; bila berbeda, ikuti Coretax. Data libur 2027 perlu dicek ulang ke kalender pajak DJP.
