@@ -60,7 +60,7 @@ Skill masuk ke `~/.openclaw/skills/`. Untuk **satu workspace** saja, hilangkan `
 
 **Codex.** Skill user di `~/.agents/skills/`; skill tim di `.agents/skills/` di repo. Skill terbaca pada pesan berikutnya. Bisa dipanggil langsung dengan `$nama-skill`.
 
-**Cursor.** Agent memuat skill dari folder proyek (`.cursor/skills/`, `.agents/skills/`) dan folder user di komputer lokal. Untuk **Cursor Cloud Agent**, skill di `~/.cursor/skills/` **tidak otomatis ikut** — pasang skill di **repo** (`.cursor/skills/`) atau aktifkan **Sync Skills** di Settings → Agents bila ingin memakai skill pribadi di cloud. Setelah memasang, buka chat Agent baru. Cursor juga bisa membaca skill dari folder Claude/Codex (`~/.claude/skills`, `~/.codex/skills`) untuk kompatibilitas; jangan duplikasi skill yang sama di banyak folder.
+**Cursor.** Agent memuat skill dari folder proyek (`.cursor/skills/`, `.agents/skills/`) dan folder user di komputer lokal. Untuk **Cursor Cloud Agent**, skill di `~/.cursor/skills/` **tidak otomatis ikut** — pasang skill di **repo** (`.cursor/skills/`) atau aktifkan **Sync Skills** di Settings → Agents bila ingin memakai skill pribadi di cloud. Setelah memasang, buka chat Agent baru. **Catatan uji 2026-10-14:** pada run **Cloud Automation** (jadwal otomatis) Cursor, skill di `.cursor/skills/` repo tidak muncul di daftar skill agent pada empat run berturut; pemasangan dan script tetap berjalan. Untuk memakai skill di Cursor, pakai chat Agent di aplikasi Cursor, bukan jadwal otomatis, sampai Cursor memperbaikinya. Cursor juga bisa membaca skill dari folder Claude/Codex (`~/.claude/skills`, `~/.codex/skills`) untuk kompatibilitas; jangan duplikasi skill yang sama di banyak folder.
 
 ## Skill yang memakai script
 
