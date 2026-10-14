@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — C24 gelombang G18 (satu gelombang per run); ulang pantau-cron lokal C22 bila router hidup (opsional).
+1. **Akun C** — **ulang C24 G18** setelah router Ninerouter bukan HTTP 530 (topik/pesan sudah siap); opsional pantau-cron lokal C22.
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default (branch sudah disinkronkan fast-forward dari default di run 22:00 UTC).
 
@@ -41,6 +41,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~11:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~11:36 UTC — merge default; getUpdates 242 kosong; C24 G18 topik 1482–1491 + msgs; kirim 1/10 GAGAL router HTTP 530 | — | blocked | ya |
+| 2026-10-14 ~11:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 11:30 UTC — KEY/BOT/TESTER SET; merge default (fast-forward buat-invoice); C24 gelombang G18 | — | — | — |
 | 2026-10-14 ~11:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 0a262790 | selesai ~11:12 UTC — LANGKAH NOL OK; merge default (+PR #130); getUpdates 242 kosong; C23 konsistensi 4 perbaikan teks | — | docs | ya |
 | 2026-10-14 ~11:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 11:00 UTC — KEY/BOT/TESTER SET; merge default (+PR #130); getUpdates 242 kosong; C23 | — | — | — |
 | 2026-10-14 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 150a000c | selesai ~10:55 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; C22 6/7 skill panduan beta OK | — | docs | ya |
