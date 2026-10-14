@@ -1,4 +1,199 @@
-# Uji OpenClaw sebelum/sesudah: hitung-thr 1.0.9
+# Uji OpenClaw sebelum/sesudah: hitung-thr 1.0.9 (uji ulang 1.0.10 di bagian atas)
+
+## Uji ulang 1.0.10 (2026-10-14) — hanya sisi DENGAN skill
+
+- **Penguji:** agent penguji independen Komunitech (bukan pembuat; SKILL.md, README, `catalog.csv`, dan scripts tidak diubah).
+- **Versi skill:** 1.0.10 (sesuai `catalog.csv`). Tujuan: memeriksa tiga cacat uji 1.0.9 (di bawah): (1) input kurang hanya bertanya tanpa hitungan bersyarat, (2) kata proses/path/nama skill lain bocor ke balasan, (3) nama usaha dikarang padahal seharusnya `[isi: nama usaha]`.
+- **Cara uji:** OpenClaw lokal yang sama (`uji.sh`, `openclaw agent --local`, satu giliran), model router `claude-sonnet-5`. Home dibuat ulang bersih per skenario (`mk-home.sh thr10-s4|s3|s2 hitung-thr`) berisi **hanya** `hitung-thr`. Pesan **identik** dengan uji 1.0.9 di bawah. Satu run per skenario (tidak ada timeout), satu `uji.sh` milik penguji per waktu. Sisi TANPA skill **tidak diulang**; pembandingnya skor TANPA uji 1.0.9. Tanggal agent: 14 Oktober 2026 (TZ Asia/Jakarta).
+- **Alat yang dipanggil agent:** S4 read + exec + write (file kerja berisi Wawan dan Tini `masa_kerja_bulan` = 12) · S3 read + exec · S2 read + exec + write. Tanpa web, tanpa pesan terkirim. Durasi 82 / 90 / 95 detik.
+- **Verifikasi angka:** kalkulator Python milik penguji (tidak mengimpor script skill): masa kerja bulan penuh inklusif sampai hari raya; THR < 12 bulan = masa kerja/12 × (gaji pokok + tunjangan tetap); harian lepas = rata-rata upah per bulan; batas H-7 dan nama hari dari kalender Python. Hasil: Ujang mulai 1 Sep = 6 bln (Rp1.400.000), mulai 30 Sep = 5 bln (Rp1.166.667) · Pak Slamet 10 bln, rata-rata Rp2.600.000 → Rp2.166.667 · Maria 7 bln → Rp2.100.000 · Yohanes Rp5.750.000 · 10 Mar 2027 = Rabu, 3 Mar 2027 = Rabu, 25 Des 2026 = Jumat, 18 Des 2026 = Jumat. Perkiraan PPh 21 Desember Yohanes (K/2, Pasal 17 setahun, tanpa iuran): bruto Rp74.750.000 − biaya jabatan Rp3.737.500 − PTKP Rp67.500.000 → PKP Rp3.512.000 × 5% = Rp175.600.
+
+### Ringkasan skor 1.0.10
+
+| Skenario | Tanpa skill (uji 1.0.9, tidak diulang) | Dengan 1.0.9 | **Dengan 1.0.10** |
+|---|:-:|:-:|:-:|
+| 4. Input kurang: 3 gaji tanpa hari raya & tanggal masuk | 4 | 6,5 | **7,5** |
+| 3. Tukang harian lepas + "umumkan ke grup, sebut masing-masing dapat berapa" | 6 | 8,5 | **8,5** |
+| 2. Kafe, THR Natal 2026 + "PPh 21-nya gimana?" | 5 | 8 | **8** |
+| **Rata-rata 3 skenario** | **5,0** | **7,7** | **8,0** |
+
+- **Kesalahan angka di sisi DENGAN skill:** tidak ada (semua THR, rentang, total, masa kerja, dan batas H-7 sama dengan hitung ulang penguji).
+
+### Status tiga cacat 1.0.9
+
+| Cacat 1.0.9 | Status 1.0.10 | Bukti |
+|---|---|---|
+| 1. Input kurang: hanya bertanya, tanpa hitungan | **Hilang** | S4: kalimat pertama menyebut asumsi Idul Fitri 2027 (perkiraan Rabu, 10 Maret 2027), lalu tabel, rentang Ujang Rp1.166.667–Rp1.400.000, total Rp7.666.667–Rp7.900.000, dan tepat 3 pertanyaan bernomor di akhir. Tetapi muncul cacat baru (Tini, lihat bawah). |
+| 2. Kata proses, path, nama skill lain | **Hilang** | 0 dari 3 balasan memuat "skill", "script", "exec", "JSON", nama file, path (`/opt/...`, workspace), nama skill lain, atau "belum terpasang" (diperiksa dengan grep). Rujukan pajak memakai kalimat awam ("Pajak THR ini bisa saya hitungkan terpisah"). |
+| 3. Nama usaha karangan di teks grup | **Sebagian** | Nama karangan hilang ("Bengkel Motor"/"Toko Bangunan" tidak muncul lagi), tetapi **`[isi: nama usaha]` tidak dipakai di satu pun dari 3 teks grup**. Gantinya kata umum: "karyawan kami" + "Salam, Manajemen" (S4), "toko akan membayarkan" (S3), "perusahaan" + "pemilik/pengelola" (S2). SKILL.md melarang pengganti jenis usaha/"kami". Akar masalah: agent tidak memberi `--perusahaan`, dan `scripts/thr.py` (baris 355 & 376) memakai cadangan `perusahaan or "kami"` / `"Manajemen "` alih-alih `[isi: nama usaha]`. |
+
+### Cacat baru / sisa (DENGAN skill 1.0.10)
+1. **S4, asumsi tak disebut (sedang):** Tini tidak punya keterangan masa kerja sama sekali, tetapi ditulis "12 bln" tanpa label asumsi (Wawan diberi label "asumsi 'sudah lama'", Tini tidak) dan **tidak ditanyakan** (pertanyaan no. 2 hanya soal Ujang). SKILL.md meminta dua baris ("bila ≥ 12 bulan" / "bila < 12 bulan, mis. 6 bulan") dan tanggal masuk semua orang dalam satu pertanyaan. Bila Tini ternyata baru 6 bulan, THR-nya Rp1.750.000, bukan Rp3.500.000 (total meleset Rp1.750.000). Hitungannya sendiri benar untuk asumsi itu, jadi tidak dihitung sebagai salah angka.
+2. **S4, teks grup dengan tanggal perkiraan (ringan):** teks grup dibuat padahal tidak diminta dan tanggal hari raya masih perkiraan; SKILL.md meminta ditunda, atau tanggal ditulis `[isi: tanggal batas bayar]`.
+3. **S2, PPh 21 kurang tajam (ringan):** penjelasan Desember = hitung ulang setahun benar, Yohanes "kemungkinan besar tetap kena potongan" benar (perkiraan penguji ±Rp175.600), tetapi tanpa perkiraan angka. Maria disebut "belum bisa dipastikan", padahal penghasilan 2026 dari kafe (8 × Rp3.600.000 + THR Rp2.100.000 = Rp30.900.000) di bawah PTKP terendah TK/0 Rp54.000.000, jadi kemungkinan besar Rp0 apa pun statusnya (kecuali ada penghasilan dari pemberi kerja lain di 2026). Akibatnya pertanyaan PTKP Maria di akhir tidak perlu.
+4. **S3 (ringan):** denda 5% bila telat tidak disebut (di 1.0.9 ada); tidak menawarkan draf pesan pribadi per orang.
+
+### Verdik uji ulang 1.0.10: **BELUM (tipis)**
+Rata-rata DENGAN skill 8,0 (tepat di ambang 8) dan tanpa salah angka; cacat 1 dan 2 **hilang**. Namun cacat 3 baru **sebagian** hilang (`[isi: nama usaha]` tidak muncul di teks grup mana pun), dan perbaikan cacat 1 memunculkan asumsi tak disebut untuk Tini. Syarat "ketiga cacat hilang" belum terpenuhi. Selisih terhadap TANPA skill pada 3 skenario ini +3,0 poin (pembanding TANPA dari uji 1.0.9).
+
+**Perbaikan paling berdampak (urut):**
+1. `scripts/thr.py`: cadangan nama usaha kosong → `[isi: nama usaha]` (bukan "kami"/"Manajemen "), sehingga teks grup aman walau agent lupa `--perusahaan`; tambah tes.
+2. SKILL.md "Info wajib kurang": tegaskan **setiap** orang tanpa keterangan masa kerja (contoh "Tini 3,5jt") wajib dua baris berlabel asumsi dan disebut di pertanyaan no. 2 bersama orang lain; tambah butir checklist "tidak ada masa kerja tanpa sumber/label asumsi".
+3. Data kurang: teks grup hanya bila diminta; bila dibuat, tanggal `[isi: tanggal batas bayar]`.
+4. THR Desember: beri perkiraan PPh 21 bertanda "perkiraan" bila PTKP & gaji tetap diketahui; untuk penghasilan setahun jelas di bawah PTKP TK/0 sebut "kemungkinan Rp0".
+
+**Kalimat pembeda (tetap berlaku):** tanpa skill, AI menghitung THR karyawan baru dari masa kerja "sampai hari ini" (Ujang Rp233.333); dengan skill 1.0.10, AI langsung memberi hitungan sampai Lebaran 2027 dengan rentang Rp1.166.667–Rp1.400.000 dan batas bayar Rabu, 3 Maret 2027, lalu bertanya maks. 3 hal.
+
+### Skenario 4 (1.0.10): input kurang
+
+**Pesan:** sama dengan skenario 4 di bawah.
+
+> THR untuk 3 karyawan, saya hitung pakai Idul Fitri 2027 (perkiraan tanggal **Rabu, 10 Maret 2027** — belum ada tanggal resmi dari pemerintah, jadi ini asumsi dulu).
+>
+> ### A. Rekap per orang — khusus Anda/pemilik (jangan ditempel ke grup)
+>
+> Batas bayar THR (H-7): **Rabu, 3 Maret 2027**
+>
+> | Nama | Masa kerja | Gaji pokok | Rumus | THR |
+> |---|---:|---:|---|---:|
+> | Wawan | ≥12 bln (asumsi "sudah lama") | Rp3.000.000 | 1 × gaji | **Rp3.000.000** |
+> | Tini | 12 bln | Rp3.500.000 | 1 × gaji | **Rp3.500.000** |
+> | Ujang | 5–6 bln (masuk bulan lalu) | Rp2.800.000 | masa kerja ÷ 12 × gaji | **Rp1.166.667 – Rp1.400.000** |
+>
+> **Total THR: Rp7.666.667 – Rp7.900.000** (tergantung tanggal pasti masuknya Ujang)
+>
+> Catatan:
+> - PPh 21 belum dihitung karena status PTKP belum diisi — kalau mau, bisa saya bantu sekalian.
+> - THR wajib dibayar penuh (tidak dicicil), paling lambat H-7 sebelum hari raya. Telat bayar kena denda 5% dari total THR.
+> - Masa kerja dihitung bulan penuh sampai hari raya.
+>
+> ### B. Teks grup — draf, silakan tempel sendiri (tanpa nominal per orang)
+>
+> ```
+> Yth. Rekan-rekan karyawan kami,
+>
+> Menyambut Idul Fitri 1448 H, perusahaan akan membayarkan Tunjangan Hari Raya (THR) Keagamaan paling lambat Rabu, 3 Maret 2027 (7 hari sebelum hari raya).
+>
+> Ketentuan besaran THR (Permenaker 6/2016):
+> • Masa kerja 12 bulan atau lebih: 1 bulan upah.
+> • Masa kerja 1 s.d. kurang dari 12 bulan: masa kerja ÷ 12 × 1 bulan upah.
+> • THR dibayar penuh, tidak dicicil, dan dikenai PPh 21 sesuai ketentuan pajak.
+>
+> Rincian THR masing-masing akan dikirim secara PRIBADI oleh bagian keuangan. Ada pertanyaan tentang THR Anda, silakan hubungi langsung.
+>
+> Selamat menyambut hari raya. Terima kasih atas kerja keras Bapak/Ibu.
+>
+> Salam,
+> Manajemen
+> ```
+>
+> Supaya angkanya pasti (bukan rentang), ada 3 hal yang bisa membantu:
+> 1. Tanggal Lebaran dipakai tanggal perkiraan di atas, atau sudah ada tanggal resmi?
+> 2. Ujang masuk tanggal berapa persisnya bulan lalu (1, 15, 30)?
+> 3. Ada tunjangan tetap lain (transport/makan tetap) di luar gaji pokok untuk ketiganya?
+>
+> Data gaji yang saya catat untuk hitungan ini mau saya hapus setelah selesai, atau disimpan saja?
+
+**Nilai: 7,5** (1.0.9: 6,5). Hitung dulu dengan asumsi di kalimat pertama, angka benar, 3 pertanyaan, tanpa kata proses, tawaran hapus data gaji. Kurang: Tini "12 bln" tanpa label asumsi dan tidak ditanyakan; teks grup dibuat dengan tanggal perkiraan dan tanpa `[isi: nama usaha]` ("karyawan kami", "Manajemen"). **Skill/script terpakai?** Ya: SKILL.md + script lewat exec, file kerja ditulis.
+
+### Skenario 3 (1.0.10): tukang harian lepas + pengumuman grup
+
+**Pesan:** sama dengan skenario 3 di bawah.
+
+> Sudah saya hitung. Untuk nominal per orang, saya pisahkan dari teks grup — karena gaji/THR itu data pribadi karyawan, idealnya disampaikan lewat pesan pribadi, bukan diumumkan di grup bersama supaya tidak jadi bahan perbandingan antar karyawan.
+>
+> **A. RINCIAN PER ORANG — untuk Anda/pemegang kas saja**
+> Idul Fitri 1448 H, Rabu 10 Maret 2027 · Batas bayar THR (H-7): **Rabu, 3 Maret 2027**
+>
+> - **Pak Slamet** (harian lepas, mulai 4 Mei 2026 → masa kerja 10 bulan saat Lebaran)
+>  Rata-rata upah dari 6 bulan yang Anda kasih (Mei–Okt): (2,4+2,6+2,5+2,8+2,7+2,6)/6 = **Rp 2.600.000**
+>  THR = 10/12 × Rp 2.600.000 = **Rp 2.166.667**
+> - **Rini** (admin tetap, kerja sejak 2023 → masa kerja 50 bulan, jadi full)
+>  THR = 1 × gaji = **Rp 4.000.000**
+> - **Total THR yang perlu disiapkan: Rp 6.166.667**
+>
+> ⚠️ Catatan: masa kerja Pak Slamet itu 10 bulan, tapi data upah yang Anda kasih baru 6 bulan (Mei–Okt), karena sisanya (Nov 2026–Feb 2027) belum kejadian/belum ada datanya. Saya hitung rata-ratanya dari 6 bulan yang ada dulu. PPh 21 belum saya hitung karena status PTKP keduanya belum disebutkan — kalau mau sekalian dipotong pajaknya, kasih tahu status PTKP masing-masing (TK/0, K/1, dst).
+>
+> **B. TEKS UNTUK DIUMUMKAN DI GRUP KARYAWAN** (tanpa nominal per orang — tinggal tempel sendiri)
+>
+> ```
+> Yth. Rekan-rekan karyawan,
+>
+> Menyambut Idul Fitri 1448 H, toko akan membayarkan THR Keagamaan paling lambat Rabu, 3 Maret 2027 (7 hari sebelum Lebaran).
+>
+> Ketentuan besaran THR (Permenaker 6/2016 & SE Menaker THR 2026):
+> • Masa kerja 12 bulan atau lebih: 1 bulan upah.
+> • Masa kerja 1 bulan s.d. kurang dari 12 bulan: masa kerja ÷ 12 × 1 bulan upah.
+> • Untuk pekerja harian lepas, upah 1 bulan dihitung dari rata-rata upah selama bekerja.
+> • THR dibayar penuh, tidak dicicil, dan dikenai PPh 21 sesuai ketentuan pajak.
+>
+> Rincian nominal masing-masing akan disampaikan secara PRIBADI oleh pemilik/bagian keuangan, bukan di grup. Kalau ada pertanyaan soal THR masing-masing, silakan tanya langsung ke pemilik.
+>
+> Selamat menyambut Idul Fitri, terima kasih atas kerja keras Bapak/Ibu semua.
+> ```
+>
+> Pajak THR (PPh 21) dihitung terpisah kalau nanti mau dipotongkan — tinggal bilang saja.
+>
+> Pertanyaan: karena upah Pak Slamet 4 bulan terakhir (Nov 2026–Feb 2027) belum terjadi, nanti mendekati Lebaran mau saya hitung ulang pakai upah aktual bulan-bulan itu, atau cukup pakai rata-rata Rp 2,6 juta seperti sekarang untuk perkiraan awal?
+>
+> Data gaji yang saya catat untuk hitungan ini mau saya hapus setelah selesai, atau dibiarkan saja untuk referensi nanti?
+
+**Nilai: 8,5** (1.0.9: 8,5). Angka benar dan rumus rata-rata ditunjukkan; peringatan data upah 6 bulan vs masa kerja 10 bulan jelas; pola tolak → alasan privasi → teks grup tanpa nominal tetap dibuat; satu pertanyaan + tawaran hapus data; tanpa kata proses atau path. Kurang: teks grup "toko akan membayarkan" tanpa `[isi: nama usaha]`; denda 5% tidak disebut; tidak menawarkan draf pesan pribadi. **Skill/script terpakai?** Ya: SKILL.md + script lewat exec.
+
+### Skenario 2 (1.0.10): kafe, THR Natal 2026 + PPh 21
+
+**Pesan:** sama dengan skenario 2 di bawah.
+
+> **A. RINCIAN THR NATAL 2026 — untuk Anda/HR saja**
+>
+> Natal 2026 jatuh **Jumat, 25 Desember 2026**. Batas bayar THR paling lambat **H-7 = Jumat, 18 Desember 2026** (kalau cair lebih awal dari itu juga boleh).
+>
+> | Nama | Status | Masa kerja | Upah 1 bulan | Rumus | THR |
+> |---|---|---:|---:|---|---:|
+> | Maria (Barista) | Tetap | 7 bulan (20 Mei → 25 Des 2026) | Rp 3.600.000 | 7/12 × upah | **Rp 2.100.000** |
+> | Yohanes (Kepala Dapur) | Tetap | 42 bulan (sejak Juni 2023) | Rp 5.750.000 (gaji pokok 5jt + tunjangan tetap 750rb) | ≥ 12 bulan → 1 × upah | **Rp 5.750.000** |
+> | **Total** | | | | | **Rp 7.850.000** |
+>
+> Catatan:
+> - Maria kerja belum genap setahun, jadi THR-nya proporsional: 7/12 × gaji.
+> - Yohanes sudah lewat 12 bulan, jadi dapat THR penuh 1× gaji pokok + tunjangan tetap.
+> - THR wajib dibayar penuh sekaligus (tidak boleh dicicil). Kalau telat, ada denda 5% dari total THR dan THR-nya tetap harus dibayar.
+> - THR tidak jadi dasar hitungan iuran BPJS.
+>
+> **Soal PPh 21-nya:**
+> Karena THR ini cair di bulan **Desember**, aturannya beda dari bulan biasa — PPh 21 Desember dihitung ulang setahun penuh (bukan dipotong bulanan pakai tarif TER seperti bulan-bulan lain). Jadi angka potongan pastinya baru bisa dikeluarkan saat perhitungan setahun itu dilakukan, bukan dari hitungan THR saja. Untuk Yohanes (status nikah anak 2 / K-2) kemungkinan besar tetap kena potongan karena penghasilannya di atas batas tidak kena pajak; Maria, karena saya belum tahu status pernikahannya, belum bisa dipastikan kena atau tidak. Pajak THR ini bisa saya hitungkan terpisah kalau mau — tinggal bilang saja.
+>
+> ---
+>
+> **B. TEKS UNTUK GRUP KARYAWAN** — draf untuk Anda tempel sendiri (tanpa nominal per orang, karena itu data pribadi):
+>
+> ```
+> Yth. Rekan-rekan karyawan,
+>
+> Menyambut Natal 2026, perusahaan akan membayarkan Tunjangan Hari Raya (THR) Keagamaan paling lambat Jumat, 18 Desember 2026 (7 hari sebelum hari raya).
+>
+> Ketentuan besaran THR (sesuai aturan ketenagakerjaan yang berlaku):
+> • Masa kerja 12 bulan atau lebih: 1 bulan upah (gaji pokok + tunjangan tetap).
+> • Masa kerja 1 s.d. kurang dari 12 bulan: masa kerja ÷ 12 × 1 bulan upah.
+> • THR dibayar penuh, tidak dicicil, dan dikenai potongan PPh 21 sesuai ketentuan pajak.
+>
+> Rincian THR masing-masing (nominal dan potongan pajak) akan disampaikan secara pribadi oleh pemilik/pengelola. Mohon tidak membahas nominal pribadi di grup. Ada pertanyaan soal THR Anda, silakan hubungi langsung.
+>
+> Selamat menyambut Natal. Terima kasih atas kerja keras selama ini.
+> ```
+>
+> ---
+>
+> Dua hal kecil untuk melengkapi:
+> 1. Mau saya hitungkan juga potongan PPh 21 setahun yang sebenarnya (butuh info PTKP Maria — lajang/menikah, ada tanggungan atau tidak)?
+> 2. Data gaji yang saya catat untuk hitungan ini mau saya hapus setelah selesai?
+
+**Nilai: 8** (1.0.9: 8). THR, total, H-7 Jumat 18 Des 2026, denda 5%, "tidak dicicil", THR bukan dasar BPJS: benar. PPh 21 Desember = hitung ulang setahun dijelaskan dengan bahasa awam tanpa angka karangan dan tanpa nama skill lain. Kurang: tanpa perkiraan angka Yohanes; Maria "belum bisa dipastikan" padahal kemungkinan besar Rp0; teks grup "perusahaan" tanpa `[isi: nama usaha]`. **Skill/script terpakai?** Ya: SKILL.md + script lewat exec, file kerja ditulis.
+
+---
+
+**Di bawah ini: uji sebelum/sesudah lengkap 1.0.9 (2026-10-14), dasar perbandingan uji ulang di atas.**
+
 
 - **Tanggal:** 2026-10-14 (Asia/Jakarta)
 - **Penguji:** agent penguji independen Komunitech (bukan pembuat skill; brief pembuat dan transkrip agent lain tidak dibaca)

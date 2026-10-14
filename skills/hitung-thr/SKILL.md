@@ -161,4 +161,4 @@ _(Nama di contoh ini fiktif — jangan dipakai di balasan.)_
 - Perusahaan yang memakai cara hitung masa kerja lain (mis. per hari) dapat mengisi `masa_kerja_bulan` sendiri (boleh desimal).
 - Pekerja pindahan grup dengan masa kerja berlanjut, THR bagi pekerja yang cuti panjang/diskors, dan sengketa THR → arahkan ke Disnaker atau Posko THR (poskothr.kemnaker.go.id).
 - Uji otomatis: `python3 <folder-skill-ini>/scripts/test_thr.py`.
-- Versi 1.0.10 (2026-10-14); riwayat di `CHANGELOG.md`.
+- Versi 1.0.11 (2026-10-14); riwayat di `CHANGELOG.md`.

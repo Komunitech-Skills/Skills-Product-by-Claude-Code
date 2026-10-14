@@ -64,7 +64,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Catatan jujur: nilainya tepat di ambang lulus. Saat data belum lengkap (tanpa tanggal hari raya dan tanggal masuk), AI hanya mengajukan 5 pertanyaan tanpa memberi angka (nilai 6,5); di beberapa balasan masih muncul istilah teknis dan nama usaha karangan di teks grup. Ketiganya diperbaiki di versi 1.0.10 (lihat status di bawah).
 - Uji hitungan sebelumnya (versi 1.0.1): 4.000 kasus acak dibandingkan dengan kalkulator terpisah, selisih 0.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia; terakhir versi 1.0.9, 14 Oktober 2026) dan Claude Code (simulasi agen penguji). Versi 1.0.10 berisi perbaikan teks instruksi (data kurang tetap dihitung dulu dengan asumsi yang disebut lalu paling banyak 3 pertanyaan, tanpa istilah teknis di balasan, nama usaha tidak dikarang) ditambah satu opsi bantu perkiraan tanggal Lebaran berikutnya (lulus uji otomatis); versi ini **belum diuji ulang** di OpenClaw. Rumus dan angka hitungan tidak berubah. Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia; terakhir versi 1.0.9, 14 Oktober 2026) dan Claude Code (simulasi agen penguji). Versi 1.0.10 berisi perbaikan teks instruksi (data kurang tetap dihitung dulu dengan asumsi yang disebut lalu paling banyak 3 pertanyaan, tanpa istilah teknis di balasan, nama usaha tidak dikarang) ditambah satu opsi bantu perkiraan tanggal Lebaran berikutnya (lulus uji otomatis); versi 1.0.10 diuji ulang 14 Oktober 2026 pada tiga skenario (rata-rata 8,0, tanpa salah angka; istilah teknis hilang, data kurang tetap dihitung dulu), lalu 1.0.11 mengganti sisa teks "kami/Manajemen" di pengumuman menjadi `[isi: nama usaha]` bila nama tidak diberikan (perubahan teks script, belum diuji ulang). Rumus dan angka hitungan tidak berubah. Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
 ## Catatan penting
 - Alat bantu hitung, **bukan nasihat hukum atau pajak**. Dasar aturan: Permenaker 6/2016, SE Menaker M/3/HK.04.00/III/2026 (SE Menaker THR 2026), serta PP 58/2023 dan PMK 168/2023 (PPh 21 tarif TER); berlaku per 23 September 2026. Untuk hari raya tahun berikutnya, cek SE Menaker THR yang terbit menjelang hari raya.
@@ -83,4 +83,4 @@ Anda yang menyebutkan tanggalnya (sesuai kalender libur nasional resmi). Bila be
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
