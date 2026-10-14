@@ -71,9 +71,44 @@
 
 ---
 
+---
+
+## 7. Butir (b) — `bandingkan-pemasok-vendor` / `references/membaca-penawaran.md`
+
+**Run Akun C:** 2026-10-14 ~15:00 UTC  
+**Subjek:** PPN atas ongkir ditagih pemasok PKP; syarat pengkreditan Pajak Masukan; daftar bebas PPN bahan pokok (pola gula).
+
+### 7.1 Ongkir/biaya pengiriman ditagih pemasok PKP (masuk DPP)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Ongkir yang ditagih pemasok PKP di faktur yang sama diasumsikan ikut kena PPN (Harga Jual) | https://pajak.go.id/sites/default/files/2021-12/SDSN%20UU%20PPN%20Indo-%20dengan%20tanda%20perubahan_UU%20HPP.pdf — Pasal 1 angka 18 | 2026-10-14 | «Harga Jual … termasuk semua biaya yang diminta atau seharusnya diminta oleh penjual karena penyerahan Barang Kena Pajak» | **COCOK** — ongkos kirim/pengiriman yang ditagih penjual terkait penyerahan BKP termasuk dalam Harga Jual/DPP (bukan PPN-nya sendiri) |
+| Pengecualian: ongkir murni titipan/reimbursement ekspedisi | Memori Penjelasan / praktik faktur (PMK terkait penggantian) — **belum dicek PMK spesifik di run ini** | — | Skill sudah menulis «PERLU REVIEW konsultan pajak» untuk titipan atas nama pembeli | **PERLU UBAH** teks skill: pertahankan asumsi default (ongkir di faktur PKP ikut DPP), tambah satu kalimat «kecuali faktur membuktikan murni penggantian biaya pihak ketiga tanpa mark-up — konsultan pajak» |
+
+**Usulan teks (Akun B):** Di `membaca-penawaran.md` §2 ongkir PKP, ganti «PERLU REVIEW konsultan pajak» di akhir paragraf ongkir menjadi: «Asumsi default: ongkir di faktur pemasok PKP ikut Harga Jual (UU PPN Pasal 1 angka 18). Titipan murni ke ekspedisi tanpa mark-up perlu dicek faktur/PMK — konsultan pajak.»
+
+### 7.2 Pengkreditan Pajak Masukan (pembeli PKP)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Pembeli PKP: PM dapat dikreditkan; syarat PKP, faktur sah, hubungan langsung dengan usaha terutang PPN | UU PPN Pasal 9 ayat (2), (2b), (8) huruf b & f — PDF DJP (idem) | 2026-10-14 | Ayat (2b): PM dikreditkan dengan FP memenuhi Pasal 13; ayat (8)b: tidak dikreditkan bila perolehan tidak hubungan langsung dengan kegiatan usaha | **COCOK arah** — ringkasan skill benar; **PERLU UBAH** rujukan «Pasal 9» saja → sebut ayat (2), (2b), (8) huruf b & f; tetap disclaimer konsultan pajak |
+
+**Usulan teks:** «Pajak Masukan dapat dikreditkan bila memenuhi UU PPN Pasal 9 (antara lain faktur sah Pasal 13, hubungan langsung dengan penyerahan terutang PPN — ayat (8) huruf b). Bila tidak, PPN menjadi biaya.»
+
+### 7.3 Bahan pokok bebas PPN — PP 49/2022 (pola «gula pasir»)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Beberapa bahan pokok (beras, gula konsumsi, telur, …) dibebaskan PPN | PP 49/2022 Pasal 6 ayat (1) huruf p–q & ayat (2) huruf q–r; Pasal 7 ayat (2) | 2026-10-14 | Huruf q/r: «gula konsumsi … gula kristal putih … tebu tanpa tambahan bahan perasa atau pewarna» dibebaskan; ayat (2) daftar beras, telur, susu, buah, sayur, dll. | **COCOK** — skill benar menandai «kemungkinan bebas» untuk gula pasir/kristal putih konsumsi |
+| Daftar frasa sempit di script (gula pasir, gula konsumsi, …) vs gula aren/industri | PP 49/2022 Pasal 6 (definisi gula konsumsi sempit) | 2026-10-14 | Hanya gula kristal putih dari tebu tanpa perasa/pewarna; gula aren/cair/industri **tidak** tercantum | **COCOK** — frasa sempit + catatan «gula aren … tidak dianggap bebas» selaras aturan; tetap «cek status barang» |
+
+**Usulan teks:** Tambah footnote di README/skill: «Pembebasan gula: PP 49/2022 Pasal 6 huruf q/r (gula kristal putih tebu tanpa perasa/pewarna); bukan semua jenis gula.»
+
+---
+
 ## Run berikutnya (C25)
 
-- Butir (b) `bandingkan-pemasok-vendor` — PPN ongkir PKP, pengkreditan, PP 49/2022  
-- Butir (c)–(d) menurut papan C25  
+- Butir (c) `rencana-restok-barang` — kolom ekspor Shopee/Tokopedia  
+- Butir (d) `pph-final-umkm` — PMK 37/2025 & PP 20/2026  
 
-Router model: smoke OpenClaw **HTTP 530** (~14:30 UTC) → C24 G18 tetap ditunda.
+Router model: smoke OpenClaw **HTTP 530** (~15:00 UTC, ~91 s) → C24 G18 tetap ditunda.
