@@ -108,7 +108,104 @@
 
 ## Run berikutnya (C25)
 
-- Butir (c) `rencana-restok-barang` — kolom ekspor Shopee/Tokopedia  
-- Butir (d) `pph-final-umkm` — PMK 37/2025 & PP 20/2026  
+- **C25 selesai** (a–d). Bila router hidup → **C24 G18** (topik 1482–1491).
 
-Router model: smoke OpenClaw **HTTP 530** (~15:00 UTC, ~91 s) → C24 G18 tetap ditunda.
+Router model: smoke OpenClaw **HTTP 530** (~16:00 UTC, ~96 s) → C24 G18 tetap ditunda.
+
+---
+
+## 8. Butir (c) — `rencana-restok-barang` / kolom ekspor marketplace
+
+**Run Akun C:** 2026-10-14 ~15:30 UTC  
+**Subjek:** Nama kolom ekspor **pesanan** dan **stok** Shopee Seller Centre & Tokopedia Seller Centre vs pemetaan di `scripts/rencana_restok.py` dan `references/data-dan-tindakan.md`.
+
+### 8.1 Shopee — ekspor pesanan (Pesanan Saya → Export)
+
+| Klaim skill/script | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Tanggal: `Waktu Pesanan Dibuat` | https://seller.shopee.co.id/edu/article/15486 (filter Pesanan); pola kolom ekspor pesanan di dokumentasi penjual & laporan akademik berbasis file export Shopee (49 kolom, 2025) | 2026-10-14 | Filter pesanan memakai «Tanggal Dibuat»; file export pesanan umum memuat «Waktu Pesanan Dibuat» | **COCOK** — ada di alias `KOLOM_JUAL["tanggal"]` |
+| Status: `Status Pesanan` | idem + https://ngulikdata.com/blog/laporan-penjualan-shopee (ringkasan kolom export) | 2026-10-14 | «Status Pesanan: Selesai, Batal, …» | **COCOK** — script memfilter kata batal/belum bayar |
+| No pesanan: `No. Pesanan` | https://seller.shopee.co.id/edu/article/15486 | 2026-10-14 | Filter «No. Pesanan» | **COCOK** |
+| SKU varian: `Nomor Referensi SKU` (bukan SKU Induk untuk hitung per varian) | Uji regresi skill (K5); ngulikdata; jurnal RFM toserba (kolom export) | 2026-10-14 | «Nomor Referensi SKU: kode barang versi kamu»; baris export juga memuat «SKU Induk» terpisah | **COCOK arah** — script memetakan `sku` ke «Nomor Referensi SKU»; **PERLU UBAH** teks `data-dan-tindakan.md`: sebut eksplisit Shopee punya **dua** kolom SKU (Induk vs Referensi) dan restok memakai **Referensi** per varian |
+| Nama + varian: `Nama Produk`, `Nama Variasi` | Pola file export (jurnal/ringkasan kolom di atas) | 2026-10-14 | Dua kolom terpisah, digabung di script | **COCOK** |
+| Qty: `Jumlah` | ngulikdata; uji regresi K5–K7 | 2026-10-14 | «Jumlah: qty per item» | **COCOK** |
+| SKU Induk hanya di listing produk, bukan nama kolom wajib Tokopedia | https://seller.shopee.co.id/edu/article/16726 | 2026-10-14 | «SKU Induk adalah kode identifikasi produk … unik untuk tiap produk» | **COCOK** — jangan klaim «SKU Induk» = kolom SKU utama di semua platform |
+
+**Usulan teks (Akun B):** Di `references/data-dan-tindakan.md` §1, tambah baris: «Shopee (ekspor Pesanan): No. Pesanan, Status Pesanan, Waktu Pesanan Dibuat, Nomor Referensi SKU, Nama Produk, Nama Variasi, Jumlah — nama menu export bisa bergeser.»
+
+### 8.2 Shopee — stok / daftar produk (Mass Update / Mass Upload)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Stok dari template produk (bukan ekspor pesanan) | https://seller.shopee.co.id/edu/article/6944, https://seller.shopee.co.id/edu/article/1944 | 2026-10-14 | Mass Update: stok diubah lewat template **Informasi Penjualan**; Mass Upload: «Isi kolom stok …» per variasi | **PERLU UBAH** — skill belum menyebut bahwa stok Shopee diunduh lewat **Produk Saya → Mass Update** (bukan dari file pesanan); nama kolom persis bergantung template (sering «Stok» / stok per variasi, plus Kode Variasi) — jangan mengarang daftar kolom tanpa file contoh terbaru |
+
+**Usulan teks:** README/skill: «Stok Shopee: unduh template Mass Update (Informasi Penjualan), lalu tempel kolom stok + identitas varian ke tabel `--barang-data` (sku/nama/stok).»
+
+### 8.3 Tokopedia — ekspor pesanan (Manage Orders → Export Orders)
+
+| Klaim skill/script | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Tanggal/waktu pesanan | https://seller-id.tokopedia.com/university/essay?knowledge_id=4494325455079170&lang=id | 2026-10-14 | Dimensi «Order ID», «Order Status», «SKU ID», «Quantity», … | **PERLU UBAH** — kolom resmi **Order ID** (bukan «No. Pesanan»), **SKU ID** (bukan «Nomor Referensi SKU» / «SKU Induk») |
+| Status | idem | 2026-10-14 | «Order Status … To Ship, Shipped, Completed» | **COCOK arah** — alias `status pesanan`/`order status` sudah di script |
+| Qty | idem | 2026-10-14 | «Quantity» / dimensi kuantitas per SKU | **COCOK** — alias `quantity`, `jumlah` |
+| Nama produk + variasi | https://seller-id.tokopedia.com/university/essay?knowledge_id=3659692639586050 | 2026-10-14 | Spreadsheet export: «Order ID, SKU ID, Product Name, Variation, Quantity» | **COCOK arah** — script mengenali `product name` + `variation`; **PERLU UBAH** dokumentasi: sebut «Product Name» + «Variation» (bahasa Inggris di file export) |
+| «Seller SKU» di laporan order (rekap pihak ketiga) | https://rekapcepat.id/blog/perbedaan-data-transaksi-settlement-data-order-pesanan | 2026-10-14 | Data order: «Seller SKU (kode produk)» | **PERLU REVIEW** — pastikan apakah label export terbaru «SKU ID» saja atau juga «Seller SKU»; script sudah punya alias `seller sku` |
+
+**Usulan teks (Akun B):** Tambah di `data-dan-tindakan.md`: «Tokopedia/TikTok Shop Seller Centre (Export Orders): Order ID, Order Status, SKU ID, Product Name, Variation, Quantity — bahasa kolom Inggris; jangan asumsikan «SKU Induk» Shopee.»
+
+### 8.4 Tokopedia — stok produk
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Stok dari Seller Centre | https://seller-id.tokopedia.com/university/essay?knowledge_id=4494325455079170 (dimensi SKU ID) | 2026-10-14 | Export order fokus SKU ID & qty terjual, bukan stok gudang | **PERLU UBAH** — stok Tokopedia biasanya dari **kelola produk / export katalog**, bukan file pesanan; skill sudah benar meminta stok terpisah (`--barang-data`), tapi dokumentasi perlu menegaskan sumber stok ≠ file order |
+
+### 8.5 Ringkas vs implementasi script
+
+| Aspek | Kesimpulan |
+|---|---|
+| Alias kolom di `rencana_restok.py` | **COCOK** untuk Shopee pesanan + banyak kasir; Tokopedia terbaca via `order id`, `sku id`, `product name`, `variation`, `quantity` |
+| Dokumen `data-dan-tindakan.md` | **PERLU UBAH** — pisahkan contoh kolom **per platform** (Shopee vs Tokopedia), hilangkan kesan «SKU Induk» universal |
+| Uji regresi K5 | Format contoh = Shopee; tetap valid |
+
+Router model: smoke OpenClaw **HTTP 530** (~15:30 UTC, ~92 s) → C24 G18 tetap ditunda.
+
+---
+
+## 9. Butir (d) — `pph-final-umkm` / PPh 22 marketplace & PP 20/2026
+
+**Run Akun C:** 2026-10-14 ~16:00 UTC  
+**Subjek:** Klaim di `references/regulasi.md` & perilaku script 1.0.4 (kredit PPh 22 per bulan; kelebihan tidak dipindah bulan; peralihan jangka waktu PT perorangan).
+
+### 9.1 PMK 37/2025 — FAQ DJP (Versi 2.0, 24 September 2026)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| PPh 22 dipungut marketplace = pengurang / pelunasan PPh final 0,5% (bukan pajak baru) | https://pajak.go.id/en/node/120044 ; FAQ PDF `FAQ PMK 37 Tahun 2025 bagi penjual_versi 2.0_24092026_1.pdf` (strings) | 2026-10-14 | «Pemungutan PPh Pasal 22 dapat menjadi pengurang PPh Final yang terutang»; «merupakan bagian dari pelunasan PPh yang bersifat final» | **COCOK** |
+| Selisih **kurang** (final > PPh 22) → wajib disetor sendiri pedagang | FAQ v2.0 (pertanyaan «Bagaimana jika terdapat selisih…») | 2026-10-14 | «selisih kurang … wajib disetor sendiri oleh Pedagang Dalam Negeri/Seller/Merchant» | **COCOK** — selaras script `kurang_setor` |
+| Selisih **lebih** (PPh 22 > final) → permohonan pengembalian, **bukan** kompensasi ke bulan berikutnya | FAQ v2.0 poin 2 pertanyaan selisih; juga «permohonan Pengembalian Pajak yang Seharusnya Tidak Terutang kepada KPP» | 2026-10-14 | «selisih lebih … dapat diajukan permohonan Pengembalian Pajak yang Seharusnya Tidak Terutang»; tidak ada frasa memindahkan kelebihan ke masa/bulan lain | **COCOK** — desain skill (kelebihan tidak dipindah antar bulan) selaras FAQ resmi; label **PERLU REVIEW konsultan** di `regulasi.md` untuk kompensasi antar bulan dapat **dilunakkan** menjadi «tidak diatur di FAQ; kelebihan via restitusi» |
+| Bukti tagihan marketplace = bukti pungut / pelunasan final | FAQ v2.0 | 2026-10-14 | «dokumen … dipersamakan dengan bukti Pemungutan PPh Pasal 22»; «bukti pelunasan PPh final» | **COCOK** |
+| Contoh dihitung per **masa/bulan** | FAQ v2.0 (contoh Tuan A Maret–April 2026) | 2026-10-14 | Pemungutan dan selisih dijelaskan per bulan transaksi | **COCOK** — kredit per bulan di script |
+
+**Usulan teks (Akun B):** Di `references/regulasi.md` baris keputusan desain v1.0.4, ganti «**PERLU REVIEW** konsultan (apakah boleh dikompensasikan)» dengan «FAQ DJP v2.0 (24 Sep 2026) hanya mengatur pengembalian untuk selisih lebih; tidak mengatur kompensasi ke bulan berikutnya.»
+
+### 9.2 PP 20/2026 — penghapusan batas tahun & ketentuan peralihan
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Pasal 59 PP 55/2022 **dihapus** → OP & PT perorangan tanpa batas 7/4 tahun (selama memenuhi kriteria) | Salindia DJP PP 20/2026 PDF (`Peraturan Pemerintah nomor 20 Tahun 2026.pdf`, pymupdf) | 2026-10-14 | Pasal I angka 6 menghapus Pasal 59; penjelasan «Penghapusan jangka waktu tertentu bagi WP OP dan PT OP» | **COCOK** |
+| Peralihan: jangka lama berakhir **2024** hanya **WP orang pribadi** → boleh 0,5% lagi **2025–2026** | idem, bagian «Ketentuan Peralihan» | 2026-10-14 | «a. Tahun 2024 untuk WP OP, dapat dikenai PPh Final 0,5% untuk Tahun Pajak 2025 dan 2026» | **COCOK** |
+| Peralihan: berakhir **2025** → **WP OP dan PT OP** → boleh **2026** | idem | 2026-10-14 | «b. Tahun 2025 untuk WP OP dan PT OP, dapat dikenai PPh Final 0,5% untuk Tahun Pajak 2026» | **COCOK** |
+| **PT perorangan** yang batas lamanya berakhir **2024** tidak disebut di huruf a/b | idem (huruf a hanya WP OP; huruf b butuh berakhir 2025) | 2026-10-14 | Tidak ada kalimat «Tahun 2024 untuk WP PT OP» | **COCOK arah skill** — script menyarankan cek DJP tetap benar; **PERLU REVIEW** sampai DJP/KPP memberi SKB atau FAQ lanjutan |
+| Koperasi 4 tahun + peralihan 2024–2029 | idem | 2026-10-14 | Koperasi terdaftar sebelum PP berlaku, batas 2024–2029 → final s.d. 2029 bila memenuhi kriteria | **COCOK** |
+
+**Usulan teks (Akun B):** Tambah di `regulasi.md` tabel peralihan: kutip singkat huruf a–b DJP; footnote «PT perorangan dengan batas 4 tahun berakhir 2024 tidak tercantum di huruf peralihan — arahkan ke Kring Pajak 1500200 sebelum mengklaim 0,5% untuk 2025+.»
+
+### 9.3 Ringkas vs implementasi script 1.0.4
+
+| Aspek | Kesimpulan |
+|---|---|
+| Kredit PPh 22 per bulan, kurang/lebih terpisah | **COCOK** dengan FAQ PMK 37 |
+| Kelebihan tidak net ke bulan lain | **COCOK** (FAQ: pengembalian) |
+| PT OP akhir masa 2024 | **PERLU REVIEW** (sumber resmi tidak eksplisit) — perilaku script (peringatan + arahkan DJP) **COCOK** |
+
+Router model: smoke OpenClaw **HTTP 530** (~16:00 UTC, ~96 s) → C24 G18 tetap ditunda.
