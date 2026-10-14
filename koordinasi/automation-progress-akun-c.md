@@ -41,7 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-14 ~02:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~02:32 UTC — LANGKAH NOL OK (>28 mnt sejak selesai 02:02); fast-forward merge default (+PR #114 Akun B); getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
+| 2026-10-14 ~02:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | selesai ~02:32 UTC — LANGKAH NOL OK (>28 mnt sejak selesai 02:02); fast-forward merge default (+PR #114 Akun B); getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
 | 2026-10-14 ~02:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 02:30 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru Akun C | — | — | — |
 | 2026-10-14 ~02:00 | `cursor/iterasi-otomatis-akun-c-8b42` | a25813e4 | selesai ~02:02 UTC — LANGKAH NOL OK (>58 mnt sejak selesai 01:32); merge default mutakhir; getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
 | 2026-10-14 ~02:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 02:00 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru Akun C | — | — | — |
@@ -49,13 +49,13 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 | 2026-10-14 ~01:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 01:30 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru Akun C | — | — | — |
 | 2026-10-14 ~01:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 69243d96 | selesai ~01:02 UTC — LANGKAH NOL OK (>28 mnt sejak selesai 00:32); merge default sudah mutakhir; getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
 | 2026-10-14 ~01:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 01:00 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru Akun C | — | — | — |
-| 2026-10-14 ~00:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~00:32 UTC — LANGKAH NOL OK (>28 mnt sejak selesai 00:02); fast-forward merge default (+PR Akun B); getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
+| 2026-10-14 ~00:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | selesai ~00:32 UTC — LANGKAH NOL OK (>28 mnt sejak selesai 00:02); fast-forward merge default (+PR Akun B); getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
 | 2026-10-14 ~00:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 00:30 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru Akun C | — | — | — |
 | 2026-10-14 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~00:02 UTC — LANGKAH NOL OK (>12 mnt sejak selesai 23:48); merge default mutakhir; getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
 | 2026-10-14 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 00:00 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru Akun C | — | — | — |
-| 2026-10-13 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~23:48 UTC — C18 pantau-cron kabar HILANG Telegram LOLOS; papan C18 selesai | — | LOLOS | ya |
+| 2026-10-13 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | selesai ~23:48 UTC — C18 pantau-cron kabar HILANG Telegram LOLOS; papan C18 selesai | — | LOLOS | ya |
 | 2026-10-13 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 23:30 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C18 | — | — | — |
-| 2026-10-13 ~22:40 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~22:52 UTC — C17 uji panduan beta run 2 (3 skill OK); C17 selesai; idle | simulasi | docs | ya |
+| 2026-10-13 ~22:40 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | selesai ~22:52 UTC — C17 uji panduan beta run 2 (3 skill OK); C17 selesai; idle | simulasi | docs | ya |
 | 2026-10-13 ~22:40 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 22:40 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C17 | — | — | — |
 | 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b4b5132b | selesai ~22:02 UTC — LANGKAH NOL OK (>25 mnt sejak selesai 21:35); fast-forward merge default (+10 commit Akun B); getUpdates 242 kosong; antrean C6–C16 selesai, idle | — | idle | tidak |
 | 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 22:00 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru di papan | — | — | — |
@@ -109,11 +109,11 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 | 2026-10-13 ~10:03 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 10:03 UTC — merge default; getUpdates 242 kosong; C13 buku-piutang | — | — | — |
 | 2026-10-13 ~09:42 | `cursor/iterasi-otomatis-akun-c-8b42` | 07b85f15 | selesai ~09:42 UTC — C13 `buku-stok` jadwal TG topik 1353 | jadwal LOLOS, omzet Rp 150rb cocok | LOLOS | ya |
 | 2026-10-13 ~09:32 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:32 UTC — merge default; getUpdates 242 kosong; C13 buku-stok topik 1353 | — | — | — |
-| 2026-10-13 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~09:25 UTC — C13 `kasir-lokal` jadwal TG topik 1343 | jadwal LOLOS, penjualan bersih Rp 51rb cocok | LOLOS | ya |
+| 2026-10-13 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | selesai ~09:25 UTC — C13 `kasir-lokal` jadwal TG topik 1343 | jadwal LOLOS, penjualan bersih Rp 51rb cocok | LOLOS | ya |
 | 2026-10-13 ~09:14 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 09:14 UTC — merge default; getUpdates 242 kosong; C13 kasir-lokal topik 1343 | — | — | — |
-| 2026-10-13 ~08:21 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~08:21 UTC — C13 `kas-umkm` jadwal TG topik 1331 | jadwal LOLOS, hasil usaha Rp 900rb cocok | LOLOS | ya |
+| 2026-10-13 ~08:21 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | selesai ~08:21 UTC — C13 `kas-umkm` jadwal TG topik 1331 | jadwal LOLOS, hasil usaha Rp 900rb cocok | LOLOS | ya |
 | 2026-10-13 ~08:11 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 08:11 UTC — merge default; getUpdates 242 kosong; C13 kas-umkm | — | — | — |
-| 2026-10-13 ~07:55 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~07:55 UTC — C13 `laporan-otomatis-terjadwal` jadwal TG topik 1321 | jadwal LOLOS, omzet cocok | LOLOS | ya |
+| 2026-10-13 ~07:55 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | selesai ~07:55 UTC — C13 `laporan-otomatis-terjadwal` jadwal TG topik 1321 | jadwal LOLOS, omzet cocok | LOLOS | ya |
 | 2026-10-13 ~07:39 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 07:39 UTC — merge default; getUpdates 242 kosong; C13 lot | — | — | — |
 | 2026-10-13 ~07:20 | `cursor/iterasi-otomatis-akun-c-8b42` | c65663da | selesai 07:20 UTC — C12 batch 7 final ×5 README | 53/53 C12 | docs OK | ya |
 | 2026-10-13 ~07:06 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 07:06 UTC — fetch/merge; getUpdates 242 kosong | — | — | — |
@@ -125,14 +125,14 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 | 2026-10-13 ~03:34 | `cursor/iterasi-otomatis-akun-c-8b42` | 5e187314 | C12 README Tahap 8 ×8 (fider + 7 marketplace) | 8/53 C12 | docs OK | ya |
 | 2026-10-13 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | fetch+merge default (sudah mutakhir); getUpdates 242 kosong; KEY/BOT/TESTER SET | C6–C11 selesai — tunggu uji B / skill `uji` baru | idle | tidak |
 | 2026-10-12 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | sync default; getUpdates 242 (tester kosong, bot lama) | antrean C kosong — tunggu uji B | idle | tidak |
-| 2026-10-12 ~22:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek ulang `slip-gaji-bpjs` v1.0.7 | 2892 char, 3 slip utuh | LOLOS TG | ya |
+| 2026-10-12 ~22:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | C9 pra-cek ulang `slip-gaji-bpjs` v1.0.7 | 2892 char, 3 slip utuh | LOLOS TG | ya |
 | 2026-10-12 ~21:00 | `cursor/iterasi-otomatis-akun-c-8b42` | (push merge) | merge default PR #64; getUpdates 242 kosong | antrean C kosong — tunggu uji B (`ubah-draf-ke-dokumen` 1.0.1) | idle | tidak |
 | 2026-10-12 ~20:30 | `cursor/iterasi-otomatis-akun-c-8b42` | d128d744 | sync default (PR #63 jadwal 1.0.1); getUpdates 242 kosong | antrean C kosong — tunggu uji B | idle | tidak |
 | 2026-10-12 ~20:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 9af64e22 | merge default (konflik catalog/papan); getUpdates 242 kosong | C6–C11 selesai | koordinasi | tidak |
 | 2026-10-12 ~19:30 | `cursor/iterasi-otomatis-akun-c-8b42` | d5af5fdc | merge default + revisi `jadwal-pelajaran-sekolah` v1.0.1 | regresi 8/8 | siap uji B | ya |
 | 2026-10-12 ~19:05 | `cursor/iterasi-otomatis-akun-c-8b42` | 5a107c86 | uji OC `kartu-belajar-anki` v1.0.1 (+ TG S1) | 6,0→8,56 | LULUS | ya |
 | 2026-10-12 ~19:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 549b6882 | merge sync default (konflik jadwal → versi uji Akun B) | — | koordinasi | tidak |
-| 2026-10-12 ~18:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | revisi pembuat `kartu-belajar-anki` v1.0.1 | regresi 6/6 | siap uji B | ya |
+| 2026-10-12 ~18:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | revisi pembuat `kartu-belajar-anki` v1.0.1 | regresi 6/6 | siap uji B | ya |
 | 2026-10-12 ~18:00 | `cursor/iterasi-otomatis-akun-c-8b42` | a2874cbf | uji OC `jadwal-pelajaran-sekolah` v1.0.0 (4 skenario + TG) | 6,5→8,6 | LULUS 8/10 | ya |
 | 2026-10-12 ~17:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 98b61be1 | merge default + C8 draf `jadwal-pelajaran-sekolah` v1.0.0 | regresi 4/4 | siap uji | ya |
 | 2026-10-12 ~17:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 3b67c7c1 | uji `kartu-belajar-anki` v1.0.0 OC 4 skenario | 6,6→8,3 | LULUS 8/10 | ya |
@@ -148,8 +148,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 | 2026-10-12 ~11:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 7ad0769c | C9 pra-cek TG beta `presentasi-instan` | 1761 char, ringkasan 13 slide | LOLOS TG | ya |
 | 2026-10-12 ~11:05 | `cursor/iterasi-otomatis-akun-c-8b42` | f908314e | C9 pra-cek TG beta `kontrak-kerja-pkwt` | 10094 char, draf PKWT utuh | LOLOS TG | ya |
 | 2026-10-12 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 1ee53f22 | C9 pra-cek TG beta `hitung-thr` | 3757 char, tabel THR utuh | LOLOS TG | ya |
-| 2026-10-12 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek TG beta `pph21-ter` | 1596 char, tabel utuh | LOLOS TG | ya |
-| 2026-10-12 ~09:35 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | C9 pra-cek TG beta `slip-gaji-bpjs` | 1773 char, rekap saja | GAGAL TG | ya |
+| 2026-10-12 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | C9 pra-cek TG beta `pph21-ter` | 1596 char, tabel utuh | LOLOS TG | ya |
+| 2026-10-12 ~09:35 | `cursor/iterasi-otomatis-akun-c-8b42` | 34783d79 | C9 pra-cek TG beta `slip-gaji-bpjs` | 1773 char, rekap saja | GAGAL TG | ya |
 | 2026-10-12 ~09:25 | `cursor/iterasi-otomatis-akun-c-8b42` | ca879194 | C7 gelombang G12 (10 pesan) | cpo 7,5→9; rpp 7,5→8,75; lot/fmp/nrl lihat laporan | 1 LULUS promosi | ya |
 | 2026-10-12 ~08:15 | `cursor/iterasi-otomatis-akun-c-8b42` | b411e35a | C6 pilot G11b 4 pesan | tangani 6,5→8,5; kelayakan 6,5→9 | LULUS tampilan | ya |
 | 2026-10-11 ~11:15 | `cursor/iterasi-otomatis-akun-c-8b42` | dd4c362d | S5: `mktopics-g12.py` + serah terima G12 | pra-cek 5/5 | koordinasi | ya |
