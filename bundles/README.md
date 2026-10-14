@@ -36,7 +36,7 @@ Penjualan nyata menunggu: status skill `rilis` + `tier_final`/`harga_final_idr` 
 - `caption-sosmed-umkm` dan `brainstorming-ide-usaha` diarsipkan (status `arsip`); `caption-sosmed-umkm` dikeluarkan dari `paket-kafe-warung` (kini 8 skill, harga tetap Rp349.000).
 - Jumlah & total ecer di tabel untuk bundle yang berubah dihitung ulang dari `harga_usulan_idr` (`paket-kafe-warung` sebelumnya tercatat 7/Rp694.000, tidak sesuai isi file; kini disinkronkan).
 
-**Keputusan otomatis 71 (2026-10-14, mode no. 30):** tiga skill baru yang lulus uji sebelum/sesudah ditempatkan ke bundle tanpa mengubah harga bundle: `panduan-wawancara-kerja` → `paket-gaji-hr` (kini 8 skill); `rencana-restok-barang` → `paket-toko-online` (16) & `paket-kafe-warung`; `bandingkan-pemasok-vendor` → `paket-admin-keuangan` (15) & `paket-kafe-warung` (kini 10). Status ketiganya masih `lulus` (ikut paket beta/rilis setelah tampil di bot Telegram uji). Batalkan dengan "batal 71".
+**Keputusan otomatis 71 (2026-10-14, mode no. 30):** tiga skill baru yang lulus uji sebelum/sesudah ditempatkan ke bundle tanpa mengubah harga bundle: `panduan-wawancara-kerja` → `paket-gaji-hr` (kini 8 skill); `rencana-restok-barang` → `paket-toko-online` (16) & `paket-kafe-warung`; `bandingkan-pemasok-vendor` → `paket-admin-keuangan` (15) & `paket-kafe-warung` (kini 10). Status ketiganya `beta` (build bundle menolak anggota `lulus`); tampil di bot Telegram uji direncanakan gelombang 17. Batalkan dengan "batal 71".
 
 Bundle baru (2026-09-29, harga bundle belum diusulkan — menunggu pemilik):
 - `paket-kantor-manajemen` (20 skill) adalah **subset** dari `solusi-vip/kantor-manajemen/`.
