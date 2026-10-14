@@ -1,0 +1,23 @@
+HASIL SKOR WAWANCARA
+Posisi: Kasir kafe (data uji fiktif) | Kandidat: 3 | Pewawancara: 2 (Lina, Arif)
+Bobot: Ketelitian uang 30% (kritis); Layanan pelanggan 25%; Kecepatan saat ramai 20%; Kejujuran 15% (kritis); Kerja sama tim 10%
+
+PERINGKAT
+1. C2 Rizal: total 3,93 dari 5. Disarankan lanjut
+2. C1 Dina: total 3,88 dari 5. Disarankan lanjut
+3. C3 Wulan: total 3,66 dari 5. Pertimbangkan (cadangan)
+
+RATA-RATA PER KOMPETENSI (1-5)
+- C2 Rizal: Ketelitian uang 4,00 (perlu dibahas); Layanan pelanggan 4,00; Kecepatan saat ramai 4,00; Kejujuran 3,50; Kerja sama tim 4,00
+- C1 Dina: Ketelitian uang 4,00; Layanan pelanggan 4,50; Kecepatan saat ramai 3,00; Kejujuran 4,00; Kerja sama tim 3,50
+- C3 Wulan: Ketelitian uang 2,50; Layanan pelanggan 4,25; Kecepatan saat ramai 4,00; Kejujuran 4,00; Kerja sama tim 4,50
+
+PERLU DIBAHAS (selisih antar pewawancara lebih dari 1,5 poin)
+- C2 Rizal, Ketelitian uang: Lina 3, Arif 5 (selisih 2)
+
+RINGKASAN KEPUTUSAN
+- C2 Rizal: total 3,93 dari 5; terkuat Ketelitian uang (4,00), terlemah Kejujuran (3,50). Saran: Disarankan lanjut; bahas dulu perbedaan penilaian antar pewawancara: Ketelitian uang.
+- C1 Dina: total 3,88 dari 5; terkuat Layanan pelanggan (4,50), terlemah Kecepatan saat ramai (3,00). Saran: Disarankan lanjut.
+- C3 Wulan: total 3,66 dari 5; terkuat Kerja sama tim (4,50), terlemah Ketelitian uang (2,50). Saran: Pertimbangkan (cadangan); ada kompetensi di bawah standar: Ketelitian uang 2,50.
+
+Aturan saran: lanjut bila total >= 3,5 dan tidak ada kompetensi di bawah 2,5 (kompetensi kritis: di bawah 3); cadangan bila total >= 2,75. Saran adalah alat bantu; keputusan tetap di pemilik/tim.

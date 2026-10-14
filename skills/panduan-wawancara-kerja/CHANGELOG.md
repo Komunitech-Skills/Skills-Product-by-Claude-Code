@@ -1,0 +1,7 @@
+# Riwayat perubahan — panduan-wawancara-kerja
+
+Catatan teknis per versi (dipisah dari README agar halaman pembeli ringkas).
+
+## Catatan versi
+- **1.0.0 (2026-10-14):** rilis awal. Paket wawancara terstruktur (kompetensi, pertanyaan perilaku dan situasional, tes praktik, rubrik 1-5, kartu skor, alur waktu, daftar pertanyaan terlarang); bank kompetensi 8 posisi UMKM; `scripts/skor_wawancara.py` (skor tertimbang beberapa pewawancara, selisih > 1,5 poin ditandai, peringkat, saran, bagi waktu) dengan `tests/uji_regresi.py`.
+- **1.0.1 (2026-10-14):** patch dari temuan uji independen (alur tidak berubah). (1) Rujukan antar-skill hanya untuk agent; ke pengguna cukup tawaran bantuan tanpa nama skill atau alat. (2) Syarat administratif dan ketersediaan kerja (bersedia shift/lembur, SIM, tanggal mulai) tidak lagi masuk definisi, rubrik, atau bobot; dicatat ya/tidak di kartu skor (aturan pakai menjadi 6). (3) Soal tes praktik diganti per sesi/hari wawancara, bukan per kandidat; kandidat pada hari yang sama mendapat soal yang sama. (4) Script: kompetensi terkuat/terlemah yang seri atau sedang diperselisihkan tidak dipilih ("seri - putuskan setelah pembahasan"); total sama dengan penilaian diperselisihkan tidak dipisahkan peringkatnya. (5) Script: kandidat dengan skor kosong, di luar 1-5, bukan angka, atau nama kompetensi salah ketik menjadi "Belum bisa disimpulkan, lengkapi skor X", tanpa rekomendasi dan tanpa peringkat sampai dilengkapi (menggantikan saran "Tunda"). Tes regresi bertambah menjadi 66. README memuat hasil uji.

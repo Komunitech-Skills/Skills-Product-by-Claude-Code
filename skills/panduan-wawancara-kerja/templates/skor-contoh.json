@@ -1,0 +1,33 @@
+{
+  "posisi": "Kasir toko (contoh data fiktif)",
+  "kompetensi": [
+    {"nama": "Ketelitian hitung uang", "bobot": 30, "kritis": true},
+    {"nama": "Layanan dan komplain pelanggan", "bobot": 25},
+    {"nama": "Kecepatan dan ketahanan kerja", "bobot": 20},
+    {"nama": "Kejujuran dan tanggung jawab", "bobot": 15},
+    {"nama": "Kerja sama dan kedisiplinan jadwal", "bobot": 10}
+  ],
+  "kandidat": [
+    {
+      "kode": "C1", "nama": "Sari",
+      "skor": {
+        "Bu Rina": {"Ketelitian hitung uang": 4, "Layanan dan komplain pelanggan": 5, "Kecepatan dan ketahanan kerja": 3, "Kejujuran dan tanggung jawab": 4, "Kerja sama dan kedisiplinan jadwal": 4},
+        "Pak Dedi": {"Ketelitian hitung uang": 4, "Layanan dan komplain pelanggan": 4, "Kecepatan dan ketahanan kerja": 3, "Kejujuran dan tanggung jawab": 5, "Kerja sama dan kedisiplinan jadwal": 4}
+      }
+    },
+    {
+      "kode": "C2", "nama": "Budi",
+      "skor": {
+        "Bu Rina": {"Ketelitian hitung uang": 3, "Layanan dan komplain pelanggan": 4, "Kecepatan dan ketahanan kerja": 4, "Kejujuran dan tanggung jawab": 3, "Kerja sama dan kedisiplinan jadwal": 5},
+        "Pak Dedi": {"Ketelitian hitung uang": 3, "Layanan dan komplain pelanggan": 2, "Kecepatan dan ketahanan kerja": 4, "Kejujuran dan tanggung jawab": 3, "Kerja sama dan kedisiplinan jadwal": 4}
+      }
+    },
+    {
+      "kode": "C3", "nama": "Maya",
+      "skor": {
+        "Bu Rina": {"Ketelitian hitung uang": 2, "Layanan dan komplain pelanggan": 3, "Kecepatan dan ketahanan kerja": 3, "Kejujuran dan tanggung jawab": 3, "Kerja sama dan kedisiplinan jadwal": 4},
+        "Pak Dedi": {"Ketelitian hitung uang": 2, "Layanan dan komplain pelanggan": 2, "Kecepatan dan ketahanan kerja": 3, "Kejujuran dan tanggung jawab": 3, "Kerja sama dan kedisiplinan jadwal": 3}
+      }
+    }
+  ]
+}
