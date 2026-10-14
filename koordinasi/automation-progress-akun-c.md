@@ -4,7 +4,7 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — idle (C6–C17 selesai, 2026-10-13); tunggu baris tugas baru di papan atau keputusan pemilik di topik 242.
+1. **Akun C** — idle (C6–C18 selesai, 2026-10-13); tunggu baris tugas baru di papan atau keputusan pemilik di topik 242.
 2. **Akun B** — uji independen + program beta VIP (keputusan 53).
 3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default (branch sudah disinkronkan fast-forward dari default di run 22:00 UTC).
 
@@ -41,6 +41,10 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-14 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~00:02 UTC — LANGKAH NOL OK (>12 mnt sejak selesai 23:48); merge default mutakhir; getUpdates 242 kosong; C6–C18 selesai, idle | — | idle | tidak |
+| 2026-10-14 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 00:00 UTC — KEY/BOT/TESTER SET; fetch+merge default; tidak ada tugas baru Akun C | — | — | — |
+| 2026-10-13 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~23:48 UTC — C18 pantau-cron kabar HILANG Telegram LOLOS; papan C18 selesai | — | LOLOS | ya |
+| 2026-10-13 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 23:30 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C18 | — | — | — |
 | 2026-10-13 ~22:40 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~22:52 UTC — C17 uji panduan beta run 2 (3 skill OK); C17 selesai; idle | simulasi | docs | ya |
 | 2026-10-13 ~22:40 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 22:40 UTC — LANGKAH NOL OK; KEY/BOT/TESTER SET; merge default; getUpdates 242 kosong; C17 | — | — | — |
 | 2026-10-13 ~22:00 | `cursor/iterasi-otomatis-akun-c-8b42` | b4b5132b | selesai ~22:02 UTC — LANGKAH NOL OK (>25 mnt sejak selesai 21:35); fast-forward merge default (+10 commit Akun B); getUpdates 242 kosong; antrean C6–C16 selesai, idle | — | idle | tidak |

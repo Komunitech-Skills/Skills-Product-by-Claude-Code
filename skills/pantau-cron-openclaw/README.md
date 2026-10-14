@@ -4,12 +4,12 @@
 
 Diuji AI penguji independen di OpenClaw: 4,63 → 8,19 dari 10 (tanpa skill asisten hanya menjawab "sudah terpasang dan aktif" tanpa bukti; dengan skill jadwal yang terlambat atau hilang ketahuan dari hitungan jam).
 
-Laporan harian 21.00, tagihan piutang 07.45, ringkasan stok... semuanya berjalan otomatis lewat OpenClaw. Sampai suatu hari laptop tertidur atau OpenClaw berhenti, dan **tidak ada yang memberi tahu**. Skill ini membuat setiap jadwal otomatis "melapor selesai" setiap kali sukses. Kalau laporannya tidak datang tepat waktu, Anda dikabari lewat Telegram (pengiriman ke Telegram sungguhan belum diuji langsung; lihat "Hasil uji" di bawah). Kalau semua jadwal lapor tepat waktu, Anda tidak diganggu.
+Laporan harian 21.00, tagihan piutang 07.45, ringkasan stok... semuanya berjalan otomatis lewat OpenClaw. Sampai suatu hari laptop tertidur atau OpenClaw berhenti, dan **tidak ada yang memberi tahu**. Skill ini membuat setiap jadwal otomatis "melapor selesai" setiap kali sukses. Kalau laporannya tidak datang tepat waktu, Anda dikabari lewat Telegram (kabar HILANG terbukti tiba di Telegram pada uji 13 Okt 2026; lihat "Hasil uji" di bawah). Kalau semua jadwal lapor tepat waktu, Anda tidak diganggu.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- **Gagal tidak lagi diam-diam**: peringatan lewat Telegram saat laporan terlambat atau hilang, lengkap dengan jadwal yang terlewat (selama komputer dan OpenClaw menyala; pengiriman ke Telegram sungguhan belum diuji langsung).
+- **Gagal tidak lagi diam-diam**: peringatan lewat Telegram saat laporan terlambat atau hilang, lengkap dengan jadwal yang terlewat (selama komputer dan OpenClaw menyala; kabar HILANG terbukti tiba di Telegram pada uji 13 Okt 2026).
 - **Tidak berisik**: tidak ada pesan "semua aman" tiap jam; cukup satu ringkasan pagi dan peringatan hanya saat perlu (masalah yang sama tidak diulang-ulang, dan ada kabar saat sudah pulih).
 - **Angka waktu dihitung, bukan ditebak**: jatuh tempo dihitung otomatis, termasuk lewat tengah malam, akhir bulan, dan WIB/WITA/WIT.
 - **Data di komputer Anda sendiri**: tanpa akun, tanpa langganan, tanpa kunci API. Layanan luar hanya opsi lanjutan.
@@ -56,7 +56,7 @@ Folder `pantau-cron-openclaw` disalin ke lokasi skill platform Anda -- lokasi le
 
 **Hasil uji (angka nyata):** uji OpenClaw 12 Okt 2026 (diuji pada v1.0.2; v1.0.3 merapikan bahasa balasan), skor 1–10 penguji independen dari 4 skenario: tanpa skill **4,63** → dengan skill **8,19** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram asli ada di bagian berikutnya. Tanpa skill asisten menjawab "sudah terpasang dan aktif" tanpa bukti dan tidak ada pengawas bagi jadwal yang hilang; dengan skill ada daftar jadwal, langkah "lapor selesai", dan pengawas siap salin.
 
-**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji. Perhitungan jadwal dicocokkan dengan hitungan independen pada 200 kasus acak (tanpa selisih). Pemasangan penuh sampai kabar HILANG/TERLAMBAT benar-benar masuk ke Telegram belum diuji langsung (di mesin uji belum ada OpenClaw penuh yang bisa dipakai agent). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji. Perhitungan jadwal dicocokkan dengan hitungan independen pada 200 kasus acak (tanpa selisih). Kabar HILANG terbukti tiba di Telegram pada uji 13 Okt 2026 oleh penguji terpisah (jadwal dummy yang sengaja tidak lapor selesai → pengawas mengirim pesan `PANTAU CRON` berisi baris `HILANG`; rincian di `examples/UJI-KABAR-TELEGRAM-2026-10-13.md`). Alur pemasangan lewat chat bot (rencana → balas "ya" → pengawas terpasang otomatis) belum terbukti ujung ke ujung di uji itu karena balasan bot terhenti; pemasangan diuji lewat perintah langsung. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
