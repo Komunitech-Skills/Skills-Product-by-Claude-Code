@@ -51,3 +51,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK"` (gateway dimatikan semen
 ## Percobaan ulang 2026-10-14 14:00 UTC
 
 Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (6 retry Ninerouter, ~63 s). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 14:30 UTC (Akun C, keputusan 78)
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~89 s, 7 retry). Run mengerjakan **C25** verifikasi aturan (bukan G18).
