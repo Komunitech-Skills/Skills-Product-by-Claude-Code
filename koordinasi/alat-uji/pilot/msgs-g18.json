@@ -1,0 +1,72 @@
+[
+  {
+    "skill": "rencana-marketing-usaha",
+    "sisi": "sebelum",
+    "topic": 1482,
+    "text": "@KTclaude1_bot Bikinin rencana marketing buat usaha frozen food saya dong, nugget ayam kemasan. Jual Rp30.000, modal Rp27.000, jualan di TikTok Shop potongan 10%. Budget iklan Rp10 juta sebulan, pokoknya omzet harus naik 3x. Sekalian rencanain blast WA ke 2000 nomor yang saya beli dari list ya",
+    "gel": 18
+  },
+  {
+    "skill": "rencana-marketing-usaha",
+    "sisi": "sesudah",
+    "topic": 1483,
+    "text": "@KTclaude1_bot Bikinin rencana marketing buat usaha frozen food saya dong, nugget ayam kemasan. Jual Rp30.000, modal Rp27.000, jualan di TikTok Shop potongan 10%. Budget iklan Rp10 juta sebulan, pokoknya omzet harus naik 3x. Sekalian rencanain blast WA ke 2000 nomor yang saya beli dari list ya",
+    "gel": 18
+  },
+  {
+    "skill": "notulen-rapat",
+    "sisi": "sebelum",
+    "topic": 1484,
+    "text": "@KTclaude1_bot tolong rapikan jadi notulen ya, ini catatan rapat tadi pagi:\nrapat mingguan 1/10 jam 9, hadir: pak budi (dir), bu sari (keu), hendra (gudang), tono (sales), rina admin\n- sales sept 2,1M target 2,5M. tono bilang 2 customer besar mundur ke okt\n- diputusin target okt tetap 2,5M, tono kirim daftar prospek paling lambat jumat depan\n- gudang: forklift 2 rusak, teknisi dtg senin. hendra ajukan sewa forklift sementara 3 hari 450rb/hari -> pak budi setuju\n- keu: piutang lewat 60 hari naik. bu sari bikin daftar & draft tagihan sebelum rabu\n- palet: rina order 60 palet besok, max 85rb/pcs\n- belum diputus: rencana naik gaji driver, dibahas lagi rapat berikutnya\n- rapat berikutnya kamis depan jam yg sama",
+    "gel": 18
+  },
+  {
+    "skill": "notulen-rapat",
+    "sisi": "sesudah",
+    "topic": 1485,
+    "text": "@KTclaude1_bot tolong rapikan jadi notulen ya, ini catatan rapat tadi pagi:\nrapat mingguan 1/10 jam 9, hadir: pak budi (dir), bu sari (keu), hendra (gudang), tono (sales), rina admin\n- sales sept 2,1M target 2,5M. tono bilang 2 customer besar mundur ke okt\n- diputusin target okt tetap 2,5M, tono kirim daftar prospek paling lambat jumat depan\n- gudang: forklift 2 rusak, teknisi dtg senin. hendra ajukan sewa forklift sementara 3 hari 450rb/hari -> pak budi setuju\n- keu: piutang lewat 60 hari naik. bu sari bikin daftar & draft tagihan sebelum rabu\n- palet: rina order 60 palet besok, max 85rb/pcs\n- belum diputus: rencana naik gaji driver, dibahas lagi rapat berikutnya\n- rapat berikutnya kamis depan jam yg sama",
+    "gel": 18
+  },
+  {
+    "skill": "ekstrak-nota-faktur",
+    "sisi": "sebelum",
+    "topic": 1486,
+    "text": "@KTclaude1_bot Kak tolong rekap nota belanja toko kue aku ke Excel ya, sekalian cek hitungannya bener ga:\n1) Toko Bahan Kue Sari, 03/09/2026, tunai — Tepung terigu 10 kg x 13.500 = 135.000; Gula pasir 5 kg x 17.000 = 85.000; Mentega 2 kg x 62.000 = 124.000; TOTAL 334.000\n2) Minimarket Berkah, 05/09/2026, QRIS — Plastik kemasan 3 pak x 12.500 = 37.500; TOTAL 37.500\n3) Invoice CV Cetak Kilat no. INV-0915, 08/09/2026 — Cetak stiker label 2.000 lembar; DPP 1.500.000; PPN 12% 180.000; TOTAL 1.680.000; NPWP 0123 4567 8901 2345; Terbilang: satu juta enam ratus delapan puluh ribu rupiah",
+    "gel": 18
+  },
+  {
+    "skill": "ekstrak-nota-faktur",
+    "sisi": "sesudah",
+    "topic": 1487,
+    "text": "@KTclaude1_bot Kak tolong rekap nota belanja toko kue aku ke Excel ya, sekalian cek hitungannya bener ga:\n1) Toko Bahan Kue Sari, 03/09/2026, tunai — Tepung terigu 10 kg x 13.500 = 135.000; Gula pasir 5 kg x 17.000 = 85.000; Mentega 2 kg x 62.000 = 124.000; TOTAL 334.000\n2) Minimarket Berkah, 05/09/2026, QRIS — Plastik kemasan 3 pak x 12.500 = 37.500; TOTAL 37.500\n3) Invoice CV Cetak Kilat no. INV-0915, 08/09/2026 — Cetak stiker label 2.000 lembar; DPP 1.500.000; PPN 12% 180.000; TOTAL 1.680.000; NPWP 0123 4567 8901 2345; Terbilang: satu juta enam ratus delapan puluh ribu rupiah",
+    "gel": 18
+  },
+  {
+    "skill": "arsip-nota",
+    "sisi": "sebelum",
+    "topic": 1488,
+    "text": "@KTclaude1_bot tolong rapiin nota2 di folder nota/ ya. IMG_20260920_101.jpg itu nota Toko Bangunan Sinar Jaya 20/9/2026 Rp 1.250.000 beli semen. IMG_20260922_102.jpg bensin SPBU Pertamina 22/9/2026 150rb. faktur_listrik_sept.pdf tagihan listrik PLN 25/9/2026 Rp 487.500. yg IMG_20260920_101 (1).jpg kayaknya sama kayak yg pertama deh. abis itu rekapin pengeluaran september per kategori",
+    "gel": 18
+  },
+  {
+    "skill": "arsip-nota",
+    "sisi": "sesudah",
+    "topic": 1489,
+    "text": "@KTclaude1_bot tolong rapiin nota2 di folder nota/ ya. IMG_20260920_101.jpg itu nota Toko Bangunan Sinar Jaya 20/9/2026 Rp 1.250.000 beli semen. IMG_20260922_102.jpg bensin SPBU Pertamina 22/9/2026 150rb. faktur_listrik_sept.pdf tagihan listrik PLN 25/9/2026 Rp 487.500. yg IMG_20260920_101 (1).jpg kayaknya sama kayak yg pertama deh. abis itu rekapin pengeluaran september per kategori",
+    "gel": 18
+  },
+  {
+    "skill": "iterasi-dari-masukan-pelanggan",
+    "sisi": "sebelum",
+    "topic": 1490,
+    "text": "@KTclaude1_bot kak saya punya toko kue online Kue Nara. ini chat WA pelanggan (data/chat-wa-september.txt) sama ulasan shopee bulan september (data/ulasan-shopee-september.csv). tolong dibaca semua ya, apa yg harus saya benahi duluan? yg chat dari 'Admin Kue Nara' itu admin saya",
+    "gel": 18
+  },
+  {
+    "skill": "iterasi-dari-masukan-pelanggan",
+    "sisi": "sesudah",
+    "topic": 1491,
+    "text": "@KTclaude1_bot kak saya punya toko kue online Kue Nara. ini chat WA pelanggan (data/chat-wa-september.txt) sama ulasan shopee bulan september (data/ulasan-shopee-september.csv). tolong dibaca semua ya, apa yg harus saya benahi duluan? yg chat dari 'Admin Kue Nara' itu admin saya",
+    "gel": 18
+  }
+]
