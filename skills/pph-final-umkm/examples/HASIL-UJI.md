@@ -51,3 +51,8 @@ Uji A/B: dengan skill jelas lebih baik (tabel per bulan, tanggal setor, status a
 4. `baca_file()`: bila CSV terbaca sebagai satu kolom (Sniffer gagal, header "bulan;omzet"), `cari_kolom` mengembalikan indeks yang sama untuk bulan & omzet, sehingga pesan error menyesatkan ("'Jan' bukan angka"). Saran: bila `ib == io`, tampilkan "pemisah kolom tidak dikenali; pakai ; atau ,".
 5. `references/regulasi.md` bagian PPh 22: tanggal "berlaku 1 Agustus 2026" ditulis tanpa kolom status, padahal butir lain punya status. Saran: beri status verifikasi + sumber tanggal mulai efektif.
 6. README FAQ "Saya CV…": kalimat "Aturan baru (PP 20/2026) mengeluarkan CV, firma, dan PT biasa…" sebaiknya ditambah "lama masa transisinya belum kami verifikasi" agar selaras dengan referensi.
+
+## Riwayat uji OpenClaw sebelum/sesudah per skill
+| Tanggal | Versi | Uji | Tanpa skill | Dengan skill | Selisih | Verdik | Catatan |
+|---|---|---|:-:|:-:|:-:|---|---|
+| 2026-10-14 | 1.0.3 | OpenClaw 2026.10.2 lokal, hanya skill ini vs tanpa skill; 5 skenario (3 normal + 1 Telegram + 1 input kurang); penguji independen | 6,8 | 6,1 | -0,7 | **BELUM** | Rincian di `00-openclaw-sebelum-sesudah.md`. Angka script benar, tetapi: PPh 22 marketplace tidak diperhitungkan sebagai pengurang PPh final (FAQ DJP PMK 37/2025 versi 1 Juli 2026) sehingga "telat"/jumlah setor keliru; batas waktu tarif 0,5% masih menurut PP 55/2022 padahal PP 20/2026 menghapusnya untuk orang pribadi & PT perorangan (sumber praktisi, PERLU REVIEW naskah resmi); agent salah menyebut "hari ini 15 Okt" (2x) dan subtotal Rp995.000 (seharusnya Rp975.000). |

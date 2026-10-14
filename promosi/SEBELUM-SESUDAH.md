@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **103 skill** dari 124 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **104 skill** dari 126 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -103,14 +103,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 93 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
 | 94 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
 | 95 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 96 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
-| 97 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 98 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 99 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 100 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 101 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
-| 102 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 103 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 96 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
+| 97 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 98 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 99 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 100 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
+| 101 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 102 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
+| 103 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 104 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -960,6 +961,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Landing page lengkap, versi link-in-bio, 3 headline, meta SEO terhitung, tombol wa.me siap klik; tidak mengarang testimoni atau klaim.
 - **Catatan jujur:** Ada detail kecil karangan (garansi 1×24 jam, 'tanpa biaya tersembunyi'); isi siap tempel hanya di file, tidak dikirim di chat.
 
+### Hitung THR Karyawan Sesuai Aturan Terbaru — 6,1 → 8
+`hitung-thr` · HR · versi 1.0.9 · diuji 2026-10-14
+
+- **Permintaan:** Bengkel motor 4 karyawan (tetap sejak 2021 dengan tunjangan jabatan + uang makan harian, kasir masuk April 2026, helper Agustus 2026 dengan tunjangan transport tetap, kontrak sejak Januari 2026), Lebaran 10 Maret 2027: hitung THR tiap orang, kapan paling lambat dibayar, lalu buat pengumuman ke grup karyawan.
+- **Tanpa skill:** Masa kerja karyawan baru dihitung "sampai hari ini" bukan sampai hari raya (THR Rp233.333 padahal seharusnya lebih), PPh 21 THR ditebak dengan tarif TER, nominal tiap orang ditulis di pengumuman grup.
+- **Dengan skill:** THR dihitung sampai hari raya memakai gaji pokok + tunjangan tetap (uang makan harian tidak ikut), batas bayar H-7 disebut dengan tanggalnya, tabel per orang siap salin, teks grup tanpa nominal pribadi; semua angka cocok dengan hitung ulang penguji.
+- **Angka kunci:** 4 karyawan: 1 × upah untuk masa kerja ≥ 12 bulan, proporsional masa kerja/12 untuk yang baru; batas bayar Rabu 3 Maret 2027 (H-7 Lebaran 10 Maret 2027).
+- **Catatan jujur:** Lulus tipis (rata-rata tepat 8,0). Saat data kurang, agent baru bertanya tanpa memberi hitungan bersyarat; beberapa balasan masih menyebut kata proses dan nama usaha karangan. Diperbaiki di 1.0.10 (uji ulang menyusul).
+
 ### Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman — 6,7 → 8,5
 `tagih-piutang` · Sales · versi 1.0.7 · diuji 2026-10-10
 
@@ -1057,3 +1067,4 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | `pdf-lokal` | 8,75 → 9 | LULUS | selisih < 1,5 |
 | `caption-sosmed-umkm` | 6 → 6,17 | BELUM | belum lulus |
 | `asisten-tulis-riset` | 7,5 → 7,5 | BELUM | belum lulus |
+| `pph-final-umkm` | 6,8 → 6,1 | BELUM | belum lulus |

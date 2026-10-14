@@ -1,0 +1,2 @@
+# Skill beta yang DITUNDA dari rilis batch 20 Okt (satu nama per baris, alasan setelah tanda #). Dihapus dari daftar bila sudah lulus uji ulang.
+pph-final-umkm # uji sebelum/sesudah 2026-10-14 BELUM (6,8→6,1): PPh 22 marketplace tidak dikreditkan (FAQ DJP PMK 37/2025), batas waktu tarif 0,5% usang (PP 20/2026); revisi 1.0.4 + uji ulang dulu
