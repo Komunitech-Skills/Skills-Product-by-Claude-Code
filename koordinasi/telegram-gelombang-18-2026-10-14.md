@@ -47,3 +47,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (7 retr
 ## Percobaan ulang 2026-10-14 13:30 UTC
 
 Smoke `openclaw agent --local -m "balas satu kata: OK"` (gateway dimatikan sementara) → **HTTP 530** (7 retry Ninerouter, ~92 s). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Percobaan ulang 2026-10-14 14:00 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (6 retry Ninerouter, ~63 s). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
