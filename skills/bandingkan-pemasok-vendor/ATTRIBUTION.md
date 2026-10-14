@@ -21,3 +21,4 @@ Karya orisinal Komunitech; penggunaan tunduk pada `LISENSI.txt` yang disertakan 
 ## Riwayat versi
 - 1.0.0 (2026-10-14): rilis awal.
 - 1.0.1 (2026-10-14): revisi dari uji independen (ringkasan siap salin, kamus PPN, batas ongkir, rekomendasi = peringkat 1, asumsi pajak terbuka). Semua perubahan karya Komunitech.
+- 1.0.2 (2026-10-14): patch termin DP + sisa, keluaran lebih ringkas, contoh baru, daftar bahan pokok dipersempit.

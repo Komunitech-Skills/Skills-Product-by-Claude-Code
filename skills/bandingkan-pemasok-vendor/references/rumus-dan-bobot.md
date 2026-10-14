@@ -25,7 +25,7 @@ Semua perhitungan memakai `Decimal` (tanpa pembulatan berantai). Rupiah dibulatk
 | Kualitas/rekam jejak | 15 | nilai 1-5 × 20 (belum dinilai = 3 → 60) | Dari penilaian pengguna, bukan tebakan |
 | Fleksibilitas/MOQ | 10 | 100 × kebutuhan ÷ jumlah beli | Beli tepat sesuai kebutuhan = 100 |
 
-- Hari bayar rata-rata = −DP% × lead time + (1 − DP%) × tempo (DP dibayar saat pesan, sebelum barang tiba).
+- Hari bayar rata-rata = −DP% × lead time + (1 − DP%) × tempo (DP dibayar saat pesan, sebelum barang tiba). Jadi untuk "DP 30% sisa 30 hari" skor termin dihitung dari bagian yang ditempokan (70% × 30 hari) dikurangi beban DP. Termin tak terbaca → netral 50 + `[isian]`.
 - **Skor total** = Σ(bobot × skor) ÷ Σ bobot. Bobot boleh diubah dan tidak harus berjumlah 100 (dinormalisasi). Bobot yang tidak disebut tetap default.
 - **Peringkat** = pemasok yang tepat waktu lebih dulu (skor total 1 desimal tertinggi; seri → lebih murah → nama), lalu pemasok yang melewati tenggat dengan aturan yang sama.
 - **Rekomendasi = peringkat 1** (selalu sama dengan tabel). Bila semua melewati tenggat, skor tertinggi + catatan untuk minta percepatan. Beda < 2 poin dengan urutan kedua → "hampir seri".
@@ -37,10 +37,10 @@ Contoh bobot alternatif yang wajar: barang untuk acara bertanggal (lead time 40,
 2. **Pemasok termurah yang tepat waktu telat** (default 7 hari, `--telat-hari`; termurah yang sudah melewati tenggat tidak dipakai sebagai subjek): lead time + hari telat → skor & rekomendasi dihitung ulang; dilaporkan apakah melewati tenggat. Penghematan vs termurah kedua dihitung; bila kerugian per hari telat diketahui (`--biaya-telat-per-hari`, mis. penjualan hilang), **hari impas** = penghematan ÷ kerugian per hari (dibulatkan ke bawah).
 3. **Bagi pesanan** (default 70/30, `--bagi`): rekomendasi mendapat 70% kebutuhan, cadangan 30% (dipilih dari calon lain yang total gabungannya paling murah; MOQ & tingkat harga tetap berlaku untuk tiap bagian; ongkir tetap dihitung penuh di masing-masing). Dilaporkan "lebih MAHAL/lebih MURAH Rp… daripada membeli semua dari [rekomendasi]" (tanpa tanda +/−).
 
-## 4. Ringkasan siap salin (sejak 1.0.1)
-Hasil `--format teks` memuat blok **RINGKASAN SIAP SALIN**: kalimat utuh bersubjek yang wajib disalin agent apa adanya.
+## 4. Inti siap salin (sejak 1.0.1; dipadatkan 1.0.2)
+Hasil `--format teks` memuat blok **INTI SIAP SALIN** = tabel 6 kolom (pemasok, total & per satuan, selisih vs termurah, kirim, bayar, skor & peringkat) + **RINGKASAN SIAP SALIN** (kalimat utuh bersubjek, wajib disalin apa adanya), beserta panjang inti dalam karakter. Kalimat yang kurang penting masuk blok **TAMBAHAN** dan rincian per pemasok, yang dikirim hanya bila pengguna membalas "rincian".
+- Isi ringkasan inti: rekomendasi; pembanding biaya; maks. 2 kalimat data kosong (batas ongkir, status PKP); maks. 2 kalimat sensitivitas (yang mengubah rekomendasi/hemat lebih dulu: telat, 2×, bagi pesanan bila tambahan ≤ 3% atau lebih murah); "Dibaca dari penawaran" (konversi hari kerja, termin yang diasumsikan/tak terbaca); asumsi pajak; pilihan pengguna.
 - Setiap selisih ditulis "A lebih MURAH Rp… daripada B" atau "A lebih MAHAL Rp… (x%) daripada B". Persen hanya pada "lebih MAHAL" dan selalu terhadap yang lebih murah, sama dengan kolom tabel "selisih vs termurah".
-- Isi: peringkat; rekomendasi (= peringkat 1); rekomendasi vs termurah (dan vs termurah yang tepat waktu bila termurah telat); jumlah 2×; termurah yang tepat waktu telat (default 7 hari); bagi pesanan; batas ongkir/biaya ambil; skenario status PKP belum jelas; asumsi pajak; pilihan pengguna (`--pilihan`).
 - **Batas ongkir (ongkir impas):** untuk pemasok yang ongkirnya belum diketahui, dicari ongkir sekali kirim terbesar (rupiah bulat, pencarian biner memakai hitungan penuh termasuk PPN bila pemasok PKP) sehingga biayanya tidak lebih mahal daripada pemasok lain termurah yang tepat waktu. Ditampilkan juga per satuan (batas ÷ jumlah) sebagai aturan umum. Sama untuk biaya ambil sendiri (loco).
 - **Skenario status PKP belum jelas:** pemasok itu dihitung ulang sebagai PKP dengan harga belum termasuk PPN; dilaporkan total baru, perbandingan dengan pesaing terdekat yang tepat waktu, dan apakah rekomendasi berubah (beserta kriteria yang membuatnya berubah).
 - **Termurah sementara:** termurah yang ongkir/biaya ambil/status PPN-nya belum pasti diberi label ini di tabel dan ringkasan.

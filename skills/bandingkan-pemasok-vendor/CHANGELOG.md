@@ -2,6 +2,15 @@
 
 Catatan teknis per versi (dipisah dari README agar halaman pembeli ringkas).
 
+## 1.0.2 (2026-10-14)
+Patch dari uji ulang 1.0.1 (LULUS, 6,5 → 8,2; dua slip kecil di skenario tambahan tanpa dampak rupiah/peringkat).
+- **Termin DP + sisa ditempokan dikenali:** "DP 30% sisa 30 hari", "30% di muka, sisa 2 minggu", "DP 40% lunas dalam 14 hari", "sisa/pelunasan saat kirim/terima". DP tanpa keterangan sisa ditulis terbuka "(diasumsikan)". Termin tak terbaca (mis. konsinyasi) → `[isian]`, skor netral, tidak lagi disebut "tunai". Cara pembacaan termin/hari kerja ditulis di ringkasan ("Dibaca dari penawaran").
+- **Contoh ringkas SKILL.md diganti** (plastik klip, 2 pemasok) agar tidak memakai data uji; agent dilarang membuka `examples/`.
+- **Keluaran lebih pendek (target ≤ 3.500 karakter):** tabel 6 kolom (termasuk kirim & bayar dari hitungan), ringkasan inti dengan maks. 2 kalimat data kosong + maks. 2 kalimat sensitivitas; kalimat lain ke blok TAMBAHAN dan rincian per pemasok hanya bila pengguna membalas "rincian". Panjang inti ditampilkan. Rincian harga per kemasan ditulis utuh (12 karton x Rp380.000, bukan harga per kg yang dibulatkan).
+- **Kutipan angka:** agent wajib menyalin INTI utuh dan tidak menulis ulang skor/lama kirim/termin di luar blok.
+- **PP 49/2022 dipersempit:** hanya frasa seperti gula pasir/gula konsumsi/gula kristal putih, beras, telur, daging/sayur/buah segar; gula aren/cair/industri/rafinasi, olahan, premium tidak dianggap bebas PPN dan diberi catatan "belum tentu termasuk; cek status barang Anda".
+- README: hasil uji nyata 1.0.1 dan status uji jujur. Uji regresi menjadi 75.
+
 ## 1.0.1 (2026-10-14)
 Revisi dari uji OpenClaw independen 1.0.0 (6,5 → 7,0, BELUM; angka script 100% cocok, cacat ada di kalimat kesimpulan agent).
 - **Arah selisih eksplisit:** script mengeluarkan blok "RINGKASAN SIAP SALIN" berisi kalimat utuh bersubjek ("A lebih MURAH/MAHAL Rp… daripada B"), menggantikan kalimat menggantung "Hemat vs Y"; SKILL.md mewajibkan blok itu disalin apa adanya dan melarang agent menghitung ulang/menyimpulkan sendiri. Kolom tabel "selisih vs termurah" kini "lebih mahal Rp… (x%)".

@@ -143,7 +143,7 @@ class TesNormal(unittest.TestCase):
         k, t = jalan(NORMAL, "--format", "teks")
         self.assertEqual(k, 0)
         self.assertIn("UNTUK AGENT SAJA", t)
-        self.assertIn("| Pemasok | Total bayar (per pcs) | Selisih vs termurah | Skor (peringkat) |", t)
+        self.assertIn("| Pemasok | Total bayar (per pcs) | Selisih vs termurah | Kirim | Bayar | Skor (peringkat) |", t)
         self.assertIn("Rp1.492.950", t)
         self.assertIn("[isian:", t)
 
@@ -522,7 +522,7 @@ class TesV101OngkirImpas(unittest.TestCase):
     def test_tanpa_barang_ada_catatan_pp49(self):
         h = jalan(self.GULA)[1]
         self.assertEqual(pem(h, "Toko Makmur")["potensi_ppn"], ppn(155000))
-        self.assertTrue(any(x.startswith("Beberapa bahan pokok") for x in h["ringkasan_siap_salin"]))
+        self.assertTrue(any(x.startswith("Bahan pokok tertentu") for x in h["ringkasan_siap_salin"]))
 
     def test_impas_pemasok_pkp_brute_force(self):
         h = jalan({"kebutuhan": {"qty": 100}, "pemasok": [
@@ -556,7 +556,7 @@ class TesV101RekomendasiDanBagi(unittest.TestCase):
         self.assertIn("CV Sinar ATK, ada di peringkat 2", x)
         self.assertIn("CV Sinar ATK lebih MURAH Rp50.000 daripada Toko Kertas Abadi", x)
         self.assertIn("kalah di lead time", x)
-        self.assertTrue(h["ringkasan_siap_salin"][1].startswith("Rekomendasi: Toko Kertas Abadi (peringkat 1)"))
+        self.assertTrue(h["ringkasan_siap_salin"][0].startswith("Rekomendasi: Toko Kertas Abadi (peringkat 1"))
 
     def test_bagi_lebih_mahal(self):
         h = jalan(self.KERTAS)[1]
@@ -573,6 +573,113 @@ class TesV101RekomendasiDanBagi(unittest.TestCase):
         self.assertIn("total Rp970.000, lebih MURAH Rp30.000 daripada membeli semua dari A", t)
         self.assertNotIn("+-", t)
         self.assertNotIn("Rp-", t)
+
+
+MARGARIN = {"kebutuhan": {"qty": 180, "satuan": "kg", "butuh_dalam_hari": 6}, "pemasok": [
+    {"nama": "CV Lancar", "harga": "385rb", "isi_kemasan": 15, "tingkat_harga": "12: 380rb", "moq": 10,
+     "ongkir": "8rb/karton", "ppn": "termasuk", "lead_time": "2 hari", "termin": "tempo 14 hari"},
+    {"nama": "Toko Rejeki", "harga": "24.900", "ppn": "non-pkp", "lead_time": "besok", "termin": "COD"},
+    {"nama": "PT Prima", "harga": "23.800", "moq": 200, "ongkir": "franco", "ppn": "belum",
+     "lead_time": "4-5 hari kerja", "termin": "DP 30% sisa 30 hari"}]}
+
+
+class TesV102Termin(unittest.TestCase):
+    """1.0.2 butir 1: DP + sisa ditempokan dikenali; yang tak terbaca -> [isian], bukan 'tunai'."""
+    def test_pola(self):
+        P = B.parse_termin_detail
+        self.assertEqual(P("DP 30% sisa 30 hari")[:2], (30, 30))
+        self.assertEqual(P("DP 30 % sisa 30 hari")[:2], (30, 30))
+        self.assertEqual(P("DP 20% sisa 30")[:2], (20, 30))
+        self.assertEqual(P("30% di muka, sisa 2 minggu")[:2], (30, 14))
+        self.assertEqual(P("DP 40% lunas dalam 14 hari")[:2], (40, 14))
+        self.assertEqual(P("DP 30%, pelunasan 30 hari setelah barang diterima")[:2], (30, 30))
+        self.assertEqual(P("DP 50% sisanya saat barang dikirim"), (50, 0, None))
+        self.assertEqual(P("bayar 50% dulu, 50% saat barang sampai")[:2], (50, 0))
+        dp_saja = P("DP 50%")
+        self.assertEqual(dp_saja[:2], (50, 0))
+        self.assertIn("dianggap dilunasi saat barang diterima", dp_saja[2])
+        self.assertIsNone(P("konsinyasi"))
+
+    def test_skor_termin_dari_bagian_ditempokan(self):
+        h = jalan(MARGARIN)[1]
+        p = pem(h, "PT Prima")
+        self.assertEqual((p["dp_persen"], p["tempo_hari"]), (30, 30))
+        hari = -0.3 * 7 + 0.7 * 30                    # lead '4-5 hari kerja' = 7 hari kalender
+        self.assertAlmostEqual(p["skor"]["termin"], round(50 + hari * 50 / 30, 1), places=1)  # 81,5
+        self.assertEqual(p["skor_total"], 64.2)
+        self.assertEqual(p["termin_dibaca"], "DP 30%, sisa tempo 30 hari")
+
+    def test_tak_terbaca_jadi_isian(self):
+        data = {"kebutuhan": {"qty": 10}, "pemasok": [
+            {"nama": "A", "harga": 1000, "ppn": "non-pkp", "termin": "konsinyasi", "ongkir": 0},
+            {"nama": "B", "harga": 1100, "ppn": "non-pkp", "termin": "DP 50%", "ongkir": 0}]}
+        h = jalan(data)[1]
+        a = pem(h, "A")
+        self.assertEqual(a["termin_dibaca"], "belum jelas")
+        self.assertEqual(a["skor"]["termin"], 50.0)
+        self.assertTrue(any(i["pemasok"] == "A" and "konsinyasi" in i["data"] for i in h["isian"]))
+        baca = next(x for x in h["ringkasan_siap_salin"] if x.startswith("Dibaca dari penawaran"))
+        self.assertIn("termin A 'konsinyasi' belum terbaca jelas", baca)
+        self.assertIn("termin B 'DP 50%' = DP 50%, sisa saat terima (diasumsikan)", baca)
+        t = jalan(data, "--format", "teks")[1]
+        self.assertNotIn("dianggap tunai saat", t)
+
+
+class TesV102Panjang(unittest.TestCase):
+    """1.0.2 butir 3: inti (tabel + ringkasan wajib) pendek agar balasan <= 3.500 karakter."""
+    def inti(self, data, *arg):
+        t = jalan(data, "--format", "teks", *arg)[1]
+        a = t.index("| Pemasok |")
+        b = t.index("(Panjang inti")
+        return t[a:b].strip(), t
+
+    def test_tiga_pemasok_inti_pendek(self):
+        for data, arg, batas in ((TEPUNG, ("--barang", "terigu"), 1600), (MARGARIN, ("--barang", "margarin"), 1600),
+                                 (NORMAL, ("--barang", "standing pouch"), 1800)):
+            inti, t = self.inti(data, *arg)
+            self.assertLessEqual(len(inti), batas, inti)
+            self.assertLessEqual(len(jalan(data, *arg)[1]["ringkasan_siap_salin"]), 9)
+            self.assertIn("| Kirim | Bayar |", inti)
+            self.assertIn("RINCIAN PER PEMASOK (hanya bila pengguna membalas 'rincian')", t)
+
+    def test_konversi_lead_terbuka_dan_kemasan_utuh(self):
+        h = jalan(MARGARIN)[1]
+        baca = next(x for x in h["ringkasan_siap_salin"] if x.startswith("Dibaca dari penawaran"))
+        self.assertIn("kirim PT Prima '4-5 hari kerja' = 7 hari", baca)
+        t = jalan(MARGARIN, "--format", "teks")[1]
+        self.assertIn("Beli 12 kemasan isi 15 (180 kg) x Rp380.000", t)   # bukan Rp25.333 x 180 kg
+
+    def test_kalimat_tak_penting_ke_tambahan(self):
+        h = jalan(MARGARIN)[1]
+        semua = h["ringkasan_siap_salin"] + h["ringkasan_tambahan"]
+        xb = next(x for x in semua if x.startswith("Bila pesanan dibagi"))
+        self.assertIn(xb, h["ringkasan_tambahan"])                       # +57,7% -> tidak penting -> tambahan
+        self.assertLessEqual(sum(x.startswith("Bila ") and "ternyata PKP" not in x for x in h["ringkasan_siap_salin"]), 2)
+        self.assertTrue(any(x.startswith("Bila Toko Rejeki (termurah) telat") for x in h["ringkasan_siap_salin"]))
+
+
+class TesV102BahanPokok(unittest.TestCase):
+    """1.0.2 butir 5: 'gula' dipersempit ke gula pasir/konsumsi/kristal putih."""
+    GULA = {"kebutuhan": {"qty": 10, "satuan": "kg"}, "pemasok": [
+        {"nama": "A", "harga": 15500, "ongkir": 0}, {"nama": "B", "harga": 16200, "ongkir": 0}]}
+
+    def test_gula_pasir_dan_kristal_putih(self):
+        for b in ("gula pasir", "Gula Kristal Putih", "gula konsumsi"):
+            h = jalan(self.GULA, "--barang", b)[1]
+            self.assertTrue(h["kebutuhan"]["mungkin_bahan_pokok_bebas_ppn"], b)
+            self.assertIsNone(pem(h, "A")["potensi_ppn"], b)
+
+    def test_gula_lain_tetap_potensi_ppn(self):
+        for b in ("gula aren premium", "gula tebu industri", "gula cair"):
+            h = jalan(self.GULA, "--barang", b)[1]
+            self.assertFalse(h["kebutuhan"]["mungkin_bahan_pokok_bebas_ppn"], b)
+            self.assertEqual(pem(h, "A")["potensi_ppn"], ppn(155000), b)
+            self.assertTrue(any("belum tentu termasuk" in x and "cek status barang Anda" in x
+                                for x in h["ringkasan_siap_salin"]), b)
+
+    def test_barang_bukan_pokok_tanpa_catatan(self):
+        h = jalan(self.GULA, "--barang", "kemasan plastik")[1]
+        self.assertFalse(any("PP 49/2022" in x for x in h["ringkasan_siap_salin"]))
 
 
 class TesParsing(unittest.TestCase):
