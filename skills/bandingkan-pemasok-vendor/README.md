@@ -71,8 +71,12 @@ Angka kunci dari uji: terigu Rp11.200/kg yang tampak termurah per kg ternyata te
 **Status uji (jujur):**
 - Diuji otomatis oleh agent di OpenClaw. Versi 1.0.0 belum lulus; versi 1.0.1 lulus.
 - Pada skenario tambahan ada dua slip kecil tanpa dampak ke rupiah, peringkat, maupun rekomendasi: salah kutip lama kirim, dan satu skor pemasok yang telat (58,9; seharusnya 64,2) karena termin "DP 30% sisa 30 hari" terbaca tanpa tempo. Pembacaan termin itu diperbaiki di versi 1.0.2, yang belum diuji ulang.
-- Belum diuji di bot Telegram asli, belum diuji manusia, dan belum melalui program beta. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+- Versi 1.0.2 sudah dicoba sekali di bot Telegram asli untuk kasus terigu (lihat bagian di bawah); kasus termin DP di atas belum diuji ulang. Belum diuji manusia dan belum melalui program beta. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 - Asumsi bahwa ongkir yang ditagih pemasok PKP ikut kena PPN, dan daftar bahan pokok yang dibebaskan PPN, masih perlu dicek konsultan pajak.
+
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 14 Okt 2026) dengan pesan yang sama: tiga balasan WA pemasok terigu, 600 kg, harus tiba dalam 5 hari. Tanpa skill skor **6,5** → dengan skill skor **8** (selisih 1,5, tepat di batas lulus acuan kami). Keduanya memilih Toko Tepung Sentosa (Rp6.826.000) dengan total yang benar. Dengan skill, jawaban muat dalam satu pesan dan menambahkan hal yang terlewat tanpa skill: status PPN Toko Tepung Sentosa belum jelas (bila ternyata kena PPN, totalnya Rp7.576.860, hanya Rp48.840 lebih murah daripada PT Mitra Pangan Jaya), total PT Mitra Pangan Jaya Rp7.625.700 yang sudah memasukkan PPN atas ongkir, akibatnya bila pemasok terlambat, dan pesan WA klarifikasi siap kirim. Semua angka cocok dengan hitung ulang terpisah. Catatan jujur: tanpa skill pun AI sudah menghitung total dengan benar dan memilih pemasok yang sama. Dengan skill, skor gabungan (86,5 vs 85,8, "hampir seri") tampil tanpa penjelasan bobotnya, dan keterangan PPN atas ongkir tidak ikut tertulis; balas "rincian" bila ingin melihat hitungan per pemasok.
 
 ## FAQ
 **Apakah AI selalu memilihkan pemasok yang paling murah?**
