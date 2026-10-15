@@ -26,7 +26,7 @@ import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP
 
-VERSI = "1.0.6"
+VERSI = "1.0.7"
 
 # ------------------------------------------------------------------ konstanta aturan
 PTKP_DIRI = Decimal(54000000)        # UU 7/2021 HPP Pasal 7 ayat (1); PMK 101/2016

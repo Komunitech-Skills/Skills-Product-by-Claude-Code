@@ -96,6 +96,9 @@ cek("peringatan global memuat checkpoint90", any("SETELAH batas hukum" in p for 
 h2 = H(mulai, jenis="pkwt")
 ap2 = cari(h2, "percobaan_pkwt")
 cek("pkwt tanpa tanggal percobaan", ap2["tanggal_target"] is None and "DILARANG" in ap2["catatan"])
+cek("pkwt catatan merujuk PP 35/2021 Pasal 12 + batal demi hukum",
+    "PP 35/2021 Pasal 12" in ap2["catatan"] and "batal demi hukum" in ap2["catatan"]
+    and "masa kerja tetap dihitung" in ap2["catatan"], ap2["catatan"])
 cek("pkwt tidak punya baris batas_percobaan", not any(t["kode"] == "batas_percobaan" for t in h2["tahapan"]))
 
 # ------------------------------------------------------------ penyesuaian akhir pekan (geser maju)
@@ -175,6 +178,7 @@ if p.returncode == 0:
     cek("cli json mulai", j["tanggal_mulai"] == "2026-09-28")
 p = cli(["--mulai", "2026-09-28", "--jenis", "pkwt", "--format", "markdown"])
 cek("cli markdown pkwt tanpa percobaan", "DILARANG" in p.stdout)
+cek("cli markdown pkwt sebut PP 35/2021 Pasal 12", "PP 35/2021 Pasal 12" in p.stdout)
 p = cli(["--mulai", "2026-09-28", "--format", "csv"])
 cek("cli csv header", p.stdout.startswith("kode,tahap"))
 p = cli(["--mulai", "31/02/2026"], kode=2)

@@ -49,6 +49,11 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Bikinin jadwal persiapan, batas unggah 20 November jam 15.00, tanggal 25 libur."
 - "CV saya KBLI 41012, SBU kecil, lagi pegang 3 proyek. Masih bisa ikut tender konstruksi?"
 
+**Catatan akses portal resmi (dicek 15 Oktober 2026):**
+- Akses tender resmi lewat LPSE masing-masing di ekosistem INAPROC (**spse.inaproc.id**). SPSE versi 4.5 **meminta kode TOTP** (verifikasi dua langkah/2FA dari aplikasi autentikator di HP) saat login — siapkan HP-nya dan coba login jauh sebelum hari unggah.
+- Data kualifikasi usaha dan riwayat kinerja penyedia dikelola di **SIKaP**, yang sejak **15 Desember 2025** diakses lewat **sikap.inaproc.id** (alamat lama sikap.lkpp.go.id kini berisi pengumuman pindah alamat).
+- Skill ini tidak masuk ke portal mana pun; ia hanya mengingatkan langkah yang perlu Anda cek sendiri.
+
 ## Instalasi singkat
 Salin folder `tender-checklist` ke folder skills AI agent Anda:
 
@@ -70,11 +75,11 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 Tidak. Skill ini mengurangi risiko gugur karena kesalahan administrasi, dokumen, jadwal, dan hitungan. Menang-kalah tetap ditentukan evaluasi pokja dan harga pesaing.
 
 **Aturannya kan sering berubah?**
-Ringkasan aturan dicek per 25 September 2026 dan pasal Perpres 16/2018 jo. 12/2021 jo. 46/2025 dicocokkan dengan naskah konsolidasi resmi LKPP pada 26 September 2026 (jaminan penawaran kini hanya untuk konstruksi & pekerjaan terintegrasi; jaminan pelaksanaan juga berlaku untuk e-purchasing), lengkap dengan sumbernya. Butir yang belum bisa dicocokkan tetap ditandai PERLU REVIEW. Acuan utama tetap dokumen pemilihan di SPSE — skill mengingatkan hal ini.
+Ringkasan aturan dicek per 25 September 2026 dan pasal Perpres 16/2018 jo. 12/2021 jo. 46/2025 dicocokkan dengan naskah konsolidasi resmi LKPP pada 26 September 2026 (jaminan penawaran kini hanya untuk konstruksi & pekerjaan terintegrasi; jaminan pelaksanaan juga berlaku untuk e-purchasing), lengkap dengan sumbernya. Butir yang belum bisa dicocokkan tetap ditandai PERLU REVIEW. Tanggal berlaku Perpres 46/2025 (diundangkan dan berlaku **30 April 2025**) dicek ulang ke JDIH BPK pada 15 Oktober 2026. Acuan utama tetap dokumen pemilihan di SPSE — skill mengingatkan hal ini.
 
 **Bisa dipakai untuk "mengatur" pemenang atau pinjam bendera?**
 Tidak. Skill akan menolak permintaan persekongkolan, pinjam bendera, dokumen palsu, atau gratifikasi karena melanggar hukum (UU 5/1999, UU Tipikor) dan berujung daftar hitam. Skill akan menawarkan jalur yang sah.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

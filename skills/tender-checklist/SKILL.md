@@ -50,6 +50,7 @@ Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat �
    - Usaha kecil berdiri < 3 tahun dapat dikecualikan dari syarat pengalaman untuk paket s.d. Rp2,5 miliar (cek LDK).
    - Batas pengadaan langsung: konstruksi s.d. Rp400 jt, barang/jasa lainnya s.d. Rp200 jt, konsultansi s.d. Rp100 jt (Pasal 38 ayat (3), Pasal 41 ayat (3)).
    - Syarat PDN (bila diminta): produk ber-**TKDN paling sedikit 25%** (artinya ≥ 25%; 25% tepat sudah memenuhi) bila ada produk dengan TKDN + BMP paling sedikit 40% (Pasal 66 ayat (2)–(4)).
+   - Akses portal (A10): tender lewat LPSE di **spse.inaproc.id**; SPSE 4.5 meminta **kode TOTP** (2FA dari aplikasi autentikator) saat login — sarankan uji login jauh sebelum H-1. Data kualifikasi & riwayat kinerja ada di **SIKaP: sikap.inaproc.id** (alamat baru sejak 15 Des 2025, menggantikan sikap.lkpp.go.id).
    Tutup dengan **keputusan: IKUT / TIDAK / IKUT DENGAN SYARAT** + alasan.
 3. **Checklist dokumen** sesuai metode (bagian B & C `references/checklist-dokumen.md`). Tampilkan sebagai kotak centang, dikelompokkan Administrasi / Teknis / Harga. Jangan menambah syarat yang tidak ada di dokumen pemilihan pengguna — tandai "jika diminta".
 4. **Jadwal mundur.** Jalankan:
@@ -85,7 +86,7 @@ Info kurang → tanyakan **sekali** (maks. 5 pertanyaan bernomor). Ingin cepat �
 ## 4. Cek harga  (tabel rincian, subtotal, PPN, total, terbilang, % HPS, peringatan)
 ## 5. Awas gugur  (5–8 butir)
 Asumsi: ...
-Dasar aturan (dicek 2026-09-25; pasal Perpres dicocokkan dengan naskah konsolidasi resmi LKPP 2026-09-26): Perpres 16/2018 jo. 12/2021 jo. 46/2025; Peraturan LKPP 12/2021 jo. 4/2024; Peraturan LKPP 2/2026 (katalog elektronik); PMK 131/2024 (PPN). Pembulatan PPN belum dicocokkan dengan Coretax. Ringkasan ini bukan nasihat hukum; yang mengikat adalah dokumen pemilihan & adendum di SPSE. Untuk keraguan, tanyakan saat pemberian penjelasan atau ke konsultan PBJ.
+Dasar aturan (dicek 2026-09-25; pasal Perpres dicocokkan dengan naskah konsolidasi resmi LKPP 2026-09-26; Perpres 46/2025 berlaku 30 April 2025, portal SPSE/SIKaP dicek 2026-10-15): Perpres 16/2018 jo. 12/2021 jo. 46/2025; Peraturan LKPP 12/2021 jo. 4/2024; Peraturan LKPP 2/2026 (katalog elektronik); PMK 131/2024 (PPN). Pembulatan PPN belum dicocokkan dengan Coretax. Ringkasan ini bukan nasihat hukum; yang mengikat adalah dokumen pemilihan & adendum di SPSE. Untuk keraguan, tanyakan saat pemberian penjelasan atau ke konsultan PBJ.
 ```
 Tampilkan hanya bagian yang diminta; alur lengkap bila pengguna "mau ikut tender" tanpa rincian.
 

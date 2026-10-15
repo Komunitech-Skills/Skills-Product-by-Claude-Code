@@ -14,7 +14,7 @@ Pakai sebagai **daftar periksa umum**. Syarat pasti tiap paket ada di **dokumen 
 | A7 | **Sisa Kemampuan Paket (konstruksi)** | SKP = KP − P; usaha kecil KP = 5; P = paket konstruksi yang sedang berjalan | SKP ≤ 0 |
 | A8 | Tidak masuk daftar hitam; pengurus tidak dalam sanksi | Portal daftar hitam nasional (INAPROC) | Masuk daftar hitam |
 | A9 | Kemampuan menyediakan: stok/produksi, TKDN (bila ada syarat PDN: TKDN **paling sedikit 25%** bila ada produk ber-TKDN + BMP paling sedikit 40% — Perpres 16/2018 jo. 46/2025 Pasal 66 ayat (2)–(4)), tenaga & alat, modal kerja (termasuk potongan PPN/PPh oleh bendahara) | Hitung arus kas; minta surat dukungan pemasok bila diminta | — (risiko wanprestasi) |
-| A10 | Akun SPSE aktif & terverifikasi di LPSE | Login SPSE di spse.inaproc.id; verifikasi berkas asli ke LPSE bila belum | Tidak bisa mengunggah |
+| A10 | Akun SPSE aktif & terverifikasi di LPSE; data kualifikasi di SIKaP terbaru | Login SPSE di spse.inaproc.id — SPSE 4.5 meminta **kode TOTP** (2FA dari aplikasi autentikator di HP), uji login jauh sebelum H-1; verifikasi berkas asli ke LPSE bila belum; cek data kualifikasi & riwayat kinerja di **SIKaP: sikap.inaproc.id** (alamat baru sejak 15 Des 2025) | Tidak bisa login/mengunggah |
 
 ## B. Dokumen penawaran — per metode
 ### B1. Tender/seleksi (pascakualifikasi, umumnya satu file)

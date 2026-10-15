@@ -63,11 +63,17 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Pada 10 kontak fiktif: tanpa skill (uji pertama) menyiapkan 6 baris kirim, termasuk nomor dobel, dan tanpa cara berhenti. Pada uji ulang, AI tanpa skill sudah membuang nomor dobel sendiri, tetapi tetap tanpa cara berhenti dan menambah urgensi "jangan sampai kehabisan!". Dengan skill (v1.0.10) 5 kontak sah, yang tidak setuju, minta berhenti, dobel, atau nomornya rusak dibuang, dan tiap pesan memuat *Balas STOP* + tautan wa.me.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan Claude Code (simulasi agent). Bot Telegram asli, Codex, dan Cursor belum diuji langsung. Versi 1.0.11 dan 1.0.12 (setelah uji) hanya mengganti rujukan ke skill lain dan melengkapi penulisan rujukan UU PDP, tanpa mengubah cara kerja. Mengirim broadcast tetap manual — skill menyiapkan file dan draf saja.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan Claude Code (simulasi agent). Bot Telegram asli, Codex, dan Cursor belum diuji langsung. Versi 1.0.11–1.0.13 (setelah uji) hanya mengganti rujukan ke skill lain, melengkapi rujukan UU PDP dan kebijakan WhatsApp, serta memperjelas jalur kirim resmi, tanpa mengubah cara kerja. Mengirim broadcast tetap manual — skill menyiapkan file dan draf saja.
+
+## Yang perlu Anda tahu (jujur)
+- **Mode Copilot: AI menyiapkan, Anda yang mengirim.** Skill menyiapkan variasi pesan, jadwal, dan daftar tautan wa.me. Anda yang membuka tiap tautan, memeriksa pesannya, lalu menekan Kirim satu per satu. Skill ini tidak terhubung ke WhatsApp dan bukan alat kirim massal otomatis (auto-blast).
+- **Hanya untuk pelanggan yang sudah setuju (opt-in).** Kebijakan WhatsApp Business (whatsapp.com/legal/business-policy, diperbarui 23 September 2026) menyebut usaha hanya boleh menghubungi orang yang sudah memberi izin menerima pesan darinya, dan permintaan berhenti wajib dihormati. UU 27/2022 tentang Pelindungan Data Pribadi (naskah resmi di JDIH BPK, peraturan.bpk.go.id) juga mensyaratkan dasar yang sah untuk memakai nomor pelanggan; untuk promo, praktisnya persetujuan pelanggan.
+- **Daftar tautan wa.me berbeda dengan WhatsApp Business Platform resmi.** Tautan wa.me hanya membuka chat dengan teks sudah terisi (sama seperti salin-tempel, hanya lebih cepat). Promo massal resmi lewat **WhatsApp Business Platform (API)** milik Meta, biasanya melalui penyedia resmi, dengan template pesan yang disetujui, izin penerima, dan ada biaya (cek harga terbaru di penyedia) — bukan lewat WhatsApp Web atau kanal WhatsApp di OpenClaw (bukan jalur resmi, nomor bisa diblokir). Skill ini tidak membantu memasang aplikasi blast atau WA mod.
+- Ringkasan aturan di skill ini bukan nasihat hukum. Untuk database pelanggan besar atau data sensitif, tanyakan konsultan hukum.
 
 ## FAQ
 **Apakah skill ini mengirim pesan otomatis?**
-Tidak. Skill menyiapkan pesan, jadwal, dan link WA per kontak. Anda yang menekan tombol kirim, jadi tetap terkendali.
+Tidak. Skill menyiapkan pesan, jadwal, dan link WA per kontak. Anda yang menekan tombol kirim, jadi tetap terkendali. Butuh kiriman massal otomatis yang resmi? Jalurnya WhatsApp Business Platform (API) lewat penyedia resmi, di luar skill ini.
 
 **Kontak saya belum ada kolom "setuju". Bagaimana?**
 Skill akan membantu membuat pesan untuk meminta izin pelanggan lebih dulu. Mengirim promo ke orang yang tidak setuju dapat melanggar UU PDP dan membuat nomor rawan diblokir.
@@ -77,4 +83,4 @@ Pelanggan berhak berhenti menerima promo kapan saja. Dengan cara berhenti yang j
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.13**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

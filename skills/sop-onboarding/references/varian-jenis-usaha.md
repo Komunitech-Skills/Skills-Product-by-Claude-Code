@@ -45,7 +45,8 @@ Hasil nyata `python3 scripts/jadwal_onboarding.py --mulai "25 Desember 2026" --h
 | Masa percobaan | - | - | Tidak | - | Tidak berlaku untuk PKWT |
 ```
 Karena **PKWT**, tidak ada baris batas hukum/evaluasi masa percobaan — PKWT dilarang mensyaratkan masa
-percobaan (UU 13/2003 Pasal 58 jo. UU 6/2023; PP 35/2021 Pasal 12), checkpoint 30/60/90 di atas hanya
+percobaan (PP 35/2021 Pasal 12; bila tetap dicantumkan, batal demi hukum; sejalan dengan UU 13/2003
+Pasal 58 jo. UU 6/2023), checkpoint 30/60/90 di atas hanya
 pemantauan kinerja biasa. Agent **tidak boleh menggeser H1 sendiri**: sampaikan peringatan apa adanya ke
 pengguna dan tanyakan apakah tetap 25 Desember (bengkel buka Natal) atau digeser ke 26 Desember. Varian
 bengkel: buku saku memuat SOP keselamatan kerja & prosedur klaim garansi; buddy = mekanik senior; formulir

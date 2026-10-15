@@ -48,6 +48,7 @@ Penilai: [ttd, nama, tanggal]        Karyawan (mengetahui): [ttd, nama, tanggal]
 
 ---
 Disclaimer: Formulir ini alat bantu administrasi HR, bukan nasihat hukum. Dasar masa percobaan: UU
-13/2003 Pasal 60 jo. UU 6/2023 (per 25 September 2026) — lihat `references/dasar-hukum-onboarding.md`.
+13/2003 Pasal 60 (maks. 3 bulan, upah tidak di bawah upah minimum; tetap berlaku setelah UU 6/2023; dicek
+ulang 15 Oktober 2026) — lihat `references/dasar-hukum-onboarding.md`.
 Untuk keputusan pemutusan hubungan kerja, konsultasikan ke ahli hukum ketenagakerjaan atau Disnaker
 setempat.

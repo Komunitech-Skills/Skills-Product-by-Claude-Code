@@ -10,6 +10,12 @@ suatu penawaran investasi), arahkan member ke ojk.go.id atau peraturan.bpk.go.id
 atau ke konsultan hukum. Jangan mengutip bagian ini sebagai "pasti masih berlaku" tanpa cek
 ulang kalau sudah lama sejak tanggal di atas.
 
+**Dicek ulang 2026-10-15** (verifikasi ulang rujukan aturan): masa transisi
+Bappebti -> OJK **diakhiri 20 Januari 2026** (siaran pers OJK, lihat §1) -- sejak itu jangan
+menulis "masa transisi" tanpa tanggal akhirnya. Pajak kripto memakai **PMK 50/2025** (berlaku
+**1 Agustus 2025**) untuk transaksi sejak tanggal itu; aturan lama tidak disebut tanpa tanggal
+berlakunya (lihat §4).
+
 ## 1. Peralihan pengawasan Bappebti -> OJK & BI, dan berakhirnya masa transisi
 - **10 Januari 2025:** peralihan resmi dimulai -- penandatanganan Berita Acara Serah Terima
   (BAST) & Nota Kesepahaman (NK) antara OJK dan Bappebti (dokumen acuan: NK-01/D.07/2025
@@ -79,10 +85,21 @@ ulang kalau sudah lama sejak tanggal di atas.
   tanggal penetapan persis, arahkan cek langsung ke halaman resmi di bawah.
   Sumber: https://ojk.go.id/id/regulasi/Pages/PADK-Nomor-3-Tahun-2026-Penyelenggaraan-Perdagangan-Aset-Keuangan-Digital-termasuk-Aset-Kripto.aspx
 
-## 4. Pajak: PPh Pasal 22 final atas penjualan aset kripto (dicek ulang 2026-10-01, status T)
+## 4. Pajak: PPh Pasal 22 final atas penjualan aset kripto (dicek ulang 2026-10-01 & 2026-10-15, status T)
 - **PMK 50/2025** (Peraturan Menteri Keuangan Nomor 50 Tahun 2025), berlaku sejak
   **1 Agustus 2025**. Ringkasan resmi DJP (31 Juli 2025), dibaca ulang 2026-10-01:
-  https://www.pajak.go.id/index.php/en/node/117234
+  https://www.pajak.go.id/index.php/en/node/117234 · halaman peraturan DJP (dicek 2026-10-15):
+  https://www.pajak.go.id/id/peraturan/pajak-pertambahan-nilai-dan-pajak-penghasilan-atas-transaksi-perdagangan-aset-kripto-0
+- **Batas tanggal (dicek 2026-10-15):** tarif di bawah HANYA untuk transaksi jual **sejak
+  1 Agustus 2025**. Transaksi sebelum tanggal itu mengikuti aturan lama, **PMK 68/PMK.03/2022**
+  (era Bappebti), yang digantikan PMK 50/2025 mulai 1 Agustus 2025. Sumber: artikel DJP "Aspek
+  Pajak Transaksi Kripto: Dulu dan Sekarang" --
+  https://www.pajak.go.id/id/artikel/aspek-pajak-transaksi-kripto-dulu-dan-sekarang
+  - Jangan menyebut tarif aturan lama sebagai tarif yang berlaku sekarang, dan jangan
+    menyebut angka tarif apa pun tanpa nama aturan + tanggal berlakunya.
+  - Script tidak mengestimasi jual sebelum 1 Agustus 2025: baris itu masuk
+    `jual_sebelum_1_agustus_2025` + `catatan_aturan_lama`; arahkan member mengecek potongan pajak
+    di riwayat exchange atau ke konsultan pajak/DJP.
   - **Yang dikenai: PENJUAL.** "Penghasilan yang diterima atau diperoleh penjual aset kripto
     sehubungan dengan transaksi aset kripto merupakan objek PPh." Jadi basisnya **nilai
     transaksi JUAL** (jumlah koin × harga satuan). **Transaksi BELI tidak dikenai PPh.**

@@ -42,6 +42,11 @@ Filter periode (opsional, `--periode bulan-ini|tahun-ini|semua` atau `--dari`/`-
 YYYY-MM-DD): hanya membatasi transaksi JUAL mana yang dihitung ke `realized_per_koin` &
 `total_realized_pl` yang ditampilkan -- perhitungan FIFO tetap memakai SELURUH riwayat
 'beli' (termasuk yang di luar periode) supaya cost basis tetap benar.
+
+Estimasi PPh final (field `estimasi_pajak`, v1.0.6; batas tanggal v1.0.11): tarif PMK 50/2025
+(0,21% / 1% dari nilai JUAL) hanya untuk transaksi jual sejak 1 Agustus 2025. Jual sebelum
+tanggal itu (aturan lama, PMK 68/PMK.03/2022) tidak diestimasi -- didaftar di
+`jual_sebelum_1_agustus_2025` + `catatan_aturan_lama`.
 """
 
 import argparse
@@ -364,6 +369,11 @@ def periksa_biaya(baris_ok):
 #  - PPN atas penyerahan aset kripto tidak dipungut lagi sejak 1 Agustus 2025 (PPN atas JASA platform/fee
 #    exchange tetap ada dan merupakan bagian biaya exchange, bukan PPh ini).
 TARIF_PPH_KRIPTO = {"dalam-negeri": Decimal("0.21"), "luar-negeri": Decimal("1")}
+# v1.0.11 (verifikasi rujukan aturan 2026-10-15): tarif PMK 50/2025 HANYA untuk transaksi jual sejak
+# tanggal berlakunya. Jual sebelum 1 Agustus 2025 tunduk aturan lama (PMK 68/PMK.03/2022, digantikan
+# PMK 50/2025; artikel DJP https://www.pajak.go.id/id/artikel/aspek-pajak-transaksi-kripto-dulu-dan-sekarang)
+# -> tidak diestimasi di sini (tarif lama tidak disebut tanpa tanggal), hanya didaftar terpisah.
+TGL_BERLAKU_PMK50 = date(2025, 8, 1)
 KET_PLATFORM = {
     "dalam-negeri": "PAKD dalam negeri berizin OJK (mis. Indodax) -- PPh dipungut otomatis oleh exchange",
     "luar-negeri": "PPMSE bukan PAKD dalam negeri (exchange luar negeri) -- bila exchange itu belum ditunjuk "
@@ -374,6 +384,7 @@ KET_PLATFORM = {
 def hitung_estimasi_pajak(baris_ok, platform, dari=None, sampai=None, total_realized_pl=0):
     tarif = TARIF_PPH_KRIPTO[platform]
     rinci = []
+    sebelum_berlaku = []
     total_nilai = Decimal(0)
     total_pph = 0
     for r in baris_ok:
@@ -382,6 +393,10 @@ def hitung_estimasi_pajak(baris_ok, platform, dari=None, sampai=None, total_real
         if (dari and r["tanggal"] < dari) or (sampai and r["tanggal"] > sampai):
             continue
         nilai = Decimal(str(r["jumlah_koin"])) * Decimal(str(r["harga_satuan"]))
+        if r["tanggal"] < TGL_BERLAKU_PMK50:
+            sebelum_berlaku.append({"baris": r["baris"], "tanggal": r["tanggal"].isoformat(), "koin": r["koin"],
+                                    "nilai_jual": bulat_rupiah(nilai)})
+            continue
         pph = int((nilai * tarif / 100).quantize(Decimal("1"), rounding=ROUND_DOWN))  # sama dgn bot-trading-kripto
         total_nilai += nilai
         total_pph += pph
@@ -390,11 +405,19 @@ def hitung_estimasi_pajak(baris_ok, platform, dari=None, sampai=None, total_real
     tarif_teks = format(tarif.normalize(), "f").replace(".", ",")
     def rp(x):
         return "Rp" + f"{x:,}".replace(",", ".")
-    teks = (f"Estimasi PPh Pasal 22 final {tarif_teks}% (PMK 50/2025) = {tarif_teks}% x total nilai JUAL "
-            f"{rp(bulat_rupiah(total_nilai))} = {rp(total_pph)}. Transaksi BELI tidak dikenai PPh.")
+    teks = (f"Estimasi PPh Pasal 22 final {tarif_teks}% (PMK 50/2025, untuk jual sejak 1 Agustus 2025) = "
+            f"{tarif_teks}% x total nilai JUAL {rp(bulat_rupiah(total_nilai))} = {rp(total_pph)}. "
+            "Transaksi BELI tidak dikenai PPh.")
+    catatan_lama = None
+    if sebelum_berlaku:
+        catatan_lama = (f"{len(sebelum_berlaku)} transaksi jual bertanggal sebelum 1 Agustus 2025 TIDAK diestimasi: "
+                        "untuk transaksi itu berlaku aturan lama (PMK 68/PMK.03/2022), yang digantikan PMK 50/2025 "
+                        "mulai 1 Agustus 2025. Cek potongan pajak di riwayat transaksi exchange atau tanyakan ke "
+                        "konsultan pajak/DJP.")
+        teks += " " + catatan_lama
     return {
-        "dasar_hukum": "PMK 50/2025, berlaku 1 Agustus 2025 (ringkasan resmi: "
-                       "https://www.pajak.go.id/index.php/en/node/117234)",
+        "dasar_hukum": "PMK 50/2025, berlaku 1 Agustus 2025 -- hanya untuk transaksi jual sejak tanggal itu "
+                       "(ringkasan resmi: https://www.pajak.go.id/index.php/en/node/117234)",
         "jenis": "PPh Pasal 22 final, dipungut dari PENJUAL",
         "platform": platform,
         "keterangan_platform": KET_PLATFORM[platform],
@@ -402,6 +425,8 @@ def hitung_estimasi_pajak(baris_ok, platform, dari=None, sampai=None, total_real
         "basis": "nilai transaksi JUAL (jumlah koin x harga satuan, sebelum fee). Transaksi BELI tidak dikenai "
                  "PPh. PPN atas penyerahan aset kripto tidak dipungut sejak 1 Agustus 2025.",
         "per_transaksi_jual": rinci,
+        "jual_sebelum_1_agustus_2025": sebelum_berlaku,
+        "catatan_aturan_lama": catatan_lama,
         "total_nilai_jual": bulat_rupiah(total_nilai),
         "total_estimasi_pph": total_pph,
         "ringkasan_teks": teks,

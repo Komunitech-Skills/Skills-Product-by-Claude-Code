@@ -34,7 +34,7 @@ Disusun dari pola evaluasi dokumen pemilihan PBJ (Perpres 16/2018 jo. 12/2021 jo
 ## Teknis unggah (SPSE)
 | # | Kesalahan | Pencegahan |
 |---|---|---|
-| 17 | **Unggah mepet** batas waktu → gagal karena koneksi/server padat | Unggah H-1; batas jam di SPSE yang berlaku |
+| 17 | **Unggah mepet** batas waktu → gagal karena koneksi/server padat, atau tidak bisa login karena HP/aplikasi kode TOTP (wajib di SPSE 4.5) tidak siap | Uji login (termasuk kode TOTP) jauh sebelumnya; unggah H-1; batas jam di SPSE yang berlaku |
 | 18 | Salah unggah: file paket lain, file kosong/rusak, salah kolom, format tidak sesuai | Buka ulang setiap file sebelum unggah; beri nama file jelas |
 | 19 | Tidak mengecek adendum setelah penjelasan | Cek H+1 penjelasan dan setiap hari |
 | 20 | Lupa menyimpan bukti unggah | Tangkapan layar/unduh tanda terima |

@@ -2,6 +2,15 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.11 (2026-10-15)
+- Tindak lanjut verifikasi rujukan aturan (dicek 15 Oktober 2026): rujukan Pasal 1320 KUHPerdata dan bea meterai UU 10/2020 dinyatakan **COCOK** dengan sumber resmi. File baru `references/regulasi.md` mencatat status COCOK, pasal, tanggal cek, dan sumbernya (Wikisource KUHPerdata, UU 10/2020 di pajak.go.id, halaman Bea Meterai DJP).
+- SKILL.md (Batasan) dan FAQ README: pengingat "proposal bukan kontrak" kini menyebut syarat sah Pasal 1320 KUHPerdata (sepakat, cakap, objek jelas, tujuan tidak dilarang), bea meterai Rp10.000 untuk surat perjanjian (Pasal 3 ayat (2) huruf a; e-meterai atau meterai tempel; terutang saat ditandatangani) beserta tautan resmi pajak.go.id/id/bea-meterai, dan arahan ke advokat/notaris. Meterai tidak disarankan pada proposal.
+- Urutan CHANGELOG dirapikan (terbaru di atas). Cara kerja, hitungan, dan script tidak berubah.
+
+## Catatan revisi 1.0.10 (2026-10-05)
+- Temuan uji Telegram: "sudah BPOM" disamakan dengan "BPOM MD/PIRT". Kini PIRT dibedakan dari BPOM (sumber di `references/izin-edar-pangan.md`).
+- Komitmen yang tidak Anda berikan (mis. "display/cooler kami sediakan") tidak lagi tercetak di proposal; ditulis `[isi: ...]` untuk Anda putuskan.
+
 ## Catatan revisi 1.0.9 (2026-10-05)
 - Rumus laba per unit (sisa untuk Anda - HPP - ongkir) dan tabel contoh selalu tampil di chat, juga bila Anda belum memberi HPP.
 - Hasil pengecekan internal dan nama/path file tidak lagi muncul di balasan; isi proposal, WA, dan email utuh di chat.
@@ -26,7 +35,3 @@ Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 - Tidak menambah klaim pemasaran yang tidak Anda berikan (termasuk klaim turunan seperti "dikenal luas").
 - Saran porsi bagi hasil/komisi kini dicek dengan hitungan untung-rugi dan titik impas ditampilkan (porsi di titik impas = laba Rp0, tidak disarankan).
 - Komitmen default (display, stok awal, isi ulang) dicatat di Asumsi.
-
-## Catatan revisi 1.0.10 (2026-10-05)
-- Temuan uji Telegram: "sudah BPOM" disamakan dengan "BPOM MD/PIRT". Kini PIRT dibedakan dari BPOM (sumber di `references/izin-edar-pangan.md`).
-- Komitmen yang tidak Anda berikan (mis. "display/cooler kami sediakan") tidak lagi tercetak di proposal; ditulis `[isi: ...]` untuk Anda putuskan.

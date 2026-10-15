@@ -2,6 +2,11 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.6 (2026-10-15)
+- Verifikasi rujukan aturan (2026-10-14 s.d. 2026-10-15) — PPh final UMKM diselaraskan dengan PP 20/2026: untuk wajib pajak orang pribadi, tarif 0,5% kini berlaku tanpa batas jumlah tahun ("selamanya") selama masih memenuhi syarat (Pasal 59 PP 55/2022 dihapus); PT perorangan, koperasi, dan badan lain punya aturan jangka waktu/peralihan sendiri. Teks lama "berbatas waktu" di `references/istilah-dan-asumsi.md` bagian 3 dan Batasan SKILL.md diganti; sumber artikel/siaran pers DJP + tanggal cek ditambahkan. Script tetap opsi sederhana 0,5% dari omzet (logika hitung tidak berubah).
+- Peringatan script untuk omzet > Rp4,8 miliar kini merujuk "PP 55/2022 jo. PP 20/2026". `VERSI` script → 1.0.6; tes L1–L3 ditambahkan.
+- `references/istilah-dan-asumsi.md` bagian 2: rujukan bunga KUR (Permenko Perekonomian No. 1 Tahun 2026 Pasal 37 & 44, berlaku 13 Januari 2026) dicocokkan ulang dengan salinan resmi JDIH BPK (tautan ditambahkan); README FAQ patokan 12% menyebut pengecekan ini.
+
 ## Catatan revisi 1.0.5 (2026-10-13)
 - Rujukan bunga KUR diverifikasi penguji independen (2026-10-13): Peraturan Menteri Koordinator Bidang Perekonomian No. 1 Tahun 2026 tentang Pedoman Pelaksanaan Kredit Usaha Rakyat memang ada (ditetapkan 5 Januari 2026, diundangkan dan berlaku 13 Januari 2026, Berita Negara 2026 No. 17). Pasal 37 ayat (1) huruf a (KUR mikro) dan Pasal 44 ayat (1) huruf a (KUR kecil) memuat 6% efektif per tahun untuk Sektor Produksi/perdagangan berorientasi ekspor, sesuai klaim skill.
 - `references/istilah-dan-asumsi.md` bagian 2: dasar aturan lengkap (judul, pasal, ayat, huruf, tanggal berlaku), catatan bunga sektor perdagangan non-ekspor (Pasal 37/44 ayat (1) huruf b), serta sumber + URL + tanggal cek. SKILL.md (tabel Input), README (FAQ patokan 12%) dan script (asumsi default & peringatan diskonto < 6%) kini menyebut tanggal berlaku 13 Januari 2026. Logika hitung tidak berubah. `VERSI` script → 1.0.5; tes K7–K8 ditambahkan.

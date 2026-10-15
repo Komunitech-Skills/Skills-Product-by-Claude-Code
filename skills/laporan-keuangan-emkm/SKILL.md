@@ -119,7 +119,7 @@ Periode <tgl> s.d. <tgl> · mengacu SAK EMKM · status: LENGKAP/SEMENTARA
 ## Ringkasan untuk pemilik        ← 3–6 kalimat awam: untung/rugi, margin, pengeluaran terbesar, prive, kas akhir
 ## 1. Laporan Laba Rugi           ← tabel
 ## 2. Laporan Posisi Keuangan     ← tabel + baris cek keseimbangan (✔/✘ + selisih)
-## Laporan Arus Kas               ← operasi / investasi / pendanaan, kas awal → kas akhir (dari script)
+## Laporan Arus Kas               ← PELENGKAP, bukan laporan wajib SAK EMKM: operasi / investasi / pendanaan, kas awal → kas akhir (dari script)
 ## 3. Catatan atas Laporan Keuangan (ringkas)
 ## Tren per periode               ← jika > 1 bulan
 ## Perlu dicek                    ← transaksi tak terklasifikasi, baris rusak, peringatan
@@ -153,6 +153,7 @@ sebesar Rp 5.400.000 (59,9% dari total biaya). ...
 - [ ] Asumsi dan disclaimer "bukan laporan audit" tercantum.
 - [ ] Modal negatif tidak disebut "wajar"; aset yang belum dicatat & utang sudah ditanyakan/dijelaskan.
 - [ ] Untuk bank/KUR: ditawarkan file siap cetak (`--html`) + arus kas; tidak ada angka yang dinaikkan.
+- [ ] Arus kas tidak disebut sebagai laporan wajib SAK EMKM (yang wajib: Posisi Keuangan, Laba Rugi, Catatan).
 
 ## Batasan & penanganan error
 - Uji regresi script: `python3 <folder-skill-ini>/scripts/uji_regresi.py` (harus "SEMUA UJI LULUS").

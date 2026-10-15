@@ -17,6 +17,8 @@ Rumus lain:
       dan (1+i)^12 - 1 (per tahun majemuk).
   Pinjaman harian (tenor dalam hari, dibayar sekali di akhir):
       bunga = pokok x bunga_harian x hari ; biaya per tahun = (kembali/diterima - 1) x 365/hari
+      Pembanding batas OJK (cara hitung SEOJK No. 19/SEOJK.06/2025 Romawi XIV angka 3):
+      manfaat ekonomi per hari = (bunga + biaya) / nilai pinjaman di perjanjian / hari
 Pembulatan: rupiah ke terdekat (0,5 ke atas) per baris; selisih pembulatan ditaruh di cicilan
 terakhir agar total pokok tepat sama dengan pinjaman, dan selisihnya ditampilkan.
 """
@@ -30,13 +32,45 @@ getcontext().prec = 50
 D = Decimal
 NOL, SATU, SERATUS = D(0), D(1), D(100)
 
-# Batas manfaat ekonomi pinjaman daring yang kami catat (SEOJK No. 19/SEOJK.06/2023, penurunan
-# bertahap; nilai untuk 2026, tenor > 6 bulan). Akhir 2024 OJK menyesuaikan batas berdasarkan tenor
-# (<= 6 bulan vs > 6 bulan). Hanya untuk peringatan; selalu minta pengguna cek aturan OJK terbaru.
-BATAS_PINJOL_HARIAN = {"konsumtif": D("0.1"), "produktif": D("0.067")}
-RUJUKAN_PINJOL = ("SEOJK No. 19/SEOJK.06/2023 (batas turun bertahap; untuk 2026 tercatat 0,1%/hari "
-                  "konsumtif, 0,067%/hari produktif untuk tenor lebih dari 6 bulan; sejak akhir 2024 batas "
-                  "dibedakan menurut tenor) - cek aturan OJK terbaru di ojk.go.id")
+# Batas maksimum manfaat ekonomi pinjaman daring (LPBBTI) menurut SEOJK No. 19/SEOJK.06/2025
+# Romawi XIV angka 2-3 (ditetapkan dan berlaku 31 Juli 2025; mencabut SEOJK No. 19/SEOJK.06/2023).
+# Persen per hari kalender dari nilai pendanaan yang tercantum dalam perjanjian. Manfaat ekonomi =
+# bunga/margin + biaya administrasi/komisi/fee platform + biaya lain, selain denda keterlambatan,
+# biaya tanda tangan elektronik bersertifikat, dan pajak. OJK dapat mengevaluasi batas ini secara
+# berkala (Romawi XIV angka 7) - hanya untuk peringatan; selalu minta pengguna cek aturan OJK terbaru.
+BATAS_PINJOL_HARIAN = {
+    "konsumtif": {"sd_6_bulan": D("0.3"), "di_atas_6_bulan": D("0.2")},
+    "produktif_sd_50jt": {"sd_6_bulan": D("0.275"), "di_atas_6_bulan": D("0.1")},
+    "produktif_di_atas_50jt": {"sd_6_bulan": D("0.1"), "di_atas_6_bulan": D("0.1")},
+}
+NILAI_PRODUKTIF_KECIL = D(50_000_000)  # produktif: nilai pendanaan paling tinggi Rp50.000.000
+# Asumsi: "tenor sampai dengan 6 bulan" = sampai 180 hari (1 bulan = 30 hari, seperti simulasi di SEOJK
+# yang sama: tenor 5 bulan = 150 hari, 7 bulan = 210 hari). Tenor 181-184 hari diberi catatan asumsi.
+TENOR_6_BULAN_HARI = 180
+TENOR_6_BULAN_KALENDER_MAKS_HARI = 184
+RUJUKAN_PINJOL = ("SEOJK No. 19/SEOJK.06/2025 Romawi XIV angka 3, berlaku sejak 31 Juli 2025 "
+                  "(SEOJK No. 19/SEOJK.06/2023 sudah dicabut): konsumtif 0,3%/hari untuk tenor sampai 6 bulan "
+                  "dan 0,2%/hari untuk tenor di atas 6 bulan; produktif dengan nilai pinjaman paling tinggi "
+                  "Rp50 juta 0,275%/hari (tenor sampai 6 bulan) dan 0,1%/hari (tenor di atas 6 bulan); produktif "
+                  "di atas Rp50 juta 0,1%/hari; dihitung per hari kalender dari nilai pinjaman di perjanjian "
+                  "- cek aturan OJK terbaru di ojk.go.id")
+RUJUKAN_PINJOL_SINGKAT = "SEOJK No. 19/SEOJK.06/2025 Romawi XIV angka 3, berlaku sejak 31 Juli 2025"
+
+
+def batas_pinjol(jenis, nilai, hari):
+    """Batas manfaat ekonomi (persen per hari) + keterangan golongan, menurut BATAS_PINJOL_HARIAN."""
+    pendek = hari <= TENOR_6_BULAN_HARI
+    kunci_tenor = "sd_6_bulan" if pendek else "di_atas_6_bulan"
+    teks_tenor = "tenor sampai 6 bulan" if pendek else "tenor di atas 6 bulan"
+    if jenis == "konsumtif":
+        return BATAS_PINJOL_HARIAN["konsumtif"][kunci_tenor], f"konsumtif, {teks_tenor}"
+    if nilai <= NILAI_PRODUKTIF_KECIL:
+        return (BATAS_PINJOL_HARIAN["produktif_sd_50jt"][kunci_tenor],
+                f"produktif dengan nilai pinjaman paling tinggi Rp50 juta, {teks_tenor}")
+    return (BATAS_PINJOL_HARIAN["produktif_di_atas_50jt"][kunci_tenor],
+            "produktif dengan nilai pinjaman di atas Rp50 juta, semua tenor")
+
+
 # Bunga ilustrasi bila bunga belum diketahui (bunga ilustrasi, bukan acuan pasar dan bukan data lembaga tertentu).
 ILUSTRASI = {
     "hp": ("kredit HP/elektronik lewat pembiayaan atau paylater, dihitung flat",
@@ -611,14 +645,28 @@ def hitung_harian(a, pokok, diterima, hari, asumsi, peringatan):
             "uang_diterima_bersih": diterima, "total_biaya_pinjaman": biaya,
             "biaya_total_per_hari_persen": per_hari, "setara_per_bulan_persen": per_hari * 30,
             "setara_per_tahun_persen": tahun_sederhana, "setara_per_tahun_majemuk_persen": majemuk}
-    batas = BATAS_PINJOL_HARIAN[a.jenis_pinjol]
+    # Pembanding batas OJK: (bunga + biaya) per hari dari nilai pinjaman di perjanjian (bukan dari uang diterima).
+    me_per_hari = biaya / pokok / hari * SERATUS
+    jenis_pinjol = a.jenis_pinjol or "konsumtif"
+    if not a.jenis_pinjol:
+        asumsi.append("Jenis pinjaman daring dianggap konsumtif; bila untuk modal usaha (produktif), batas OJK-nya berbeda.")
+    batas, golongan = batas_pinjol(jenis_pinjol, pokok, hari)
+    ring["manfaat_ekonomi_per_hari_persen"] = me_per_hari
     ring["batas_tercatat_per_hari_persen"] = batas
+    ring["golongan_batas"] = golongan
     ring["rujukan_batas"] = RUJUKAN_PINJOL
+    asumsi.append(f"Batas OJK dipilih untuk pinjaman daring {golongan}: tenor {hari} hari (6 bulan dihitung 180 hari), "
+                  f"nilai pinjaman di perjanjian {rp(pokok)}; semua biaya yang dimasukkan dihitung sebagai manfaat ekonomi "
+                  f"(denda keterlambatan, biaya tanda tangan elektronik bersertifikat, dan pajak tidak termasuk).")
+    if TENOR_6_BULAN_HARI < hari <= TENOR_6_BULAN_KALENDER_MAKS_HARI:
+        b_pendek, _ = batas_pinjol(jenis_pinjol, pokok, TENOR_6_BULAN_HARI)
+        asumsi.append(f"Tenor {hari} hari dianggap di atas 6 bulan (6 bulan = 180 hari). Bila perjanjian menyebut tenornya "
+                      f"6 bulan, batas yang berlaku adalah batas tenor sampai 6 bulan ({pct(b_pendek, 3)}/hari).")
     peringatan.append(f"Biaya total {rp(biaya)} untuk {hari} hari = {pct(per_hari, 3)} per hari dari uang yang diterima "
                       f"(setara ±{pct(tahun_sederhana, 0)} per tahun).")
-    if per_hari > batas:
-        peringatan.append(f"Biaya total per hari di atas {pct(batas, 3)}/hari, angka batas pinjaman daring {a.jenis_pinjol} "
-                          f"yang kami catat ({RUJUKAN_PINJOL}). Untuk tenor pendek seperti ini batasnya bisa berbeda; "
+    if me_per_hari > batas:
+        peringatan.append(f"Bunga + biaya = {pct(me_per_hari, 3)} per hari dari nilai pinjaman {rp(pokok)}, di atas "
+                          f"{pct(batas, 3)}/hari, batas pinjaman daring {golongan} ({RUJUKAN_PINJOL_SINGKAT}); "
                           f"cek aturan OJK terbaru dan legalitas penyelenggara di ojk.go.id / Kontak OJK 157.")
     if diterima < pokok:
         peringatan.append(f"Uang cair {rp(diterima)} tetapi yang harus dikembalikan dihitung dari {rp(pokok)}.")
@@ -682,6 +730,8 @@ def teks(h):
         L.append(f"  Total biaya pinjaman     : {rp(rg['total_biaya_pinjaman'])}")
         L.append(f"  Biaya per hari (bersih)  : {pct(rg['biaya_total_per_hari_persen'], 3)}  ~ {pct(rg['setara_per_bulan_persen'], 1)}/bulan"
                  f"  ~ {pct(rg['setara_per_tahun_persen'], 0)}/tahun")
+        L.append(f"  Cara hitung OJK          : {pct(rg['manfaat_ekonomi_per_hari_persen'], 3)}/hari dari nilai pinjaman; "
+                 f"batas {pct(rg['batas_tercatat_per_hari_persen'], 3)}/hari ({rg['golongan_batas']})")
     elif h["mode"] == "bulanan":
         jen = {"flat": "flat", "efektif": "efektif/anuitas", "dari_cicilan": "dihitung balik dari cicilan"}[rg["jenis_bunga"]]
         L.append(f"Pinjaman {rp(it['pokok_pinjaman'])}, tenor {it['tenor']} bulan, bunga {jen} "
@@ -778,7 +828,9 @@ def main(argv=None):
     p.add_argument("--biaya-bulanan", help="biaya tetap per bulan di luar cicilan (mis. asuransi bulanan)")
     p.add_argument("--cara-biaya", choices=["tunai", "potong", "masuk-pinjaman"], default="tunai",
                    help="biaya di muka: dibayar tunai (default), dipotong dari pencairan, atau ditambahkan ke pinjaman")
-    p.add_argument("--jenis-pinjol", choices=["konsumtif", "produktif"], default="konsumtif")
+    p.add_argument("--jenis-pinjol", choices=["konsumtif", "produktif"],
+                   help="jenis pinjaman daring untuk memilih batas OJK (default konsumtif, dicatat sebagai asumsi; "
+                        "tenor & nilai pinjaman dipilih otomatis)")
     p.add_argument("--denda", help="denda telat: 0,1%%/hari dari tunggakan, atau rupiah per hari")
     p.add_argument("--telat", default="7", help="hari telat untuk ilustrasi denda (default 7)")
     p.add_argument("--penghasilan", help="penghasilan bersih per bulan (untuk cicilan maksimal aman)")
