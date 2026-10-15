@@ -115,6 +115,60 @@
 
 ---
 
+## 5. `cek-privasi-openclaw` — UU PDP, UU ITE, PP pelaksana
+
+**Run verifikasi:** 2026-10-15 ~00:30 UTC (Akun C, C30 butir 4).
+
+### 5.1 Masa berlaku & transisi UU 27/2022
+
+| Klaim skill (`references/uu-pdp.md`) | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| UU PDP berlaku penuh sejak **Oktober 2024** | UU 27/2022 Pasal 74 (penyesuaian paling lama 2 tahun sejak diundangkan 17 Okt 2022); Pasal 76 (berlaku saat diundangkan) — JDIH Kemkomdigi | 2026-10-15 | **COCOK** — masa penyesuaian 2 tahun berakhir ±17 Okt 2024 |
+| PP pelaksana «belum diverifikasi» | PP 33/2026 diundangkan 16 Jul 2026, berlaku 16 Jan 2027 (Pasal 225); peraturan.go.id / legaltrans salinan resmi | 2026-10-15 | **PERLU UBAH** — cantumkan PP 33/2026 + tanggal berlaku; UU tetap wajib sejak transisi berakhir, PP menambah operasional |
+
+### 5.2 Kewajiban pengendali & hak subjek (ringkasan skill)
+
+| Klaim skill | Sumber | Kesimpulan |
+|---|---|---|
+| Dasar pemrosesan (persetujuan, kontrak, kewajiban hukum, dll.) | UU 27/2022 Pasal 20 ayat (2) a–f | **COCOK** |
+| Informasi wajib bila berbasis persetujuan | Pasal 21 ayat (1) a–g | **COCOK** |
+| Data pribadi spesifik (termasuk kesehatan) Pasal 4 | Pasal 4 UU 27/2022 | **COCOK** |
+| Notifikasi kebocoran «hitungan hari» / cek ketentuan resmi | Pasal 46 ayat (1): paling lambat **3×24 jam** tertulis ke subjek data & lembaga | **PERLU UBAH** — ganti frasa vague menjadi «paling lambat 72 jam (3×24 jam)» dengan rujuk Pasal 46 |
+
+### 5.3 Sanksi administratif
+
+| Klaim skill | Sumber | Kesimpulan |
+|---|---|---|
+| Skill tidak memuat daftar sanksi (hanya disclaimer) | Pasal 57: peringatan, penghentian pemrosesan, penghapusan/pemusnahan, denda admin. maks. 2% pendapatan/penerimaan terkait | **COCOK** arah (pengingat, bukan nasihat); opsional README: satu kalimat «pelanggaran kewajiban pengendali dapat dikenai sanksi administratif UU PDP» |
+
+### 5.4 Penolakan penyadapan chat (UU ITE)
+
+| Klaim skill (`SKILL.md`, examples) | Sumber | Kesimpulan |
+|---|---|---|
+| UU ITE Pasal 31 (intersepsi ilegal) | UU 11/2008 jo. UU 19/2016 jo. **UU 1/2024** Pasal 31 ayat (1)–(2) — JDIH Komdigi | **COCOK** substansi; **PERLU REVIEW Akun B:** kutipan materi jualan sebut «UU ITE (UU 11/2008 jo. UU 1/2024) Pasal 31» agar mutakhir |
+
+**Usulan teks (Akun B):** Perbarui `references/uu-pdp.md`: (1) PP 33/2026 & 16 Jan 2027; (2) Pasal 46 = 72 jam; (3) opsional satu baris Pasal 57; (4) rujuk UU ITE jo. 1/2024 di penolapan sadap.
+
+---
+
+## 6. `rekonsiliasi-bank` — praktik vs SAK EMKM (tanpa peraturan khusus)
+
+**Run verifikasi:** 2026-10-15 ~00:30 UTC (Akun C, C30 butir 5).
+
+Tidak ada UU/PP khusus «rekonsiliasi bank» untuk UMKM. Pemeriksaan: klaim skill vs praktik akuntansi SAK EMKM & privasi.
+
+| Klaim skill | Sumber / acuan | Kesimpulan |
+|---|---|---|
+| «Bukan audit» / «bukan nasihat akuntansi» (`README.md`, `SKILL.md`) | Skill memang operasional matching CSV, bukan opini audit | **COCOK** |
+| Laporan laba/neraca → arahkan ke `laporan-keuangan-emkm` | Pemisahan fungsi selaras praktik: rekonsiliasi kas ≠ laporan keuangan lengkap | **COCOK** |
+| Mutasi rekening = data pribadi (UU PDP) — `references/format-bank.md` | UU 27/2022 (data keuangan pribadi = spesifik, Pasal 4) | **COCOK** arah |
+| «Angka seimbang» = penjelasan aritmetika selisih, bukti pasangan benar | Bukan klaim SAK EMKM; selaras praktik rekonsiliasi kas sebelum tutup buku | **COCOK** |
+| Tidak mengklaim wajib rekonsiliasi menurut SAK EMKM | SAK EMKM (IAI) menekankan pengendalian kas & catatan; rekonsiliasi bank adalah praktik wajar tetapi skill tidak perlu mengutip pasal SAK | **COCOK** — tidak ada klaim salah; opsional README: «rekonsiliasi membantu tutup buku kas, bukan pengganti SAK EMKM» |
+
+**Usulan teks (Akun B):** Tidak wajib; bila ingin: satu kalimat di README bahwa hasil ini alat bantu operasional, bukan bukti audit atau laporan keuangan SAK EMKM.
+
+---
+
 ## Progress C30
 
 | # | Skill | Status run |
@@ -122,6 +176,6 @@
 | 1 | kasir-lokal | ✅ verifikasi run 23:30 UTC |
 | 2 | laporan-keuangan-emkm | ✅ verifikasi run 23:30 UTC |
 | 3 | pengingat-pasien-klinik + edukasi-pasien-klinik | ✅ verifikasi run 00:00 UTC 2026-10-15 |
-| 4 | cek-privasi-openclaw | belum |
-| 5 | rekonsiliasi-bank | belum |
+| 4 | cek-privasi-openclaw | ✅ verifikasi run 00:30 UTC 2026-10-15 |
+| 5 | rekonsiliasi-bank | ✅ verifikasi run 00:30 UTC 2026-10-15 |
 | 6 | kelayakan-investasi-usaha | belum |
