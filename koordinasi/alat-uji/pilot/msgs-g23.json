@@ -1,0 +1,44 @@
+[
+  {
+    "skill": "dasbor-lokal",
+    "sisi": "sebelum",
+    "topic": 1578,
+    "text": "@KTclaude1_bot Buka dasbor toko saya dong, sekalian tampilkan stok yang menipis dan saldo kas per akun.",
+    "gel": 23
+  },
+  {
+    "skill": "dasbor-lokal",
+    "sisi": "sesudah",
+    "topic": 1579,
+    "text": "@KTclaude1_bot Buka dasbor toko saya dong, sekalian tampilkan stok yang menipis dan saldo kas per akun.",
+    "gel": 23
+  },
+  {
+    "skill": "audit-seo-toko-online",
+    "sisi": "sebelum",
+    "topic": 1580,
+    "text": "@KTclaude1_bot Audit SEO halaman produk toko saya: https://tokorenyahjaya.co.id/produk/keripik-pedas-bandung-250gr/ — kata kunci yang saya incar keripik pedas Bandung.",
+    "gel": 23
+  },
+  {
+    "skill": "audit-seo-toko-online",
+    "sisi": "sesudah",
+    "topic": 1581,
+    "text": "@KTclaude1_bot Audit SEO halaman produk toko saya: https://tokorenyahjaya.co.id/produk/keripik-pedas-bandung-250gr/ — kata kunci yang saya incar keripik pedas Bandung.",
+    "gel": 23
+  },
+  {
+    "skill": "analisis-excel",
+    "sisi": "sebelum",
+    "topic": 1582,
+    "text": "@KTclaude1_bot Saya punya file Penjualan 2026.xlsx toko bangunan. Kategori apa paling laku, tren per bulan gimana, dan Q2 vs Q3 naik atau turun?",
+    "gel": 23
+  },
+  {
+    "skill": "analisis-excel",
+    "sisi": "sesudah",
+    "topic": 1583,
+    "text": "@KTclaude1_bot Saya punya file Penjualan 2026.xlsx toko bangunan. Kategori apa paling laku, tren per bulan gimana, dan Q2 vs Q3 naik atau turun?",
+    "gel": 23
+  }
+]

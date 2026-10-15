@@ -4,8 +4,8 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C24 G18** (prioritas 1): smoke router → lanjut kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~08:00 UTC). Pesan 2–10 `msgs-g18.json` belum terkirim.
-2. **C34** — G19–G22 **siap**; **G23** belum. Setelah G18: restart gateway → kirim G19 → … → G22.
+1. **Akun C** — **C24 G18** (prioritas 1): smoke router → lanjut kirim gelombang bila HTTP 200 (~87 s → 530 @08:32 UTC). Pesan 2–10 `msgs-g18.json` belum terkirim.
+2. **C34 selesai** — G19–G23 prep siap. Setelah router hidup: restart gateway → G18 → G19 … → G23.
 3. **C25–C33 selesai** — ringkasan PERLU UBAH: `koordinasi/ringkasan-verifikasi-aturan-2026-10-15.md`.
 4. **Akun B** — terapkan usulan ringkasan verifikasi; uji independen + program beta VIP (keputusan 53).
 5. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
@@ -44,6 +44,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-15 ~08:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 08:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C34 G23 | — | — | — |
 | 2026-10-15 ~08:00 | `cursor/iterasi-otomatis-akun-c-8b42` | c5d1d0e3 | selesai ~08:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~108 s); **C34 G22 siap** (topik 1567–1576, msgs-g22, salin skill G18–G22, patch tanpa restart); **G18 tidak dilanjutkan** | — | prep | ya |
 | 2026-10-15 ~08:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 08:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C34 G22 | — | — | — |
 | 2026-10-15 ~07:30 | `cursor/iterasi-otomatis-akun-c-8b42` | b31ea3be | selesai ~07:48 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; smoke router HTTP 530 (~80 s); **C34 G21 siap** (topik 1556–1565, msgs-g21, salin skill G18–G21, patch tanpa restart); **G18 tidak dilanjutkan** | — | prep | ya |
