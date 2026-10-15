@@ -61,7 +61,7 @@ Salin folder `surat-penawaran-harga` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** dua sumber yang terpisah, skor 1–10.
-- **Uji perbandingan oleh penguji independen (simulasi agent; skor kualitas 8/10):** 400 surat acak (diskon baris dan total, ongkir, non-PKP/PKP, harga termasuk PPN) dicocokkan dengan hitungan independen: 0 selisih. Pada uji A/B untuk percetakan non-PKP, surat tanpa skill menulis "belum termasuk pajak" (menyesatkan), masa berlaku tanpa tanggal, nomor surat tanpa kode usaha, dan tanpa teks WhatsApp; dengan skill: "Harga tidak dikenakan PPN", berlaku sampai tanggal pasti, nomor baku `045/SPH/PSJ/IX/2026`, plus teks WA siap kirim. Rincian: `examples/HASIL-UJI.md` dan `examples/00-pembanding-tanpa-skill.md`.
+- **Uji perbandingan oleh penguji independen (simulasi agent; skor kualitas 8/10):** 400 surat acak (diskon baris dan total, ongkir, non-PKP/PKP, harga termasuk PPN) dicocokkan dengan hitungan independen: 0 selisih. Pada uji A/B untuk percetakan non-PKP, surat tanpa skill menulis "belum termasuk pajak" (menyesatkan), masa berlaku tanpa tanggal, nomor surat tanpa kode usaha, dan tanpa teks WhatsApp; dengan skill: "Harga tidak dikenakan PPN", berlaku sampai tanggal yang tertulis jelas, nomor baku `045/SPH/PSJ/IX/2026`, plus teks WA siap kirim. Rincian: `examples/HASIL-UJI.md` dan `examples/00-pembanding-tanpa-skill.md`.
 - **Uji OpenClaw, 1 Okt 2026** (uji otomatis agent, satu skenario surat, skill diuji di dalam paket 25 skill; angka dari `examples/00-openclaw-sebelum-sesudah.md`): 7 → 8 (8 pada uji ulang terakhir; selisih kecil, jadi bukan kemenangan telak). Temuannya diperbaiki di versi 1.0.3 sampai 1.0.5 (rincian di `CHANGELOG.md`). Uji ulang pada 13 Okt 2026 memakai v1.0.5 (hasilnya di baris berikutnya).
 
 - **Uji ulang v1.0.5, 13 Okt 2026** (OpenClaw 2026.10.2, penguji independen, satu skill saja, pesan identik dua giliran, angka dicek ulang dengan Python): tanpa skill **6** → dengan skill **8,5** (LULUS). Angka benar di kedua sisi (total Rp8.370.000, PPN Rp0 karena bukan PKP); bedanya di kelengkapan surat di chat, kalimat bukan-PKP, terbilang, dan kota yang tidak dikarang.
@@ -70,13 +70,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## FAQ
 **Usaha saya belum PKP, apakah tetap bisa?**
-Bisa, justru itu pengaturan bawaannya. Surat dibuat tanpa PPN dan diberi keterangan "Harga final; penjual bukan PKP sehingga tidak memungut PPN."
+Usaha yang belum PKP tetap bisa memakainya, dan itu pengaturan bawaannya. Surat dibuat tanpa PPN dan diberi keterangan "Harga final; penjual bukan PKP sehingga tidak memungut PPN."
 
 **Apakah surat ini bisa jadi faktur pajak?**
-Tidak. Surat penawaran hanya penawaran. Faktur pajak tetap dibuat lewat Coretax (sistem pajak online DJP) oleh PKP. Untuk tagihan, pakai skill Invoice & Kuitansi.
+Surat penawaran tidak bisa dijadikan faktur pajak karena isinya hanya penawaran. Faktur pajak tetap dibuat lewat Coretax (sistem pajak online DJP) oleh PKP. Untuk tagihan, pakai skill Invoice & Kuitansi.
 
 **Harus install Python?**
-Tidak wajib. Jika komputer punya Python, angka dihitung otomatis oleh kalkulator bawaan. Jika tidak, AI tetap menghitung langkah demi langkah dan memberi tanda agar Anda mengecek ulang.
+Python tidak wajib dipasang. Jika komputer punya Python, angka dihitung otomatis oleh kalkulator bawaan. Jika tidak, AI tetap menghitung langkah demi langkah dan memberi tanda agar Anda mengecek ulang.
 
 ## Riwayat perubahan
 
