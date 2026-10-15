@@ -138,7 +138,9 @@ description: Pantau harga kripto (BTC/ETH/SOL/dll) terhadap ambang % atau harga 
    Kutip `estimasi_pajak` (`ringkasan_teks`, `per_transaksi_jual`, `total_estimasi_pph`). Dasar
    (PMK 50/2025, sejak 1 Agustus 2025, `references/regulasi.md` §4): PPh Pasal 22 final dipungut
    dari penjual, basis = **nilai transaksi JUAL** saja; 0,21% di PAKD dalam negeri, 1% di bursa
-   luar negeri; PPN tidak dipungut. Sebut asumsi platform.
+   luar negeri; PPN tidak dipungut. Sebut asumsi platform. Tarif ini hanya untuk jual **sejak
+   1 Agustus 2025**; jual sebelumnya (aturan lama PMK 68/PMK.03/2022) tidak diestimasi script →
+   kutip `jual_sebelum_1_agustus_2025` + `catatan_aturan_lama`, jangan menyebut tarif lama.
    **Jangan menebak apakah PPh sudah termasuk di kolom `biaya`** -- minta dicek di riwayat bursa;
    bila belum termasuk, P/L setelah pajak = `pl_bila_pph_belum_di_kolom_biaya`. SPT tahunan →
    konsultan pajak/DJP.

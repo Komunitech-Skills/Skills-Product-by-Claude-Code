@@ -3,6 +3,19 @@
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
 ## Riwayat versi
+- **Catatan revisi 1.0.11 (2026-10-15)** — tindak lanjut verifikasi rujukan aturan (dicek
+  15 Oktober 2026 ke pajak.go.id & ojk.go.id): (1) **pajak kripto dibatasi tanggal**: tarif
+  PMK 50/2025 (0,21% / 1% atas nilai jual) kini hanya dipakai `scripts/hitung_pl_jurnal.py` untuk
+  transaksi jual **sejak 1 Agustus 2025**; jual sebelum tanggal itu (aturan lama PMK
+  68/PMK.03/2022, digantikan PMK 50/2025) tidak diestimasi dan didaftar di field baru
+  `jual_sebelum_1_agustus_2025` + `catatan_aturan_lama` — tarif lama tidak disebut tanpa tanggal;
+  hitungan P/L FIFO tidak berubah; tes regresi 130–132 ditambahkan; (2) README: perkiraan PPh
+  final menyebut PMK 50/2025 + tanggal berlaku, transaksi beli tidak kena PPh, dan arahan ke
+  konsultan pajak/DJP; status regulasi menyebut masa peralihan Bappebti → OJK berakhir
+  **20 Januari 2026**; (3) `references/regulasi.md`: catatan cek ulang 2026-10-15 di bagian atas
+  (akhir transisi 20 Januari 2026), batas tanggal PMK 50/2025 vs PMK 68/PMK.03/2022 dengan sumber
+  artikel DJP, dan tautan halaman peraturan PMK 50/2025 di pajak.go.id; SKILL.md langkah D.4
+  ikut diperbarui.
 - **Catatan revisi 1.0.10 (2026-10-05)** — dari uji ulang ke-3 paket (pesan gabungan berita +
   riset + alert sering tidak terjawab dalam batas waktu): (1) instruksi skill dipangkas dari 370
   ke ±190 baris, rincian dipindah ke `references/` dan hanya dibaca bila perlu; ada "anggaran
