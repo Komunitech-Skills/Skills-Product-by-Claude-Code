@@ -2,6 +2,8 @@
 
 **Ceritakan produk Anda, dapat judul, deskripsi, dan kata kunci yang siap tempel ke tiga marketplace.**
 
+Diuji AI penguji independen di OpenClaw: 5,5 → 9 dari 10 (satu skenario, versi 1.0.4, 1 Oktober 2026; tanpa skill, deskripsi hijab ditambahi enam klaim yang tidak pernah disebut pemilik toko, mis. "Dikirim cepat & packing aman"; dengan skill, AI bertanya sekali dulu, lalu judul dan deskripsi terutama dari fakta pemilik dengan panjang karakter yang cocok dengan hitung ulang penguji).
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
@@ -57,9 +59,13 @@ Salin folder `listing-marketplace` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: judul 141 karakter (melewati batas Shopee/Tokopedia/TikTok), klaim karangan (“tidak menerawang”, “wudhu friendly”); dengan skill: judul per platform + batas karakter, deskripsi polos siap tempel, cek kata terlarang. Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji muat OpenClaw 2026.9.5–9.7 dan uji sebelum/sesudah otomatis OpenClaw 2026-10-01 sudah dijalankan, tetapi skor angkanya belum didokumentasikan di folder `examples/`.
+**Hasil uji (angka nyata):** uji sebelum/sesudah oleh AI penguji independen di OpenClaw (uji otomatis oleh agent AI, bukan oleh manusia; versi 1.0.4, 1 Oktober 2026; satu skenario dalam uji paket Toko Online, bukan lima skenario per skill). Pesan uji ditulis penguji seperti pemilik toko awam: "bikinin deskripsi produk buat hijab voal aku dong, mau upload di shopee" (info produk belum diberikan), lalu jawaban pemilik dalam satu pesan; pesan yang sama dikirim tanpa dan dengan skill. Nilai **5,5 tanpa skill → 9 dengan skill** (dari 10): 8,5 pada uji pertama, lalu 9 pada dua uji ulang (versi 1.0.3 dan 1.0.4); sisi tanpa skill tidak diulang.
+- Tanpa skill: AI langsung menulis deskripsi dan menambah enam klaim yang tidak pernah disebut pemilik (mis. "Dikirim cepat & packing aman", "Barang sesuai foto & deskripsi", "Banyak pelanggan repeat order!"), menaruh harga di deskripsi, dan tidak membuat judul terpisah.
+- Dengan skill: AI bertanya sekali dulu (lima pertanyaan bernomor), lalu memberi judul untuk Shopee, Tokopedia, dan TikTok Shop beserta deskripsi; pada uji terakhir panjang karakter yang dilaporkan sama dengan hitung ulang penguji (deskripsi 673 dan 294 karakter; judul 68 dan 47), harga tidak dimasukkan ke deskripsi, dan sertifikat yang tidak ada tidak ditulis.
+- Catatan jujur: nilai tanpa skill hanya dari giliran 2 (balasan giliran 1 sisi tanpa skill tidak terbaca penguji). Uji pertama menemukan satu klaim tambahan kecil ("ga gampang buyar") yang lolos pengecekan, diperbaiki di versi 1.0.3. Di uji terakhir dua tambahan kecil ("warna kalem" dan contoh pemakaian) masih lolos pengecekan, jadi tetap baca ulang deskripsi sebelum diunggah. Rincian: `examples/00-openclaw-sebelum-sesudah.md`.
+- Uji Claude Code (simulasi agent, 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: judul 141 karakter (melewati batas Shopee/Tokopedia/TikTok), klaim karangan (“tidak menerawang”, “wudhu friendly”); dengan skill: judul per platform + batas karakter, deskripsi polos siap tempel, cek kata terlarang. Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`.
 
-**Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat CLI + uji sebelum/sesudah otomatis 2026-10-01). Codex dan Cursor belum kami uji langsung.
+**Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat lewat CLI, ditambah uji sebelum/sesudah otomatis oleh agent AI pada 1 Oktober 2026: satu skenario, tiga putaran, terakhir versi 1.0.4). Versi terkini 1.0.5 mengganti rujukan ke skill yang sudah diarsipkan dengan `konten-mingguan` (lihat `CHANGELOG.md`); uji sebelum/sesudah yang tercatat di folder `examples/` memakai versi 1.0.4. Codex dan Cursor belum kami uji langsung.
 
 ## FAQ
 **Apakah batas karakternya pasti sesuai aturan terbaru marketplace?**

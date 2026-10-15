@@ -2,7 +2,7 @@
 
 **Tahu harga tayang yang pas di Shopee, Tokopedia, dan TikTok Shop supaya masih untung setelah potongan yang Anda masukkan.**
 
-*Diuji AI penguji independen (simulasi Claude Code, 23 Sep 2026): 8 dari 10; pembeda pada satu skenario banding tanpa vs dengan skill: dengan skill PPh 22 marketplace 0,5% ikut dihitung dan harga impas (batas rugi) diberikan; tanpa skill, PPh 22 terlewat dan harga impas tidak ada.*
+Diuji AI penguji independen di OpenClaw: 6,5 → 8,5 dari 10 (satu skenario; nilai dengan skill sama pada versi 1.0.3 dan 1.0.4; 1 Oktober 2026; tanpa skill, PPh 22 marketplace 0,5% terlewat sehingga laba tampak Rp15.574 padahal Rp15.262 di harga yang sama; dengan skill, harga minimal Rp44.858 dan harga rekomendasi Rp63.000 dihitung lengkap dengan PPh 22).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -58,9 +58,14 @@ Salin folder `harga-jual-marketplace` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 23 Sep 2026, pada versi awal skill; 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat, jadi laba per barang tampak Rp11.992 (yang benar Rp11.758) dan harga impas tidak diberikan (harga tayang akhirnya sama, Rp47.000); dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka dicek ulang secara independen pada 300 kasus acak, tanpa selisih). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Uji sebelum/sesudah otomatis OpenClaw 2026-10-01 sudah dijalankan, tetapi skor angkanya belum didokumentasikan di folder `examples/`.
+**Hasil uji (angka nyata):** uji Claude Code (simulasi agent, 23 Sep 2026, pada versi awal skill; 5 skenario + A/B skenario 1): skor penguji independen **8/10** (LULUS). Tanpa skill: PPh 22 marketplace 0,5% terlewat, jadi laba per barang tampak Rp11.992 (yang benar Rp11.758) dan harga impas tidak diberikan (harga tayang akhirnya sama, Rp47.000); dengan skill: harga impas + rekomendasi, PPh 22 dihitung, pengecualian surat pernyataan dijelaskan (angka dicek ulang secara independen pada 300 kasus acak, tanpa selisih). Sumber: `examples/HASIL-UJI.md`, `examples/00-pembanding-tanpa-skill.md`. Hasil uji sebelum/sesudah di OpenClaw ada di paragraf berikutnya.
 
-**Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat CLI + uji sebelum/sesudah otomatis 2026-10-01). Codex dan Cursor belum kami uji langsung.
+**Uji OpenClaw sebelum/sesudah (angka nyata):** uji sebelum/sesudah oleh AI penguji independen di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia, 1 Oktober 2026, data fiktif), dijalankan sebagai **satu skenario** dalam uji paket skill Toko Online (bukan 5 skenario per skill). Pertanyaan yang sama dikirim tanpa dan dengan skill: harga jual tumbler stainless di Shopee (modal Rp38.000, admin 8%, gratis ongkir xtra 4% maks Rp10.000, biaya proses Rp1.250, target untung 25%). Nilai **6,5 tanpa skill → 8,5 dengan skill** (dari 10); uji ulang pada versi 1.0.3 dan 1.0.4 tetap 8,5 dan dinyatakan LULUS.
+- Tanpa skill: harga Rp62.300 dan laba tampak Rp15.574 dengan klaim "persis 25%", tetapi PPh 22 marketplace 0,5% tidak dihitung (dengan PPh 22 di harga yang sama laba Rp15.262, margin 24,5%) dan harga impas tidak diberikan.
+- Dengan skill: harga minimal Rp44.858 dan harga rekomendasi Rp63.000; PPh 22 Rp315 ikut dihitung, laba bersih Rp15.875 (margin 25,2%); semua angka hasil script cocok dengan hitungan ulang penguji.
+- Catatan jujur: hanya satu skenario dan sisi tanpa skill hanya dijalankan sekali. Di uji ulang 1.0.3 model sempat menyebut harga Rp62.900 "di bawah target" padahal margin 25,10% (hilang di 1.0.4), dan di 1.0.4 sepotong teks perintah teknis dari script ikut tersalin ke balasan (diperbaiki di 1.0.5). Versi 1.0.5 dan 1.0.6 (termasuk koreksi tanggal PPh 22 menjadi dipungut sejak 1 Oktober 2026) belum diuji ulang di OpenClaw; kutipan balasan di berkas uji masih memuat tanggal lama. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+
+**Status uji (jujur):** sudah diuji di Claude Code (simulasi agent, 23 September 2026, versi awal) dan OpenClaw (uji muat CLI; uji sebelum/sesudah otomatis oleh agen AI, bukan oleh manusia, 1 Oktober 2026, satu skenario pada versi 1.0.3 dan 1.0.4, keduanya LULUS dengan nilai 8,5). Versi 1.0.5 dan 1.0.6 belum diuji ulang di OpenClaw. Codex dan Cursor belum kami uji langsung.
 
 ## FAQ
 **Kenapa saya harus mengisi sendiri persentase biaya admin?**
