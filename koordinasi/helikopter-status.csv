@@ -37,8 +37,8 @@ foto-produk-brief,telegram,"Pesan G20 untuk foto-produk-brief (bersama balas-cha
 foto-produk-brief,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 gaji-umkm,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 gaji-umkm,telegram,"gaji-umkm (v1.0.12, beta) masih terbuka untuk uji Telegram: pesan G21 (topik 1564/1565) belum dikirim, pra-cek uji-tg.sh belum dijalankan, gateway belum di-rest",buka,,
-harga-jual-marketplace,uji-ulang,"Item masih terbuka tetapi hanya berupa pekerjaan dokumentasi, bukan uji baru: salin hasil uji OpenClaw 6,5 ke 8,5 dari solusi-vip/toko-online ke skills/harga-ju",buka,,
-harga-jual-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
+harga-jual-marketplace,uji-ulang,"Item masih terbuka tetapi hanya berupa pekerjaan dokumentasi, bukan uji baru: salin hasil uji OpenClaw 6,5 ke 8,5 dari solusi-vip/toko-online ke skills/harga-ju",selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 6,5→8,5 v1.0.4, commit 4c3aa3a"
+harga-jual-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 6,5→8,5 v1.0.4, commit 4c3aa3a"
 hitung-thr,uji-ulang,uji ulang 1.0.11 (placeholder nama usaha),selesai,2026-10-14,"uji ulang 1.0.10 LULUS (penguji independen 2026-10-14), patch 1.0.11 placeholder"
 iterasi-dari-masukan-pelanggan,telegram,"Masih terbuka: gelombang G18 (topik 1482-1491) untuk iterasi-dari-masukan-pelanggan belum terkirim ke bot Telegram asli, hanya 1 dari 10 pesan yang terkirim (mi",buka,,
 iterasi-dari-masukan-pelanggan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
@@ -49,8 +49,8 @@ laporan-insiden-usaha,rujukan,"(opsional README K3) → Bila catatan kecelakaan 
 laporan-insiden-usaha,telegram,"Skill laporan-insiden-usaha (lulus uji internal, +2,25) masih terbuka untuk tampil di bot Telegram asli: G20 (topik 1545–1554) baru persiapan C34, belum dikirim",buka,,
 laporan-insiden-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 laporan-keuangan-emkm,rujukan,"Laporan arus kas vs 3 laporan SAK EMKM → README: arus kas = pelengkap, bukan laporan wajib ke-4",selesai,2026-10-15,revisi v1.3.5 commit 42bbbcb (verifikasi independen lolos)
-listing-marketplace,uji-ulang,"Item masih terbuka, tetapi bukan uji dari nol: sisa pekerjaannya membuat skills/listing-marketplace/examples/00-openclaw-sebelum-sesudah.md dari solusi-vip/toko",buka,,
-listing-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
+listing-marketplace,uji-ulang,"Item masih terbuka, tetapi bukan uji dari nol: sisa pekerjaannya membuat skills/listing-marketplace/examples/00-openclaw-sebelum-sesudah.md dari solusi-vip/toko",selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 5,5→9,0 v1.0.4, commit 597aaf6"
+listing-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 5,5→9,0 v1.0.4, commit 597aaf6"
 lowongan-kerja,rujukan,UU PDP rekrutmen → Sama usulan pasal seperti wawancara,selesai,2026-10-15,revisi v1.0.5 commit bbfc74f (verifikasi independen lolos)
 notulen-rapat,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 notulen-rapat,telegram,notulen-rapat masih terbuka untuk uji Telegram: G18 (antrean C24) baru 1 dari 10 pesan yang terkirim (bukan milik notulen-rapat) dan gagal karena router HTTP 53,buka,,
