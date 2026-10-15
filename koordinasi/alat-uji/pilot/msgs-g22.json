@@ -1,0 +1,72 @@
+[
+  {
+    "skill": "copy-landing-page",
+    "sisi": "sebelum",
+    "topic": 1567,
+    "text": "@KTclaude1_bot Buatkan landing page untuk keripik pedas saya, harga 25 ribu.",
+    "gel": 22
+  },
+  {
+    "skill": "copy-landing-page",
+    "sisi": "sesudah",
+    "topic": 1568,
+    "text": "@KTclaude1_bot Buatkan landing page untuk keripik pedas saya, harga 25 ribu.",
+    "gel": 22
+  },
+  {
+    "skill": "analisis-rasio-keuangan-usaha",
+    "sisi": "sebelum",
+    "topic": 1569,
+    "text": "@KTclaude1_bot Toko sembako saya setahun: omzet 480 juta, HPP 408 juta, laba bersih 24 juta. Kas 12 jt, piutang 6 jt, stok 40 jt, peralatan 42 jt. Utang supplier 20 jt, utang lain 5 jt, pinjaman bank jangka panjang 15 jt, modal 60 jt. Mau ambil KUR cicilan 500 ribu/bulan, aman?",
+    "gel": 22
+  },
+  {
+    "skill": "analisis-rasio-keuangan-usaha",
+    "sisi": "sesudah",
+    "topic": 1570,
+    "text": "@KTclaude1_bot Toko sembako saya setahun: omzet 480 juta, HPP 408 juta, laba bersih 24 juta. Kas 12 jt, piutang 6 jt, stok 40 jt, peralatan 42 jt. Utang supplier 20 jt, utang lain 5 jt, pinjaman bank jangka panjang 15 jt, modal 60 jt. Mau ambil KUR cicilan 500 ribu/bulan, aman?",
+    "gel": 22
+  },
+  {
+    "skill": "tagih-piutang",
+    "sisi": "sebelum",
+    "topic": 1571,
+    "text": "@KTclaude1_bot Saya punya usaha Katering Dapur Sehati Fiktif di Surabaya. Tagihan makan siang bulan Agustus ke PT Fiktif Makmur Sejahtera Rp 6.300.000, invoice INV-KT-0825, jatuh tempo 5 September. Sudah saya WA tanggal 8 dan 15 September tapi cuma dibaca. Yang ngurus Bu Dewi bagian GA. Pelanggan lama, nggak ada denda di kontrak. Tolong bikinin pesan tagihannya, rekening BCA 000-000-0000 a.n. Dapur Sehati Fiktif.",
+    "gel": 22
+  },
+  {
+    "skill": "tagih-piutang",
+    "sisi": "sesudah",
+    "topic": 1572,
+    "text": "@KTclaude1_bot Saya punya usaha Katering Dapur Sehati Fiktif di Surabaya. Tagihan makan siang bulan Agustus ke PT Fiktif Makmur Sejahtera Rp 6.300.000, invoice INV-KT-0825, jatuh tempo 5 September. Sudah saya WA tanggal 8 dan 15 September tapi cuma dibaca. Yang ngurus Bu Dewi bagian GA. Pelanggan lama, nggak ada denda di kontrak. Tolong bikinin pesan tagihannya, rekening BCA 000-000-0000 a.n. Dapur Sehati Fiktif.",
+    "gel": 22
+  },
+  {
+    "skill": "tender-checklist",
+    "sisi": "sebelum",
+    "topic": 1573,
+    "text": "@KTclaude1_bot Saya punya CV (usaha kecil di NIB, KBLI 47612 & 46900, sudah PKP). Mau ikut tender Pengadaan ATK Dinas Pendidikan Kabupaten, HPS Rp185 juta, pagu Rp190 juta, pascakualifikasi. Pengumuman 28/9, penjelasan 2/10, batas unggah 14 Oktober 2026 jam 15.00. Layak ikut nggak? Dokumen apa saja? Tolong cek juga rincian harga saya (12 barang), harga belum termasuk PPN.",
+    "gel": 22
+  },
+  {
+    "skill": "tender-checklist",
+    "sisi": "sesudah",
+    "topic": 1574,
+    "text": "@KTclaude1_bot Saya punya CV (usaha kecil di NIB, KBLI 47612 & 46900, sudah PKP). Mau ikut tender Pengadaan ATK Dinas Pendidikan Kabupaten, HPS Rp185 juta, pagu Rp190 juta, pascakualifikasi. Pengumuman 28/9, penjelasan 2/10, batas unggah 14 Oktober 2026 jam 15.00. Layak ikut nggak? Dokumen apa saja? Tolong cek juga rincian harga saya (12 barang), harga belum termasuk PPN.",
+    "gel": 22
+  },
+  {
+    "skill": "follow-up-prospek",
+    "sisi": "sebelum",
+    "topic": 1575,
+    "text": "@KTclaude1_bot Kemarin (22 Sept) saya demo aplikasi kasir KasirPintar Fiktif ke Pak Joni, pemilik Resto Padang Rasa Minang Fiktif di Depok. Paket 199rb/bulan, gratis setup. Dia bilang bagus, tapi mau diskusi dulu sama istrinya yang pegang keuangan. Dia sempat nanya apakah bisa cetak struk ke printer lama mereka (Epson TM-U220) — jawabannya bisa. Nama saya Rudi. Bikinin follow-up WA ya.",
+    "gel": 22
+  },
+  {
+    "skill": "follow-up-prospek",
+    "sisi": "sesudah",
+    "topic": 1576,
+    "text": "@KTclaude1_bot Kemarin (22 Sept) saya demo aplikasi kasir KasirPintar Fiktif ke Pak Joni, pemilik Resto Padang Rasa Minang Fiktif di Depok. Paket 199rb/bulan, gratis setup. Dia bilang bagus, tapi mau diskusi dulu sama istrinya yang pegang keuangan. Dia sempat nanya apakah bisa cetak struk ke printer lama mereka (Epson TM-U220) — jawabannya bisa. Nama saya Rudi. Bikinin follow-up WA ya.",
+    "gel": 22
+  }
+]
