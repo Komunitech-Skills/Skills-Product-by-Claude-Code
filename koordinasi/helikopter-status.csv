@@ -16,12 +16,12 @@ balas-chat-cs,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G
 balas-ulasan-pelanggan,uji-ulang,Uji sebelum/sesudah per skill oleh penguji independen untuk balas-ulasan-pelanggan v1.0.5 belum dilakukan: berkasnya masih salinan uji solusi VIP (v1.0.3-1.0.4),buka,,
 balas-ulasan-pelanggan,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
 bandingkan-pemasok-vendor,rujukan,PPN ongkir PKP & PM → Perjelas ayat; footnote titipan murni → konsultan pajak,selesai,2026-10-14,rujukan PPN ongkir & pajak masukan diterapkan di v1.0.3 (commit 2026-10-14)
-broadcast-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",buka,,
+broadcast-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",selesai,2026-10-15,revisi v1.0.13 commit 13813cf (verifikasi independen lolos)
 buat-invoice,uji-ulang,"Uji ulang independen buat-invoice 1.0.7 untuk skenario 03 (kuitansi DP terlampir sebagai berkas) belum dijalankan. Patch sudah ada tetapi buktinya belum, dan pe",buka,,
 buat-invoice,uji-ulang,uji ulang 1.0.7 skenario 03 (kuitansi lampir),buka,,
-cek-privasi-openclaw,rujukan,Notifikasi kebocoran → «72 jam (3×24 jam)» + rujuk pasal,buka,,
-cek-privasi-openclaw,rujukan,PP pelaksana UU PDP → Cantumkan PP + tanggal berlaku,buka,,
-checklist-keamanan-pangan-usaha,rujukan,SPP-IRT → Sebut SPP-IRT + tahun,buka,,
+cek-privasi-openclaw,rujukan,Notifikasi kebocoran → «72 jam (3×24 jam)» + rujuk pasal,selesai,2026-10-15,revisi v1.1.5 commit ba2608c (verifikasi independen lolos)
+cek-privasi-openclaw,rujukan,PP pelaksana UU PDP → Cantumkan PP + tanggal berlaku,selesai,2026-10-15,revisi v1.1.5 commit ba2608c (verifikasi independen lolos)
+checklist-keamanan-pangan-usaha,rujukan,SPP-IRT → Sebut SPP-IRT + tahun,selesai,2026-10-15,revisi v1.0.3 commit 900a2f3 (verifikasi independen lolos)
 copy-landing-page,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 copy-landing-page,telegram,"copy-landing-page (1.0.7, beta) belum pernah tampil di bot Telegram asli: pesan G22 (topik 1567–1576) sudah disiapkan tetapi belum dikirim karena router HTTP 53",buka,,
 crm-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",buka,,
@@ -44,14 +44,14 @@ iterasi-dari-masukan-pelanggan,telegram,"Masih terbuka: gelombang G18 (topik 148
 iterasi-dari-masukan-pelanggan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 kalender-pajak,uji-ulang,"kalender-pajak (beta, 1.0.7) masih perlu uji sebelum/sesudah OpenClaw per skill oleh penguji independen. Berkas 00-openclaw-sebelum-sesudah.md hanya salinan rin",buka,,
 kas-umkm,uji-ulang,"Uji ulang sebelum/sesudah per skill untuk kas-umkm (1.0.12) belum dikerjakan: berkasnya masih salinan ringkasan uji solusi VIP 2026-10-01, tanpa baris di jsonl ",buka,,
-kelayakan-investasi-usaha,rujukan,OP final vs PP 20/2026 → Sebut OP «selamanya» bila syarat terpenuhi,buka,,
-laporan-insiden-usaha,rujukan,"(opsional README K3) → Bila catatan kecelakaan kerja: 5/2021, bukan 5/2018",buka,,
+kelayakan-investasi-usaha,rujukan,OP final vs PP 20/2026 → Sebut OP «selamanya» bila syarat terpenuhi,selesai,2026-10-15,revisi v1.0.6 commit f963446 (verifikasi independen lolos)
+laporan-insiden-usaha,rujukan,"(opsional README K3) → Bila catatan kecelakaan kerja: 5/2021, bukan 5/2018",selesai,2026-10-15,revisi v1.0.4 commit 61916b9 (verifikasi independen lolos)
 laporan-insiden-usaha,telegram,"Skill laporan-insiden-usaha (lulus uji internal, +2,25) masih terbuka untuk tampil di bot Telegram asli: G20 (topik 1545–1554) baru persiapan C34, belum dikirim",buka,,
 laporan-insiden-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-laporan-keuangan-emkm,rujukan,"Laporan arus kas vs 3 laporan SAK EMKM → README: arus kas = pelengkap, bukan laporan wajib ke-4",buka,,
+laporan-keuangan-emkm,rujukan,"Laporan arus kas vs 3 laporan SAK EMKM → README: arus kas = pelengkap, bukan laporan wajib ke-4",selesai,2026-10-15,revisi v1.3.5 commit 42bbbcb (verifikasi independen lolos)
 listing-marketplace,uji-ulang,"Item masih terbuka, tetapi bukan uji dari nol: sisa pekerjaannya membuat skills/listing-marketplace/examples/00-openclaw-sebelum-sesudah.md dari solusi-vip/toko",buka,,
 listing-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
-lowongan-kerja,rujukan,UU PDP rekrutmen → Sama usulan pasal seperti wawancara,buka,,
+lowongan-kerja,rujukan,UU PDP rekrutmen → Sama usulan pasal seperti wawancara,selesai,2026-10-15,revisi v1.0.5 commit bbfc74f (verifikasi independen lolos)
 notulen-rapat,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 notulen-rapat,telegram,notulen-rapat masih terbuka untuk uji Telegram: G18 (antrean C24) baru 1 dari 10 pesan yang terkirim (bukan milik notulen-rapat) dan gagal karena router HTTP 53,buka,,
 panduan-wawancara-kerja,rujukan,"Daftar larangan PHK UU 6/2023 Ps. 153 ayat (1) → Lengkapi huruf ayat (1) sesuai UU, bukan ringkasan pendek",selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
@@ -60,7 +60,7 @@ panduan-wawancara-kerja,rujukan,"Lembur Ps. 78 UU 6/2023 → Cantumkan batas 4 j
 panduan-wawancara-kerja,rujukan,UU 8/2016 diskriminasi → Sebut Pasal 11 eksplisit,selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
 panduan-wawancara-kerja,rujukan,UU PDP pemrosesan data pelamar → Kutip pasal bila dipakai di skill,selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
 pantau-cron-openclaw,uji-ulang,"Sisa pekerjaan: ulangi uji lokal alur pasang lewat chat (rencana, lalu ""ya"", lalu pengawas terpasang) untuk pantau-cron-openclaw 1.0.3 begitu router model hidup",buka,,
-pantau-pasar-kripto,rujukan,"PMK pajak kripto → Jangan sebut 0,1% tanpa tanggal",buka,,
+pantau-pasar-kripto,rujukan,"PMK pajak kripto → Jangan sebut 0,1% tanpa tanggal",selesai,2026-10-15,revisi v1.0.11 commit 19e2ea2 (verifikasi independen lolos)
 pantau-pasar-kripto,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-15,"sudah ada uji sebelum/sesudah per skill (examples/00-openclaw, 2026-10-01); tidak perlu uji ulang"
 pengingat-pasien-klinik,uji-ulang,"pengingat-pasien-klinik (beta, katalog 1.0.9) masih perlu uji sebelum/sesudah per skill oleh penguji independen di OpenClaw, karena berkas examples/00 hanya sal",buka,,
 peringatan-dini-operasional,telegram,"Item masih terbuka: G21 untuk peringatan-dini-operasional baru berupa persiapan (topik 1556–1565, msgs-g21.json) dan belum dikirim karena router HTTP 530. Tersi",buka,,
@@ -74,7 +74,7 @@ presentasi-instan,telegram,belum pernah tampil di bot Telegram asli (antrean G18
 presentasi-instan,telegram,presentasi-instan belum pernah tampil di bot Telegram asli. G19 (topik 1534-1543) baru disiapkan dan belum dikirim karena router HTTP 530. G18 juga masih tertah,buka,,
 promo-kalender,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
 promo-kalender,uji-ulang,"promo-kalender 1.0.4 (beta) baru punya salinan ringkasan satu skenario uji solusi VIP Toko Online (6,5 ke 8,5 pada 1.0.3), tanpa baris di promosi/sebelum-sesuda",buka,,
-proposal-kerjasama,rujukan,Bea meterai UU 10/2020 → Tandai COCOK di `regulasi.md`,buka,,
+proposal-kerjasama,rujukan,Bea meterai UU 10/2020 → Tandai COCOK di `regulasi.md`,selesai,2026-10-15,revisi v1.0.11 commit 3c4d239 (verifikasi independen lolos)
 rekap-penjualan-csv,uji-ulang,Uji sebelum/sesudah per skill untuk rekap-penjualan-csv 1.2.5 belum pernah dijalankan: berkas 00-nya hanya salinan ringkasan uji solusi VIP Toko Online (1.2.2 d,buka,,
 rekap-penjualan-csv,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
 rencana-marketing-usaha,telegram,"G18 rencana-marketing-usaha di bot Telegram pertama belum tuntas: baru 1 dari 10 pesan (TANPA) terkirim dan gagal HTTP 530, pesan 2–10 serta pra-cek uji-tg.sh b",buka,,
@@ -89,15 +89,15 @@ ringkas-grup-wa,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),
 ringkas-grup-wa,uji-ulang,"ringkas-grup-wa (katalog 1.0.6, status beta) belum pernah diuji sebelum/sesudah per skill: berkas 00-openclaw-sebelum-sesudah.md hanya salinan ringkasan uji sol",buka,,
 riset-harga-kompetitor,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
 riset-harga-kompetitor,uji-ulang,riset-harga-kompetitor (beta v1.0.5) masih terbuka: belum ada uji sebelum/sesudah OpenClaw per skill (tidak ada examples/00-openclaw-sebelum-sesudah.md dan tida,buka,,
-riset-saham-berita,rujukan,Bapepam → OJK → «OJK (dulu Bapepam)»,buka,,
-simulasi-cicilan-pinjaman,rujukan,"Batas bunga konsumtif 0,1%/hari → Tenor konsumtif < 1 tahun, bukan hanya «> 6 bulan»",buka,,
-slip-gaji-bpjs,rujukan,Tarif JKK 5 tingkat → Cocokkan angka % dengan PP terbaru,buka,,
-sop-onboarding,rujukan,BPJS 30 hari → Footnote program JKK/JHT/JP/Kesehatan terpisah,buka,,
-sop-onboarding,rujukan,Larangan percobaan PKWT → Selaraskan dengan Ps. 58 lama di contoh uji,buka,,
+riset-saham-berita,rujukan,Bapepam → OJK → «OJK (dulu Bapepam)»,selesai,2026-10-15,revisi v1.0.6 commit 6c16577 (verifikasi independen lolos)
+simulasi-cicilan-pinjaman,rujukan,"Batas bunga konsumtif 0,1%/hari → Tenor konsumtif < 1 tahun, bukan hanya «> 6 bulan»",selesai,2026-10-15,revisi v1.0.4 commit 0ab0010 (verifikasi independen lolos)
+slip-gaji-bpjs,rujukan,Tarif JKK 5 tingkat → Cocokkan angka % dengan PP terbaru,selesai,2026-10-15,revisi v1.0.8 commit 6744648 (verifikasi independen lolos)
+sop-onboarding,rujukan,BPJS 30 hari → Footnote program JKK/JHT/JP/Kesehatan terpisah,selesai,2026-10-15,revisi v1.0.7 commit 61590a3 (verifikasi independen lolos)
+sop-onboarding,rujukan,Larangan percobaan PKWT → Selaraskan dengan Ps. 58 lama di contoh uji,selesai,2026-10-15,revisi v1.0.7 commit 61590a3 (verifikasi independen lolos)
 sop-writer,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 sop-writer,telegram,"sop-writer (G20, pesan 5–6 dari 10) masih terbuka: topik 1545–1554 dan msgs-g20.json sudah siap tetapi belum dikirim ke bot Telegram asli, pra-cek uji-tg.sh bel",buka,,
-spt-tahunan-op,rujukan,Formulir 1770 vs SPT OP dinamis → Klarifikasi historis vs Coretax di README,buka,,
-spt-tahunan-op,rujukan,"Isi revisi spt-tahunan-op 1.0.7 (klarifikasi SPT OP dinamis Coretax dan PP 20/2026) sudah lengkap dan lulus tes, tetapi belum di-commit dan catalog.csv masih 1.",buka,,
+spt-tahunan-op,rujukan,Formulir 1770 vs SPT OP dinamis → Klarifikasi historis vs Coretax di README,selesai,2026-10-15,revisi v1.0.7 commit e1ed5ad (verifikasi independen lolos)
+spt-tahunan-op,rujukan,"Isi revisi spt-tahunan-op 1.0.7 (klarifikasi SPT OP dinamis Coretax dan PP 20/2026) sudah lengkap dan lulus tes, tetapi belum di-commit dan catalog.csv masih 1.",selesai,2026-10-15,revisi v1.0.7 commit e1ed5ad (verifikasi independen lolos)
 strategi-harga-produk,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 strategi-harga-produk,telegram,"strategi-harga-produk masih punya satu pekerjaan terbuka: tampil di bot Telegram asli lewat G21. Topik 1556-1565 dan pesan sudah disiapkan, tetapi pra-cek uji-t",buka,,
 studio-video-pendek-ai,telegram,"Gelombang 21 Telegram untuk studio-video-pendek-ai masih terbuka: topik 1556–1565 dan pesan sudah disiapkan, tetapi belum dikirim (router HTTP 530) dan pra-cek ",buka,,
@@ -111,7 +111,7 @@ tagih-piutang,rujukan,Somasi vs perjanjian → Satu kalimat somasi tidak selalu 
 tagih-piutang,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 tagih-piutang,telegram,"tagih-piutang 1.0.7 lulus internal (6,7 ke 8,5) tetapi belum pernah tampil di bot Telegram asli. Gelombang 22 (topik 1567-1576) baru persiapan dan belum dikirim",buka,,
 tagih-piutang,lain,"Kolom platform_teruji tagih-piutang di catalog.csv (baris 13) masih berhenti di uji 2026-10-01, belum memuat uji ulang OpenClaw v1.0.7 tanggal 2026-10-10 (6,7→8",buka,,
-tender-checklist,rujukan,Login SPSE TOTP → README: 2FA/TOTP,buka,,
-tender-checklist,rujukan,URL SIKaP → Tambah domain baru,buka,,
+tender-checklist,rujukan,Login SPSE TOTP → README: 2FA/TOTP,selesai,2026-10-15,revisi v1.0.8 commit fdd94a3 (verifikasi independen lolos)
+tender-checklist,rujukan,URL SIKaP → Tambah domain baru,selesai,2026-10-15,revisi v1.0.8 commit fdd94a3 (verifikasi independen lolos)
 tender-checklist,telegram,"Gelombang Telegram 22 (topik 1567-1576, termasuk tender-checklist) baru disiapkan, belum dikirim ke bot asli, pra-cek uji-tg.sh belum jalan, dan router masih HT",buka,,
 tender-checklist,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
