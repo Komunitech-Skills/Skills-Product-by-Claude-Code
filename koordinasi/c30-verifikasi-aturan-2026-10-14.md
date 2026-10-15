@@ -115,6 +115,60 @@
 
 ---
 
+## 5. `cek-privasi-openclaw` — UU PDP, UU ITE, PP pelaksana
+
+**Run verifikasi:** 2026-10-15 ~00:30 UTC (Akun C, C30 butir 4).
+
+### 5.1 Masa berlaku & transisi UU 27/2022
+
+| Klaim skill (`references/uu-pdp.md`) | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| UU PDP berlaku penuh sejak **Oktober 2024** | UU 27/2022 Pasal 74 (penyesuaian paling lama 2 tahun sejak diundangkan 17 Okt 2022); Pasal 76 (berlaku saat diundangkan) — JDIH Kemkomdigi | 2026-10-15 | **COCOK** — masa penyesuaian 2 tahun berakhir ±17 Okt 2024 |
+| PP pelaksana «belum diverifikasi» | PP 33/2026 diundangkan 16 Jul 2026, berlaku 16 Jan 2027 (Pasal 225); peraturan.go.id / legaltrans salinan resmi | 2026-10-15 | **PERLU UBAH** — cantumkan PP 33/2026 + tanggal berlaku; UU tetap wajib sejak transisi berakhir, PP menambah operasional |
+
+### 5.2 Kewajiban pengendali & hak subjek (ringkasan skill)
+
+| Klaim skill | Sumber | Kesimpulan |
+|---|---|---|
+| Dasar pemrosesan (persetujuan, kontrak, kewajiban hukum, dll.) | UU 27/2022 Pasal 20 ayat (2) a–f | **COCOK** |
+| Informasi wajib bila berbasis persetujuan | Pasal 21 ayat (1) a–g | **COCOK** |
+| Data pribadi spesifik (termasuk kesehatan) Pasal 4 | Pasal 4 UU 27/2022 | **COCOK** |
+| Notifikasi kebocoran «hitungan hari» / cek ketentuan resmi | Pasal 46 ayat (1): paling lambat **3×24 jam** tertulis ke subjek data & lembaga | **PERLU UBAH** — ganti frasa vague menjadi «paling lambat 72 jam (3×24 jam)» dengan rujuk Pasal 46 |
+
+### 5.3 Sanksi administratif
+
+| Klaim skill | Sumber | Kesimpulan |
+|---|---|---|
+| Skill tidak memuat daftar sanksi (hanya disclaimer) | Pasal 57: peringatan, penghentian pemrosesan, penghapusan/pemusnahan, denda admin. maks. 2% pendapatan/penerimaan terkait | **COCOK** arah (pengingat, bukan nasihat); opsional README: satu kalimat «pelanggaran kewajiban pengendali dapat dikenai sanksi administratif UU PDP» |
+
+### 5.4 Penolakan penyadapan chat (UU ITE)
+
+| Klaim skill (`SKILL.md`, examples) | Sumber | Kesimpulan |
+|---|---|---|
+| UU ITE Pasal 31 (intersepsi ilegal) | UU 11/2008 jo. UU 19/2016 jo. **UU 1/2024** Pasal 31 ayat (1)–(2) — JDIH Komdigi | **COCOK** substansi; **PERLU REVIEW Akun B:** kutipan materi jualan sebut «UU ITE (UU 11/2008 jo. UU 1/2024) Pasal 31» agar mutakhir |
+
+**Usulan teks (Akun B):** Perbarui `references/uu-pdp.md`: (1) PP 33/2026 & 16 Jan 2027; (2) Pasal 46 = 72 jam; (3) opsional satu baris Pasal 57; (4) rujuk UU ITE jo. 1/2024 di penolapan sadap.
+
+---
+
+## 6. `rekonsiliasi-bank` — praktik vs SAK EMKM (tanpa peraturan khusus)
+
+**Run verifikasi:** 2026-10-15 ~00:30 UTC (Akun C, C30 butir 5).
+
+Tidak ada UU/PP khusus «rekonsiliasi bank» untuk UMKM. Pemeriksaan: klaim skill vs praktik akuntansi SAK EMKM & privasi.
+
+| Klaim skill | Sumber / acuan | Kesimpulan |
+|---|---|---|
+| «Bukan audit» / «bukan nasihat akuntansi» (`README.md`, `SKILL.md`) | Skill memang operasional matching CSV, bukan opini audit | **COCOK** |
+| Laporan laba/neraca → arahkan ke `laporan-keuangan-emkm` | Pemisahan fungsi selaras praktik: rekonsiliasi kas ≠ laporan keuangan lengkap | **COCOK** |
+| Mutasi rekening = data pribadi (UU PDP) — `references/format-bank.md` | UU 27/2022 (data keuangan pribadi = spesifik, Pasal 4) | **COCOK** arah |
+| «Angka seimbang» = penjelasan aritmetika selisih, bukti pasangan benar | Bukan klaim SAK EMKM; selaras praktik rekonsiliasi kas sebelum tutup buku | **COCOK** |
+| Tidak mengklaim wajib rekonsiliasi menurut SAK EMKM | SAK EMKM (IAI) menekankan pengendalian kas & catatan; rekonsiliasi bank adalah praktik wajar tetapi skill tidak perlu mengutip pasal SAK | **COCOK** — tidak ada klaim salah; opsional README: «rekonsiliasi membantu tutup buku kas, bukan pengganti SAK EMKM» |
+
+**Usulan teks (Akun B):** Tidak wajib; bila ingin: satu kalimat di README bahwa hasil ini alat bantu operasional, bukan bukti audit atau laporan keuangan SAK EMKM.
+
+---
+
 ## Progress C30
 
 | # | Skill | Status run |
@@ -122,6 +176,51 @@
 | 1 | kasir-lokal | ✅ verifikasi run 23:30 UTC |
 | 2 | laporan-keuangan-emkm | ✅ verifikasi run 23:30 UTC |
 | 3 | pengingat-pasien-klinik + edukasi-pasien-klinik | ✅ verifikasi run 00:00 UTC 2026-10-15 |
-| 4 | cek-privasi-openclaw | belum |
-| 5 | rekonsiliasi-bank | belum |
-| 6 | kelayakan-investasi-usaha | belum |
+| 4 | cek-privasi-openclaw | ✅ verifikasi run 00:30 UTC 2026-10-15 |
+| 5 | rekonsiliasi-bank | ✅ verifikasi run 00:30 UTC 2026-10-15 |
+| 6 | kelayakan-investasi-usaha | ✅ verifikasi run 01:00 UTC 2026-10-15 |
+
+---
+
+## 7. `kelayakan-investasi-usaha` — KUR 6 %, patokan diskonto 12 %, PPh final 0,5 %
+
+**Run verifikasi:** 2026-10-15 ~01:00 UTC (Akun C, C30 butir 6).
+
+### 7.1 Bunga KUR & rujukan Permenko 1/2026
+
+| Klaim skill (`references/istilah-dan-asumsi.md`, script asumsi) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| KUR mikro/kecil sektor produksi atau perdagangan berorientasi ekspor: **6 % efektif per tahun** (Pasal 37 ayat (1) huruf a & Pasal 44 ayat (1) huruf a) | JDIH BPK — Permenko Perekonomian 1/2026; PDF salinan BPK | 2026-10-15 | «… dikenakan sebesar 6% (enam persen) efektif per tahun …» — https://peraturan.bpk.go.id/Details/342969/permenko-perekonomian-no-1-tahun-2026 ; PDF https://peraturan.bpk.go.id/Download/406143/2026PemenkoEkon001.pdf | **COCOK** |
+| Perdagangan **non-ekspor**: bunga naik per akad (mikro 6 %→7 %; kecil 6 %→9 %) | Pasal 37 ayat (1) huruf b & Pasal 44 ayat (1) huruf b (sumber sama) | 2026-10-15 | Skill sudah menyebut pengecualian; patokan 12 % tetap «asumsi contoh» | **COCOK** |
+| Berlaku **13 Januari 2026**; mencabut Permenko 1/2022 | Metadata JDIH BPK (Permenko 1/2026) | 2026-10-15 | «… mulai berlaku pada tanggal 13 Januari 2026» | **COCOK** |
+
+**Usulan teks (Akun B):** Opsional — tambah link JDIH BPK resmi di `istilah-dan-asumsi.md` §2 (selain DDTC); tetap cantumkan bahwa 6 % tidak berlaku untuk semua sektor/akad.
+
+### 7.2 Patokan diskonto default 12 % & uji ketat 20 %
+
+| Klaim skill | Sumber / acuan | Kesimpulan |
+|---|---|---|
+| Default **12 %/tahun** = 6 % KUR + **6 % premi risiko usaha** | Keputusan desain skill (bukan aturan pemerintah) | **COCOK** — skill sudah menegaskan «asumsi pembanding», bukan rekomendasi bunga |
+| **NPV uji ketat 20 %** hanya informasi; kesimpulan dari patokan 12 % (atau input pengguna) | Praktik analisis investasi; tidak ada tarif resmi «20 %» | **COCOK** |
+| Peringatan bila diskonto **< 6 %** (di bawah bunga KUR produksi/ekspor) | Selaras Pasal 37/44 (6 % minimum subsidized untuk sektor tertentu) | **COCOK** arah |
+| Bunga cicilan **tidak** dimasukkan ke biaya (sudah diwakili diskonto) | Praktik DCF standar | **COCOK** |
+
+**Usulan teks (Akun B):** Pertahankan disclaimer «premi risiko 6 % tipis untuk usaha baru» (sudah di HASIL-UJI); opsional satu kalimat «banyak pinjaman non-KUR > 12 % — ganti `--diskonto`».
+
+### 7.3 PPh final UMKM 0,5 % (opsi `--pajak-persen`)
+
+| Klaim skill (`istilah-dan-asumsi.md` §3) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Tarif **0,5 %** dari peredaran bruto, plafon **Rp 4,8 M/tahun** | PP 55/2022; siaran pers DJP | 2026-10-15 | «… tarif PPh final 0,5% … peredaran bruto … tidak melebihi Rp4,8 miliar …» — https://www.pajak.go.id/id/siaran-pers/wajib-pajak-umkm-kenali-hak-dan-kewajiban-perpajakannya | **COCOK** |
+| OP: bagian omzet **s.d. Rp 500 juta/tahun** tidak kena (Pasal 60) | DJP / PP 55 (rujukan C29) | 2026-10-15 | Selaras artikel DJP fasilitas UMKM | **COCOK** — skill menyebut batas waktu/jenis WP; **PERLU UBAH** ringan: sebut PP 20/2026 untuk OP «selamanya» bila masih memenuhi syarat (selaras C29, bukan kontradiksi) |
+| Masa berlaku 7 th (OP) / 4 th (koperasi/CV) / 3 th (PT) | PP 55 Pasal 59 (DJP) | 2026-10-15 | Siaran pers DJP 2023 | **COCOK** dengan catatan PP 20/2026 untuk OP (skill belum detail PP 20 — Akun B selaraskan dengan `pph-final-umkm`) |
+
+**Usulan teks (Akun B):** Satu footnote di §3: «Untuk WP OP setelah PP 20/2026, fasilitas 0,5 % dapat berlaku selama syarat terpenuhi — cek DJP/konsultan; script tetap opsi sederhana 0,5 % omzet.»
+
+### Ringkasan `kelayakan-investasi-usaha`
+
+- Klaim **Permenko 1/2026 Pasal 37 & 44 (6 % efektif)** dan tanggal berlaku **COCOK** terhadap JDIH BPK (2026-10-15).
+- **12 % + 20 %** = asumsi analisis, bukan aturan; penjelasan skill sudah jujur.
+- **PPh final 0,5 %** selaras PP 55/2022/DJP; perlu selaraskan narasi PP 20/2026 untuk OP dengan skill pajak lain.
+
+**C30 selesai 6/6** (2026-10-15 ~01:00 UTC).

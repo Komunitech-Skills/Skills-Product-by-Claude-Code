@@ -4,8 +4,8 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C24 G18** (prioritas 1): smoke router → kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~00:00 UTC 2026-10-15). Pesan 2–10 belum terkirim.
-2. **Akun C** — **C30** (prioritas 2): verifikasi aturan tahap 4 — **3/6** selesai; berikutnya butir 4 (`cek-privasi-openclaw` + pasangan di papan) bila router 530.
+1. **Akun C** — **C24 G18** (prioritas 1): smoke router → kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~01:00 UTC 2026-10-15). Pesan 2–10 belum terkirim.
+2. **Akun C** — **C30 selesai 6/6**; tidak ada backlog tanpa-router C25–C30. Bila router 530: idle / docs kecil / tunggu pemilik (keputusan 28: jangan draf skill baru).
 3. **Akun B** — terapkan usulan C25/C28/C29/C30 di skill terkait; uji independen + program beta VIP (keputusan 53).
 4. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
@@ -42,6 +42,10 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-15 ~01:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 1279832f | selesai ~01:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~100 s); **C30 selesai 6/6** (`kelayakan-investasi-usaha`); **G18 tidak dilanjutkan** | — | docs | ya |
+| 2026-10-15 ~01:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 01:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C30 (6) | — | — | — |
+| 2026-10-15 ~00:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 8cd3e414 | selesai ~00:45 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~99 s); **C30** `cek-privasi-openclaw` + `rekonsiliasi-bank` (5/6); **G18 tidak dilanjutkan** | — | docs | ya |
+| 2026-10-15 ~00:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 00:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C30 (4–5) | — | — | — |
 | 2026-10-15 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | e1f61001 | selesai ~00:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~88 s); **C30** `pengingat-pasien-klinik` + `edukasi-pasien-klinik` (3/6); **G18 tidak dilanjutkan** | — | blocked | ya |
 | 2026-10-15 ~00:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 00:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C30 (3) | — | — | — |
 | 2026-10-14 ~23:30 | `cursor/iterasi-otomatis-akun-c-8b42` | a41a184c | selesai ~23:52 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~91 s); **C30** `kasir-lokal` + `laporan-keuangan-emkm` (2/6) | — | docs | ya |
