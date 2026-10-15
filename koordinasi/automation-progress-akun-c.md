@@ -44,7 +44,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
-| 2026-10-15 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~10:48 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~97 s); **C25–C34 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** (pesan 2–10) | — | blocked | tidak |
+| 2026-10-15 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 7c4e225b | selesai ~10:48 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~97 s); **C25–C34 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** (pesan 2–10) | — | blocked | tidak |
 | 2026-10-15 ~10:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 10:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 | — | — | — |
 | 2026-10-15 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | ce741d64 | selesai ~10:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~79 s); **C25–C34 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** (pesan 2–10) | — | blocked | tidak |
 | 2026-10-15 ~10:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 10:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 | — | — | — |
