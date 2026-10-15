@@ -199,3 +199,7 @@ Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~81 s, 
 ## Run 2026-10-15 ~11:30 UTC (Akun C automation)
 
 Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~84 s, Ninerouter). **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-15 ~12:00 UTC (Akun C automation)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~90 s, Ninerouter Error 1016 origin DNS, 7 retry). **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
