@@ -4,10 +4,9 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C24 G18** (prioritas 1): smoke router → kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~02:00 UTC 2026-10-15). Pesan 2–10 belum terkirim.
-2. **Akun C** — **C31 aktif 4/6**; bila router 530: butir 5–6 (`surat-penawaran-harga`, `checklist-keamanan-pangan-usaha`).
-3. **Akun B** — terapkan usulan C25/C28/C29/C30 di skill terkait; uji independen + program beta VIP (keputusan 53).
-4. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
+1. **Akun C** — **C24 G18** (prioritas 1): smoke router → kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~02:30 UTC 2026-10-15). Pesan 2–10 `msgs-g18.json` belum terkirim.
+2. **Akun B** — terapkan usulan C25–C31 di skill terkait; uji independen + program beta VIP (keputusan 53).
+3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -42,6 +41,7 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-15 ~02:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 02:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C31 (5–6) | — | — | — |
 | 2026-10-15 ~02:00 | `cursor/iterasi-otomatis-akun-c-8b42` | d565138e | selesai ~02:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~86 s); **C31** 4/6 (`proposal-kerjasama`, `tagih-piutang`); **G18 tidak dilanjutkan** | — | docs | ya |
 | 2026-10-15 ~02:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 02:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C31 (3–4) | — | — | — |
 | 2026-10-15 ~01:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 610a66b3 | selesai ~01:48 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~96 s); **C31** 2/6 (`tender-checklist`, `persiapan-jual-atau-wariskan-usaha`); **G18 tidak dilanjutkan** | — | docs | ya |
