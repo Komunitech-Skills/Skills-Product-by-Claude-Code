@@ -78,11 +78,86 @@
 
 ---
 
-## Ringkasan run
+## 3. `bot-trading-kripto` — API tanpa tarik dana, disclaimer, OJK AKD
+
+**Run Akun C:** 2026-10-15 ~04:00 UTC (lanjutan)
+
+### 3.1 Perizinan & bursa berizin OJK (PAKD)
+
+| Klaim skill (README, SKILL.md, `keamanan-kunci-api.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Live utamakan **PAKD berizin OJK**; cek daftar di ojk.go.id | Halaman perizinan AKD OJK | 2026-10-15 | «POJK Nomor 27 Tahun 2024 … diubah dengan POJK Nomor 23 Tahun 2025»; BAST/NK pengalihan Bappebti→OJK **10 Januari 2025** — https://www.ojk.go.id/id/fungsi-utama/itsk/perizinan-itsk-aset-keuangan-digital-aset-kripto/default.aspx | **COCOK** |
+| Binance global bukan PAKD berizin → pernyataan tambahan sebelum live | POJK 27/2024 + positioning skill | 2026-10-15 | Perdagangan AKD di Indonesia diatur OJK; bursa luar negeri di luar kerangka PAKD | **COCOK** — selaras SKILL.md §E.7 |
+| Bot **bukan** nasihat investasi / sinyal / janji profit | UU 8/1995 Pasal 34 (Penasihat Investasi) — selaras C32 §1 | 2026-10-15 | (cross-check `riset-saham-berita`) | **COCOK** — disclaimer README & SKILL.md |
+
+**Usulan teks (Akun B):** Pastikan README menyebut «cek daftar PAKD/ITSK di ojk.go.id» dengan tanggal akses, bukan daftar statis.
+
+### 3.2 Kunci API — tanpa withdraw
+
+| Klaim skill | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| Izin hanya view + trade; **withdraw dilarang** | `references/keamanan-kunci-api.md`, `siapkan_live.py` DAFTAR PERIKSA | 2026-10-15 | Aturan emas #1 & frasa konfirmasi live `LIVE <kode> SAYA TANGGUNG RISIKONYA` + `--saya-sudah-cek-tanpa-withdraw` | **COCOK** |
+| Binance: cek otomatis `apiRestrictions`, tolak bila withdraw | Implementasi `siapkan_live.py --cek-kunci` (audit kode, bukan live) | 2026-10-15 | Script memanggil endpoint baca-saja, bukan withdraw | **COCOK** |
+| Indodax: **tidak** memanggil metode withdraw apa pun (termasuk baca-saja) | Keputusan kurator 2026-09-29; SKILL.md §E.4 | 2026-10-15 | Izin withdraw hanya lewat daftar periksa manual member | **COCOK** — selaras keputusan pemilik no. 30 (frasa member + checklist cukup) |
+| Kunci tidak disimpan/ditampilkan agent; revoke bila bocor | SKILL.md § langkah awal | 2026-10-15 | Praktik keamanan, bukan norma OJK khusus | **COCOK** |
+
+**Usulan teks (Akun B):** Tidak perlu ubah SKILL; opsional README satu kalimat «Indodax: izin tarik dana dicek manual di situs bursa sebelum live».
+
+### 3.3 Pajak & disclaimer risiko
+
+| Klaim skill | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| PPh final PMK **50/2025** (0,21 % / 1 %), berlaku 1 Agustus 2025 | pajak.go.id PMK 50/2025 — selaras C32 §2 | 2026-10-15 | **COCOK** |
+| Peringatan risiko, contoh backtest rugi, default simulasi | README blok PERINGATAN | 2026-10-15 | Selaras POJK/OJK waspada investasi (157) arah edukasi, bukan promosi return | **COCOK** |
+| Auto-trading hanya aturan member di akun member | Keputusan pemilik 2026-09-29 | 2026-10-15 | **COCOK** — batas risiko & tombol berhenti di SKILL |
+
+---
+
+## 4. `agen-cs-toko` & `balas-chat-cs` — konsumen, PDP, WhatsApp
+
+**Run Akun C:** 2026-10-15 ~04:00 UTC
+
+### 4.1 UU 8/1999 — Perlindungan Konsumen
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Pelanggan berhak info benar & ganti rugi bila barang tidak sesuai | UU 8/1999 — JDIH BPK | 2026-10-15 | Judul resmi «UU Nomor 8 Tahun 1999 tentang Perlindungan Konsumen»; berlaku 20 April 2000 — https://peraturan.bpk.go.id/Details/45288/uu-no-8-tahun-1999 | **COCOK** — `balas-chat-cs/references/alur-komplain.md` |
+| Alur komplain empati → solusi → tindak lanjut | Praktik CS + UU 8/1999 (hak konsumen) | 2026-10-15 | Skill tidak mengutip pasal spesifik di setiap balasan; rujukan di references | **COCOK** |
+| Tidak janji ganti rugi otomatis / tidak menggantikan ahli hukum | SKILL.md batasan | 2026-10-15 | **COCOK** |
+
+**Usulan teks (Akun B):** Di `alur-komplain.md`, opsional tambah Pasal 4 (hak atas informasi) & Pasal 7 (hak atas tuntutan ganti rugi) dengan tautan BPK di atas.
+
+### 4.2 UU 27/2022 — Data pelanggan
+
+| Klaim skill | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| Data pelanggan (nama, WA, isi chat) = data pribadi | UU 27/2022 — JDIH BPK | 2026-10-15 | https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 (metadata & pasal — selaras verifikasi C30) | **COCOK** |
+| `agen-cs-toko`: log `cs/log/` minimal, tanpa nama/nomor lengkap | UU 27/2022 Ps. 16 (minimalisasi) + `eskalasi-dan-kanal.md` §3a | 2026-10-15 | **COCOK** |
+| `balas-chat-cs`: tidak simpan data pribadi di output template | SKILL.md | 2026-10-15 | **COCOK** arah |
+| Promosi WA butuh persetujuan (crm-wa — run berikutnya C32 §5) | UU 27/2022 Ps. 20–21 | 2026-10-15 | **COCOK** arah untuk skill CS umum |
+
+**Usulan teks (Akun B):** README CS sebut «simpan data pelanggan sesuai UU PDP; jangan tempel data sensitif ke chat AI».
+
+### 4.3 WhatsApp — resmi vs Web (OpenClaw)
+
+| Klaim skill (`agen-cs-toko` references, examples) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| **Level 1 Copilot default** — manusia yang kirim ke pelanggan | Keputusan pemilik Komunitech 2026-09-23 | 2026-10-15 | **COCOK** operasional |
+| WA Web (OpenClaw/Baileys) **tidak resmi**; risiko blokir; larangan auto-reply massal | WhatsApp Business Messaging Policy | 2026-10-15 | «You may only contact people … opt-in»; otomasi Platform: wajib jalur eskalasi manusia dalam 24 jam — https://www.whatsapp.com/legal/business-policy (perbarui 23 Sep 2026) | **COCOK** — skill menolak auto-balas nomor toko; **PERLU UBAH** README bila masih terkesan «pasang bot auto-reply» tanpa penjelasan Copilot |
+| **WhatsApp Business Platform (WABA):** otomasi dengan template & opt-in | Policy §2 | 2026-10-15 | Berbeda dari consumer WA Web; Level 3 skill hanya referensi BSP | **COCOK** arah |
+| `balas-chat-cs`: draf untuk admin, bukan kirim otomatis ke pasien (klinik) | examples/00-openclaw | 2026-10-15 | Selaras keputusan medis + WA | **COCOK** |
+
+**Usulan teks (Akun B):** Satu paragraf README `agen-cs-toko`: «Balasan otomatis ke pelanggan di WA butuh WhatsApp Business API resmi + opt-in; OpenClaw WA Web hanya untuk Copilot/notifikasi ke pemilik (nomor terpisah).»
+
+---
+
+## Ringkasan run (kumulatif C32)
 
 | Skill | Temuan utama | Revisi skill? |
 |---|---|---|
-| `riset-saham-berita` | Penolakan rekomendasi selaras UU 8/1995 Pasal 34–35 & POJK 5/2019 | Tidak (Akun B: opsional footnote pasal) |
-| `pantau-pasar-kripto` | Peralihan & PMK 50/2025 cocok; transisi berakhir 20 Jan 2026 | Tidak (Akun B: tanggal transisi & tarif README) |
+| `riset-saham-berita` | Penolakan rekomendasi selaras UU 8/1995 & POJK 5/2019 | Tidak (Akun B opsional footnote) |
+| `pantau-pasar-kripto` | Peralihan OJK & PMK 50/2025 cocok | Tidak (Akun B: tanggal transisi README) |
+| `bot-trading-kripto` | PAKD OJK, no-withdraw, disclaimer selaras | Tidak (Akun B: daftar PAKD dinamis) |
+| `agen-cs-toko` / `balas-chat-cs` | UU 8 & UU 27 cocok; WA Web vs Business Policy selaras Copilot | Tidak (Akun B: README WA resmi vs Web) |
 
-**Berikutnya (C32):** skill (3) `bot-trading-kripto`, (4) `agen-cs-toko` + `balas-chat-cs` — atau **C24 G18** bila router HTTP 200.
+**Berikutnya (C32):** skill (5) `crm-wa`, (6) `broadcast-wa` — atau **C24 G18** bila router HTTP 200.
