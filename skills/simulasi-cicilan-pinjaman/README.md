@@ -2,7 +2,7 @@
 
 **"Bunganya cuma 0,8% sebulan" — sebenarnya berapa? Hitung cicilan, total bunga, dan bunga efektif dalam satu kalimat.**
 
-Diuji AI penguji independen di bot Telegram asli: 6 → 8,5 dari 10 (tanpa skill menaksir bunga kredit HP "kira-kira 44-45%" setahun padahal ±41,7%; dengan skill bunga flat 0,8% sebulan terlihat setara ±17,25% per tahun).
+Diuji AI penguji independen di OpenClaw: 6,5 → 8,75 dari 10 (rata-rata 4 skenario; tanpa skill tidak menjelaskan bahwa bunga flat 0,8% sebulan setara ±17,25% per tahun, dengan skill hal itu terlihat, ±20,97% bila biaya admin ikut dihitung).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -55,23 +55,23 @@ Salin folder `simulasi-cicilan-pinjaman` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 6 Okt 2026 (v1.0.1; versi terkini 1.0.4), skor 1–10 penguji independen: rata-rata tanpa skill **6,5** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Bot Telegram asli, 12 Okt 2026: tanpa skill **6** → dengan skill **8,5** — tanpa skill hanya menyebut cicilan Rp715.556 dan menaksir bunga kredit HP "kira-kira 44-45%" setahun (seharusnya ±41,7%); dengan skill terlihat 0,8% flat = ±17,25% per tahun (±20,97% dengan admin), motor jadi 27% lebih mahal dari tunai, dan brosur "bunga 0%" dibuatkan versi jujur.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agen AI, 6 Okt 2026 (v1.0.1; versi terkini 1.0.4), skor 1–10 penguji independen: rata-rata tanpa skill **6,5** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Bot Telegram asli, 12 Okt 2026: tanpa skill **6** → dengan skill **8,5** — tanpa skill hanya menyebut cicilan Rp715.556 dan menaksir bunga kredit HP "kira-kira 44-45%" setahun (seharusnya ±41,7%); dengan skill terlihat 0,8% flat = ±17,25% per tahun (±20,97% dengan admin), motor jadi 27% lebih mahal dari tunai, dan brosur "bunga 0%" dibuatkan versi jujur.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Bukan nasihat keuangan atau rekomendasi lembaga pembiayaan.
+**Status uji (jujur):** sudah diuji di OpenClaw (sebelum/sesudah, otomatis oleh agen AI, bukan oleh manusia) dan di bot Telegram asli. Cursor: pemasangan folder, skrip, dan tes regresi diuji 14 Okt 2026 dan berjalan, tetapi skill termuat otomatis di Cursor belum terbukti. Claude Code dan Codex belum diuji langsung (format skill-nya sama). Bukan nasihat keuangan atau rekomendasi lembaga pembiayaan.
 
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech, 12 Okt 2026): tanpa skill skor **6** → dengan skill skor **8,5** (LULUS). Ringkasan pembeda ada di blok **Hasil uji (angka nyata)** di atas.
 
 ## FAQ
-**Apakah angkanya pasti sama dengan tabel dari bank/leasing?**
+**Apakah angkanya sama persis dengan tabel dari bank/leasing?**
 Rumusnya standar dan dibulatkan per rupiah, tetapi tiap lembaga bisa memakai pembulatan dan biaya yang berbeda. Pakai hasil ini untuk memahami dan membandingkan; angka final tetap dari tabel angsuran resmi.
 
 **Apa bedanya bunga flat dan efektif?**
 Flat menghitung bunga dari pinjaman awal sampai lunas; efektif menghitung dari sisa utang. Pada angka yang sama, flat jauh lebih mahal — misalnya flat 0,8% per bulan setara bunga efektif sekitar 17% per tahun.
 
 **Bisa menyarankan bank atau aplikasi pinjaman yang paling murah?**
-Tidak. Skill ini tidak menyebut atau merekomendasikan merek. Kirimkan angka dari penawaran yang Anda terima, dan AI akan membandingkannya dengan bunga efektif setara dan total biaya.
+Skill ini tidak menyebut atau merekomendasikan merek bank maupun aplikasi pinjaman. Kirimkan angka dari penawaran yang Anda terima, dan AI akan membandingkannya dengan bunga efektif setara dan total biaya.
 
 ## Riwayat perubahan
 

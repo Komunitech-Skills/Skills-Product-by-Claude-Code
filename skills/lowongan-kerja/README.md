@@ -75,7 +75,7 @@ Diuji di bot OpenClaw asli (grup uji internal Komunitech), 3 Oktober 2026.
 Verdik uji bot: LULUS — DENGAN menghapus keempat syarat diskriminatif (wanita, maks 25 th, belum menikah, berpenampilan menarik) dengan dasar SE Menaker M/6/HK.04/V/2025 + 3 versi (portal/IG/WA) + pertanyaan seleksi + cek UMK; TANPA masih memuat "wanita, usia maks 25" dan menawarkan menambah kembali syarat yang dihapus.
 
 ## Catatan penting
-- **Bukan nasihat hukum.** Dasar aturan: SE Menaker No. M/6/HK.04/V/2025 (28 Mei 2025) tentang larangan diskriminasi dalam rekrutmen; UU 13/2003 Pasal 88E s.t.d.d. UU 6/2023 dan PP 36/2021 untuk upah minimum; UU 27/2022 tentang Pelindungan Data Pribadi untuk data pelamar; berlaku per 23 September 2026, pasal dicocokkan ulang ke naskah resmi 15 Oktober 2026. UMK berbeda per kota dan berubah tiap tahun, jadi cek angka terbaru ke Disnaker/Pemda.
+- **Bukan nasihat hukum.** Dasar aturan: SE Menaker No. M/6/HK.04/V/2025 (28 Mei 2025) tentang larangan diskriminasi dalam rekrutmen; UU 13/2003 Pasal 88E s.t.d.d. UU 6/2023 dan PP 36/2021 untuk upah minimum; UU 27/2022 tentang Pelindungan Data Pribadi untuk data pelamar; berlaku per 23 September 2026, pasal dicocokkan ulang ke naskah resmi 14–15 Oktober 2026. UMK berbeda per kota dan berubah tiap tahun, jadi cek angka terbaru ke Disnaker/Pemda.
 - **Data pelamar** (CV, nomor HP) termasuk data pribadi: pakai hanya untuk rekrutmen, simpan di tempat yang hanya dibuka tim rekrutmen, dan hapus bila tidak lagi diperlukan atau pelamar memintanya (UU 27/2022 Pasal 43 ayat (1)).
 - Untuk sengketa rekrutmen, konsultasikan ke Disnaker atau ahli hukum ketenagakerjaan.
 
@@ -84,10 +84,10 @@ Verdik uji bot: LULUS — DENGAN menghapus keempat syarat diskriminatif (wanita,
 Sejak Mei 2025 Kemnaker melarang syarat diskriminatif seperti batas usia dan "berpenampilan menarik" di lowongan, kecuali ada alasan pekerjaan yang nyata. Skill ini tetap memberi kalimat pengganti yang fokus pada kemampuan.
 
 **Apakah angka UMR otomatis diisi?**
-Tidak. UMK berbeda per kota dan berubah tiap tahun, jadi Anda yang mengisi angkanya agar tidak salah.
+Angka UMR/UMK tidak diisi otomatis, karena UMK berbeda per kota dan berubah tiap tahun, jadi Anda yang mengisinya agar tidak salah. Skill menyisakan tempat kosong `[isi: UMK]` dan mengingatkan Anda mengeceknya ke Disnaker atau Pemda sebelum loker disebar.
 
 **Bisa dibuat dalam bahasa Inggris untuk LinkedIn?**
-Bisa. Minta saja "versi bahasa Inggris".
+Bisa, skill ini dapat menyiapkan versi bahasa Inggris untuk LinkedIn. Minta saja "versi bahasa Inggris" setelah iklan jadi.
 
 ## Riwayat perubahan
 

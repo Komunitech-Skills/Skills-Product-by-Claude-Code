@@ -75,13 +75,13 @@ Uji ulang di bot Telegram uji, 12 Okt 2026: skor 6,5 → 9, LULUS, hasil sama de
 
 ## FAQ
 **Apakah hasilnya menjamin usaha saya untung?**
-Tidak menjamin. Hasil tergantung perkiraan omzet dan biaya yang Anda masukkan. Karena itu skill menampilkan skenario "kalau meleset" dan batas aman. Ini alat bantu, bukan nasihat keuangan.
+Hasilnya tidak menjamin usaha Anda untung, karena semuanya tergantung perkiraan omzet dan biaya yang Anda masukkan. Karena itu skill menampilkan skenario "kalau meleset" dan batas aman. Ini alat bantu, bukan nasihat keuangan.
 
 **Kenapa patokannya 12% per tahun?**
 Itu asumsi awal, bukan acuan pasar: bunga KUR (Kredit Usaha Rakyat) Mikro/Kecil sektor produksi 6% efektif per tahun (Peraturan Menteri Koordinator Bidang Perekonomian No. 1 Tahun 2026 tentang Pedoman Pelaksanaan KUR, Pasal 37 & 44, berlaku sejak 13 Januari 2026; teks pasalnya sudah dicek penguji independen pada 13 Oktober 2026 dan dicocokkan ulang dengan salinan resmi JDIH BPK pada 15 Oktober 2026, tetapi aturan bisa berubah, jadi konfirmasi ke bank penyalur) ditambah premi risiko usaha 6% yang kami pilih sebagai contoh. Anda bisa menggantinya dengan bunga pinjaman Anda sendiri atau hasil minimal yang Anda inginkan, dan skill akan menghitung ulang.
 
 **Bisa untuk menilai saham, kripto, atau reksa dana?**
-Tidak bisa. Skill ini khusus investasi di usaha sendiri (alat, cabang, kendaraan, renovasi). Kalau Anda bertanya "pasti untung berapa kalau di kripto?", AI diarahkan menolak janji untung dengan sopan, menyarankan penasihat keuangan berizin OJK, lalu menawarkan hitungan rencana usaha Anda.
+Skill ini khusus untuk investasi di usaha sendiri (alat, cabang, kendaraan, renovasi), jadi tidak bisa dipakai untuk menilai saham, kripto, atau reksa dana. Kalau Anda bertanya "pasti untung berapa kalau di kripto?", AI diarahkan menolak janji untung dengan sopan, menyarankan penasihat keuangan berizin OJK, lalu menawarkan hitungan rencana usaha Anda.
 
 ## Riwayat perubahan
 
