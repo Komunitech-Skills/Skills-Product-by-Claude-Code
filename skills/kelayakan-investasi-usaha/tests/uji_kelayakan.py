@@ -265,6 +265,14 @@ k, h = jalankan(*dasar, "--diskonto", "5")
 cek("K8 peringatan diskonto < 6% menyebut pasal + tanggal berlaku",
     k == 0 and any("Pasal 37 & 44, berlaku 13 Januari 2026" in x for x in h["peringatan"]))
 
+# ---------------------------------------------------------------- L. rujukan PPh final PP 20/2026 (v1.0.6)
+k, h = jalankan("--investasi", "900jt", "--omzet", "450jt/bulan", "--biaya", "400jt/bulan", "--tahun", "5", "--pajak-persen", "0,5")
+cek("L1 omzet > Rp4,8 miliar + PPh final: peringatan menyebut PP 55/2022 jo. PP 20/2026",
+    k == 0 and any("PP 55/2022 jo. PP 20/2026" in x and "Rp4,8 miliar" in x for x in h["peringatan"]))
+k, h = jalankan(*dasar, "--pajak-persen", "0,5")
+cek("L2 omzet <= Rp4,8 miliar: tanpa peringatan batas PPh final", k == 0 and not any("Rp4,8 miliar" in x for x in h["peringatan"]))
+cek("L3 VERSI script = 1.0.6", K.VERSI == "1.0.6")
+
 print()
 print(f"{'SEMUA LULUS' if not GAGAL else str(len(GAGAL)) + ' GAGAL'}")
 sys.exit(1 if GAGAL else 0)

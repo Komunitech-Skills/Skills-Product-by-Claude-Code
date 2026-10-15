@@ -26,7 +26,7 @@ import sys
 from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation, getcontext
 
 getcontext().prec = 40
-VERSI = "1.0.5"
+VERSI = "1.0.6"
 DISKONTO_DEFAULT = Decimal("12")
 DISKONTO_KETAT = Decimal("20")
 LABEL_MANFAAT = {"omzet": "Omzet", "penghematan": "Penghematan", "pemasukan": "Pemasukan tambahan"}
@@ -607,7 +607,7 @@ def jalankan(a):
     if p["mode"] == "omzet":
         h.update(bep(p))
         if p["pajak"] > 0 and p["dasar_pajak"] == "omzet" and p["omzet"][0] > Decimal("4800000000"):
-            peringatan.append("Omzet di atas Rp4,8 miliar/tahun: PPh final 0,5% UMKM (PP 55/2022) tidak berlaku.")
+            peringatan.append("Omzet di atas Rp4,8 miliar/tahun: PPh final 0,5% UMKM (PP 55/2022 jo. PP 20/2026) tidak berlaku.")
         if baris[0]["arus_kas_operasional"] < 0:
             peringatan.append("Arus kas tahun pertama negatif: siapkan dana cadangan untuk menutup kekurangan.")
     else:
