@@ -1,0 +1,72 @@
+[
+  {
+    "skill": "studio-video-pendek-ai",
+    "sisi": "sebelum",
+    "topic": 1556,
+    "text": "@KTclaude1_bot Bikinin video 15 detik promo laundry kiloan Laundry Bersih Jaya Fiktif, Rp6.500/kg, pesan lewat WA. Rekam pakai HP aja buat TikTok sama Reels.",
+    "gel": 21
+  },
+  {
+    "skill": "studio-video-pendek-ai",
+    "sisi": "sesudah",
+    "topic": 1557,
+    "text": "@KTclaude1_bot Bikinin video 15 detik promo laundry kiloan Laundry Bersih Jaya Fiktif, Rp6.500/kg, pesan lewat WA. Rekam pakai HP aja buat TikTok sama Reels.",
+    "gel": 21
+  },
+  {
+    "skill": "strategi-harga-produk",
+    "sisi": "sebelum",
+    "topic": 1558,
+    "text": "@KTclaude1_bot Aku jualan kopi susu gula aren literan (botol 1 liter) di Semarang, namanya Kopi Teras Fiktif. Modal per botol 22 ribu udah sama botol & stiker. Sekarang jual 45 ribu, laku sekitar 400 botol sebulan. Biaya tetap 5,2 juta sebulan. Pesaing jual 35rb, 42rb, 55rb. Banyak yang minta jadi reseller, ada kantor mau 100 botol per minggu. Kepikiran naikin ke 49.900 karena gula aren naik. Gimana strategi harganya?",
+    "gel": 21
+  },
+  {
+    "skill": "strategi-harga-produk",
+    "sisi": "sesudah",
+    "topic": 1559,
+    "text": "@KTclaude1_bot Aku jualan kopi susu gula aren literan (botol 1 liter) di Semarang, namanya Kopi Teras Fiktif. Modal per botol 22 ribu udah sama botol & stiker. Sekarang jual 45 ribu, laku sekitar 400 botol sebulan. Biaya tetap 5,2 juta sebulan. Pesaing jual 35rb, 42rb, 55rb. Banyak yang minta jadi reseller, ada kantor mau 100 botol per minggu. Kepikiran naikin ke 49.900 karena gula aren naik. Gimana strategi harganya?",
+    "gel": 21
+  },
+  {
+    "skill": "resi-picking",
+    "sisi": "sebelum",
+    "topic": 1560,
+    "text": "@KTclaude1_bot Ini ekspor pesanan Shopee hari ini dari Toko Gadget Fiktif (40 pesanan, campur JNE/J&T/SiCepat, ada 3 batal). Tolong buatkan daftar ambil barang per SKU dan urutan kemas/tempel resi per kurir. Nanti aku kirim file CSV-nya di chat berikutnya kalau perlu.",
+    "gel": 21
+  },
+  {
+    "skill": "resi-picking",
+    "sisi": "sesudah",
+    "topic": 1561,
+    "text": "@KTclaude1_bot Ini ekspor pesanan Shopee hari ini dari Toko Gadget Fiktif (40 pesanan, campur JNE/J&T/SiCepat, ada 3 batal). Tolong buatkan daftar ambil barang per SKU dan urutan kemas/tempel resi per kurir. Nanti aku kirim file CSV-nya di chat berikutnya kalau perlu.",
+    "gel": 21
+  },
+  {
+    "skill": "peringatan-dini-operasional",
+    "sisi": "sebelum",
+    "topic": 1562,
+    "text": "@KTclaude1_bot Ini log harian pabrik roti saya 30 hari terakhir (fiktif). Ada yang perlu saya waspadai? Pemasok tepung biasanya kirim 2 hari setelah dipesan. Nama usaha: Roti Bu Ratna Fiktif. (Catatan: output min 2000 pcs/hari, reject maks 50, penjualan min 9 juta, telat kirim maks 1.)",
+    "gel": 21
+  },
+  {
+    "skill": "peringatan-dini-operasional",
+    "sisi": "sesudah",
+    "topic": 1563,
+    "text": "@KTclaude1_bot Ini log harian pabrik roti saya 30 hari terakhir (fiktif). Ada yang perlu saya waspadai? Pemasok tepung biasanya kirim 2 hari setelah dipesan. Nama usaha: Roti Bu Ratna Fiktif. (Catatan: output min 2000 pcs/hari, reject maks 50, penjualan min 9 juta, telat kirim maks 1.)",
+    "gel": 21
+  },
+  {
+    "skill": "gaji-umkm",
+    "sisi": "sebelum",
+    "topic": 1564,
+    "text": "@KTclaude1_bot Mulai pakai aplikasi gaji. UMK kota kami Rp 5.396.761, JKK 0,54%, gajian tgl 25. Gaji September fiktif: 12 karyawan, Andi bonus 500 ribu & kasbon 250 ribu, Indah lembur 2 jam dan 3 jam di hari kerja, Kiki masuk 15 September, Lina resign 14 September. Tolong hitung slip dan rekap setoran BPJS/PPh21-nya.",
+    "gel": 21
+  },
+  {
+    "skill": "gaji-umkm",
+    "sisi": "sesudah",
+    "topic": 1565,
+    "text": "@KTclaude1_bot Mulai pakai aplikasi gaji. UMK kota kami Rp 5.396.761, JKK 0,54%, gajian tgl 25. Gaji September fiktif: 12 karyawan, Andi bonus 500 ribu & kasbon 250 ribu, Indah lembur 2 jam dan 3 jam di hari kerja, Kiki masuk 15 September, Lina resign 14 September. Tolong hitung slip dan rekap setoran BPJS/PPh21-nya.",
+    "gel": 21
+  }
+]
