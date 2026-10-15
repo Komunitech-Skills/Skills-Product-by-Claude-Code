@@ -4,7 +4,10 @@
 Dasar (status per 2026-09-23, rincian di references/regulasi.md):
 - BPJS Kesehatan: 5% (4% perusahaan, 1% karyawan), batas atas upah Rp12.000.000, batas bawah UMK
   (Perpres 82/2018 jo. Perpres 64/2020 Pasal 30 & 32).
-- BPJS Ketenagakerjaan: JHT 3,7% + 2%; JKK 0,24–1,74% (perusahaan); JKM 0,30% (perusahaan);
+- BPJS Ketenagakerjaan: JHT 3,7% + 2%; JKK 0,24–1,74% (perusahaan, PP 44/2015 Pasal 16; total yang dibayar,
+  menurut PP 6/2025 Pasal 11 ayat (5) 0,14% di antaranya direkomposisi untuk JKP; ketentuan ini sudah ada sejak
+  PP 37/2021 Pasal 11 ayat (5) huruf a, PP 6/2025 menghapus rekomposisi JKM 0,10% dan menurunkan iuran JKP
+  dari 0,46% ke 0,36%); JKM 0,30% (perusahaan);
   JP 2% + 1% dengan batas upah JP (Rp10.547.400 s.d. Feb 2026; Rp11.086.300 mulai Maret 2026).
   Dasar iuran = upah pokok + tunjangan tetap (PP 44/2015 Pasal 19).
 - Lembur: PP 35/2021 Pasal 26, 31–32 (1/173 upah sebulan; hari kerja jam ke-1 1,5x, berikutnya 2x).
@@ -40,6 +43,10 @@ JP_PERUSAHAAN = Decimal(2)
 JP_KARYAWAN = Decimal(1)
 JKK_RESMI = [Decimal("0.24"), Decimal("0.54"), Decimal("0.89"), Decimal("1.27"), Decimal("1.74")]
 JKK_DEFAULT = Decimal("0.24")
+# PP 6/2025 Pasal 11 ayat (5) (sama dengan PP 37/2021 Pasal 11 ayat (5) huruf a): 0,14% iuran JKK direkomposisi
+# untuk JKP, sehingga porsi JKK murni menjadi 0,10/0,40/0,75/1,13/1,60%. Iuran yang dibayar perusahaan tetap tarif JKK_RESMI (porsi JKK murni + 0,14%).
+JKK_REKOMPOSISI_JKP = Decimal("0.14")
+JKK_NETO_PP6 = [t - JKK_REKOMPOSISI_JKP for t in JKK_RESMI]
 # Batas upah JP: (mulai 'YYYY-MM', sampai 'YYYY-MM', nilai)
 BATAS_JP = [
     ("2025-03", "2026-02", Decimal(10547400)),
@@ -55,7 +62,7 @@ TIER_LIBUR = {
 }
 
 DISCLAIMER = ("Alat bantu hitung, bukan nasihat hukum/pajak. Dasar: Perpres 64/2020 (BPJS Kesehatan), PP 44/2015 & "
-              "PP 45/2015 & PP 46/2015 (BPJS Ketenagakerjaan), PP 35/2021 (lembur), PP 58/2023 & PMK 168/2023 "
+              "PP 45/2015 & PP 46/2015 & PP 6/2025 (BPJS Ketenagakerjaan), PP 35/2021 (lembur), PP 58/2023 & PMK 168/2023 "
               "(PPh 21 TER), PMK 105/2025 (DTP), berlaku per 23 September 2026. Untuk kasus khusus hubungi BPJS, "
               "Disnaker, Kring Pajak 1500200, atau konsultan.")
 
@@ -236,9 +243,16 @@ def hitung_karyawan(r, cfg):
         "jp_perusahaan": persen(JP_PERUSAHAAN, dasar_jp) if ikut_jp else Decimal(0),
         "jp_karyawan": persen(JP_KARYAWAN, dasar_jp) if ikut_jp else Decimal(0),
     }
-    if ikut_tk and jkk_p not in JKK_RESMI:
-        peringatan.append("{}: tarif JKK {} bukan salah satu tarif PP 44/2015 (0,24/0,54/0,89/1,27/1,74%). Pastikan "
-                          "sesuai penetapan BPJS Ketenagakerjaan.".format(label, tc.format_persen(jkk_p)))
+    if ikut_tk and jkk_p in JKK_NETO_PP6:
+        peringatan.append("{}: tarif JKK {} adalah porsi JKK setelah 0,14% dialihkan untuk JKP (PP 37/2021 Pasal 11 "
+                          "ayat (5), dipertahankan PP 6/2025), bukan iuran yang dibayar perusahaan. Iuran JKK yang dibayar tetap {} "
+                          "(PP 44/2015 Pasal 16); isi tarif JKK (kolom jkk_persen / --jkk) dengan angka itu "
+                          "kecuali tagihan BPJS Ketenagakerjaan menyebut lain."
+                          .format(label, tc.format_persen(jkk_p), tc.format_persen(jkk_p + JKK_REKOMPOSISI_JKP)))
+    elif ikut_tk and jkk_p not in JKK_RESMI:
+        peringatan.append("{}: tarif JKK {} bukan salah satu tarif PP 44/2015 Pasal 16 (0,24/0,54/0,89/1,27/1,74%; "
+                          "tidak berubah oleh PP 6/2025). Pastikan sesuai penetapan BPJS Ketenagakerjaan."
+                          .format(label, tc.format_persen(jkk_p)))
 
     penghasilan = pokok + tetap + tidak_tetap + lembur + bonus
     bruto_pajak = penghasilan + iur["jkk"] + iur["jkm"] + iur["kes_perusahaan"]

@@ -20,7 +20,11 @@ Diuji AI penguji independen di OpenClaw: 5,3 → 8,6 dari 10 (harga diambil dari
   opini atau "sinyal" siapa pun.
 - ✅ **Jurnal trading rapi & untung/rugi (P/L) dihitung dengan skrip** -- dari angka yang
   Anda catat sendiri (metode FIFO, yaitu yang dibeli lebih dulu dianggap dijual lebih
-  dulu; sudah termasuk biaya), bukan diperkirakan.
+  dulu; sudah termasuk biaya), bukan diperkirakan. Termasuk perkiraan PPh final atas
+  transaksi **jual** sesuai PMK 50/2025 (berlaku sejak 1 Agustus 2025): 0,21% di exchange
+  dalam negeri berizin OJK, 1% di exchange luar negeri; transaksi beli tidak kena PPh, dan
+  transaksi jual sebelum 1 Agustus 2025 (masih aturan lama) tidak ikut diperkirakan. Ini
+  perkiraan, bukan nasihat pajak -- untuk kepastian, tanyakan konsultan pajak atau DJP.
 - ✅ **Bukan bot trading** -- skill ini tidak meminta kunci API (kunci akses program ke akun) bursa (exchange) dan tidak
   menjalankan order. Keputusan beli/jual sepenuhnya di tangan Anda. Ini bukan sinyal
   beli/jual dan tanpa janji profit; risiko rugi tetap di Anda.
@@ -70,7 +74,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw (paket solusi kripto Komunitech, lingkungan uji terpisah), 3–5 Okt 2026 (v1.0.10), skor 1–10 penguji independen (rata-rata 3 skenario): tanpa skill **5,3** → dengan skill **8,6** (LULUS). Skor berasal dari uji gabungan paket solusi kripto Komunitech (skill ini bersama skill pendamping); ringkasan per skenario ada di `examples/00-openclaw-sebelum-sesudah.md`, uji simulasi agent yang lebih awal di `examples/HASIL-UJI.md`. Tanpa skill, berita tanpa tautan sumber dan memuat level harga, AI mengubah pengaturan OpenClaw tanpa izin, dan meminta token bot dikirim lewat chat; dengan skill harga dari CoinGecko/Indodax (situs data harga kripto) diverifikasi skrip (program hitung kecil), tanpa sinyal beli/jual, jurnal FIFO cocok hitungan independen.
 
-**Status uji (jujur):** informasi saja — **bukan** rekomendasi investasi atau bot trading. Sudah diuji di OpenClaw Gateway asli (program OpenClaw yang berjalan terus untuk menjalankan jadwal; notifikasi ambang) dan uji gabungan agent. Regulasi kripto Indonesia berubah — cek OJK (Otoritas Jasa Keuangan) dan daftar aset keuangan digital (DAKD) yang berlaku. Jadwal OpenClaw baru diuji di Linux; macOS dan Windows belum diuji di perangkat asli.
+**Status uji (jujur):** informasi saja — **bukan** rekomendasi investasi atau bot trading. Sudah diuji di OpenClaw Gateway asli (program OpenClaw yang berjalan terus untuk menjalankan jadwal; notifikasi ambang) dan uji gabungan agent. Sejak 20 Januari 2026 masa peralihan dari Bappebti resmi berakhir dan perdagangan aset kripto sepenuhnya diawasi OJK (Otoritas Jasa Keuangan); regulasi bisa berubah — cek situs OJK dan daftar aset keuangan digital (DAKD) yang berlaku. Jadwal OpenClaw baru diuji di Linux; macOS dan Windows belum diuji di perangkat asli.
 
 ## FAQ
 **Ini bot auto-trading, kan?**
@@ -103,4 +107,4 @@ adanya, bukan diberi angka palsu.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

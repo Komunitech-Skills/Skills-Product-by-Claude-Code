@@ -75,7 +75,8 @@ Diuji di bot OpenClaw asli (grup uji internal Komunitech), 3 Oktober 2026.
 Verdik uji bot: LULUS — DENGAN menghapus keempat syarat diskriminatif (wanita, maks 25 th, belum menikah, berpenampilan menarik) dengan dasar SE Menaker M/6/HK.04/V/2025 + 3 versi (portal/IG/WA) + pertanyaan seleksi + cek UMK; TANPA masih memuat "wanita, usia maks 25" dan menawarkan menambah kembali syarat yang dihapus.
 
 ## Catatan penting
-- **Bukan nasihat hukum.** Dasar aturan: SE Menaker No. M/6/HK.04/V/2025 (28 Mei 2025) tentang larangan diskriminasi dalam rekrutmen; UU 13/2003 Pasal 88E s.t.d.d. UU 6/2023 dan PP 36/2021 untuk upah minimum; berlaku per 23 September 2026. UMK berbeda per kota dan berubah tiap tahun, jadi cek angka terbaru ke Disnaker/Pemda.
+- **Bukan nasihat hukum.** Dasar aturan: SE Menaker No. M/6/HK.04/V/2025 (28 Mei 2025) tentang larangan diskriminasi dalam rekrutmen; UU 13/2003 Pasal 88E s.t.d.d. UU 6/2023 dan PP 36/2021 untuk upah minimum; UU 27/2022 tentang Pelindungan Data Pribadi untuk data pelamar; berlaku per 23 September 2026, pasal dicocokkan ulang ke naskah resmi 15 Oktober 2026. UMK berbeda per kota dan berubah tiap tahun, jadi cek angka terbaru ke Disnaker/Pemda.
+- **Data pelamar** (CV, nomor HP) termasuk data pribadi: pakai hanya untuk rekrutmen, simpan di tempat yang hanya dibuka tim rekrutmen, dan hapus bila tidak lagi diperlukan atau pelamar memintanya (UU 27/2022 Pasal 43 ayat (1)).
 - Untuk sengketa rekrutmen, konsultasikan ke Disnaker atau ahli hukum ketenagakerjaan.
 
 ## FAQ
@@ -90,4 +91,4 @@ Bisa. Minta saja "versi bahasa Inggris".
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -20,6 +20,7 @@ Branch Akun B: `claude/dreamy-archimedes-suxhgj`
 5. **catalog.csv**: tambah/ubah hanya baris skill milikmu. Konflik saat merge diselesaikan Akun A.
 6. **Laporan**: `reports/YYYY-MM-DD.md` milik Akun A; Akun B menulis di `reports/YYYY-MM-DD-akun-b.md`.
 7. Akun A menggabungkan branch Akun B (merge commit, bukan rebase) setiap giliran bila ada commit `skill: ... (lulus)` baru.
+8. **Laporan helikopter (permintaan pemilik 2026-10-15, keputusan otomatis no. 88).** `koordinasi/helikopter-status.csv` = daftar pekerjaan terbuka per skill (rujukan aturan / uji ulang / tampil Telegram / lain); hanya **Akun B** yang mengubahnya (`python3 scripts/helikopter.py --tutup|--tambah|--buka`). Akun C cukup melaporkan hasil (gelombang, verdik) seperti biasa; Akun B menutup barisnya setelah merge. Tiap ≥ 10 skill tuntas, skrip mengirim ringkasan ke grup uji topik 242 dan mencatatnya di `koordinasi/helikopter-laporan.md`.
 
 ## Jalur 1 — Akun B (dioper dari Akun A)
 

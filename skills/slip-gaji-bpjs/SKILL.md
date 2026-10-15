@@ -28,7 +28,7 @@ Mengubah daftar gaji karyawan menjadi slip gaji siap cetak/kirim dan rekap payro
 | Per karyawan: nama, status PTKP (TK/0…K/3), gaji pokok | Ya | — (tanyakan) |
 | Tunjangan tetap / tidak tetap, bonus, potongan lain (kasbon) | Tidak | 0 |
 | Jam lembur per hari (hari kerja & hari libur) | Tidak | Tanpa lembur |
-| Tarif JKK perusahaan (0,24/0,54/0,89/1,27/1,74%) | Tidak | 0,24% — sebutkan asumsi |
+| Tarif JKK perusahaan (0,24/0,54/0,89/1,27/1,74%; PP 44/2015, tetap dipakai setelah PP 6/2025) | Tidak | 0,24% — sebutkan asumsi |
 | UMK/UMP daerah (angka dari pengguna) | Tidak | Tidak dicek — sebutkan |
 | Pola kerja 5 atau 6 hari/minggu | Tidak | 5 hari |
 | Nama perusahaan | Tidak | Kosong |
@@ -85,10 +85,11 @@ Ditanggung perusahaan (tidak memotong gaji): BPJS Kes 4% Rp …; JHT 3,7% Rp …
 Baris pos yang nilainya Rp 0 boleh dihilangkan; bila DTP, tampilkan "PPh 21 dipotong", "PPh 21 DTP dibayar tunai" (nilai sama), dan "setoran ke negara Rp 0" seperti di slip MD.
 
 ## Rumus (untuk hitung manual)
-Dasar & sumber: `references/regulasi.md` (berlaku per 2026-09-23).
+Dasar & sumber: `references/regulasi.md` (berlaku per 2026-09-23; JKK/JKP dicek ulang 2026-10-15 terhadap PP 37/2021 & PP 6/2025).
 - Upah tetap = gaji pokok + tunjangan tetap.
 - BPJS Kesehatan: dasar = upah tetap, minimal UMK, maksimal Rp 12.000.000 → perusahaan 4%, karyawan 1%.
 - JHT: perusahaan 3,7%, karyawan 2% × upah tetap (tanpa batas). JKK (perusahaan) tarif risiko × upah tetap. JKM (perusahaan) 0,3%.
+- JKK & JKP (PP 6/2025 Pasal 11 ayat (5), berlaku 7 Feb 2025; pengalihan 0,14% ini sudah ada sejak PP 37/2021): tarif JKK yang dibayar perusahaan **tetap 0,24–1,74%**; 0,14% di dalamnya dialihkan untuk JKP, sehingga PP itu menyebut porsi JKK murni 0,10/0,40/0,75/1,13/1,60%. Angka itu **bukan** tarif tagihan — jangan dipakai sebagai `jkk_persen`, dan **jangan menambah iuran JKP** (dibayar pemerintah 0,22% + rekomposisi JKK 0,14%).
 - JP: dasar = upah tetap maks **Rp 11.086.300** (mulai Maret 2026; Rp 10.547.400 untuk Maret 2025–Feb 2026) → perusahaan 2%, karyawan 1%.
 - Lembur: upah sejam = upah tetap ÷ 173 (bila ada tunjangan tidak tetap dan upah tetap < 75% total upah, pakai 75% total upah). Hari kerja: jam ke-1 × 1,5, jam berikutnya × 2. Hari libur (5 hari kerja): jam 1–8 × 2, jam 9 × 3, jam 10–12 × 4.
 - Bruto pajak = semua pendapatan + JKK + JKM + BPJS Kesehatan 4% (bagian perusahaan). PPh 21 = TER (kategori dari PTKP) × bruto pajak; Desember/bulan berhenti: hitung ulang setahun (lihat skill `pph21-ter`).
@@ -122,6 +123,7 @@ Satu slip (isi file MD/HTML): identitas & periode → tabel Pendapatan → tabel
 - [ ] DTP hanya bila pengguna mengonfirmasi sektor/KLU, masa pajak 2026, dan bruto tetap Januari/bulan pertama kerja ≤ Rp 10 jt.
 - [ ] Bila DTP: slip menampilkan PPh 21 dipotong, DTP dibayar tunai (nilai sama), setoran ke negara Rp 0, dan take home pay dari script (tidak pernah "gaji + DTP").
 - [ ] Desember/berhenti: jumlah bulan kerja (atau bulan mulai) diisi sesuai fakta, bukan ditebak.
+- [ ] JKK memakai tarif tagihan 0,24–1,74% (bukan porsi 0,10–1,60% di PP 37/2021 & PP 6/2025) dan tidak ada baris iuran JKP.
 - [ ] Asumsi (JKK, pola kerja), pembulatan, dan disclaimer tercantum.
 - [ ] Aplikasi chat: minimal 1 slip utuh (maks. 3) tampil langsung di chat sebagai teks rata tanpa tabel; tidak ada path file; file dilampirkan atau ditawarkan "balas 'kirim file'".
 

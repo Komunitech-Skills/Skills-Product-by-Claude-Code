@@ -10,7 +10,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 9 dari 10 pada skenario jebakan (
 - ✅ Laporan "lampu lalu lintas" (🔴🟡🟢) yang mudah dipahami, bukan tumpukan istilah teknis.
 - ✅ Setiap perbaikan ditawarkan satu per satu, dan **minta izin Anda dulu** sebelum diubah.
 - ✅ Setiap perbaikan disertai cara membatalkannya.
-- ✅ Ringkasan singkat UU PDP (aturan perlindungan data pribadi) kalau OpenClaw Anda memproses data pelanggan.
+- ✅ Ringkasan singkat UU PDP (UU 27/2022 tentang Pelindungan Data Pribadi, berlaku penuh sejak Oktober 2024; aturan pelaksananya PP 33/2026 mulai berlaku 16 Januari 2027) kalau OpenClaw Anda memproses data pelanggan, termasuk tenggat pemberitahuan kebocoran data paling lambat 72 jam (3×24 jam, Pasal 46).
 - ✅ Pemeriksaan hanya **membaca**; skill dirancang tidak mengubah apa pun tanpa persetujuan Anda.
 
 ## Cocok untuk siapa
@@ -75,8 +75,8 @@ Tidak. Pemeriksaan berjalan di OpenClaw Anda sendiri; hasilnya muncul di percaka
 
 **Skill ini bisa menggantikan konsultan hukum untuk UU PDP?**
 Tidak. Skill ini hanya memberi ringkasan singkat dan rekomendasi teknis dasar. Untuk kepatuhan
-hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ahli hukum/DPO. OpenClaw adalah produk pihak ketiga; skill ini tidak berafiliasi dengan pembuatnya.
+hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ahli hukum/DPO. Perlu diingat, pelanggaran kewajiban pengendali data dapat dikenai sanksi administratif UU PDP (Pasal 57). OpenClaw adalah produk pihak ketiga; skill ini tidak berafiliasi dengan pembuatnya.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

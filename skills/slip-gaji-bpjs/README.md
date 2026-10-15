@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech, 2026-10-03, putaran uji di bot). Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.5); skor angka tidak dicatat di putaran itu. PPh 21 Desember **tanpa skill** Rp165.000 (premi BPJS/JKK/JKM yang dibayar perusahaan tidak dimasukkan ke bruto pajak), gaji bersih Rp7.035.000; **dengan skill** Rp321.595, gaji bersih Rp6.878.405, plus biaya perusahaan Rp8.268.000 dan file slip (selisih Rp156.595; angka dicek ulang kurator dengan python dan cocok).
 
-Diperbaiki di versi 1.0.7 (slip gaji tampil utuh di chat Telegram; 1.0.6 memperjelas catatan PPh 21 DTP di slip, hitungan tidak berubah), belum diuji ulang di bot Telegram.
+Diperbaiki di versi 1.0.7 (slip gaji tampil utuh di chat Telegram; 1.0.6 memperjelas catatan PPh 21 DTP di slip, hitungan tidak berubah), belum diuji ulang di bot Telegram. Versi 1.0.8 hanya memperbarui rujukan aturan JKK (PP 37/2021 dan perubahannya, PP 6/2025); angka slip tidak berubah.
 
 ## FAQ
 **Apakah UMK daerah saya sudah ada di dalam skill?**
@@ -82,8 +82,8 @@ Desember pajaknya dihitung ulang setahun, jadi skill akan meminta total penghasi
 **Apakah data gaji karyawan dikirim ke internet?**
 Script hitungnya tidak memakai internet: hitungan berjalan di komputer Anda dan file slip disimpan di folder yang Anda tentukan. Isi percakapan (termasuk data gaji yang Anda ketik atau lampirkan) tetap dibaca oleh AI agent yang Anda pakai.
 
-> **Catatan penting:** alat bantu hitung, bukan nasihat pajak, hukum, atau ketenagakerjaan. Dasar aturan (berlaku per 23 September 2026): BPJS Kesehatan Perpres 64/2020; BPJS Ketenagakerjaan PP 44/2015 (JKK, JKM), PP 46/2015 (JHT), dan PP 45/2015 (JP) dengan batas upah JP Rp 11.086.300 mulai 1 Maret 2026; lembur PP 35/2021; PPh 21 TER PP 58/2023 dan PMK 168/2023; PPh 21 DTP (ditanggung pemerintah) PMK 105/2025. Batas upah JP dan UMK berubah tiap tahun, jadi cek ulang. Pembulatan iuran dan lembur (ke rupiah terdekat) serta PPh 21 (ke bawah) belum dicocokkan dengan aplikasi BPJS maupun Coretax (sistem pajak online DJP). Bagian PPh 21 DTP PERLU REVIEW konsultan pajak.
+> **Catatan penting:** alat bantu hitung, bukan nasihat pajak, hukum, atau ketenagakerjaan. Dasar aturan (berlaku per 23 September 2026): BPJS Kesehatan Perpres 64/2020; BPJS Ketenagakerjaan PP 44/2015 (JKK, JKM; tarif JKK yang dibayar perusahaan tetap 0,24–1,74%; menurut PP 6/2025 Pasal 11 ayat (5), 0,14% di dalamnya dipakai untuk Jaminan Kehilangan Pekerjaan (JKP) tanpa iuran tambahan — ketentuan ini sudah ada sejak PP 37/2021 Pasal 11 ayat (5); PP 6/2025 menghapus pengalihan 0,10% dari JKM dan menurunkan iuran JKP dari 0,46% ke 0,36%), PP 46/2015 (JHT), dan PP 45/2015 (JP) dengan batas upah JP Rp 11.086.300 mulai 1 Maret 2026; lembur PP 35/2021; PPh 21 TER PP 58/2023 dan PMK 168/2023; PPh 21 DTP (ditanggung pemerintah) PMK 105/2025. Batas upah JP dan UMK berubah tiap tahun, jadi cek ulang. Pembulatan iuran dan lembur (ke rupiah terdekat) serta PPh 21 (ke bawah) belum dicocokkan dengan aplikasi BPJS maupun Coretax (sistem pajak online DJP). Bagian PPh 21 DTP PERLU REVIEW konsultan pajak.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

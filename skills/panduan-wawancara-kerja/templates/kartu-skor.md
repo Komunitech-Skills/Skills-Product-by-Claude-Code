@@ -27,4 +27,4 @@ Pengingat:
 - Pertanyaan yang sama ke semua kandidat posisi ini.
 - Syarat administratif dan ketersediaan (shift, lembur, SIM, tanggal mulai) hanya dicentang ya/tidak; tidak masuk skor dan tidak masuk rubrik.
 - Jangan menulis atau menilai: usia, status menikah/hamil/anak, agama, suku, penampilan, kesehatan yang tidak terkait tugas, media sosial pribadi.
-- Kartu ini data pribadi (UU 27/2022): simpan seperlunya, jangan bagikan di grup umum, hapus setelah proses selesai (masa simpan: [isian: kebijakan usaha]).
+- Kartu ini data pribadi (UU 27/2022): simpan seperlunya, jangan bagikan di grup umum (Pasal 36), hapus setelah proses selesai (Pasal 43 ayat (1); masa simpan: [isian: kebijakan usaha]).

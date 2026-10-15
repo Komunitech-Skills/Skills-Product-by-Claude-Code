@@ -28,13 +28,28 @@
 ## Patokan cicilan aman
 Semua cicilan (termasuk yang sudah berjalan) **maks. 30% penghasilan bersih**; 30–35% = waspada; > 35% = berat. Ini patokan hati-hati yang dipakai sebagai asumsi (bukan aturan resmi untuk semua lembaga); sesuaikan bila tanggungan keluarga besar.
 
-## Batas biaya pinjaman daring (pinjol/LPBBTI) — cek ulang sebelum dipakai
-| Jenis | Batas yang dicatat untuk 2026 (tenor > 6 bulan) | Dasar |
-|---|---|---|
-| Konsumtif | 0,1% per hari | SEOJK No. 19/SEOJK.06/2023 (penurunan bertahap: 0,3% 2024 → 0,2% 2025 → 0,1% 2026) |
-| Produktif | 0,067% per hari | SEOJK yang sama |
+Catatan khusus pinjaman daring konsumtif: SEOJK No. 19/SEOJK.06/2025 Romawi XIII angka 2 meminta penyelenggara menilai perbandingan seluruh pembayaran pokok + manfaat ekonomi (ke semua kreditur) dengan penghasilan peminjam, paling tinggi 40% pada 2025 dan 30% sejak 2026. Itu aturan penilaian bagi penyelenggara pinjaman daring, bukan aturan untuk bank atau leasing; patokan 30% di atas tetap asumsi hati-hati skill ini.
 
-Akhir 2024 OJK menyesuaikan batas manfaat ekonomi berdasarkan **tenor pinjaman** (≤ 6 bulan vs > 6 bulan). Angka di tabel berlaku untuk tenor > 6 bulan; untuk tenor ≤ 6 bulan (termasuk pinjaman harian 7–30 hari) angkanya tidak dicatat di sini — jangan dikarang, tulis "cek aturan OJK terbaru". Nomor SEOJK diverifikasi di ojk.go.id (2026-10-06); angka dicatat dari riset internal Komunitech (26 September 2026). Batas ini mencakup bunga dan biaya lain ("manfaat ekonomi"). Aturan dapat berubah — di balasan selalu tulis "cek aturan OJK terbaru di ojk.go.id" dan ajak cek legalitas penyelenggara (Kontak OJK 157). Bila ragu, jangan sebut angka batas; cukup sampaikan biaya per hari hasil hitungan dan arahkan ke OJK.
+## Batas biaya pinjaman daring (pinjol/LPBBTI) — cek ulang sebelum dipakai
+**Dasar:** SEOJK No. 19/SEOJK.06/2025 tentang Penyelenggaraan Layanan Pendanaan Bersama Berbasis Teknologi Informasi, Romawi XIV angka 2–3, ditetapkan dan berlaku sejak **31 Juli 2025**. SEOJK No. 19/SEOJK.06/2023 (termasuk jadwal turunnya batas yang ada di dalamnya) sudah **dicabut** oleh SEOJK 2025 itu (Romawi XXII angka 1) — jangan dipakai lagi.
+
+Batas dihitung **per hari kalender dari nilai pinjaman (nilai pendanaan) yang tercantum di perjanjian**:
+
+| Jenis & nilai pinjaman | Tenor sampai 6 bulan | Tenor di atas 6 bulan |
+|---|---|---|
+| Konsumtif | 0,3% per hari | 0,2% per hari |
+| Produktif, nilai paling tinggi Rp50 juta | 0,275% per hari | 0,1% per hari |
+| Produktif, nilai di atas Rp50 juta | 0,1% per hari | 0,1% per hari |
+
+- **Yang dibatasi ("manfaat ekonomi"):** bunga/margin + biaya administrasi/komisi/fee platform + biaya lain, **selain** denda keterlambatan, biaya tanda tangan elektronik yang diamankan sertifikat elektronik, dan pajak (Romawi XIV angka 2).
+- **Cara hitung** (mengikuti simulasi di SEOJK yang sama): total manfaat ekonomi ÷ (nilai pinjaman × jumlah hari tenor). Contoh: pinjaman Rp2.000.000, 14 hari, bunga 0,3%/hari (Rp84.000) + admin Rp100.000 dipotong saat cair → Rp184.000 ÷ (Rp2.000.000 × 14) = 0,657% per hari, di atas batas konsumtif 0,3%.
+- **Asumsi skill ini:** "6 bulan" dihitung 180 hari (simulasi SEOJK menghitung tenor 5 bulan = 150 hari dan 7 bulan = 210 hari). Untuk tenor 181–184 hari, hasil hitungan memberi catatan: bila perjanjian menyebut tenornya 6 bulan, pakai batas tenor sampai 6 bulan.
+- Hitungan otomatis hanya untuk pinjaman bertenor hari (dibayar sekali di akhir). Untuk pinjaman daring yang dicicil bulanan, jangan menyimpulkan lolos/tidak lolos batas; sampaikan biayanya dan arahkan ke OJK.
+
+Aturan ini sudah pernah diganti (SEOJK 2023 dicabut oleh SEOJK 2025), dan OJK dapat mengevaluasi batasnya secara berkala (Romawi XIV angka 7). Di balasan selalu tulis "cek aturan OJK terbaru di ojk.go.id" dan ajak cek legalitas penyelenggara (Kontak OJK 157). Bila pengguna tidak menyebut jenisnya, hitungan memakai konsumtif dan mencatatnya sebagai asumsi (pinjaman untuk modal usaha = produktif, batasnya berbeda). Bila nilai pinjaman di perjanjian tidak jelas, jangan sebut angka batas; cukup sampaikan biaya per hari hasil hitungan dan arahkan ke OJK. Angka dan nomor bagian dicocokkan dengan teks PDF resmi SEOJK 19/SEOJK.06/2025 di ojk.go.id (verifikasi Komunitech 2026-10-15).
+
+## Kredit bank: minta konversi flat → efektif tertulis
+Untuk kredit dari **bank umum konvensional**, POJK No. 13 Tahun 2024 (Transparansi dan Publikasi Suku Bunga Dasar Kredit bagi Bank Umum Konvensional) mengarahkan bank memberi tahu nasabah konversi bunga flat ke setara efektif dalam surat penawaran kredit (*offering letter*). Aturan ini untuk bank umum konvensional, bukan untuk leasing non-bank; untuk penawaran selain dari bank tetap minta rincian bunga dan biaya tertulis, lalu hitung bunga efektif setara dengan skill ini.
 
 ## Bahan rujukan bagi pengguna
 - Daftar penyelenggara pinjaman daring berizin: situs resmi OJK (ojk.go.id), Kontak OJK 157.

@@ -78,11 +78,11 @@ Kekurangan yang ditemukan dari uji ini diperbaiki di versi 1.0.10: PIRT kini dib
 Seharusnya tidak. Hitungan modal dan laba hanya ditunjukkan kepada Anda; proposal hanya berisi angka yang penting bagi mitra, dan ada pemeriksa otomatis yang menandai bila angka internal terselip. Tetap baca ulang sebelum dikirim.
 
 **Kalau mitra setuju, apakah proposal ini sudah jadi kontrak?**
-Belum. Proposal adalah ajakan. Setelah sepakat, buat perjanjian tertulis (bisa dengan skill Perjanjian Sederhana).
+Belum. Proposal adalah ajakan. Setelah sepakat, buat perjanjian tertulis (bisa dengan skill Perjanjian Sederhana). Perjanjian itu sah bila memenuhi syarat Pasal 1320 KUHPerdata: kedua pihak sepakat, cakap (berwenang) menandatangani, objeknya jelas, dan tujuannya tidak dilarang hukum. Surat perjanjian dikenai bea meterai Rp10.000 (UU No. 10 Tahun 2020), bisa e-meterai atau meterai tempel; info resmi di https://www.pajak.go.id/id/bea-meterai. Ini bukan nasihat hukum; untuk nilai besar atau bila ragu, tanyakan ke advokat/notaris.
 
 **Bisa dalam bahasa Inggris?**
 Bisa diminta: ketik "buat versi bahasa Inggris" setelah proposal jadi. Versi bahasa Inggris belum kami uji khusus, jadi baca ulang sebelum dikirim.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

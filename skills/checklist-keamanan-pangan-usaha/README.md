@@ -13,7 +13,7 @@ Diuji AI penguji independen di OpenClaw: 5,6 → 8,25 dari 10 (dengan skill, bat
 - Catatan (log) suhu kulkas, freezer, masak, dan pemanasan ulang lengkap dengan batas Celsius dan "kalau melebihi, lakukan apa".
 - Kartu 10 aturan dapur untuk staf, bahasa sehari-hari.
 - Peta risiko menu: ayam, telur, santan, susu, nasi, seafood, alergen, dan kontaminasi silang.
-- Ringkasan izin yang relevan (sertifikat laik higiene SLHS, izin pangan rumahan PIRT, izin edar BPOM kode MD, halal, label) sebagai petunjuk awal.
+- Ringkasan izin yang relevan (sertifikat laik higiene SLHS, izin pangan rumahan SPP-IRT yang sering disebut PIRT, izin edar BPOM kode MD, halal, label) sebagai petunjuk awal.
 
 ## Cocok untuk siapa
 Pemilik kafe, warung, katering rumahan, toko kue, usaha minuman, dan frozen food yang ingin dapurnya lebih tertib dan lebih siap bila ada pemeriksaan (bukan jaminan lulus pemeriksaan), tanpa harus menulis prosedur kerja (SOP) dari nol.
@@ -66,9 +66,9 @@ Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12 (versi **1
 
 ## FAQ
 **Apakah ini menggantikan pelatihan atau SLHS resmi?** Tidak. Ini alat bantu kebiasaan kerja; pelatihan dan pemeriksaan resmi tetap lewat Dinas Kesehatan/BPOM.
-**Apakah angka suhunya sesuai aturan Indonesia?** Angka suhu dari WHO, FDA Food Code 2022, dan USDA (dicek 2026-10-12; ayam harus matang di bagian inti sampai 74 °C), daftar alergen mengikuti label BPOM, dan halal ditulis wajib sesuai UU 33/2014 & PP 42/2024. Tetap cocokkan dengan Dinkes setempat (PERLU REVIEW).
+**Apakah angka suhunya sesuai aturan Indonesia?** Angka suhu dari WHO, FDA Food Code 2022, dan USDA (dicek 2026-10-12; ayam harus matang di bagian inti sampai 74 °C), daftar alergen mengikuti label BPOM, dan halal ditulis wajib sesuai UU 33/2014 & PP 42/2024. Izin pangan rumahan ditulis dengan nama resminya, SPP-IRT (Peraturan BPOM No. 4 Tahun 2024, dasar PP 86/2019; dicek 2026-10-15), dan hanya untuk produk kemasan yang tahan 7 hari atau lebih, bukan makanan siap saji. Tetap cocokkan dengan Dinkes setempat (PERLU REVIEW).
 **Perlu instal apa-apa?** Tidak. Skill tetap berguna tanpa program kecil bawaannya (script); program itu hanya butuh Python standar.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

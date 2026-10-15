@@ -79,7 +79,7 @@ Omzet PPh final 0,5% **tidak** masuk rumus di atas (dilaporkan terpisah). Beda d
 - **Pekerjaan bebas yang terlanjur setor 0,5%:** hitung penghasilannya dengan `--nppn`/`--pembukuan-neto` dan isi setoran itu di `--final-salah-skema` (BUKAN `--omzet-final`/`--pph-final`). Setoran itu **tidak dikreditkan** dan **tidak dilaporkan di Lampiran 2**; arahkan ke permohonan **pengembalian pajak yang seharusnya tidak terutang** lewat Coretax (menu Pembayaran, formulir restitusi). Pemindahbukuan umumnya tidak bisa karena setoran PPh final UMKM dianggap penyampaian SPT Masa (PMK 81/2024 Ps. 109 ayat (3)). Wajib sarankan konfirmasi ke KPP/Kring Pajak 1500200 atau konsultan pajak (⚠️ PERLU REVIEW konsultan pajak).
 
 ## Peta ke SPT Coretax (tahun pajak 2025 dst.)
-Formulir 1770/1770S/1770SS **sudah dihapus**; sekarang satu SPT Tahunan PPh OP dinamis (PER-11/PJ/2025). Kode lampiran bisa berubah — cocokkan di layar Coretax.
+Sejak tahun pajak 2025, formulir 1770 seri lama (1770/1770 S/1770 SS) **diganti** satu SPT Tahunan PPh OP dinamis di Coretax (PER-11/PJ/2025). Bila pengguna menyebut formulir 1770 (mis. dari FAQ/artikel DJP lama), jelaskan singkat bahwa itu formulir lama untuk tahun pajak sebelum 2025, lalu pakai peta di bawah. Kode lampiran bisa berubah — cocokkan di layar Coretax.
 
 | Angka dari script | Bagian di Coretax |
 |---|---|

@@ -5,13 +5,15 @@
 > Situs resmi (jdih.lkpp.go.id, peraturan.bpk.go.id, lkpp.go.id) **tidak bisa dibuka langsung** dari lingkungan riset (terblokir). Isi di bawah diambil dari cuplikan hasil pencarian atas situs resmi & sumber sekunder. Butir bertanda **PERLU REVIEW** belum dicocokkan dengan naskah resmi.
 >
 > **Pencocokan naskah resmi (26 September 2026):** tautan unduhan JDIH LKPP berhasil dibuka (HTTP 200) untuk **naskah konsolidasi resmi LKPP** Perpres 16/2018 jo. 12/2021 jo. 46/2025 dalam satu naskah (https://jdih.lkpp.go.id/regulation/download/konsolidasi-nomor-46-tahun-2025/1; bertanda (*) diubah, (**) disisipkan, (***) dihapus oleh 46/2025) dan **Peraturan LKPP 2/2026** (https://jdih.lkpp.go.id/regulation/download/peraturan-lkpp-nomor-2-tahun-2026/1). Catatan: naskah konsolidasi adalah dokumen informatif LKPP, bukan Lembaran Negara; halaman detail jdih.lkpp.go.id, lkpp.go.id dan Peraturan LKPP 12/2021 gagal tersambung (000); peraturan.bpk.go.id 403.
+>
+> **Verifikasi ulang sumber resmi (15 Oktober 2026):** metadata Perpres 46/2025 di JDIH BPK (diundangkan & berlaku 30 April 2025) **cocok**; portal SPSE (versi 4.5, login TOTP) dan SIKaP (pindah ke sikap.inaproc.id sejak 15 Desember 2025) dicek dari situs resmi — lihat baris SPSE & SIKaP di bagian 2.
 
 ## 1. Hierarki aturan
 | Aturan | Isi pokok | Status per 2026-09-25 |
 |---|---|---|
 | Perpres 16/2018 tentang PBJ Pemerintah | Aturan induk | Berlaku, diubah 2 kali |
 | Perpres 12/2021 (perubahan pertama) | Jaminan penawaran, UMK, dll. | Berlaku |
-| **Perpres 46/2025 (perubahan kedua)** | Ditetapkan & diundangkan **30 April 2025**, berlaku sejak diundangkan (LN 2025 No. 67). Tujuan: meningkatkan produk dalam negeri, mempercepat PBJ, mengatur PBJ desa | Berlaku — ✅ dicocokkan dengan naskah resmi https://jdih.lkpp.go.id/regulation/download/konsolidasi-nomor-46-tahun-2025/1 (konsideran & penutup), dicek 2026-09-26 |
+| **Perpres 46/2025 (perubahan kedua)** | Ditetapkan & diundangkan **30 April 2025**, berlaku sejak diundangkan (LN 2025 No. 67). Tujuan: meningkatkan produk dalam negeri, mempercepat PBJ, mengatur PBJ desa | Berlaku — ✅ dicocokkan dengan naskah resmi https://jdih.lkpp.go.id/regulation/download/konsolidasi-nomor-46-tahun-2025/1 (konsideran & penutup), dicek 2026-09-26; ✅ tanggal pengundangan & berlaku 30 April 2025 dikonfirmasi JDIH BPK https://peraturan.bpk.go.id/Details/318647/perpres-no-46-tahun-2025, dicek 2026-10-15 |
 | Peraturan LKPP 12/2021 Pedoman Pelaksanaan PBJ melalui Penyedia | Pedoman teknis tender/seleksi/pengadaan langsung | Berlaku, **diubah Peraturan LKPP 4/2024**; belum ditemukan pencabutan total (**PERLU REVIEW**) |
 | Peraturan LKPP 2/2025 | Pedoman **penunjukan langsung** untuk program prioritas/bantuan pemerintah berdasarkan arahan Presiden | Berlaku (khusus) |
 | **Peraturan LKPP 2/2026 tentang Katalog Elektronik** | Mengganti Peraturan LKPP 9/2021 (Toko Daring & Katalog Elektronik). Mengatur pengelolaan katalog, pencantuman produk, **pengelolaan toko daring**, e-purchasing (metode: **pembelian langsung, negosiasi harga, mini-kompetisi**), pengawasan | ✅ dicocokkan dengan naskah resmi https://jdih.lkpp.go.id/regulation/download/peraturan-lkpp-nomor-2-tahun-2026/1 (Pasal 14 ayat (1): metode pembelian langsung, negosiasi harga, mini kompetisi; Pasal 22: sistem katalog menyesuaikan paling lama 1 tahun sejak diundangkan; Pasal 24: mencabut Peraturan LKPP 9/2021; Pasal 25: berlaku sejak diundangkan; **ditetapkan 27 Agustus 2026**), dicek 2026-09-26. Tanggal **diundangkan** tidak terbaca dari PDF (kolom tanggal & nomor Berita Negara tidak terekstrak) → "berlaku 1 September 2026" tetap **PERLU REVIEW** (sumber berita) |
@@ -31,7 +33,8 @@
 | Penawaran > HPS | Gugur pada evaluasi harga (HPS = batas tertinggi penawaran yang sah untuk barang/konstruksi/jasa lainnya) | Perpres 16/2018 jo. 46/2025 **Pasal 26 ayat (5) huruf b** | Dasar HPS ✅ dicocokkan dengan naskah resmi https://jdih.lkpp.go.id/regulation/download/konsolidasi-nomor-46-tahun-2025/1, dicek 2026-09-26; mekanisme "gugur" rinci ada di pedoman LKPP → PERLU REVIEW ringan |
 | Pengalaman usaha kecil baru | Usaha kecil **berdiri < 3 tahun** dan belum punya pengalaman dikecualikan dari syarat pengalaman untuk paket s.d. **Rp2,5 miliar** | Peraturan LKPP 12/2021 (ringkasan hasil pencarian) | PERLU REVIEW |
 | Sisa Kemampuan Paket (konstruksi) | **SKP = KP − P**; usaha kecil **KP = 5** paket; P = paket konstruksi yang sedang dikerjakan | Peraturan LKPP 12/2021 Lampiran II / Permen PUPR 14/2020 (sumber sekunder) | PERLU REVIEW |
-| SPSE | Aplikasi tender per LPSE di portal **spse.inaproc.id**; versi yang terlihat pada paket 2026: **SPSE 4.5** | spse.inaproc.id (hasil pencarian) | PERLU REVIEW (cek versi di halaman LPSE masing-masing) |
+| SPSE | Aplikasi tender per LPSE di portal **spse.inaproc.id**; versi yang terlihat pada paket 2026: **SPSE 4.5**. Login SPSE 4.5 **memakai kode TOTP** (verifikasi dua langkah lewat aplikasi autentikator) | Daftar LPSE LKPP (versi «SPSE 4.5u20240923»): https://eproc.lkpp.go.id/lpse/ ; https://spse.inaproc.id/nasional ; pengumuman LPSE «SPSE Versi 4.5 Membutuhkan TOTP untuk login»: https://spse.inaproc.id/papuabaratprov/pengumuman/1144641 | ✅ dicek 2026-10-15 (versi tetap dicek di halaman LPSE masing-masing) |
+| SIKaP (Sistem Informasi Kinerja Penyedia) | Subsistem SPSE yang mengelola **data kualifikasi pelaku usaha** dan **riwayat kinerja penyedia**. Sejak **15 Desember 2025** diakses lewat **sikap.inaproc.id** (alamat lama sikap.lkpp.go.id berisi pengumuman migrasi) | https://sikap.inaproc.id/ ; pengumuman migrasi LKPP: https://sikap.lkpp.go.id/ | ✅ dicek 2026-10-15 |
 
 ## 3. Pajak dalam penawaran
 - **PPN**: hanya penyedia **PKP**. Barang/jasa non-mewah: **12% × DPP nilai lain 11/12** (efektif 11%) — PMK 131/2024, berlaku 1 Januari 2025; barang mewah 12% × harga jual. Skill memakai standar pembulatan Komunitech: PPN dihitung persis dari DPP lalu **dibulatkan ke bawah** sekali; **belum dicocokkan dengan Coretax**.
@@ -62,6 +65,8 @@
 - Peraturan LKPP 2/2026 Katalog Elektronik: https://jdih.lkpp.go.id/regulation/peraturan-lkpp/peraturan-lkpp-nomor-2-tahun-2026 ; https://lintaspriangan.com/berita-nasional/aturan-baru-e-katalog-berlaku-mulai-1-september-2026/
 - SKP usaha kecil: https://pejuangtender.id/wawasan-tender/strategi-menghitung-sisa-kemampuan-paket-skp-agar-perusahaan-anda-tidak-gugur-administrasi
 - SPSE/INAPROC: https://spse.inaproc.id/ ; https://tendermu.id/blog/inaproc-spse-perbedaan-dengan-lpse
+- (diakses 2026-10-15) Daftar LPSE & versi SPSE: https://eproc.lkpp.go.id/lpse/ ; TOTP login SPSE 4.5: https://spse.inaproc.id/papuabaratprov/pengumuman/1144641
+- (diakses 2026-10-15) SIKaP: https://sikap.inaproc.id/ ; pengumuman migrasi 15 Des 2025: https://sikap.lkpp.go.id/
 - PP 28/2025: https://peraturan.bpk.go.id/Details/319773/pp-no-28-tahun-2025
 - Kriteria usaha kecil PP 7/2021: https://smartlegal.id/trending-topic/2021/02/23/pp-umkm-sah-ini-kriteria-umkm-yang-baru/
 - PMK 131/2024: https://www.pajak.go.id/en/node/113453

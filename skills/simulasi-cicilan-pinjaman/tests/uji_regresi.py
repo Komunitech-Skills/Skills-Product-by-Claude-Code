@@ -159,7 +159,62 @@ k, h = jalankan("--pokok", "450jt", "--tenor", "15th", "--bunga-tahap", "5%x36;1
 jt = h["jadwal_per_tahun"]
 cek("I8 KPR: catatan pergantian hanya di tahun 4, mulai bulan ke-37", jt[3]["catatan"] and "bulan ke-37" in jt[3]["catatan"]
     and "Rp4.823.129" in jt[3]["catatan"] and all(r["catatan"] is None for i, r in enumerate(jt) if i != 3))
-cek("I9 rujukan pinjol SEOJK 19/SEOJK.06/2023 + tenor", "19/SEOJK.06/2023" in C.RUJUKAN_PINJOL and "6 bulan" in C.RUJUKAN_PINJOL)
+cek("I9 rujukan pinjol SEOJK 19/SEOJK.06/2025 Romawi XIV (berlaku 31 Juli 2025; SEOJK 2023 dicabut), tanpa angka lama",
+    "19/SEOJK.06/2025" in C.RUJUKAN_PINJOL and "Romawi XIV" in C.RUJUKAN_PINJOL and "31 Juli 2025" in C.RUJUKAN_PINJOL
+    and "dicabut" in C.RUJUKAN_PINJOL and "6 bulan" in C.RUJUKAN_PINJOL and "Rp50 juta" in C.RUJUKAN_PINJOL
+    and "1 Januari 2026" not in C.RUJUKAN_PINJOL and "0,067" not in C.RUJUKAN_PINJOL
+    and "19/SEOJK.06/2025" in C.RUJUKAN_PINJOL_SINGKAT and not hasattr(C, "TENOR_MAKS_BATAS_KONSUMTIF_HARI"))
+B = C.BATAS_PINJOL_HARIAN
+cek("I10 tabel batas SEOJK 2025: konsumtif 0,3/0,2; produktif <= Rp50 jt 0,275/0,1; > Rp50 jt 0,1; 6 bulan = 180 hari",
+    B["konsumtif"] == {"sd_6_bulan": C.D("0.3"), "di_atas_6_bulan": C.D("0.2")}
+    and B["produktif_sd_50jt"] == {"sd_6_bulan": C.D("0.275"), "di_atas_6_bulan": C.D("0.1")}
+    and B["produktif_di_atas_50jt"] == {"sd_6_bulan": C.D("0.1"), "di_atas_6_bulan": C.D("0.1")}
+    and C.TENOR_6_BULAN_HARI == 180 and C.NILAI_PRODUKTIF_KECIL == 50_000_000)
+cek("I11 pemilih batas: tenor 14/180 hari -> 0,3; 181/400 hari -> 0,2 (konsumtif); produktif 50 jt 180/181 hari -> "
+    "0,275/0,1; produktif 50.000.001 tenor 30 hari -> 0,1",
+    [C.batas_pinjol("konsumtif", C.D(2_000_000), h)[0] for h in (14, 180, 181, 400)]
+    == [C.D("0.3"), C.D("0.3"), C.D("0.2"), C.D("0.2")]
+    and [C.batas_pinjol("produktif", C.D(50_000_000), h)[0] for h in (180, 181)] == [C.D("0.275"), C.D("0.1")]
+    and C.batas_pinjol("produktif", C.D(50_000_001), 30)[0] == C.D("0.1"))
+
+
+def ada_batas(h):
+    return any("batas pinjaman daring" in x for x in h["peringatan"])
+
+
+k1, h1 = jalankan("--pokok", "2jt", "--tenor", "14hari", "--bunga", "0,3%/hari")
+k2, h2 = jalankan("--pokok", "2jt", "--tenor", "90hari", "--bunga", "0,25%/hari")
+cek("I12 tidak ada peringatan palsu: konsumtif 14 hari 0,3%/hari (tepat di batas) & 90 hari 0,25%/hari",
+    k1 == 0 and k2 == 0 and not ada_batas(h1) and not ada_batas(h2)
+    and dekat(h1["ringkasan"]["manfaat_ekonomi_per_hari_persen"], 0.3, atol=1e-9)
+    and h1["ringkasan"]["batas_tercatat_per_hari_persen"] == 0.3)
+k, h = jalankan("--pokok", "2jt", "--tenor", "200hari", "--bunga", "0,25%/hari")
+cek("I13 konsumtif 200 hari (> 6 bulan) 0,25%/hari: di atas 0,2%, sebut tenor di atas 6 bulan + SEOJK 2025 + cek OJK",
+    k == 0 and h["ringkasan"]["batas_tercatat_per_hari_persen"] == 0.2
+    and any("batas pinjaman daring konsumtif, tenor di atas 6 bulan" in x and "19/SEOJK.06/2025" in x
+            and "cek aturan OJK terbaru" in x.replace("Cek", "cek") for x in h["peringatan"]))
+ka, ha = jalankan("--pokok", "30jt", "--tenor", "30hari", "--bunga", "0,28%/hari", "--jenis-pinjol", "produktif")
+kb_, hb = jalankan("--pokok", "30jt", "--tenor", "30hari", "--bunga", "0,2%/hari", "--jenis-pinjol", "produktif")
+kc, hc = jalankan("--pokok", "60jt", "--tenor", "30hari", "--bunga", "0,2%/hari", "--jenis-pinjol", "produktif")
+cek("I14 produktif: 30 jt 0,28% > 0,275% (peringatan); 30 jt 0,2% (aman); 60 jt 0,2% > 0,1% (peringatan)",
+    ka == kb_ == kc == 0 and ada_batas(ha) and not ada_batas(hb) and ada_batas(hc)
+    and hc["ringkasan"]["batas_tercatat_per_hari_persen"] == 0.1
+    and "di atas Rp50 juta" in hc["ringkasan"]["golongan_batas"])
+k, h = jalankan("--pokok", "2jt", "--tenor", "10hari", "--bunga", "0,25%/hari", "--admin", "9800", "--cara-biaya", "potong")
+rg = h["ringkasan"]
+cek("I15 pembanding batas = (bunga + biaya) / nilai pinjaman di perjanjian / hari (59.800/2 jt/10 = 0,299%), bukan dari uang diterima",
+    k == 0 and dekat(rg["manfaat_ekonomi_per_hari_persen"], 59_800 / 2_000_000 / 10 * 100, atol=1e-9)
+    and rg["biaya_total_per_hari_persen"] > 0.3 and not ada_batas(h))
+k, h = jalankan("--pokok", "2jt", "--tenor", "183hari", "--bunga", "0,1%/hari")
+cek("I16 tenor 183 hari: asumsi 6 bulan = 180 hari + catatan batas tenor sampai 6 bulan (0,300%/hari)",
+    k == 0 and any("6 bulan = 180 hari" in x and "0,300%/hari" in x for x in h["asumsi"])
+    and any("6 bulan dihitung 180 hari" in x for x in h["asumsi"]))
+
+k1, h1 = jalankan("--pokok", "2jt", "--tenor", "14hari", "--bunga", "0,3%/hari")
+k2, h2 = jalankan("--pokok", "2jt", "--tenor", "14hari", "--bunga", "0,3%/hari", "--jenis-pinjol", "produktif")
+cek("I17 jenis pinjol tidak disebut: konsumtif dicatat sebagai asumsi; produktif eksplisit: tanpa asumsi itu, batas 0,275%",
+    k1 == k2 == 0 and any("dianggap konsumtif" in x for x in h1["asumsi"])
+    and not any("dianggap konsumtif" in x for x in h2["asumsi"]) and h2["ringkasan"]["batas_tercatat_per_hari_persen"] == 0.275)
 
 # ---------------------------------------------------------------- J. input rusak
 for nama, arg in (("tenor 0", ["--pokok", "10jt", "--tenor", "0", "--bunga", "10"]),

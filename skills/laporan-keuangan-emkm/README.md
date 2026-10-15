@@ -8,6 +8,7 @@ Diuji AI penguji independen di OpenClaw: 7,9 → 8,6 dari 10 (angka laba rugi da
 
 ## Manfaat
 - ✅ Tiga laporan standar SAK EMKM (standar laporan keuangan untuk usaha kecil) langsung jadi: Laba Rugi, Posisi Keuangan (neraca), dan Catatan atas Laporan Keuangan. Bisa jadi lampiran awal saat mengajukan KUR (Kredit Usaha Rakyat) atau untuk arsip usaha; bank bisa meminta format sendiri
+- ✅ Bonus Laporan Arus Kas (uang masuk-keluar dikelompokkan per kegiatan usaha, investasi, dan pendanaan) plus file siap cetak. Laporan Arus Kas disertakan sebagai pelengkap praktis, mis. untuk lampiran pengajuan KUR; SAK EMKM (IAI, berlaku sejak 1 Januari 2018) mensyaratkan tiga laporan: Laba Rugi, Posisi Keuangan, dan Catatan atas Laporan Keuangan
 - ✅ Uang pribadi dipisah dari biaya usaha (prive, yaitu uang usaha yang Anda ambil untuk keperluan pribadi), supaya laba yang tampil lebih mendekati laba usaha yang sebenarnya
 - ✅ Neraca dicek otomatis: Aset = Utang + Modal. Jika tidak seimbang, selisih dan penyebabnya ditunjukkan
 - ✅ Transaksi yang tidak jelas ditanyakan dulu ke Anda, tidak langsung ditebak
@@ -65,7 +66,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket. Perhi
 
 ## FAQ
 **Apakah laporan ini bisa dipakai untuk bank atau pajak?**
-Formatnya mengikuti SAK EMKM, standar yang umum diminta untuk UMKM. Laporan ini bukan laporan audit dan bukan nasihat pajak. Untuk tender, investor besar, atau pelaporan pajak, minta akuntan atau konsultan pajak memeriksanya.
+Formatnya mengikuti SAK EMKM, standar yang umum diminta untuk UMKM. Laporan Arus Kas disertakan sebagai pelengkap; SAK EMKM mensyaratkan Laba Rugi, Posisi Keuangan, dan Catatan. Laporan ini bukan laporan audit dan bukan nasihat pajak. Untuk tender, investor besar, atau pelaporan pajak, minta akuntan atau konsultan pajak memeriksanya.
 
 **Catatan saya berantakan dan ada yang tidak jelas. Tetap bisa?**
 Bisa. Format angka Indonesia (`Rp 15.000`, `1,5jt`, `150rb`), tanggal seperti "5 Januari 2026", file CSV, dan tabel tempelan bisa dibaca. Baris yang rusak atau tidak jelas akan dilaporkan nomornya dan ditanyakan ke Anda, bukan diabaikan diam-diam.
@@ -75,4 +76,4 @@ Kata umum seperti bahan, gaji, listrik, ongkir, iklan, dan prive sudah dikenali.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.3.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.3.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

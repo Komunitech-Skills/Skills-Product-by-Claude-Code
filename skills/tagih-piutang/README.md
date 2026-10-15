@@ -73,10 +73,13 @@ Boleh, jika denda itu sudah disepakati tertulis (di kontrak, PO, atau syarat inv
 Jangan. Itu bisa melanggar UU ITE dan UU Pelindungan Data Pribadi. Skill ini hanya membuat pesan yang ditujukan langsung ke pelanggan Anda.
 
 **Apakah surat teguran ini sama dengan bantuan pengacara?**
-Tidak. Surat ini membantu menagih secara resmi. Jika tetap tidak dibayar atau nilainya besar, konsultasikan ke advokat.
+Tidak. Surat ini membantu menagih secara resmi. Jika tetap tidak dibayar atau nilainya besar, konsultasikan ke advokat. Catatan: bila perjanjian atau invoice sudah menetapkan jatuh tempo dan akibat bila telat, surat teguran (somasi) terpisah bisa jadi tidak wajib sebelum menggugat; advokat yang menilai. Surat teguran tetap berguna sebagai bukti Anda sudah menagih baik-baik.
 
-> **Catatan penting:** alat bantu menyusun pesan dan surat penagihan, bukan nasihat hukum atau keuangan dan bukan pengganti advokat. Denda hanya dihitung bila disepakati tertulis. Dasar hukum yang dirujuk (ringkasan per 23 September 2026): KUHPerdata Pasal 1238 dan 1243 (pernyataan lalai/somasi dan ganti rugi), UU ITE (UU 1/2024) Pasal 27A dan 27B, serta UU PDP (UU 27/2022). Ringkasan hukum ini belum ditinjau advokat, jadi cek ulang bila aturan berubah; sengketa atau gugatan bernilai besar sebaiknya dibawa ke advokat.
+**Bagaimana jika yang berutang adalah konsumen perorangan, bukan sesama usaha?**
+Jika yang berutang adalah konsumen (B2C), syarat penagihan seperti denda harus patuh UU Perlindungan Konsumen (UU 8/1999) Pasal 18. Pasal itu melarang jenis syarat standar (klausula baku) tertentu, misalnya syarat bahwa pembeli tunduk pada aturan baru yang diubah penjual sepihak, atau syarat yang tulisannya sulit terlihat atau sulit dimengerti; syarat seperti itu batal demi hukum. Jadi pakai hanya syarat yang tertulis jelas dan disepakati. Penagihan antar-usaha (B2B) umumnya mengikuti KUHPerdata soal wanprestasi (ingkar janji).
+
+> **Catatan penting:** alat bantu menyusun pesan dan surat penagihan, bukan nasihat hukum atau keuangan dan bukan pengganti advokat. Denda hanya dihitung bila disepakati tertulis. Dasar hukum yang dirujuk (ringkasan per 23 September 2026, dicek ulang 15 Oktober 2026): KUHPerdata Pasal 1238, 1243, dan 1250 (pernyataan lalai/somasi, ganti rugi, dan bunga keterlambatan menurut undang-undang yang tidak dihitung skill ini), UU ITE (UU 1/2024) Pasal 27A dan 27B, UU PDP (UU 27/2022), UU Bea Meterai (UU 10/2020) untuk kesepakatan cicilan, serta UU Perlindungan Konsumen (UU 8/1999) Pasal 18 bila yang berutang konsumen perorangan. Ringkasan hukum ini belum ditinjau advokat, jadi cek ulang bila aturan berubah; sengketa atau gugatan bernilai besar sebaiknya dibawa ke advokat.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -41,7 +41,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 APLIKASI = "crm-wa"
-VERSI = "1.0.10"
+VERSI = "1.0.11"
 SKEMA = 1
 SKEMA_JSON_REKAP = 1
 

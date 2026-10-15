@@ -111,7 +111,7 @@
 
 | Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
 |---|---|---|---|---|
-| Perjanjian tertulis kena bea meterai **Rp10.000** (UU 10/2020) | UU 10/2020 (JDIH Kemenkeu / pajak.go.id PDF) Pasal 3 ayat (2) huruf a, Pasal 4 | 2026-10-15 | «surat perjanjian, surat keterangan, surat pernyataan, atau surat lainnya yang sejenis, beserta rangkapnya»; «tarif tetap sebesar Rp10.000,00» — https://www.pajak.go.id/sites/default/files/2020-11/UU%20Nomor%2010%20Tahun%202020%20tentang%20Bea%20Materai.pdf | **COCOK** |
+| Perjanjian tertulis kena bea meterai **Rp10.000** (UU 10/2020) | UU 10/2020 (JDIH Kemenkeu / pajak.go.id PDF) Pasal 3 ayat (2) huruf a, Pasal 5 (tarif; Pasal 4 = terutang satu kali per dokumen — dikoreksi 2026-10-15 oleh penguji putaran 3 tagih-piutang) | 2026-10-15 | «surat perjanjian, surat keterangan, surat pernyataan, atau surat lainnya yang sejenis, beserta rangkapnya»; «tarif tetap sebesar Rp10.000,00» — https://www.pajak.go.id/sites/default/files/2020-11/UU%20Nomor%2010%20Tahun%202020%20tentang%20Bea%20Materai.pdf | **COCOK** |
 | Ambang > Rp5 jt hanya untuk kuitansi/pelunasan utang, bukan semua perjanjian | UU 10/2020 Pasal 3 ayat (2) huruf g | 2026-10-15 | Objek huruf g: dokumen > Rp5 jt yang «menyebutkan penerimaan uang» atau «pengakuan … utang … dilunasi» | **COCOK** — selaras catatan skill `tagih-piutang` & contoh proposal (meterai untuk perjanjian, bukan kuitansi) |
 | Saat terutang: dibubuhi tanda tangan (surat perjanjian) | DJP — halaman Bea Meterai | 2026-10-15 | Pasal 8 UU 10/2020: saat terutang untuk surat perjanjian = saat dokumen dibubuhi tanda tangan — https://www.pajak.go.id/id/bea-meterai | **COCOK** |
 

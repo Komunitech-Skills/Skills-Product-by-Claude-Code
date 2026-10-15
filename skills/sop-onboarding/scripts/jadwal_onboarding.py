@@ -5,7 +5,8 @@
 Tahap yang dihitung: hari pertama (H1), akhir minggu 1, evaluasi checkpoint 30/60/90 hari, dan
 (khusus PKWTT) batas hukum + tanggal evaluasi keputusan akhir masa percobaan 3 bulan
 (UU 13/2003 Pasal 60 jo. UU 6/2023). PKWT (karyawan kontrak) TIDAK BOLEH ada masa percobaan
-(UU 13/2003 Pasal 58 jo. UU 6/2023; PP 35/2021 Pasal 12) -- lihat references/dasar-hukum-onboarding.md.
+(PP 35/2021 Pasal 12; sejalan dengan UU 13/2003 Pasal 58 jo. UU 6/2023) -- lihat
+references/dasar-hukum-onboarding.md.
 
 Cara hitung tanggal (identik dengan penjelasan manual di SKILL.md langkah 3 -- jaga keduanya tetap sama):
   - H1                = tanggal mulai kerja (tidak digeser; diperingatkan bila jatuh di hari libur/akhir
@@ -375,8 +376,9 @@ def hitung_jadwal(mulai, hari_kerja=5, jenis="pkwtt", libur=None, libur_bawaan_i
             "digeser": False,
             "penanggung_jawab": "-",
             "kegiatan_target": "Tidak berlaku untuk PKWT",
-            "catatan": ("PKWT (karyawan kontrak) DILARANG mensyaratkan masa percobaan; bila ada, batal "
-                        "demi hukum (UU 13/2003 Pasal 58 jo. UU 6/2023; PP 35/2021 Pasal 12). Checkpoint "
+            "catatan": ("PKWT (karyawan kontrak) DILARANG mensyaratkan masa percobaan (PP 35/2021 Pasal "
+                        "12); bila tetap dicantumkan, klausul itu batal demi hukum dan masa kerja tetap "
+                        "dihitung (sejalan dengan UU 13/2003 Pasal 58 jo. UU 6/2023). Checkpoint "
                         "30/60/90 di atas tetap dipakai sebagai pemantauan kinerja biasa (isi formulir "
                         "evaluasi kinerja versi PKWT), bukan syarat kelulusan percobaan."),
         })

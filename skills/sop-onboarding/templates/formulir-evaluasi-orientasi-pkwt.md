@@ -1,7 +1,8 @@
 # Formulir Evaluasi Kinerja Akhir Orientasi (Karyawan Kontrak/PKWT)
 
-**Catatan penting:** PKWT (karyawan kontrak) **dilarang** memiliki masa percobaan (UU 13/2003 Pasal 58
-jo. UU 6/2023 Pasal 81 angka 14; PP 35/2021 Pasal 12) — formulir ini adalah **evaluasi kinerja biasa**
+**Catatan penting:** PKWT (karyawan kontrak) **dilarang** memiliki masa percobaan (PP 35/2021 Pasal 12;
+bila tetap dicantumkan, klausul itu batal demi hukum dan masa kerja tetap dihitung; sejalan dengan UU
+13/2003 Pasal 58 jo. UU 6/2023 Pasal 81 angka 14) — formulir ini adalah **evaluasi kinerja biasa**
 di akhir masa orientasi, BUKAN syarat "lulus masa percobaan". Hasil evaluasi ini tidak mengubah status
 PKWT dan tidak menjadi dasar pemutusan hubungan kerja sebelum jangka waktu kontrak berakhir tanpa proses
 sesuai aturan PHK yang berlaku (lihat `references/dasar-hukum-onboarding.md`).
@@ -52,6 +53,6 @@ Penilai: [ttd, nama, tanggal]        Karyawan (mengetahui): [ttd, nama, tanggal]
 
 ---
 Disclaimer: Formulir ini alat bantu administrasi HR, bukan nasihat hukum. Dasar larangan masa percobaan
-untuk PKWT: UU 13/2003 Pasal 58 jo. UU 6/2023 Pasal 81 angka 14; PP 35/2021 Pasal 12 (per 25 September
-2026) — lihat `references/dasar-hukum-onboarding.md`. Untuk keputusan pemutusan hubungan kerja,
+untuk PKWT: PP 35/2021 Pasal 12 (sejalan dengan UU 13/2003 Pasal 58 jo. UU 6/2023 Pasal 81 angka 14;
+dicek ulang 15 Oktober 2026) — lihat `references/dasar-hukum-onboarding.md`. Untuk keputusan pemutusan hubungan kerja,
 konsultasikan ke ahli hukum ketenagakerjaan atau Disnaker setempat.

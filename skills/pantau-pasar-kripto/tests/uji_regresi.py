@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Uji regresi pantau-pasar-kripto (v1.0.2 s/d v1.0.10) -- SEPENUHNYA OFFLINE (tanpa jaringan sungguhan;
+"""Uji regresi pantau-pasar-kripto (v1.0.2 s/d v1.0.11) -- SEPENUHNYA OFFLINE (tanpa jaringan sungguhan;
 kegagalan jaringan/timeout DIUJI lewat `unittest.mock` pada `urllib.request.urlopen`, tidak
 pernah menghubungi internet sungguhan).
 
@@ -1760,6 +1760,82 @@ class UjiV110PratinjauDraftDanDokumen(unittest.TestCase):
         kalimat = [k for k in kutipan.replace("ojk.go.id", "ojk_go_id").split(". ") if k.strip()]
         self.assertTrue(2 <= len(kalimat) <= 4, kalimat)
         self.assertIn("ambil_berita.py", blok)
+
+
+class UjiV1011BatasTanggalPmk50(unittest.TestCase):
+    """v1.0.11 -- verifikasi rujukan aturan 2026-10-15 (koordinasi C32 §2.3): tarif PMK 50/2025 hanya
+    untuk transaksi jual sejak 1 Agustus 2025; jual sebelum itu (aturan lama PMK 68/PMK.03/2022) tidak
+    diestimasi dan tarif lama tidak disebut tanpa tanggal.
+    Hitung independen (integer, tanpa memanggil script):
+      jual 2025-07-31 BTC 0,004 x 1.100.000.000 = 4.400.000 -> TIDAK diestimasi (sebelum 1 Agustus 2025)
+      jual 2025-08-01 BTC 0,003 x 1.200.000.000 = 3.600.000 x 21/10000 = 7.560
+      jual 2026-01-10 BTC 0,002 x 1.500.000.000 = 3.000.000 x 21/10000 = 6.300
+      total nilai jual terestimasi 6.600.000 -> 13.860 ; luar negeri 1% = 36.000 + 30.000 = 66.000
+    """
+
+    CSV = ("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+           "2025-03-01,BTC,beli,0.01,1000000000,10000\n"
+           "2025-07-31,BTC,jual,0.004,1100000000,4400\n"
+           "2025-08-01,BTC,jual,0.003,1200000000,3600\n"
+           "2026-01-10,BTC,jual,0.002,1500000000,3000\n")
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.csv_path = os.path.join(self.tmp.name, "JURNAL.csv")
+        with open(self.csv_path, "w", encoding="utf-8") as f:
+            f.write(self.CSV)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def jalankan(self, *tambahan):
+        kode, out, err = jalankan_jurnal(["--jurnal", self.csv_path, "--hari-ini", "2026-10-15"] + list(tambahan))
+        self.assertEqual(kode, 0, err)
+        return json.loads(out)
+
+    def test_130_jual_sebelum_1_agustus_2025_tidak_diestimasi(self):
+        d = self.jalankan()
+        p = d["estimasi_pajak"]
+        self.assertEqual(p["total_nilai_jual"], 3600000 + 3000000)
+        self.assertEqual(p["total_estimasi_pph"], (3600000 + 3000000) * 21 // 10000)   # 13.860
+        self.assertEqual(p["total_estimasi_pph"], 13860)
+        self.assertEqual([x["tanggal"] for x in p["per_transaksi_jual"]], ["2025-08-01", "2026-01-10"])
+        self.assertEqual([x["estimasi_pph"] for x in p["per_transaksi_jual"]], [7560, 6300])
+        self.assertEqual(p["jual_sebelum_1_agustus_2025"],
+                         [{"baris": 3, "tanggal": "2025-07-31", "koin": "BTC", "nilai_jual": 4400000}])
+        for teks in (p["catatan_aturan_lama"], p["ringkasan_teks"]):
+            self.assertIn("sebelum 1 Agustus 2025", teks)
+            self.assertIn("PMK 68/PMK.03/2022", teks)
+        self.assertIn("sejak 1 Agustus 2025", p["ringkasan_teks"])
+        self.assertIn("sejak tanggal itu", p["dasar_hukum"])
+        # tarif lama tidak disebut sama sekali (apalagi tanpa tanggal)
+        for pola in ("0,1%", "0.1%", "0,1 %"):
+            self.assertNotIn(pola, out_teks(d))
+        # P/L FIFO tidak berubah oleh batas tanggal pajak (semua jual tetap dihitung)
+        self.assertEqual(sum(len(v) for v in d["realized_per_koin"].values()), 3)
+
+    def test_131_luar_negeri_dan_jurnal_tanpa_jual_lama(self):
+        p = self.jalankan("--platform", "luar-negeri")["estimasi_pajak"]
+        self.assertEqual(p["total_estimasi_pph"], 36000 + 30000)
+        p = self.jalankan("--dari", "2025-08-01")["estimasi_pajak"]
+        self.assertEqual(p["jual_sebelum_1_agustus_2025"], [])
+        self.assertIsNone(p["catatan_aturan_lama"])
+        self.assertEqual(p["total_estimasi_pph"], 13860)
+
+    def test_132_dokumen_tanggal_berlaku_dan_akhir_transisi(self):
+        baca = lambda *b: open(os.path.join(SKILL_DIR, *b), encoding="utf-8").read()
+        readme, skill, reg = baca("README.md"), baca("SKILL.md"), baca("references", "regulasi.md")
+        for teks in (readme, skill, reg):
+            self.assertIn("PMK 50/2025", teks)
+            self.assertIn("1 Agustus 2025", teks)
+            for pola in ("0,1%", "0.1%", "0,1 %"):
+                self.assertNotIn(pola, teks)
+        self.assertIn("20 Januari 2026", readme)
+        kepala = reg.split("## 1.")[0]
+        self.assertIn("20 Januari 2026", kepala)
+        self.assertIn("PMK 68/PMK.03/2022", reg)
+        self.assertIn("https://www.pajak.go.id/id/artikel/aspek-pajak-transaksi-kripto-dulu-dan-sekarang", reg)
+        self.assertIn("jual_sebelum_1_agustus_2025", skill)
 
 
 if __name__ == "__main__":

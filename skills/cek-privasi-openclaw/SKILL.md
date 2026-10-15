@@ -28,7 +28,8 @@ sistem diam-diam.
   pengguna sendiri, bukan untuk mengintai orang lain. **Penolakan wajib ditulis lengkap di
   balasan itu sendiri** (jangan hanya "tetap saya tolak seperti sebelumnya"), di awal balasan,
   2–3 kalimat sopan: (1) maaf, bagian ini tidak bisa dibantu; (2) alasannya — membaca/menyadap
-  chat orang lain tanpa izin dapat melanggar UU ITE (Pasal 31, intersepsi) dan UU PDP No. 27/2022;
+  chat orang lain tanpa izin dapat melanggar UU ITE (UU 11/2008 jo. UU 1/2024, Pasal 31 tentang
+  intersepsi/penyadapan) dan UU PDP (UU 27/2022);
   (3) alternatif sah — kebijakan tertulis pemakaian perangkat/akun kerja yang disetujui
   karyawan, memakai akun WA Business kantor, atau konsultasi ke HR/konsultan hukum. Bagian lain
   permintaan (cek privasi) tetap dikerjakan.
@@ -137,6 +138,12 @@ jelaskan dulu **daftar findings yang akan disentuh** (`--fix` juga mengubah conf
 Kalau pengguna memproses data pelanggan/pihak ketiga (dijawab "ya", atau default "mungkin ya"),
 sertakan ringkasan singkat dari `references/uu-pdp.md` dan tawarkan membaca versi lengkapnya.
 Selalu sertakan disclaimer bahwa ini bukan nasihat hukum.
+- **Dasar aturan yang disebut:** UU 27/2022 (berlaku penuh sejak Oktober 2024) dan aturan
+  pelaksananya, PP 33/2026 (mulai berlaku 16 Januari 2027). Jangan mengutip nomor pasal di luar
+  yang tercantum di `references/uu-pdp.md`.
+- **Bila pengguna menyebut kebocoran/insiden data:** ingatkan kewajiban pemberitahuan tertulis
+  **paling lambat 72 jam (3×24 jam)** kepada pemilik data dan lembaga pelindungan data pribadi
+  (UU 27/2022 Pasal 46 ayat (1)), lalu arahkan segera ke konsultan hukum/DPO.
 
 ## Format output
 
@@ -196,7 +203,8 @@ agen CS WA harus mode Copilot (draf, bukan auto-reply langsung).
 - [ ] Tidak menawarkan `tools.profile: "messaging"`/`sandbox.mode: "all"`/perubahan
       `gateway.auth.mode` sebagai perbaikan "satu-klik" tanpa peringatan khusus.
 - [ ] UU PDP disertakan bila relevan, dengan disclaimer "bukan nasihat hukum"; data
-      kesehatan/pasien disebut sebagai data pribadi spesifik (Pasal 4).
+      kesehatan/pasien disebut sebagai data pribadi spesifik (Pasal 4); tenggat pemberitahuan
+      kebocoran ditulis "paling lambat 72 jam (3×24 jam), Pasal 46", bukan "hitungan hari".
 - [ ] Perintah yang disebut sudah terverifikasi (lihat `references/openclaw.md`); yang tidak
       bisa dipastikan ditulis sebagai "perlu dicek langsung", bukan perintah pasti.
 

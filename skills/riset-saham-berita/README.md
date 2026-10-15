@@ -67,7 +67,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## FAQ
 **Kenapa AI-nya tidak mau bilang saham ini bagus dibeli atau tidak?**
-Karena rekomendasi investasi adalah wewenang pihak berizin OJK, dan AI bisa salah atau terpengaruh informasi palsu di internet. Skill ini sengaja berhenti di fakta, angka, risiko, dan pertanyaan, supaya keputusan Anda berdasar data, bukan ikut-ikutan.
+Karena memberi nasihat beli/jual saham adalah wewenang Penasihat Investasi berizin OJK (dulu Bapepam), dan AI bisa salah atau terpengaruh informasi palsu di internet. Skill ini sengaja berhenti di fakta, angka, risiko, dan pertanyaan, supaya keputusan Anda berdasar data, bukan ikut-ikutan.
 
 **Apakah bisa beli/jual otomatis atau terhubung ke aplikasi sekuritas saya?**
 Tidak, dan jangan pernah memberikan PIN/password sekuritas ke AI. Level harga di watchlist hanya untuk pemberitahuan; transaksi tetap Anda lakukan sendiri di aplikasi sekuritas resmi.
@@ -78,6 +78,8 @@ Rasio dihitung script dari angka yang tertulis di laporan, dan script menampilka
 ---
 _Bukan nasihat investasi, tanpa janji untung; investasi saham berisiko rugi. Keputusan & risiko sepenuhnya di tangan Anda. Cek prospektus/laporan resmi di idx.co.id & situs emiten; info izin & pengaduan: OJK (kontak 157)._
 
+_Dasar aturan: kegiatan penasihat investasi diatur UU No. 8 Tahun 1995 tentang Pasar Modal Pasal 34; izin dan pengawasannya kini oleh OJK (dulu Bapepam), lihat juga POJK 5/POJK.04/2019 (berlaku 2 Agustus 2019). Dicek 15 Oktober 2026; bila ragu soal aturan, tanyakan ke OJK (157) atau profesional berizin._
+
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

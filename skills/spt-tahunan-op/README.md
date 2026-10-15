@@ -6,13 +6,15 @@ Diuji AI penguji independen di OpenClaw: rata-rata 3,75 → 8,5 dari 10 pada uji
 
 > ⚠️ **Alat bantu hitung, bukan nasihat pajak dan bukan konsultan pajak.** Pembulatan belum dicocokkan dengan Coretax (sistem pajak online Direktorat Jenderal Pajak/DJP); Coretax yang final. Tidak berafiliasi dengan Direktorat Jenderal Pajak.
 
+> **Formulir lama vs Coretax:** untuk tahun pajak 2025 dan seterusnya, SPT Tahunan orang pribadi dilaporkan lewat **SPT Tahunan OP di Coretax** — satu formulir dinamis yang **menggantikan formulir 1770 seri lama (1770, 1770 S, 1770 SS) sejak tahun pajak 2025** (PER-11/PJ/2025). Bila di FAQ atau artikel DJP Anda masih menemukan penjelasan formulir 1770, itu formulir lama untuk tahun pajak sebelum 2025; skill ini memetakan angka ke SPT OP Coretax.
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ Tidak kaget di Coretax: dapat perkiraan sejak awal berapa pajak yang harus disetor (atau dikembalikan) dan alasannya
 - ✅ Angka dihitung skrip dengan tarif Pasal 17 UU HPP (Harmonisasi Peraturan Perpajakan) & PTKP (penghasilan tidak kena pajak) resmi — PKP (penghasilan kena pajak) dibulatkan sesuai aturan, bukan dikira-kira
 - ✅ Menangani kasus yang sering bikin bingung: pindah kerja (2 bukti potong A1, yaitu bukti potong PPh 21 dari kantor), karyawan + usaha sampingan, freelancer NPPN (cara menghitung pajak dari persentase penghasilan, tanpa pembukuan), zakat, suami-istri digabung
-- ✅ Peta "angka ini masuk bagian mana" di formulir SPT (laporan pajak tahunan) Coretax yang baru (1770/1770S sudah dihapus)
+- ✅ Peta "angka ini masuk bagian mana" di SPT Tahunan OP Coretax (laporan pajak tahunan), yang menggantikan formulir 1770 seri lama sejak tahun pajak 2025 (PER-11/PJ/2025)
 - ✅ Checklist dokumen pribadi: bukti potong, harta, utang, bukti zakat, bukti setor — tinggal centang
 
 ## Cocok untuk siapa
@@ -56,7 +58,7 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 Salin folder `spt-tahunan-op` ke folder skills AI agent Anda (OpenClaw, Codex, Claude Code, Cursor). Lokasi lengkap per platform: **`docs/instalasi.md`** (di dalam paket bernama `CARA-INSTAL.md`). Skrip memakai Python standar (tanpa instal paket); bila Python tidak ada, agent menghitung manual dengan rumus yang sama.
 
 **Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
-- Uji lengkap terakhir (versi 1.0.3, 1 Okt 2026), rata-rata 2 skenario: tanpa skill **3,75** → dengan skill **8,5** (selisih +4,75). Karyawan pindah kerja dengan 2 bukti potong A1: **6** → **9**; kedua sisi menghitung kurang bayar Rp4.125.000 dengan benar, pembedanya prosedur Coretax (tanpa skill masih menyuruh memakai formulir 1770 S yang sudah dihapus) dan status tenggat. Konsultan IT yang memakai PPh final 0,5%: **1,5** → **8**; tanpa skill menyimpulkan lebih bayar Rp1.900.000 (keliru), dengan skill pekerjaan bebas dan NPPN diluruskan dan kurang bayar Rp14.400.000 dihitung. Putaran ini belum lulus karena satu saran tanggal yang sudah lewat (pemberitahuan NPPN tahun 2026); diperbaiki di versi 1.0.4, dan pada uji ulang kesalahan itu tidak muncul lagi (2 dari 2 sesi, skor dengan skill 9). Uji pertama (1 Okt 2026, versi sebelumnya): rata-rata 4,75 → 8,75.
+- Uji lengkap terakhir (versi 1.0.3, 1 Okt 2026), rata-rata 2 skenario: tanpa skill **3,75** → dengan skill **8,5** (selisih +4,75). Karyawan pindah kerja dengan 2 bukti potong A1: **6** → **9**; kedua sisi menghitung kurang bayar Rp4.125.000 dengan benar, pembedanya prosedur Coretax (tanpa skill masih menyuruh memakai formulir 1770 S lama, padahal sejak tahun pajak 2025 sudah diganti SPT OP Coretax) dan status tenggat. Konsultan IT yang memakai PPh final 0,5%: **1,5** → **8**; tanpa skill menyimpulkan lebih bayar Rp1.900.000 (keliru), dengan skill pekerjaan bebas dan NPPN diluruskan dan kurang bayar Rp14.400.000 dihitung. Putaran ini belum lulus karena satu saran tanggal yang sudah lewat (pemberitahuan NPPN tahun 2026); diperbaiki di versi 1.0.4, dan pada uji ulang kesalahan itu tidak muncul lagi (2 dari 2 sesi, skor dengan skill 9). Uji pertama (1 Okt 2026, versi sebelumnya): rata-rata 4,75 → 8,75.
 - Uji ulang versi terbaru 1.0.5 (3 Okt 2026), hanya kasus konsultan IT: tanpa skill **2** → dengan skill **9** (LULUS). Tanpa skill AI menulis "Deadline lapor: 31 Maret 2026" tanpa menyebut sudah lewat dan memakai formulir lama; dengan skill baris pertama menyebut sudah terlambat 186 hari (pada tanggal uji), denda Rp100.000, dan kurang bayar Rp14.400.000 dihitung. Penguji menyarankan hasilnya tetap dicek konsultan pajak.
 - Bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 3 Okt 2026: tanpa skill tidak memberi jawaban; dengan skill skema pajaknya diluruskan dan kurang bayar Rp14.400.000 dihitung setelah giliran lanjutan.
 
@@ -67,11 +69,11 @@ Salin folder `spt-tahunan-op` ke folder skills AI agent Anda (OpenClaw, Codex, C
 Tidak. Skill hanya menghitung dan menyiapkan checklist. Pelaporan tetap Anda lakukan sendiri di Coretax (atau lewat konsultan). Jangan pernah membagikan password atau kode otorisasi Coretax ke siapa pun, termasuk AI.
 
 **2. Apakah hasilnya sama persis dengan Coretax?**
-Rumus dan tarif mengikuti aturan resmi yang dicek per 30 September 2026, tetapi pembulatan belum dicocokkan dengan hitungan otomatis Coretax dan data bukti potong di Coretax bisa berbeda. Anggap hasilnya sebagai hitungan pembanding — Coretax yang final.
+Rumus dan tarif mengikuti aturan resmi yang dicek per 30 September 2026 (rujukan batas lapor, PTKP, tarif, PPh final 0,5%, dan bentuk SPT dicek ulang 14 Oktober 2026), tetapi pembulatan belum dicocokkan dengan hitungan otomatis Coretax dan data bukti potong di Coretax bisa berbeda. Anggap hasilnya sebagai hitungan pembanding — Coretax yang final.
 
 **3. Kasus apa yang tidak bisa?**
 SPT badan, pisah harta/memilih terpisah, penghasilan luar negeri, rugi usaha, dan WNA datang/pergi di tengah tahun. Untuk itu, skill akan menyarankan konsultan pajak atau Kring Pajak 1500200.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
