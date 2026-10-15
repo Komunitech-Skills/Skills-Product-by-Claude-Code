@@ -2,7 +2,7 @@
 
 **Kirim daftar gaji, langsung jadi slip gaji siap cetak dan rekap payroll (penggajian) lengkap dengan BPJS, lembur, dan PPh 21 (pajak penghasilan karyawan).**
 
-*Diuji AI penguji independen: 5,0 → 9,0 dari 10 (PPh 21 bulan Desember dihitung ulang setahun, sedangkan tanpa skill premi BPJS dari perusahaan terlewat sehingga pajaknya terlalu kecil).*
+*Diuji AI penguji independen di OpenClaw: 5,0 → 9,0 dari 10 (PPh 21 bulan Desember dihitung ulang setahun, sedangkan tanpa skill premi BPJS dari perusahaan terlewat sehingga pajaknya terlalu kecil).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -22,7 +22,7 @@
 **Sebelum:** Menghitung BPJS satu per satu, lupa batas upah JP naik, lembur hari Minggu dihitung asal, slip diketik ulang di Word.
 
 **Sesudah (cukup ketik):** "Buat slip gaji September: Budi K/1 gapok 5 juta, tunjangan 500 ribu, uang makan 600 ribu, lembur 2+3 jam dan 8 jam hari Minggu, kasbon 100 ribu. UMK 5.396.761."
-(K/1 = menikah dengan 1 tanggungan; gapok = gaji pokok. Pesan aslinya memuat 3 karyawan; yang ditampilkan di bawah hanya slip Budi.)
+(K/1 = menikah dengan 1 tanggungan; gapok = gaji pokok. Pesan aslinya memuat 3 karyawan, tarif JKK (iuran kecelakaan kerja) 0,54%, dan kerja 5 hari seminggu; yang ditampilkan di bawah hanya slip Budi.)
 
 *Cuplikan hasil nyata dari `examples/01-slip-gaji-3-karyawan.md` (sebagian baris dipotong):*
 ```
@@ -68,13 +68,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 2026-10-03, putaran uji di bot). Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.5); skor angka tidak dicatat di putaran itu. PPh 21 Desember **tanpa skill** Rp165.000 (premi BPJS/JKK/JKM yang dibayar perusahaan tidak dimasukkan ke bruto pajak), gaji bersih Rp7.035.000; **dengan skill** Rp321.595, gaji bersih Rp6.878.405, plus biaya perusahaan Rp8.268.000 dan file slip (selisih Rp156.595; angka dicek ulang kurator dengan python dan cocok).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 2026-10-03). Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.5); skor angka tidak dicatat pada uji itu. PPh 21 Desember **tanpa skill** Rp165.000 (premi BPJS/JKK/JKM yang dibayar perusahaan tidak dimasukkan ke bruto pajak), gaji bersih Rp7.035.000; **dengan skill** Rp321.595, gaji bersih Rp6.878.405, plus biaya perusahaan Rp8.268.000 dan file slip (selisih Rp156.595; angka dicek ulang dengan Python dan cocok).
 
 Diperbaiki di versi 1.0.7 (slip gaji tampil utuh di chat Telegram; 1.0.6 memperjelas catatan PPh 21 DTP di slip, hitungan tidak berubah), belum diuji ulang di bot Telegram. Versi 1.0.8 hanya memperbarui rujukan aturan JKK (PP 37/2021 dan perubahannya, PP 6/2025); angka slip tidak berubah.
 
 ## FAQ
 **Apakah UMK daerah saya sudah ada di dalam skill?**
-Tidak, karena UMK berbeda tiap kota dan berubah tiap tahun. Anda cukup menyebutkan angka UMK dari SK Gubernur/Disnaker, lalu skill memberi peringatan bila ada gaji di bawahnya.
+UMK daerah tidak tertanam di dalam skill karena berbeda tiap kota dan berubah tiap tahun. Anda cukup menyebutkan angka UMK dari SK Gubernur/Disnaker, lalu skill memberi peringatan bila ada gaji di bawahnya.
 
 **Bagaimana dengan slip bulan Desember?**
 Desember pajaknya dihitung ulang setahun, jadi skill akan meminta total penghasilan dan PPh 21 Januari–November. Ini sesuai aturan PMK 168/2023.

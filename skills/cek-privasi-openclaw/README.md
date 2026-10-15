@@ -2,7 +2,7 @@
 
 **Tahu siapa yang bisa menyuruh AI Anda dan ke mana data Anda pergi, dalam bahasa awam.**
 
-Diuji AI penguji independen di OpenClaw: 3 → 9 dari 10 pada skenario jebakan (tanpa skill pengaturan diubah tanpa menunggu "ya"; dengan skill tiap perubahan diminta persetujuan, ada cara membatalkan, dan permintaan menyadap chat karyawan ditolak).
+Diuji AI penguji independen di OpenClaw: 3 → 9 dari 10 pada skenario jebakan (angka 9 dari uji ulang setelah skill diperbaiki; tanpa skill pengaturan diubah tanpa menunggu "ya"; dengan skill tiap perubahan diminta persetujuan, ada cara membatalkan, dan permintaan menyadap chat karyawan ditolak).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -10,7 +10,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 9 dari 10 pada skenario jebakan (
 - ✅ Laporan "lampu lalu lintas" (🔴🟡🟢) yang mudah dipahami, bukan tumpukan istilah teknis.
 - ✅ Setiap perbaikan ditawarkan satu per satu, dan **minta izin Anda dulu** sebelum diubah.
 - ✅ Setiap perbaikan disertai cara membatalkannya.
-- ✅ Ringkasan singkat UU PDP (UU 27/2022 tentang Pelindungan Data Pribadi, berlaku penuh sejak Oktober 2024; aturan pelaksananya PP 33/2026 mulai berlaku 16 Januari 2027) kalau OpenClaw Anda memproses data pelanggan, termasuk tenggat pemberitahuan kebocoran data paling lambat 72 jam (3×24 jam, Pasal 46).
+- ✅ Ringkasan singkat UU PDP (UU 27/2022 tentang Pelindungan Data Pribadi, berlaku penuh sejak Oktober 2024; aturan pelaksananya PP 33/2026 mulai berlaku 16 Januari 2027) kalau OpenClaw Anda memproses data pelanggan, termasuk tenggat pemberitahuan kebocoran data paling lambat 72 jam (3×24 jam, Pasal 46 ayat (1)).
 - ✅ Pemeriksaan hanya **membaca**; skill dirancang tidak mengubah apa pun tanpa persetujuan Anda.
 
 ## Cocok untuk siapa
@@ -61,20 +61,20 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, tertutup untuk umum; tautan pesan tidak dicantumkan): gelombang uji 12 (satu putaran uji di bot), 2026-10-12.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, tertutup untuk umum; tautan pesan tidak dicantumkan), 2026-10-12.
 - Skor: 7,5 tanpa skill, 9 dengan skill.
-Verdik gelombang: LULUS. Dengan skill laporan memakai format lampu 🔴/🟡/🟢 dan ringkasan UU PDP; tanpa skill audit teknisnya bagus tetapi tanpa kerangka itu.
+Verdik: LULUS. Dengan skill laporan memakai format lampu 🔴/🟡/🟢 dan ringkasan UU PDP; tanpa skill audit teknisnya bagus tetapi tanpa kerangka itu.
 
 ## FAQ
 **Apakah skill ini langsung mengubah pengaturan saya?**
-Tidak dirancang begitu. Pemeriksaan awal hanya membaca. Perubahan ditawarkan satu per satu dan baru dijalankan setelah Anda
+Skill ini dirancang agar tidak langsung mengubah pengaturan Anda. Pemeriksaan awal hanya membaca. Perubahan ditawarkan satu per satu dan baru dijalankan setelah Anda
 menjawab "ya" untuk tiap butir. (Pada satu uji awal, AI sempat mengubah izin file sebelum daftar perbaikan lengkap ditampilkan; hal itu sudah diperbaiki dan tidak terulang pada uji ulang.)
 
 **Apakah hasil audit saya dikirim ke Komunitech?**
-Tidak. Pemeriksaan berjalan di OpenClaw Anda sendiri; hasilnya muncul di percakapan Anda. Seperti percakapan AI lainnya, isi percakapan tetap diproses oleh penyedia model AI yang Anda pakai.
+Skill ini tidak mengirim hasil audit ke Komunitech: pemeriksaan berjalan di OpenClaw Anda sendiri dan hasilnya muncul di percakapan Anda. Seperti percakapan AI lainnya, isi percakapan tetap diproses oleh penyedia model AI yang Anda pakai.
 
 **Skill ini bisa menggantikan konsultan hukum untuk UU PDP?**
-Tidak. Skill ini hanya memberi ringkasan singkat dan rekomendasi teknis dasar. Untuk kepatuhan
+Skill ini tidak menggantikan konsultan hukum; ia hanya memberi ringkasan singkat dan rekomendasi teknis dasar. Untuk kepatuhan
 hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ahli hukum/DPO. Perlu diingat, pelanggaran kewajiban pengendali data dapat dikenai sanksi administratif UU PDP (Pasal 57). OpenClaw adalah produk pihak ketiga; skill ini tidak berafiliasi dengan pembuatnya.
 
 ## Riwayat perubahan

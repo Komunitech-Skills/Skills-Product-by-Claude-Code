@@ -66,19 +66,19 @@ Salin folder `tender-checklist` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Script hanya butuh Python bawaan; tanpa Python pun skill tetap bekerja memakai rumus yang tertulis.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Sep 2026 (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`), skor 1–10: tanpa skill **7,25** → dengan skill **9,0** (LULUS). Contoh tender meubel (HPS Rp248,5 juta): dengan skill total penawaran **Rp234.487.500** (PPN efektif 11%), jaminan pelaksanaan dan jadwal hari kerja dihitung skrip; tanpa skill menawarkan skenario PPN 12% yang keliru untuk barang non-mewah.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 1 Okt 2026 (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`), skor 1–10: tanpa skill **7,25** → dengan skill **9,0** (LULUS). Contoh tender meubel (HPS Rp248,5 juta): dengan skill total penawaran **Rp234.487.500** (PPN efektif 11%), jaminan pelaksanaan dan jadwal hari kerja dihitung skrip; tanpa skill memberi dua skenario PPN (11% dan 12%), padahal skenario 12% keliru untuk barang non-mewah.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli khusus skill ini. Codex dan Cursor belum uji platform asli. PERLU REVIEW: pasal Perpres 46/2025 dari sumber sekunder.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli khusus skill ini. Codex dan Cursor belum uji platform asli. PERLU REVIEW: klarifikasi penawaran di bawah 80% HPS, pengecualian pengalaman usaha kecil baru, dan sisa kemampuan paket (dari Peraturan LKPP 12/2021, sumber sekunder) — cocokkan dengan dokumen pemilihan paket Anda.
 
 ## FAQ
-**Apakah skill ini menjamin saya menang tender?**
-Tidak. Skill ini mengurangi risiko gugur karena kesalahan administrasi, dokumen, jadwal, dan hitungan. Menang-kalah tetap ditentukan evaluasi pokja dan harga pesaing.
+**Apakah dengan skill ini saya otomatis menang tender?**
+Skill ini membantu mengurangi risiko gugur karena kesalahan administrasi, dokumen, jadwal, dan hitungan, tetapi tidak bisa menentukan pemenang. Menang-kalah tetap ditentukan evaluasi pokja (kelompok kerja pemilihan, yaitu panitia tender) dan harga pesaing.
 
 **Aturannya kan sering berubah?**
 Ringkasan aturan dicek per 25 September 2026 dan pasal Perpres 16/2018 jo. 12/2021 jo. 46/2025 dicocokkan dengan naskah konsolidasi resmi LKPP pada 26 September 2026 (jaminan penawaran kini hanya untuk konstruksi & pekerjaan terintegrasi; jaminan pelaksanaan juga berlaku untuk e-purchasing), lengkap dengan sumbernya. Butir yang belum bisa dicocokkan tetap ditandai PERLU REVIEW. Tanggal berlaku Perpres 46/2025 (diundangkan dan berlaku **30 April 2025**) dicek ulang ke JDIH BPK pada 15 Oktober 2026. Acuan utama tetap dokumen pemilihan di SPSE — skill mengingatkan hal ini.
 
 **Bisa dipakai untuk "mengatur" pemenang atau pinjam bendera?**
-Tidak. Skill akan menolak permintaan persekongkolan, pinjam bendera, dokumen palsu, atau gratifikasi karena melanggar hukum (UU 5/1999, UU Tipikor) dan berujung daftar hitam. Skill akan menawarkan jalur yang sah.
+Skill ini dirancang menolak permintaan persekongkolan, pinjam bendera, dokumen palsu, atau gratifikasi karena melanggar hukum (UU 5/1999, UU Tipikor) dan dapat berujung daftar hitam. Sebagai gantinya skill menawarkan jalur yang sah.
 
 ## Riwayat perubahan
 

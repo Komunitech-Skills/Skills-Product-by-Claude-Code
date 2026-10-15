@@ -2,7 +2,7 @@
 
 **Pelanggan telat bayar? Dapat pesan penagihan bertahap sampai surat teguran resmi, dengan hari keterlambatan dan denda yang dihitung skrip.**
 
-*Diuji AI penguji independen: 6,7 → 8,5 dari 10 pada uji ulang v1.0.7, 5 skenario (pesan tagih siap kirim lengkap dengan tenggat dan surat teguran resmi, tanpa ancaman).*
+*Diuji AI penguji independen di OpenClaw: 6,4 → 8,0 dari 10 (uji pertama v1.0.6) dan 6,7 → 8,5 dari 10 (uji ulang v1.0.7), rata-rata 5 skenario (pesan tagih siap kirim lengkap dengan tenggat dan surat teguran resmi, tanpa ancaman).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -60,8 +60,8 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 **Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 10 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md` untuk v1.0.6 dan `examples/HASIL-UJI-openclaw-v1.0.7.md` untuk v1.0.7).
 - **Uji pertama, v1.0.6, 5 skenario:** rata-rata nilai 6,4 tanpa skill menjadi 8,0 dengan skill. Contoh dari uji: 10 nota piutang toko bangunan yang berantakan menghasilkan total belum lunas Rp 157.540.000 dengan Rp 142.540.000 sudah lewat jatuh tempo (7 nota), dan nota yang sudah lunas tidak ikut ditagih. Permintaan "sebarkan ke grup dan hubungi istri atau atasan" ditolak dengan alasan hukum, lalu surat teguran yang sah tetap dibuatkan.
-- **Uji ulang, v1.0.7 (versi terbaru), 5 skenario:** 6,7 menjadi 8,5 (skenario ke-3 memakai skor uji v1.0.6 karena alurnya tidak berubah). Satu uji ulang parsial lagi (3 skenario, `examples/HASIL-UJI-v1.0.7-openclaw-2026-10-10.md`) memberi 6,7 menjadi 8,3; keduanya lulus.
-- **Catatan jujur:** pada v1.0.6 skill kalah di satu skenario (permintaan tanpa data, hanya bertanya) dan belum mengenali kolom "sdh bayar" di file tabel; keduanya diperbaiki di v1.0.7.
+- **Uji ulang, v1.0.7 (versi yang terakhir diuji), 5 skenario:** 6,7 menjadi 8,5 (skenario ke-3 memakai skor uji v1.0.6 karena alurnya tidak berubah). Satu uji ulang parsial lagi (3 skenario, `examples/HASIL-UJI-v1.0.7-openclaw-2026-10-10.md`) memberi 6,7 menjadi 8,3; keduanya lulus.
+- **Catatan jujur:** pada v1.0.6 skill kalah di satu skenario (permintaan tanpa data, hanya bertanya) dan belum mengenali kolom "sdh bayar" di file tabel; keduanya diperbaiki di v1.0.7. Versi terkini, v1.0.8, memperbarui rujukan aturan dan catatan hukum (logika hitung tidak berubah) dan belum diuji ulang di OpenClaw.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent; satu skenario juga di konteks Telegram tanpa mengirim pesan nyata) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -70,10 +70,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 Boleh, jika denda itu sudah disepakati tertulis (di kontrak, PO, atau syarat invoice). Jika tidak ada, skill akan mengingatkan agar denda tidak dicantumkan.
 
 **Bolehkah saya mengumumkan nama pelanggan yang menunggak di grup atau media sosial?**
-Jangan. Itu bisa melanggar UU ITE dan UU Pelindungan Data Pribadi. Skill ini hanya membuat pesan yang ditujukan langsung ke pelanggan Anda.
+Sebaiknya jangan, karena mengumumkan nama pelanggan yang menunggak di grup atau media sosial bisa melanggar UU ITE dan UU Pelindungan Data Pribadi. Skill ini hanya membuat pesan yang ditujukan langsung ke pelanggan Anda.
 
 **Apakah surat teguran ini sama dengan bantuan pengacara?**
-Tidak. Surat ini membantu menagih secara resmi. Jika tetap tidak dibayar atau nilainya besar, konsultasikan ke advokat. Catatan: bila perjanjian atau invoice sudah menetapkan jatuh tempo dan akibat bila telat, surat teguran (somasi) terpisah bisa jadi tidak wajib sebelum menggugat; advokat yang menilai. Surat teguran tetap berguna sebagai bukti Anda sudah menagih baik-baik.
+Surat ini tidak menggantikan bantuan pengacara; fungsinya membantu Anda menagih secara resmi. Jika tetap tidak dibayar atau nilainya besar, konsultasikan ke advokat. Catatan: bila perjanjian atau invoice sudah menetapkan jatuh tempo dan akibat bila telat, surat teguran (somasi) terpisah bisa jadi tidak wajib sebelum menggugat; advokat yang menilai. Surat teguran tetap berguna sebagai bukti Anda sudah menagih baik-baik.
 
 **Bagaimana jika yang berutang adalah konsumen perorangan, bukan sesama usaha?**
 Jika yang berutang adalah konsumen (B2C), syarat penagihan seperti denda harus patuh UU Perlindungan Konsumen (UU 8/1999) Pasal 18. Pasal itu melarang jenis syarat standar (klausula baku) tertentu, misalnya syarat bahwa pembeli tunduk pada aturan baru yang diubah penjual sepihak, atau syarat yang tulisannya sulit terlihat atau sulit dimengerti; syarat seperti itu batal demi hukum. Jadi pakai hanya syarat yang tertulis jelas dan disepakati. Penagihan antar-usaha (B2B) umumnya mengikuti KUHPerdata soal wanprestasi (ingkar janji).
