@@ -77,7 +77,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 67 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 5,9 → 8,5 | +2,6 |
 | 68 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
 | 69 | Cek Layak Investasi Sebelum Keluar Uang (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
-| 70 | Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
+| 70 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
 | 71 | Strategi Konten & Anggaran Iklan - konten jelas, uang iklan tidak bocor (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
 | 72 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
 | 73 | Cek Kesehatan Akun Iklan, Tanpa Login (`audit-akun-iklan`) | Marketing & Konten | 6 → 8,5 | +2,5 |
@@ -736,7 +736,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** NPV 12% Rp109.237.735; balik modal 1 tahun 1 bulan (dicek ulang python)
 - **Catatan jujur:** Versi 1.0.0 lulus tipis (8,0) karena pertanyaan kripto tidak memuat skill; diperbaiki di 1.0.1. Bukan nasihat keuangan; hasil tergantung asumsi pengguna. Pilot ulang bot Telegram (26, 2026-10-12): 6,5 → 9 LULUS, balasan utuh tanpa galat.
 
-### Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit — 6,5 → 9
+### Paket Onboarding Karyawan Baru, Siap Pakai — 6,5 → 9
 `sop-onboarding` · HR · versi 1.0.5 · diuji 2026-10-05
 
 - **Permintaan:** Bikin paket onboarding lengkap untuk kasir baru, karyawan tetap, masa percobaan 3 bulan, mulai Senin 5 Oktober 2026.

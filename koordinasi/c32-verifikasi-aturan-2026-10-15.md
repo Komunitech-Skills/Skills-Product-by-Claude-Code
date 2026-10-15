@@ -22,7 +22,7 @@
 
 | Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
 |---|---|---|---|---|
-| Tidak memberi rekomendasi beli/jual, target harga, sinyal, «murah/mahal» | POJK 5/2019 (perilaku dilarang PI) + UU 8/1995 Pasal 35 huruf d | 2026-10-15 | POJK 5/2019 menggantikan Kep-33/PM/1996 perilaku dilarang PI; Pasal 35(d) UU 8/1995: «dilarang merekomendasikan … membeli atau menjual Efek tanpa memberitahukan adanya kepentingan …» — halaman regulasi https://ojk.go.id/id/regulasi/Pages/Perilaku-yang-Dilarang-bagi-Penasihat-Investasi.aspx (berlaku 2/8/2019) | **COCOK** — selaras Batas Tegas #1–2 |
+| Tidak memberi rekomendasi beli/jual, target harga, sinyal, «murah/mahal» | POJK 5/2019 (perilaku dilarang PI) + UU 8/1995 Pasal 35 huruf d | 2026-10-15 | POJK 5/2019 menggantikan Kep-33/PM/1996 perilaku dilarang PI; Pasal 35(d) UU 8/1995: «dilarang merekomendasikan … membeli atau menjual Efek tanpa memberitahukan adanya kepentingan …» — halaman regulasi https://ojk.go.id/id/regulasi/Pages/Perilaku-yang-Dilarang-bagi-Penasihat-Investasi.aspx (ditetapkan 8 Feb 2019, diundangkan & berlaku 11 Feb 2019 per Pasal 7 — PDF resmi ojk.go.id, dikoreksi 2026-10-15; kolom «2/8/2019» di halaman OJK berformat bulan/hari/tahun) | **COCOK** — selaras Batas Tegas #1–2 |
 | Disclaimer OJK **157** = kontak konsumen, bukan nomor peraturan | OJK Waspada Investasi / halaman PI | 2026-10-15 | Kontak 157 & Satgas PASTI untuk pengaduan — https://ojk.go.id/waspada-investasi/id/hubungikami.aspx | **COCOK** — skill tidak menulis «POJK 157» |
 | Satgas PASTI / OJK 157 untuk tawaran investasi mencurigakan | `references/aksi-korporasi.md`, examples/05 | 2026-10-15 | Siaran pers & portal waspada investasi OJK | **COCOK** |
 
