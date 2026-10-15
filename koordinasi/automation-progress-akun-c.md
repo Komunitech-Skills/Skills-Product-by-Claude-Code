@@ -4,9 +4,10 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C24 G18** (prioritas 1): smoke router → kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~04:30 UTC 2026-10-15). Pesan 2–10 `msgs-g18.json` belum terkirim.
-2. **C32 selesai 6/6** (2026-10-15 ~04:30 UTC) — tidak ada antrean verifikasi tanpa-router.
+1. **Akun C** — **C24 G18** (prioritas 1): smoke router → lanjut kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~05:00 UTC 2026-10-15). Pesan 2–10 `msgs-g18.json` belum terkirim.
+2. **C25–C32 selesai** — tidak ada antrean verifikasi tanpa-router; run menunggu router hidup untuk G18.
 3. **Akun B** — terapkan usulan C25–C32 di skill terkait; uji independen + program beta VIP (keputusan 53).
+4. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 4. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
 ## Format Telegram (thread 242) — wajib multiline
@@ -42,6 +43,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-15 ~05:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | selesai ~05:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~99 s); **C25–C32 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** | — | blocked | ya |
+| 2026-10-15 ~05:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 05:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 | — | — | — |
 | 2026-10-15 ~04:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 94323fa8 | selesai ~04:48 UTC — LANGKAH NOL OK; merge default (+1 laporan Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~99 s); **C32 selesai 6/6** (`crm-wa`, `broadcast-wa`); **G18 tidak dilanjutkan** | — | docs | ya |
 | 2026-10-15 ~04:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 04:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C32 (5–6) | — | — | — |
 | 2026-10-15 ~04:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 55d53758 | selesai ~04:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~101 s); **C32** 3–4 (`bot-trading-kripto`, `agen-cs-toko`/`balas-chat-cs`); **G18 tidak dilanjutkan** | — | docs | ya |
