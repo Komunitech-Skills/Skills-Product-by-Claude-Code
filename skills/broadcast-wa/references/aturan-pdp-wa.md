@@ -1,21 +1,28 @@
 # Aturan Broadcast WA: UU PDP & Kebijakan WhatsApp
 
-Dicatat 2026-09-23. Ringkasan praktis, **bukan nasihat hukum**. Untuk kasus khusus (data sensitif,
-kebocoran data, database besar) konsultasikan dengan konsultan hukum.
+Dicatat 2026-09-23; rujukan resmi dicek ulang 15 Oktober 2026. Ringkasan praktis, **bukan nasihat hukum**.
+Untuk kasus khusus (data sensitif, kebocoran data, database besar) konsultasikan dengan konsultan hukum.
 
 ## 1. UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)
 Berlaku penuh sejak Oktober 2024. Nomor HP dan nama pelanggan termasuk data pribadi. Poin yang relevan
 untuk broadcast promosi:
-- **Perlu dasar pemrosesan yang sah**, untuk promosi praktisnya **persetujuan** pelanggan.
+- **Perlu dasar pemrosesan yang sah** (Pasal 20), untuk promosi praktisnya **persetujuan** pelanggan.
 - **Beri tahu tujuannya** saat meminta nomor ("untuk info promo & pesanan via WhatsApp").
 - **Minimalkan data**: simpan hanya yang perlu (nama, nomor, persetujuan, tanggal setuju).
 - **Hak pelanggan**: melihat, memperbaiki, menghapus data, dan **menarik persetujuan** kapan saja.
   → Setiap broadcast wajib punya cara berhenti yang mudah (balas STOP/BERHENTI), dan permintaan itu dipatuhi.
-- **Kebocoran data** wajib diberitahukan (paling lambat 3 × 24 jam kepada pihak terkait).
-- Peraturan pelaksana (PP) masih perlu dicek statusnya — **BELUM TERVERIFIKASI** di skill ini.
+- **Kebocoran data** wajib diberitahukan secara tertulis paling lambat 3 × 24 jam (72 jam) kepada
+  pelanggan yang datanya bocor dan kepada lembaga yang disebut UU PDP (Pasal 46 ayat (1)).
+- **Peraturan pelaksana:** PP Nomor 33 Tahun 2026 (peraturan pelaksana UU 27/2022), diundangkan
+  16 Juli 2026 dan **mulai berlaku 16 Januari 2027**. PP ini menambah aturan teknis; kewajiban UU PDP sendiri
+  sudah berlaku sejak Oktober 2024. Isi rinci PP belum diringkas di skill ini — untuk kewajiban teknisnya,
+  cek salinan resmi di peraturan.go.id (cek ulang sebelum 16 Januari 2027) atau tanyakan konsultan hukum.
 
-Sumber: https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-data-pribadi-lt5d588c1cc649e/
-(teks resmi: cari "UU 27 Tahun 2022" di https://peraturan.bpk.go.id)
+Sumber resmi (dicek 15 Oktober 2026):
+- UU 27/2022 — JDIH BPK: https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022
+- PP 33/2026 — salinan resmi di https://peraturan.go.id
+- Penjelasan populer (sumber sekunder, bukan teks resmi):
+  https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-data-pribadi-lt5d588c1cc649e/
 
 ### Cara praktis mengumpulkan persetujuan
 - Di kasir/form order: kotak centang "Saya bersedia menerima info promo via WhatsApp".
@@ -27,6 +34,15 @@ Sumber: https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-
   tanggal berhenti) = **berhenti**. Script menganggap nomor itu berhenti di semua baris, termasuk baris duplikat.
 
 ## 2. Kebijakan & fitur WhatsApp (cek ketentuan terbaru — fitur sering berubah)
+Sumber: Kebijakan WhatsApp Business (WhatsApp Business Messaging Policy),
+https://www.whatsapp.com/legal/business-policy — diperbarui 23 September 2026, dicek 15 Oktober 2026.
+Intinya: usaha hanya boleh menghubungi orang yang sudah memberi izin (opt-in) menerima pesan darinya,
+tidak boleh spam, dan wajib menghormati permintaan berhenti (opt-out).
+
+- **Daftar tautan wa.me dari skill ini ≠ WhatsApp Business Platform.** Tautan wa.me hanya membuka chat
+  WhatsApp dengan teks sudah terisi; pemilik usaha memeriksa dan menekan Kirim sendiri, satu per satu
+  (mode Copilot: AI menyiapkan, manusia mengirim). Ini sama seperti salin-tempel, hanya lebih cepat —
+  bukan kirim otomatis dan bukan auto-blast.
 - **Daftar siaran (broadcast list) di WhatsApp/WhatsApp Business**: pesan hanya sampai ke kontak yang
   **menyimpan nomor kamu**. Jumlah kontak per daftar dibatasi (lama dikenal 256 — cek batas terbaru).
   Pesan terkirim sebagai chat pribadi, penerima tidak saling melihat.
@@ -34,6 +50,8 @@ Sumber: https://www.hukumonline.com/klinik/a/uu-pdp--landasan-hukum-pelindungan-
   permanen. Skill tidak membantu setup alat seperti itu.
 - **Volume besar & resmi**: WhatsApp Business Platform (API) lewat penyedia resmi, memakai template pesan
   yang disetujui dan wajib opt-in; ada biaya per percakapan/pesan (cek harga terbaru di penyedia).
+  Kirim massal otomatis yang resmi hanya lewat Platform ini — **bukan** lewat otomasi WhatsApp Web,
+  termasuk kanal WhatsApp di OpenClaw (memakai WhatsApp Web, bukan jalur resmi, nomor bisa diblokir).
 - Nomor terkena pembatasan umumnya karena **banyak penerima memblokir/melaporkan**. Cara paling efektif
   mencegahnya: kirim hanya ke yang setuju, pesan relevan & singkat, frekuensi wajar, opt-out jelas.
 
