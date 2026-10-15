@@ -18,6 +18,8 @@
 - Admin/CS yang harus cepat menjawab pelanggan setelah kejadian dan melapor ke atasan
 - Owner UMKM yang ingin insiden dicatat rapi supaya bisa dievaluasi, bukan cuma diributkan lalu dilupakan
 
+**Di luar cakupan:** kecelakaan kerja berat, kebakaran, atau kejadian yang mengancam nyawa. Untuk kecelakaan kerja, pemberi kerja wajib melapor ke BPJS Ketenagakerjaan dan Dinas Provinsi/unit pengawasan ketenagakerjaan setempat paling lama 2×24 jam (Permenaker 5/2021 Pasal 8) serta ke pihak berwenang — bukan lewat laporan insiden toko dari skill ini. Skill hanya membantu kronologi & komunikasi dasar; ini bukan nasihat K3 atau hukum, jadi tanyakan langkah resminya ke BPJS Ketenagakerjaan atau pengawas ketenagakerjaan.
+
 ## Contoh sebelum & sesudah
 **Sebelum:** "QRIS di toko error total dari jam 12 siang sampe jam 1, pas lagi rame jam makan siang. Kasir cuma bisa terima cash, ada sekitar 15 pelanggan yang batal beli karena cuma bawa uang digital. Internet toko emang sering putus-nyambung, cuma pake 1 provider."
 
@@ -79,4 +81,4 @@ Tidak masalah — skill akan menandai bagian itu `[isi: jumlah]` daripada meneba
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

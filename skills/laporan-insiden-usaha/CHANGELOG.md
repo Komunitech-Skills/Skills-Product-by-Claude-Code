@@ -2,6 +2,12 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.4 (2026-10-15)
+Verifikasi rujukan aturan C33 (`koordinasi/c33-verifikasi-aturan-2026-10-15.md` §2; butir opsional "README K3"):
+- README: tambah catatan **Di luar cakupan** — kecelakaan kerja dilaporkan pemberi kerja ke BPJS Ketenagakerjaan dan Dinas Provinsi/unit pengawasan ketenagakerjaan setempat paling lama 2×24 jam (Permenaker 5/2021 Pasal 8 ayat 1–2; sumber: https://pasal.id/peraturan/permen/permenaker-no-5-tahun-2021, diakses 2026-10-15), bukan lewat laporan insiden skill ini.
+- SKILL.md (Batasan → Di luar cakupan): pengalihan kecelakaan kerja kini menyebut rujukan yang sama dan melarang merujuk Permenaker 5/2018 (itu K3 lingkungan kerja, bukan tata cara lapor kecelakaan). Skill tetap tidak mengisi formulir K3 dan tidak memaksakan format laporan insiden untuk kecelakaan kerja.
+- Klaim UU 27/2022 Pasal 46 (3×24 jam) tidak berubah (verifikasi C33: COCOK).
+
 ## Catatan revisi 1.0.3 (2026-10-13)
 - Batasan di SKILL.md: aturan anti-karangan diperluas dari angka ke tindakan (tindakan yang "sudah dilakukan" hanya dari input pengguna; selebihnya `[isi: ...]`). Temuan audit contoh: `examples/01` memuat tindakan "menghubungi 15 pelanggan / membalas 5 komplain" yang tidak ada di input; kini diganti `[isian: tindakan yang sudah Anda lakukan]`. Logika langkah kerja tidak berubah.
 
