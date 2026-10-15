@@ -191,3 +191,11 @@ Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (
 ## Run 2026-10-15 ~06:00 UTC (Akun C automation)
 
 Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~98 s, Ninerouter Error 1016, 7 retry). **C33 selesai** (`notulen-rapat`, `buku-stok` + ringkasan C25–C33); G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-15 ~11:00 UTC (Akun C automation)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~81 s, Ninerouter Error 1016). **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-15 ~11:30 UTC (Akun C automation)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~84 s, Ninerouter). **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
