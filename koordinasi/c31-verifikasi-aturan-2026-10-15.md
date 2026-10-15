@@ -92,3 +92,65 @@
 **Router model:** smoke OpenClaw gateway → **HTTP 530** (~96 s, Ninerouter) → **C24 G18 tidak dilanjutkan**; pesan 2–10 `msgs-g18.json` belum terkirim.
 
 **Run berikutnya:** smoke router → G18 bila HTTP 200; else C31 skill (3–4) `proposal-kerjasama` + `tagih-piutang` (atau `perjanjian-kerja` bila ada).
+
+---
+
+## 3. `proposal-kerjasama` — KUHPerdata Pasal 1320 & bea meterai UU 10/2020
+
+### 3.1 Syarat sah perjanjian (Pasal 1320 KUHPerdata)
+
+| Klaim skill (`SKILL.md`, kerangka) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Setelah mitra setuju, tuangkan perjanjian tertulis; skill `perjanjian-sederhana` | Pasal 1320 + 1338 KUHPerdata (Wikisource) | 2026-10-15 | «Supaya terjadi persetujuan yang sah, perlu dipenuhi empat syarat; 1. kesepakatan … 2. kecakapan … 3. suatu pokok persoalan tertentu; 4. suatu sebab yang tidak terlarang.» — https://id.wikisource.org/wiki/Halaman:KUHPerdata.pdf/236 | **COCOK** — proposal bukan kontrak, tetapi anjuran perjanjian tertulis selaras syarat sah bila nanti diikat |
+| Empat syarat: kesepakatan, kecakapan, hal tertentu, sebab halal | Halo JPN Kejaksaan RI (2025-88JP) | 2026-10-15 | Ringkasan Pasal 1320: syarat subjektif (1–2) → dapat dibatalkan; objektif (3–4) → batal demi hukum bila tidak terpenuhi | **COCOK** |
+| Pasal 1321: persetujuan karena kekhilafan/paksaan/penipuan tidak berkekuatan | Wikisource KUHPerdata hal. 236 | 2026-10-15 | «Tiada suatu persetujuan pun mempunyai kekuatan jika diberikan karena kekhilafan atau diperoleh dengan paksaan atau penipuan.» | **COCOK** — skill menolak skema piramida/penipuan (kerangka reseller) |
+
+**Usulan teks (Akun B):** Di README pembeli, satu kalimat: «Proposal ini bukan kontrak; bila disepakati, perjanjian tertulis harus memenuhi syarat sah Pasal 1320 KUHPerdata (kesepakatan, kecakapan, objek jelas, causa halal).» Opsional rujuk `perjanjian-sederhana`.
+
+### 3.2 Bea meterai perjanjian (UU 10/2020)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Perjanjian tertulis kena bea meterai **Rp10.000** (UU 10/2020) | UU 10/2020 (JDIH Kemenkeu / pajak.go.id PDF) Pasal 3 ayat (2) huruf a, Pasal 4 | 2026-10-15 | «surat perjanjian, surat keterangan, surat pernyataan, atau surat lainnya yang sejenis, beserta rangkapnya»; «tarif tetap sebesar Rp10.000,00» — https://www.pajak.go.id/sites/default/files/2020-11/UU%20Nomor%2010%20Tahun%202020%20tentang%20Bea%20Materai.pdf | **COCOK** |
+| Ambang > Rp5 jt hanya untuk kuitansi/pelunasan utang, bukan semua perjanjian | UU 10/2020 Pasal 3 ayat (2) huruf g | 2026-10-15 | Objek huruf g: dokumen > Rp5 jt yang «menyebutkan penerimaan uang» atau «pengakuan … utang … dilunasi» | **COCOK** — selaras catatan skill `tagih-piutang` & contoh proposal (meterai untuk perjanjian, bukan kuitansi) |
+| Saat terutang: dibubuhi tanda tangan (surat perjanjian) | DJP — halaman Bea Meterai | 2026-10-15 | Pasal 8 UU 10/2020: saat terutang untuk surat perjanjian = saat dokumen dibubuhi tanda tangan — https://www.pajak.go.id/id/bea-meterai | **COCOK** |
+
+**Usulan teks (Akun B):** Pertahankan kalimat meterai Rp10.000; tambah opsional «e-meterai atau meterai tempel» dan tautan pajak.go.id/bea-meterai.
+
+---
+
+## 4. `tagih-piutang` — wanprestasi, somasi, UU 8/1999 (konsumen)
+
+### 4.1 Lalai, somasi, bunga moratoir (KUHPerdata)
+
+| Klaim skill (`references/regulasi.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Pasal 1238: lalai setelah surat perintah/akta sejenis atau lewat waktu perjanjian | Wikisource / BPK Bali (tulisan somasi) | 2026-10-15 | «Si berutang adalah lalai, apabila ia dengan surat perintah atau dengan sebuah akta sejenis itu telah dinyatakan lalai, atau demi perikatannya sendiri … lewatnya waktu yg ditentukan.» | **COCOK** |
+| Pasal 1243: ganti rugi/biaya/bunga setelah lalai | Halo JPN (2025-5XQB) | 2026-10-15 | «Penggantian biaya, kerugian dan bunga … mulai diwajibkan, bila debitur, walaupun telah dinyatakan lalai, tetap lalai …» | **COCOK** |
+| Pasal 1250: bunga moratoir 6%/tahun untuk utang uang (skill tidak hitung) | Skill + doktrin (sumber sekunder di skill) | 2026-10-15 | Run ini tidak membuka PDF KUHPerdata Pasal 1250 penuh | **COCOK** arah; **PERLU REVIEW Akun B:** kutip Pasal 1250 dari naskah resmi |
+| Somasi tidak selalu mutlak bila perjanjian sudah menetapkan akibat lalai | Marinews MA + LBH Pengayoman | 2026-10-15 | Yurisprudensi: gugatan/surat teguran dapat dianggap somasi; somasi wajib bervariasi menurut perjanjian | **PERLU UBAH** (ringan): di `regulasi.md` §1 tambah satu kalimat «bila perjanjian/invoice sudah menetapkan jatuh tempo & akibat lalai, somasi terpisah bisa tidak wajib — advokat menilai» |
+
+### 4.2 Penagihan & UU 8/1999 Perlindungan Konsumen
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Utang dagang = perdata; jangan ancam pidana hanya karena telat bayar | UU 8/1999 fokus pelaku usaha → konsumen (BPK PDF) | 2026-10-15 | UU 8/1999 melindungi **konsumen** dari pelaku usaha (Pasal 4, 19, 45), bukan debitur B2B | **COCOK** — skill sudah bedakan utang usaha vs ancaman pidana |
+| Klausula baku merugikan konsumen (denda/penagihan sepihak) batal demi hukum | UU 8/1999 Pasal 18 ayat (1)–(3) (BPK PDF) | 2026-10-15 | Larangan klausula baku huruf a–h; ayat (3): «dinyatakan batal demi hukum» | **COCOK** — skill: denda hanya bila disepakati tertulis; relevan bila **pembeli = konsumen** |
+| Penagihan ke pihak ketiga / publikasi nama = risiko UU ITE & PDP | UU 8/1999 + skill §2 | 2026-10-15 | Pasal 18 tidak menggantikan larangan pencemaran/ancaman (UU ITE) | **COCOK** |
+| Gugatan sederhana wanprestasi maks Rp500 jt (PERMA 2/2015 jo. 4/2019) | Skill (perlu review) | 2026-10-15 | Run ini tidak verifikasi PERMA terbaru 2026 | **PERLU REVIEW** — Akun B cek PERMA MA & batas nilai gugatan sederhana |
+
+**Usulan teks (Akun B):** Tambah di README §FAQ: «Jika yang berutang adalah konsumen (B2C), klausula penagihan harus patuh UU 8/1999 Pasal 18; penagihan B2B umumnya KUHPerdata wanprestasi.»
+
+---
+
+## Ringkasan run 2026-10-15 ~02:00 UTC
+
+| Skill | Hasil singkat |
+|---|---|
+| `proposal-kerjasama` | Pasal 1320 **COCOK**; UU 10/2020 meterai Rp10.000 untuk surat perjanjian **COCOK** |
+| `tagih-piutang` | Pasal 1238/1243 **COCOK**; UU 8/1999 Pasal 18 relevan B2C **COCOK**; somasi mutlak & PERMA 500 jt **PERLU REVIEW/UBAH** ringan |
+
+**Progress C31:** 4/6 skill (`proposal-kerjasama`, `tagih-piutang` ditambah pada tender-checklist, persiapan-jual-atau-wariskan-usaha).  
+**Router model:** smoke OpenClaw `./oc.sh agent --local` → **HTTP 530** (~86 s, Ninerouter Error 1016) → **C24 G18 tidak dilanjutkan**; pesan 2–10 `msgs-g18.json` belum terkirim.
+
+**Run berikutnya:** smoke router → G18 bila HTTP 200; else C31 skill (5–6) `surat-penawaran-harga` + `checklist-keamanan-pangan-usaha`.
