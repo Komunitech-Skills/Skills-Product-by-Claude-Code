@@ -1,13 +1,13 @@
-# Paket Onboarding Karyawan Baru, Siap Pakai dalam Hitungan Menit
+# Paket Onboarding Karyawan Baru, Siap Pakai
 
-**Karyawan baru masuk Senin? Checklist, jadwal 90 hari, pesan sambutan, buku saku, dan formulir evaluasi langsung jadi — tinggal cetak.**
+**Karyawan baru masuk Senin? Checklist, jadwal 90 hari, pesan sambutan, buku saku, dan formulir evaluasi langsung jadi — tinggal isi data yang ditandai, lalu cetak.**
 
-Diuji AI penguji independen di OpenClaw: 6,5 → 9,0 dari 10 (tanpa skill tanggal 30/60/90 hari hanya perkiraan dan BPJS ditulis "sesuai kebijakan toko"; dengan skill tanggal dihitung skrip dan BPJS diperlakukan wajib dengan tenggat).
+Diuji AI penguji independen di OpenClaw: 6,5 → 9,0 dari 10 (tanpa skill tanggal 30/60/90 hari hanya perkiraan dan BPJS ditulis "sesuai kebijakan toko"; dengan skill tanggal jadwal dihitung skrip, dan BPJS ditulis wajib dengan tenggat 30 hari sesuai aturan).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- Checklist pra-hari-pertama lengkap: dokumen, pendaftaran BPJS, kontrak, perangkat kerja — supaya tidak ada yang kelewat
+- Checklist pra-hari-pertama lengkap: dokumen, pendaftaran BPJS, kontrak, perangkat kerja — supaya tidak mudah ada yang terlewat
 - Jadwal orientasi (onboarding) hari pertama, minggu 1, dan checkpoint 30-60-90 hari dengan **tanggal dihitung otomatis** (bukan dikira-kira, termasuk libur nasional & cuti bersama 2026/2027 bawaan), lengkap dengan penanggung jawab
 - Khusus karyawan tetap (PKWTT): **batas hukum akhir masa percobaan dan tanggal evaluasi keputusannya dihitung terpisah**, evaluasi dijadwalkan sebelum batas hukum — bukan sekadar checkpoint 90 hari yang bisa kelewat
 - Panduan rekan pendamping (buddy) singkat, jadwal check-in mingguan, dan target per jabatan (kasir, barista, mekanik, dll.) supaya karyawan baru tidak merasa dilepas begitu saja
@@ -59,20 +59,20 @@ Salin folder `sop-onboarding` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
-- **Uji OpenClaw otomatis agent, Sep 2026** (v1.0.6; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS).
-- **Uji bot Telegram asli, gelombang 10 (2026-10-05):** **6,5** → **8,0**. Dengan skill jadwal masa percobaan, evaluasi, dan BPJS dihitung skrip; tanpa skill tanggal evaluasi melewati batas masa percobaan.
+- **Uji OpenClaw otomatis oleh AI penguji, 1 Oktober 2026** (pada versi skill yang lebih lama; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS).
+- **Uji bot Telegram asli, 5 Oktober 2026** (versi 1.0.5): **6,5** → **8,0**. Dengan skill, tanggal masa percobaan dan evaluasi tepat, sama persis dengan hasil skrip jadwal (evaluasi keputusan 6 Januari 2027, sebelum batas masa percobaan 11 Januari 2027); tanpa skill, tanggal evaluasi (12 Januari 2027) melewati batas masa percobaan. Pengingat BPJS sudah benar di kedua sisi, jadi bukan pembeda di uji ini.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 10). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Dasar aturan utama (masa percobaan, larangan percobaan PKWT, tenggat 30 hari BPJS Ketenagakerjaan) sudah dicocokkan dengan naskah resmi di JDIH Kemnaker, dicek ulang 15 Oktober 2026; rincian sanksi BPJS dan cara menghitung tanggal batas 3 bulan masih PERLU REVIEW (tafsir, bukan pasal eksplisit).
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (5 Oktober 2026). Claude Code baru diuji lewat simulasi AI. Codex dan Cursor belum diuji di platform aslinya. Dasar aturan utama (masa percobaan, larangan percobaan PKWT, tenggat 30 hari BPJS Ketenagakerjaan) sudah dicocokkan dengan naskah resmi di JDIH Kemnaker, dicek ulang 15 Oktober 2026; rincian sanksi BPJS dan cara menghitung tanggal batas 3 bulan masih PERLU REVIEW (tafsir, bukan pasal eksplisit).
 
 ## FAQ
 **Skill ini bikin kontrak kerja juga?**
-Tidak. Untuk kontrak kerja karyawan kontrak (PKWT), pakai skill `kontrak-kerja-pkwt` (pembuat kontrak karyawan kontrak) — skill onboarding ini hanya mengingatkan kelengkapannya di checklist, termasuk aturan bahwa PKWT dilarang punya masa percobaan (PP 35/2021 Pasal 12).
+Skill ini tidak menyusun kontrak kerja; ia hanya mengingatkan kelengkapannya di checklist, termasuk aturan bahwa PKWT dilarang punya masa percobaan (PP 35/2021 Pasal 12). Untuk kontrak karyawan kontrak (PKWT), pakai skill `kontrak-kerja-pkwt`.
 
 **Masa percobaan wajib 3 bulan?**
 Masa percobaan hanya berlaku untuk karyawan tetap (PKWTT) dan **maksimal** 3 bulan (boleh lebih pendek), dengan upah tidak boleh di bawah upah minimum (UU 13/2003 Pasal 60, tetap berlaku setelah UU 6/2023). Karyawan kontrak (PKWT) sama sekali tidak boleh dikenai masa percobaan (PP 35/2021 Pasal 12); bila tetap ditulis di kontrak, klausul itu batal demi hukum dan masa kerjanya tetap dihitung. Pendaftaran BPJS tidak menunggu masa percobaan selesai: BPJS Ketenagakerjaan paling lambat 30 hari sejak mulai kerja (PP 45/2015 Pasal 4 ayat (2)), BPJS Kesehatan didaftarkan terpisah. Ringkasan ini bukan nasihat hukum; untuk kasus khusus tanyakan ke Disnaker atau konsultan ketenagakerjaan.
 
 **Bisa dipakai untuk usaha dengan banyak cabang atau shift?**
-Bisa. Sebutkan jumlah shift dan cabang saat meminta, jadwal dan buku saku akan disesuaikan; script jadwal juga mendukung 5 atau 6 hari kerja per minggu, libur nasional bawaan 2026/2027, dan file libur tambahan perusahaan.
+Untuk usaha dengan shift, bisa: sebutkan jumlah shift saat meminta, lalu jadwal dan buku saku disesuaikan. Skrip jadwal juga mendukung 5 atau 6 hari kerja per minggu, libur nasional bawaan 2026/2027, dan file libur tambahan perusahaan. Untuk beberapa cabang, sebutkan perbedaan tiap cabang (misalnya jam kerja dan penanggung jawab) saat meminta; belum ada template khusus multi-cabang.
 
 ## Riwayat perubahan
 
