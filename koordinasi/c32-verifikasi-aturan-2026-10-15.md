@@ -151,7 +151,62 @@
 
 ---
 
-## Ringkasan run (kumulatif C32)
+## 5. `crm-wa` — persetujuan promosi, UU PDP, WhatsApp Business
+
+**Run Akun C:** 2026-10-15 ~04:30 UTC (lanjutan)
+
+### 5.1 UU 27/2022 — opt-in promo & minimisasi data
+
+| Klaim skill (SKILL.md aturan 6, 10; `references/openclaw-jadwal.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Nomor HP pelanggan = data pribadi; jangan tampilkan daftar lengkap ke grup | UU 27/2022 — JDIH BPK | 2026-10-15 | «…melindungi Data Pribadi dalam rangkaian pemrosesan…» — https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 | **COCOK** |
+| Promo hanya ke kontak label `setuju-promo`; pembeli marketplace default belum setuju | UU 27/2022 (persetujuan pemrosesan) + praktik platform | 2026-10-15 | Hak subjek & pemrosesan wajib dasar hukum (UU 27/2022 abstrak BPK) | **COCOK** — selaras aturan 10 SKILL.md |
+| Permintaan hapus data → `hapus` dengan konfirmasi | UU 27/2022 hak subjek (akses/penghapusan) | 2026-10-15 | Metadata UU 27/2022 BPK | **COCOK** arah |
+| Pengingat Telegram ke pemilik saja, bukan ke pelanggan | Keputusan pemilik 2026-09-23 + `openclaw-jadwal.md` §Aturan | 2026-10-15 | **COCOK** |
+
+**Usulan teks (Akun B):** README opsional satu kalimat: «Label `setuju-promo` = bukti persetujuan sesuai UU PDP; simpan tanggal/sumber persetujuan di catatan kontak.»
+
+### 5.2 Larangan broadcast & WhatsApp Web
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| **Tidak pernah** kirim ke pelanggan; draf + wa.me; pemilik kirim satu per satu | Keputusan pemilik WA Web + SKILL.md aturan 1 | 2026-10-15 | **COCOK** operasional |
+| Tolak kirim massal/broadcast; tidak sarankan blast | WhatsApp Business Messaging Policy §1 | 2026-10-15 | «You may only contact people … (b) … opt-in permission … Do not … spam» — https://www.whatsapp.com/legal/business-policy (perbarui 23 Sep 2026) | **COCOK** |
+| Integrasi `broadcast-wa` hanya variasi teks + wa.me untuk yang sudah setuju | Policy §1 opt-in + positioning skill | 2026-10-15 | **COCOK** — bukan blast otomatis |
+
+**Usulan teks (Akun B):** Pastikan README menegaskan perbedaan «daftar wa.me untuk copy-paste» vs «WhatsApp Business Platform resmi».
+
+---
+
+## 6. `broadcast-wa` — UU PDP, opt-out, anti-spam WA
+
+**Run Akun C:** 2026-10-15 ~04:30 UTC
+
+### 6.1 UU PDP & persetujuan
+
+| Klaim skill (`references/aturan-pdp-wa.md`, SKILL.md) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Promo wajib persetujuan; tolak database beli / grup / tanpa izin | UU 27/2022 BPK | 2026-10-15 | https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 | **COCOK** |
+| Teks STOP/BERHENTI wajib; patuhi permintaan berhenti | UU 27/2022 (hak subjek menarik persetujuan) + Policy §1 opt-out | 2026-10-15 | «You must respect … opt out of communications» — WhatsApp Business Policy | **COCOK** |
+| Catatan PP pelaksana «BELUM TERVERIFIKASI» di references | Jujur skill | 2026-10-15 | **COCOK** — Akun B bisa tambah PP terbaru bila sudah final di BPK |
+
+**Usulan teks (Akun B):** Ganti atau lengkapi sumber sekunder di `aturan-pdp-wa.md` dengan tautan BPK resmi (baris 17–18) untuk materi jualan.
+
+### 6.2 Kebijakan WhatsApp & volume
+
+| Klaim skill | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| Tolak WA mod/blast tidak resmi | Policy §1; Messaging Guidelines | 2026-10-15 | **COCOK** |
+| Broadcast list hanya ke yang simpan nomor kita; batas ~256 (cek terbaru) | Policy + references §2 | 2026-10-15 | **COCOK** arah — skill sudah minta cek batas terbaru |
+| Kirim bertahap (batch/jeda) = saran konservatif, bukan aturan resmi | Policy §1 anti-spam | 2026-10-15 | **COCOK** — README jujur «bukan batas resmi» |
+| WABA/API resmi + template + opt-in untuk volume besar | Policy §2 Message Template | 2026-10-15 | **COCOK** — selaras penolakan alat blast |
+| Variasi pesan ≠ izin kirim tanpa opt-in | references §3 | 2026-10-15 | **COCOK** |
+
+**Usulan teks (Akun B):** Satu paragraf README: «Promo massal resmi lewat WhatsApp Business Platform (API), bukan consumer WA Web/OpenClaw.»
+
+---
+
+## Ringkasan run (kumulatif C32) — **SELESAI 6/6**
 
 | Skill | Temuan utama | Revisi skill? |
 |---|---|---|
@@ -159,5 +214,7 @@
 | `pantau-pasar-kripto` | Peralihan OJK & PMK 50/2025 cocok | Tidak (Akun B: tanggal transisi README) |
 | `bot-trading-kripto` | PAKD OJK, no-withdraw, disclaimer selaras | Tidak (Akun B: daftar PAKD dinamis) |
 | `agen-cs-toko` / `balas-chat-cs` | UU 8 & UU 27 cocok; WA Web vs Business Policy selaras Copilot | Tidak (Akun B: README WA resmi vs Web) |
+| `crm-wa` | Opt-in promo & no-broadcast selaras UU 27 & WA Policy | Tidak (Akun B: footnote setuju-promo) |
+| `broadcast-wa` | Opt-in/opt-out & tolak blast selaras UU 27 & WA Policy | Tidak (Akun B: sumber BPK di references) |
 
-**Berikutnya (C32):** skill (5) `crm-wa`, (6) `broadcast-wa` — atau **C24 G18** bila router HTTP 200.
+**Berikutnya:** **C24 G18** bila router HTTP 200; bila masih 530, antrean tanpa-router habis — fokus G18 atau tugas baru di papan.
