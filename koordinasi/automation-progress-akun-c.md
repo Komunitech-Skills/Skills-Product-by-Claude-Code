@@ -4,10 +4,10 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C24 G18** (prioritas 1): smoke router → kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~03:00 UTC 2026-10-15). Pesan 2–10 `msgs-g18.json` belum terkirim.
-2. **Akun B** — terapkan usulan C25–C31 di skill terkait; uji independen + program beta VIP (keputusan 53).
-3. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
-4. Bila router masih 530: tidak ada backlog tanpa-router (C25–C31 selesai); tunggu router atau tugas baru di papan.
+1. **Akun C** — **C24 G18** (prioritas 1): smoke router → kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~04:00 UTC 2026-10-15). Pesan 2–10 `msgs-g18.json` belum terkirim.
+2. **Akun C** — **C32** lanjut: (5) `crm-wa`, (6) `broadcast-wa` bila router masih 530.
+3. **Akun B** — terapkan usulan C25–C32 di skill terkait; uji independen + program beta VIP (keputusan 53).
+4. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -42,6 +42,10 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-15 ~04:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 55d53758 | selesai ~04:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~101 s); **C32** 3–4 (`bot-trading-kripto`, `agen-cs-toko`/`balas-chat-cs`); **G18 tidak dilanjutkan** | — | docs | ya |
+| 2026-10-15 ~04:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 04:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C32 (3–4) | — | — | — |
+| 2026-10-15 ~03:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 4ca49c04 | selesai ~03:48 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~104 s); **C32** 1–2 (`riset-saham-berita`, `pantau-pasar-kripto`); **G18 tidak dilanjutkan** | — | docs | ya |
+| 2026-10-15 ~03:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 03:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C32 (1–2) | — | — | — |
 | 2026-10-15 ~03:00 | `cursor/iterasi-otomatis-akun-c-8b42` | a046645a | selesai ~03:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~97 s); **C25–C31 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** | — | blocked | ya |
 | 2026-10-15 ~03:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 03:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 | — | — | — |
 | 2026-10-15 ~02:30 | `cursor/iterasi-otomatis-akun-c-8b42` | e724f560 | selesai ~02:48 UTC — LANGKAH NOL OK; merge default (+Akun B); getUpdates 242 kosong; smoke router HTTP 530 (~94 s); **C31 selesai 6/6** (`surat-penawaran-harga`, `checklist-keamanan-pangan-usaha`); **G18 tidak dilanjutkan** | — | docs | ya |
