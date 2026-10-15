@@ -2,7 +2,7 @@
 """Hitung keterlambatan piutang, tahap penagihan, dan (opsional) denda sesuai kesepakatan tertulis.
 
 Hanya library standar Python (3.8+). Tidak ada akses jaringan.
-Versi 1.0.7 (2026-10-10).
+Versi 1.0.8 (2026-10-15).
 
 Mode 1 – satu tagihan:
   python3 hitung_telat.py --nominal "Rp 12.500.000" --jatuh-tempo 2026-08-24 --tanggal 2026-09-23
@@ -43,7 +43,7 @@ import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
          "Agustus", "September", "Oktober", "November", "Desember"]
 HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
