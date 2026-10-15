@@ -52,6 +52,14 @@ Smoke `openclaw agent --local -m "balas satu kata: OK"` (gateway dimatikan semen
 
 Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (6 retry Ninerouter, ~63 s). Gelombang tidak dilanjutkan; pesan 2–10 masih belum dikirim.
 
+## Run 07:00 UTC (Akun C, 2026-10-15)
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~85 s, Ninerouter Error 1016). Run mengerjakan **C34 prep G20** (`telegram-gelombang-20-prep-2026-10-15.md`); pesan 2–10 masih belum dikirim.
+
+## Run 06:30 UTC (Akun C, 2026-10-15)
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~79 s). Run mengerjakan **C34 prep G19** (bukan G18); pesan 2–10 masih belum dikirim.
+
 ## Run 14:30 UTC (Akun C, keputusan 78)
 
 Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~89 s, 7 retry). Run mengerjakan **C25** verifikasi aturan (bukan G18).
