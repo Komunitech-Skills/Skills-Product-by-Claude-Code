@@ -203,7 +203,7 @@ Telusuri setiap kalimat proposal, pesan WA, email, dan Asumsi terhadap daftar "F
 - [ ] Panjang sesuai versi (singkat ≤ ±350 kata).
 
 ## Batasan & penanganan error
-- Proposal bukan kontrak. Ingatkan: setelah mitra setuju, tuangkan dalam perjanjian tertulis (skill `perjanjian-sederhana`); perjanjian dikenai bea meterai Rp10.000 (UU 10/2020).
+- Proposal bukan kontrak. Ingatkan: setelah mitra setuju, tuangkan dalam perjanjian tertulis (skill `perjanjian-sederhana`) yang memenuhi syarat sah Pasal 1320 KUHPerdata (kesepakatan, kecakapan, objek jelas, sebab yang halal); surat perjanjian dikenai bea meterai Rp10.000 (UU 10/2020 Pasal 3 ayat (2) huruf a; e-meterai atau meterai tempel, terutang saat ditandatangani; info resmi: pajak.go.id/id/bea-meterai). Jangan sarankan meterai pada proposal. Bukan nasihat hukum; untuk nilai besar atau ragu, arahkan ke advokat/notaris. Dasar & sumber: `references/regulasi.md`.
 - Jangan menjanjikan hasil penjualan pasti; tabel simulasi selalu diberi label "simulasi/perkiraan".
 - Sponsorship: jangan mengarang jumlah pengunjung/peserta/reach; minta data atau tulis `[perkiraan peserta]`.
 - Konsinyasi/penjualan bila salah satu pihak PKP: ada aspek PPN atas penyerahan barang titipan; sarankan konsultasi ke konsultan pajak (skill tidak menghitungnya).
