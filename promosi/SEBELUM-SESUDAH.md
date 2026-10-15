@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **105 skill** dari 128 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **106 skill** dari 129 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -100,19 +100,20 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 90 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
 | 91 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 9 | +2 |
 | 92 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 93 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 94 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 95 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 96 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 97 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
-| 98 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
-| 99 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 100 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 101 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 102 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 103 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
-| 104 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 105 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 93 | Harga Jual Marketplace Anti Boncos (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
+| 94 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 95 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 96 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 97 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 98 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
+| 99 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 100 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 101 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 102 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
+| 103 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 104 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
+| 105 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 106 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -935,6 +936,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Script menahan ketidakcocokan hari di awal dan menawarkan dua pilihan; surat akhir Sabtu 17 Oktober 2026, nomor 012/UND/KSPMB/X/2026, format EYD siap cetak.
 - **Angka kunci:** Hari acara: 'Jumat' → Sabtu, 17 Oktober 2026
 - **Catatan jujur:** Tolak surat keterangan kerja palsu untuk KPR: tanpa skill sama baiknya (8,5 vs 8,5); skill tidak terpicu di sana.
+
+### Harga Jual Marketplace Anti Boncos — 6,5 → 8,5
+`harga-jual-marketplace` · Keuangan & Akuntansi · versi 1.0.4 · diuji 2026-10-01
+
+- **Permintaan:** Pemilik toko menanyakan harga jual tumbler stainless di Shopee (modal Rp38.000, admin 8%, gratis ongkir xtra 4% maks Rp10.000, biaya proses Rp1.250) agar untung 25%.
+- **Tanpa skill:** Rumusnya benar, tetapi PPh 22 marketplace 0,5% tidak dihitung, sehingga harga Rp62.300 tampak untung Rp15.574 dengan klaim "persis 25%" padahal Rp15.262 di harga yang sama (margin 24,5%). Harga balik modal juga tidak diberikan.
+- **Dengan skill:** Memberi harga minimal Rp44.858 dan harga rekomendasi Rp63.000 dalam tabel komponen yang dihitung script, lengkap dengan PPh 22 Rp315 dan laba bersih Rp15.875 (margin 25,2%). Pada uji ulang 1.0.4 status target dan catatan aturan dikutip dari script, dan semua angka cocok dengan hitungan ulang penguji.
+- **Angka kunci:** Harga minimal Rp44.858; harga rekomendasi Rp63.000; PPh 22 Rp315; laba bersih Rp15.875 (margin 25,2%, markup 41,78%). Tanpa skill: Rp62.300, laba tampak Rp15.574, seharusnya Rp15.262 (margin 24,5%) setelah PPh 22.
+- **Keterangan:** Uji satu skenario dalam uji solusi VIP Toko Online (versi 1.0.4; versi sekarang 1.0.6)
+- **Catatan jujur:** Hanya satu skenario (harga tumbler di Shopee) yang diuji, sebagai bagian uji solusi VIP Toko Online 2026-10-01, bukan 5 skenario per skill; sisi tanpa skill dijalankan sekali dan uji ulang hanya sisi dengan skill. Versi diuji 1.0.3 dan 1.0.4 (versi uji pertama tidak dicatat), sedangkan versi katalog sekarang 1.0.6; perubahan 1.0.5 dan 1.0.6 tidak tercakup berkas uji, termasuk koreksi tanggal PPh 22 menjadi dipungut sejak 1 Oktober 2026 (kutipan uji masih memuat tanggal lama). Uji ini tidak dijalankan di konteks Telegram dan argumen tool call tidak diperiksa.
 
 ### Kasir Toko Tanpa Langganan, Cukup Lewat Chat — 6,5 → 8,5
 `kasir-lokal` · E-commerce/Marketplace Indonesia · versi 1.1.7 · diuji 2026-10-01
