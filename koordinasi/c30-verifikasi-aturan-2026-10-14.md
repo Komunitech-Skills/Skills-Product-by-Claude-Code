@@ -60,13 +60,68 @@
 
 ---
 
+## 3. `pengingat-pasien-klinik` — UU PDP, minimalisasi data, bukan rekam medis
+
+**Run verifikasi:** 2026-10-15 ~00:00 UTC (Akun C, C30 butir 3).
+
+### 3.1 Data kesehatan & pemrosesan minimal
+
+| Klaim skill (`SKILL.md`, `scripts/pengingat_pasien.py`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Data kesehatan = data pribadi bersifat spesifik; perlindungan lebih ketat | UU 27/2022 Ps. 4 ayat (2) huruf a & Penjelasan | 2026-10-15 | «data dan informasi kesehatan» = catatan/keterangan individu terkait kesehatan fisik, mental, dan/atau pelayanan kesehatan — https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022 | **COCOK** |
+| Persetujuan eksplisit per tujuan sebelum pemrosesan | UU 27/2022 Ps. 20 ayat (2) huruf a, Ps. 21–22 | 2026-10-15 | Pengendali wajib dasar pemrosesan; persetujuan sah eksplisit untuk tujuan tertentu | **COCOK** — skill wajib `--persetujuan ya\|tidak` saat pencatatan |
+| Hak hapus / permintaan subjek data | UU 27/2022 Ps. 5 (hak), Ps. 43 ayat (1) huruf c | 2026-10-15 | Pengendali wajib menghapus bila ada permintaan Subjek Data Pribadi | **COCOK** — perintah `hapus --id/--wa` |
+| Prinsip minimalisasi (hanya nama panggilan, WA, jenis kunjungan umum, tanggal; tanpa diagnosis/RM) | UU 27/2022 Ps. 16 ayat (2) huruf a–b (terbatas, spesifik, sesuai tujuan) | 2026-10-15 | Pemrosesan terbatas & spesifik, sesuai tujuan | **COCOK** — selaras desain CSV; menolak isian menyerupai penyakit |
+| Draf WA disiapkan staf, bukan kirim otomatis | UU 27/2022 + keputusan pemilik OpenClaw (WA Web) | 2026-10-15 | Bukan norma UU khusus; praktik mengurangi risiko pemrosesan tanpa kontrol manusia | **COCOK** arah kepatuhan operasional |
+
+### 3.2 Permenkes 24/2022 (rekam medis elektronik)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Skill **bukan** pengganti RME; tidak menyimpan rekam medis | Permenkes 24/2022 Ps. 3 ayat (1) | 2026-10-15 | «Setiap Fasilitas Pelayanan Kesehatan wajib menyelenggarakan Rekam Medis Elektronik» — PDF resmi https://jdih.kemkes.go.id/documents/peraturan-menteri-kesehatan-nomor-24-tahun-2022 | **COCOK** — skill hanya buku jadwal pengingat lokal; faskes tetap wajib RME terpisah (SATUSEHAT/RME) |
+| Kerahasiaan & keamanan data RM | Permenkes 24/2022 (tujuan pengaturan huruf c) | 2026-10-15 | «menjamin keamanan, kerahasiaan, keutuhan, dan ketersediaan data Rekam Medis» | **COCOK** — skill tidak mengklaim menggantikan RM |
+
+**Usulan teks (Akun B):** Di README `pengingat-pasien-klinik`, satu kalimat: «Daftar pengingat ini bukan rekam medis elektronik; klinik tetap wajib RME sesuai Permenkes 24/2022.»
+
+---
+
+## 4. `edukasi-pasien-klinik` — edukasi bukan diagnosis, privasi & iklan
+
+**Run verifikasi:** 2026-10-15 ~00:00 UTC (Akun C, C30 butir 3).
+
+### 4.1 Batasan edukasi (bukan diagnosis / dosis)
+
+| Klaim skill (`SKILL.md` baris 7–24) | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| Tanpa dosis, tanpa diagnosis, tanpa triase; arahkan ke tenaga kesehatan + tanda bahaya umum | Etika praktik & UU 17/2023 (kerahasiaan); bukan «izin diagnosis AI» | 2026-10-15 | UU tidak memberi AI hak diagnosis; skill membatasi diri ke draf edukasi/operasional | **COCOK** — selaras disclaimer skill & keputusan pemilik (edukasi pasien, bukan skrining awam) |
+| Leaflet/konten dari poin yang **sudah ditentukan tenaga kesehatan** | Praktik edukasi pasien faskes | 2026-10-15 | Bukan menggantikan keputusan klinis | **COCOK** |
+| Draf saja; staf yang kirim | Sama dengan pengingat-pasien | 2026-10-15 | **COCOK** |
+
+### 4.2 UU PDP & data kesehatan (selaras `references/aturan-privasi-dan-iklan.md` §1)
+
+| Klaim skill | Sumber | Tanggal akses | Kesimpulan |
+|---|---|---|---|
+| Data kesehatan = spesifik; persetujuan/notifikasi (PP 33/2026 transisi) | UU 27/2022 Ps. 4; PP 33/2026 (undang 16 Jul 2026, berlaku 16 Jan 2027) — skill sudah catat | 2026-10-15 | Ps. 4 **COCOK**; tanggal PP **COCOK** dengan peraturan.go.id |
+| Rekap agregat; abaikan kolom diagnosis/NIK | UU 27/2022 + UU 17/2023 Ps. 301 (kerahasiaan) — sudah diverifikasi di HASIL-UJI skill | 2026-10-15 | **COCOK** arah; regresi script tetap wajib (lihat HASIL-UJI B2 historis) |
+
+### 4.3 Permenkes 24/2022 vs konten edukasi
+
+| Klaim | Sumber | Kesimpulan |
+|---|---|---|
+| FAQ/leaflet/medsos edukasi umum **bukan** entri rekam medis | Permenkes 24/2022 (definisi RM sebagai catatan pelayanan kesehatan individu) | **COCOK** — asalkan tidak menempelkan RM/diagnosis pasien ke chat (skill melarang) |
+| Konten medsos: nama & alamat faskes + tanggal publikasi | Permenkes 1787/2010 Ps. 4 ayat (2) — sudah diverifikasi naskah di HASIL-UJI | **COCOK** |
+
+**Usulan teks (Akun B):** Pertahankan disclaimer «bukan nasihat medis/diagnosis» di README; untuk klaim PP 33/2026 tambah footnote «naskah PP diverifikasi ulang sebelum 16 Jan 2027».
+
+---
+
 ## Progress C30
 
 | # | Skill | Status run |
 |---|---|---|
 | 1 | kasir-lokal | ✅ verifikasi run 23:30 UTC |
 | 2 | laporan-keuangan-emkm | ✅ verifikasi run 23:30 UTC |
-| 3 | pengingat-pasien-klinik + edukasi-pasien-klinik | belum |
+| 3 | pengingat-pasien-klinik + edukasi-pasien-klinik | ✅ verifikasi run 00:00 UTC 2026-10-15 |
 | 4 | cek-privasi-openclaw | belum |
 | 5 | rekonsiliasi-bank | belum |
 | 6 | kelayakan-investasi-usaha | belum |

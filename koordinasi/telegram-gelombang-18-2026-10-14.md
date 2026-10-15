@@ -99,3 +99,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** 
 ## Run 2026-10-14 ~23:30 UTC (Akun C automation)
 
 Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~91 s, Ninerouter). Run mengerjakan **C30** verifikasi `kasir-lokal` + `laporan-keuangan-emkm` (2/6) → `koordinasi/c30-verifikasi-aturan-2026-10-14.md`; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Percobaan ulang 2026-10-15 00:00 UTC
+
+Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~88 s, Ninerouter Error 1016 origin DNS). Run mengerjakan **C30** verifikasi `pengingat-pasien-klinik` + `edukasi-pasien-klinik` (3/6) → `koordinasi/c30-verifikasi-aturan-2026-10-14.md`; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
