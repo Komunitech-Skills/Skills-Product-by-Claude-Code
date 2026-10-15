@@ -55,7 +55,7 @@ Salin folder `simulasi-cicilan-pinjaman` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 6 Okt 2026 (v1.0.1; versi terkini 1.0.3), skor 1–10 penguji independen: rata-rata tanpa skill **6,5** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Bot Telegram asli, 12 Okt 2026: tanpa skill **6** → dengan skill **8,5** — tanpa skill hanya menyebut cicilan Rp715.556 dan menaksir bunga kredit HP "kira-kira 44-45%" setahun (seharusnya ±41,7%); dengan skill terlihat 0,8% flat = ±17,25% per tahun (±20,97% dengan admin), motor jadi 27% lebih mahal dari tunai, dan brosur "bunga 0%" dibuatkan versi jujur.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 6 Okt 2026 (v1.0.1; versi terkini 1.0.4), skor 1–10 penguji independen: rata-rata tanpa skill **6,5** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Bot Telegram asli, 12 Okt 2026: tanpa skill **6** → dengan skill **8,5** — tanpa skill hanya menyebut cicilan Rp715.556 dan menaksir bunga kredit HP "kira-kira 44-45%" setahun (seharusnya ±41,7%); dengan skill terlihat 0,8% flat = ±17,25% per tahun (±20,97% dengan admin), motor jadi 27% lebih mahal dari tunai, dan brosur "bunga 0%" dibuatkan versi jujur.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Bukan nasihat keuangan atau rekomendasi lembaga pembiayaan.
 
@@ -75,4 +75,4 @@ Tidak. Skill ini tidak menyebut atau merekomendasikan merek. Kirimkan angka dari
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
