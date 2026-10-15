@@ -2,6 +2,11 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.3 (2026-10-15)
+- Verifikasi rujukan aturan 2026-10-15: izin pangan rumahan kini ditulis dengan nama resminya, **SPP-IRT** (Sertifikat Produksi Pangan Industri Rumah Tangga, sering disebut PIRT), dengan dasar Peraturan BPOM No. 4 Tahun 2024 dan PP No. 86 Tahun 2019 tentang Keamanan Pangan (sumber: https://peraturan.bpk.go.id/Read/341095/).
+- `references/perizinan-indonesia.md`: bagian baru SPP-IRT, termasuk pengecualian dari Peraturan BPOM 4/2024 (pangan umur simpan < 7 hari, pangan siap saji, bahan belum diolah); jalur cepat katering/toko kue memakai SPP-IRT; catatan PERLU REVIEW untuk memeriksa perubahan PP 86/2019 di JDIH BPK.
+- `SKILL.md`: langkah perizinan menulis "SPP-IRT" (nama aturan + tahun, tanpa pasal) dan tidak menyebut Permenkes 1096/2011 sebagai aturan berlaku (sudah dicabut Permenkes 2/2023). README ikut diperbarui. Batas suhu, alergen, halal, dan script tidak berubah.
+
 ## Catatan revisi 1.0.2 (2026-10-12)
 - Fakta keamanan pangan diperiksa ulang ke WHO 5 Kunci Keamanan Pangan, FDA Food Code 2022, USDA FSIS, BPOM, dan BPJPH (dicek 2026-10-12) setelah uji Telegram menemukan ada fakta yang salah.
 - Ayam/unggas dalam bentuk apa pun (utuh, potong, goreng, giling) selalu dimasak sampai suhu inti minimal 74 °C, tidak pernah 63 °C; daging giling dan hidangan telur 71 °C; ikan, telur langsung saji, dan daging sapi/kambing utuh 63 °C.
