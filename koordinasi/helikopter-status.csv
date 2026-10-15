@@ -54,11 +54,11 @@ listing-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data la
 lowongan-kerja,rujukan,UU PDP rekrutmen → Sama usulan pasal seperti wawancara,buka,,
 notulen-rapat,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 notulen-rapat,telegram,notulen-rapat masih terbuka untuk uji Telegram: G18 (antrean C24) baru 1 dari 10 pesan yang terkirim (bukan milik notulen-rapat) dan gagal karena router HTTP 53,buka,,
-panduan-wawancara-kerja,rujukan,"Daftar larangan PHK UU 6/2023 Ps. 153 ayat (1) → Lengkapi huruf ayat (1) sesuai UU, bukan ringkasan pendek",buka,,
-panduan-wawancara-kerja,rujukan,"Item panduan-wawancara-kerja masih terbuka sebagian: larangan PHK Ps. 153 a-j, UU 8/2016 Ps. 11 dan 53, serta lembur Ps. 78 sudah beres di v1.0.2, tetapi rujuka",buka,,
-panduan-wawancara-kerja,rujukan,"Lembur Ps. 78 UU 6/2023 → Cantumkan batas 4 jam/hari, 18 jam/minggu; hapus PERLU REVIEW",buka,,
-panduan-wawancara-kerja,rujukan,UU 8/2016 diskriminasi → Sebut Pasal 11 eksplisit,buka,,
-panduan-wawancara-kerja,rujukan,UU PDP pemrosesan data pelamar → Kutip pasal bila dipakai di skill,buka,,
+panduan-wawancara-kerja,rujukan,"Daftar larangan PHK UU 6/2023 Ps. 153 ayat (1) → Lengkapi huruf ayat (1) sesuai UU, bukan ringkasan pendek",selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
+panduan-wawancara-kerja,rujukan,"Item panduan-wawancara-kerja masih terbuka sebagian: larangan PHK Ps. 153 a-j, UU 8/2016 Ps. 11 dan 53, serta lembur Ps. 78 sudah beres di v1.0.2, tetapi rujuka",selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
+panduan-wawancara-kerja,rujukan,"Lembur Ps. 78 UU 6/2023 → Cantumkan batas 4 jam/hari, 18 jam/minggu; hapus PERLU REVIEW",selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
+panduan-wawancara-kerja,rujukan,UU 8/2016 diskriminasi → Sebut Pasal 11 eksplisit,selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
+panduan-wawancara-kerja,rujukan,UU PDP pemrosesan data pelamar → Kutip pasal bila dipakai di skill,selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
 pantau-cron-openclaw,uji-ulang,"Sisa pekerjaan: ulangi uji lokal alur pasang lewat chat (rencana, lalu ""ya"", lalu pengawas terpasang) untuk pantau-cron-openclaw 1.0.3 begitu router model hidup",buka,,
 pantau-pasar-kripto,rujukan,"PMK pajak kripto → Jangan sebut 0,1% tanpa tanggal",buka,,
 pantau-pasar-kripto,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-15,"sudah ada uji sebelum/sesudah per skill (examples/00-openclaw, 2026-10-01); tidak perlu uji ulang"
@@ -102,7 +102,7 @@ strategi-harga-produk,telegram,belum pernah tampil di bot Telegram asli (antrean
 strategi-harga-produk,telegram,"strategi-harga-produk masih punya satu pekerjaan terbuka: tampil di bot Telegram asli lewat G21. Topik 1556-1565 dan pesan sudah disiapkan, tetapi pra-cek uji-t",buka,,
 studio-video-pendek-ai,telegram,"Gelombang 21 Telegram untuk studio-video-pendek-ai masih terbuka: topik 1556–1565 dan pesan sudah disiapkan, tetapi belum dikirim (router HTTP 530) dan pra-cek ",buka,,
 studio-video-pendek-ai,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-surat-penawaran-harga,rujukan,"Footnote meterai di references/regulasi.md surat-penawaran-harga (baris 28 dan 35) masih bersumber online-pajak.com dengan catatan ""belum dibaca langsung — perl",buka,,
+surat-penawaran-harga,rujukan,"Footnote meterai di references/regulasi.md surat-penawaran-harga (baris 28 dan 35) masih bersumber online-pajak.com dengan catatan ""belum dibaca langsung — perl",selesai,2026-10-15,revisi v1.0.6 commit da29ad6 (verifikasi independen lolos)
 surat-penawaran-harga,telegram,"G19 (surat-penawaran-harga, topik 1534-1543) baru disiapkan dan belum dikirim; masih menunggu router pulih dari HTTP 530, restart gateway, pra-cek uji-tg.sh, G1",buka,,
 surat-penawaran-harga,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 surat-resmi,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
