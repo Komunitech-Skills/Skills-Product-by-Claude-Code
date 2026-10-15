@@ -62,18 +62,18 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 - **Uji OpenClaw otomatis agent, Sep 2026** (v1.0.6; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS).
 - **Uji bot Telegram asli, gelombang 10 (2026-10-05):** **6,5** → **8,0**. Dengan skill jadwal masa percobaan, evaluasi, dan BPJS dihitung skrip; tanpa skill tanggal evaluasi melewati batas masa percobaan.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 10). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: dasar hukum dari sumber sekunder.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 10). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Dasar aturan utama (masa percobaan, larangan percobaan PKWT, tenggat 30 hari BPJS Ketenagakerjaan) sudah dicocokkan dengan naskah resmi di JDIH Kemnaker, dicek ulang 15 Oktober 2026; rincian sanksi BPJS dan cara menghitung tanggal batas 3 bulan masih PERLU REVIEW (tafsir, bukan pasal eksplisit).
 
 ## FAQ
 **Skill ini bikin kontrak kerja juga?**
-Tidak. Untuk kontrak kerja karyawan kontrak (PKWT), pakai skill `kontrak-kerja-pkwt` (pembuat kontrak karyawan kontrak) — skill onboarding ini hanya mengingatkan kelengkapannya di checklist, termasuk aturan bahwa PKWT dilarang punya masa percobaan.
+Tidak. Untuk kontrak kerja karyawan kontrak (PKWT), pakai skill `kontrak-kerja-pkwt` (pembuat kontrak karyawan kontrak) — skill onboarding ini hanya mengingatkan kelengkapannya di checklist, termasuk aturan bahwa PKWT dilarang punya masa percobaan (PP 35/2021 Pasal 12).
 
 **Masa percobaan wajib 3 bulan?**
-Masa percobaan hanya berlaku untuk karyawan tetap (PKWTT) dan **maksimal** 3 bulan (boleh lebih pendek), dengan upah tidak boleh di bawah upah minimum (UU 13/2003 Pasal 60 jo. UU 6/2023). Karyawan kontrak (PKWT) sama sekali tidak boleh dikenai masa percobaan.
+Masa percobaan hanya berlaku untuk karyawan tetap (PKWTT) dan **maksimal** 3 bulan (boleh lebih pendek), dengan upah tidak boleh di bawah upah minimum (UU 13/2003 Pasal 60, tetap berlaku setelah UU 6/2023). Karyawan kontrak (PKWT) sama sekali tidak boleh dikenai masa percobaan (PP 35/2021 Pasal 12); bila tetap ditulis di kontrak, klausul itu batal demi hukum dan masa kerjanya tetap dihitung. Pendaftaran BPJS tidak menunggu masa percobaan selesai: BPJS Ketenagakerjaan paling lambat 30 hari sejak mulai kerja (PP 45/2015 Pasal 4 ayat (2)), BPJS Kesehatan didaftarkan terpisah. Ringkasan ini bukan nasihat hukum; untuk kasus khusus tanyakan ke Disnaker atau konsultan ketenagakerjaan.
 
 **Bisa dipakai untuk usaha dengan banyak cabang atau shift?**
 Bisa. Sebutkan jumlah shift dan cabang saat meminta, jadwal dan buku saku akan disesuaikan; script jadwal juga mendukung 5 atau 6 hari kerja per minggu, libur nasional bawaan 2026/2027, dan file libur tambahan perusahaan.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

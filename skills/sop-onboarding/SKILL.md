@@ -15,10 +15,10 @@ sambutan siap kirim, aturan sehari-hari tertulis di buku saku, dan evaluasi akhi
 ## Aturan utama: kerjakan dulu, tanya di akhir
 Jika pengguna sudah menyebut **jabatan**, **jenis hubungan kerja** (tetap/kontrak) dan **tanggal mulai**, JANGAN membalas hanya dengan pertanyaan, walau nama karyawan, nama usaha, buddy, atau jam kerja belum ada. Dalam **satu balasan yang sama**, tulis **isi paket utuh di chat** (bukan hanya tawaran atau nama file), berurutan:
 1. **Jadwal minggu pertama** (hari 1 sampai 6/7: kegiatan & penanggung jawab) dan **jadwal 30/60/90 hari + tanggal evaluasi masa percobaan** (tanggal dihitung dari tanggal mulai; lihat Langkah kerja 3). Tulis sebagai **daftar bernomor per tanggal, urut kronologis** (bukan tabel 6 kolom, karena tampil sebagai teks berpipa di Telegram/WA). Satu butir = `Hari, tanggal: tahap (penanggung jawab), kegiatan`.
-2. **Checklist pra-hari-pertama** (dokumen seperlunya, BPJS Ketenagakerjaan & Kesehatan wajib, perangkat/akses kerja).
+2. **Checklist pra-hari-pertama** (dokumen seperlunya, BPJS Ketenagakerjaan wajib didaftarkan paling lambat 30 hari sejak mulai kerja dan BPJS Kesehatan wajib didaftarkan terpisah, perangkat/akses kerja).
 3. **SOP ringkas jabatan** (mis. kasir: buka kas, transaksi, retur/void, tutup kas & setoran; buat 5-8 langkah ringkas, tandai `[isian]` untuk aturan khusus usaha).
 4. **Evaluasi masa percobaan** (karyawan tetap/PKWTT: tanggal evaluasi keputusan dan batas 3 bulan; ringkas formulir penilaiannya). Tulis dalam satu kalimat berurutan, evaluasi lebih dulu: "Evaluasi keputusan: Rabu 6 Jan 2027 (sebelum batas percobaan Senin 11 Jan 2027)". Checkpoint 90 hari disebut pemantauan rutin, jangan dijadikan batas keputusan.
-5. **Catatan aturan** (satu blok pendek): masa percobaan hanya untuk karyawan tetap, maksimal 3 bulan (PP 35/2021, UU 13/2003 Pasal 60 jo. UU 6/2023); upah masa percobaan tidak boleh di bawah upah minimum, jadi cek UMK kota Anda: `[isian: UMK kota ... tahun 2026]` dibandingkan gaji yang disebut pengguna (usaha mikro/kecil punya pengecualian, lihat referensi); PKWT tidak boleh punya masa percobaan.
+5. **Catatan aturan** (satu blok pendek): masa percobaan hanya untuk karyawan tetap, maksimal 3 bulan, upah tidak boleh di bawah upah minimum (UU 13/2003 Pasal 60, tetap berlaku setelah UU 6/2023), jadi cek UMK kota Anda: `[isian: UMK kota ... tahun 2026]` dibandingkan gaji yang disebut pengguna (usaha mikro/kecil punya pengecualian, lihat referensi); PKWT tidak boleh ada masa percobaan (PP 35/2021 Pasal 12; bila tetap dicantumkan, klausul itu batal demi hukum dan masa kerja tetap dihitung); BPJS Ketenagakerjaan didaftarkan paling lambat 30 hari sejak mulai kerja (PP 45/2015 Pasal 4 ayat (2)), BPJS Kesehatan didaftarkan terpisah.
 6. Data yang kurang ditulis `[isian: ...]` (nama karyawan, nama usaha, buddy, jam kerja, jumlah cuti, dll.) dan **diberi asumsi** (mis. 6 hari kerja).
 7. **Maks. 3 pertanyaan di akhir** untuk menyempurnakan (mis. hari kerja & shift, nama buddy, UMK kota). Hanya **jabatan, jenis hubungan kerja, atau tanggal mulai yang benar-benar kosong** yang boleh menahan paket.
 
@@ -65,7 +65,11 @@ Bila jabatan, jenis hubungan kerja, dan tanggal mulai sudah ada: kerjakan dulu (
 2. **Checklist pra-hari-pertama**: isi `templates/checklist-pra-hari-pertama.md` dengan data pengguna.
    Ingatkan dokumen diminta **seperlunya saja** dan disimpan aman (UU 27/2022 PDP). Untuk PKWT, rujuk
    `kontrak-kerja-pkwt` dan jangan menulis pasal kontrak sendiri. Tandai kewajiban BPJS Ketenagakerjaan
-   & BPJS Kesehatan sebagai wajib, bukan opsional.
+   & BPJS Kesehatan sebagai wajib sejak mulai kerja, bukan opsional dan bukan menunggu lolos masa
+   percobaan. Tenggat 30 hari = pendaftaran pekerja baru ke **BPJS Ketenagakerjaan** (PP 45/2015 Pasal 4
+   ayat (2)); program JKK, JKM, JHT, dan JP masing-masing punya PP sendiri, dan **BPJS Kesehatan
+   terpisah** (ikuti ketentuan BPJS Kesehatan; jangan memakai dasar tenggat BPJS Ketenagakerjaan
+   untuknya). Lihat `references/dasar-hukum-onboarding.md` bagian 2.
 3. **Hitung jadwal onboarding dengan script** (jangan mengira-ngira tanggal). Path relatif terhadap
    folder SKILL.md ini; Windows: ganti `python3` dengan `python`/`py`:
    ```bash
@@ -114,7 +118,8 @@ Bila jabatan, jenis hubungan kerja, dan tanggal mulai sudah ada: kerjakan dulu (
    dengan script) dan beri tahu pengguna tanggal dihitung manual, sarankan cek dengan script. Bila
    checkpoint 90 hari (mulai+89) lebih lambat dari batas hukum, beri peringatan eksplisit dan jangan
    pakai checkpoint itu untuk keputusan lanjut/tidak. Untuk PKWT: **tidak ada** akhir masa percobaan —
-   tulis dengan tegas bahwa PKWT dilarang mensyaratkan masa percobaan (lihat
+   tulis dengan tegas bahwa PKWT dilarang mensyaratkan masa percobaan (**PP 35/2021 Pasal 12**; bila
+   tetap dicantumkan, klausul batal demi hukum dan masa kerja tetap dihitung; lihat
    `references/dasar-hukum-onboarding.md`).
 4. **Isi buku saku karyawan** dari `templates/buku-saku-karyawan.md`. **Jangan mengarang** jam kerja,
    jumlah cuti, atau aturan seragam — bila pengguna belum memberi tahu, tulis `[isi: ...]` dan sebutkan
@@ -202,8 +207,9 @@ bengkel". Contoh PKWT & input tidak lengkap lain ada di `examples/`.
 - [ ] Tidak ada kata proses (skill, script, file, path, cek, LULUS/GAGAL, "tafsir skill ini") di jawaban.
 - [ ] Jadwal berupa daftar bernomor urut tanggal, bukan tabel 6 kolom; evaluasi keputusan ditulis sebelum batas percobaan.
 - [ ] Tanggal jadwal berasal dari script (atau ditandai "dihitung manual").
-- [ ] Untuk PKWT: tidak ada tanggal/klausul masa percobaan; disebutkan dasar larangannya; formulir
-  evaluasi versi PKWT dipakai (tanpa istilah "lulus masa percobaan").
+- [ ] Untuk PKWT: tidak ada tanggal/klausul masa percobaan; disebutkan dasar larangannya (PP 35/2021
+  Pasal 12, klausul batal demi hukum); formulir evaluasi versi PKWT dipakai (tanpa istilah "lulus masa
+  percobaan").
 - [ ] Untuk PKWTT: masa percobaan maks. 3 bulan, upah selama percobaan tidak boleh di bawah upah minimum
   (kecuali usaha mikro/kecil — lihat `references/dasar-hukum-onboarding.md`); baris "evaluasi keputusan
   akhir masa percobaan" (bukan checkpoint 90 hari) dipakai untuk keputusan lanjut/tidak; bila pengguna
@@ -212,7 +218,8 @@ bengkel". Contoh PKWT & input tidak lengkap lain ada di `examples/`.
 - [ ] Bila script memberi peringatan (H1 di hari libur, checkpoint 90 hari melewati batas hukum),
   peringatan itu **disalin ke jawaban**, tidak dihilangkan.
 - [ ] Checklist dokumen meminta data **seperlunya** dan mengingatkan penyimpanan aman (PDP).
-- [ ] Kewajiban pendaftaran BPJS Ketenagakerjaan & Kesehatan disebutkan sebagai wajib.
+- [ ] Kewajiban pendaftaran BPJS Ketenagakerjaan (paling lambat 30 hari sejak mulai kerja, PP 45/2015
+  Pasal 4 ayat (2)) & BPJS Kesehatan (terpisah, tanpa tenggat karangan) disebutkan sebagai wajib.
 - [ ] Buku saku tidak berisi angka/aturan karangan; semua yang belum diisi pengguna diberi `[isi: ...]`.
 - [ ] Formulir evaluasi mengingatkan bahwa pemutusan hubungan kerja perlu konsultasi ahli hukum/Disnaker.
 - [ ] Disclaimer & tanggal dasar hukum dicantumkan.
