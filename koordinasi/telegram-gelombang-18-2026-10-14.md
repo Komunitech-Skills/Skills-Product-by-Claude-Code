@@ -111,3 +111,7 @@ Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** 
 ## Run 2026-10-15 ~01:00 UTC (Akun C automation)
 
 Smoke `openclaw agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~100 s, Ninerouter). Run mengerjakan **C30** verifikasi `kelayakan-investasi-usaha` (**C30 selesai 6/6**) → `koordinasi/c30-verifikasi-aturan-2026-10-14.md` §7; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 01:30 UTC (Akun C)
+
+Smoke `openclaw agent -m "balas satu kata: OK" --json` (gateway) → **HTTP 530** (~96 s, Ninerouter). Run mengerjakan **C31** verifikasi `tender-checklist` + `persiapan-jual-atau-wariskan-usaha` (2/6) → `koordinasi/c31-verifikasi-aturan-2026-10-15.md`; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
