@@ -1,4 +1,4 @@
-# Dasar aturan PPN untuk SPH — berlaku per 2026-09-23
+# Dasar aturan PPN untuk SPH — berlaku per 2026-09-23 (bagian bea meterai dicek ulang 2026-10-15)
 
 > Ringkasan untuk keperluan menyusun penawaran harga. Bukan nasihat pajak. Aturan bisa berubah; cek pajak.go.id atau konsultan pajak sebelum dipakai untuk kasus khusus.
 
@@ -21,15 +21,17 @@ Harga sudah termasuk PPN (non-mewah): DPP = rupiah bulat terbesar sehingga DPP +
 ## Faktur pajak
 - Faktur pajak dibuat PKP melalui Coretax / e-Faktur Desktop / H2H (KEP-54/PJ/2025). SPH **bukan** faktur pajak.
 
-## Bea meterai
+## Bea meterai (UU No. 10 Tahun 2020 tentang Bea Meterai)
 - SPH pada umumnya bukan dokumen yang wajib bermeterai.
-- Bea meterai Rp10.000 (UU 10/2020 Pasal 3): **surat perjanjian/pernyataan** dikenai meterai **berapa pun nilainya**; ambang **> Rp5.000.000** hanya berlaku untuk dokumen yang menyebut **penerimaan uang** atau pernyataan bahwa utang **telah dilunasi** (mis. kuitansi/tanda terima pelunasan).
+- **Objek (Pasal 3 ayat (2)):** huruf a menyebut «surat perjanjian, surat keterangan, surat pernyataan, atau surat lainnya yang sejenis, beserta rangkapnya» **tanpa batas nilai**; ambang **lebih dari Rp5.000.000** hanya ada di huruf g, yaitu dokumen yang menyebut **penerimaan uang** atau pengakuan bahwa utang **telah dilunasi/diperhitungkan** (mis. kuitansi/tanda terima pelunasan).
+- **Tarif (Pasal 5):** «Dokumen sebagaimana dimaksud dalam Pasal 3 dikenai Bea Meterai dengan tarif tetap sebesar Rp10.000,00 (sepuluh ribu rupiah).»
+- **Saat terutang (Pasal 8 ayat (1) huruf a):** untuk surat perjanjian, saat dokumen **dibubuhi tanda tangan**.
 - Jika SPH ditandatangani kedua pihak sebagai kesepakatan (menjadi perjanjian), sarankan pengguna memakai meterai / skill `perjanjian-sederhana`.
-- Dicek per 2026-09-23. Sumber ringkasan: https://www.online-pajak.com/pajak/materai-10000/ *(teks resmi UU 10/2020 Pasal 3 belum dibaca langsung — perlu review)*
+- Dibaca langsung dari teks resmi (salinan) UU 10/2020 di pajak.go.id, diakses 2026-10-15 (tautan di bagian Sumber).
 
 ## Sumber
 - https://www.pajak.go.id/en/node/113453
 - https://peraturan.bpk.go.id/Details/311485/pmk-no-131-tahun-2024
 - https://news.ddtc.co.id/berita/nasional/1812992/tak-berubah-tarif-ppn-12-tetap-berlaku-untuk-barang-mewah-di-2026
 - https://pajak.go.id/en/node/115238 (Coretax & faktur)
-- https://www.online-pajak.com/pajak/materai-10000/ (bea meterai)
+- https://www.pajak.go.id/sites/default/files/2020-11/UU%20Nomor%2010%20Tahun%202020%20tentang%20Bea%20Materai.pdf (UU 10/2020 tentang Bea Meterai, teks resmi; Pasal 3, 5, 8; diakses 2026-10-15)
