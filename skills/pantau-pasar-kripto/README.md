@@ -51,7 +51,7 @@ Pantau harga kripto -- 24 Sep 2026 07:41 WIB
   >> AMBANG TERLEWATI: Harga sudah <= ambang bawah 2100000.
 Sumber & jam data ada di rincian JSON. Informasi, bukan nasihat investasi.
 ```
-Hasil lengkapnya juga memuat ringkasan pagi dengan berita bertautan sumber asli, hitungan untung/rugi jurnal yang sudah termasuk biaya, dan disclaimer "bukan nasihat investasi" di setiap keluaran.
+Hasil lengkapnya juga memuat ringkasan pagi dengan berita bertautan sumber asli, hitungan untung/rugi jurnal yang sudah termasuk biaya, dan disclaimer "bukan nasihat investasi" pada keluarannya.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -78,7 +78,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## FAQ
 **Ini bot auto-trading, kan?**
-Bukan. Skill ini murni memberi informasi (harga, berita, hasil riset, hitungan jurnal).
+Bukan, ini bukan bot auto-trading. Skill ini murni memberi informasi (harga, berita, hasil riset, hitungan jurnal).
 Skill ini secara sengaja **menolak** meminta/menyimpan kunci API bursa (exchange) dan tidak
 mengeksekusi order -- semua keputusan beli/jual tetap Anda lakukan sendiri di aplikasi
 exchange Anda.
