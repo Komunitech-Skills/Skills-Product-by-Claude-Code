@@ -56,6 +56,10 @@ Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (6 retr
 
 Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~80 s). Run mengerjakan **C34 prep G21** (`telegram-gelombang-21-prep-2026-10-15.md`); pesan 2–10 masih belum dikirim.
 
+## Run 10:30 UTC (Akun C, 2026-10-15)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~97 s, Ninerouter Error 1016). **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; pesan 2–10 masih belum dikirim.
+
 ## Run 10:00 UTC (Akun C, 2026-10-15)
 
 Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~79 s, Ninerouter Error 1016). **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; pesan 2–10 masih belum dikirim.
