@@ -72,6 +72,34 @@
 |---|---|---|
 | 1 | `sop-onboarding` | selesai (§1) |
 | 2 | `laporan-insiden-usaha` | selesai (§2) |
-| 3 | `notulen-rapat` | menunggu run berikutnya |
-| 4 | `kelola-stok` / `buku-stok` | menunggu run berikutnya |
-| Ringkasan C25–C33 | `ringkasan-verifikasi-aturan-2026-10-15.md` | setelah §3–4 selesai |
+| 3 | `notulen-rapat` | selesai (§3, run ~06:00 UTC) |
+| 4 | `buku-stok` | selesai (§4, run ~06:00 UTC; `kelola-stok` tidak ada di repo) |
+| Ringkasan C25–C33 | `ringkasan-verifikasi-aturan-2026-10-15.md` | selesai (run ~06:00 UTC) |
+
+---
+
+## 3. `notulen-rapat` — klaim aturan / RUPS
+
+**Run Akun C:** 2026-10-15 ~06:00 UTC
+
+| Klaim / tidak-klaim | Temuan di repo | Kesimpulan |
+|---|---|---|
+| Brief C33: UU PT 40/2007 risalah RUPS bila disebut | **SKILL.md / README / references** tidak mengutip UU 40/2007, Pasal RUPS, atau format risalah resmi | **COCOK** — skill **tanpa klaim aturan** |
+| Rapat Umum Pemegang Saham / akta notaris | SKILL.md baris «Kapan TIDAK»: «RUPS … format resminya mengikuti notaris/anggaran dasar» | **COCOK** — disclaimer praktis, bukan kutipan UU |
+| Referensi pembanding (bukan klaim skill): risalah RUPS | UU 40/2007 tentang Perseroan Terbatas (RUPS & dokumentasi) — salinan resmi di jdih.setneg / peraturan.bpk (judul «UU No. 40 Tahun 2007») | 2026-10-15 | Skill **tidak** wajib menyebut UU; bila README menambah catatan RUPS, rujuk UU 40/2007 + notaris |
+
+**Usulan teks (Akun B):** Tidak wajib. Opsional satu kalimat di README «Untuk RUPS PT, format resmi mengikuti anggaran dasar & notaris (UU 40/2007), bukan template operasional skill ini.»
+
+---
+
+## 4. `buku-stok` — klaim aturan
+
+**Run Akun C:** 2026-10-15 ~06:00 UTC
+
+| Klaim skill | Temuan | Kesimpulan |
+|---|---|---|
+| Pajak, jurnal akuntansi penuh, biaya admin marketplace | SKILL.md § Batasan: «**Bukan akuntansi penuh** … tidak ada … pajak»; arahkan ke `laporan-keuangan-emkm` | **COCOK** — **tanpa klaim aturan** perundangan |
+| HPP rata-rata tertimbang | Rumus eksplisit di SKILL; bukan referensi PSAK/SAK | **COCOK** — praktik inventori, bukan klaim standar akuntansi wajib |
+| Kolom ekspor Shopee/Tokopedia | Sudah diverifikasi di **C25** (`rencana-restok-barang` terkait kolom); `buku-stok` punya impor pesanan sendiri | **COCOK** — skill tidak mengutip PMK/UU; dokumentasi kolom marketplace → lihat usulan C25 bila teks impor perlu selaras |
+
+**Catatan:** Papan C33 menawarkan `kelola-stok` — folder skill **tidak ada**; verifikasi dilakukan pada `buku-stok` saja.
