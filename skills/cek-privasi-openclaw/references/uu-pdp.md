@@ -1,9 +1,17 @@
 # Ringkasan UU PDP untuk Pengguna OpenClaw (bahasa awam)
 
-**Dasar hukum:** Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP),
-**berlaku penuh sejak Oktober 2024**. Sumber: hukumonline.com — ringkasan umum, bukan nasihat
-hukum. (Peraturan Pemerintah pelaksana lebih lanjut ada, tapi nomor & isinya **belum
-diverifikasi** dalam sesi ini — jangan mengutip nomor PP secara pasti tanpa cek ulang.)
+**Dasar hukum (dicek 15 Oktober 2026):**
+- **Undang-Undang Nomor 27 Tahun 2022** tentang Pelindungan Data Pribadi (UU PDP), diundangkan
+  17 Oktober 2022. Masa penyesuaian paling lama 2 tahun (Pasal 74) berakhir Oktober 2024, jadi
+  kewajibannya **sudah berlaku penuh sejak Oktober 2024**.
+- **Peraturan Pemerintah Nomor 33 Tahun 2026** tentang Peraturan Pelaksanaan UU 27/2022:
+  diundangkan 16 Juli 2026, **mulai berlaku 16 Januari 2027** (Pasal 225). PP ini menambah
+  aturan teknis/operasional; ia **tidak menunda** kewajiban UU PDP yang sudah berlaku sejak
+  Oktober 2024. Isi rinci PP belum diringkas di skill ini — untuk kewajiban teknis dari PP,
+  arahkan ke salinan resminya atau konsultan hukum/DPO.
+- Sumber: naskah UU 27/2022 (JDIH Kemkomdigi) dan salinan resmi PP 33/2026 (peraturan.go.id).
+  Ringkasan umum, bukan nasihat hukum. Jangan mengutip nomor pasal lain yang tidak tercantum di
+  file ini tanpa cek ulang ke naskah resmi.
 
 Bagian ini dipakai skill `cek-privasi-openclaw` **hanya** untuk mengingatkan, bukan untuk
 memberi kepastian hukum. Untuk kasus spesifik (data kesehatan, data anak, insiden kebocoran),
@@ -22,8 +30,15 @@ lain, atau menyimpan daftar piutang/kontak pelanggan.
    untuk pekerjaan itu (mis. tidak perlu menyimpan nomor KTP kalau tidak dibutuhkan).
 4. **Hak subjek data:** pelanggan berhak mengakses, mengoreksi, menghapus datanya, dan menarik
    persetujuan.
-5. **Notifikasi kalau ada kebocoran data**, sesuai jangka waktu yang diatur (ringkasan umum:
-   dalam hitungan hari sejak diketahui — cek ketentuan resmi terbaru untuk angka pastinya).
+5. **Pemberitahuan kalau terjadi kebocoran data** (UU 27/2022 Pasal 46 ayat (1)): pengendali
+   data wajib memberi tahu **secara tertulis paling lambat 72 jam (3×24 jam)** kepada pemilik
+   data (orang yang datanya bocor) dan kepada lembaga pelindungan data pribadi. Tenggatnya
+   pendek — kalau ada dugaan kebocoran, segera libatkan konsultan hukum/DPO.
+
+**Sanksi (sekadar pengingat):** pelanggaran kewajiban pengendali data dapat dikenai sanksi
+administratif UU PDP (Pasal 57): peringatan tertulis, penghentian sementara pemrosesan,
+penghapusan/pemusnahan data, sampai denda administratif paling tinggi 2% dari pendapatan atau
+penerimaan tahunan terkait pelanggaran.
 
 ## Data kesehatan = kategori khusus (Pasal 4 UU PDP)
 UU PDP membedakan data pribadi **umum** (nama, alamat, nomor HP) dan data pribadi **spesifik**
@@ -47,6 +62,13 @@ kategori khusus ini — jangan disamakan dengan data pelanggan toko biasa. Skill
   untuk kepatuhan praktis): aktifkan enkripsi disk penuh (FileVault di Mac, BitLocker di
   Windows), kunci layar otomatis, dan backup terenkripsi untuk komputer yang menyimpan data
   pasien/pelanggan sensitif.
+
+## Permintaan menyadap/membaca chat orang lain (ditolak)
+Membaca atau menyadap chat/perangkat orang lain tanpa hak dapat melanggar **UU ITE — UU 11/2008
+jo. UU 19/2016 jo. UU 1/2024, Pasal 31** (larangan intersepsi/penyadapan), selain UU PDP.
+Karena itu skill menolak permintaan semacam ini dan menawarkan alternatif sah (kebijakan
+tertulis pemakaian perangkat/akun kerja yang disetujui karyawan, akun WA Business kantor,
+konsultasi ke HR/konsultan hukum).
 
 ## Disclaimer
 Ringkasan ini **bukan nasihat hukum**. Untuk kepatuhan penuh (terutama usaha yang memproses
