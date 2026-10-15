@@ -4,10 +4,11 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 
 ## Run berikutnya (prioritas)
 
-1. **Akun C** — **C24 G18** (prioritas 1): smoke router → lanjut kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~06:30 UTC). Pesan 2–10 `msgs-g18.json` belum terkirim.
-2. **C34** — G19 **siap** (`telegram-gelombang-19-prep-2026-10-15.md`); G20–G23 belum. Setelah G18: restart gateway → kirim G19.
+1. **Akun C** — **C24 G18** (prioritas 1): smoke router → lanjut kirim gelombang bila HTTP 200 (terakhir HTTP 530 ~07:00 UTC). Pesan 2–10 `msgs-g18.json` belum terkirim.
+2. **C34** — G19 & G20 **siap**; G21–G23 belum. Setelah G18: restart gateway → kirim G19 → G20.
 3. **C25–C33 selesai** — ringkasan PERLU UBAH: `koordinasi/ringkasan-verifikasi-aturan-2026-10-15.md`.
 4. **Akun B** — terapkan usulan ringkasan verifikasi; uji independen + program beta VIP (keputusan 53).
+5. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 5. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
 ## Format Telegram (thread 242) — wajib multiline
@@ -43,6 +44,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-15 ~07:00 | `cursor/iterasi-otomatis-akun-c-8b42` | (commit run) | selesai ~07:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~85 s); **C34 G20 siap** (topik 1545–1554, msgs-g20, salin skill G19+G20, patch tanpa restart); **G18 tidak dilanjutkan** | — | prep | ya |
+| 2026-10-15 ~07:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 07:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C34 G20 | — | — | — |
 | 2026-10-15 ~06:30 | `cursor/iterasi-otomatis-akun-c-8b42` | 10552052 | selesai ~06:48 UTC — LANGKAH NOL OK; merge default; getUpdates 242 kosong; smoke router HTTP 530 (~79 s); **C34 G19 siap** (topik 1534–1543, msgs, salin skill, patch tanpa restart); **G18 tidak dilanjutkan** | — | prep | ya |
 | 2026-10-15 ~06:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 06:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 else C34 G19 | — | — | — |
 | 2026-10-15 ~06:00 | `cursor/iterasi-otomatis-akun-c-8b42` | ea13e799 | selesai ~06:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~98 s); **C33 selesai** (`notulen-rapat`, `buku-stok` + ringkasan C25–C33); **G18 tidak dilanjutkan** | — | docs | ya |
