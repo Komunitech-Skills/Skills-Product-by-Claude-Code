@@ -18,7 +18,7 @@ Diuji AI penguji independen di OpenClaw: 4,5 → 9,0 dari 10 pada uji pertama (1
 - Pemilik atau admin sales yang selama ini mencatat calon pembeli di kepala, buku, atau label chat WA.
 - Member yang memakai OpenClaw dan ingin daftar follow-up masuk Telegram tiap pagi (jadwal otomatis belum diuji langsung).
 
-**Kurang cocok:** tim sales besar yang butuh banyak pengguna sekaligus di perangkat berbeda, atau yang ingin mengirim promo massal otomatis (skill ini sengaja tidak mengirim apa pun).
+**Kurang cocok:** tim sales besar yang butuh banyak pengguna sekaligus di perangkat berbeda, atau yang ingin mengirim promo massal otomatis (skill ini sengaja tidak mengirim apa pun; kiriman otomatis/massal resmi tersedia lewat WhatsApp Business Platform (API), bukan lewat WhatsApp Web/OpenClaw; lihat bagian "Yang perlu Anda tahu").
 
 ## Contoh sebelum & sesudah
 **Sebelum:** calon pembeli tersebar di chat WA, DM IG, dan catatan HP. Yang minta "nanti saya kabari" sering terlupa. Akhir bulan tidak tahu berapa yang jadi order dan dari mana pembeli terbaik datang.
@@ -75,7 +75,9 @@ Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, tota
 **Status uji (jujur):** sudah diuji di OpenClaw (uji muat CLI, uji platform otomatis agent, uji sebelum/sesudah 1–2 Oktober 2026, dan satu uji di bot Telegram OpenClaw asli 2 Oktober 2026) dan Claude Code (simulasi agent). Jadwal otomatis ke Telegram, Codex, dan Cursor belum kami uji langsung.
 
 ## Yang perlu Anda tahu (jujur)
-- **Tidak mengirim pesan sendiri.** Skill hanya menyiapkan draf + tautan wa.me; Anda yang menekan Kirim. Ini disengaja: kiriman otomatis lewat WhatsApp tidak resmi bisa membuat nomor diblokir.
+- **Mode Copilot: AI menyiapkan, Anda yang mengirim.** Skill hanya menyiapkan draf + tautan wa.me; Anda yang membuka, memeriksa, dan menekan Kirim satu per satu. Skill ini bukan bot balas otomatis dan bukan alat kirim massal (auto-blast). Ini disengaja: kiriman otomatis lewat WhatsApp tidak resmi (mis. WhatsApp Web yang dipakai OpenClaw) bisa membuat nomor diblokir.
+- **Daftar tautan wa.me berbeda dengan WhatsApp Business Platform resmi.** Tautan wa.me dari skill ini hanya membuka WhatsApp di HP/komputer Anda dengan teks sudah terisi, lalu Anda periksa dan kirim sendiri (sama seperti salin-tempel, hanya lebih cepat). Kiriman otomatis atau massal yang resmi tersedia lewat WhatsApp Business Platform (API) resmi milik Meta, dengan template pesan yang disetujui dan izin (opt-in) penerima, bukan lewat WhatsApp Web/OpenClaw. Skill ini tidak terhubung ke layanan itu. Kebijakan WhatsApp Business (whatsapp.com/legal/business-policy, diperbarui 23 September 2026, dicek 15 Oktober 2026) menyebut usaha hanya boleh menghubungi orang yang sudah setuju (opt-in) menerima pesan darinya, dan permintaan berhenti wajib dihormati.
+- **Label `setuju-promo` = catatan persetujuan promo.** Pasang hanya untuk pelanggan yang memang sudah bilang setuju dikabari promo, dan simpan tanggal serta sumber persetujuannya di catatan kontak (mis. "setuju promo lewat chat WA, 3 Okt 2026"); skill ini mengarahkan agent untuk menanyakannya bila belum Anda sebutkan. Catatan ini membantu Anda menunjukkan dasar persetujuan sesuai UU 27/2022 tentang Pelindungan Data Pribadi (persetujuan sebagai dasar pemrosesan data, Pasal 20–21; teks pasal dicek 15 Oktober 2026 di JDIH Kemkomdigi, jdih.komdigi.go.id). Pelanggan minta berhenti → label dilepas dan dicatat. Ini bukan nasihat hukum; untuk kebijakan data pelanggan usaha Anda, tanyakan konsultan hukum.
 - **Tidak membaca chat WhatsApp otomatis.** Perkembangan dicatat dari cerita Anda (atau chat yang Anda tempel ke agent).
 - **Satu komputer, satu file data (database).** Jangan buka file yang sama dari dua komputer lewat Google Drive/Dropbox.
 - **Data pribadi pelanggan.** Nomor HP tersimpan hanya di komputer Anda. Jika pengingat dikirim ke Telegram, isinya (nama, nomor, tautan) tersimpan di chat Telegram Anda; ada pilihan versi disamarkan. Pelanggan minta datanya dihapus? Cukup bilang "hapus data Bu Rina".
@@ -88,18 +90,18 @@ Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 2 Okt 
 - Dengan skill: giliran 1–2 mendeteksi nama ganda dan mencatat status Deal + DP.
 - Catatan jujur: giliran 3 dengan skill salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
 
-Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.10). Perbaikan ini sudah diuji ulang di OpenClaw lokal (uji ulang v1.0.7 di atas), tetapi belum diuji ulang di bot Telegram.
+Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.11). Perbaikan ini sudah diuji ulang di OpenClaw lokal (uji ulang v1.0.7 di atas), tetapi belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah data pelanggan saya dikirim ke internet?**
 Tidak. Script CRM tidak memakai internet sama sekali; semuanya ada di satu file di komputer Anda. Yang keluar hanya teks yang Anda minta dikirim ke Telegram Anda sendiri (lewat OpenClaw), dan pesan yang Anda kirim sendiri lewat WhatsApp. Seperti percakapan AI lainnya, apa yang Anda ketik ke AI agent tetap diproses oleh penyedia model AI yang Anda pakai.
 
 **Bisa kirim pesan ke semua pelanggan sekaligus?**
-Tidak, dan itu disengaja. Setiap pesan dikirim manusia satu per satu supaya risiko nomor WhatsApp Anda diblokir lebih kecil dan pesannya tetap personal. Promo hanya untuk pelanggan yang sudah setuju dikabari (ditandai label `setuju-promo`); agent menyiapkan draf + tautan per orang, Anda kirim satu per satu. Pembeli marketplace (Shopee/Tokopedia) dianggap belum setuju, jadi promo untuk mereka lewat fitur voucher/promosi di dalam marketplace. (Skill Broadcast WA terpisah, bila Anda punya, hanya membantu menulis variasi teks — tetap dikirim satu per satu.)
+Tidak, dan itu disengaja. Setiap pesan dikirim manusia satu per satu supaya risiko nomor WhatsApp Anda diblokir lebih kecil dan pesannya tetap personal. Promo hanya untuk pelanggan yang sudah setuju dikabari (ditandai label `setuju-promo`, lengkap dengan tanggal & sumber persetujuannya); agent menyiapkan draf + tautan per orang, Anda kirim satu per satu. Butuh kiriman otomatis/massal resmi? Itu tersedia lewat WhatsApp Business Platform (API) resmi milik Meta, dengan template pesan yang disetujui dan opt-in penerima, bukan lewat WhatsApp Web/OpenClaw, dan di luar skill ini. Pembeli marketplace (Shopee/Tokopedia) dianggap belum setuju, jadi promo untuk mereka lewat fitur voucher/promosi di dalam marketplace. (Skill Broadcast WA terpisah, bila Anda punya, hanya membantu menulis variasi teks — tetap dikirim satu per satu.)
 
 **Saya sudah punya daftar pelanggan di Excel/HP. Harus ketik ulang?**
 Tidak. Simpan sebagai CSV (Excel: *Save As → CSV*; Google Contacts: *Export → Google CSV*), kirim ke agent, lalu periksa pratinjaunya. Nomor dirapikan otomatis, nomor dobel dan baris yang bermasalah dilewati dan disebutkan barisnya.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

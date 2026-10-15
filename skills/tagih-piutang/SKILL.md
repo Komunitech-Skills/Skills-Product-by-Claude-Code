@@ -100,7 +100,7 @@ Hitung manual, tulis langkahnya, dan beri tahu pengguna "dihitung manual, mohon 
 - ...
 
 ### Catatan hukum
-Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi)[, UU Bea Meterai bila menyarankan kesepakatan cicilan bermeterai] — per 2026-09-23. Untuk sengketa/gugatan, konsultasikan ke advokat.
+Bukan nasihat hukum. Dasar: KUHPerdata (wanprestasi/somasi)[, UU Bea Meterai (UU 10/2020) bila menyarankan kesepakatan cicilan bermeterai][, UU Perlindungan Konsumen (UU 8/1999) Pasal 18 bila debitur konsumen perorangan] — per 2026-10-15. Untuk sengketa/gugatan, konsultasikan ke advokat.
 ```
 Sebut UU ITE/UU PDP **hanya bila relevan** dan dengan alasannya dalam satu kalimat (mis. pengguna ingin menyebar nama debitur di grup/medsos atau mengancam lewat chat → "dilarang UU ITE Pasal 27A/27B dan UU PDP"). Jangan mencantumkannya sebagai "dasar" pesan tagihan biasa.
 Bila pengguna minta "semua tahap sekaligus", tampilkan tahap 1–6 berurutan dengan tanggal kirim masing-masing (tanggal = jatuh tempo −3, 0, +3, +7, +14, +30).
@@ -149,8 +149,9 @@ Asumsi: tenggat 7 hari. (Jika pengguna belum pernah mengirim pengingat, script m
 - [ ] Baris rekening ada di semua pesan; batas maksimal denda (bila ada) ditulis dalam rupiah.
 
 ## Batasan & penanganan error
-- Bukan nasihat hukum. Somasi, gugatan (termasuk gugatan sederhana), dan penagihan lintas negara → advokat.
-- Script tidak menghitung bunga moratoir menurut undang-undang, bunga berbunga, atau denda dengan dasar pembayaran bertanggal; jika diminta, jelaskan dan sarankan advokat/akuntan.
+- Bukan nasihat hukum. Somasi, gugatan (termasuk gugatan sederhana), dan penagihan lintas negara → advokat. Jangan memastikan somasi pasti wajib atau pasti tidak wajib sebelum gugatan: bila perjanjian/invoice sudah menetapkan jatuh tempo & akibat lalai, somasi terpisah bisa tidak wajib (KUHPerdata Pasal 1238) — advokat yang menilai; surat teguran tetap disarankan sebagai bukti.
+- Debitur **konsumen perorangan (B2C)**: denda/syarat penagihan hanya dari syarat tertulis yang jelas & disepakati; jangan pakai klausula baku yang dilarang UU 8/1999 Pasal 18 (mis. aturan baru yang diubah penjual sepihak selama konsumen memakai jasa, atau syarat yang sulit terlihat/dibaca) — klausula seperti itu batal demi hukum; antar-usaha (B2B) umumnya KUHPerdata (wanprestasi). Rincian: `references/regulasi.md` bagian 4.
+- Script tidak menghitung bunga moratoir menurut undang-undang (KUHPerdata Pasal 1250: baru wajib dibayar sejak diminta di muka pengadilan, kecuali undang-undang menetapkan berlaku demi hukum), bunga berbunga, atau denda dengan dasar pembayaran bertanggal; jika diminta, jelaskan dan sarankan advokat/akuntan. Jangan menyebut angka bunga 6% di pesan (tidak ada di Pasal 1250; lihat `references/regulasi.md` bagian 1).
 - Jika pengguna tidak punya bukti tertulis (invoice, PO, chat kesepakatan), sarankan mengumpulkan bukti dulu dan gunakan nada tahap 3–4 saja.
 - File tidak terbaca (`.xls` lama, terkunci kata sandi, rusak) → script menulis `ERROR:` + minta CSV; sampaikan itu ke pengguna. Jangan mencari cara lain dengan menginstal paket.
 - Jika debitur membantah tagihan (barang cacat, belum diterima), hentikan eskalasi; sarankan klarifikasi & rekonsiliasi dulu.
