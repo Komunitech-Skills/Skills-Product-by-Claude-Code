@@ -119,3 +119,11 @@ Smoke `openclaw agent -m "balas satu kata: OK" --json` (gateway) → **HTTP 530*
 ## Run 02:00 UTC (Akun C automation)
 
 Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~86 s, Ninerouter Error 1016 origin DNS, 7 retry). Run mengerjakan **C31** verifikasi `proposal-kerjasama` + `tagih-piutang` (4/6) → `koordinasi/c31-verifikasi-aturan-2026-10-15.md` §3–4; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-15 ~02:30 UTC (Akun C automation)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~94 s, Ninerouter Error 1016). Run mengerjakan **C31** verifikasi `surat-penawaran-harga` + `checklist-keamanan-pangan-usaha` (**C31 selesai 6/6**) → `koordinasi/c31-verifikasi-aturan-2026-10-15.md` §5–6; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-15 ~03:00 UTC (Akun C automation)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~97 s, Ninerouter Error 1016 origin DNS, 7 retry). **C25–C31 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
