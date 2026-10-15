@@ -54,7 +54,7 @@ Salin folder ini ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 12 Okt 2026 (v1.0.2), skor 1–10: tanpa skill **5,6** → dengan skill **8,25** (LULUS). Empat skenario OpenClaw: katering nasi box (jebakan suhu ayam), warung bakso, input kurang, jebakan halal/bebas alergen. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Pemeriksaan log suhu v1.0.1 ada di `examples/02-cek-log-suhu-kafe-v1.0.1.md` (skenario terpisah). Angka di bagian "Bukti uji di bot Telegram" dari uji bot asli v1.0.1 (sebelum perbaikan fakta).
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 12 Okt 2026 (diuji v1.0.2; versi terkini 1.0.3 hanya memperbarui penulisan izin pangan rumahan SPP-IRT dan belum diuji ulang), skor 1–10: tanpa skill **5,6** → dengan skill **8,25** (LULUS). Empat skenario OpenClaw: katering nasi box (jebakan suhu ayam), warung bakso, input kurang, jebakan halal/bebas alergen. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Pemeriksaan log suhu v1.0.1 ada di `examples/02-cek-log-suhu-kafe-v1.0.1.md` (skenario terpisah). Angka di bagian "Bukti uji di bot Telegram" dari uji bot asli v1.0.1 (sebelum perbaikan fakta).
 
 **Status uji (jujur):** diuji OpenClaw (uji otomatis agent) dan bot Telegram asli; batas suhu dan aturan di dalamnya **belum direview ahli keamanan pangan** dan tenggat halal serta perizinan perlu dicek ulang menjelang 18 Okt 2026. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -65,9 +65,9 @@ Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12 (versi **1
 - Dengan skill: skor **7,5** — paket lebih lengkap, tetapi ada kesalahan fakta (ayam 63 °C, alergen santan, halal opsional); diperbaiki di **1.0.2**. Verdik uji bot: BELUM.
 
 ## FAQ
-**Apakah ini menggantikan pelatihan atau SLHS resmi?** Tidak. Ini alat bantu kebiasaan kerja; pelatihan dan pemeriksaan resmi tetap lewat Dinas Kesehatan/BPOM.
+**Apakah ini menggantikan pelatihan atau SLHS resmi?** Skill ini tidak menggantikan pelatihan atau SLHS resmi; ini alat bantu kebiasaan kerja, dan pelatihan serta pemeriksaan resmi tetap lewat Dinas Kesehatan/BPOM.
 **Apakah angka suhunya sesuai aturan Indonesia?** Angka suhu dari WHO, FDA Food Code 2022, dan USDA (dicek 2026-10-12; ayam harus matang di bagian inti sampai 74 °C), daftar alergen mengikuti label BPOM, dan halal ditulis wajib sesuai UU 33/2014 & PP 42/2024. Izin pangan rumahan ditulis dengan nama resminya, SPP-IRT (Peraturan BPOM No. 4 Tahun 2024, dasar PP 86/2019; dicek 2026-10-15), dan hanya untuk produk kemasan yang tahan 7 hari atau lebih, bukan makanan siap saji. Tetap cocokkan dengan Dinkes setempat (PERLU REVIEW).
-**Perlu instal apa-apa?** Tidak. Skill tetap berguna tanpa program kecil bawaannya (script); program itu hanya butuh Python standar.
+**Perlu instal apa-apa?** Tidak perlu memasang program tambahan. Skill tetap berguna tanpa program kecil bawaannya (script); program itu hanya butuh Python standar.
 
 ## Riwayat perubahan
 
