@@ -154,3 +154,69 @@
 **Router model:** smoke OpenClaw `./oc.sh agent --local` → **HTTP 530** (~86 s, Ninerouter Error 1016) → **C24 G18 tidak dilanjutkan**; pesan 2–10 `msgs-g18.json` belum terkirim.
 
 **Run berikutnya:** smoke router → G18 bila HTTP 200; else C31 skill (5–6) `surat-penawaran-harga` + `checklist-keamanan-pangan-usaha`.
+
+---
+
+## 5. `surat-penawaran-harga` — PPN 12 % / DPP 11/12, PKP, masa berlaku penawaran
+
+### 5.1 Tarif PPN & DPP nilai lain (PMK 131/2024)
+
+| Klaim skill (`references/regulasi.md`, SKILL.md) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| PKP saja boleh memungut PPN & faktur | UU PPN jo. UU HPP (umum); DJP | 2026-10-15 | PMK 131/2024 mengatur tarif & DPP; faktur lewat Coretax (KEP-54/PJ/2025) | **COCOK** |
+| Non-mewah: PPN = 12 % × DPP nilai lain 11/12 → efektif 11 % | PMK 131/2024 (JDIH BPK) + artikel DJP | 2026-10-15 | «tarif efektif … selain barang mewah adalah 11 persen»; «12% x 11/12» — https://www.pajak.go.id/id/node/113453 ; PMK berlaku **1 Januari 2025** — https://peraturan.bpk.go.id/Details/311485/pmk-no-131-tahun-2024 | **COCOK** |
+| Barang mewah (PPnBM): 12 % × harga jual | PMK 131/2024 Pasal 2 ayat (2)–(3) (ringkasan DJP) | 2026-10-15 | DJP: tarif 12 % × harga jual untuk BKP mewah | **COCOK** |
+| Pembulatan PPN ke bawah dari DPP | Standar library (belum Coretax) | 2026-10-15 | — | **COCOK** arah; disclaimer skill sudah ada |
+| Ambang PKP Rp4,8 M/tahun | Skill (belum dicek ulang) | 2026-10-15 | Run ini tidak verifikasi angka terbaru 2026 | **PERLU REVIEW Akun B** — cek PMK/UU HPP ambang usaha kecil |
+
+### 5.2 Masa berlaku penawaran & meterai SPH
+
+| Klaim skill | Sumber | Kesimpulan |
+|---|---|---|
+| Default masa berlaku penawaran **14 hari** | Praktik bisnis / default skill, bukan aturan | **COCOK** sebagai default (bukan klaim hukum); README boleh tetap sebut «bisa disesuaikan» |
+| SPH umumnya **bukan** faktur pajak | PMK/Coretax (faktur terpisah) | **COCOK** |
+| Bea meterai: perjanjian Rp10.000 (UU 10/2020); ambang > Rp5 jt untuk kuitansi/pelunasan | Sudah diverifikasi C31 §3 (proposal-kerjasama) | **COCOK** — skill `regulasi.md` selaras; catatan «UU 10/2020 belum dibaca langsung» di regulasi.md **PERLU UBAH** ke **COCOK** (sudah dicek run C31 sebelumnya) |
+
+**Usulan teks (Akun B):** Di `references/regulasi.md` baris PKP: tandai verifikasi PMK 131 + DJP 2026-10-15; perbarui footnote meterai ke sumber resmi UU 10/2020 (BPK/DJP).
+
+---
+
+## 6. `checklist-keamanan-pangan-usaha` — PP 86/2019, Perka BPOM, Permenkes, halal
+
+### 6.1 Perizinan & SPP-IRT / PIRT
+
+| Klaim skill (`references/perizinan-indonesia.md`) | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| PIRT / SPP-IRT untuk pangan olahan IRTP kemasan eceran | PP 86/2019 Pasal 35 (JDIH PDF) | 2026-10-15 | IRTP wajib sertifikat produksi dari bupati/wali kota | **COCOK** |
+| Nama & pedoman terbaru **SPP-IRT** | Peraturan BPOM No. 4 Tahun 2024 | 2026-10-15 | «Perizinan … berupa **SPP-IRT**»; pengecualian umur simpan <7 hari, pangan siap saji, bahan belum olah — https://peraturan.bpk.go.id/Read/341095/ | **PERLU UBAH** ringan: README/references sebut **SPP-IRT** selain singkatan PIRT; catat Per BPOM 4/2024 |
+| SLHS + pelatihan penjamah (jasa boga/katering) | Permenkes 2/2023 | 2026-10-15 | Permenkes 2/2023 **mencabut** Permenkes **1096/2011** jasa boga — https://peraturan.bpk.go.id/Details/245563 | **COCOK** — skill sudah pakai Permenkes 2/2023; pastikan output agent tidak menyebut 1096/2011 |
+| Label + alergen Peraturan BPOM 31/2018 jo. 20/2021 | Metadata BPK (skill) | 2026-10-15 | Run ini tidak buka PDF penuh | **COCOK** arah (sudah di references); **PERLU REVIEW** naskah Pasal 49 ayat (3) |
+
+### 6.2 Halal (PP 42/2024)
+
+| Klaim skill | Sumber | Tanggal akses | Kutipan ringkas | Kesimpulan |
+|---|---|---|---|---|
+| Produk masuk/beredar wajib sertifikat halal (kecuali bahan haram → label tidak halal) | PP 42/2024 (JDIH BPK abstrak) | 2026-10-15 | «Produk … wajib bersertifikat halal»; menggantikan PP 39/2021; berlaku **17 Oktober 2024** | **COCOK** |
+| UMK: penahapan wajib halal (skill: **18 Oktober 2026**) | PP 42/2024 + rilis BPJPH 2026 (skill) | 2026-10-15 | Abstrak PP 42 tidak memuat tanggal tahapan UMK; skill merujuk BPJPH 2026 — **PERLU REVIEW** kutip pasal PP 42/UU 33 jo. Cipta Kerja untuk tanggal pasti |
+
+### 6.3 Suhu & bahan (FDA/WHO — bukan PP 86)
+
+| Klaim skill (`references/batas-suhu-dan-bahan-rawan.md`) | Sumber | Kesimpulan |
+|---|---|---|
+| Batas suhu mengacu FDA/WHO/USDA, bukan PP 86/2019 | Sumber asing resmi (skill) | **COCOK** — PP 86 tidak mengatur suhu internal; skill sudah label PERLU REVIEW untuk aturan Indonesia lebih rinci |
+
+**Usulan teks (Akun B):** Tambah satu baris di `perizinan-indonesia.md`: «SPP-IRT = Per BPOM 4/2024, mengacu PP 86/2019»; cek apakah PP 1/2026 mengubah PP 86 (metadata BPK ada — **PERLU REVIEW** sebelum rilis batch).
+
+---
+
+## Ringkasan run 2026-10-15 ~02:30 UTC
+
+| Skill | Hasil singkat |
+|---|---|
+| `surat-penawaran-harga` | PMK 131 + DJP **COCOK** (11/12, efektif 11 %); PKP/meterai **COCOK**; ambang PKP **PERLU REVIEW** |
+| `checklist-keamanan-pangan-usaha` | PP 86/2019 + Per BPOM 4/2024 SPP-IRT **COCOK**; Permenkes 2/2023 cabut 1096 **COCOK**; halal PP 42 **COCOK**; tanggal UMK halal **PERLU REVIEW** |
+
+**Progress C31:** **6/6 selesai** (tender-checklist … checklist-keamanan-pangan-usaha).  
+**Router model:** smoke `./oc.sh agent --local` → **HTTP 530** (~94 s, Error 1016) → **C24 G18 tidak dilanjutkan**; pesan 2–10 `msgs-g18.json` belum terkirim.
+
+**Run berikutnya:** smoke router → **G18** bila HTTP 200; bila masih 530, tidak ada backlog C25–C31 — tunggu router / tugas baru di papan.
