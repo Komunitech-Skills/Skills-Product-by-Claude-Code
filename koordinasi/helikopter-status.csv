@@ -24,7 +24,7 @@ cek-privasi-openclaw,rujukan,PP pelaksana UU PDP → Cantumkan PP + tanggal berl
 checklist-keamanan-pangan-usaha,rujukan,SPP-IRT → Sebut SPP-IRT + tahun,selesai,2026-10-15,revisi v1.0.3 commit 900a2f3 (verifikasi independen lolos)
 copy-landing-page,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 copy-landing-page,telegram,"copy-landing-page (1.0.7, beta) belum pernah tampil di bot Telegram asli: pesan G22 (topik 1567–1576) sudah disiapkan tetapi belum dikirim karena router HTTP 53",buka,,
-crm-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",buka,,
+crm-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",selesai,2026-10-15,revisi v1.0.11 commit 205c07a (verifikasi independen lolos)
 cv-lamaran-ats,telegram,"Item masih terbuka: G19 (cv-lamaran-ats) baru siap secara persiapan (topik 1534-1543, pesan, salinan skill) tetapi belum pernah dikirim ke bot Telegram asli kar",buka,,
 cv-lamaran-ats,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 dasbor-lokal,telegram,"Skill dasbor-lokal (G23, topik 1578–1583, 6 pesan bersama audit-seo-toko-online dan analisis-excel) masih terbuka: pra-cek uji-tg.sh belum dijalankan dan pesan ",buka,,
@@ -107,10 +107,10 @@ surat-penawaran-harga,telegram,"G19 (surat-penawaran-harga, topik 1534-1543) bar
 surat-penawaran-harga,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 surat-resmi,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 surat-resmi,telegram,"surat-resmi (LULUS internal 6,75 ke 8,75, versi 1.0.3, status beta) belum pernah tampil sebagai skill target di bot Telegram asli. Pesan G20 (topik 1545-1554) b",buka,,
-tagih-piutang,rujukan,Somasi vs perjanjian → Satu kalimat somasi tidak selalu wajib,buka,,
+tagih-piutang,rujukan,Somasi vs perjanjian → Satu kalimat somasi tidak selalu wajib,selesai,2026-10-15,revisi v1.0.8 commit e4c0597 (verifikasi independen lolos)
 tagih-piutang,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 tagih-piutang,telegram,"tagih-piutang 1.0.7 lulus internal (6,7 ke 8,5) tetapi belum pernah tampil di bot Telegram asli. Gelombang 22 (topik 1567-1576) baru persiapan dan belum dikirim",buka,,
-tagih-piutang,lain,"Kolom platform_teruji tagih-piutang di catalog.csv (baris 13) masih berhenti di uji 2026-10-01, belum memuat uji ulang OpenClaw v1.0.7 tanggal 2026-10-10 (6,7→8",buka,,
+tagih-piutang,lain,"Kolom platform_teruji tagih-piutang di catalog.csv (baris 13) masih berhenti di uji 2026-10-01, belum memuat uji ulang OpenClaw v1.0.7 tanggal 2026-10-10 (6,7→8",selesai,2026-10-15,"platform_teruji diisi, commit e4c0597"
 tender-checklist,rujukan,Login SPSE TOTP → README: 2FA/TOTP,selesai,2026-10-15,revisi v1.0.8 commit fdd94a3 (verifikasi independen lolos)
 tender-checklist,rujukan,URL SIKaP → Tambah domain baru,selesai,2026-10-15,revisi v1.0.8 commit fdd94a3 (verifikasi independen lolos)
 tender-checklist,telegram,"Gelombang Telegram 22 (topik 1567-1576, termasuk tender-checklist) baru disiapkan, belum dikirim ke bot asli, pra-cek uji-tg.sh belum jalan, dan router masih HT",buka,,
