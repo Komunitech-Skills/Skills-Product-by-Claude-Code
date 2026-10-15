@@ -120,6 +120,29 @@ class TestHitung(unittest.TestCase):
         h = payroll.hitung_karyawan(orang(gaji_pokok="3jt", tunjangan_tidak_tetap="2jt", lembur_hari_kerja="1"), cfg())
         self.assertEqual(h["lembur"]["dasar_upah"], D("3750000"))
 
+    def test_jkk_tarif_resmi_tetap_pp6_2025(self):
+        # PP 6/2025 Pasal 11 ayat (5) (sudah sejak PP 37/2021 Pasal 11 ayat (5) huruf a): 0,14% dari iuran JKK
+        # dialihkan ke JKP; tarif yang dibayar tetap 0,24-1,74%.
+        self.assertEqual(payroll.JKK_RESMI, [D("0.24"), D("0.54"), D("0.89"), D("1.27"), D("1.74")])
+        self.assertEqual(payroll.JKK_NETO_PP6, [D("0.10"), D("0.40"), D("0.75"), D("1.13"), D("1.60")])
+        for t in payroll.JKK_RESMI:
+            h = payroll.hitung_karyawan(orang(gaji_pokok="10jt", jkk_persen=str(t)), cfg())
+            self.assertFalse(any("JKK" in p for p in h["peringatan"]), t)
+            self.assertEqual(h["iuran"]["jkk"], t * 100000)
+
+    def test_jkk_neto_pp6_diberi_peringatan_khusus(self):
+        h = payroll.hitung_karyawan(orang(gaji_pokok="10jt", jkk_persen="0,10"), cfg())
+        self.assertEqual(h["iuran"]["jkk"], 10000)          # input pengguna tetap dihormati
+        pesan = [p for p in h["peringatan"] if "JKK" in p]
+        self.assertEqual(len(pesan), 1)
+        self.assertIn("PP 6/2025", pesan[0])
+        self.assertIn("PP 37/2021", pesan[0])
+        self.assertIn("0,24%", pesan[0])
+        h = payroll.hitung_karyawan(orang(gaji_pokok="10jt", jkk_persen="1,6"), cfg())
+        self.assertTrue(any("1,74%" in p and "JKP" in p for p in h["peringatan"]))
+        h = payroll.hitung_karyawan(orang(gaji_pokok="10jt", jkk_persen="0,12"), cfg())   # mis. diskon 50%
+        self.assertTrue(any("bukan salah satu tarif PP 44/2015" in p for p in h["peringatan"]))
+
     def test_desember_wajib_data_ytd(self):
         with self.assertRaises(payroll.InputError):
             payroll.hitung_karyawan(orang(gaji_pokok="10jt"), cfg(periode="2026-12"))
