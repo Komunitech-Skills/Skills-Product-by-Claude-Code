@@ -135,3 +135,7 @@ Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (
 ## Run 2026-10-15 ~04:00 UTC (Akun C automation)
 
 Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~101 s, Ninerouter Error 1016). **C32** verifikasi `bot-trading-kripto` + `agen-cs-toko`/`balas-chat-cs` (4/6); G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-15 ~04:30 UTC (Akun C automation)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (~99 s, Ninerouter Error 1016 origin DNS, 7 retry). **C32 selesai 6/6** (`crm-wa` + `broadcast-wa` §5–6); G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
