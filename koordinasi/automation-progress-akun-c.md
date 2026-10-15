@@ -9,7 +9,6 @@ Pemilik memicu agent lewat otomasi cron (~30 menit). Setiap run: baca file ini +
 3. **C25–C33 selesai** — ringkasan PERLU UBAH: `koordinasi/ringkasan-verifikasi-aturan-2026-10-15.md`.
 4. **Akun B** — terapkan usulan ringkasan verifikasi; uji independen + program beta VIP (keputusan 53).
 5. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
-5. **Akun A** — merge **`cursor/iterasi-otomatis-akun-c-8b42`** ke default.
 
 ## Format Telegram (thread 242) — wajib multiline
 
@@ -44,6 +43,8 @@ Pakai `tester_bot_token` + heredoc/`python3 …/pilot/tg.py sendMessage chat_id=
 
 | Waktu (UTC) | Branch | Commit | Skill / tugas | Tanpa→Dengan / hasil | Verdik | TG 242 |
 |---|---|---|---|---|---|---|
+| 2026-10-15 ~12:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (push) | selesai ~12:48 UTC — LANGKAH NOL OK; merge default (fast-forward); getUpdates 242 kosong; smoke router HTTP 530 (~96 s, Error 1016); **C25–C34 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** (pesan 2–10) | — | blocked | tidak |
+| 2026-10-15 ~12:30 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 12:30 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 | — | — | — |
 | 2026-10-15 ~12:00 | `cursor/iterasi-otomatis-akun-c-8b42` | 6276b003 | selesai ~12:18 UTC — LANGKAH NOL OK; merge default mutakhir; getUpdates 242 kosong; smoke router HTTP 530 (~90 s); **C25–C34 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** (pesan 2–10) | — | blocked | tidak |
 | 2026-10-15 ~12:00 | `cursor/iterasi-otomatis-akun-c-8b42` | — | mulai 12:00 UTC — KEY/BOT/TESTER SET; merge default; smoke router → G18 bila 200 | — | — | — |
 | 2026-10-15 ~11:30 | `cursor/iterasi-otomatis-akun-c-8b42` | (push) | selesai ~11:48 UTC — LANGKAH NOL OK; merge default (PR #162); getUpdates 242 kosong; smoke router HTTP 530 (~84 s); **C25–C34 selesai** — tidak ada tugas tanpa-router; **G18 tidak dilanjutkan** (pesan 2–10) | — | blocked | tidak |
