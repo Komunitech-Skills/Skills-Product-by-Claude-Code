@@ -2,12 +2,12 @@
 
 **Dari kejadian panik — pesanan salah kirim, kasir error, komplain viral — jadi laporan lengkap + draf minta maaf, siap kirim.**
 
-*Diuji AI penguji independen: 6,5 → 8,75 dari 10 (akar masalah mengarah ke proses, bukan menyalahkan karyawan, dan batas waktu lapor kebocoran data dihitung tepat).*
+*Diuji AI penguji independen di OpenClaw: 6,5 → 8,75 dari 10 (akar masalah mengarah ke proses, bukan menyalahkan karyawan, dan batas waktu lapor kebocoran data dihitung tepat).*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Susun laporan insiden lengkap (kronologi, dampak berangka, akar masalah, pencegahan) dari cerita berantakan, dalam hitungan menit
+- ✅ Susun laporan insiden lengkap (kronologi, dampak berangka, akar masalah, pencegahan) dari cerita berantakan
 - ✅ Akar masalah dicari pakai 5 Kenapa (bertanya "kenapa?" berulang sampai ketemu sebabnya) yang **mengarah ke proses**, bukan menyalahkan karyawan
 - ✅ Angka dampak diambil dari cerita Anda; yang belum Anda sebutkan ditandai `[isi: ...]`, bukan dikarang
 - ✅ Langsung dapat **draf permintaan maaf ke pelanggan** (sopan, tanpa janji berlebihan) + **ringkasan siap tempel ke WA tim/pemilik**
@@ -38,7 +38,7 @@
 | Siapkan internet cadangan (paket data/modem kedua) khusus untuk mesin QRIS | Pemilik/Supervisor | [isi: tenggat] |
 | Siapkan QRIS statis cetak (dari bank/penyedia lain) sebagai cadangan manual saat sistem utama down | Kasir/Supervisor | [isi: tenggat] |
 ```
-Bagian `[isi: ...]` adalah yang Anda lengkapi sendiri; AI tidak menebaknya. Hasil aslinya juga memuat kronologi, dampak, draf minta maaf, dan ringkasan WA — lihat contoh lengkap di `examples/02-qris-error-jam-sibuk.md`.
+Bagian `[isi: ...]` adalah yang Anda lengkapi sendiri; skill meminta AI tidak menebaknya. Hasil aslinya juga memuat kronologi, dampak, draf minta maaf, dan ringkasan WA — lihat contoh lengkap di `examples/02-qris-error-jam-sibuk.md`.
 
 ## Cara pakai
 Setelah terpasang, cukup ceritakan kejadiannya seperti chat biasa ke AI agent Anda, misalnya:
@@ -68,13 +68,13 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## FAQ
 **1. Apakah skill ini bisa dipakai untuk kebocoran data pelanggan?**
-Bisa (mis. data terkirim ke grup salah). Skill menyebut kewajiban UU 27/2022 Pasal 46 — pemberitahuan tertulis paling lambat 3×24 jam ke pelanggan terdampak dan lembaga — menghitung batas waktunya, dan menyiapkan drafnya. Kalau Anda ingin "diam saja", skill akan mengingatkan dengan sopan bahwa menurut pasal itu pemberitahuan wajib. Ini **bukan nasihat hukum**; untuk kepastian penerapan, konsultasikan ke konsultan hukum atau petugas pelindungan data (DPO) Anda.
+Skill ini bisa dipakai untuk kasus itu, mis. data terkirim ke grup salah. Skill menyebut kewajiban UU 27/2022 Pasal 46 — pemberitahuan tertulis paling lambat 3×24 jam ke pelanggan terdampak dan lembaga — menghitung batas waktunya, dan menyiapkan drafnya. Kalau Anda ingin "diam saja", skill akan mengingatkan dengan sopan bahwa menurut pasal itu pemberitahuan wajib. Ini **bukan nasihat hukum**; untuk kepastian penerapan, konsultasikan ke konsultan hukum atau petugas pelindungan data (DPO) Anda.
 
 **2. Apakah laporan ini bisa dipakai untuk memberi sanksi ke karyawan?**
-Tidak dirancang untuk itu. Skill ini sengaja mengarahkan akar masalah ke proses/sistem, bukan ke individu. Untuk tindak lanjut kedisiplinan, gunakan skill **Surat Peringatan Karyawan** (`surat-peringatan-karyawan`) yang terpisah.
+Skill ini tidak dirancang untuk itu, karena sengaja mengarahkan akar masalah ke proses/sistem, bukan ke individu. Untuk tindak lanjut kedisiplinan, gunakan skill **Surat Peringatan Karyawan** (`surat-peringatan-karyawan`) yang terpisah.
 
 **3. Bagaimana kalau saya belum tahu jumlah kerugian pasti?**
-Tidak masalah — skill akan menandai bagian itu `[isi: jumlah]` daripada menebak-nebak, supaya angka di laporan tidak dikarang.
+Anda tetap bisa memakai skill ini: skill akan menandai bagian itu `[isi: jumlah]` daripada menebak-nebak, supaya angka di laporan tidak dikarang.
 
 ---
 *Terinspirasi dari struktur `incident-postmortem`, `customer-incident-update`, dan `apology-letter` (MIT, pm-claude-skills), ditulis ulang & diperluas untuk konteks UMKM Indonesia. Rincian di `ATTRIBUTION.md`.*
