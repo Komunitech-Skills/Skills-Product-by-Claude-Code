@@ -11,6 +11,7 @@ apa adanya dan minta pengguna menempel teks/tautan, jangan mengarang isinya.
 | Pengumuman bursa (suspensi, UMA, notasi khusus, papan pemantauan khusus) | idx.co.id: pengumuman bursa & profil perusahaan tercatat | Fakta, bukan penilaian. |
 | Status efek syariah | Daftar Efek Syariah (DES) dari OJK (ojk.go.id) | DES diperbarui berkala; sebut tanggal/periode DES yang dipakai. |
 | Izin pihak & pengaduan | ojk.go.id, kontak OJK 157; Satgas PASTI untuk aktivitas keuangan ilegal | Hanya sebagai kanal resmi, bukan tuduhan. |
+| Dasar aturan batas rekomendasi | UU No. 8 Tahun 1995 tentang Pasar Modal Pasal 34–35 (PDF resmi di ojk.go.id); POJK 5/POJK.04/2019 tentang Perilaku yang Dilarang bagi Penasihat Investasi (berlaku 2 Agustus 2019) | Izin & pengawasan pasar modal kini oleh OJK (dulu Bapepam); tulis "OJK (dulu Bapepam)", bukan "Bapepam" saja. Tidak perlu mengutip pasal di setiap balasan. Dicek 2026-10-15. |
 | Berita | Media nasional (mis. Kontan, Bisnis.com, CNBC Indonesia, IDX Channel, Kompas, Investor Daily) | Selalu tautan + tanggal terbit. Utamakan berita yang merujuk dokumen resmi. |
 | Harga saham | Halaman publik idx.co.id atau portal berita/keuangan tanpa login; atau tempelan pengguna | Selalu tulis tanggal & jam harga. Harga intraday/tertunda: sebutkan. |
 

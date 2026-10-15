@@ -192,6 +192,7 @@ Lengkap: `examples/contoh-pembuat-cnth.md`.
   mengirim portofolio pengguna ke mana pun selain penyedia model AI yang dipakai agent.
 
 ## Riwayat versi
+- **1.0.6** (2026-10-15): rujukan dasar aturan (UU 8/1995 Pasal 34–35, POJK 5/POJK.04/2019; izin & pengawasan oleh OJK, dulu Bapepam) di README & `references/sumber-data.md`; perilaku skill tidak berubah.
 - **1.0.5** (2026-10-01): urutan wajib jadwal OpenClaw — level & jam → tunjukkan perintah → tunggu "ya" → baru buat; tidak ada percobaan membuat jadwal sebelum konfirmasi.
 - **1.0.3** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
 - **1.0.2 (2026-09-29):** jadwal OpenClaw tidak lagi mengandalkan `NO_REPLY` (belum terbukti); kode 0
