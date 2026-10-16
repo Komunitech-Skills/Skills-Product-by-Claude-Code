@@ -2,6 +2,13 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.12 (2026-10-16)
+- Perbaikan dari uji di bot Telegram asli (gelombang 18): baris ekspor WhatsApp tanpa tanggal yang isinya hanya teks sistem ("Pesan ini dihapus", "Pesan dihapus", "This message was deleted", "You deleted this message") tidak lagi digabung ke pesan di atasnya. Sebelumnya pesan pelanggan di atasnya ikut terbuang, sehingga satu keluhan hilang dan angka rekap meleset (data uji: 38 masukan, 12 pesan WhatsApp, 4 dari 6 keluhan tanpa balasan; yang benar 39, 13, 5 dari 7, dan keluhan pengiriman 8 = 20,5%).
+- Teks sistem hanya dibuang bila SELURUH isi pesan adalah teks sistem. Pesan pelanggan yang kebetulan memuat kata seperti "pesan ini dihapus" atau "telah ditambahkan" di tengah kalimat tidak lagi ikut terbuang. Baris sistem bertanggal ("Budi: Pesan ini dihapus") dan pemberitahuan enkripsi tetap dibuang seperti dulu.
+- Baris sistem yang disisipkan di antara pesan pelanggan dan balasan admin tidak lagi memutus hitungan "dibalas atau belum".
+- Data contoh `examples/data/chat-wa.txt` memuat baris yang sama, jadi rekapnya ikut berubah: 52 masukan (sebelumnya 51), keluhan pengiriman 10 (sebelumnya 9), keluhan WhatsApp tanpa balasan 5 dari 7. Hasil contoh lama di folder `examples/` ditulis sebelum perbaikan ini.
+- Uji baru di `scripts/uji_olah_masukan.py` (kelas `UjiPesanSistemWA`); angka contoh di `tests/uji_regresi_106.py` dan `tests/uji_regresi_107.py` disesuaikan.
+
 ## Catatan revisi 1.0.11 (2026-10-02)
 - Revisi dari uji ulang OpenClaw: pelanggan di laporan, ringkasan, dan draf balasan disebut dengan inisial atau nomor urut ("Pelanggan A", "pelanggan #3"), bukan nama. Balasan publik (ulasan marketplace, Google Maps, komentar) tidak boleh memuat nama, nomor pesanan, atau detail pengenal, dan tidak boleh ditawarkan versi "pakai nama asli"; placeholder `{panggilan}` hanya untuk balasan pribadi yang dikirim manusia.
 - Tema keamanan ditulis per jenis (jamur, basi/kedaluwarsa, hewan/serangga, dst.), tidak digabung dalam satu label. Daftar periksa dan template balasan diperbarui.

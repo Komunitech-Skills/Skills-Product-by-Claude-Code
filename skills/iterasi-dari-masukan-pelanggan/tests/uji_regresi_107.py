@@ -294,8 +294,9 @@ class UjiContohTidakMemburuk(unittest.TestCase):
         r = om.ringkas(item, tema, dibuang, o, meta)
         kel = {d["id"]: d["keluhan"] for d in r["tema"] if d["keluhan"]}
         # sama dengan 1.0.6 (hanya label "Waktu tunggu / jadwal / antrean" yang berubah)
-        self.assertEqual(r["sentimen"], {"positif": 23, "netral": 7, "negatif": 21})
-        self.assertEqual(kel.get("pengiriman"), 9)
+        # v1.0.12: baris "Pesan ini dihapus" tanpa tanggal di chat-wa.txt tidak lagi membuang keluhan Budi 22/9 (negatif 21->22, pengiriman 9->10)
+        self.assertEqual(r["sentimen"], {"positif": 23, "netral": 7, "negatif": 22})
+        self.assertEqual(kel.get("pengiriman"), 10)
         self.assertEqual(r["perlu_dibaca"]["tidak_terklasifikasi"], 4)
         self.assertGreaterEqual(tuple(int(x) for x in r["versi_script"].split(".")), (1, 0, 7))
 

@@ -850,5 +850,88 @@ class UjiRingkasanSalin(unittest.TestCase):
         self.assertEqual(r["respons_staf"]["WA"]["keluhan"], 5)
 
 
+class UjiPesanSistemWA(unittest.TestCase):
+    """v1.0.12: baris tanpa tanggal yang seluruhnya teks sistem ("Pesan ini dihapus") bukan lanjutan pesan sebelumnya,
+    dan pola teks sistem hanya cocok bila SELURUH isi pesan adalah teks sistem."""
+    CHAT = ("[20/09/2026 12.00.00] Dewi: Sambalnya mantap, gurih dan segar\n"
+            "[20/09/2026 12.10.00] Admin: Terima kasih kak\n"
+            "[22/09/2026 08.20.00] Budi: Kurir telat lagi, nunggu lama. Tolong dibenahi\n"
+            "Pesan ini dihapus\n"
+            "[24/09/2026 14.00.00] Sari: Makasih kak, kue boxnya rapi dan enak\n")
+
+    def jalan(self, chat, staf=("admin",)):
+        with tempfile.TemporaryDirectory() as d:
+            p = tulis(d, "chat.txt", chat)
+            o = Opsi()
+            o.staf_list = list(staf)
+            item, tema, dibuang, meta = om.olah([p + "=WA"], o, None)
+            return item, om.ringkas(item, tema, dibuang, o, meta), dibuang
+
+    def test_baris_sistem_tanpa_tanggal_tidak_digabung(self):
+        for teks_sistem in ("Pesan ini dihapus", "This message was deleted", "You deleted this message", "Pesan dihapus",
+                            "\U0001F6AB Pesan ini dihapus", "<Pesan ini dihapus>", "Pesan ini dihapus oleh admin"):
+            pesan, hitung = om.baca_wa("[22/09/2026 08.20.00] Budi: Kurir telat lagi\n%s\n" % teks_sistem)
+            self.assertEqual(len(pesan), 2, teks_sistem)
+            self.assertEqual(pesan[0][2], "Kurir telat lagi", teks_sistem)
+            self.assertIsNone(pesan[1][1], teks_sistem)   # baris sistem tersendiri
+            self.assertEqual(hitung["Budi"], 1, teks_sistem)
+
+    def test_keluhan_diikuti_pesan_dihapus_tetap_terhitung(self):
+        item, r, dibuang = self.jalan(self.CHAT)
+        self.assertEqual(len(item), 3)
+        self.assertIn("Kurir telat lagi", " ".join(i["teks"] for i in item))
+        self.assertEqual(dibuang["pesan sistem/media"], 1)   # baris sistem murni tetap dibuang
+        self.assertEqual(dibuang["pesan staf"], 1)
+        v = r["respons_staf"]["WA"]
+        self.assertEqual((v["keluhan"], v["keluhan_tanpa_balasan"], v["tanpa_balasan"]), (1, 1, 2))
+        pengiriman = next(d for d in r["tema"] if d["id"] == "pengiriman")
+        self.assertEqual(pengiriman["keluhan"], 1)
+
+    def test_sistem_murni_bertanggal_tetap_dibuang(self):
+        chat = ("[22/09/2026 08.20.00] Budi: Kurir telat lagi, nunggu lama\n"
+                "[22/09/2026 08.25.00] Budi: Pesan ini dihapus\n"
+                "[22/09/2026 08.26.00] Sari: This message was deleted\n"
+                "[22/09/2026 08.27.00] Dewi: You deleted this message.\n"
+                "[22/09/2026 08.28.00] Sari: Makasih kak, enak\n")
+        item, r, dibuang = self.jalan(chat)
+        self.assertEqual(len(item), 2)
+        self.assertEqual(dibuang["pesan sistem/media"], 3)
+
+    def test_kata_sistem_di_tengah_pesan_tidak_membuang_pesan(self):
+        for isi in ("Chat saya kemarin tertulis pesan ini dihapus padahal belum dibalas, kurir telat lagi",
+                    "Pesanan saya telah ditambahkan ke keranjang tapi kurir telat lagi dan nunggu lama banget di depan rumah",
+                    "Kemasan bocor, ini terenkripsi atau tidak datanya? Kurir telat lagi"):
+            item, r, dibuang = self.jalan("[21/09/2026 08.00.00] Sari: Kuenya enak, rapi\n[22/09/2026 08.20.00] Budi: %s\n"
+                                          "[23/09/2026 09.00.00] Dewi: Pengiriman cepat, ramah\n" % isi)
+            self.assertEqual(len(item), 3, isi)
+            self.assertEqual(dibuang.get("pesan sistem/media", 0), 0, isi)
+
+    def test_baris_lanjutan_biasa_tetap_digabung(self):
+        pesan, _ = om.baca_wa("[22/09/2026 08.20.00] Budi: Kurir telat lagi\ndan nasinya dingin\nPesan ini dihapus\ntolong dibenahi\n")
+        self.assertEqual(len(pesan), 2)
+        self.assertEqual(pesan[0][2], "Kurir telat lagi dan nasinya dingin tolong dibenahi")   # lanjutan biasa tetap ikut pesan bertanggal terakhir
+        self.assertIsNone(pesan[1][1])
+
+    def test_baris_sistem_di_antara_pesan_dan_balasan_tidak_memutus_balasan(self):
+        chat = ("[21/09/2026 08.00.00] Sari: Kuenya enak, rapi\n"
+                "[22/09/2026 08.20.00] Budi: Kurir telat lagi, nunggu lama\n"
+                "Pesan ini dihapus\n"
+                "[22/09/2026 08.30.00] Admin: Maaf ya Pak, segera kami cek\n"
+                "[23/09/2026 09.00.00] Dewi: Pengiriman cepat, ramah\n")
+        item, r, dibuang = self.jalan(chat)
+        v = r["respons_staf"]["WA"]
+        self.assertEqual((v["keluhan"], v["keluhan_tanpa_balasan"]), (1, 0))
+
+    def test_enkripsi_tanpa_pengirim_tetap_dibuang(self):
+        chat = ("02/09/2026 09.30 - Pesan dan panggilan terenkripsi secara end-to-end. Tidak ada pihak di luar chat ini yang dapat membacanya.\n"
+                "02/09/2026 09.30 - Messages and calls are end-to-end encrypted. No one outside of this chat can read them.\n"
+                "[03/09/2026 10.00.00] Sari: Rasanya enak sekali\n"
+                "[03/09/2026 10.05.00] Dewi: Kemasannya rapi\n"
+                "[03/09/2026 10.10.00] Budi: Kurir ramah\n")
+        item, r, dibuang = self.jalan(chat)
+        self.assertEqual(len(item), 3)
+        self.assertEqual(dibuang["pesan sistem/media"], 2)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
