@@ -86,4 +86,4 @@ Sebagian metode skor diadaptasi dari proyek open-source claude-ads (MIT). Tidak 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7** (16 Okt 2026): data sebagian kini langsung mendapat audit pendahuluan (titik impas, verdik, 3 tindakan hari ini, skor sementara) sebelum pertanyaan lanjutan. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
