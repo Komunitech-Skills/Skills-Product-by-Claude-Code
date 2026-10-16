@@ -64,6 +64,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Kak, tolong audit SEO halaman produk toko online saya dong. Filenya halaman-produk.html di folder kerja. Kata kunci utamanya 'keripik pedas Bandung'. Kasih perbaikan yang bisa langsung saya tempel ya". Tanpa skill skor **5** → dengan skill skor **8,5** (selisih +3,5, lulus acuan kami). Dengan skill, bot memberi 8 perbaikan yang masing-masing diberi label Dampak dan Kemudahan, menghitung panjang judul dengan pasti (118 → 59 karakter, deskripsi 144 karakter), memberi tanda [isi: ...] untuk link checkout yang belum diketahui, dan terus terang bahwa kecepatan belum diukur; tanpa skill temuannya sama dan noindex juga didahulukan, tetapi sisa daftarnya tanpa label prioritas, panjang judul hanya ditulis "110+", dan ada salah hitung "Bandung" 3x (padahal 2x). Salah angka yang ditemukan penilai: TANPA: menyebut judul mengulang "Bandung" 3x, padahal di <title> kata itu muncul 2x (dihitung ulang). Catatan jujur: Tanpa skill pun AI sudah menemukan cacat-cacat utama halaman ini; kelebihan versi berskill ada pada urutan prioritas, hitungan karakter yang pasti, dan keterusterangan soal batasan. Kecepatan halaman tidak diukur (perlu dicek sendiri di PageSpeed), dan judul baru diberikan sebagai teks biasa, bukan tag yang langsung bisa ditempel.
+
 ## FAQ
 **Apakah ini menjamin toko saya jadi peringkat 1 di Google?**
 Tidak, dan tidak ada yang bisa menjamin itu — peringkat Google dipengaruhi banyak faktor di luar satu halaman (persaingan, waktu, faktor lain). Skill ini fokus membenahi hal-hal dasar yang benar-benar dalam kendali Anda dan bisa dicek, dengan jujur menyebutkan kalau ada data yang tidak tersedia.

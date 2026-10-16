@@ -87,6 +87,10 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Kak, tolong bantu baca file Penjualan 2026.xlsx, filenya ada di folder kerja. Saya mau tahu: 1) kategori apa yang paling laku, 2) tren penjualan per bulannya gimana, 3) penjualan Q2 dibanding Q3 naik atau turun? Kasih angkanya…". Tanpa skill skor **7,3** → dengan skill skor **8,5** (selisih +1,2, belum lulus acuan kami: selisih 1,2 di bawah 1,5). Hanya versi dengan skill yang memberi omzet tiap bulan sampai rupiah beserta persen naik-turun per bulan (puncak April Rp34.340.000, terendah Juli Rp17.476.000 = -45,6 %) dan menunjuk persis sel Total yang kosong (Q2 baris 68, Q3 baris 79 & 98) beserta cara memperbaikinya. Tanpa skill, angka bulanan hanya dibulatkan ke juta dan trennya keliru disebut "naik terus dari Jan sampai April", padahal Februari turun 25 %. Penurunan Q2→Q3 -28,8 % didapat oleh kedua sisi. Catatan jujur: Transaksi yang totalnya masih berupa rumus belum tersimpan tidak ikut dihitung (di uji ini 3 transaksi, ±Rp409.000), jadi file perlu dibuka dan disimpan sekali di Excel agar angkanya lengkap. Jawaban juga belum menjelaskan kenapa baris TOTAL bawaan file berbeda dari hasil hitungan, dan tidak menyebut adanya retur.
+
 ## FAQ
 **Apakah data saya dikirim ke internet?**
 Tidak oleh skill ini. Perhitungan berjalan di komputer Anda lewat skrip Python. Bila file berisi

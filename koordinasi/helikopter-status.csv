@@ -1,6 +1,6 @@
 skill,jenis,keterangan,status,tanggal_selesai,bukti
-analisis-excel,telegram,"analisis-excel (1.0.18) masih terbuka untuk Telegram: topik G23 (1578–1583) dan 6 pesan sudah disiapkan, tetapi belum dikirim ke bot asli karena router HTTP 530",buka,,
-analisis-excel,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+analisis-excel,telegram,"analisis-excel (1.0.18) masih terbuka untuk Telegram: topik G23 (1578–1583) dan 6 pesan sudah disiapkan, tetapi belum dikirim ke bot asli karena router HTTP 530",selesai,2026-10-16,"gelombang 23 2026-10-16: BELUM 7,3→8,5 (v1.0.18)"
+analisis-excel,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 23 2026-10-16: BELUM 7,3→8,5 (v1.0.18)"
 analisis-rasio-keuangan-usaha,telegram,"Skill analisis-rasio-keuangan-usaha (beta v1.0.5, uji sebelum/sesudah 7 ke 9) masih punya satu item terbuka: tampil di bot Telegram asli pada G22. Pesan G22 sud",selesai,2026-10-16,"gelombang 22 2026-10-16: LOLOS 6,5→8 (v1.0.5)"
 analisis-rasio-keuangan-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 22 2026-10-16: LOLOS 6,5→8 (v1.0.5)"
 arsip-nota,telegram,"arsip-nota (beta, v1.0.7, skor 8, bukan arsip) masih menunggu G18 di bot Telegram asli: hanya 1 dari 10 pesan G18 yang terkirim (milik rencana-marketing-usaha, ",selesai,2026-10-16,gelombang 18 2026-10-16: BELUM 7→8 (v1.0.7)
@@ -9,8 +9,8 @@ arus-kas-13minggu,uji-ulang,Revisi 1.0.5 arus-kas-13minggu sudah ada tetapi belu
 arus-kas-13minggu,uji-ulang,"uji ulang 1.0.5 (skenario 5 habis waktu, opsi piutang, pemisah CSV; beta-tunda)",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,75→8,4 (3 skenario ulang, cacat habis waktu/piutang/CSV hilang); keluar beta-tunda"
 audit-akun-iklan,telegram,"Gelombang Telegram 19 untuk audit-akun-iklan masih terbuka: topik 1534–1543, msgs-g19.json dan salinan skill ke home bot sudah disiapkan, tetapi pesan belum dik",selesai,2026-10-16,"gelombang 19 2026-10-16: BELUM 7,5→6 (v1.0.6)"
 audit-akun-iklan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 19 2026-10-16: BELUM 7,5→6 (v1.0.6)"
-audit-seo-toko-online,telegram,"audit-seo-toko-online masih terbuka: G23 (topik 1580/1581, 2 dari 6 pesan gelombang) baru disiapkan dan belum dikirim ke bot Telegram asli karena router HTTP 53",buka,,
-audit-seo-toko-online,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+audit-seo-toko-online,telegram,"audit-seo-toko-online masih terbuka: G23 (topik 1580/1581, 2 dari 6 pesan gelombang) baru disiapkan dan belum dikirim ke bot Telegram asli karena router HTTP 53",selesai,2026-10-16,"gelombang 23 2026-10-16: LOLOS 5→8,5 (v1.0.6)"
+audit-seo-toko-online,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 23 2026-10-16: LOLOS 5→8,5 (v1.0.6)"
 balas-chat-cs,telegram,"balas-chat-cs (v1.0.5, beta, lulus uji internal 6,4→8,8) belum pernah tampil di bot Telegram asli. G20 baru disiapkan (topik 1545–1554, pesan, salinan skill) da",selesai,2026-10-16,"gelombang 20 2026-10-16: LOLOS 5→8,5 (v1.0.5)"
 balas-chat-cs,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 20 2026-10-16: LOLOS 5→8,5 (v1.0.5)"
 balas-ulasan-pelanggan,uji-ulang,Uji sebelum/sesudah per skill oleh penguji independen untuk balas-ulasan-pelanggan v1.0.5 belum dilakukan: berkasnya masih salinan uji solusi VIP (v1.0.3-1.0.4),selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (5,5→8,5 v1.0.4, promosi), commit 998146a; keputusan otomatis 89"
@@ -27,8 +27,8 @@ copy-landing-page,telegram,"copy-landing-page (1.0.7, beta) belum pernah tampil 
 crm-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",selesai,2026-10-15,revisi v1.0.11 commit 205c07a (verifikasi independen lolos)
 cv-lamaran-ats,telegram,"Item masih terbuka: G19 (cv-lamaran-ats) baru siap secara persiapan (topik 1534-1543, pesan, salinan skill) tetapi belum pernah dikirim ke bot Telegram asli kar",selesai,2026-10-16,gelombang 19 2026-10-16: BELUM 7→8 (v1.1.3)
 cv-lamaran-ats,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,gelombang 19 2026-10-16: BELUM 7→8 (v1.1.3)
-dasbor-lokal,telegram,"Skill dasbor-lokal (G23, topik 1578–1583, 6 pesan bersama audit-seo-toko-online dan analisis-excel) masih terbuka: pra-cek uji-tg.sh belum dijalankan dan pesan ",buka,,
-dasbor-lokal,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+dasbor-lokal,telegram,"Skill dasbor-lokal (G23, topik 1578–1583, 6 pesan bersama audit-seo-toko-online dan analisis-excel) masih terbuka: pra-cek uji-tg.sh belum dijalankan dan pesan ",selesai,2026-10-16,"gelombang 23 2026-10-16: BELUM 8,5→7,5 (v1.0.4)"
+dasbor-lokal,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 23 2026-10-16: BELUM 8,5→7,5 (v1.0.4)"
 ekstrak-nota-faktur,telegram,Pesan Telegram G18 untuk ekstrak-nota-faktur (topik 1486/1487) belum dikirim dan pra-cek uji-tg.sh belum dijalankan; gelombang G18 terhenti di pesan 1 dari 10 k,selesai,2026-10-16,"gelombang 18 2026-10-16: BELUM 4,5→7,5 (v1.0.4)"
 ekstrak-nota-faktur,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 18 2026-10-16: BELUM 4,5→7,5 (v1.0.4)"
 follow-up-prospek,telegram,"Skill follow-up-prospek (beta, v1.0.4, skor 8, selisih +1,75) masih terbuka: pesan G22 belum pernah dikirim ke bot Telegram asli karena router masih HTTP 530, p",selesai,2026-10-16,"gelombang 22 2026-10-16: LOLOS 6,5→8,5 (v1.0.4)"

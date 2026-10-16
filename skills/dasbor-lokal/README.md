@@ -83,6 +83,10 @@ Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+
 - Sesudah itu sudah diuji oleh penguji independen (26 Sep 2026) dan di OpenClaw (uji otomatis oleh agen AI, 1 Okt 2026); hasilnya di atas.
 - **Belum** diuji di Codex dan Cursor, belum diuji manusia di komputer pembeli sungguhan, dan belum diuji dengan data usaha nyata dalam jumlah besar.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Buka dasbor toko saya dong, sekalian tampilkan stok yang menipis dan saldo kas per akun. Datanya ada di folder KomunitechData di folder home (stok.db, kasir/kasir.db, kas/kas.db)". Tanpa skill skor **8,5** → dengan skill skor **7,5** (selisih -1, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot hanya menambahkan lokasi rak (A1, B1), daftar data yang ditemukan, dan keterangan bahwa data cuma dibaca tanpa diubah. Angka stok dan saldo sama persis dengan versi tanpa skill, padahal versi tanpa skill sudah memberi total kas Rp2.123.000 dan jumlah kekurangan stok. Catatan jujur: Untuk pertanyaan sederhana seperti stok menipis dan saldo kas, asisten tanpa skill pun sudah menjawab sama tepatnya. Balasan dengan skill masih memakai istilah teknis (nama database, "read-only", Datasette) dan belum menampilkan total kas maupun ringkasan penjualan dari kasir.
+
 ## FAQ
 **Apakah skill ini bisa mengubah data toko saya secara tidak sengaja?**
 Tidak seharusnya. Skill ini membuka database dalam mode **baca-saja** (`?mode=ro` di Python, `--immutable` di Datasette), jadi perintah selain "lihat data" (SELECT) akan ditolak oleh SQLite dan Datasette sendiri. Perubahan data tetap hanya lewat skill alat masing-masing (kasir, stok, dan seterusnya), bukan lewat dasbor.
