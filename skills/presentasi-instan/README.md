@@ -89,4 +89,6 @@ yang perlu Anda lengkapi sendiri (seperti data usaha) akan ditandai jelas.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+- **1.1.6 (16 Okt 2026):** di Telegram/WhatsApp, file presentasi kini ikut dikirim sebagai dokumen, dan balasan memakai bahasa sehari-hari (tanpa istilah teknis atau nama skill internal).
