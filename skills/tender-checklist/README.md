@@ -68,11 +68,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 1 Okt 2026 (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`), skor 1–10: tanpa skill **7,25** → dengan skill **9,0** (LULUS). Contoh tender meubel (HPS Rp248,5 juta): dengan skill total penawaran **Rp234.487.500** (PPN efektif 11%), jaminan pelaksanaan dan jadwal hari kerja dihitung skrip; tanpa skill memberi dua skenario PPN (11% dan 12%), padahal skenario 12% keliru untuk barang non-mewah.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli khusus skill ini. Codex dan Cursor belum uji platform asli. PERLU REVIEW: klarifikasi penawaran di bawah 80% HPS, pengecualian pengalaman usaha kecil baru, dan sisa kemampuan paket (dari Peraturan LKPP 12/2021, sumber sekunder) — cocokkan dengan dokumen pemilihan paket Anda.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Sudah diuji di bot Telegram asli pada 16 Oktober 2026 dengan versi 1.0.8 (belum lulus acuan kami; lihat bagian berikut). Codex dan Cursor belum uji platform asli. PERLU REVIEW: klarifikasi penawaran di bawah 80% HPS, pengecualian pengalaman usaha kecil baru, dan sisa kemampuan paket (dari Peraturan LKPP 12/2021, sumber sekunder) — cocokkan dengan dokumen pemilihan paket Anda.
 
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Saya punya CV (usaha kecil di NIB, KBLI 47612 & 46900, sudah PKP). Mau ikut tender Pengadaan ATK Dinas Pendidikan Kabupaten, HPS Rp185 juta, pagu Rp190 juta, pascakualifikasi. Pengumuman 28/9, penjelasan 2/10, batas unggah 14…". Tanpa skill skor **5** → dengan skill skor **7,5** (selisih +2,5, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot langsung memberi vonis "IKUT DENGAN SYARAT" dan memakai batas usaha kecil yang berlaku (Rp15 miliar; tanpa skill masih batas lama Rp2,5 miliar). Bot juga menulis terbilang total Rp44.142.480 dan menyebut persis 23,86% HPS, di bawah ambang 80% yang memicu klarifikasi kewajaran harga, tetapi daftar dokumen yang ditanyakan justru tidak muncul. Salah angka yang ditemukan penilai: TANPA: menyebut batas paket untuk Usaha Kecil/Koperasi "s.d. Rp2,5 M". Itu angka lama Perpres 16/2018 sebelum diubah; batas yang berlaku sejak Perpres 12/2021 (dipertahankan Perpres 46/2025) adalah Rp15 miliar. Kesimpulan "layak" tetap benar, tetapi angka aturannya salah. Sisi DENGAN tidak punya salah angka/fakta. Hasil hitung ulang Python: 150×52.500 = 7.875.000; 24×1.250.000 = 30.000.000; 500×3.750 = 1.875.000; 1,5×12.000 = 18.000; DPP 39.768.000; PPN 12%×11/12×DPP = 4.374.480 (bulat ke bawah); total 44.142.480 = 23,86% HPS (ambang 80% = 148.000.000); terbilang benar. Batas unggah 14 Okt 15.00 sudah lewat; balasan dikirim 17 Okt sekitar 01.00 WIB (Sabtu), jadi kedua sisi benar menyebutnya sudah lewat.. Catatan jujur: Di bot Telegram, daftar dokumen penawaran bisa tidak muncul walau ditanyakan, sehingga pengguna perlu memintanya lagi. Balasan juga belum menyertakan dasar aturan, penafian, dan pengingat bahwa bendahara memotong PPN/PPh 22 saat membayar.
+
+**Perbaikan versi 1.0.9:** jawaban di chat kini wajib utuh dalam satu balasan dengan urutan tetap — tenggat & jadwal, kelayakan, cek harga (termasuk persen HPS, ambang 80%, jaminan penawaran dan jaminan pelaksanaan yang ditulis terpisah, serta pengingat potongan PPN/PPh 22 oleh bendahara), daftar dokumen (tetap diberikan walau batas unggah sudah lewat), awas gugur, lalu dasar aturan & penafian. Versi ini belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah dengan skill ini saya otomatis menang tender?**
@@ -86,4 +88,4 @@ Skill ini dirancang menolak permintaan persekongkolan, pinjam bendera, dokumen p
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

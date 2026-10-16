@@ -25,10 +25,10 @@ Disusun dari pola evaluasi dokumen pemilihan PBJ (Perpres 16/2018 jo. 12/2021 jo
 ## Harga
 | # | Kesalahan | Pencegahan |
 |---|---|---|
-| 12 | Total penawaran **melebihi HPS** | `cek_penawaran.py --hps` |
+| 12 | Total penawaran **melebihi HPS** | Bandingkan total (termasuk PPN) dengan HPS sebelum unggah |
 | 13 | Penawaran < 80% HPS lalu **tidak bisa membuktikan kewajaran** saat klarifikasi (pedoman Peraturan LKPP 12/2021 — PERLU REVIEW), atau tidak sanggup menyerahkan jaminan pelaksanaan 5% dari HPS (Pasal 33 ayat (3) huruf b) | Siapkan bukti harga pemasok/upah/alat |
-| 14 | Salah hitung volume × harga / volume diubah dari dokumen (untuk kontrak harga satuan bisa dikoreksi aritmatik, tapi berisiko melewati HPS) | Hitung dengan script; jangan ubah volume |
-| 15 | Angka dan **terbilang** berbeda | Salin terbilang dari script |
+| 14 | Salah hitung volume × harga / volume diubah dari dokumen (untuk kontrak harga satuan bisa dikoreksi aritmatik, tapi berisiko melewati HPS) | Hitung ulang volume × harga tiap baris; jangan ubah volume |
+| 15 | Angka dan **terbilang** berbeda | Salin terbilang dari hasil hitung |
 | 16 | Mencantumkan PPN padahal **bukan PKP** (atau sebaliknya lupa PPN padahal PKP) | Cek status PKP di Coretax |
 
 ## Teknis unggah (SPSE)

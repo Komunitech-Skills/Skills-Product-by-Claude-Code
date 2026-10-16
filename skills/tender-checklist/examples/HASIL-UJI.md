@@ -173,3 +173,8 @@ Disalin ke scratchpad `uji-kecil/`, dijalankan dari sana. Tes bawaan: **60/60 lu
 1. Pagu < HPS atau total > pagu (mis. HPS 15 M, pagu 10 M, total 12 M): selain "melebihi pagu", muncul "5% dari nilai kontrak … (penawaran 80%-100% pagu anggaran)" padahal 120% pagu — teks keliru, angka tidak dipakai (penawaran di atas pagu tidak bisa menang). Sarankan pesan jaminan pelaksanaan dilewati bila total > pagu, dan peringatan bila pagu < HPS.
 
 ### Skor uji ulang v1.0.5: **9/10** — perubahan sesuai naskah resmi; satu temuan teks rendah.
+
+## Uji bot Telegram asli v1.0.8 (16 Okt 2026) → revisi v1.0.9 (catatan pembuat revisi, belum diuji ulang)
+- Hasil bot: tanpa skill 5 → dengan skill **7,5** (BELUM; ambang 8). Angka benar semua (DPP Rp39.768.000, PPN Rp4.374.480, total Rp44.142.480, 23,86% HPS), tetapi checklist dokumen yang ditanyakan tidak muncul (batas unggah sudah lewat), tanpa dasar aturan/penafian, tanpa pengingat PPN/PPh 22 bendahara, kalimat jaminan penawaran/pelaksanaan tergabung, dan ada kata proses "hitungan script".
+- Perbaikan v1.0.9: urutan jawaban tetap + daftar cek sebelum kirim (SKILL.md Format Output), checklist dokumen wajib walau tenggat lewat + checklist minimal di SKILL.md, baris Dasar aturan baku, jaminan penawaran vs pelaksanaan dua butir terpisah, bagian "Pengingat" baru di hasil hitung (jaminan penawaran & potongan bendahara; tampilan saja), kata "script" dihapus dari teks hasil hitung/jadwal/rujukan.
+- Angka & kode keluar identik dengan v1.0.8 pada 98 kombinasi (14 CSV × 7 pilihan, `--json`). Tes bawaan: **66/66 OK**. Perlu uji ulang di bot Telegram (pra-cek konteks Telegram) sebelum dinyatakan lulus.

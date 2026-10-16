@@ -844,5 +844,77 @@ class UjiV105Terintegrasi(Dasar):
         kode, out, _ = self.cli("harga", p, "--hps", "11 M", "--pagu", "14 M", "--jenis", "terintegrasi")
         self.assertIn("Rp140.000.000 s.d. Rp420.000.000", out)
 
+
+class UjiV109Tampilan(Dasar):
+    """v1.0.9: teks untuk pengguna tanpa kata proses; jaminan penawaran dipisah dari jaminan pelaksanaan;
+    pengingat potongan bendahara (PPN & PPh) saat dibayar. Angka hitungan TIDAK berubah."""
+    ATK = ("No;Uraian;Volume;Satuan;Harga Satuan;Jumlah\n"
+           "1;Kertas HVS A4 70 gsm;150;rim;Rp52.500;Rp7.875.000\n"
+           "2;Tinta printer original hitam;24;botol;Rp1.250.000,00;Rp30.000.000\n"
+           "3;Map snelhecter plastik;500;buah;Rp3.750;Rp1.875.000\n"
+           "4;Paper clip no.3;1,5;lusin;12.000;18.000\n")
+
+    def h(self, isi=None, **kw):
+        return C.hitung(self.tulis(isi or self.ATK), **kw)
+
+    def test_angka_kasus_atk_tetap(self):
+        # manual: 7.875.000 + 30.000.000 + 1.875.000 + 18.000 = 39.768.000; PPN floor(39.768.000 x 11%) = 4.374.480
+        h = self.h(ppn="nonmewah", hps=185_000_000, pagu=190_000_000, jenis="barang")
+        self.assertEqual((h["subtotal"], h["ppn"], h["total"]), (39_768_000, 4_374_480, 44_142_480))
+        self.assertEqual((h["persen_hps"], h["batas_80_hps"]), (Decimal("23.86"), 148_000_000))
+        self.assertEqual(h["terbilang"], "Empat Puluh Empat Juta Seratus Empat Puluh Dua Ribu Empat Ratus "
+                                         "Delapan Puluh Rupiah")
+        self.assertNotIn("pengingat", h)   # pengingat hanya di tampilan teks, bukan di hasil --json
+
+    def test_tanpa_kata_script(self):
+        salah = self.ATK.replace("Rp30.000.000", "Rp3.000.000") + ";Total;;;;Rp39.768.000\n"
+        for isi in (self.ATK, salah):
+            out = C.tampil_harga(self.h(isi, ppn="nonmewah", hps=185_000_000, jenis="barang"))
+            self.assertNotIn("script", out.lower())
+            self.assertIn("RINCIAN PENAWARAN HARGA (hasil hitung)", out)
+        j = C.tampil_jadwal(C.jadwal(datetime(2026, 10, 14, 15, 0), date(2026, 10, 1)))
+        self.assertNotIn("cek_penawaran", j)
+
+    def test_jaminan_penawaran_dipisah(self):
+        out = C.tampil_harga(self.h(ppn="nonmewah", hps=185_000_000, jenis="barang"))
+        self.assertIn("Jaminan penawaran: TIDAK disyaratkan Perpres untuk paket ini (HPS s.d. Rp10 miliar", out)
+        self.assertIn("BERBEDA dengan jaminan pelaksanaan", out)
+        self.assertIn("jaminan pelaksanaan umumnya tidak diberlakukan", out)   # pesan lama tetap ada
+        # HPS > Rp10 M sudah dibahas di Info -> tidak ada baris pengingat ganda
+        out2 = C.tampil_harga(self.h("Uraian;Volume;Satuan;Harga Satuan\nPaket;1;ls;10.500.000.000\n",
+                                     hps=11_000_000_000, jenis="konstruksi"))
+        self.assertIn("WAJIB JAMINAN PENAWARAN", out2)
+        self.assertNotIn("Jaminan penawaran: ", out2)
+        # tanpa HPS: barang -> tidak disyaratkan; konstruksi -> wajib bila HPS > Rp10 M
+        self.assertIn("TIDAK disyaratkan Perpres untuk pengadaan barang", C.tampil_harga(self.h(jenis="barang")))
+        self.assertIn("wajib bila HPS di atas Rp10 miliar", C.tampil_harga(self.h(jenis="konstruksi")))
+
+    def test_pengingat_potongan_bendahara(self):
+        out = C.tampil_harga(self.h(ppn="nonmewah", hps=185_000_000, jenis="barang"))
+        self.assertIn("memungut PPN (Rp4.374.480)", out)
+        self.assertIn("PPh Pasal 22 sebesar 1,5%", out)
+        self.assertIn("tetap TERMASUK PPN", out)
+        bukan_pkp = C.tampil_harga(self.h(hps=185_000_000, jenis="barang"))
+        self.assertIn("tanpa PPN (bukan PKP)", bukan_pkp)
+        self.assertIn("PPh Pasal 22", bukan_pkp)
+        self.assertIn("PPh final jasa konstruksi (PP 9/2022",
+                      C.tampil_harga(self.h(ppn="nonmewah", hps=185_000_000, jenis="konstruksi")))
+        self.assertIn("umumnya PPh Pasal 23", C.tampil_harga(self.h(ppn="nonmewah", jenis="jasa-lainnya")))
+
+    def test_kode_keluar_tidak_berubah(self):
+        p = self.tulis(self.ATK)
+        self.assertEqual(self.cli("harga", p, "--ppn", "nonmewah", "--hps", "185jt", "--jenis", "barang")[0], 1)
+        self.assertEqual(self.cli("harga", p, "--ppn", "nonmewah", "--hps", "50jt", "--jenis", "barang")[0], 0)
+
+    def test_skill_md_format_chat(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as fh:
+            teks = fh.read()
+        for wajib in ("WAJIB selalu ada di jawaban utama", "walau batas unggah sudah lewat",
+                      "Perpres 16/2018 sebagaimana diubah Perpres 12/2021 dan Perpres 46/2025",
+                      "Bukan nasihat hukum/pajak", "PPh Pasal 22", "DUA butir terpisah",
+                      "Kanal chat (Telegram/WhatsApp)", "hasil cek lengkap"):
+            self.assertIn(wajib, teks)
+        self.assertLess(teks.count("\n"), 300)
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
