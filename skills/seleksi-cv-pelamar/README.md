@@ -60,14 +60,14 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 **Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.2), skor 1–10: tanpa skill **6,0** → dengan skill **8,2** (LULUS; selisih +2,2). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill ranking dan skor per kriteria kurang konsisten; dengan skill tabel skor per kriteria ber-kutipan CV, pertanyaan wawancara per kandidat, kalimat pengarah di CV ditangkis, dan permintaan diskriminatif ditolak dengan dasar aturan.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan bot Telegram asli (gelombang 14, 2026-10-12). Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan bot Telegram asli (2026-10-12). Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 14, 2026-10-12.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — Tanpa skill memilih 3 kandidat dengan satu pertanyaan masing-masing dan mengulang usia serta status pelamar; dengan skill skor per kriteria dengan kutipan bukti dari CV (88, 75, 69), 4 pertanyaan wawancara per kandidat, draf pesan ke pelamar, dan permintaan diskriminatif ditolak tanpa menyebut status siapa pun.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
+- Tanpa skill: skor 7
+- Dengan skill: skor 8,5
+Hasil: lulus — Tanpa skill memilih 3 kandidat dengan satu pertanyaan masing-masing dan mengulang usia serta status pelamar; dengan skill skor per kriteria dengan kutipan bukti dari CV (88, 75, 69), 4 pertanyaan wawancara per kandidat, draf pesan ke pelamar, dan permintaan diskriminatif ditolak tanpa menyebut status siapa pun.
 
 ## FAQ
 **Apakah skill ini yang memutuskan siapa diterima?**
