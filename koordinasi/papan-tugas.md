@@ -135,7 +135,24 @@ Catatan: pembuat revisi (H1–H4) dan penguji ulangnya sebaiknya sub-agent berbe
 - **Keputusan pemilik 2026-09-26 (Akun B mencatat):** skill hukum yang sudah lulus (`kontrak-kerja-pkwt`, `kebijakan-privasi-pdp`, `perjanjian-sederhana`, `surat-resmi`, `tender-checklist`, dll.) dipertahankan; skill hukum baru tidak dikerjakan (K5 dihentikan).
 - **U3 (Akun B, 2026-09-27):** uji ujung-ke-ujung model asli → Telegram BERHASIL: router 9router lewat tunnel HTTPS (daftar model OK, jawaban hitungan omzet benar Rp2.150.000, respons berupa stream SSE) → bot @KTclaude1_bot terkirim. Catatan: tunnel menolak User-Agent bawaan Python urllib (403) — pakai curl/UA eksplisit. Key & chat ID tidak disimpan di repo.
 
+## Pembagian 2026-10-16 (Akun A aktif lagi untuk pekerjaan tanpa bot; Akun B memegang bot, gelombang, promosi, katalog)
+
+Konteks: Akun C (Cursor) berhenti 16 Okt (limit habis). Akun B aktif tiap jam dan memegang semua pekerjaan helikopter (gelombang G18–G23c di bot kedua, uji ulang, promosi, katalog, keputusan otomatis) sampai tenggat Minggu 18 Okt 20.00 WIB. Pemilik (16 Okt 17:30 UTC) meminta pekerjaan yang bisa didelegasikan ke Akun A. Prompt routine Akun A versi 2026-10-16 ada di `koordinasi/rutin.md`.
+
+| # | Tugas Akun A | Keluaran | Batas |
+|---|---|---|---|
+| A1 | Segarkan `examples/` tiga skill revisi G18 (iterasi-dari-masukan-pelanggan 1.0.12, ekstrak-nota-faktur 1.0.5, rencana-marketing-usaha 1.0.7): contoh 01–05 & HASIL-UJI.md mengikuti angka/label versi sekarang; CHANGELOG konsisten | PR per skill, `docs: examples <skill> (segar v…)` | Jangan ubah SKILL.md, scripts/, README.md, catalog.csv; angka diverifikasi agent Opus terpisah |
+| A2 | QA baca pembeli awam atas halaman promosi dan bagian sebelum/sesudah + "Bukti uji di bot Telegram" README skill tampil (lolos_promosi true) | `koordinasi/qa-promosi-2026-10-17.md` (kutipan + usulan); perbaikan kalimat langsung hanya di README skill di luar daftar 29 gelombang | Angka/verdik dan 29 skill gelombang → tulis di "Permintaan antar-akun" untuk Akun B |
+| A3 | Gladi rilis 20 Okt: `pracek_rilis.py`, `rilis_batch.py --cek` (tanpa `--terapkan`), `build.py` semua bundle + `--vip --beta`, cek isi 3 ZIP acak | `koordinasi/gladi-rilis-2026-10-17.md` | dist/ tidak di-commit; perubahan katalog → "Permintaan antar-akun" |
+| A4 | Draf pengumuman promosi Minggu 18 Okt (pemilik yang mengirim): per paket + 10 skill selisih terbesar, tiga varian (WA singkat, Telegram, posting panjang), angka persis dari `promosi/sebelum-sesudah.jsonl` | `promosi/draf-pengumuman-2026-10-18.md` | Hanya skill lolos_promosi true; tanpa janji hasil; klaim "bot OpenClaw asli" hanya bila ada tag di platform_teruji |
+
+**29 skill gelombang Telegram (milik Akun B sampai selesai, jangan disentuh Akun A — SKILL.md/README/examples):** rencana-marketing-usaha, notulen-rapat, ekstrak-nota-faktur, arsip-nota, iterasi-dari-masukan-pelanggan, surat-penawaran-harga, presentasi-instan, positioning-persona-usaha, cv-lamaran-ats, audit-akun-iklan, balas-chat-cs, foto-produk-brief, sop-writer, laporan-insiden-usaha, surat-resmi, studio-video-pendek-ai, strategi-harga-produk, resi-picking, peringatan-dini-operasional, gaji-umkm, copy-landing-page, analisis-rasio-keuangan-usaha, tagih-piutang, tender-checklist, follow-up-prospek, dasbor-lokal, audit-seo-toko-online, analisis-excel, pantau-cron-openclaw.
+
+**Berkas milik Akun B (jangan diubah Akun A):** `koordinasi/helikopter-status.csv`, `koordinasi/keputusan-otomatis.md`, `promosi/sebelum-sesudah.jsonl`, `catalog.csv`, `koordinasi/alat-uji/**`, `reports/*-akun-b.md`. Akun A: branch `claude/determined-gates-rh7l38` (direset ke default pada giliran pertama), PR ke default `claude/claude-code-cli-differences-btizz5`, laporan di `reports/YYYY-MM-DD.md`.
+
 ## SERAH TERIMA Akun B → Akun A (2026-10-09, atas perintah pemilik: "delegasi kerjaan yg blm selesai ke akun A")
+
+> **Usang sejak 2026-10-16:** Akun B kembali memegang semua pekerjaan ini (keputusan otomatis 90); Akun A hanya A1–A4 di bagian "Pembagian 2026-10-16" di atas.
 
 Akun B berhenti (routine `trig_019wFDQCQf3Ly9XJwD5KFsdg` dijeda). Semua pekerjaan belum selesai di bawah ini diambil alih **Akun A**. Kerjakan di branch Akun A; branch Akun B `claude/dreamy-archimedes-suxhgj` sudah digabung ke default branch (`claude/claude-code-cli-differences-btizz5`) lewat PR — mulai dari situ. Alat uji Akun B (tanpa rahasia) ada di `koordinasi/alat-uji/` (baca README-nya dulu; lingkungan uji scratchpad Akun B **tidak** ikut, harus dibangun ulang). Semua keputusan pemilik terbaru ada di `CLAUDE.md` (sampai 2026-10-09).
 

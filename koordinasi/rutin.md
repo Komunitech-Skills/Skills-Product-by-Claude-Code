@@ -4,6 +4,7 @@ Routine membuat sesi Claude Code melanjutkan kerja sendiri tiap beberapa jam, ta
 Routine hanya bisa dibuat **oleh sesi itu sendiri** (akun lain tidak bisa membuatkannya).
 
 ## Status saat ini
+- **2026-10-16:** Akun B **AKTIF** (routine tiap jam `7 * * * *`, sesi `session_017WmvK7PF8wwU1cBtMGyfry`) dan memegang semua pekerjaan bot Telegram/router/gelombang/promosi/helikopter/katalog (keputusan otomatis 90). Akun C (Cursor) berhenti 16 Okt (limit habis). Akun A dihidupkan lagi **hanya untuk pekerjaan tanpa bot/router** (A1–A4 di `koordinasi/papan-tugas.md` bagian "Pembagian 2026-10-16"); prompt routine Akun A **versi 2026-10-16** di bawah menggantikan versi 2026-10-09 (yang menganggap Akun B dijeda — jangan dipakai lagi).
 - **2026-10-09:** pemilik mendelegasikan semua pekerjaan belum selesai ke Akun A (lihat `koordinasi/papan-tugas.md` bagian SERAH TERIMA Akun B → Akun A). Routine Akun B dijeda; routine Akun A perlu diaktifkan kembali oleh pemilik/Akun A.
 | Akun | Routine | Jadwal | Status |
 |---|---|---|---|
@@ -43,7 +44,42 @@ HEMAT CONTEXT: serahkan pekerjaan berat ke agent; minta laporan balik ringkas (�
 Jangan simpan data pribadi member/pembeli, API key, atau token di repo; jangan commit dist/. Perbarui laporan sesi di reports/ (file bertanggal hari itu, YYYY-MM-DD-akun-b.md) setiap selesai satu batch. Berhenti hanya jika pemilik menulis "stop".
 ```
 
-## Prompt routine Akun A (versi 2026-10-09 — pakai ini, bukan versi lama)
+## Prompt routine Akun A (versi 2026-10-16 — pakai ini; versi 2026-10-09 usang)
+
+Konteks: Akun B aktif lagi sejak 2026-10-16 dan memegang bot uji @KTclaude2bot, router, semua gelombang uji sebelum/sesudah (G18–G23c), `promosi/sebelum-sesudah.jsonl` + artifact, `koordinasi/helikopter-status.csv`, `koordinasi/keputusan-otomatis.md`, `catalog.csv`, dan program beta. Akun A mengerjakan pekerjaan yang **tidak** butuh bot/router dan tidak beririsan (A1–A4). Branch Akun A `claude/determined-gates-rh7l38` tertinggal ±1.000 commit tanpa commit yang belum digabung → direset ke default pada giliran pertama.
+
+Cara pakai di sesi Akun A (pemilik menempel teks pendek berikut ke routine Akun A lewat `update_trigger`, atau membuat routine baru tiap 3 jam):
+
+```
+[Pengingat otomatis tiap 3 jam — versi 2026-10-16] Kamu Akun A. Akun B AKTIF dan memegang bot Telegram, router, gelombang uji, promosi, helikopter, katalog, dan keputusan otomatis — jangan sentuh dan jangan menunggu Akun B. Tugasmu: A1–A4 di koordinasi/papan-tugas.md bagian "Pembagian 2026-10-16". WAJIB BEKERJA tiap giliran. LANGKAH PERTAMA: `git fetch origin claude/claude-code-cli-differences-btizz5`; giliran pertama: `git checkout -B claude/determined-gates-rh7l38 origin/claude/claude-code-cli-differences-btizz5 && git push -u --force-with-lease origin claude/determined-gates-rh7l38`; giliran berikutnya cukup `git merge --no-edit origin/claude/claude-code-cli-differences-btizz5`. Lalu baca koordinasi/rutin.md bagian "Prompt routine Akun A (versi 2026-10-16)" dan JALANKAN prompt itu persis (rutin.md menang atas ringkasan ini; CLAUDE.md dan pemilik menang atas rutin.md). Tanpa OpenClaw/gateway/Telegram/router. Batasan tetap: tanpa token/data pribadi di repo; dist/ tidak di-commit; jangan ubah visibilitas repo. Berhenti hanya bila pemilik menulis "stop". Akhiri dengan ringkasan singkat berbahasa Indonesia.
+```
+
+Prompt lengkap yang dijalankan Akun A:
+
+```
+[Routine Akun A — versi 2026-10-16] Kamu Akun A. Sejak 2026-10-16 Akun B AKTIF (routine tiap jam) dan memegang: bot Telegram uji (gateway OpenClaw @KTclaude2bot), router Komunitech, semua gelombang uji sebelum/sesudah (G18–G23c), promosi/sebelum-sesudah.jsonl + artifact, koordinasi/helikopter-status.csv, koordinasi/keputusan-otomatis.md, catalog.csv (versi/status/platform_teruji), dan program beta. JANGAN menyentuh itu dan JANGAN menunggu Akun B. Akun C (Cursor) sudah berhenti. Tugasmu = A1–A4 di koordinasi/papan-tugas.md bagian "Pembagian 2026-10-16" — semuanya tanpa bot, tanpa router, tanpa OpenClaw.
+
+WAJIB BEKERJA di setiap giliran — jangan menjawab "No response requested".
+
+LANGKAH NOL — TIDAK ADA gateway/OpenClaw/Telegram untuk Akun A: jangan memasang OpenClaw, jangan menjalankan gw-cek.sh, jangan memakai bot_token/bot_token2/tester_bot_token, jangan mengirim pesan Telegram, jangan memanggil router. Bila ada proses openclaw-gateway lama di kontainermu, matikan per PID (pgrep -f "^openclaw-gateway$"; jangan pkill -f).
+
+LANGKAH SATU — CONTEXT & LIMIT: get_session (tanpa session_id) → context_usage; >300k: ingatkan /compact satu baris; >600k: selesaikan & commit, minta /compact; rate_limit rejected: tanpa agent baru.
+
+LANGKAH DUA — SINKRON KODE: `git fetch origin claude/claude-code-cli-differences-btizz5`. Giliran pertama (branch tertinggal, tanpa commit yang belum digabung): `git checkout -B claude/determined-gates-rh7l38 origin/claude/claude-code-cli-differences-btizz5 && git push -u --force-with-lease origin claude/determined-gates-rh7l38`. Giliran berikutnya: `git merge --no-edit origin/claude/claude-code-cli-differences-btizz5`. Baca CLAUDE.md (keputusan pemilik), koordinasi/papan-tugas.md bagian "Pembagian 2026-10-16" & "Permintaan antar-akun", dan reports/2026-10-1*-akun-b.md hanya untuk tahu keadaan — jangan mengubah berkas Akun B.
+
+LANGKAH KERJA (urut A1→A4; tiap batch: `python3 scripts/validate.py` harus ✅, commit, push, PR ke default claude/claude-code-cli-differences-btizz5 lewat GitHub MCP (owner komunitech-skills, repo skills), merge sendiri bila tidak konflik; bila konflik, merge default ke branchmu dulu lalu push & merge PR):
+A1 — Segarkan examples/ tiga skill revisi G18: iterasi-dari-masukan-pelanggan 1.0.12, ekstrak-nota-faktur 1.0.5, rencana-marketing-usaha 1.0.7. Jalankan skrip skill dengan data contoh yang sudah ada di examples/ (Python standar), perbarui contoh 01–05 & HASIL-UJI.md agar angka/label sama dengan versi sekarang (rencana-marketing: label "Minimal pelanggan agar sesuai target (…)" dan "Titik impas iklan"; ekstrak-nota: kolom "Hitung Ulang", tanpa tabel Markdown di kanal chat; iterasi: baris sistem WA tanpa tanggal tidak lagi membuang pesan sebelumnya). CHANGELOG konsisten. JANGAN mengubah SKILL.md, scripts/, README.md, catalog.csv. Angka diverifikasi agent Opus yang berbeda dari penulis.
+A2 — QA baca pembeli awam sebelum promosi Minggu 18 Okt 20.00 WIB: baca promosi/halaman-sebelum-sesudah.html dan bagian sebelum/sesudah + "Bukti uji di bot Telegram" di README skill yang tampil (lolos_promosi true di promosi/sebelum-sesudah.jsonl). Catat temuan (jargon, kode internal/path, klaim mutlak, angka tidak konsisten README vs jsonl, kalimat membingungkan) di koordinasi/qa-promosi-2026-10-17.md dengan kutipan + usulan kalimat pengganti. Perbaiki LANGSUNG hanya README skill di luar daftar 29 skill gelombang (lihat papan) dan hanya kalimat (tanpa angka/verdik baru), commit `docs: README <skill> (QA promosi)`. Untuk 29 skill gelombang dan semua angka/verdik: tulis di "Permintaan antar-akun" untuk Akun B.
+A3 — Gladi rilis 20 Okt (keputusan 28): `python3 scripts/pracek_rilis.py`, `python3 scripts/rilis_batch.py --cek` (JANGAN --terapkan), `python3 scripts/build.py` semua bundle + `--vip --beta` ke dist/ (tidak di-commit), buka 3 ZIP acak dan cek isinya (folder skill lengkap, docs/instalasi.md, LISENSI.txt, tanpa __pycache__/berkas sampah). Laporkan di koordinasi/gladi-rilis-2026-10-17.md; yang perlu keputusan atau ubah katalog → "Permintaan antar-akun".
+A4 — Draf pengumuman promosi Minggu (pemilik yang mengirim): promosi/draf-pengumuman-2026-10-18.md — bahasa awam, per paket (bundles/*.txt) dan 10 skill selisih terbesar dari promosi/sebelum-sesudah.jsonl (hanya lolos_promosi true), angka persis dari jsonl, tanpa janji hasil, sebut "diuji di bot OpenClaw asli" hanya untuk skill yang punya tag itu di platform_teruji catalog.csv; tiga varian: WA singkat, Telegram, posting panjang.
+Bila A1–A4 selesai: perawatan dokumen repo (README.md/CONTRIBUTING.md/LICENSE vs kondisi repo) dan cek CHANGELOG skill yang tertinggal, lalu laporkan. JANGAN membuat skill baru (keputusan 28) kecuali pemilik meminta.
+
+BATAS KERAS: jangan mengubah koordinasi/helikopter-status.csv, koordinasi/keputusan-otomatis.md, promosi/sebelum-sesudah.jsonl, catalog.csv, koordinasi/alat-uji/**, reports/*-akun-b.md, dan skill mana pun dalam daftar 29 gelombang (SKILL.md/README/examples) — perlu perubahan di sana → "Permintaan antar-akun". Agent sub-tugas giliran sebelumnya masih jalan → jangan duplikat. Model: Opus untuk verifikasi angka; Sonnet untuk dokumen; maks 4 agent paralel; laporan agent ≤200 kata; jangan baca transkrip agent.
+
+AKHIR GILIRAN: tulis reports/YYYY-MM-DD.md (milik Akun A), commit & push, PR+merge. Tanpa identitas model di commit/PR. Batasan tetap: tanpa token/data pribadi di repo; dist/ tidak di-commit; jangan ubah visibilitas repo; rm -rf hanya "${VAR:?}". Berhenti hanya bila pemilik menulis "stop". Akhiri dengan ringkasan singkat berbahasa Indonesia untuk pemilik.
+```
+
+## Prompt routine Akun A (versi 2026-10-09 — USANG sejak 2026-10-16, jangan dipakai)
 
 Versi lama (2026-09-26: hanya jalur 2 & 3, maks 2 agent) **sudah usang**. Perbedaan utama versi baru: cakupan semua jalur; langkah nol cek gateway bot uji; cek context & limit; keputusan pemilik 2026-10-03 (acuan LULUS sesudah ≥ 8 dan selisih ≥ 1,5; skill di bawah itu tidak diiterasi); keputusan & laporan hasil uji lewat Telegram topik 242; langkah PROMOSI (jsonl → script → artifact URL sama); pra-cek `uji-tg.sh` untuk calon gelombang; aturan restart gateway setelah ubah `channels.*`; perawatan README/CONTRIBUTING/LICENSE; pemilihan model agent; mode hemat kuota.
 
