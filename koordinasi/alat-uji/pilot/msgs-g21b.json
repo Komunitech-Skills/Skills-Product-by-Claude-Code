@@ -74,5 +74,13 @@
   "text": "@KTclaude2bot Mulai pakai aplikasi gaji. Daftar 12 karyawan saya ada di data/karyawan.csv. UMK kota kami Rp 5.396.761, JKK 0,54%, gajian tgl 25. Gaji September 2026 fiktif: Andi bonus 500 ribu & kasbon 250 ribu, Indah lembur 2 jam dan 3 jam di hari kerja, Kiki masuk 15 September, Lina resign 14 September. Tolong hitung slip dan rekap setoran BPJS/PPh21-nya.",
   "gel": 21,
   "catatan": "pesan disesuaikan 16 Okt: data fiktif disediakan di folder kerja bot (data/)"
+ },
+ {
+  "skill": "gaji-umkm",
+  "sisi": "sesudah-ya",
+  "topic": 1662,
+  "text": "ya",
+  "balas": true,
+  "catatan": "giliran 2 konfirmasi pratinjau (SKILL.md gaji-umkm: setup + impor + hitung memakai pratinjau sebelum simpan); sama dengan alur uji internal examples/01"
  }
 ]
