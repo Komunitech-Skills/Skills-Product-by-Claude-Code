@@ -25,7 +25,7 @@ Diuji AI penguji independen di OpenClaw: 2,25 → 9,25 dari 10 (tanpa skill gant
 
 **Sesudah (cukup ketik):** "Bikinin kontrak buat Dimas, barista kedai kopi saya di Bandung, 1 tahun mulai 1 Oktober 2026, gaji 3,8 juta + tunjangan transport tetap 300 ribu, 3 bulan pertama masa percobaan."
 
-Cuplikan hitungan (dipotong; contoh dengan data fiktif, keluaran nyata skrip `hitung_pkwt.py`):
+Cuplikan hitungan (dipotong; contoh dengan data fiktif, hasil hitung nyata dari alat hitung bawaan skill):
 ```
 HITUNG KOMPENSASI AKHIR PKWT
 Upah 1 bulan : Rp4.100.000 (gaji pokok Rp3.800.000 + tunjangan tetap Rp300.000)
@@ -57,9 +57,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
 - **Uji OpenClaw otomatis agent, Okt 2026** (v1.0.8; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **2,25** → dengan skill **9,25** (LULUS).
-- **Uji bot Telegram asli, gelombang 4 (2026-10-03)**, skenario karyawan diberhentikan sebelum kontrak habis: tanpa skill melewatkan ganti rugi sisa kontrak; dengan skill kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = **Rp21.115.591**.
+- **Uji bot Telegram asli (2026-10-03)**, skenario karyawan diberhentikan sebelum kontrak habis: tanpa skill melewatkan ganti rugi sisa kontrak; dengan skill kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = **Rp21.115.591**.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (gelombang 4). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: nomor ayat PP 35/2021 dari sumber sekunder.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: nomor ayat PP 35/2021 dari sumber sekunder.
 
 ## FAQ
 **Apakah kontrak dari skill ini pasti sah dan aman?**
