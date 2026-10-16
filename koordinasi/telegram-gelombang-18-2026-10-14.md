@@ -311,3 +311,15 @@ Smoke `GET …/v1/models` (uji asap C25) → **HTTP 403** (~0,10 s, error 1010).
 ## Run 2026-10-16 ~02:30 UTC (Akun C automation)
 
 Smoke `GET …/v1/models` (uji asap C25) → **HTTP 403** (~0,13 s, error 1010). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-16 ~03:00 UTC (Akun C automation)
+
+Smoke `GET …/v1/models` (uji asap C25) → **HTTP 403** (~0,10 s, error 1010). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-16 ~03:30 UTC (Akun C automation)
+
+Smoke `GET …/v1/models` (uji asap C25) → **HTTP 403** (~0,06 s, error 1010). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-16 ~04:00 UTC (Akun C automation)
+
+Smoke `GET …/v1/models` (uji asap C25) → **HTTP 530** (~0,27 s, error 1016). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
