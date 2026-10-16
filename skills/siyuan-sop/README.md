@@ -29,7 +29,7 @@ HASIL PENCARIAN 'jam buka' (1 dokumen)
 - Jam Buka 🕐  [/FAQ/Jam Buka 🕐]
     ...Toko buka jam 09.00-21.00 setiap hari, termasuk Minggu...
 ```
-(Contoh nyata dari uji dengan mesin inti SiYuan resmi v3.8.5 versi Linux.)
+(Contoh nyata dari uji dengan SiYuan resmi v3.8.5 versi Linux.)
 
 ## Cara pakai
 Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
