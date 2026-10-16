@@ -67,6 +67,10 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Buatkan undangan Rapat Anggota Tahunan koperasi, Jumat 17 Oktober 2026 jam 9 pagi, untuk seluruh anggota. Tanpa skill skor **6,5** → dengan skill skor **8** (selisih +1,5, tepat di batas lulus acuan kami). Hanya DENGAN yang membuat surat kuasa lengkap: ada masa berlaku, larangan dialihkan ke orang lain, wewenang menandatangani tanda terima, kolom NIK/alamat kedua pihak berpenanda isian (tidak dikarang), meterai di atas nama pemberi kuasa, plus daftar bawaan saat ambil BPKB (fotokopi KTP kedua pihak, cap CV, konfirmasi format ke leasing). Catatan jujur: Surat dari sisi DENGAN tidak menyebut bahwa kendaraan sudah lunas (padahal itu info dari pengguna), dan catatan akhirnya memakai istilah teknis "dihitung dengan script" serta menyapa pengguna dengan "kamu", jadi perlu dirapikan sebelum dicetak. NIK, alamat penerima, serta telepon/email kop tetap harus diisi sendiri, dan format akhir sebaiknya dikonfirmasi ke leasing.
+
 ## FAQ
 **Apakah surat kuasa wajib pakai meterai?**
 Meterai adalah pajak atas dokumen yang dipakai sebagai bukti, bukan syarat sahnya surat. Untuk surat kuasa dan surat keterangan yang akan diserahkan ke instansi, sebaiknya tetap dibubuhi meterai Rp10.000. Tanyakan juga ke instansi tujuan.

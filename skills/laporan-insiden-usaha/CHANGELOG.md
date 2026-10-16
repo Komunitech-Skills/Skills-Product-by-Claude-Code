@@ -2,6 +2,13 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.5 (2026-10-16)
+Temuan uji bot Telegram asli gelombang 20 (DENGAN 1.0.4 dibatasi maks 5: klaim tanpa dasar). Perubahan di SKILL.md dan `references/panduan-5-kenapa.md`; logika perhitungan tidak berubah (skill tidak punya skrip):
+- Tindakan cepat dipisah dua daftar: **Sudah dilakukan** hanya berisi tindakan yang disebut pengguna (kutip/parafrase); sisanya ke **Disarankan (belum dilakukan)** atau `[isi: ...]`. Status yang belum diketahui ditulis "belum ada kabar" (bukan "masih dalam penanganan"); hasil yang belum dikonfirmasi ditulis sesuai pesan ("sudah menghubungi kurir untuk membatalkan 25 pesanan; hasil pembatalan: [isi: ...]").
+- Langkah "kenapa" dan akar masalah yang tidak disebut pengguna wajib bertanda `(dugaan, perlu dikonfirmasi)`; akar masalah ditulis sebagai hipotesis sampai pemilik mengonfirmasi, ditutup 1–2 pertanyaan konfirmasi. Contoh di `references/panduan-5-kenapa.md` disesuaikan. Dugaan tidak masuk draf maaf/ringkasan WA.
+- Langkah 10 baru: cek konsistensi angka antarbagian sebelum mengirim (total terdampak = sudah komplain + belum komplain, dst.), satu fakta = satu kalimat.
+- Kanal chat: bila jawaban > 4.000 karakter, pecah per bagian berjudul jelas atau lampirkan laporan lengkap + ringkasan di chat; tanpa menyebut jalur folder dan tanpa kata proses.
+
 ## Catatan revisi 1.0.4 (2026-10-15)
 Verifikasi rujukan aturan C33 (`koordinasi/c33-verifikasi-aturan-2026-10-15.md` §2; butir opsional "README K3"):
 - README: tambah catatan **Di luar cakupan** — kecelakaan kerja dilaporkan pemberi kerja ke BPJS Ketenagakerjaan dan Dinas Provinsi/unit pengawasan ketenagakerjaan setempat paling lama 2×24 jam (Permenaker 5/2021 Pasal 8 ayat 1–2; sumber: https://pasal.id/peraturan/permen/permenaker-no-5-tahun-2021, diakses 2026-10-15), bukan lewat laporan insiden skill ini.

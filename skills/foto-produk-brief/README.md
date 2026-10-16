@@ -62,6 +62,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung, dan bot Telegram asli belum diuji.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Jual lilin aromaterapi 3 aroma, foto sendiri pakai HP untuk Shopee dan TikTok. Bikinin shot list; jendela menghadap timur. Tanpa skill skor **6,5** → dengan skill skor **8,5** (selisih +2, lulus acuan kami). Hanya sisi DENGAN yang menghindari matahari pagi langsung dari jendela timur (memotret sekitar 10.30-14.00), memetakan 9 foto ke slot upload dengan urutan prioritas bila slot kurang, menambah teks penjelas "warna bisa sedikit berbeda", dan memberi dua storyboard video per detik. Sisi TANPA menyarankan pagi 7:30-9:30 dan hanya memberi 5 foto umum per warna, tanpa urutan slot dan tanpa ide video, walau sudah memakai kertas HVS putih sebagai patokan warna. Catatan jujur: Tabel foto terlalu lebar untuk layar HP dan terpotong di tengah kalimat antar pesan, jadi sebagian baris sulit dibaca; ide video ditulis sebagai daftar singkat, bukan tabel per detik. Saran menurunkan kecerahan untuk warna hitam kurang jelas alasannya dan tidak ada panduan mengunci white balance, jadi hasil warna tetap perlu dites dulu dengan kertas putih sebelum memotret semua varian.
+
 ## FAQ
 **Harus beli lampu studio atau kamera?**
 Tidak harus. Panduan dirancang untuk HP, cahaya jendela, dan properti murah seperti kertas karton dan styrofoam. Kalau Anda punya tripod atau lampu, skill akan memakainya.
