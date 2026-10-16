@@ -1,0 +1,4 @@
+lokasi,sku,nama,varian,satuan,stok,stok_min,hpp_rata2,nilai_persediaan,harga_jual,status
+A1,KAOS-HT-M,Kaos Polos Pria,Hitam - M,pcs,3,10,35000,105000,59000,menipis
+A2,KAOS-HT-L,Kaos Polos Pria,Hitam - L,pcs,20,10,35000,700000,59000,aman
+B3,TOPI-01,Topi Bucket,Krem,pcs,10,5,20000,200000,45000,aman

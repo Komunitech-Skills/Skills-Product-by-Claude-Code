@@ -973,31 +973,31 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Satu skenario, pesan identik, OpenClaw 2026.10.2, 13 Okt 2026; uji pertama 1 Okt 2026 hanya 8 → 9 karena AI biasa sudah pandai rasio dasar. Bukan nasihat keuangan.
 
 ### Aplikasi Gaji Bulanan UMKM, Dijalankan AI — 7 → 9
-`gaji-umkm` · HR · versi 1.0.11 · diuji 2026-10-13
+`gaji-umkm` · HR · versi 1.0.11 · diuji 2026-10-16
 
 - **Permintaan:** Hitung gaji Oktober 2 karyawan fiktif di Surakarta (gaji pokok Rp3.100.000 dan Rp2.650.000, lembur 10,5 jam, BPJS Kesehatan dan Ketenagakerjaan, PPh 21): berapa transfer, setoran BPJS, dan biaya perusahaan?
 - **Tanpa skill:** Angka transfer benar, tetapi setoran BPJS digabung ke satu 'rekening BPJS', tanpa dasar aturan dan disclaimer; satu sampel mengklaim 'di atas UMK, aman' tanpa angka.
 - **Dengan skill:** Angka dari mesin hitung dan cocok semua: transfer Rp3.164.150 dan Rp2.544.000, setor BPJS Kesehatan Rp287.500 + Ketenagakerjaan Rp531.300, PPh 21 Rp0, biaya perusahaan Rp6.526.950; asumsi bernomor, dasar aturan dan disclaimer tercantum.
 - **Angka kunci:** Total transfer Rp5.708.150; setor BPJS Rp818.800; biaya perusahaan Rp6.526.950 (dicek ulang Python Decimal)
-- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, 2 sampel per sisi; uji 1 Okt 2026 8 → 9 dengan skor tanpa skill yang tidak diulang). Sisi dengan skill belum menyebut lokasi file CSV/slip dan tenggat setor. Bukan nasihat hukum/pajak; cek ulang dengan konsultan bila ragu.
+- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, 2 sampel per sisi; uji 1 Okt 2026 8 → 9 dengan skor tanpa skill yang tidak diulang). Sisi dengan skill belum menyebut lokasi file CSV/slip dan tenggat setor. Bukan nasihat hukum/pajak; cek ulang dengan konsultan bila ragu. Di bot Telegram asli (2026-10-16): 0 → 4, BELUM; Dengan skill, bot mengimpor 12 karyawan beserta UMK, JKK, bonus/kasbon Andi dan lembur Indah, serta benar menandai September sebagai Masa Pajak Terakhir Lina, tetapi belum memberi satu pun angka slip atau setoran karena menunggu data Lina Januari–Agustus; tanpa skill, bot habis batas waktu tanpa jawaban.
 
 ### Tahu Masalah Operasional Sebelum Jadi Besar — 7 → 9
-`peringatan-dini-operasional` · Data & Analisis · versi 1.0.5 · diuji 2026-10-02
+`peringatan-dini-operasional` · Data & Analisis · versi 1.0.5 · diuji 2026-10-16
 
 - **Permintaan:** Cek log harian dapur katering 4 minggu; target 1.200 porsi, keluhan maks 2 per hari. Ada yang perlu diwaspadai?
 - **Tanpa skill:** Angka stok benar tetapi periode salah (data mulai 4 Sep), siklus restock keliru, sebab dinyatakan terlalu yakin, dan menawarkan kirim ke grup WA karyawan.
 - **Dengan skill:** Laporan dihitung script: stok beras sisa 255 kg = sekitar 2 hari pemakaian dan pemasok butuh 2 hari, jadi pesan hari ini; tanpa nama karyawan; draf hanya untuk pemilik.
 - **Angka kunci:** Stok beras sisa 255 = ±2 hari; pemasok 2 hari -> pesan HARI INI
-- **Catatan jujur:** Tanpa skill sudah benar pada angka inti (7 dari 10); daftar cek kadang generik dan merujuk skill yang tidak terpasang.
+- **Catatan jujur:** Tanpa skill sudah benar pada angka inti (7 dari 10); daftar cek kadang generik dan merujuk skill yang tidak terpasang. Terbukti di bot Telegram asli (2026-10-16): 5 → 8,5, LOLOS; Hanya versi dengan skill yang menghitung tepat kapan tepung habis (cukup sampai Jumat 2 Okt, mulai kurang Sabtu 3 Okt) dan memberi tanda merah/oranye/kuning untuk tiap angka tanpa salah hitung; versi tanpa skill salah menghitung hari telat kirim (9, padahal 8).
 
 ### Harga Tepat, Laku, dan Tetap Untung — 7 → 9
-`strategi-harga-produk` · Keuangan & Akuntansi · versi 1.0.9 · diuji 2026-10-03
+`strategi-harga-produk` · Keuangan & Akuntansi · versi 1.0.9 · diuji 2026-10-16
 
 - **Permintaan:** Toko PKP jual hampers Rp189.000 termasuk PPN, modal Rp110.000. Margin berapa? Bagi 1,12 saja? Pasang harga coret Rp249.000 yang tidak pernah dijual.
 - **Tanpa skill:** Margin dan dasar hukum harga coret benar, tetapi menyarankan 'naikin dulu ke Rp249.000 beberapa hari, baru promo' dan tidak memberi harga lantai.
 - **Dengan skill:** Membandingkan cara keliru (dibagi 1,12: margin 34,81%) dengan yang benar (35,4%), memberi harga lantai Rp203.500 (margin pangan 40%), dan menolak harga coret palsu.
 - **Angka kunci:** Margin hampers 34,81% (dibagi 1,12, keliru) vs 35,4% (benar); harga lantai Rp203.500
-- **Catatan jujur:** Satu putaran versi 1.0.9 dengan pesan identik di kedua sisi; varian lain yang hanya diuji dengan skill (8,5; 9,0; 8,5) tidak dirata-rata.
+- **Catatan jujur:** Satu putaran versi 1.0.9 dengan pesan identik di kedua sisi; varian lain yang hanya diuji dengan skill (8,5; 9,0; 8,5) tidak dirata-rata. Di bot Telegram asli (2026-10-16): 7 → 8, BELUM; Hanya versi dengan skill yang memberi daftar harga bertingkat siap pakai (eceran Rp49.900, reseller Rp42.415 dengan minimal 12 botol, kantor Rp37.425) beserta untung per botol, harga terendah aman Rp36.667, simulasi tiga tingkat kepekaan pembeli, dan teks pengumuman WA. Namun versi ini lupa memperhitungkan modal yang naik karena gula aren, padahal hal itu justru diingatkan versi tanpa skill.
 
 ### Hitung Pajak UMKM 0,5% Tiap Bulan — 6,8 → 8,8
 `pph-final-umkm` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-16
@@ -1048,22 +1048,22 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Hanya satu skenario (promo 11.11 diskon 30% untuk serum) yang diuji di OpenClaw, sebagai bagian uji solusi VIP Toko Online 2026-10-01 (satu skenario per skill, bukan 5 skenario per skill); sisi tanpa skill dijalankan sekali dan uji ulang hanya sisi dengan skill. Versi uji pertama tidak dicatat (sebelum revisi 1.0.3); uji ulang v1.0.3, sedangkan versi katalog sekarang 1.0.4 (belum ada uji OpenClaw untuk 1.0.4). Regresi kecil pada uji ulang: opsi bundling 2 botol (laba Rp24.375 per botol), peringatan harga coret palsu, dan pengingat cek potongan di Seller Center tidak muncul lagi, sehingga jawaban lebih tipis; tidak ada angka salah. PPh 22 marketplace 0,5% tidak dimasukkan di kedua sisi karena pemilik menyebut potongan "kira-kira 12%"; bila belum termasuk, laba diskon 30% turun menjadi Rp12.263 (hitungan penguji).
 
 ### Picking List & Urutan Resi dari File Pesanan — 6,5 → 8,5
-`resi-picking` · E-commerce/Marketplace Indonesia · versi 1.0.4 · diuji 2026-10-01
+`resi-picking` · E-commerce/Marketplace Indonesia · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Export pesanan TikTok Shop ini tadi dibuka di Excel lalu disimpan; buatkan picking list dan urutan resi, mau langsung packing.
 - **Tanpa skill:** Menyatakan Order ID rusak jadi '5,77E+17' akibat Excel 'gak masalah' dan memasukkannya ke picking list tanpa saran ekspor ulang.
 - **Dengan skill:** Mendeteksi kerusakan Excel, menahan 2 baris rusak, menyarankan ekspor ulang tanpa dibuka di Excel; resi kosong ditandai; file siap cetak tersimpan.
 - **Angka kunci:** Skenario normal Shopee: 8 pesanan aktif, 6 SKU, 19 pcs (SPX 3, J&T 3, JNE 2) benar di kedua sisi
-- **Catatan jujur:** Kasus normal: tanpa skill sudah hampir sama bagus (8 vs 8,5), jangan dijual sebagai 'tanpa skill pasti salah hitung'.
+- **Catatan jujur:** Kasus normal: tanpa skill sudah hampir sama bagus (8 vs 8,5), jangan dijual sebagai 'tanpa skill pasti salah hitung'. Di bot Telegram asli (2026-10-16): 6,5 → 7,5, BELUM; Dengan skill, bot langsung memberi total yang benar (4 pesanan aktif, 4 jenis barang, 12 pcs) dan tetap memasukkan pesanan yang resinya belum dicetak ke antrean JNE dengan arahan cetak resi dulu; tanpa skill, pesanan itu ditunda sehingga daftar ambil kurang 1 pcs.
 
 ### Paket Video Pendek Siap Rekam — 6,5 → 8,5
-`studio-video-pendek-ai` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-02
+`studio-video-pendek-ai` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-16
 
 - **Permintaan:** Bikinin video TikTok 30 detik jualan keripik pisang coklat Kripis Bu Ani, Rp25.000, order lewat WA; saya tidak mau tampil.
 - **Tanpa skill:** Naskah tanpa hitungan durasi, dengan klaim 'stok terbatas' dan 'coklat melimpah' yang tidak pernah disebut pengguna.
 - **Dengan skill:** Durasi sulih suara dihitung (28,5 dtk dari target 30), hanya fakta dari pengguna yang dipakai (dicek script), harga ditulis cara baca, checklist label AI ikut.
 - **Angka kunci:** Durasi sulih suara 28,5 dtk dari target 30 dtk
-- **Catatan jujur:** Tolak klon wajah/suara tanpa izin: tanpa skill sama bagusnya (8 vs 8); tidak diulang pada v1.0.3.
+- **Catatan jujur:** Tolak klon wajah/suara tanpa izin: tanpa skill sama bagusnya (8 vs 8); tidak diulang pada v1.0.3. Di bot Telegram asli (2026-10-16): 5 → 7, BELUM; Dengan skill, bot menghitung naskah suara pas 14,8 dari 15 detik, menulis harga sesuai cara baca, dan tidak mengarang janji seperti "antar-jemput bisa" atau "wangi" yang muncul tanpa skill. Namun bot tidak memberi daftar adegan yang harus direkam dengan HP; daftar itu hanya ditawarkan di akhir.
 
 ### Landing Page Jualan Siap Kirim ke Pembeli — 6 → 8
 `copy-landing-page` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-01
