@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
 - Tanpa skill: skor **7,5** — angka sudah benar dan menolak memoles laporan investor.
-- Dengan skill: skor **8** — ditambah tabel selisih per pos, penyesuaian volume, daftar tindakan, pesan siap kirim ke tim. Verdik: BELUM, artinya belum memenuhi acuan lulus kami (selisih skor minimal 1,5; di sini 0,5).
+- Dengan skill: skor **8** — ditambah tabel selisih per pos, penyesuaian volume, daftar tindakan, pesan siap kirim ke tim. Hasil: belum lulus, artinya belum memenuhi acuan lulus kami (selisih skor minimal 1,5; di sini 0,5).
 
 ## FAQ
 **Apakah AI akan memastikan siapa/apa penyebab selisihnya?**
