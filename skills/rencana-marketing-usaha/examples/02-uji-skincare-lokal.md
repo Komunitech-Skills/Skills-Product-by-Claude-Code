@@ -78,10 +78,11 @@ ANGGARAN Rp 25.000.000 untuk 3 bulan
 - Konten & live: Rp 2.125.000 total (8.5% dari anggaran), ~Rp 708.333/bulan
 - WA pelanggan lama: Rp 2.125.000 total (8.5% dari anggaran), ~Rp 708.333/bulan
 - Cadangan eksperimen (15%): Rp 3.750.000
-Cek: jumlah semua = anggaran (OK).
+Cek: jumlah semua = anggaran (OK). Sisa pembulatan Rp diserap kanal dengan sisa terbesar.
 ```
 
 ## 8. Target angka (keluaran script)
+> **Disegarkan ke v1.0.7 (2026-10-16):** blok di bawah adalah keluaran ulang `scripts/alokasi_anggaran.py target --harga-jual 89000 --hpp 24000 --biaya-platform 12 --biaya-per-pesanan 3500 --laba-target-per-pesanan 10000 --pembelian-ulang 0.6 --anggaran-iklan 11687500 --target-omzet 150000000` (anggaran iklan = Shopee/TikTok Shop Rp 7.437.500 + Meta Rp 4.250.000). Label lama "Pesanan dari iklan: 286" kini "Minimal pelanggan agar sesuai target (…): **287**" — angkanya naik 1 karena sejak v1.0.4 minimal dibulatkan ke atas (11.687.500 / 40.820 = 286,3 → 287); uji 2026-09-29 masih memakai pembulatan ke bawah. Ditambah baris "Titik impas iklan: 230" dan "Batas atas anggaran iklan, sesuai target laba: Rp 68.822.520".
 ```
 Harga jual Rp 89.000 | HPP Rp 24.000 | biaya platform Rp 10.680 | biaya/pesanan Rp 3.500
 Margin kontribusi per pesanan: Rp 50.820 (57.1%)  STATUS: AMAN
@@ -90,11 +91,16 @@ Margin kontribusi per pesanan: Rp 50.820 (57.1%)  STATUS: AMAN
 - CAC impas termasuk pembelian ulang: Rp 81.312
 - CAC target: Rp 40.820
 - ROAS target: 2.19
-- Pesanan dari iklan: 286
-- Pesanan dibutuhkan untuk target omzet: 1686
-- Anggaran iklan maks (impas): Rp 85.682.520
+- Titik impas iklan (pelanggan agar biaya iklan tertutup margin, tanpa laba target; bukan perkiraan): 230
+- Minimal pelanggan agar sesuai target (biaya iklan maks. Rp 40.820/pelanggan, laba Rp 10.000/pelanggan; bukan perkiraan): 287
+- Omzet bila jumlah pelanggan sesuai target tercapai (bukan perkiraan): Rp 25.543.000
+- Jumlah pesanan yang dibutuhkan untuk target omzet: 1686
+- Batas atas anggaran iklan, impas (hanya bila SEMUA pesanan dari iklan; bukan saran belanja): Rp 85.682.520
+- Batas atas anggaran iklan, sesuai target laba (hanya bila SEMUA pesanan dari iklan; bukan saran belanja): Rp 68.822.520
+Cara baca: titik impas = batas agar iklan tidak rugi; angka 'sesuai target' = syarat agar laba target tercapai. Keduanya syarat, BUKAN perkiraan hasil iklan.
+Kalau 'tanpa iklan' sebagian pesanan tetap datang (organik), iklan cukup menutup sisanya: kurangi pesanan_dibutuhkan dengan perkiraan pesanan organik.
 ```
-Artinya: iklan (marketplace + Meta = Rp 11,69 jt) harus menghasilkan **minimal 286 pesanan** agar sesuai target laba Rp 10.000/pesanan. Target 1.686 pesanan sebagian besar datang dari penjualan organik yang sudah jalan (± 1.180 bila run-rate bertahan) + influencer + pembelian ulang. Catatan: diskon voucher mengurangi margin — hitung ulang margin promo di `promo-kalender`.
+Artinya: iklan (marketplace + Meta = Rp 11,69 jt) balik modal bila menghasilkan **230 pesanan** (titik impas iklan) dan harus menghasilkan **minimal 287 pesanan** agar sesuai target laba Rp 10.000/pesanan. Target 1.686 pesanan sebagian besar datang dari penjualan organik yang sudah jalan (± 1.180 bila run-rate bertahan) + influencer + pembelian ulang. Catatan: diskon voucher mengurangi margin — hitung ulang margin promo di `promo-kalender`.
 
 Corong toko (asumsi konversi 2,5%, ganti dengan statistik Seller Center):
 ```

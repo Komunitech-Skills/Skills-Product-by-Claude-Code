@@ -93,6 +93,7 @@ Cek: jumlah semua = anggaran (OK). Sisa pembulatan Rp diserap kanal dengan sisa 
 Dana referral dipakai untuk hadiah/komisi referral dan kabar ke klien lama; **besaran komisi per proyek diputuskan pemilik** (lihat bagian 11). Cadangan eksperimen Rp 1.500.000 dipakai untuk satu iklan berbayar kecil karena margin berstatus TIPIS. Pembagian ini mendekati aturan 70/20/10 (kira-kira 67,5% kanal terbukti, 22,5% kanal berikutnya, 10% eksperimen); persentase adalah usulan, ganti sesuai kondisi Anda.
 
 ## 8. Target angka (keluaran script)
+> **Disegarkan ke v1.0.7 (2026-10-16):** keluaran dijalankan ulang dengan perintah yang sama. Karena laba minimum per proyek belum ditentukan (tanpa `--laba-target-per-pesanan`), label "Minimal pesanan agar balik modal iklan" tetap dipakai — minimal di sini memang sama dengan titik impas iklan, jadi baris "Titik impas iklan" tidak muncul. Yang bertambah hanya baris "Batas atas anggaran iklan, sesuai target laba" (sama dengan batas impas, Rp 150.000.000, karena tidak ada laba target) dan kalimat penutup tentang pesanan organik.
 ```
 python3 scripts/alokasi_anggaran.py target --harga-jual 35000000 --hpp 26500000 --biaya-platform 0 --biaya-per-pesanan 1000000 --anggaran-iklan 1500000 --target-omzet 700000000
 
@@ -104,6 +105,9 @@ Margin kontribusi per pesanan: Rp 7.500.000 (21.4%)  STATUS: TIPIS
 - Omzet minimal dari iklan (bukan perkiraan): Rp 35.000.000
 - Jumlah pesanan yang dibutuhkan untuk target omzet: 20
 - Batas atas anggaran iklan, impas (hanya bila SEMUA pesanan dari iklan; bukan saran belanja): Rp 150.000.000
+- Batas atas anggaran iklan, sesuai target laba (hanya bila SEMUA pesanan dari iklan; bukan saran belanja): Rp 150.000.000
+Cara baca: angka 'minimal' = syarat agar iklan tidak rugi, BUKAN perkiraan hasil iklan.
+Kalau 'tanpa iklan' sebagian pesanan tetap datang (organik), iklan cukup menutup sisanya: kurangi pesanan_dibutuhkan dengan perkiraan pesanan organik.
 ```
 Cara membaca (penting untuk jasa bernilai besar):
 - "Minimal pesanan: 1" artinya iklan Rp 1,5 juta cukup balik modal bila menghasilkan 1 proyek. Itu syarat minimum, **bukan perkiraan hasil**.

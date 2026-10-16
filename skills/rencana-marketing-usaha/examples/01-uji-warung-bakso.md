@@ -72,11 +72,12 @@ ANGGARAN Rp 9.000.000 untuk 3 bulan
 - WA & kartu stempel: Rp 1.620.000 total (18.0% dari anggaran), ~Rp 540.000/bulan
 - Google Maps & foto: Rp 1.215.000 total (13.5% dari anggaran), ~Rp 405.000/bulan
 - Cadangan eksperimen (10%): Rp 900.000
-Cek: jumlah semua = anggaran (OK).
+Cek: jumlah semua = anggaran (OK). Sisa pembulatan Rp diserap kanal dengan sisa terbesar.
 ```
 Isi dana non-iklan: cetak kartu stempel & QR, stiker kemasan, foto menu, hadiah mangkuk gratis (biaya HPP), bensin antar lokal.
 
 ## 8. Target angka (keluaran script)
+> **Disegarkan ke v1.0.7 (2026-10-16):** blok di bawah adalah keluaran ulang `scripts/alokasi_anggaran.py target --harga-jual 20000 --hpp 9000 --biaya-platform 0 --biaya-per-pesanan 1000 --laba-target-per-pesanan 2000 --pembelian-ulang 1.5 --anggaran-iklan 3240000 --target-omzet 36000000`. Label lama "Pesanan dari iklan: 405" kini "Minimal pelanggan agar sesuai target (…): 405", ditambah baris "Titik impas iklan: 324" dan "Batas atas anggaran iklan, sesuai target laba: Rp 14.400.000". Angka lain sama dengan uji 2026-09-29.
 ```
 Harga jual Rp 20.000 | HPP Rp 9.000 | biaya platform Rp 0 | biaya/pesanan Rp 1.000
 Margin kontribusi per pesanan: Rp 10.000 (50.0%)  STATUS: AMAN
@@ -85,13 +86,18 @@ Margin kontribusi per pesanan: Rp 10.000 (50.0%)  STATUS: AMAN
 - CAC impas termasuk pembelian ulang: Rp 25.000
 - CAC target: Rp 8.000
 - ROAS target: 2.50
-- Pesanan dari iklan: 405
-- Pesanan dibutuhkan untuk target omzet: 1800
-- Anggaran iklan maks (impas): Rp 18.000.000
+- Titik impas iklan (pelanggan agar biaya iklan tertutup margin, tanpa laba target; bukan perkiraan): 324
+- Minimal pelanggan agar sesuai target (biaya iklan maks. Rp 8.000/pelanggan, laba Rp 2.000/pelanggan; bukan perkiraan): 405
+- Omzet bila jumlah pelanggan sesuai target tercapai (bukan perkiraan): Rp 8.100.000
+- Jumlah pesanan yang dibutuhkan untuk target omzet: 1800
+- Batas atas anggaran iklan, impas (hanya bila SEMUA pesanan dari iklan; bukan saran belanja): Rp 18.000.000
+- Batas atas anggaran iklan, sesuai target laba (hanya bila SEMUA pesanan dari iklan; bukan saran belanja): Rp 14.400.000
+Cara baca: titik impas = batas agar iklan tidak rugi; angka 'sesuai target' = syarat agar laba target tercapai. Keduanya syarat, BUKAN perkiraan hasil iklan.
+Kalau 'tanpa iklan' sebagian pesanan tetap datang (organik), iklan cukup menutup sisanya: kurangi pesanan_dibutuhkan dengan perkiraan pesanan organik.
 ```
 GoFood (potongan 20%): margin Rp 6.000, CAC impas Rp 6.000, ROAS impas 3,34 -> iklan/voucher GoFood jauh lebih sempit; utamakan pesan WA ambil sendiri.
 
-Artinya: iklan Rp 3,24 juta **minimal harus menghasilkan 405 pelanggan baru** agar sesuai target laba (Rp 8.000/pelanggan). Iklan sendiri tidak akan menutup 1.800 nota; sisanya dari pelanggan lama yang datang malam (kartu stempel, WA) dan Maps.
+Artinya: iklan Rp 3,24 juta **balik modal bila menghasilkan 324 pelanggan baru** (titik impas iklan), dan **minimal harus menghasilkan 405 pelanggan baru** agar sesuai target laba (biaya iklan maks. Rp 8.000/pelanggan). Iklan sendiri tidak akan menutup 1.800 nota; sisanya dari pelanggan lama yang datang malam (kartu stempel, WA) dan Maps.
 
 Corong iklan untuk 360 pelanggan baru sekuartal (**asumsi, ganti dengan data Anda**):
 ```
@@ -134,4 +140,4 @@ Target 360 pesanan -> perlu 300000 di awal corong (Jangkauan)
 - Angka dari script, cocok dengan verifikasi independen (0 selisih). ✔
 - GoFood margin dihitung terpisah — wawasan nyata yang tidak ada di jawaban generik. ✔
 - Kanal utama 3 + pendukung, sesuai aturan "maksimal 3". ✔ (Catatan: `examples/01-kedai-kopi-q4.md` bawaan memakai 5 kanal setara — lihat temuan.)
-- Label script "Pesanan dari iklan: 405" harus ditafsirkan agent sebagai **minimal**, bukan perkiraan (agent melakukannya; lihat temuan M1).
+- Label script "Pesanan dari iklan: 405" harus ditafsirkan agent sebagai **minimal**, bukan perkiraan (agent melakukannya; lihat temuan M1). *(Catatan 2026-10-16: sejak v1.0.7 label script sudah "Minimal pelanggan agar sesuai target (…)" + baris "Titik impas iklan: 324"; blok bagian 8 di atas sudah disegarkan. Penilaian penguji ini tetap penilaian uji 2026-09-29.)*

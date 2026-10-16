@@ -71,3 +71,16 @@ Input rusak (26 kasus): 22 ditolak dengan `ERROR:` jelas (persen ≠ 100, huruf,
 - L1: `--bulan` wajib bilangan bulat >= 1 (GAGAL bila tidak); anggaran < Rp 1, nama tahap kosong, dan angka ekstrem ditolak tanpa traceback.
 - L2: satu set ambang margin: < 15% TERLALU TIPIS, 15% - < 25% TIPIS, >= 25% AMAN (script, SKILL.md, references).
 - Tes regresi ditambah di `scripts/uji_regresi.py`. Belum diuji ulang oleh penguji independen.
+
+## Contoh disegarkan ke v1.0.7 (2026-10-16)
+Bukan uji baru: skor dan verdik di atas (8/10, LULUS, uji 2026-09-29) **tidak berubah**. Yang disegarkan hanya keluaran script di contoh, dijalankan ulang dengan `scripts/alokasi_anggaran.py` v1.0.7 memakai input yang sama, agar label dan angka sama dengan versi sekarang. Angka kunci dihitung ulang terpisah dengan `Decimal` (bulat ke atas): cocok semua.
+
+| Contoh | Yang berubah | Angka (v1.0.7) |
+|---|---|---|
+| `01-kedai-kopi-q4.md` | "Minimal pesanan agar balik modal iklan" → "Minimal pelanggan agar sesuai target (…)", + "Titik impas iklan" | iklan Rp 1.350.000: impas 135 (÷ Rp 10.000), sesuai target 193 (÷ Rp 7.000), omzet Rp 4.825.000 |
+| `01-uji-warung-bakso.md` | "Pesanan dari iklan" → "Minimal pelanggan agar sesuai target (…)", + "Titik impas iklan", + batas atas sesuai target laba | iklan Rp 3.240.000: impas 324, sesuai target 405, omzet Rp 8.100.000; batas atas impas Rp 18.000.000, sesuai target Rp 14.400.000 |
+| `02-uji-skincare-lokal.md` | sama dengan bakso; minimal naik **286 → 287** karena pembulatan ke atas sejak v1.0.4 (11.687.500 ÷ 40.820 = 286,3) | impas 230 (÷ Rp 50.820), sesuai target 287, omzet Rp 25.543.000; batas atas impas Rp 85.682.520, sesuai target Rp 68.822.520 |
+| `03-uji-jasa-renovasi.md` | tanpa laba target → label lama "Minimal pesanan agar balik modal iklan: 1" tetap benar; hanya + baris batas atas sesuai target laba (= Rp 150.000.000) | tidak ada angka berubah |
+| `04`, `05` | tidak memuat keluaran script | tidak berubah |
+
+Blok `alokasi` dan `funnel` di semua contoh dijalankan ulang dan angkanya sama persis (hanya kalimat "Sisa pembulatan Rp diserap kanal dengan sisa terbesar." ditambahkan di contoh bakso & skincare karena memang dicetak script). Catatan lama di bagian "Penilaian penguji" tiap contoh dan temuan M1 di atas dibiarkan sebagai riwayat uji.
