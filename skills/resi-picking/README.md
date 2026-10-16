@@ -83,6 +83,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Semua uji memakai file pesanan contoh (data fiktif) dengan judul kolom yang meniru ekspor Shopee/Tokopedia/TikTok Shop, belum dengan ekspor toko asli.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Export pesanan TikTok Shop ini tadi dibuka di Excel lalu disimpan; buatkan picking list dan urutan resi, mau langsung packing. Tanpa skill skor **6,5** → dengan skill skor **7,5** (selisih +1, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot langsung memberi total yang benar (4 pesanan aktif, 4 jenis barang, 12 pcs) dan tetap memasukkan pesanan yang resinya belum dicetak ke antrean JNE dengan arahan cetak resi dulu; tanpa skill, pesanan itu ditunda sehingga daftar ambil kurang 1 pcs. Catatan jujur: Tanpa skill pun bot sudah menemukan hampir semua kejanggalan data. Kelebihan versi dengan skill ada pada total yang pasti dan pesanan tanpa resi yang tetap masuk antrean. Baris yang dilewati hanya dihitung jumlahnya tanpa nomor pesanan, dan sisa stok per barang tidak ditampilkan, jadi pesanan bermasalah tetap perlu dicek sendiri di Seller Center.
+
 ## FAQ
 **Filenya harus format apa?**
 CSV. Kalau file ekspor dari Seller Center-nya .xlsx, buka di Excel/Google Sheets lalu simpan ulang sebagai CSV - baru unggah ke sini.

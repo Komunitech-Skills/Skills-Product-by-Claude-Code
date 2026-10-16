@@ -60,6 +60,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill tidak membuat file video — hanya rencana/naskah/prompt; alat video AI pihak ketiga belum diuji.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Bikinin video TikTok 30 detik jualan keripik pisang coklat Kripis Bu Ani, Rp25.000, order lewat WA; saya tidak mau tampil. Tanpa skill skor **5** → dengan skill skor **7** (selisih +2, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot menghitung naskah suara pas 14,8 dari 15 detik, menulis harga sesuai cara baca, dan tidak mengarang janji seperti "antar-jemput bisa" atau "wangi" yang muncul tanpa skill. Namun bot tidak memberi daftar adegan yang harus direkam dengan HP; daftar itu hanya ditawarkan di akhir. Salah angka yang ditemukan penilai: TANPA: teks layar "Pesan lewat WA, antar-jemput bisa!" dan "Bersih, wangi, rapi" berisi layanan dan sifat yang tidak pernah disebut pemilik (hanya laundry kiloan, Rp6.500/kg, pesan lewat WA), jadi klaim karangan. Sisi DENGAN tidak punya salah angka/fakta: durasi 14,8 dtk dihitung ulang benar (31 kata/150×60 = 12,4 + 3 jeda×0,5 + 3 pergantian adegan×0,3 = 14,8), dan "enam ribu lima ratus rupiah per kilogram" = Rp6.500/kg.. Catatan jujur: Untuk video 15 detik, hasil pertama hanya berisi naskah, teks layar, dan caption. Arahan pengambilan gambar dengan HP (sudut kamera, properti, urutan rekam) baru diberikan bila Anda membalas minta versi lengkap. Kalimat pembuka sekitar 3,3 detik, sedikit lebih panjang dari patokan 3 detik.
+
 ## FAQ
 **Apakah skill ini membuat file videonya?** Tidak. Skill menulis rencana, naskah, dan prompt; video dibuat dengan HP Anda atau alat video AI yang Anda pilih.
 
