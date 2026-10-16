@@ -331,3 +331,7 @@ Smoke `GET …/v1/models` (uji asap C25) → **HTTP 403** (~0,10 s, error 1010).
 ## Run 2026-10-16 ~05:00 UTC (Akun C automation)
 
 Smoke `GET …/v1/models` (uji asap C25) → **HTTP 403** (~0,09 s, error 1010). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-16 ~06:00 UTC (Akun C automation)
+
+Smoke `openclaw agent --local -m "balas satu kata: OK"` → **HTTP 530** (~77 s, Ninerouter Error 1016 origin DNS, 6 retry). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
