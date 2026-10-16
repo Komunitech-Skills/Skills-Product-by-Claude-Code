@@ -36,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.11"
+VERSI = "1.0.12"
 
 
 class Gagal(Exception):
@@ -573,8 +573,14 @@ RE_PENGIRIM_MEDIA = re.compile(
     r"<media[^>]*>|<attached[^>]*>|\(file attached\)|(?:[^\s<>]+\s+•\s+(?:\d+\s+\w+\s+)?)?(?:document|dokumen)\s+omitted|"
     r"\b(?:image|video|audio|sticker|gif|contact\s+card|photo|voice\s+message)\s+omitted\b|"
     r"\b(?:gambar|foto|video|stiker|audio|dokumen|gif|kartu\s+kontak|pesan\s+suara)\s+(?:tidak\s+disertakan|dihilangkan|dihapus)\b", re.I)
-RE_SISTEM_TEKS = re.compile(r"pesan ini dihapus|you deleted this message|this message was deleted|pesan dihapus|end-to-end|terenkripsi|"
-                            r"bergabung menggunakan tautan|telah ditambahkan|meninggalkan grup|mengubah (?:ikon|subjek|deskripsi)|null$", re.I)
+# v1.0.12 teks sistem WA hanya dibuang bila SELURUH isi pesan adalah teks sistem (dicocokkan dengan fullmatch). Sebelumnya dicari di tengah pesan,
+# sehingga pesan pelanggan yang diikuti baris "Pesan ini dihapus" ikut terbuang seluruhnya.
+_SISTEM_HAPUS = r"(?:pesan ini dihapus|pesan dihapus|you deleted this message|this message was deleted)(?:\s+oleh\s+\S+(?:\s+\S+){0,2})?"
+_SISTEM_ENKRIPSI = (r"(?:pesan dan panggilan|pesan yang dikirim ke chat ini|messages and calls|messages to this chat)\b.*"
+                    r"(?:end-to-end|terenkripsi|enkripsi|encrypt).*")
+_SISTEM_GRUP = (r"(?:\S+\s+){0,6}(?:bergabung menggunakan tautan|telah ditambahkan|meninggalkan grup|mengubah (?:ikon|subjek|deskripsi))"
+                r"(?:\s+\S+){0,8}")
+RE_SISTEM_TEKS = re.compile(r"[\W_]*(?:" + _SISTEM_HAPUS + r"|" + _SISTEM_ENKRIPSI + r"|" + _SISTEM_GRUP + r"|null)[\W_]*", re.I)
 
 
 def _bukan_nama(kata):
@@ -870,6 +876,7 @@ def _tanggal_wa(tgl, urutan="hb"):
 def baca_wa(teks, staf=None, tanpa_sapaan=False):
     """Kembalikan (daftar [(tanggal, pengirim, isi, menit_hari)], Counter pengirim)."""
     pesan = []
+    akhir = None   # indeks pesan bertanggal terakhir: baris lanjutan tanpa tanggal ikut ke sana
     for baris in teks.splitlines():
         baris = baris.replace("\u200e", "").replace("\u202f", " ").replace("\xa0", " ")
         m = RE_WA1.match(baris)
@@ -881,8 +888,14 @@ def baca_wa(teks, staf=None, tanpa_sapaan=False):
                 pesan.append([m.group(1), pengirim.strip(), isi, jam])
             else:
                 pesan.append([m.group(1), None, sisa, jam])  # pesan sistem
-        elif pesan and baris.strip():
-            pesan[-1][2] += " " + baris.strip()
+            akhir = len(pesan) - 1
+        elif akhir is not None and baris.strip():
+            if RE_SISTEM_TEKS.fullmatch(baris.strip()):
+                # v1.0.12 baris tanpa tanggal yang seluruhnya teks sistem ("Pesan ini dihapus") = baris sistem tersendiri (dibuang),
+                # BUKAN lanjutan pesan sebelumnya; pesan pelanggan di atasnya tetap utuh.
+                pesan.append([pesan[akhir][0], None, baris.strip(), pesan[akhir][3]])
+            else:
+                pesan[akhir][2] += " " + baris.strip()
     hitung = Counter(p[1] for p in pesan if p[1])
     return pesan, hitung
 
@@ -1979,7 +1992,7 @@ def olah(sumber, opsi, konfigurasi=None):
                                           "dihitung. Cek dengan --daftar-pengirim." % (info["berkas"], ", ".join(getattr(opsi, "staf_list", []))))
                 balas = {}
             for idx, (tgl, pengirim, isi, _jam) in enumerate(mentah):
-                if pengirim is None or RE_SISTEM_TEKS.search(isi) or RE_PENGIRIM_MEDIA.fullmatch(isi.strip()):
+                if pengirim is None or RE_SISTEM_TEKS.fullmatch(isi.strip()) or RE_PENGIRIM_MEDIA.fullmatch(isi.strip()):
                     dibuang["pesan sistem/media"] += 1
                     continue
                 if any(s in pengirim.lower() for s in staf):

@@ -917,7 +917,7 @@ def ke_csv(docs, mode, pemisah, desimal, id_polos):
     if mode == "dokumen":
         w.writerow(["No", "ID", "Tanggal", "Jenis", "Nomor Dokumen", "Penjual", "NPWP Penjual", "Pembeli",
                     "Kategori", "Subtotal", "Diskon", "DPP", "PPN", "PPh", "Biaya Lain", "Total",
-                    "Subtotal Dihitung Script", "DPP Dihitung Script", "PPN Seharusnya", "Total Seharusnya",
+                    "Subtotal Hitung Ulang", "DPP Hitung Ulang", "PPN Seharusnya", "Total Seharusnya",
                     "Total Untuk Rekap", "Ikut Rekap", "Jatuh Tempo", "Rekening Tujuan", "Metode Bayar",
                     "Status Cek", "Kolom Tidak Terbaca", "Catatan"])
         for i, d in enumerate(docs, 1):

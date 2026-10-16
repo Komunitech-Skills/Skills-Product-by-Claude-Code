@@ -105,8 +105,10 @@ for hpp, harapan in (("8600", "TERLALU TIPIS"), ("8500", "TIPIS"), ("7600", "TIP
 # 11. label keluaran teks = batas minimal/atas, bukan perkiraan
 rc, out, err = jalan("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
                      "--laba-target-per-pesanan", "3000", "--anggaran-iklan", "1350000", "--target-omzet", "30000000")
-cek(rc == 0 and "Minimal pesanan agar balik modal iklan" in out and "Batas atas anggaran iklan" in out
+cek(rc == 0 and "Minimal pelanggan agar sesuai target" in out and "Batas atas anggaran iklan" in out
     and "BUKAN perkiraan" in out and "Pesanan dari iklan:" not in out, "label minimal/batas atas")
+# v1.0.7: dengan laba target, angka minimal BUKAN titik impas -> label jelas, tidak lagi "balik modal"
+cek("balik modal" not in out and "Titik impas iklan" in out, "dengan laba target: tidak ada label 'balik modal', ada titik impas iklan")
 # 12. contoh kedai kopi konsisten: margin 10.000 -> CAC impas 10.000, CAC target 7.000
 d = js("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
        "--laba-target-per-pesanan", "3000")
@@ -122,6 +124,33 @@ cek(d["pesanan_dari_iklan_bila_capai_cac"] == 193 and d["omzet_dari_iklan"] == 4
 d = js("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
        "--anggaran-iklan", "1350000")
 cek(d["pesanan_dari_iklan_bila_capai_cac"] == 135, "anggaran pas habis dibagi tidak naik")
+
+# 14. v1.0.7 warung bakso (gelombang 18): margin 10.000, anggaran iklan 3.240.000
+#     titik impas = 3.240.000 / 10.000 = 324; sesuai target (CAC maks 8.000, laba 2.000) = 3.240.000 / 8.000 = 405
+args14 = ("target", "--harga-jual", "20000", "--hpp", "9000", "--biaya-per-pesanan", "1000", "--laba-target-per-pesanan", "2000",
+          "--anggaran-iklan", "3240000")
+d = js(*args14)
+cek(d["pesanan_impas_iklan"] == 324 and d["pesanan_dari_iklan_bila_capai_cac"] == 405 and d["omzet_dari_iklan"] == 8100000,
+    "bakso: titik impas 324, sesuai target 405, omzet 8.100.000")
+rc, out, err = jalan(*args14)
+cek(rc == 0 and "Titik impas iklan (pelanggan agar biaya iklan tertutup margin, tanpa laba target; bukan perkiraan): 324" in out
+    and "Minimal pelanggan agar sesuai target (biaya iklan maks. Rp 8.000/pelanggan, laba Rp 2.000/pelanggan; bukan perkiraan): 405" in out
+    and "balik modal" not in out and "Omzet minimal dari iklan" not in out, "bakso: label teks jelas")
+# GoFood: margin 6.000 -> impas 2.025.000 / 6.000 = 337,5 -> 338 (ke ATAS); target CAC 5.000 -> 405
+d = js("target", "--harga-jual", "20000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
+       "--laba-target-per-pesanan", "1000", "--anggaran-iklan", "2025000")
+cek(d["pesanan_impas_iklan"] == 338 and d["pesanan_dari_iklan_bila_capai_cac"] == 405
+    and d["pesanan_impas_iklan"] * 6000 >= 2025000 > (d["pesanan_impas_iklan"] - 1) * 6000, "GoFood: titik impas 338 dibulatkan ke atas, target 405")
+# tanpa laba target: label lama tetap benar (minimal = titik impas), tanpa baris titik impas ganda
+rc, out, err = jalan("target", "--harga-jual", "25000", "--hpp", "9000", "--biaya-platform", "20", "--biaya-per-pesanan", "1000",
+                     "--anggaran-iklan", "1350000")
+cek(rc == 0 and "Minimal pesanan agar balik modal iklan (bukan perkiraan): 135" in out and "Titik impas iklan" not in out
+    and "sesuai target" not in out, "tanpa laba target: label balik modal tetap, tanpa baris ganda")
+d = js("target", "--harga-jual", "100000", "--hpp", "58000", "--anggaran-iklan", "472500")
+cek(d["pesanan_impas_iklan"] == 12 == d["pesanan_dari_iklan_bila_capai_cac"], "tanpa laba target: titik impas = minimal (12)")
+# tanpa anggaran iklan: tidak ada angka pelanggan/impas
+d = js("target", "--harga-jual", "20000", "--hpp", "9000", "--laba-target-per-pesanan", "2000")
+cek("pesanan_impas_iklan" not in d and "pesanan_dari_iklan_bila_capai_cac" not in d, "tanpa anggaran iklan: tidak ada angka pelanggan")
 
 print("SEMUA LULUS" if not gagal else f"{gagal} GAGAL")
 sys.exit(1 if gagal else 0)
