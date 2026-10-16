@@ -70,4 +70,4 @@ Diadaptasi dan diperluas dari dua skill berlisensi MIT (marketing-plan oleh Core
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

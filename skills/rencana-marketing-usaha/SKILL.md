@@ -60,7 +60,7 @@ python3 scripts/alokasi_anggaran.py target --harga-jual 45000 --hpp 18000 --biay
 python3 scripts/alokasi_anggaran.py funnel --target-pesanan 300 --tahap "Jangkauan>Klik=2" --tahap "Klik>Chat=20" --tahap "Chat>Pesanan=30"
 ```
 - Ambang margin (satu set, dipakai di seluruh skill): < 15% TERLALU TIPIS (jangan iklan berbayar); 15% - < 25% TIPIS (iklan kecil, pantau ketat); >= 25% AMAN.
-- Cara baca keluaran `target`: angka berlabel "Minimal ..." adalah **syarat** agar iklan tidak rugi (jumlah pesanan minimal dibulatkan ke ATAS, jadi benar-benar menutup anggaran), dan "Batas atas ..." adalah plafon teoretis bila semua pesanan dari iklan. **Bukan perkiraan hasil dan bukan saran belanja.** Tulis begitu di rencana.
+- Cara baca keluaran `target`: bila ada laba target, ada dua angka pelanggan. "Titik impas iklan" = jumlah pelanggan minimal agar biaya iklan tertutup margin (tanpa laba target); "Minimal pelanggan agar sesuai target" = jumlah yang dibutuhkan agar laba target tercapai, dengan biaya iklan tidak melebihi batas per pelanggan. Tanpa laba target hanya ada "Minimal pesanan agar balik modal iklan". Semua jumlah dibulatkan ke ATAS, jadi benar-benar menutup anggaran. "Batas atas ..." adalah plafon teoretis bila semua pesanan dari iklan. **Bukan perkiraan hasil dan bukan saran belanja.** Tulis begitu di rencana, dan jangan menyebut angka "minimal sesuai target" sebagai titik impas.
 - `--bulan` harus bilangan bulat >= 1; nilai lain ditolak dengan pesan GAGAL.
 - Persen kanal harus total 100; cadangan eksperimen (default 10%) diambil dulu dari total, sisanya dibagi ke kanal.
 - Rumus: margin = harga - HPP - (harga x biaya platform%) - biaya per pesanan. **CAC titik impas = margin** (dibulatkan ke bawah). **ROAS titik impas = harga / margin** (dibulatkan ke atas). ROAS/CAC target memakai margin dikurangi laba target per pesanan.
@@ -69,6 +69,7 @@ python3 scripts/alokasi_anggaran.py funnel --target-pesanan 300 --tahap "Jangkau
 
 ## Format Output
 Dokumen mengikuti `templates/rencana-marketing.md` (12 bagian: ringkasan, kondisi, tujuan SMART, target pasar, pesan kunci, kanal, kalender, anggaran, target angka, KPI, risiko, langkah minggu ini). Bahasa sehari-hari, tabel untuk kalender/anggaran/KPI, angka dalam Rupiah dengan titik ribuan. Bagian atas selalu memuat **asumsi** yang dipakai.
+- **Kanal chat (Telegram/WhatsApp):** jangan menyebut kata "script" atau "skill", atau nama skill lain, ke pengguna (tulis "saya hitung" atau "hitungannya"; rujukan cukup menyebut kegiatannya, mis. "hitung HPP"). Tulis total anggaran sebagai satu angka yang sudah termasuk cadangan, mis. "Rp9.000.000, sudah termasuk cadangan Rp900.000 (10%)", bukan dua angka terpisah.
 
 ## Contoh singkat
 Masukan: "Rencana marketing Q4 kedai kopi saya, budget 6 juta, target 200 pesanan online/bulan." -> Tanyakan sekali: harga & HPP menu andalan, tempat jualan, biaya platform, jam luang per minggu. Lalu hasil: tujuan SMART, segmen pekerja kantor radius 3 km, kanal WA + Instagram + Maps + sedikit iklan Meta, kalender gajian/11.11/12.12/Natal, tabel anggaran, CAC impas Rp 10.000 (harga Rp 25.000, margin Rp 10.000), funnel, KPI. Contoh lengkap: `examples/01-kedai-kopi-q4.md`.

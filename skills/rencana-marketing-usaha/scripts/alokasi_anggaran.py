@@ -6,7 +6,8 @@ Subperintah:
             eksperimen (default 10% dari total). Jumlah Rp per kanal DIJAMIN sama dengan anggaran (sisa
             pembulatan dibagi dengan metode sisa terbesar).
   target  : harga jual + HPP + biaya platform -> margin per pesanan, CAC & ROAS titik impas, CAC & ROAS target
-            (untuk laba yang diinginkan), anggaran iklan maksimal dari target omzet, dan pesanan MINIMAL agar iklan balik modal (bukan perkiraan hasil).
+            (untuk laba yang diinginkan), anggaran iklan maksimal dari target omzet, titik impas iklan (pelanggan minimal agar biaya iklan tertutup
+            margin) dan, bila ada laba target, pelanggan MINIMAL agar sesuai target (bukan perkiraan hasil).
   funnel  : target pesanan + tingkat konversi tiap tahap -> jumlah orang yang harus dijangkau di tiap tahap.
 
 Aturan pembulatan:
@@ -180,6 +181,8 @@ def hitung_target(a):
         h["anggaran_iklan"] = bulat(a["anggaran_iklan"])
         h["pesanan_dari_iklan_bila_capai_cac"] = pesanan
         h["omzet_dari_iklan"] = bulat(harga * pesanan)
+        # v1.0.7 titik impas iklan = pelanggan minimal agar biaya iklan tertutup margin (tanpa laba target); dibulatkan ke ATAS
+        h["pesanan_impas_iklan"] = langit(a["anggaran_iklan"] / Decimal(h["cac_impas_pesanan_pertama"]))
     if a["target_omzet"] is not None:
         pesanan_perlu = langit(a["target_omzet"] / harga)
         h["target_omzet"] = bulat(a["target_omzet"])
@@ -252,17 +255,34 @@ def cetak_target(h):
     print(f"Margin kontribusi per pesanan: {rp(h['margin_kontribusi_per_pesanan'])} ({h['margin_persen']}%)  STATUS: {h['status']}")
     if "catatan" in h:
         print("!! " + h["catatan"])
-    for k, lbl in [("cac_impas_pesanan_pertama", "CAC titik impas (pesanan pertama)"), ("roas_impas_pesanan_pertama", "ROAS titik impas"),
-                   ("cac_impas_dengan_pembelian_ulang", "CAC impas termasuk pembelian ulang"), ("cac_target", "CAC target"),
-                   ("roas_target", "ROAS target"), ("pesanan_dari_iklan_bila_capai_cac", "Minimal pesanan agar balik modal iklan (bukan perkiraan)"),
-                   ("omzet_dari_iklan", "Omzet minimal dari iklan (bukan perkiraan)"), ("pesanan_dibutuhkan", "Jumlah pesanan yang dibutuhkan untuk target omzet"),
-                   ("anggaran_iklan_maks_impas", "Batas atas anggaran iklan, impas (hanya bila SEMUA pesanan dari iklan; bukan saran belanja)"),
-                   ("anggaran_iklan_maks_sesuai_target", "Batas atas anggaran iklan, sesuai target laba (hanya bila SEMUA pesanan dari iklan; bukan saran belanja)")]:
+    ada_target = "cac_target" in h and "pesanan_impas_iklan" in h
+    if ada_target:
+        # v1.0.7 dengan laba target, angka 405 dst. BUKAN titik impas: label jelas + titik impas ditampilkan terpisah
+        lbl_min = (f"Minimal pelanggan agar sesuai target (biaya iklan maks. {rp(h['cac_target'])}/pelanggan, "
+                   f"laba {rp(h['laba_target_per_pesanan'])}/pelanggan; bukan perkiraan)")
+        lbl_omzet = "Omzet bila jumlah pelanggan sesuai target tercapai (bukan perkiraan)"
+    else:
+        lbl_min = "Minimal pesanan agar balik modal iklan (bukan perkiraan)"
+        lbl_omzet = "Omzet minimal dari iklan (bukan perkiraan)"
+    daftar = [("cac_impas_pesanan_pertama", "CAC titik impas (pesanan pertama)"), ("roas_impas_pesanan_pertama", "ROAS titik impas"),
+              ("cac_impas_dengan_pembelian_ulang", "CAC impas termasuk pembelian ulang"), ("cac_target", "CAC target"),
+              ("roas_target", "ROAS target")]
+    if ada_target:
+        daftar.append(("pesanan_impas_iklan", "Titik impas iklan (pelanggan agar biaya iklan tertutup margin, tanpa laba target; bukan perkiraan)"))
+    daftar += [("pesanan_dari_iklan_bila_capai_cac", lbl_min), ("omzet_dari_iklan", lbl_omzet),
+               ("pesanan_dibutuhkan", "Jumlah pesanan yang dibutuhkan untuk target omzet"),
+               ("anggaran_iklan_maks_impas", "Batas atas anggaran iklan, impas (hanya bila SEMUA pesanan dari iklan; bukan saran belanja)"),
+               ("anggaran_iklan_maks_sesuai_target", "Batas atas anggaran iklan, sesuai target laba (hanya bila SEMUA pesanan dari iklan; bukan saran belanja)")]
+    for k, lbl in daftar:
         if k in h:
             v = h[k]
-            uang = k not in ("roas_impas_pesanan_pertama", "roas_target", "pesanan_dari_iklan_bila_capai_cac", "pesanan_dibutuhkan")
+            uang = k not in ("roas_impas_pesanan_pertama", "roas_target", "pesanan_dari_iklan_bila_capai_cac", "pesanan_impas_iklan",
+                             "pesanan_dibutuhkan")
             print(f"- {lbl}: {rp(v) if uang else v}")
-    if "pesanan_dari_iklan_bila_capai_cac" in h:
+    if ada_target:
+        print("Cara baca: titik impas = batas agar iklan tidak rugi; angka 'sesuai target' = syarat agar laba target tercapai. "
+              "Keduanya syarat, BUKAN perkiraan hasil iklan.")
+    elif "pesanan_dari_iklan_bila_capai_cac" in h:
         print("Cara baca: angka 'minimal' = syarat agar iklan tidak rugi, BUKAN perkiraan hasil iklan.")
     if "catatan_anggaran" in h:
         print(h["catatan_anggaran"])
