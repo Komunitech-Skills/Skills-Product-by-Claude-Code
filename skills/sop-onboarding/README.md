@@ -26,7 +26,7 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 9,0 dari 10 (tanpa skill tangga
 
 **Sesudah (cukup ketik):** "Buatin paket onboarding buat kasir baru namanya Sinta, mulai Senin 28 September 2026, PKWTT, kerja 6 hari seminggu"
 
-Cuplikan jadwal (dipotong; contoh dengan data fiktif, keluaran nyata skrip `jadwal_onboarding.py`):
+Cuplikan jadwal (dipotong; contoh dengan data fiktif, hasil hitung nyata dari alat hitung bawaan skill):
 ```
 | Tahap | Tanggal target | Tanggal disesuaikan | Digeser? | Penanggung jawab | Kegiatan |
 | Hari pertama (H1) | 28 September 2026 | 28 September 2026 | Tidak | Pemilik/Atasan langsung | Penyambutan, serah terima perangkat & akun, penjelasan buku saku karyawan |
