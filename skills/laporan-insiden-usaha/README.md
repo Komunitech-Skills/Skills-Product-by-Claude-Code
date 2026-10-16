@@ -85,4 +85,4 @@ Anda tetap bisa memakai skill ini: skill akan menandai bagian itu `[isi: jumlah]
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
