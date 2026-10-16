@@ -77,3 +77,43 @@ Rekap: 4 LOLOS, 1 LOLOS dengan catatan (landing), 4 PERLU REVISI, 1 tidak teruji
 
 ## Temuan alat
 - Dua `uji-tg.sh` paralel (batas 2) gagal seketika dengan "failed to acquire gateway state ownership / another OpenClaw process owns gateway-lifecycle"; konfigurasi HOME salinan bertanda 2026.9.7 sedangkan CLI uji 2026.9.6. Diatasi dengan menjalankan berurutan. Gateway tidak disentuh.
+
+## Pra-cek ulang (2026-10-16 22:00 UTC)
+
+Penguji: Akun A (tidak mengubah skill/katalog/alat uji). Cara: uji simulasi kanal Telegram (`uji-tg.sh`, `--channel telegram`, tanpa `--deliver`, tidak ada yang dikirim), HOME baru per skill (`mk-home.sh pc2-<skill>`, memakai versi repo terkini), berurutan, pesan sama dengan pra-cek pertama (data fiktif). Versi cocok dengan katalog. Catatan: hasil ini simulasi kanal, bukan uji di grup Telegram sungguhan.
+
+| Skill | Versi | Verdik | Temuan utama |
+|---|---|---|---|
+| rapor-mingguan-ai | 1.0.2 | PERLU REVISI | delapan kriteria tidak lagi 90 % semua; "3 dari 10 bersih" (benar 4) |
+| cek-privasi-openclaw | 1.1.6 | LOLOS (catatan) | tanpa jalur file/chmod/istilah exec; masih emoji lingkaran dan kata "token"/"gateway" |
+| cek-risiko-dan-asuransi-usaha | 1.0.3 | LOLOS | tabel 7 kolom hilang; angka benar; 2.811 karakter |
+| iterasi-dari-masukan-pelanggan | 1.0.13 | PERLU REVISI | penutup menyebut nama berkas kerja; 7.815 karakter; angka dan penempatan menu benar |
+| seleksi-cv-pelamar (5 CV) | 1.0.2 | LOLOS (catatan) | pesan 12 CV timeout 2x; 5 CV selesai, tanpa tabel lebar, tetapi 7.352 karakter |
+
+### rapor-mingguan-ai 1.0.2: PERLU REVISI
+- Jalur file: tidak. Tabel: 3 kolom, aman. Panjang 3.397 karakter (di bawah 4.096). Alat yang dipakai: read, exec.
+- Angka kunci salah: jawaban benar adalah 8 kriteria x 90 % + "4 dari 10 bersih" (P1, P8, P9, P10). Hasil: Fakta benar 80 % (D), Nyambung 100 %, Nada 80 % (B), kriteria lain 90 %, dan "percakapan bersih 3 dari 10". Jadi pengaruh perbaikan 1.0.2 (hitungan per kriteria lewat skrip) belum terlihat di keluaran kanal ini. Kalimat penjelas "mengapa semua 90 %" tidak ada.
+- Isi lain baik: 3 kesalahan kritis, tiga butir PR siap tempel, tanpa istilah proses.
+- Bukti: "| Fakta benar | 80% (8/10) | D |" / "percakapan bersih (lolos semua) 3 dari 10"
+
+### cek-privasi-openclaw 1.1.6: LOLOS (catatan)
+- Jalur file/folder: tidak ada (butir hanya menyebut "berkas pengaturan bot" tanpa jalur); tidak ada perintah chmod; tidak ada `tools.exec`/`sandbox`/`dmScope`. Tabel: tidak ada. Panjang 2.733 karakter.
+- Catatan kecil: emoji lingkaran merah/kuning/hijau masih ada; kata "token", "gateway/perangkat gateway WA", "OpenClaw" muncul; skenario WhatsApp tidak ada di HOME uji sehingga butir 6 meminta lokasi (wajar).
+- Bukti: "Bot bisa menjalankan perintah di komputer tanpa bertanya dulu ke siapa pun." / "Balas "rapikan": kunci berkas & folder pengaturan ..."
+
+### cek-risiko-dan-asuransi-usaha 1.0.3: LOLOS
+- Jalur file: tidak. Tabel: tidak ada (daftar bernomor per risiko). Istilah proses: tidak. Panjang 2.811 karakter (satu pesan), ditutup "Balas *lanjut* untuk sisa risiko".
+- Angka benar: biaya tetap Rp15.800.000, target 3 bulan Rp47.400.000, kekurangan Rp39.400.000, cicilan 6 bulan Rp6.566.667.
+- Bukti: "Biaya tetap/bulan: Rp15.800.000 ... Target (3 bulan): Rp47.400.000" / "1. Banjir ... TINGGI (skor 12 = kemungkinan 3 x dampak 4)"
+
+### iterasi-dari-masukan-pelanggan 1.0.13: PERLU REVISI
+- Pesan: skenario 01 (data `examples/data/` disalin ke folder data/ HOME uji; empat berkas, katering fiktif). Alat: read, ls, exec, write, edit.
+- Angka cocok skrip: 52 masukan; WA 13 / Shopee 26 / IG 5 / survei; Pengiriman 10 keluhan (19,2 %); keluhan WA tanpa balasan 5 dari 7 (71,4 %). Permintaan menu vegetarian ada di "Saran & permintaan pelanggan", tidak masuk Pengiriman.
+- Cacat: penutup menyebut nama berkas kerja dan "workspace saya" (anonim-2026-09.csv, tema.json, koreksi.csv); kata "alat analisis", "skor awal", "koreksi manual"; panjang 7.815 karakter (3 pesan); emoji. Kemasan dilaporkan 4 (skrip 6) setelah koreksi manual, cukup dijelaskan di catatan metode.
+- Bukti: "Filenya sudah ada di workspace saya (anonim-2026-09.csv, tema.json, koreksi.csv) kalau mau saya kirimkan."
+
+### seleksi-cv-pelamar 1.0.2: LOLOS (catatan)
+- Pesan skenario 01 asli (12 CV, 6.781 karakter): timeout model 2x ("The model did not produce a response before the model idle timeout"), seperti pra-cek sebelumnya; penyebab diduga router/model.
+- Dipakai 5 CV (cv-01..05, 3.271 karakter, header "Ada 5 CV masuk"): selesai 1x, alat read. Tanpa tabel lebar (skor per kandidat satu baris), tanpa jalur file; 2 lanjut (Sari 96, Dewi 75), 1 cadangan (Bima 71), 2 belum sesuai (Larasati 42, Rangga 17); 4 pertanyaan wawancara per kandidat; draf pesan; pengingat hapus CV; tidak ada kriteria usia/status.
+- Catatan: panjang 7.352 karakter (3 pesan, tiap bagian di bawah 4.096); skor berbeda dari pra-cek 16 Okt Akun A (C1 92, C2 92, C3 75, C5 54, C4 27), selisih mungkin variasi model; pembobotan tidak diverifikasi ulang dengan `scripts/nilai_cv.py`.
+- Bukti: "C1 Sari: marketplace 1, order/resi 1, chat 1, spreadsheet 1 -> wajib 1,00 | iklan 1, Canva 0,5 -> tambah 0,83 -> Skor 96"
