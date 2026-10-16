@@ -3,15 +3,17 @@
   "skill": "copy-landing-page",
   "sisi": "sebelum",
   "topic": 1663,
-  "text": "@KTclaude2bot Buatkan landing page untuk keripik pedas saya, harga 25 ribu.",
-  "gel": 22
+  "text": "@KTclaude2bot Buatkan landing page untuk keripik pedas saya, harga 25 ribu per bungkus. Namanya Keripik Setan Mak Iyem, WA 0812-3456-7890, kirim se-Jabodetabek pakai ojol/kurir sendiri kalau dekat, luar kota pakai ekspedisi, bayar transfer/QRIS, belum ada testimoni tertulis, nada santai aja.",
+  "gel": 22,
+  "catatan": "pesan dilengkapi 16 Okt (gabungan giliran 1+2 examples/01) agar halaman jadi dalam satu giliran; pesan prep hanya memicu pertanyaan"
  },
  {
   "skill": "copy-landing-page",
   "sisi": "sesudah",
   "topic": 1664,
-  "text": "@KTclaude2bot Buatkan landing page untuk keripik pedas saya, harga 25 ribu.",
-  "gel": 22
+  "text": "@KTclaude2bot Buatkan landing page untuk keripik pedas saya, harga 25 ribu per bungkus. Namanya Keripik Setan Mak Iyem, WA 0812-3456-7890, kirim se-Jabodetabek pakai ojol/kurir sendiri kalau dekat, luar kota pakai ekspedisi, bayar transfer/QRIS, belum ada testimoni tertulis, nada santai aja.",
+  "gel": 22,
+  "catatan": "pesan dilengkapi 16 Okt (gabungan giliran 1+2 examples/01) agar halaman jadi dalam satu giliran; pesan prep hanya memicu pertanyaan"
  },
  {
   "skill": "analisis-rasio-keuangan-usaha",
