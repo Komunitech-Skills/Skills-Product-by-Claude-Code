@@ -37,6 +37,7 @@ PRATINJAU TAMBAH TUGAS
 
 Belum disimpan. Ulangi perintah yang sama + --ya untuk menyimpan ke Vikunja.
 ```
+(Tulisan `--ya` di layar itu urusan teknis agent; Anda cukup membalas "ya" di chat.)
 Setelah "ya":
 ```
 TERSIMPAN 1 TUGAS DI VIKUNJA:
