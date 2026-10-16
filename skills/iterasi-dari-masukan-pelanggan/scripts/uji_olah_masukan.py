@@ -933,5 +933,64 @@ class UjiPesanSistemWA(unittest.TestCase):
         self.assertEqual(dibuang["pesan sistem/media"], 2)
 
 
+class UjiPaketProdukBukanPengiriman(unittest.TestCase):
+    """v1.0.13: kata lemah "paket"/"instan" yang berarti produk/menu ("semoga ada paket hemat", "mie instan") tidak boleh dihitung
+    Pengiriman. Kata kuat (kirim, kurir, telat, sampai, resi ...) dan "paketnya" (barang kiriman) tetap Pengiriman."""
+
+    def setUp(self):
+        self.tema, self.pos, self.neg = om.buat_tema(None)
+
+    def tema_jenis(self, teks, bintang=None, peran="ulasan"):
+        _, pt = om.analisis_item(om.samarkan(teks), bintang, self.tema, self.pos, self.neg, peran)
+        return {k: set(v) for k, v in pt.items()}
+
+    def test_permintaan_menu_dan_paket_bukan_pengiriman(self):
+        for teks in ("Semoga ada paket tanpa daging", "Semoga ada paket hemat untuk kantor", "kapan ada paket nasi box untuk arisan?",
+                     "bisa bikin paket hemat buat keluarga?", "tolong tambah paket mingguan", "ada varian tanpa telur?",
+                     "Tolong tambah menu sayur tanpa santan"):
+            t = self.tema_jenis(teks)
+            self.assertNotIn("pengiriman", t, teks)
+            self.assertEqual(t.get("varian_menu"), {"saran"}, teks)
+
+    def test_paket_hemat_tetap_juga_tema_harga(self):
+        self.assertEqual(self.tema_jenis("Semoga ada paket hemat untuk kantor").get("harga"), {"saran"})
+
+    def test_keluhan_atau_pujian_paket_bundel_bukan_pengiriman(self):
+        for teks, b in (("paket hematnya porsi kecil banget", None), ("paket hemat enak banget, harganya murah", 5)):
+            self.assertNotIn("pengiriman", self.tema_jenis(teks, b), teks)
+        self.assertNotIn("varian_menu", self.tema_jenis("paket hemat enak banget, harganya murah", 5))   # bukan permintaan -> tidak ikut menu
+
+    def test_makanan_instan_bukan_pengiriman(self):
+        self.assertNotIn("pengiriman", self.tema_jenis("mie instannya enak banget", 5))
+        self.assertIn("rasa", self.tema_jenis("mie instannya enak banget", 5))
+
+    def test_regresi_keluhan_pengiriman_tetap_pengiriman(self):
+        for teks in ("paketnya penyok", "paketnya lama banget", "paket belum sampai sudah 3 hari", "paket kantor telat 2 jam",
+                     "pesan paket hemat tapi kurirnya telat 2 jam", "kurir antar paketnya telat lagi", "paket hemat tapi dikirim telat",
+                     "paketnya diletakkan di satpam", "barang dateng telat banget padahal pilih instan", "pilih pengiriman instan tapi 3 hari belum datang"):
+            t = self.tema_jenis(teks)
+            self.assertIn("pengiriman", t, teks)
+        for teks in ("paketnya penyok", "paket belum sampai sudah 3 hari", "paket kantor telat 2 jam", "kurir antar paketnya telat lagi"):
+            self.assertIn("keluhan", self.tema_jenis(teks)["pengiriman"], teks)
+
+    def test_regresi_saran_pengiriman_sungguhan_tetap(self):
+        for teks in ("bisa kirim ke luar kota tidak?", "tolong kurirnya jangan telat", "semoga paketnya cepat sampai"):
+            self.assertIn("pengiriman", self.tema_jenis(teks), teks)
+
+    def test_data_contoh_tidak_ada_saran_pengiriman_palsu(self):
+        d = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "examples", "data")
+        sumber = [os.path.join(d, "chat-wa.txt") + "=WhatsApp", os.path.join(d, "ulasan-shopee.csv") + "=Shopee",
+                  os.path.join(d, "komentar-instagram.txt") + "=Instagram", os.path.join(d, "survei-pelanggan.csv") + "=Survei"]
+        o = Opsi()
+        o.staf_list = ["admin"]
+        item, tema, dibuang, meta = om.olah(sumber, o, None)
+        r = om.ringkas(item, tema, dibuang, o, meta)
+        per_id = {t["id"]: t for t in r["tema"]}
+        self.assertEqual(per_id["pengiriman"]["saran"], 0)      # dulu 2: permintaan menu vegetarian & paket hemat
+        self.assertEqual(per_id["pengiriman"]["keluhan"], 10)   # keluhan pengiriman tidak berubah
+        self.assertEqual(per_id["varian_menu"]["saran"], 4)     # dulu 3: + "paket hemat untuk kantor"
+        self.assertEqual(per_id["harga"]["saran"], 1)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
