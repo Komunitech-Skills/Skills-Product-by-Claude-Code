@@ -1,0 +1,72 @@
+[
+ {
+  "skill": "balas-chat-cs",
+  "sisi": "sebelum",
+  "topic": 1643,
+  "text": "@KTclaude2bot Balesin chat ini dong: \"kak paketku udah 5 hari blm sampe, katanya 2-3 hari. gmn sih?? mau buat oleh2 lusa\". Tokoku Kopi Lereng Fiktif, jual kopi bubuk, kirim pakai JNE REG, resinya JP0000FIKTIF01, status terakhir kemarin sore di gudang transit Surabaya. Tujuannya Sidoarjo.",
+  "gel": 20
+ },
+ {
+  "skill": "balas-chat-cs",
+  "sisi": "sesudah",
+  "topic": 1644,
+  "text": "@KTclaude2bot Balesin chat ini dong: \"kak paketku udah 5 hari blm sampe, katanya 2-3 hari. gmn sih?? mau buat oleh2 lusa\". Tokoku Kopi Lereng Fiktif, jual kopi bubuk, kirim pakai JNE REG, resinya JP0000FIKTIF01, status terakhir kemarin sore di gudang transit Surabaya. Tujuannya Sidoarjo.",
+  "gel": 20
+ },
+ {
+  "skill": "foto-produk-brief",
+  "sisi": "sebelum",
+  "topic": 1645,
+  "text": "@KTclaude2bot Aku jual hijab voal segi empat 115x115, ada 4 warna: hitam, mocca, dusty pink, sage. Mau foto sendiri pake HP (android, ga punya tripod) buat Shopee sama TikTok Shop. Sering dapet review \"warnanya beda sama foto\". Kamar aku ada jendela gede hadap timur. Bikinin brief fotonya dong.",
+  "gel": 20
+ },
+ {
+  "skill": "foto-produk-brief",
+  "sisi": "sesudah",
+  "topic": 1646,
+  "text": "@KTclaude2bot Aku jual hijab voal segi empat 115x115, ada 4 warna: hitam, mocca, dusty pink, sage. Mau foto sendiri pake HP (android, ga punya tripod) buat Shopee sama TikTok Shop. Sering dapet review \"warnanya beda sama foto\". Kamar aku ada jendela gede hadap timur. Bikinin brief fotonya dong.",
+  "gel": 20
+ },
+ {
+  "skill": "sop-writer",
+  "sisi": "sebelum",
+  "topic": 1647,
+  "text": "@KTclaude2bot Tolong buatkan SOP packing pesanan untuk online shop skincare saya, Glowria Skin di Tangerang. Pesanan sekitar 150 paket per hari dari Shopee dan TikTok Shop. Staf packing ada 2 orang, dicek sama admin (Mbak Sinta). Kurir pickup jam 15.00. Masalah kami: sering komplain botol toner pecah dan salah kirim varian (misal serum 20 ml malah dikirim 30 ml).",
+  "gel": 20
+ },
+ {
+  "skill": "sop-writer",
+  "sisi": "sesudah",
+  "topic": 1648,
+  "text": "@KTclaude2bot Tolong buatkan SOP packing pesanan untuk online shop skincare saya, Glowria Skin di Tangerang. Pesanan sekitar 150 paket per hari dari Shopee dan TikTok Shop. Staf packing ada 2 orang, dicek sama admin (Mbak Sinta). Kurir pickup jam 15.00. Masalah kami: sering komplain botol toner pecah dan salah kirim varian (misal serum 20 ml malah dikirim 30 ml).",
+  "gel": 20
+ },
+ {
+  "skill": "laporan-insiden-usaha",
+  "sisi": "sebelum",
+  "topic": 1649,
+  "text": "@KTclaude2bot Buatin laporan insiden. Kemarin pas promo 9.9, 40 pesanan label alamatnya kesalahan gara-gara admin salin data dari sheet lama. Ketahuan jam 14.00 pas ada komplain masuk 5 pelanggan, packing mulai jam 09.00. Kita udah hubungin kurir buat batalin 25 paket yang belum diambil, 15 sisanya udah terlanjur jalan. Kerugian ongkir kirim ulang sekitar Rp1.500.000. Toko namanya Kedai Rempah Bu Sri.",
+  "gel": 20
+ },
+ {
+  "skill": "laporan-insiden-usaha",
+  "sisi": "sesudah",
+  "topic": 1650,
+  "text": "@KTclaude2bot Buatin laporan insiden. Kemarin pas promo 9.9, 40 pesanan label alamatnya kesalahan gara-gara admin salin data dari sheet lama. Ketahuan jam 14.00 pas ada komplain masuk 5 pelanggan, packing mulai jam 09.00. Kita udah hubungin kurir buat batalin 25 paket yang belum diambil, 15 sisanya udah terlanjur jalan. Kerugian ongkir kirim ulang sekitar Rp1.500.000. Toko namanya Kedai Rempah Bu Sri.",
+  "gel": 20
+ },
+ {
+  "skill": "surat-resmi",
+  "sisi": "sebelum",
+  "topic": 1651,
+  "text": "@KTclaude2bot Tolong buatin surat kuasa. Saya Hendra Gunawan, direktur CV Sinar Laras Abadi, Jl. Contoh Industri No. 8 Semarang. Saya kasih kuasa ke staf admin saya, Sri Wahyuni, buat ambil BPKB mobil kantor Toyota Avanza H 1234 XY yang sudah lunas di PT Contoh Finance cabang Semarang. Ini surat keluar ke-18 bulan ini.",
+  "gel": 20
+ },
+ {
+  "skill": "surat-resmi",
+  "sisi": "sesudah",
+  "topic": 1652,
+  "text": "@KTclaude2bot Tolong buatin surat kuasa. Saya Hendra Gunawan, direktur CV Sinar Laras Abadi, Jl. Contoh Industri No. 8 Semarang. Saya kasih kuasa ke staf admin saya, Sri Wahyuni, buat ambil BPKB mobil kantor Toyota Avanza H 1234 XY yang sudah lunas di PT Contoh Finance cabang Semarang. Ini surat keluar ke-18 bulan ini.",
+  "gel": 20
+ }
+]

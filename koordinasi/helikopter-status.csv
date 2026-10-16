@@ -5,8 +5,8 @@ analisis-rasio-keuangan-usaha,telegram,"Skill analisis-rasio-keuangan-usaha (bet
 analisis-rasio-keuangan-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 arsip-nota,telegram,"arsip-nota (beta, v1.0.7, skor 8, bukan arsip) masih menunggu G18 di bot Telegram asli: hanya 1 dari 10 pesan G18 yang terkirim (milik rencana-marketing-usaha, ",buka,,
 arsip-nota,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-arus-kas-13minggu,uji-ulang,Revisi 1.0.5 arus-kas-13minggu sudah ada tetapi belum diuji ulang oleh penguji independen (skenario 5 yang habis waktu pada 1.0.4 belum dijalankan lagi); skill ,buka,,
-arus-kas-13minggu,uji-ulang,"uji ulang 1.0.5 (skenario 5 habis waktu, opsi piutang, pemisah CSV; beta-tunda)",buka,,
+arus-kas-13minggu,uji-ulang,Revisi 1.0.5 arus-kas-13minggu sudah ada tetapi belum diuji ulang oleh penguji independen (skenario 5 yang habis waktu pada 1.0.4 belum dijalankan lagi); skill ,selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,75→8,4 (3 skenario ulang, cacat habis waktu/piutang/CSV hilang); keluar beta-tunda"
+arus-kas-13minggu,uji-ulang,"uji ulang 1.0.5 (skenario 5 habis waktu, opsi piutang, pemisah CSV; beta-tunda)",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,75→8,4 (3 skenario ulang, cacat habis waktu/piutang/CSV hilang); keluar beta-tunda"
 audit-akun-iklan,telegram,"Gelombang Telegram 19 untuk audit-akun-iklan masih terbuka: topik 1534–1543, msgs-g19.json dan salinan skill ke home bot sudah disiapkan, tetapi pesan belum dik",buka,,
 audit-akun-iklan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 audit-seo-toko-online,telegram,"audit-seo-toko-online masih terbuka: G23 (topik 1580/1581, 2 dari 6 pesan gelombang) baru disiapkan dan belum dikirim ke bot Telegram asli karena router HTTP 53",buka,,
@@ -17,8 +17,8 @@ balas-ulasan-pelanggan,uji-ulang,Uji sebelum/sesudah per skill oleh penguji inde
 balas-ulasan-pelanggan,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (5,5→8,5 v1.0.4, promosi), commit 998146a; keputusan otomatis 89"
 bandingkan-pemasok-vendor,rujukan,PPN ongkir PKP & PM → Perjelas ayat; footnote titipan murni → konsultan pajak,selesai,2026-10-14,rujukan PPN ongkir & pajak masukan diterapkan di v1.0.3 (commit 2026-10-14)
 broadcast-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",selesai,2026-10-15,revisi v1.0.13 commit 13813cf (verifikasi independen lolos)
-buat-invoice,uji-ulang,"Uji ulang independen buat-invoice 1.0.7 untuk skenario 03 (kuitansi DP terlampir sebagai berkas) belum dijalankan. Patch sudah ada tetapi buktinya belum, dan pe",buka,,
-buat-invoice,uji-ulang,uji ulang 1.0.7 skenario 03 (kuitansi lampir),buka,,
+buat-invoice,uji-ulang,"Uji ulang independen buat-invoice 1.0.7 untuk skenario 03 (kuitansi DP terlampir sebagai berkas) belum dijalankan. Patch sudah ada tetapi buktinya belum, dan pe",selesai,2026-10-16,"uji ulang sk. 03 pada 1.0.7 penguji independen 2026-10-16: LULUS 6→8,5, kuitansi terlampir 2/2"
+buat-invoice,uji-ulang,uji ulang 1.0.7 skenario 03 (kuitansi lampir),selesai,2026-10-16,"uji ulang sk. 03 pada 1.0.7 penguji independen 2026-10-16: LULUS 6→8,5, kuitansi terlampir 2/2"
 cek-privasi-openclaw,rujukan,Notifikasi kebocoran → «72 jam (3×24 jam)» + rujuk pasal,selesai,2026-10-15,revisi v1.1.5 commit ba2608c (verifikasi independen lolos)
 cek-privasi-openclaw,rujukan,PP pelaksana UU PDP → Cantumkan PP + tanggal berlaku,selesai,2026-10-15,revisi v1.1.5 commit ba2608c (verifikasi independen lolos)
 checklist-keamanan-pangan-usaha,rujukan,SPP-IRT → Sebut SPP-IRT + tahun,selesai,2026-10-15,revisi v1.0.3 commit 900a2f3 (verifikasi independen lolos)
@@ -87,8 +87,8 @@ resi-picking,telegram,"Gelombang 21 untuk resi-picking baru disiapkan (topik 156
 resi-picking,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 ringkas-grup-wa,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (7,5→8,5 v1.0.4, tidak dipromosikan, selisih <1,5), commit e31eb68; keputusan otomatis 89"
 ringkas-grup-wa,uji-ulang,"ringkas-grup-wa (katalog 1.0.6, status beta) belum pernah diuji sebelum/sesudah per skill: berkas 00-openclaw-sebelum-sesudah.md hanya salinan ringkasan uji sol",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (7,5→8,5 v1.0.4, tidak dipromosikan, selisih <1,5), commit e31eb68; keputusan otomatis 89"
-riset-harga-kompetitor,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
-riset-harga-kompetitor,uji-ulang,riset-harga-kompetitor (beta v1.0.5) masih terbuka: belum ada uji sebelum/sesudah OpenClaw per skill (tidak ada examples/00-openclaw-sebelum-sesudah.md dan tida,buka,,
+riset-harga-kompetitor,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-16,"uji sebelum/sesudah 1.0.5 penguji independen 2026-10-16: LULUS 5→8,0 (1 skenario lokal+Telegram); examples/00 + baris promosi dibuat"
+riset-harga-kompetitor,uji-ulang,riset-harga-kompetitor (beta v1.0.5) masih terbuka: belum ada uji sebelum/sesudah OpenClaw per skill (tidak ada examples/00-openclaw-sebelum-sesudah.md dan tida,selesai,2026-10-16,"uji sebelum/sesudah 1.0.5 penguji independen 2026-10-16: LULUS 5→8,0 (1 skenario lokal+Telegram); examples/00 + baris promosi dibuat"
 riset-saham-berita,rujukan,Bapepam → OJK → «OJK (dulu Bapepam)»,selesai,2026-10-15,revisi v1.0.6 commit 6c16577 (verifikasi independen lolos)
 simulasi-cicilan-pinjaman,rujukan,"Batas bunga konsumtif 0,1%/hari → Tenor konsumtif < 1 tahun, bukan hanya «> 6 bulan»",selesai,2026-10-15,revisi v1.0.4 commit 0ab0010 (verifikasi independen lolos)
 slip-gaji-bpjs,rujukan,Tarif JKK 5 tingkat → Cocokkan angka % dengan PP terbaru,selesai,2026-10-15,revisi v1.0.8 commit 6744648 (verifikasi independen lolos)

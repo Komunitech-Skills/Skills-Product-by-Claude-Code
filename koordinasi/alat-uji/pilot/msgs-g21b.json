@@ -1,0 +1,86 @@
+[
+ {
+  "skill": "studio-video-pendek-ai",
+  "sisi": "sebelum",
+  "topic": 1653,
+  "text": "@KTclaude2bot Bikinin video 15 detik promo laundry kiloan Laundry Bersih Jaya Fiktif, Rp6.500/kg, pesan lewat WA. Rekam pakai HP aja buat TikTok sama Reels.",
+  "gel": 21
+ },
+ {
+  "skill": "studio-video-pendek-ai",
+  "sisi": "sesudah",
+  "topic": 1654,
+  "text": "@KTclaude2bot Bikinin video 15 detik promo laundry kiloan Laundry Bersih Jaya Fiktif, Rp6.500/kg, pesan lewat WA. Rekam pakai HP aja buat TikTok sama Reels.",
+  "gel": 21
+ },
+ {
+  "skill": "strategi-harga-produk",
+  "sisi": "sebelum",
+  "topic": 1655,
+  "text": "@KTclaude2bot Aku jualan kopi susu gula aren literan (botol 1 liter) di Semarang, namanya Kopi Teras Fiktif. Modal per botol 22 ribu udah sama botol & stiker. Sekarang jual 45 ribu, laku sekitar 400 botol sebulan. Biaya tetap 5,2 juta sebulan. Pesaing jual 35rb, 42rb, 55rb. Banyak yang minta jadi reseller, ada kantor mau 100 botol per minggu. Kepikiran naikin ke 49.900 karena gula aren naik. Gimana strategi harganya?",
+  "gel": 21
+ },
+ {
+  "skill": "strategi-harga-produk",
+  "sisi": "sesudah",
+  "topic": 1656,
+  "text": "@KTclaude2bot Aku jualan kopi susu gula aren literan (botol 1 liter) di Semarang, namanya Kopi Teras Fiktif. Modal per botol 22 ribu udah sama botol & stiker. Sekarang jual 45 ribu, laku sekitar 400 botol sebulan. Biaya tetap 5,2 juta sebulan. Pesaing jual 35rb, 42rb, 55rb. Banyak yang minta jadi reseller, ada kantor mau 100 botol per minggu. Kepikiran naikin ke 49.900 karena gula aren naik. Gimana strategi harganya?",
+  "gel": 21
+ },
+ {
+  "skill": "resi-picking",
+  "sisi": "sebelum",
+  "topic": 1657,
+  "text": "@KTclaude2bot Ini ekspor pesanan Shopee hari ini dari Toko Gadget Fiktif, filenya data/pesanan-shopee.csv (campur JNE/J&T/SiCepat, ada yang batal dan belum bayar). Lokasi rak ada di data/lokasi-rak.csv dan stok di data/stok.csv. Tolong buatkan daftar ambil barang per SKU dan urutan kemas/tempel resi per kurir.",
+  "gel": 21,
+  "catatan": "pesan disesuaikan 16 Okt: data fiktif disediakan di folder kerja bot (data/)"
+ },
+ {
+  "skill": "resi-picking",
+  "sisi": "sesudah",
+  "topic": 1658,
+  "text": "@KTclaude2bot Ini ekspor pesanan Shopee hari ini dari Toko Gadget Fiktif, filenya data/pesanan-shopee.csv (campur JNE/J&T/SiCepat, ada yang batal dan belum bayar). Lokasi rak ada di data/lokasi-rak.csv dan stok di data/stok.csv. Tolong buatkan daftar ambil barang per SKU dan urutan kemas/tempel resi per kurir.",
+  "gel": 21,
+  "catatan": "pesan disesuaikan 16 Okt: data fiktif disediakan di folder kerja bot (data/)"
+ },
+ {
+  "skill": "peringatan-dini-operasional",
+  "sisi": "sebelum",
+  "topic": 1659,
+  "text": "@KTclaude2bot Ini log harian pabrik roti saya 30 hari terakhir (fiktif), filenya data/log-roti-30hari.csv. Ada yang perlu saya waspadai? Pemasok tepung biasanya kirim 2 hari setelah dipesan. Nama usaha: Roti Bu Ratna Fiktif. (Catatan: output min 2000 pcs/hari, reject maks 50, penjualan min 9 juta, telat kirim maks 1.)",
+  "gel": 21,
+  "catatan": "pesan disesuaikan 16 Okt: data fiktif disediakan di folder kerja bot (data/)"
+ },
+ {
+  "skill": "peringatan-dini-operasional",
+  "sisi": "sesudah",
+  "topic": 1660,
+  "text": "@KTclaude2bot Ini log harian pabrik roti saya 30 hari terakhir (fiktif), filenya data/log-roti-30hari.csv. Ada yang perlu saya waspadai? Pemasok tepung biasanya kirim 2 hari setelah dipesan. Nama usaha: Roti Bu Ratna Fiktif. (Catatan: output min 2000 pcs/hari, reject maks 50, penjualan min 9 juta, telat kirim maks 1.)",
+  "gel": 21,
+  "catatan": "pesan disesuaikan 16 Okt: data fiktif disediakan di folder kerja bot (data/)"
+ },
+ {
+  "skill": "gaji-umkm",
+  "sisi": "sebelum",
+  "topic": 1661,
+  "text": "@KTclaude2bot Mulai pakai aplikasi gaji. Daftar 12 karyawan saya ada di data/karyawan.csv. UMK kota kami Rp 5.396.761, JKK 0,54%, gajian tgl 25. Gaji September 2026 fiktif: Andi bonus 500 ribu & kasbon 250 ribu, Indah lembur 2 jam dan 3 jam di hari kerja, Kiki masuk 15 September, Lina resign 14 September. Tolong hitung slip dan rekap setoran BPJS/PPh21-nya.",
+  "gel": 21,
+  "catatan": "pesan disesuaikan 16 Okt: data fiktif disediakan di folder kerja bot (data/)"
+ },
+ {
+  "skill": "gaji-umkm",
+  "sisi": "sesudah",
+  "topic": 1662,
+  "text": "@KTclaude2bot Mulai pakai aplikasi gaji. Daftar 12 karyawan saya ada di data/karyawan.csv. UMK kota kami Rp 5.396.761, JKK 0,54%, gajian tgl 25. Gaji September 2026 fiktif: Andi bonus 500 ribu & kasbon 250 ribu, Indah lembur 2 jam dan 3 jam di hari kerja, Kiki masuk 15 September, Lina resign 14 September. Tolong hitung slip dan rekap setoran BPJS/PPh21-nya.",
+  "gel": 21,
+  "catatan": "pesan disesuaikan 16 Okt: data fiktif disediakan di folder kerja bot (data/)"
+ },
+ {
+  "skill": "gaji-umkm",
+  "sisi": "sesudah-ya",
+  "topic": 1662,
+  "text": "ya",
+  "balas": true,
+  "catatan": "giliran 2 konfirmasi pratinjau (SKILL.md gaji-umkm: setup + impor + hitung memakai pratinjau sebelum simpan); sama dengan alur uji internal examples/01"
+ }
+]

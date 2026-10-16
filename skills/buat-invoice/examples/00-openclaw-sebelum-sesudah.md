@@ -1,5 +1,139 @@
 # Uji OpenClaw SEBELUM vs SESUDAH: buat-invoice
 
+## Uji ulang 1.0.7 (2026-10-16, penguji independen) — skenario 03
+
+**Penguji:** agent penguji independen (bukan pembuat patch 1.0.7). **Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`, satu giliran per panggilan), model router `ninerouter/komunitech` (dilayani `claude-sonnet-5`), TZ Asia/Jakarta. Setiap sampel memakai home baru yang terisolasi dan hanya berisi `buat-invoice` 1.0.7 dari repo. **Yang diuji hanya sisi DENGAN skill, skenario 03 saja** (kuitansi DP), dengan pesan member yang sama persis dengan uji 1.0.5/1.0.6. Ada dua sampel: (a) lokal, 63 detik; (b) konteks kanal Telegram (`--channel telegram`, tanpa `--deliver`, tidak ada yang dikirim), 97 detik. Skor TANPA skill tetap memakai hasil uji 14 Okt (6). Lampiran dinilai dari payload `mediaUrl`/`mediaUrls` di keluaran JSON lalu dicocokkan dengan berkas yang benar-benar ada di workspace home uji (`/opt/ochome` = home uji yang di-bind).
+
+**Verifikasi angka independen** (Python, tanpa mengimpor script skill): 60 × Rp285.000 = **Rp17.100.000**; diterima DP **Rp7.500.000**, terbilang "Tujuh Juta Lima Ratus Ribu Rupiah"; sisa 17.100.000 − 7.500.000 = **Rp9.600.000**; nomor KWT/2026/10/0003 + 1 = **KWT/2026/10/0004**; meterai: DP 7.500.000 > 5.000.000 → **wajib Rp10.000**; sisa 9.600.000 > 5.000.000 → **kuitansi pelunasan nanti juga wajib**. Semua nominal Rupiah di kedua jawaban cocok dengan angka acuan, dan isi berkas HTML sama dengan isi chat. **0 salah angka.**
+
+| Versi | Sampel | Skor | Lampiran kuitansi | Catatan |
+|---|---|:-:|---|---|
+| 1.0.5 (14 Okt) | lokal | 8,5 | Tidak (path saja) | "a.n." rekening BRI ditebak |
+| 1.0.6 (14 Okt) | a, lokal | 7,5 | **Gagal**: path salah ketik `/opt/ochome/.openchome/…` | Baris judul tabel ringkasan terbuang |
+| 1.0.6 (14 Okt) | b, lokal | 8,5 | Tidak; cadangan "balas 'kirim file'" | — |
+| **1.0.7 (16 Okt)** | **a, lokal** | **9** | **Terlampir**: `mediaUrl` = `/opt/ochome/.openclaw/workspace/kuitansi-KWT-2026-10-0004.html`, berkas ada (3.254 byte) ✓ | Tabel ringkasan lengkap dengan baris judul ✓; rekening tidak ditebak dan dijelaskan ✓ |
+| **1.0.7 (16 Okt)** | **b, konteks Telegram** | **8** | **Terlampir**: `mediaUrl` sama, berkas ada (3.233 byte) ✓ | Agent menjalankan `find /` ke seluruh disk sebelum memakai folder skill |
+| **Rata-rata skenario 03** | | **6 → 8,5** (1.0.6: 8,0) | **2 dari 2** (1.0.6: 0 dari 2) | Selisih +2,5 |
+
+**Pemeriksaan per butir (kedua sampel):**
+- Penanda tangan & kota: `[isi kota]` / `[isi nama penanda tangan]`, disampaikan ke pengguna sebagai hal yang perlu diisi ✓. Tidak ada "a.n." atau nama yang ditebak ✓.
+- Catatan meterai: DP Rp7.500.000 di atas Rp5 juta → wajib Rp10.000; sisa Rp9.600.000 juga di atas Rp5 juta → kuitansi pelunasan wajib meterai ✓ (cocok dengan kalimat dari script).
+- Cacat ringan yang tersisa: nama berkas internal `nomor-invoice.json` dan kata "folder kerja"/"workspace" muncul di chat (SKILL.md memang meminta lokasi file counter disebut); "Untuk pembayaran: Seragam batik" kurang spesifik (sebaiknya "DP pesanan seragam batik 60 stel"); baris "Sisa yang belum dibayar … dari total Rp 17.100.000" dari script tidak ikut ke chat, tetapi sisa tetap tampil di tabel. Sampel a menyapa pengguna "Ibu" tanpa dasar. Sampel b memakai judul "Catatan buat saya sendiri" (sudut pandang membingungkan).
+
+**Status cacat "kuitansi tidak dilampirkan": HILANG.** 2 dari 2 sampel (lokal dan konteks Telegram) melampirkan HTML kuitansi dengan path persis dari baris `BERKAS:`, dan berkasnya benar-benar ada. Tidak ada lagi path salah ketik atau cadangan "balas 'kirim file'" padahal pelampiran tersedia.
+
+**Verdik skenario 03: LULUS** (DENGAN 8,5 ≥ 8, selisih 2,5 ≥ 1,5, 0 salah angka, cacat lampiran hilang). Cacat lampiran adalah satu-satunya alasan BELUM di uji 1.0.6, jadi dengan skor skenario 01/02 dari 1.0.6 (9 dan 9) dipakai ulang, **buat-invoice 1.0.7 memenuhi syarat LULUS**.
+
+**Pembeda (satu kalimat):** Tanpa skill, kuitansi DP Rp7,5 jt jadi tanpa peringatan meterai dan tanpa berkas. Dengan skill 1.0.7, kuitansi KWT/2026/10/0004 lengkap (terbilang, sisa Rp9.600.000, kotak meterai, catatan meterai untuk DP dan pelunasan) dan HTML siap cetak terlampir di 2 dari 2 sampel, termasuk konteks Telegram.
+
+**Catatan jujur:**
+- Hanya skenario 03 yang diuji ulang. Skor TANPA (6) dan skor skenario 01/02 (1.0.6) dipakai ulang. Invoice skenario 01 di konteks Telegram (1.0.6: tidak terlampir) belum dibuktikan ulang dengan 1.0.7.
+- Lampiran dinilai dari payload JSON OpenClaw, bukan dari tampilan di aplikasi Telegram sungguhan.
+- Sampel Telegram masih menjalankan `find / -iname buat-invoice` ke seluruh disk. Di home uji yang terisolasi ini tidak menyentuh data apa pun, tetapi di komputer member pencarian ini lambat dan melanggar aturan SKILL.md.
+
+**Perbaikan, urut dari dampak terbesar (semuanya ringan):**
+1. Script kuitansi: isi "Untuk pembayaran" dari keterangan pembayaran + item, mis. "DP pesanan seragam batik 60 stel".
+2. SKILL.md: ganti "sebut lokasinya ke pengguna" untuk file counter dengan kalimat awam ("nomor sudah dicatat agar tidak dobel"), tanpa nama berkas atau kata "workspace".
+3. Pertegas larangan `find /` di awal Langkah kerja.
+
+**Jawaban DENGAN skill 1.0.7 (utuh, teks chat; lampiran tercatat di keterangan)**
+
+<details><summary>03 sampel a, lokal: lampiran `kuitansi-KWT-2026-10-0004.html` (ada)</summary>
+
+````text
+Berikut kuitansi DP-nya, sudah dibuat pakai nomor otomatis (lanjutan dari 0003):
+
+# KUITANSI
+
+**No.:** KWT/2026/10/0004
+**Tanggal:** 16 Oktober 2026
+**Status:** SEBAGIAN DIBAYAR
+
+Telah terima dari: **Bu Anisa Fiktif**
+Uang sejumlah: **Rp 7.500.000**
+Terbilang: _Tujuh Juta Lima Ratus Ribu Rupiah_
+Untuk pembayaran: Seragam batik
+
+**Dari:** Batik Lestari Fiktif
+**Kepada:** Bu Anisa Fiktif
+
+| No | Deskripsi | Qty | Harga | Diskon | Jumlah |
+|---:|---|---:|---:|---:|---:|
+| 1 | Seragam batik | 60 stel | Rp 285.000 | - | Rp 17.100.000 |
+
+| | |
+|---|---:|
+| Subtotal | Rp 17.100.000 |
+| **TOTAL** | **Rp 17.100.000** |
+| Diterima - DP (transfer BRI) (16 Oktober 2026) | -Rp 7.500.000 |
+| **Sisa belum dibayar** | **Rp 9.600.000** |
+
+[isi kota], 16 Oktober 2026
+[ Meterai Rp10.000 ]
+
+**[isi nama penanda tangan]**
+Batik Lestari Fiktif
+
+
+Catatan buat Ibu (bukan untuk dikirim ke Bu Anisa):
+- DP Rp7.500.000 di atas Rp5 juta → **wajib bea meterai Rp10.000** (tempel/e-meterai sebelum ditandatangani).
+- Sisa tagihan Rp9.600.000 juga di atas Rp5 juta, jadi kuitansi pelunasan nanti wajib bermeterai juga.
+- Belum ada nama & jabatan penanda tangan serta kota, jadi masih tertulis "[isi kota]" / "[isi nama penanda tangan]" — kasih tahu kalau mau diisi, biar saya update filenya.
+- Rekening tidak dicantumkan karena belum disebutkan; kalau mau ditampilkan di kuitansi berikutnya, kasih nomor rekening & a.n.-nya.
+- Nomor tercatat di `nomor-invoice.json` di folder kerja, jadi kuitansi berikutnya otomatis lanjut ke 0005.
+````
+
+</details>
+<details><summary>03 sampel b, konteks Telegram: lampiran `kuitansi-KWT-2026-10-0004.html` (ada)</summary>
+
+````text
+Kuitansi DP sudah jadi — nomor lanjut dari KWT/2026/10/0003 jadi **KWT/2026/10/0004**.
+
+# KUITANSI
+
+**No.:** KWT/2026/10/0004
+**Tanggal:** 16 Oktober 2026
+**Status:** SEBAGIAN DIBAYAR
+
+Telah terima dari: **Anisa Fiktif**
+Uang sejumlah: **Rp 7.500.000**
+Terbilang: _Tujuh Juta Lima Ratus Ribu Rupiah_
+Untuk pembayaran: Seragam batik
+
+**Dari:** Batik Lestari Fiktif
+**Kepada:** Anisa Fiktif
+
+| No | Deskripsi | Qty | Harga | Diskon | Jumlah |
+|---:|---|---:|---:|---:|---:|
+| 1 | Seragam batik | 60 stel | Rp 285.000 | - | Rp 17.100.000 |
+
+| | |
+|---|---:|
+| Subtotal | Rp 17.100.000 |
+| **TOTAL** | **Rp 17.100.000** |
+| Diterima - DP (16 Oktober 2026) | -Rp 7.500.000 |
+| **Sisa belum dibayar** | **Rp 9.600.000** |
+
+[isi kota], 16 Oktober 2026
+[ Meterai Rp10.000 ]
+
+**[isi nama penanda tangan]**
+Batik Lestari Fiktif
+
+Catatan buat saya sendiri (ini tidak dikirim ke pembeli):
+- DP Rp7.500.000 di atas Rp5 juta → **wajib meterai Rp10.000** (tempel/e-meterai sebelum tanda tangan).
+- Kota dan nama penanda tangan belum diisi — kasih tahu ya nanti saya update.
+- Sisa tagihan Rp9.600.000 nanti saat pelunasan juga di atas Rp5 juta, jadi tetap wajib meterai lagi.
+- File tersimpan di workspace, nomor sudah tercatat di `nomor-invoice.json` biar nggak dobel.
+
+File HTML siap cetak:
+````
+
+</details>
+
+---
+
+
 ## Uji ulang 1.0.6 (2026-10-14)
 
 **Penguji:** agent penguji independen (bukan pembuat patch 1.0.6). **Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`, satu giliran per panggilan), model router `ninerouter/komunitech`. Setiap sampel memakai home baru yang terisolasi dan hanya berisi `buat-invoice` 1.0.6 dari repo. **Yang diuji hanya sisi DENGAN skill.** Skor TANPA skill tetap memakai hasil uji 1.0.5 di bawah. Skenario 01–03 memakai pesan member yang sama persis dengan uji 1.0.5 (lihat di bawah). Ada tiga tambahan: (a) skenario 01 diulang di konteks kanal Telegram (`--channel telegram`, tanpa `--deliver`); (b) skenario 03 dijalankan dua kali karena sampel pertama memunculkan masalah lampiran; (c) percobaan sampel ketiga skenario 03 gagal 3× karena router error 530, jadi tidak dihitung. Lampiran dinilai dari payload `mediaUrl`/baris `MEDIA:` di keluaran JSON dan dicocokkan dengan berkas yang benar-benar ada di workspace agent.
