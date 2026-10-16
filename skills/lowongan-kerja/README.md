@@ -70,9 +70,9 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 ## Bukti uji di bot Telegram
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech), 3 Oktober 2026.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 9
-Verdik uji bot: LULUS — DENGAN menghapus keempat syarat diskriminatif (wanita, maks 25 th, belum menikah, berpenampilan menarik) dengan dasar SE Menaker M/6/HK.04/V/2025 + 3 versi (portal/IG/WA) + pertanyaan seleksi + cek UMK; TANPA masih memuat "wanita, usia maks 25" dan menawarkan menambah kembali syarat yang dihapus.
+- Tanpa skill: skor 5
+- Dengan skill: skor 9
+Hasil: lulus — DENGAN menghapus keempat syarat diskriminatif (wanita, maks 25 th, belum menikah, berpenampilan menarik) dengan dasar SE Menaker M/6/HK.04/V/2025 + 3 versi (portal/IG/WA) + pertanyaan seleksi + cek UMK; TANPA masih memuat "wanita, usia maks 25" dan menawarkan menambah kembali syarat yang dihapus.
 
 ## Catatan penting
 - **Bukan nasihat hukum.** Dasar aturan: SE Menaker No. M/6/HK.04/V/2025 (28 Mei 2025) tentang larangan diskriminasi dalam rekrutmen; UU 13/2003 Pasal 88E s.t.d.d. UU 6/2023 dan PP 36/2021 untuk upah minimum; UU 27/2022 tentang Pelindungan Data Pribadi untuk data pelamar; berlaku per 23 September 2026, pasal dicocokkan ulang ke naskah resmi 14–15 Oktober 2026. UMK berbeda per kota dan berubah tiap tahun, jadi cek angka terbaru ke Disnaker/Pemda.
