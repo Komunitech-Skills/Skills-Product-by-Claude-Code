@@ -4,11 +4,12 @@
 
 Diuji AI penguji independen di OpenClaw: 4,75 → 8,25 dari 10 (tanpa skill, nama dan nomor HP pelanggan lain diulang utuh di rapor dan AI malah memeriksa pengaturan sistem bot lalu menawarkan mengubahnya; dengan skill ada nilai per kriteria, data pelanggan disamarkan, dan teks perbaikan siap tempel). Di bot Telegram asli: 6,5 → 8,5.
 
-> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
+> **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) dianjurkan: AI memakainya untuk menghitung angka rapor agar pasti tepat. Tanpa Python skill tetap berjalan, AI menghitung langsung dengan pemeriksaan silang, tetapi angkanya sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
 - ✅ **Tahu seberapa baik bot Anda**, bukan sekadar perasaan: 8 kriteria tetap (fakta, nyambung, ingat konteks, panjang, nada brand, janji berlebihan, data bocor, kata teknis), nilai A-D, dan persen lolos yang dihitung dari contoh percakapan yang Anda tempel.
 - ✅ **Tahu apa yang harus diajarkan minggu ini:** maksimal 3 "PR" berupa teks siap tempel ke catatan bot (di OpenClaw: berkas AGENTS.md, tempat aturan kerja bot): contoh jawaban benar, aturan nada, atau tanya-jawab (FAQ) baru, bukan saran umum.
+- ✅ **Pas dibaca di chat:** rapor pertama ringkas (paling banyak 3.000 karakter, muat satu pesan Telegram); rincian per percakapan cukup balas "rinci".
 - ✅ **Terlihat naik atau turun:** tempel angka rapor minggu lalu, dapatkan tren per kriteria.
 - ✅ **Ekspektasi yang adil:** bot minggu pertama dinilai beda dari bot bulan kedua; tetapi data bocor dan janji berlebihan tetap dihitung sebagai kesalahan serius di tahap mana pun.
 - ✅ **Hati-hati dengan data:** nama dan nomor pelanggan disamarkan di rapor (tetap periksa sebelum dibagikan); skill tidak membuka database atau kunci bot Anda dan menolak membantu membuat bot berbohong.
@@ -45,7 +46,7 @@ Setiap minggu, salin 10-20 percakapan terbaru antara bot dan pelanggan dari chat
 - "Ini rapor minggu lalu dan percakapan minggu ini. Naik atau turun?"
 - "Bot saya sering salah jawab soal harga, tolong dinilai dan kasih perbaikannya."
 
-Tidak perlu lengkap: info yang kurang ditanyakan maksimal tiga hal di akhir. Rapor ini memeriksa contoh yang Anda tempel; tetap baca beberapa chat bot sendiri tiap minggu, terutama pelanggan bernilai besar. Skill ini tidak mengubah pengaturan bot: teks perbaikan Anda tempel sendiri.
+Tidak perlu lengkap: info yang kurang ditanyakan maksimal tiga hal di akhir. Rapor pertama sengaja ringkas; balas "rinci" untuk melihat penilaian tiap percakapan dan cara mengecek PR minggu depan. Rapor ini memeriksa contoh yang Anda tempel; tetap baca beberapa chat bot sendiri tiap minggu, terutama pelanggan bernilai besar. Skill ini tidak mengubah pengaturan bot: teks perbaikan Anda tempel sendiri.
 
 ## Instalasi singkat
 Salin folder `rapor-mingguan-ai` ke folder skills AI agent Anda:
@@ -57,13 +58,14 @@ Salin folder `rapor-mingguan-ai` ke folder skills AI agent Anda:
 | Claude Code | `~/.claude/skills/` |
 | Cursor | `~/.cursor/skills/` |
 
-Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Python tidak wajib; hanya membantu bila percakapan sangat banyak.
+Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Python tidak wajib, tetapi dianjurkan: dengan Python angka rapor dihitung otomatis sehingga pasti tepat.
 
 **Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, lingkungan uji terpisah), 6 Okt 2026 (v1.0.0), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`.
 - Skenario normal (12 percakapan bot toko skincare minggu ke-2): tanpa skill **5** → dengan skill **8** (uji lokal 8,5; dengan pengaturan kanal Telegram 7,5).
 - Skenario jebakan (diminta mengubah pengaturan bot, membolehkan bot bilang "pasti cocok", dan membaca database): tanpa skill **4,5** → dengan skill **8,5**.
 - Rata-rata: **4,75** → **8,25** (LULUS). Persen lolos per kriteria dan nilai A–D cocok dengan hitungan independen (5 dari 12 percakapan bersih). Tanpa skill, nama dan nomor HP pelanggan lain diulang utuh di rapor.
-- Catatan jujur: pada v1.0.0 urutan "3 kesalahan teratas" belum selalu konsisten (di satu uji, masalah yang tidak kritis mendahului data bocor atau janji berlebihan). Ini diperbaiki di v1.0.1 (versi terkini). Skrip hitung tidak dipakai pada 12 percakapan.
+- Catatan jujur: pada v1.0.0 urutan "3 kesalahan teratas" belum selalu konsisten (di satu uji, masalah yang tidak kritis mendahului data bocor atau janji berlebihan). Ini diperbaiki di v1.0.1. Skrip hitung tidak dipakai pada 12 percakapan.
+- Catatan jujur v1.0.1 (pra-cek dengan pengaturan kanal Telegram, 16 Okt 2026, 10 percakapan fiktif): persen per kriteria benar, tetapi jumlah percakapan bersih dikira (ditulis 5, seharusnya 4), rapor ±4.000 karakter (hampir melewati batas satu pesan Telegram), dan nama skill lain tertulis apa adanya. Diperbaiki di v1.0.2 (versi terkini): angka selalu dihitung dari penilaian per percakapan (lewat skrip bila ada Python) lalu dicek silang, rapor pertama paling banyak 3.000 karakter dengan "balas 'rinci'", dan rujukan ke skill lain ditulis dengan bahasa awam. v1.0.2 belum diuji ulang di bot.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent, v1.0.0) dan di bot Telegram asli (2026-10-12; versi yang diuji tidak tercatat). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -89,4 +91,4 @@ Bukan nasihat hukum, medis, atau keuangan. Penilaian bergantung pada percakapan 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
