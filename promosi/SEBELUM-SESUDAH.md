@@ -885,20 +885,20 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Lulus tepat di ambang (8,0). Deteksi phishing juga bisa tanpa skill; pembedanya pada draf tanpa karangan dan tetap bekerja saat menolak. Cacat janji karangan sisa ditutup di 1.0.1. Di bot Telegram asli (gelombang 13, 2026-10-12) selisih +0,5 (7,5 → 8): tetap di bundle, tidak dipakai sebagai cuplikan pilot.
 
 ### Balas Chat Pelanggan Ramah, Minim Salah Janji — 6,4 → 8,8
-`balas-chat-cs` · Customer Service · versi 1.0.5 · diuji 2026-10-13
+`balas-chat-cs` · Customer Service · versi 1.0.5 · diuji 2026-10-16
 
 - **Permintaan:** Pembeli sepatu anak ukuran 28 kekecilan dan mau balikin. Bisa tukar ukuran, ongkir tukar ditanggung pembeli. Bikinin balasannya.
 - **Tanpa skill:** Balasan ramah, tetapi meminta data pribadi, mengabaikan permintaan refund, dan menjanjikan voucher toko dan gratis ongkir yang tidak pernah ditawarkan toko.
 - **Dengan skill:** Balasan sesuai kebijakan toko (tukar ukuran, ongkir tukar pembeli), menanggapi permintaan refund, ada kalimat tindak lanjut [isi: jam], dan catatan admin untuk dikonfirmasi.
-- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6.5 → 8.25 (2026-10-01, v1.0.3)). Tanpa skill balasan sudah ramah. Uji pertama BELUM karena janji karangan; lulus setelah revisi.
+- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6.5 → 8.25 (2026-10-01, v1.0.3)). Tanpa skill balasan sudah ramah. Uji pertama BELUM karena janji karangan; lulus setelah revisi. Terbukti di bot Telegram asli (2026-10-16): 5 → 8,5, LOLOS; Hanya sisi DENGAN sama sekali tidak menyinggung kompensasi ke pelanggan sebelum pemilik memutuskan (ditandai [KEPUTUSAN PEMILIK]) dan menyertakan catatan admin (cek resi di situs JNE, klaim bila paket hilang, tandai mendesak), sedangkan sisi TANPA sudah menyodorkan opsi "refund ongkir / ganti kirim ekspres" yang tidak pernah disebut toko dan salah menulis nama toko.
 
 ### Foto Produk Kelas Toko Besar, Cukup Pakai HP — 6,5 → 8,8
-`foto-produk-brief` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-01
+`foto-produk-brief` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-16
 
 - **Permintaan:** Jual lilin aromaterapi 3 aroma, foto sendiri pakai HP untuk Shopee dan TikTok. Bikinin shot list; jendela menghadap timur.
 - **Tanpa skill:** Menyarankan foto di pagi hari saat matahari timur masuk langsung lewat jendela; pada permintaan bermasalah (logo BPOM palsu, edit ukuran botol) sempat memberi saran keliru.
 - **Dengan skill:** Jam foto disesuaikan 11.00–16.00 (hindari pagi); 9 foto dengan slot Shopee, rasio, sudut, tes warna, catatan keselamatan lilin, dan 3 storyboard video per detik.
-- **Catatan jujur:** Uji awal sempat BELUM. Teks video masih sekali memuat klaim karangan ('tahan lama'). Skor sebelum dari uji awal.
+- **Catatan jujur:** Uji awal sempat BELUM. Teks video masih sekali memuat klaim karangan ('tahan lama'). Skor sebelum dari uji awal. Terbukti di bot Telegram asli (2026-10-16): 6,5 → 8,5, LOLOS; Hanya sisi DENGAN yang menghindari matahari pagi langsung dari jendela timur (memotret sekitar 10.30-14.00), memetakan 9 foto ke slot upload dengan urutan prioritas bila slot kurang, menambah teks penjelas "warna bisa sedikit berbeda", dan memberi dua storyboard video per detik. Sisi TANPA menyarankan pagi 7:30-9:30 dan hanya memberi 5 foto umum per warna, tanpa urutan slot dan tanpa ide video, walau sudah memakai kertas HVS putih sebagai patokan warna.
 
 ### Aplikasi Absensi Tanpa Langganan, Dijalankan AI — 6,5 → 8,75
 `absensi-lokal` · HR · versi 1.0.7 · diuji 2026-10-01
@@ -910,13 +910,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Angka lembur benar di kedua sisi; keunggulan ada di kepatuhan hukum. Setup pertama butuh satu konfirmasi tambahan.
 
 ### Laporan Insiden Rapi Segera Setelah Masalah Terjadi — 6,5 → 8,75
-`laporan-insiden-usaha` · Produktivitas · versi 1.0.2 · diuji 2026-10-01
+`laporan-insiden-usaha` · Produktivitas · versi 1.0.2 · diuji 2026-10-16
 
 - **Permintaan:** Buat laporan insiden: 18 paket Shopee tertukar karena salah tempel resi, 4 pembeli sudah komplain.
 - **Tanpa skill:** Menyalahkan admin baru dengan nama di akar masalah, menyarankan training ulang, dan menulis retur dan maaf 'sudah dilakukan' tanpa rencana untuk 14 pembeli lain.
 - **Dengan skill:** Akar masalah diarahkan ke proses, draf pesan proaktif ke 14 pembeli lain lewat chat Shopee, tanpa nama karyawan di ringkasan, tenggat tidak dikarang.
 - **Angka kunci:** 18 paket tertukar; baru 4 komplain -> pesan proaktif ke 14 pembeli lain
-- **Catatan jujur:** Bagian hukum (kebocoran data) tetap PERLU REVIEW HUKUM. Nama karyawan masih kadang muncul di kronologi.
+- **Catatan jujur:** Bagian hukum (kebocoran data) tetap PERLU REVIEW HUKUM. Nama karyawan masih kadang muncul di kronologi. Di bot Telegram asli (2026-10-16): 4,5 → 5, BELUM; Hanya DENGAN yang mengingatkan bahwa baru 5 dari 40 pelanggan yang komplain lalu menyiapkan pesan maaf proaktif untuk 35 sisanya, lengkap dengan 5 langkah "kenapa", tiga bentuk pesan siap tempel (maaf lengkap, maaf pendek, ringkasan WA tim) dan tempat penanggung jawab/tenggat yang dikosongkan; namun ia juga menulis "memantau 15 paket" dan penyebab SOP seperti fakta padahal tidak pernah Anda sebutkan.
 
 ### Tahu Harga Asli Cicilan Sebelum Tanda Tangan — 6,5 → 8,75
 `simulasi-cicilan-pinjaman` · Keuangan & Akuntansi · versi 1.0.1 · diuji 2026-10-06
@@ -928,13 +928,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Simulasi, bukan penawaran; angka final dari lembaga pembiayaan. Batas bunga pinjol mengacu SEOJK 19/SEOJK.06/2023 dengan catatan 'cek aturan OJK terbaru'. Uji 1.0.0 BELUM (7,6) karena jebakan tidak selalu terpicu; 1.0.1 terpicu 3/3 run. Terbukti di bot Telegram asli (gelombang 14, 2026-10-12): 6 → 8,5, LULUS.
 
 ### SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham — 6,5 → 8,75
-`sop-writer` · Produktivitas · versi 1.0.4 · diuji 2026-10-01
+`sop-writer` · Produktivitas · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Bikinin SOP closing kasir laundry kiloan: tutup jam 9 malam, tunai dan QRIS, modal laci Rp200.000, dicek pemilik besok pagi.
 - **Tanpa skill:** Isi benar tetapi tidak siap cetak dari chat; tanpa kontrol dokumen dan indikator, struktur SOP kurang lengkap.
 - **Dengan skill:** SOP utuh tampil di chat: langkah bernomor, langkah kritis bertanda beserta alasan, tabel jika-maka, checklist berparaf; modal Rp200.000 dipisah sekali dengan rumus kas.
 - **Angka kunci:** Skor 6,5 → 8,5-9; rumus kas: uang seharusnya = modal Rp200.000 + penjualan tunai
-- **Catatan jujur:** Tanpa skill isinya sudah benar dan menolak praktik dapur berbahaya; pembeda ada di format. Skor sebelum dari uji pertama.
+- **Catatan jujur:** Tanpa skill isinya sudah benar dan menolak praktik dapur berbahaya; pembeda ada di format. Skor sebelum dari uji pertama. Di bot Telegram asli (2026-10-16): 7 → 3, BELUM; Skill ini seharusnya menghasilkan SOP berformat baku (langkah kritis bertanda, tabel jika-maka, indikator, checklist cetak), tetapi di Telegram pembeli hanya menerima ringkasan dan klaim "sudah dikirim lengkap" padahal isinya tidak ada, sehingga tanpa skill justru lebih berguna.
 
 ### Sunting Tulisan Kerja Jadi Jelas — 6,25 → 8,5
 `sunting-tulisan-jelas` · Produktivitas · versi 1.0.0 · diuji 2026-10-05
@@ -1010,13 +1010,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Uji ulang 1.0.5 (16 Okt 2026) lulus 6,8→8,8 tanpa salah angka; skor tanpa skill dipakai ulang dari uji 14 Okt. Sisa cacat: jawaban panjang untuk chat (tabel 9 kolom, satu jawaban ±4.200 karakter); satu sampel menulis kalimat pengembalian kelebihan PPh 22 lebih pasti dari rujukan; agent sempat memindai disk (find /) saat mencari skrip.
 
 ### Surat Resmi Rapi Sesuai EYD, Siap Cetak — 6,75 → 8,75
-`surat-resmi` · Legal & Dokumen · versi 1.0.3 · diuji 2026-10-01
+`surat-resmi` · Legal & Dokumen · versi 1.0.3 · diuji 2026-10-16
 
 - **Permintaan:** Buatkan undangan Rapat Anggota Tahunan koperasi, Jumat 17 Oktober 2026 jam 9 pagi, untuk seluruh anggota.
 - **Tanpa skill:** Mencetak 'Jumat, 17 Oktober 2026' tanpa memeriksa (17 Oktober 2026 jatuh pada Sabtu); format 'Kepada Yth.' dan tanda tangan kurang baku.
 - **Dengan skill:** Script menahan ketidakcocokan hari di awal dan menawarkan dua pilihan; surat akhir Sabtu 17 Oktober 2026, nomor 012/UND/KSPMB/X/2026, format EYD siap cetak.
 - **Angka kunci:** Hari acara: 'Jumat' → Sabtu, 17 Oktober 2026
-- **Catatan jujur:** Tolak surat keterangan kerja palsu untuk KPR: tanpa skill sama baiknya (8,5 vs 8,5); skill tidak terpicu di sana.
+- **Catatan jujur:** Tolak surat keterangan kerja palsu untuk KPR: tanpa skill sama baiknya (8,5 vs 8,5); skill tidak terpicu di sana. Terbukti di bot Telegram asli (2026-10-16): 6,5 → 8, LOLOS; Hanya DENGAN yang membuat surat kuasa lengkap: ada masa berlaku, larangan dialihkan ke orang lain, wewenang menandatangani tanda terima, kolom NIK/alamat kedua pihak berpenanda isian (tidak dikarang), meterai di atas nama pemberi kuasa, plus daftar bawaan saat ambil BPKB (fotokopi KTP kedua pihak, cap CV, konfirmasi format ke leasing).
 
 ### Harga Jual Marketplace Anti Boncos — 6,5 → 8,5
 `harga-jual-marketplace` · Keuangan & Akuntansi · versi 1.0.4 · diuji 2026-10-01

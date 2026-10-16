@@ -64,6 +64,10 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Bikinin SOP closing kasir laundry kiloan: tutup jam 9 malam, tunai dan QRIS, modal laci Rp200.000, dicek pemilik besok pagi. Tanpa skill skor **7** → dengan skill skor **3** (selisih -4, belum lulus acuan kami: skor dengan skill di bawah 8). Skill ini seharusnya menghasilkan SOP berformat baku (langkah kritis bertanda, tabel jika-maka, indikator, checklist cetak), tetapi di Telegram pembeli hanya menerima ringkasan dan klaim "sudah dikirim lengkap" padahal isinya tidak ada, sehingga tanpa skill justru lebih berguna. Salah angka yang ditemukan penilai: Klaim "SOP packing untuk Glowria Skin sudah saya kirim lengkap di chat" keliru: tujuan, langkah A-E, tabel jika terjadi masalah, indikator keberhasilan, dan checklist harian yang disebut tidak ada dalam balasan yang diterima pembeli (hanya "Working" lalu satu pesan ringkasan, tanpa lampiran berkas).. Catatan jujur: Di Telegram, SOP lengkap tidak sampai ke pembeli: yang terkirim hanya ringkasan dan pernyataan "sudah dikirim lengkap" yang tidak benar, sedangkan berkas yang disebut tersimpan di komputer bot dan tidak bisa dibuka pembeli. Pembeli perlu membalas meminta SOP ditampilkan ulang di chat.
+
 ## FAQ
 **Saya belum punya cara kerja yang baku. Tetap bisa?**
 Bisa. Skill memakai praktik umum untuk jenis usaha Anda dan menandai langkah yang perlu Anda sesuaikan.
