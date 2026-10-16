@@ -128,3 +128,16 @@ dan satu keluhan yang tercatat di tema tetangga ("restock ... udh nunggu lama" -
 - OpenClaw 2026.10.2 lokal, skenario 1 (toko kue Kue Nara, chat WhatsApp + ulasan Shopee; pesan identik, berkas data dibuat ulang karena aslinya tidak tersimpan). Rincian di `00-openclaw-sebelum-sesudah.md`.
 - Skor tanpa skill **5,9** -> dengan skill **8,5** (selisih +2,6), **LULUS** acuan (sesudah >= 8 dan selisih >= 1,5). Semua angka SESUDAH cocok dengan keluaran script yang dijalankan penguji (11 dari 13 pesan tanpa balasan = 84,6%, keluhan 8 dari 9, jamur 4 + semut 1); tidak ada nama pelanggan di laporan, backlog, atau draf. SEBELUM menyebut 11 nama, salah hitung (16 pesan, rata-rata 3,4), dan tidak melihat bahwa hampir semua chat tidak dibalas.
 - Sisa temuan: label "5 laporan jamur/benda asing" di satu kalimat (rincian benar 4 jamur + 1 semut); alasan menurunkan Rasa ke "Pantau" berlebihan; draf balasan memuat salah ketik "kriminal", satu tawaran kompensasi, dan "ganti/refund" tanpa tanda keputusan pemilik; draf tidak ditampilkan di chat.
+
+## Contoh disegarkan ke v1.0.12 (2026-10-16)
+Bukan uji baru: skor/verdik di atas dan di bagian uji ulang **tidak berubah**. Contoh 01–05 disamakan dengan keluaran `scripts/olah_masukan.py` v1.0.12 (perintah dan data contoh yang sama; `examples/data/anonim-2026-09.csv` dibuat ulang). Angka kunci dihitung ulang terpisah dengan `Decimal` dari hitungan mentah: cocok semua.
+
+| Contoh | Yang berubah | Angka (v1.0.12) |
+|---|---|---|
+| 01 rekap multi-kanal | keluaran script diganti utuh (dulu v1.0.1); baris "Pesan ini dihapus" tanpa tanggal tidak lagi menelan keluhan WA 22/09 "Kurir telat lagi…"; catatan verifikasi agent ditulis ulang | 52 masukan (dulu 51): Shopee 26, WhatsApp 13 (dulu 12), Survei 8, Instagram 5; sentimen 23/7/22 (44,2% / 13,5% / 42,3%); Pengiriman 10 keluhan = 19,2% (dulu 9 = 17,6%), naik +3,3 poin (Agu 2/12, Sep 7/35); Kemasan 6 = 11,5%, +6,0 poin; keluhan WA tanpa balasan 5 dari 7 (71,4%), pesan tanpa balasan 10 dari 13 (76,9%) |
+| 02 backlog | angka bukti disamakan; + baris "Keluhan WA belum dibalas" (5 dari 7); permintaan menu 3 (dulu tertulis 4, tidak sesuai data) | 10 dari 52 (19,2%); kemasan 6 (11,5%), +6,0 poin |
+| 03 tren bulan kedua | kolom Sept memakai persen bulan September versi sekarang | Pengiriman 7/35 = 20,0%; Kemasan 5/35 = 14,3% (Okt tetap ilustrasi) |
+| 04 input kurang | pesan galat berkas kosong disamakan dengan teks script sekarang (kode keluar 2, dicek) | — |
+| 05 luar cakupan | tidak memakai keluaran script; diperiksa, tidak berubah | — |
+
+Catatan pembaca: di keluaran 01 script menaruh 2 permintaan menu/paket juga di "Saran - Pengiriman" (kata kunci), dan "Porsi kecil untuk harga segitu" masuk "Perlu dibaca". Keduanya ditulis apa adanya; cara agent menanganinya ada di catatan verifikasi contoh 01. Contoh `06`–`10`, `00-*.md`, dan `HASIL-UJI-ULANG.md` dibiarkan sebagai catatan uji historis.
