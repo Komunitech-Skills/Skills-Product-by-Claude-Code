@@ -62,10 +62,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 7, 2026-10-05.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — dengan skill AI menghitung cicilan anuitas 6% efektif (Rp2.281.645, 35,1% dari laba), plafon aman 30% (±Rp64,1 jt), memperingatkan bahwa "flat 6%" setara ±11% efektif, dan menyebut hak tanpa agunan tambahan (Pasal 20); sedangkan tanpa skill AI keliru menganggap KUR berbunga "flat 6%" sehingga cicilan terhitung Rp176.688 per bulan lebih besar (Rp2,46 jt, 38% dari laba).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
+- Tanpa skill: skor 6
+- Dengan skill: skor 8,5
+Hasil: lulus — dengan skill AI menghitung cicilan anuitas 6% efektif (Rp2.281.645, 35,1% dari laba), plafon aman 30% (±Rp64,1 jt), memperingatkan bahwa "flat 6%" setara ±11% efektif, dan menyebut hak tanpa agunan tambahan (Pasal 20); sedangkan tanpa skill AI keliru menganggap KUR berbunga "flat 6%" sehingga cicilan terhitung Rp176.688 per bulan lebih besar (Rp2,46 jt, 38% dari laba).
 
 ## FAQ
 **Apakah skill ini menjamin KUR saya disetujui?**
