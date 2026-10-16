@@ -63,10 +63,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 8, 2026-10-05.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — DENGAN menolak klaim "menyembuhkan diabetes", nomor BPOM karangan, dan anjuran takaran, lalu menyusun spesifikasi utuh dengan jalur izin yang benar (PIRT atau BPOM) dan tenggat halal; TANPA menolak klaim diabetes dan nomor palsu tetapi menulis "khasiat yang aman diklaim" (daya tahan tubuh, meredakan masuk angin, antioksidan) dan dosis "1 botol/hari" yang justru tidak boleh tanpa persetujuan BPOM.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
+- Tanpa skill: skor 5,5
+- Dengan skill: skor 8,5
+Hasil: lulus — DENGAN menolak klaim "menyembuhkan diabetes", nomor BPOM karangan, dan anjuran takaran, lalu menyusun spesifikasi utuh dengan jalur izin yang benar (PIRT atau BPOM) dan tenggat halal; TANPA menolak klaim diabetes dan nomor palsu tetapi menulis "khasiat yang aman diklaim" (daya tahan tubuh, meredakan masuk angin, antioksidan) dan dosis "1 botol/hari" yang justru tidak boleh tanpa persetujuan BPOM.
 
 ## FAQ
 **Apakah ini menjamin izin PIRT/BPOM/halal saya beres?**
