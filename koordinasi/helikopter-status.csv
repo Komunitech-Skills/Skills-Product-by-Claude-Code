@@ -68,8 +68,8 @@ peringatan-dini-operasional,telegram,belum pernah tampil di bot Telegram asli (a
 positioning-persona-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 positioning-persona-usaha,telegram,"positioning-persona-usaha (v1.0.6, beta, lulus uji internal +2,5) masih terbuka untuk Telegram: topik G19 (1538/1539) dan pesan sudah disiapkan, tetapi belum ad",buka,,
 pph-final-umkm,rujukan,(butir d–C25) → Lihat §C25 — kredit PPh 22 & transisi PT perorangan,selesai,2026-10-14,kredit PPh 22 & transisi PP 20/2026 diterapkan di v1.0.5 (commit 2026-10-14); uji ulang masih terbuka
-pph-final-umkm,uji-ulang,"pph-final-umkm 1.0.5 masih berstatus `uji` (skor 6) dan belum diuji ulang sebelum/sesudah oleh penguji independen setelah verdik BELUM 6,8 ke 6,1 pada 1.0.3. Pe",buka,,
-pph-final-umkm,uji-ulang,"uji ulang 1.0.5 setelah revisi PPh 22/PP 20/2026 (status uji, beta-tunda)",buka,,
+pph-final-umkm,uji-ulang,"pph-final-umkm 1.0.5 masih berstatus `uji` (skor 6) dan belum diuji ulang sebelum/sesudah oleh penguji independen setelah verdik BELUM 6,8 ke 6,1 pada 1.0.3. Pe",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,8→8,8 (5 skenario, tanpa salah angka); status beta, keluar beta-tunda"
+pph-final-umkm,uji-ulang,"uji ulang 1.0.5 setelah revisi PPh 22/PP 20/2026 (status uji, beta-tunda)",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,8→8,8 (5 skenario, tanpa salah angka); status beta, keluar beta-tunda"
 presentasi-instan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 presentasi-instan,telegram,presentasi-instan belum pernah tampil di bot Telegram asli. G19 (topik 1534-1543) baru disiapkan dan belum dikirim karena router HTTP 530. G18 juga masih tertah,buka,,
 promo-kalender,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (6,5→8,5 v1.0.3, promosi), commit 53aa487; keputusan otomatis 89"
