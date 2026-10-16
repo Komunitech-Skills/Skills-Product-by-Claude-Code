@@ -7,8 +7,8 @@ arsip-nota,telegram,"arsip-nota (beta, v1.0.7, skor 8, bukan arsip) masih menung
 arsip-nota,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,gelombang 18 2026-10-16: BELUM 7→8 (v1.0.7)
 arus-kas-13minggu,uji-ulang,Revisi 1.0.5 arus-kas-13minggu sudah ada tetapi belum diuji ulang oleh penguji independen (skenario 5 yang habis waktu pada 1.0.4 belum dijalankan lagi); skill ,selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,75→8,4 (3 skenario ulang, cacat habis waktu/piutang/CSV hilang); keluar beta-tunda"
 arus-kas-13minggu,uji-ulang,"uji ulang 1.0.5 (skenario 5 habis waktu, opsi piutang, pemisah CSV; beta-tunda)",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,75→8,4 (3 skenario ulang, cacat habis waktu/piutang/CSV hilang); keluar beta-tunda"
-audit-akun-iklan,telegram,"Gelombang Telegram 19 untuk audit-akun-iklan masih terbuka: topik 1534–1543, msgs-g19.json dan salinan skill ke home bot sudah disiapkan, tetapi pesan belum dik",buka,,
-audit-akun-iklan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+audit-akun-iklan,telegram,"Gelombang Telegram 19 untuk audit-akun-iklan masih terbuka: topik 1534–1543, msgs-g19.json dan salinan skill ke home bot sudah disiapkan, tetapi pesan belum dik",selesai,2026-10-16,"gelombang 19 2026-10-16: BELUM 7,5→6 (v1.0.6)"
+audit-akun-iklan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 19 2026-10-16: BELUM 7,5→6 (v1.0.6)"
 audit-seo-toko-online,telegram,"audit-seo-toko-online masih terbuka: G23 (topik 1580/1581, 2 dari 6 pesan gelombang) baru disiapkan dan belum dikirim ke bot Telegram asli karena router HTTP 53",buka,,
 audit-seo-toko-online,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 balas-chat-cs,telegram,"balas-chat-cs (v1.0.5, beta, lulus uji internal 6,4→8,8) belum pernah tampil di bot Telegram asli. G20 baru disiapkan (topik 1545–1554, pesan, salinan skill) da",buka,,
@@ -25,8 +25,8 @@ checklist-keamanan-pangan-usaha,rujukan,SPP-IRT → Sebut SPP-IRT + tahun,selesa
 copy-landing-page,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 copy-landing-page,telegram,"copy-landing-page (1.0.7, beta) belum pernah tampil di bot Telegram asli: pesan G22 (topik 1567–1576) sudah disiapkan tetapi belum dikirim karena router HTTP 53",buka,,
 crm-wa,rujukan,"WhatsApp Business policy → README: Copilot/opt-in, bukan auto-blast",selesai,2026-10-15,revisi v1.0.11 commit 205c07a (verifikasi independen lolos)
-cv-lamaran-ats,telegram,"Item masih terbuka: G19 (cv-lamaran-ats) baru siap secara persiapan (topik 1534-1543, pesan, salinan skill) tetapi belum pernah dikirim ke bot Telegram asli kar",buka,,
-cv-lamaran-ats,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+cv-lamaran-ats,telegram,"Item masih terbuka: G19 (cv-lamaran-ats) baru siap secara persiapan (topik 1534-1543, pesan, salinan skill) tetapi belum pernah dikirim ke bot Telegram asli kar",selesai,2026-10-16,gelombang 19 2026-10-16: BELUM 7→8 (v1.1.3)
+cv-lamaran-ats,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,gelombang 19 2026-10-16: BELUM 7→8 (v1.1.3)
 dasbor-lokal,telegram,"Skill dasbor-lokal (G23, topik 1578–1583, 6 pesan bersama audit-seo-toko-online dan analisis-excel) masih terbuka: pra-cek uji-tg.sh belum dijalankan dan pesan ",buka,,
 dasbor-lokal,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 ekstrak-nota-faktur,telegram,Pesan Telegram G18 untuk ekstrak-nota-faktur (topik 1486/1487) belum dikirim dan pra-cek uji-tg.sh belum dijalankan; gelombang G18 terhenti di pesan 1 dari 10 k,selesai,2026-10-16,"gelombang 18 2026-10-16: BELUM 4,5→7,5 (v1.0.4)"
@@ -65,13 +65,13 @@ pantau-pasar-kripto,uji-ulang,bukti sebelum/sesudah per skill belum ada (data la
 pengingat-pasien-klinik,uji-ulang,"pengingat-pasien-klinik (beta, katalog 1.0.9) masih perlu uji sebelum/sesudah per skill oleh penguji independen di OpenClaw, karena berkas examples/00 hanya sal",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (3,0→9,0 v1.0.6, promosi), commit 513fef9; keputusan otomatis 89"
 peringatan-dini-operasional,telegram,"Item masih terbuka: G21 untuk peringatan-dini-operasional baru berupa persiapan (topik 1556–1565, msgs-g21.json) dan belum dikirim karena router HTTP 530. Tersi",buka,,
 peringatan-dini-operasional,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-positioning-persona-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-positioning-persona-usaha,telegram,"positioning-persona-usaha (v1.0.6, beta, lulus uji internal +2,5) masih terbuka untuk Telegram: topik G19 (1538/1539) dan pesan sudah disiapkan, tetapi belum ad",buka,,
+positioning-persona-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 19 2026-10-16: LOLOS 5→8,5 (v1.0.6)"
+positioning-persona-usaha,telegram,"positioning-persona-usaha (v1.0.6, beta, lulus uji internal +2,5) masih terbuka untuk Telegram: topik G19 (1538/1539) dan pesan sudah disiapkan, tetapi belum ad",selesai,2026-10-16,"gelombang 19 2026-10-16: LOLOS 5→8,5 (v1.0.6)"
 pph-final-umkm,rujukan,(butir d–C25) → Lihat §C25 — kredit PPh 22 & transisi PT perorangan,selesai,2026-10-14,kredit PPh 22 & transisi PP 20/2026 diterapkan di v1.0.5 (commit 2026-10-14); uji ulang masih terbuka
 pph-final-umkm,uji-ulang,"pph-final-umkm 1.0.5 masih berstatus `uji` (skor 6) dan belum diuji ulang sebelum/sesudah oleh penguji independen setelah verdik BELUM 6,8 ke 6,1 pada 1.0.3. Pe",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,8→8,8 (5 skenario, tanpa salah angka); status beta, keluar beta-tunda"
 pph-final-umkm,uji-ulang,"uji ulang 1.0.5 setelah revisi PPh 22/PP 20/2026 (status uji, beta-tunda)",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,8→8,8 (5 skenario, tanpa salah angka); status beta, keluar beta-tunda"
-presentasi-instan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-presentasi-instan,telegram,presentasi-instan belum pernah tampil di bot Telegram asli. G19 (topik 1534-1543) baru disiapkan dan belum dikirim karena router HTTP 530. G18 juga masih tertah,buka,,
+presentasi-instan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 19 2026-10-16: BELUM 6,9→7,5 (v1.1.5)"
+presentasi-instan,telegram,presentasi-instan belum pernah tampil di bot Telegram asli. G19 (topik 1534-1543) baru disiapkan dan belum dikirim karena router HTTP 530. G18 juga masih tertah,selesai,2026-10-16,"gelombang 19 2026-10-16: BELUM 6,9→7,5 (v1.1.5)"
 promo-kalender,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (6,5→8,5 v1.0.3, promosi), commit 53aa487; keputusan otomatis 89"
 promo-kalender,uji-ulang,"promo-kalender 1.0.4 (beta) baru punya salinan ringkasan satu skenario uji solusi VIP Toko Online (6,5 ke 8,5 pada 1.0.3), tanpa baris di promosi/sebelum-sesuda",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (6,5→8,5 v1.0.3, promosi), commit 53aa487; keputusan otomatis 89"
 proposal-kerjasama,rujukan,Bea meterai UU 10/2020 → Tandai COCOK di `regulasi.md`,selesai,2026-10-15,revisi v1.0.11 commit 3c4d239 (verifikasi independen lolos)
@@ -103,8 +103,8 @@ strategi-harga-produk,telegram,"strategi-harga-produk masih punya satu pekerjaan
 studio-video-pendek-ai,telegram,"Gelombang 21 Telegram untuk studio-video-pendek-ai masih terbuka: topik 1556–1565 dan pesan sudah disiapkan, tetapi belum dikirim (router HTTP 530) dan pra-cek ",buka,,
 studio-video-pendek-ai,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 surat-penawaran-harga,rujukan,"Footnote meterai di references/regulasi.md surat-penawaran-harga (baris 28 dan 35) masih bersumber online-pajak.com dengan catatan ""belum dibaca langsung — perl",selesai,2026-10-15,revisi v1.0.6 commit da29ad6 (verifikasi independen lolos)
-surat-penawaran-harga,telegram,"G19 (surat-penawaran-harga, topik 1534-1543) baru disiapkan dan belum dikirim; masih menunggu router pulih dari HTTP 530, restart gateway, pra-cek uji-tg.sh, G1",buka,,
-surat-penawaran-harga,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+surat-penawaran-harga,telegram,"G19 (surat-penawaran-harga, topik 1534-1543) baru disiapkan dan belum dikirim; masih menunggu router pulih dari HTTP 530, restart gateway, pra-cek uji-tg.sh, G1",selesai,2026-10-16,"gelombang 19 2026-10-16: LOLOS 6,5→8,5 (v1.0.6)"
+surat-penawaran-harga,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 19 2026-10-16: LOLOS 6,5→8,5 (v1.0.6)"
 surat-resmi,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 surat-resmi,telegram,"surat-resmi (LULUS internal 6,75 ke 8,75, versi 1.0.3, status beta) belum pernah tampil sebagai skill target di bot Telegram asli. Pesan G20 (topik 1545-1554) b",buka,,
 tagih-piutang,rujukan,Somasi vs perjanjian → Satu kalimat somasi tidak selalu wajib,selesai,2026-10-15,revisi v1.0.8 commit e4c0597 (verifikasi independen lolos)

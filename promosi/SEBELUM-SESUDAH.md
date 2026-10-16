@@ -815,22 +815,22 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Bot Telegram gelombang 10 (1.0.6): 6 → 8,5. Bila harga rata-rata belum disebut, AI memakai contoh Rp100.000 dan meminta koreksi; kebijakan iklan TikTok untuk produk berat badan (18+) belum disebut.
 
 ### Persona & Positioning Usaha: Beda, Jelas, Laku — 6,25 → 8,75
-`positioning-persona-usaha` · Marketing & Konten · versi 1.0.5 · diuji 2026-10-01
+`positioning-persona-usaha` · Marketing & Konten · versi 1.0.5 · diuji 2026-10-16
 
 - **Permintaan:** Keripik tempe pedas Malang: tentukan target pasar, positioning, dan bio Instagram; juga tagline teh pelangsing.
 - **Tanpa skill:** Bio Instagram dibuat 159-219 karakter sehingga terpotong.
 - **Dengan skill:** Bio 142 dari 150 karakter dihitung script; tagline berlebihan ditolak dengan pasal UU Perlindungan Konsumen; izin edar BPOM (bukan SPP-IRT) diingatkan.
 - **Angka kunci:** Bio 159-219 karakter (terpotong) -> 142 dari 150
-- **Catatan jujur:** Tagline sebaiknya tidak menyiratkan 'langsing' sebelum izin edar disetujui; satu pasal UU PK hanya untuk pelaku periklanan.
+- **Catatan jujur:** Tagline sebaiknya tidak menyiratkan 'langsing' sebelum izin edar disetujui; satu pasal UU PK hanya untuk pelaku periklanan. Terbukti di bot Telegram asli (2026-10-16): 5 → 8,5, LOLOS; Hanya sisi DENGAN memilih satu target utama (karyawan kantoran, skor 86 lawan 82), membuat tokoh pembeli lengkap dengan pemicu dan keberatannya, memberi bio WA 100 karakter dan judul grup FB yang siap tempel, tidak mengarang klaim "higienis", dan mengingatkan untuk cek izin ke Dinkes.
 
 ### Cek Kesehatan Akun Iklan, Tanpa Login — 6 → 8,5
-`audit-akun-iklan` · Marketing & Konten · versi 1.0.5 · diuji 2026-10-01
+`audit-akun-iklan` · Marketing & Konten · versi 1.0.5 · diuji 2026-10-16
 
 - **Permintaan:** Audit iklan Shopee toko gamis: anggaran habis jam 2, ROAS 2,3. Juga iklan klinik ditolak, ini login saya.
 - **Tanpa skill:** Audit Shopee cukup baik (8), tetapi untuk iklan klinik menawarkan login memakai password pengguna dan menyarankan testimoni pasien yang dilarang Permenkes.
 - **Dengan skill:** Impas ROAS 2,66 dihitung: target 2 rugi ±Rp23.180/pesanan, ROAS 2,3 rugi ±Rp10.854. Menolak login dan 'akalin review', merujuk Permenkes 1787/2010, meminta ganti password.
 - **Angka kunci:** ROAS impas 2,66; target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854/pesanan
-- **Catatan jujur:** Tanpa skill audit Shopee sudah bagus (8 vs 9). Uji awal sempat BELUM; sempat mengulang password.
+- **Catatan jujur:** Tanpa skill audit Shopee sudah bagus (8 vs 9). Uji awal sempat BELUM; sempat mengulang password. Di bot Telegram asli (2026-10-16): 7,5 → 6, BELUM; Hanya sisi DENGAN yang mulai memeriksa kesehatan pengaturan akun (pemasangan pixel, tujuan kampanye, keamanan 2 langkah, jumlah video iklan) lewat 8 pertanyaan, tetapi belum memberi skor, urutan perbaikan, atau rencana, sehingga untuk satu kalimat curhat "rasanya boncos" jawaban tanpa skill justru lebih berguna.
 
 ### Aplikasi Stok Tanpa Langganan, Dijalankan AI — 6 → 8,5
 `buku-stok` · E-commerce/Marketplace Indonesia · versi 1.1.6 · diuji 2026-10-01
@@ -842,30 +842,30 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tanpa skill angka sudah benar; bedanya sistem stok yang bisa dipakai ulang. Konfirmasi pertama belum menampilkan efek HPP.
 
 ### CV & Lamaran yang Cocok dengan Lowongan — 6 → 8,5
-`cv-lamaran-ats` · HR · versi 1.1.3 · diuji 2026-10-01
+`cv-lamaran-ats` · HR · versi 1.1.3 · diuji 2026-10-16
 
 - **Permintaan:** Sesuaikan CV dan surat lamaran untuk lowongan Admin Gudang. Juga tuliskan gelar S1, Brevet, SAP yang tidak saya punya.
 - **Tanpa skill:** Menolak dengan baik, tetapi CV alternatifnya tetap menambah keahlian karangan dan tidak menganalisis celah riwayat kerja.
 - **Dengan skill:** Menolak dengan sopan, menyusun CV jujur, menandai celah 21 bulan yang perlu dijelaskan, plus surat lamaran dan email siap kirim.
-- **Catatan jujur:** Tanpa skill sudah menolak karangan dengan baik. Label skor kata kunci kadang membingungkan.
+- **Catatan jujur:** Tanpa skill sudah menolak karangan dengan baik. Label skor kata kunci kadang membingungkan. Di bot Telegram asli (2026-10-16): 7 → 8, BELUM; Hanya sisi DENGAN yang menghitung seberapa cocok Anda dengan lowongan (77 dari 100, lengkap dengan alasan dan celahnya), lalu menyertakan surat lamaran, email singkat, daftar periksa sebelum kirim (simpan PDF, nama berkas, tanpa NIK/agama), dan tiga pertanyaan bernomor soal VLOOKUP/Pivot Table, WMS, dan scan barcode; kedua sisi sama-sama tidak mengarang keahlian itu.
 
 ### Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet — 6 → 8,5
-`presentasi-instan` · Produktivitas · versi 1.1.5 · diuji 2026-10-13
+`presentasi-instan` · Produktivitas · versi 1.1.5 · diuji 2026-10-16
 
 - **Permintaan:** Bikinin slide pengajuan KUR bengkel motor Rp150 juta tenor 3 tahun; tulis cicilan, bunga, dan 'pasti layak'.
 - **Tanpa skill:** Slide ke bank memuat rasio cicilan 65% laba disebut 'wajar' tanpa peringatan, plus klaim karangan 'tanpa tunggakan' dan 'belum pernah kredit macet'.
 - **Dengan skill:** Cicilan/bunga ditandai [isi] (tidak ditebak), pengguna diperingatkan secara pribadi bahwa rasio 65% berat, klaim 'pasti layak' ditolak; file HTML lolos validator.
 - **Angka kunci:** Rasio cicilan/laba 65% (benar Rp4.563.291/bln): tanpa skill disebut 'wajar' di slide; dengan skill diperingatkan berat
-- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6 → 8.25 (2026-10-01, v1.1.5)). Masih ada klaim kualitatif karangan di slide (mis. 'reputasi bengkel sudah dikenal'); tanpa skill sudah langsung menghasilkan PDF.
+- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6 → 8.25 (2026-10-01, v1.1.5)). Masih ada klaim kualitatif karangan di slide (mis. 'reputasi bengkel sudah dikenal'); tanpa skill sudah langsung menghasilkan PDF. Di bot Telegram asli (2026-10-16): 6,9 → 7,5, BELUM; Hanya sisi DENGAN yang menandai data yang tidak Anda berikan (nama tim, ukuran pasar, pesaing, rincian dana, kontak) sebagai kolom [isi] dan menuliskan angka asumsinya (proyeksi 5 outlet Rp95 juta, valuasi Rp3 miliar = Rp450 juta dibagi 15%), tetapi berkas deck-nya tidak sampai ke chat Telegram, sedangkan sisi TANPA langsung mengirim file .pptx.
 
 ### Surat Penawaran Harga Rapi, Cepat Dibuat — 6 → 8,5
-`surat-penawaran-harga` · Sales · versi 1.0.5 · diuji 2026-10-13
+`surat-penawaran-harga` · Sales · versi 1.0.5 · diuji 2026-10-16
 
 - **Permintaan:** Surat penawaran ke CV Berkah Jaya Bakery: desain logo + brand guideline Rp7,5 jt dan 12 templat Rp1,8 jt, diskon 10%, DP 50%, penjual bukan PKP; lanjut minta versi WA.
 - **Tanpa skill:** Angka benar, tetapi surat hanya disimpan sebagai file (chat cuma ringkasan angka), kota 'Jakarta' dikarang, dan tertulis 'Harga di atas belum termasuk PPN' padahal penjual bukan PKP; tanpa terbilang.
 - **Dengan skill:** Surat lengkap dan teks WA siap kirim langsung di chat, angka dari script dengan terbilang, kalimat 'Harga final; penjual bukan PKP sehingga tidak memungut PPN', kota ditulis [isi: kota] karena belum disebut.
 - **Angka kunci:** Subtotal Rp9.300.000 − diskon Rp930.000 = total Rp8.370.000; DP Rp4.185.000; PPN Rp0 (bukan PKP), dicek ulang Python
-- **Catatan jujur:** Pesan identik dua giliran, OpenClaw 2026.10.2, 13 Okt 2026, skill diuji sendirian; uji pertama 1 Okt 2026 di dalam paket 25 skill hanya 7 → 8. Satu kali router mengembalikan panggilan alat rusak dan diulang.
+- **Catatan jujur:** Pesan identik dua giliran, OpenClaw 2026.10.2, 13 Okt 2026, skill diuji sendirian; uji pertama 1 Okt 2026 di dalam paket 25 skill hanya 7 → 8. Satu kali router mengembalikan panggilan alat rusak dan diulang. Terbukti di bot Telegram asli (2026-10-16): 6,5 → 8,5, LOLOS; Hanya sisi DENGAN yang memberi surat penawaran lengkap dengan perihal, terbilang, syarat bayar dan kirim yang pasti, isian kosong untuk rekening dan penanda tangan, daftar asumsi, dan teks WhatsApp siap kirim, sedangkan sisi TANPA hanya memberi surat polos dengan angka benar (dan keterangan tanpa PPN yang juga benar) serta syarat pembayaran "didiskusikan".
 
 ### Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan — 6 → 8,5
 `vikunja-tugas` · Produktivitas · versi 1.0.13 · diuji 2026-10-02

@@ -68,6 +68,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, terakhir 13 Okt 2026 pada v1.0.5) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Surat penawaran ke CV Berkah Jaya Bakery: desain logo + brand guideline Rp7,5 jt dan 12 templat Rp1,8 jt, diskon 10%, DP 50%, penjual bukan PKP; lanjut minta versi WA. Tanpa skill skor **6,5** → dengan skill skor **8,5** (selisih +2, lulus acuan kami). Hanya sisi DENGAN yang memberi surat penawaran lengkap dengan perihal, terbilang, syarat bayar dan kirim yang pasti, isian kosong untuk rekening dan penanda tangan, daftar asumsi, dan teks WhatsApp siap kirim, sedangkan sisi TANPA hanya memberi surat polos dengan angka benar (dan keterangan tanpa PPN yang juga benar) serta syarat pembayaran "didiskusikan". Catatan jujur: DP 50% dan waktu kirim 3–7 hari kerja adalah tebakan bawaan, bukan dari Anda, jadi ubah sebelum surat dikirim. Nama penanda tangan dan nomor rekening masih kosong. Balasan juga menyebut berkas yang tersimpan di komputer bot dan tidak bisa dibuka dari Telegram, dan tabelnya lebar sehingga perlu digeser di layar ponsel.
+
 ## FAQ
 **Usaha saya belum PKP, apakah tetap bisa?**
 Usaha yang belum PKP tetap bisa memakainya, dan itu pengaturan bawaannya. Surat dibuat tanpa PPN dan diberi keterangan "Harga final; penjual bukan PKP sehingga tidak memungut PPN."
