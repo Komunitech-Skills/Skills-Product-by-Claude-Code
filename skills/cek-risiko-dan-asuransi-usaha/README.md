@@ -1,6 +1,6 @@
 # Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak
 
-*Peta risiko usaha Anda dan dana darurat yang masuk akal, dalam satu tabel.*
+*Peta risiko usaha Anda dan dana darurat yang masuk akal, dalam satu jawaban.*
 
 Diuji AI penguji independen di OpenClaw: 6,6 → 9,0 dari 10 (tanpa skill hanya daftar risiko umum dan rentang dana darurat; dengan skill tiap risiko berskor dengan keputusan asuransinya dan target dana darurat dihitung).
 
@@ -17,7 +17,7 @@ Diuji AI penguji independen di OpenClaw: 6,6 → 9,0 dari 10 (tanpa skill hanya 
 Pemilik usaha kecil yang bingung apakah perlu asuransi, dan profesional yang membantu mereka. Tidak perlu paham istilah asuransi.
 
 ## Cara pakai
-Ketik satu kalimat, mis. "Kafe saya di ruko dekat sungai, 3 karyawan, apa risikonya dan perlu asuransi apa?" Hasil langsung berupa tabel; di akhir ada maksimal 3 pertanyaan.
+Ketik satu kalimat, mis. "Kafe saya di ruko dekat sungai, 3 karyawan, apa risikonya dan perlu asuransi apa?" Hasil langsung berupa peta risiko; di akhir ada maksimal 3 pertanyaan. Di komputer tampil sebagai tabel. Di Telegram atau WhatsApp (layar HP) tampil sebagai blok pendek per risiko, tanpa tabel lebar: ringkasan 3 prioritas teratas dulu, dan sisanya dikirim setelah Anda membalas "lanjut" (tiap pesan paling banyak 3.500 karakter). Istilah asuransi seperti premi (biaya asuransi) dan polis (surat perjanjian asuransi) dijelaskan sekali dalam kurung.
 
 ## Sebelum / sesudah
 Contoh: toko kelontong di Semarang Utara yang sering kena banjir rob (air laut pasang); satu pesan yang sama, jawaban AI tanpa dan dengan skill. Angka ujinya ada di bagian "Hasil uji" di bawah.
@@ -25,7 +25,7 @@ Contoh: toko kelontong di Semarang Utara yang sering kena banjir rob (air laut p
 - **Tanpa skill:** daftar risiko umum, perkiraan premi (biaya asuransi) dan tarif iuran BPJS dari ingatan, arisan ikut dihitung sebagai biaya tetap tanpa catatan, dana darurat hanya berupa rentang ("11,5 sampai 23 juta"), tanpa skor dan tanpa keputusan "perlu asuransi atau tidak" per risiko.
 - **Dengan skill:** 9 risiko diberi skor dan tingkat, tiap risiko ada keputusan asuransinya (utang pelanggan macet ditulis "tidak ada asuransi umum, pakai langkah lain"), dana darurat dihitung dengan rumus tetap, hasilnya "kurang Rp4.050.000, sisihkan Rp675.000 per bulan selama 6 bulan", tanpa merek dan tanpa premi karangan.
 
-Cuplikan keluaran dengan skill (uji isi oleh agent, bukan uji OpenClaw; dipotong; `examples/06-kelontong-semarang-uji-ulang.md`):
+Cuplikan keluaran dengan skill, tampilan tabel untuk layar komputer (uji isi oleh agent, bukan uji OpenClaw; dipotong; `examples/06-kelontong-semarang-uji-ulang.md`):
 
 > | No | Risiko | Kemungkinan | Dampak | Skor/Tingkat | Langkah murah minggu ini | Perlu asuransi? |
 > |---|---|---|---|---|---|---|
@@ -65,4 +65,4 @@ Terkait: skill Laporan Insiden Usaha (untuk kejadian yang sudah terjadi) dan ski
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

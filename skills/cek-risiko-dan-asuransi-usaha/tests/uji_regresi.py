@@ -238,5 +238,60 @@ class Tes(unittest.TestCase):
         self.assertIn("Kebakaran", o)
 
 
+    # ---- v1.0.3: tampilan chat ----
+    def _data_chat(self, n=9):
+        return [{"nama": f"Risiko {i}", "kemungkinan": 1 + i % 5, "dampak": 1 + (i * 2) % 5} for i in range(n)]
+
+    def test_chat_tanpa_tabel_dan_ringkasan_tiga_teratas(self):
+        j = tmp_json(self._data_chat(6))
+        k, o, _ = jalan("risiko", j, "--tampilan", "chat")
+        self.assertEqual(k, 0)
+        self.assertNotIn("|", o)
+        self.assertNotIn("---", o)
+        self.assertTrue(o.startswith("Tiga prioritas teratas:"))
+        # ringkasan memuat tiga risiko skor tertinggi sama dengan urutan tabel
+        h = c.hitung_risiko(self._data_chat(6))
+        ringkas = o.split("Rincian per risiko:")[0]
+        for i, r in enumerate(h[:3], 1):
+            self.assertIn(f"{i}. {r['nama']} \u00b7 {r['tingkat']} (skor {r['skor']})", ringkas)
+        self.assertNotIn(h[3]["nama"], ringkas)
+        # tiap risiko ada keenam butir: nama, tingkat, dampak, langkah, perlindungan, prioritas
+        for kata in ("Dampak kira-kira:", "Langkah pencegahan:", "Perlindungan/asuransi:", "Prioritas:"):
+            self.assertEqual(o.count(kata), 6, kata)
+
+    def test_chat_angka_sama_dengan_tabel_dan_pesan_dibagi(self):
+        data = self._data_chat(9)
+        j = tmp_json(data)
+        _, tabel, _ = jalan("risiko", j)
+        _, chat, _ = jalan("risiko", j, "--tampilan", "chat")
+        for r in c.hitung_risiko(data):
+            self.assertIn(f"skor {r['skor']} = kemungkinan {r['kemungkinan']} x dampak {r['dampak']}", chat)
+            self.assertIn(r["perlu_asuransi"], chat)
+            self.assertIn(r["respons"], chat)
+        self.assertEqual(chat.count("<<< PESAN BERIKUTNYA"), 2)  # 9 blok = 4 + 4 + 1
+        for bagian in chat.split(c.PENANDA_PESAN):
+            self.assertLess(len(bagian), 3000)
+        # 4 blok atau kurang: tidak ada penanda
+        _, kecil, _ = jalan("risiko", tmp_json(self._data_chat(4)), "--tampilan", "chat")
+        self.assertNotIn("PESAN BERIKUTNYA", kecil)
+
+    def test_chat_kerugian_rupiah_dan_bpjs_dan_istilah(self):
+        j = tmp_json([{"nama": "Kebakaran", "kemungkinan": 2, "dampak": 5, "kerugian_rp": 80000000},
+                      {"nama": "Karyawan cedera kerja", "kemungkinan": 3, "dampak": 3}])
+        k, o, _ = jalan("risiko", j, "--tampilan", "chat")
+        self.assertIn("perkiraan rugi Rp80.000.000", o)
+        self.assertIn("BPJS: kewajiban pemberi kerja", o)
+        self.assertIn("JKK/jaminan kecelakaan kerja", o)  # istilah dijelaskan
+        self.assertIn("setara sekitar 1 bulan biaya tetap", o)
+
+    def test_chat_input_rusak_tetap_ditolak_jelas(self):
+        k, _, e = jalan("risiko", tmp_json([{"nama": "A", "kemungkinan": 9, "dampak": 1}]), "--tampilan", "chat")
+        self.assertEqual(k, 2)
+        self.assertIn("tidak valid", e)
+        with self.assertRaises(SystemExit):
+            with redirect_stderr(io.StringIO()):
+                c.main(["risiko", "x.json", "--tampilan", "lain"])
+
+
 if __name__ == "__main__":
     unittest.main()

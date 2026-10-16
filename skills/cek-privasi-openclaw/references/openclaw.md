@@ -188,3 +188,27 @@ rujuk ke `~/.openclaw` (lihat §"Penyimpanan memori/log" di `SKILL.md`).
   ini (tanpa Gateway).
 - Nilai bawaan **sebenarnya** yang dipakai komputer pengguna — selalu bisa berbeda dari skema;
   jangan disamakan tanpa mengecek `config get`/`approvals get` langsung di mesin pengguna.
+
+## 10. Mengunci izin berkas (tawaran "rapikan" di kanal chat)
+
+`chmod` adalah perintah sistem Linux/macOS, **bukan** perintah OpenClaw. Dalam uji OpenClaw 1 Okt
+2026 (`examples/00-openclaw-sebelum-sesudah.md`), `chmod 600` pada berkas config dan `chmod 700`
+pada folder pengaturan hanya mengubah izin; isi `openclaw.json` tidak berubah. Dipakai untuk temuan
+audit yang menyebut berkas/folder pengaturan bisa dibaca akun lain (contoh checkId yang pernah
+muncul: `fs.config.perms_world_readable`, `fs.state_dir.perms_readable`).
+
+Urutan kerja (semuanya setelah pengguna membalas "rapikan" pada pesan yang memuat tawarannya):
+1. **Sebelum menawarkan:** baca izin & pemilik sekarang dari path yang disebut temuan audit
+   (`ls -ld <path>`), catat nilainya untuk pembatalan. Jangan menampilkannya di chat.
+2. **Ubah:** `chmod 600 <berkas config>` dan `chmod 700 <folder pengaturan>`. Hanya path yang
+   disebut temuan audit; **tanpa `-R`**, tanpa menyentuh folder workspace atau berkas lain, tanpa
+   `sudo`. Jika berkas dimiliki akun lain (perintah ditolak), berhenti dan laporkan "belum berhasil".
+3. **Verifikasi:** `ls -ld` lagi dan jalankan ulang `openclaw security audit --json`; laporkan
+   hanya yang terbukti (temuan izin berkas hilang atau masih ada).
+4. **Pembatalan ("kembalikan"):** `chmod` ke nilai yang dicatat di langkah 1, lalu verifikasi.
+5. **Bukan** `openclaw security audit --fix`: itu juga mengubah nilai config (lihat §1).
+6. **Windows:** `chmod` tidak mengatur izin berkas Windows. Jangan tawarkan "rapikan"; tulis sebagai
+   saran manual ("minta pemasang OpenClaw Anda memeriksa siapa saja yang bisa membuka folder
+   pengaturan"). Perilaku audit izin berkas di Windows belum diverifikasi.
+Di chat, ringkasan perubahan memakai kata awam (lihat `references/format-kanal-chat.md`); jalur
+dan angka izin hanya muncul bila pengguna meminta "tampilkan perintahnya".

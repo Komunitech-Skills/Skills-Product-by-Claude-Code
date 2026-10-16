@@ -3,7 +3,9 @@
 Setiap perbaikan yang ditawarkan skill ini **wajib** menyertakan baris "**Efek yang berhenti
 bekerja**" (lihat Format Output di `SKILL.md`). Tabel ini adalah sumber kebenarannya — semua
 baris **diverifikasi langsung** di OpenClaw 2026.9.5 (mesin uji terisolasi) atau dari docs resmi
-`docs.openclaw.ai` yang dikutip apa adanya.
+`docs.openclaw.ai` yang dikutip apa adanya. Tabel ini untuk agent: di kanal chat (Telegram,
+WhatsApp) tulis ulang isinya dalam kata awam tanpa nama kunci pengaturan, jalur, atau perintah —
+lihat `references/format-kanal-chat.md`.
 
 | Perubahan | Apa yang BERHENTI bekerja | Kapan aman dilakukan |
 |---|---|---|
@@ -15,6 +17,7 @@ baris **diverifikasi langsung** di OpenClaw 2026.9.5 (mesin uji terisolasi) atau
 | `agents.defaults.sandbox.mode` → `all` | AI berjalan di kotak pasir (container) untuk **setiap** sesi. **Butuh Docker (atau Podman) terpasang & berjalan** di komputer pengguna (dari docs `gateway/sandboxing`: backend sandbox berbasis Docker/Podman). Tanpa Docker, agent bisa gagal jalan sama sekali. | Hanya tawarkan setelah menanyakan apakah Docker Desktop/Podman sudah terpasang. Kalau pengguna awam dan belum punya Docker, ini **bukan** perbaikan "satu klik" — jelaskan sebagai langkah lanjutan yang butuh instalasi tambahan, jangan jalankan `config set` begitu saja. |
 | `gateway.auth.mode` (mis. `none` → `token`) | OpenClaw sendiri memberi peringatan: **"Restart the gateway to apply."** — perubahan tidak aktif sampai Gateway di-restart, dan klien (Control UI/app) butuh token baru untuk tetap bisa login. **Hanya mengubah `gateway.auth.mode` ke `token` TANPA token asli tidak memperbaiki apa pun** — `security audit` tetap menandai `critical` (`gateway.loopback_no_auth`) sampai ada token nyata. | Jangan set `gateway.auth.mode` manual sendirian — pakai `openclaw doctor --generate-gateway-token` (terverifikasi: membuat token asli sekaligus mengatur `gateway.auth.mode: "token"`, dan mencadangkan config lama). Jelaskan langkah restart & di mana menyalin token baru **sebelum** menjalankan. Untuk pengguna yang sangat awam, sarankan ini dilakukan bersama jasa setup/pendampingan. |
 | `openclaw security audit --fix` | **Bukan hanya** merapikan izin file. Terbukti di mesin uji: `--fix` juga **mengubah nilai config secara langsung**, contoh terverifikasi: `channels.<kanal>.groupPolicy` dari `open` menjadi `allowlist` otomatis. **Grup tetap terbuka setelah `--fix`** selama `groupAllowFrom` kosong dan `allowFrom` masih `["*"]` (fallback). Anggap `--fix` sebagai gabungan beberapa perubahan config sekaligus, bukan operasi "aman & netral". | Jelaskan dulu daftar findings yang akan disentuh `--fix` (dari hasil `security audit --json` sebelumnya) sebelum menjalankan, seperti perbaikan config manapun — bukan langsung dijalankan karena "cuma --fix". |
+| **Kunci izin berkas pengaturan** — berkas config dan folder pengaturan OpenClaw dari "bisa dibaca akun lain" menjadi hanya pemilik (izin 600 untuk berkas, 700 untuk folder; tawaran "rapikan" di chat) | Tidak ada fitur OpenClaw yang berhenti bila OpenClaw berjalan dengan akun pemilik berkas (uji 1 Okt 2026: isi config tidak berubah). Yang berhenti hanya **akun/program lain di komputer yang sebelumnya bisa membaca** berkas itu — termasuk bila OpenClaw sengaja dijalankan oleh akun berbeda dari pemilik berkas. | Aman untuk komputer yang dipakai sendiri. Tanyakan/sebutkan bila komputer dipakai bersama atau OpenClaw dijalankan sebagai layanan oleh akun lain. Catat izin lama sebelum mengubah; cara membatalkan = kembalikan ke izin tercatat. Tidak berlaku di Windows. Langkah rinci: `references/openclaw.md` §10. |
 
 ## Cara membaca tabel ini saat memberi rekomendasi
 1. Cek dulu **untuk apa** OpenClaw pengguna dipakai (pertanyaan pertama di SKILL.md): pribadi

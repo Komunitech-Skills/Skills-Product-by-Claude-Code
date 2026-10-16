@@ -38,8 +38,8 @@ sistem diam-diam.
 
 | Info | Wajib? | Default jika tidak diberikan |
 |---|---|---|
-| OpenClaw ini dipakai untuk apa? — **4 opsi baku**: 1️⃣ pribadi saja, 2️⃣ juga dipakai pelanggan/pasien (CS), 3️⃣ juga ikut di grup, 4️⃣ juga punya laporan/automation terjadwal | Tidak, tapi tanyakan di awal | Anggap "mungkin semua" (pribadi + pelanggan + grup + automation) — audit jadi lebih lengkap, dan tawaran perbaikan lebih hati-hati |
-| Izin menjalankan `openclaw security audit` (dan perintah baca lain) | Ya (tanya sekali di awal) | Kalau `exec` tidak diizinkan, tawarkan versi salin-tempel (lihat Langkah 1) |
+| OpenClaw ini dipakai untuk apa? — **4 opsi baku** (tulis bernomor 1) 2) 3) 4), tanpa emoji): 1) pribadi saja, 2) juga dipakai pelanggan/pasien (CS), 3) juga ikut di grup, 4) juga punya laporan/automation terjadwal | Tidak, tapi tanyakan di awal | Anggap "mungkin semua" (pribadi + pelanggan + grup + automation) — audit jadi lebih lengkap, dan tawaran perbaikan lebih hati-hati |
+| Izin menjalankan `openclaw security audit` (dan perintah baca lain) | Ya (tanya sekali di awal) | Kalau `exec` tidak diizinkan, tawarkan versi salin-tempel (lihat Langkah 1; di kanal chat hanya bila diminta) |
 | Apakah OpenClaw memproses data pelanggan/pihak ketiga (agen CS, bot grup, daftar piutang, dll.) | Tidak, tapi tanyakan | Anggap "mungkin ya" → tetap sertakan ringkasan UU PDP singkat |
 | Kanal yang dipakai (WhatsApp/Telegram/dll.) | Tidak | Cek semua kanal yang terlihat di config |
 
@@ -57,7 +57,9 @@ Jalankan (lihat `references/openclaw.md` §1 untuk detail & fallback tanpa `exec
 openclaw security audit --json
 ```
 Kalau `exec` tidak diizinkan atau gagal, beri perintah ini untuk disalin-tempel pengguna sendiri
-di terminal, lalu minta hasilnya ditempel kembali ke chat untuk dibaca bersama.
+di terminal, lalu minta hasilnya ditempel kembali ke chat untuk dibaca bersama. (Di kanal chat:
+katakan dengan bahasa awam bahwa pemeriksaan belum diizinkan dan tawarkan "balas 'tampilkan
+perintahnya'"; perintah baru ditulis bila pengguna meminta.)
 
 ### 2. Baca konfigurasi relevan (HANYA BACA)
 Untuk tiap kanal yang terpasang, dan untuk pengaturan tool/sandbox, jalankan `openclaw config get
@@ -81,8 +83,9 @@ Yang dicek (ringkas; detail di `references/openclaw.md`):
 - **Isolasi percakapan** (`session.dmScope`): apakah semua orang yang chat pribadi berbagi satu
   ingatan (berisiko untuk agen yang dipakai banyak orang) atau terpisah per pengirim.
 - **Penyimpanan memori/log**: jelaskan bahwa transkrip & memori tersimpan lokal di folder
-  `~/.openclaw` komputer pengguna (Markdown + SQLite) — bukan di server Komunitech maupun pihak
-  ketiga lain, tapi siapa pun yang punya akses ke komputer/disk itu bisa membacanya.
+  `~/.openclaw` komputer pengguna (Markdown + SQLite; di kanal chat sebut "folder pengaturan
+  OpenClaw Anda") — bukan di server Komunitech maupun pihak ketiga lain, tapi siapa pun yang
+  punya akses ke komputer/disk itu bisa membacanya.
 - **Model/penyedia AI yang menerima isi pesan**: jelaskan bahwa isi percakapan yang diproses
   dikirim ke penyedia model AI yang sudah dipilih pengguna (mis. Anthropic/OpenAI/Google),
   kecuali memakai model lokal. Tanyakan penyedia yang dipakai kalau pengguna ingin tahu lebih
@@ -100,7 +103,9 @@ Gabungkan temuan dari `security audit` + config menjadi daftar, masing-masing di
 - 🟢 **Hijau** — sudah aman/sesuai bawaan yang wajar (mis. `dmPolicy: pairing`, sandbox aktif).
 
 Tulis setiap butir dalam **bahasa awam** (apa artinya, kenapa penting), bukan istilah teknis
-mentah. Sertakan path config asli di dalam tanda kurung untuk yang ingin cek sendiri.
+mentah. Format lengkap (terminal/IDE): sertakan path config asli di dalam tanda kurung. **Kanal
+chat: JANGAN** menampilkannya; simpan untuk dipakai bila pengguna meminta "tampilkan perintahnya".
+Saran perbaikan bawaan audit (`remediation`) diparafrasekan, tidak ditempel apa adanya.
 
 ### 4. Tawarkan perbaikan — SATU PER SATU, DENGAN PERSETUJUAN, DENGAN PETA DAMPAK
 
@@ -130,6 +135,10 @@ tiap temuan 🔴/🟡 yang punya perbaikan jelas:
 "default satu-klik" — keduanya bisa mematikan skill ber-script atau butuh Docker. Perubahan
 `gateway.auth.mode` butuh peringatan restart + token baru sebelum dijalankan.
 
+**Di kanal chat**, persetujuan berbentuk kata balasan pendek ("rapikan", "ubah N"; lihat bagian
+"Balasan di kanal chat"). Balasan itu menggantikan pertanyaan "ya/tidak" **hanya bila** pesan
+sebelumnya sudah memuat butir 1–3 di atas untuk butir tersebut dan pengguna sudah melihat daftarnya.
+
 Kalau `--fix` bawaan (`openclaw security audit --fix`) tersedia dan pengguna setuju memakainya:
 jelaskan dulu **daftar findings yang akan disentuh** (`--fix` juga mengubah config seperti
 `groupPolicy`, bukan cuma izin file — lihat `references/openclaw.md` §1) sebelum menjalankannya.
@@ -145,8 +154,43 @@ Selalu sertakan disclaimer bahwa ini bukan nasihat hukum.
   **paling lambat 72 jam (3×24 jam)** kepada pemilik data dan lembaga pelindungan data pribadi
   (UU 27/2022 Pasal 46 ayat (1)), lalu arahkan segera ke konsultan hukum/DPO.
 
+## Balasan di kanal chat (Telegram, WhatsApp, dll.) — aturan wajib
+Berlaku bila pesan pengguna masuk lewat kanal pesan **atau Anda ragu** lewat mana ia membaca.
+Format lengkap di "Format output" hanya untuk pengguna di terminal/IDE atau yang meminta
+"detail teknis". **Baca `references/format-kanal-chat.md`** (kerangka, contoh, kamus istilah)
+sebelum menulis balasan pertama.
+1. **Bentuk:** satu pesan ≤ 3.000 karakter (termasuk spasi); daftar berbutir bertanda hubung,
+   **tanpa tabel**, tanpa blok kode, tanpa JSON/hasil mentah audit. Temuan banyak → rinci 3
+   teratas per kelompok, sisanya satu kalimat "N temuan lain, balas 'detail'".
+2. **Urutan tetap:** ringkasan (penilaian + jumlah temuan + ke mana data pergi + UU PDP 1–2
+   kalimat bila relevan) → BERBAHAYA → PERLU PERHATIAN → SUDAH AMAN → TAWARAN TINDAKAN.
+3. **Emoji:** hanya tiga, sebagai penanda judul bagian (merah/kuning/hijau). Tanpa emoji lain.
+4. **DILARANG tampil:** jalur berkas/folder (tulis "berkas pengaturan bot Anda", "folder
+   pengaturan OpenClaw Anda"), angka izin (644/600), perintah (`chmod`, `openclaw ...`), nama
+   kunci pengaturan (`tools.exec.mode` dst.), kode temuan audit, nama berkas config, jalur
+   komputer uji, dan isi token/kunci apa pun. Istilah teknis → kata awam, dijelaskan **sekali**
+   saat pertama muncul: exec → "izin bot menjalankan perintah di komputer", sandbox → "ruang
+   terbatas", token → "kunci rahasia", gateway → "layanan inti bot".
+5. **Tawaran tindakan = kata balasan pendek; belum ada yang diubah.** Setiap tawaran memuat:
+   apa yang berubah (dari → ke, bahasa awam), **efek yang berhenti bekerja**, dan cara
+   membatalkan.
+   - `rapikan`: kunci izin berkas pengaturan & folder pengaturan (hanya yang dilaporkan audit
+     bisa dibaca akun lain) agar hanya akun pengguna yang bisa membacanya. Skill yang menjalankan
+     setelah pengguna membalas "rapikan" pada pesan yang memuat tawaran itu: catat izin lama,
+     ubah, verifikasi, laporkan ringkas apa yang berubah (`references/openclaw.md` §10).
+     Mencakup HANYA dua butir izin itu, bukan `config set`/`--fix`/butir lain.
+   - `kembalikan`: pulihkan izin ke yang tercatat sebelum diubah.
+   - `ubah N`: satu butir pengaturan yang tawarannya sudah lengkap. Butir yang butuh mulai ulang
+     layanan/kunci baru/Docker **tanpa** `ubah N`; tawarkan `bantu butir N` dan minta "ya"
+     terpisah setelah risikonya dijelaskan.
+   - `tampilkan perintahnya`: BARU sekarang perintah teknis (blok kode, alamat ditulis
+     `[isian: folder pengaturan OpenClaw Anda]`) dilampirkan, hanya untuk butir yang diminta.
+   - `detail` / `PDP`: kirim daftar lengkap / ringkasan UU PDP sebagai pesan lanjutan ≤ 3.000.
+   "rapikan"/"ubah N" yang diucapkan **sebelum** daftar dilihat bukan persetujuan.
+
 ## Format output
 
+### Format lengkap (terminal/IDE atau diminta "detail teknis")
 ```
 ## Ringkasan Keamanan OpenClaw Anda
 
@@ -188,12 +232,17 @@ agent yang juga membalas chat pelanggan, lalu menawarkan mengubahnya ke `ask` �
 itu akan ditolak otomatis tanpa klien approval terhubung** — dan cara membatalkan, lalu menunggu
 persetujuan sebelum menjalankan `openclaw config set tools.exec.mode ask`. Karena disebut "CS
 toko online", sertakan ringkasan UU PDP dari `references/uu-pdp.md`, dan ingatkan aturan pemilik:
-agen CS WA harus mode Copilot (draf, bukan auto-reply langsung).
+agen CS WA harus mode Copilot (draf, bukan auto-reply langsung). **Bila pesan masuk lewat
+Telegram/WhatsApp**, bentuknya mengikuti `references/format-kanal-chat.md` (contoh lengkap di
+sana): ringkas, tanpa jalur/perintah, dengan tawaran "balas 'rapikan'".
 
 ## Checklist sebelum mengirim hasil
 - [ ] Semua temuan berasal dari hasil `security audit`/`config get` **nyata** (atau fallback
       salin-tempel), bukan dikarang.
 - [ ] Bahasa awam, tanpa jargon teknis mentah tanpa penjelasan.
+- [ ] **Kanal chat:** ≤ 3.000 karakter, tanpa tabel, urutan baku, maks. 3 emoji; tanpa jalur
+      berkas, angka izin, perintah, nama kunci pengaturan, atau isi token; tawaran berupa kata
+      balasan ("rapikan", "ubah N"); perintah hanya bila pengguna minta "tampilkan perintahnya".
 - [ ] Tidak ada perubahan (config, `chmod`/izin file, `--fix`) yang dijalankan sebelum daftar
       lengkap ditampilkan dan pemilik menjawab "ya".
 - [ ] Bila ada permintaan menyadap/memantau orang lain: penolakan + alasan + alternatif sah
@@ -210,7 +259,8 @@ agen CS WA harus mode Copilot (draf, bukan auto-reply langsung).
 
 ## Batasan & penanganan error
 - **`exec` tidak diizinkan / OpenClaw tidak terpasang di komputer ini:** beri perintah sebagai
-  salin-tempel (lihat `references/openclaw.md` §1–2), jangan berpura-pura sudah menjalankannya.
+  salin-tempel (lihat `references/openclaw.md` §1–2; di kanal chat hanya bila diminta), jangan
+  berpura-pura sudah menjalankannya.
 - **Gateway tidak sedang berjalan:** `--deep` pada `security audit` dan `openclaw approvals
   pending` sama-sama butuh Gateway aktif; kalau tidak aktif, jalankan tanpa `--deep`/lewati
   `approvals pending`, dan sebutkan keterbatasannya. `openclaw approvals get` (tanpa `pending`)

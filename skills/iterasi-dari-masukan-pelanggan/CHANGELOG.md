@@ -2,6 +2,13 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.13 (2026-10-16)
+- Perbaikan dari temuan penguji independen (Akun A): permintaan menu atau paket produk ("boleh tambah menu vegetarian? semoga ada paket tanpa daging", "semoga ada paket hemat untuk kantor") ikut dihitung sebagai saran **Pengiriman**. Penyebabnya bukan kata "kirim" atau "antar", melainkan kata "paket": script mengira semua "paket" adalah barang kiriman. Kata "instan" ("mie instan") punya masalah yang sama.
+- Sekarang kata lemah itu hanya dihitung Pengiriman bila memang berarti barang kiriman. Bila konteksnya produk/menu ("paket hemat", "paket nasi box", "paket tanpa daging", "ada/tambah/bikin paket ...", "mie instan"), Pengiriman dilepas. Permintaan paket ikut tema **Varian / menu / pilihan** (saran), jadi tidak hilang dari laporan. Contoh: "semoga ada paket hemat untuk kantor" kini masuk Harga + Varian/menu.
+- Tidak berubah: kata kuat tetap menang. "paketnya penyok", "paket belum sampai", "paket kantor telat 2 jam", "kurir antar paketnya telat", "bisa kirim ke luar kota?" tetap Pengiriman. Kata "kirim" dan "antar" sengaja tidak diubah karena memang menandakan pengiriman.
+- Dampak pada data contoh: saran Pengiriman 2 menjadi 0, saran Varian / menu 3 menjadi 4, keluhan Pengiriman tetap 10 (19,2%). Hasil contoh lama di folder `examples/` ditulis sebelum perbaikan ini (lihat catatan di `examples/HASIL-UJI.md`).
+- Uji baru di `scripts/uji_olah_masukan.py` (kelas `UjiPaketProdukBukanPengiriman`): kasus menu/paket, kasus regresi keluhan Pengiriman, dan hitungan pada data contoh.
+
 ## Catatan revisi 1.0.12 (2026-10-16)
 - Perbaikan dari uji di bot Telegram asli (gelombang 18): baris ekspor WhatsApp tanpa tanggal yang isinya hanya teks sistem ("Pesan ini dihapus", "Pesan dihapus", "This message was deleted", "You deleted this message") tidak lagi digabung ke pesan di atasnya. Sebelumnya pesan pelanggan di atasnya ikut terbuang, sehingga satu keluhan hilang dan angka rekap meleset (data uji: 38 masukan, 12 pesan WhatsApp, 4 dari 6 keluhan tanpa balasan; yang benar 39, 13, 5 dari 7, dan keluhan pengiriman 8 = 20,5%).
 - Teks sistem hanya dibuang bila SELURUH isi pesan adalah teks sistem. Pesan pelanggan yang kebetulan memuat kata seperti "pesan ini dihapus" atau "telah ditambahkan" di tengah kalimat tidak lagi ikut terbuang. Baris sistem bertanggal ("Budi: Pesan ini dihapus") dan pemberitahuan enkripsi tetap dibuang seperti dulu.

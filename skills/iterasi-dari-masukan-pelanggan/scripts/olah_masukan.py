@@ -36,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.12"
+VERSI = "1.0.13"
 
 
 class Gagal(Exception):
@@ -1730,6 +1730,38 @@ def _pengiriman_usaha_jasa(k, norm, cocok, tema):
     return baru
 
 
+# v1.0.13 "paket" dan "instan" ambigu: paket barang kiriman ("paketnya penyok") vs paket produk/menu ("semoga ada paket hemat",
+# "paket nasi box untuk arisan") dan makanan instan ("mie instan"). Kata kunci pengiriman yang lemah ini tidak boleh menang atas arti
+# produk/menu: bila HANYA kata itu yang membuat klausa cocok Pengiriman dan konteksnya produk/menu, Pengiriman dilepas. Kata kuat
+# (kirim, kurir, telat, sampai, resi ...) tetap menang: "paket hemat tapi telat" tetap keluhan Pengiriman.
+RE_PENGIRIMAN_LEMAH = re.compile(r"\b(?:paket\w*|instan\w*|instant\w*)\b")
+_BUNDEL = (r"hemat|murah|promo|bundling|bundle|combo|reguler|ramadan|ramadhan|lebaran|keluarga|arisan|nasi|box|tumpeng|diet|vegetarian|"
+           r"vegan|tanpa|langganan|mingguan|bulanan|harian|premium|spesial|istimewa|sehat|isi\s+\d+")
+# paket + kata bundel ("paket hemat", "paket tanpa daging")
+RE_PAKET_BUNDEL = re.compile(r"\b(?P<w>paket)(?:an)?\s+(?:\w+\s+)?(?:%s)\w*\b" % _BUNDEL)
+# permintaan menawarkan paket ("semoga ada paket", "tolong tambah paket"); hanya untuk klausa saran. "paketnya" (barang) tidak cocok.
+RE_PAKET_MINTA = re.compile(r"\b(?:ada|adakan|adain|tambah\w*|bikin\w*|buat\w*|sedia\w*|menyediakan|jual\w*|menjual|tawar\w*|punya|rilis\w*|"
+                            r"luncurkan|keluarkan)\s+(?:\w+\s+)?(?P<w>paket)\b")
+RE_INSTAN_PRODUK = re.compile(r"\b(?:mie|mi|kopi|bumbu|bubur|susu|teh|minuman|makanan|sambal|kuah|soto|sop|bihun|oat\w*|jus|cokelat|coklat|"
+                              r"puding|nasi)\s+(?P<w>instan\w*|instant\w*)\b")
+
+
+def _pengiriman_hanya_kata_produk(k, jenis, tema):
+    """Kembalikan (True, ada_paket_produk) bila Pengiriman di klausa k hanya berasal dari kata lemah (paket/instan) yang jelas berarti
+    produk/menu. ada_paket_produk=True bila yang dimaksud paket produk (bukan makanan instan)."""
+    pola_kirim = next((t["pola"] for t in tema if t["id"] == "pengiriman"), None)
+    if pola_kirim is None or pola_kirim.search(RE_PENGIRIMAN_LEMAH.sub(" ", k)):
+        return False, False   # ada kata pengiriman yang kuat -> tetap Pengiriman
+    lemah = {m.start() for m in RE_PENGIRIMAN_LEMAH.finditer(k)}
+    produk = {m.start("w") for m in RE_PAKET_BUNDEL.finditer(k)}
+    if jenis == "saran":
+        produk |= {m.start("w") for m in RE_PAKET_MINTA.finditer(k)}
+    instan = {m.start("w") for m in RE_INSTAN_PRODUK.finditer(k)}
+    if not lemah or not lemah <= (produk | instan):
+        return False, False   # ada "paket"/"instan" yang bisa berarti barang kiriman -> perilaku lama
+    return True, bool(produk)
+
+
 _CACHE_TYPO = {}
 _TERAKHIR = {}   # hasil normalisasi analisis_item terakhir (dipakai ulang oleh nada_keluhan agar tidak dihitung dua kali)
 
@@ -1793,6 +1825,12 @@ def analisis_item(teks_anonim, bintang, tema, kata_pos, kata_neg, peran="ulasan"
             pola_kirim = next(t["pola"] for t in tema if t["id"] == "pengiriman")
             if not pola_kirim.search(re.sub(r"\b\w*datang\w*\b", " ", k)):
                 cocok.remove("pengiriman")
+        if "pengiriman" in cocok:
+            produk_saja, paket_produk = _pengiriman_hanya_kata_produk(k, jenis, tema)
+            if produk_saja:   # v1.0.13 "semoga ada paket hemat" / "mie instan" = produk/menu, bukan pengiriman
+                cocok.remove("pengiriman")
+                if paket_produk and jenis == "saran" and "varian_menu" not in cocok and any(t["id"] == "varian_menu" for t in tema):
+                    cocok.append("varian_menu")   # permintaan paket = permintaan menu/produk
         if "pengiriman" in cocok:
             cocok = _pengiriman_usaha_jasa(k, norm, cocok, tema)
         for tid in cocok:

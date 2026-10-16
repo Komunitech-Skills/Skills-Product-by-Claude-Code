@@ -141,3 +141,7 @@ Bukan uji baru: skor/verdik di atas dan di bagian uji ulang **tidak berubah**. C
 | 05 luar cakupan | tidak memakai keluaran script; diperiksa, tidak berubah | — |
 
 Catatan pembaca: di keluaran 01 script menaruh 2 permintaan menu/paket juga di "Saran - Pengiriman" (kata kunci), dan "Porsi kecil untuk harga segitu" masuk "Perlu dibaca". Keduanya ditulis apa adanya; cara agent menanganinya ada di catatan verifikasi contoh 01. Contoh `06`–`10`, `00-*.md`, dan `HASIL-UJI-ULANG.md` dibiarkan sebagai catatan uji historis.
+
+---
+## Catatan riwayat v1.0.13 (2026-10-16)
+Bukan uji baru: skor/verdik tidak berubah. Catatan pembaca di atas ("script menaruh 2 permintaan menu/paket juga di 'Saran - Pengiriman'") adalah cacat yang diperbaiki di v1.0.13: kata "paket" dan "instan" tidak lagi otomatis berarti Pengiriman bila konteksnya produk/menu. Dengan data contoh yang sama, saran Pengiriman 2 -> 0, saran Varian / menu 3 -> 4 (permintaan "paket hemat untuk kantor" ikut Harga + Varian/menu), keluhan Pengiriman tetap 10 (19,2%). Contoh `01`-`05` dibiarkan apa adanya (keluaran v1.0.12); bila dijalankan ulang, bagian "Saran & permintaan" contoh 01 akan memakai pengelompokan baru.
