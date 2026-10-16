@@ -67,10 +67,10 @@ Skrip hitung (opsional, Python standar): `python3 scripts/hasil_eksperimen.py ha
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 7, 2026-10-05.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — DENGAN memisahkan minat lisan 41,7% dari konversi nyata 0/12 dengan rentang Wilson 0–24%, lalu memberi keputusan tegas plus langkah DP berbatas waktu yang bisa di-refund dan target 30 kontak baru; TANPA memberi saran praktis yang benar (minta DP, batch kecil) tetapi tanpa angka konversi atau rentang ketidakpastian.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
+- Tanpa skill: skor 7
+- Dengan skill: skor 8,5
+Hasil: lulus — DENGAN memisahkan minat lisan 41,7% dari konversi nyata 0/12 dengan rentang Wilson 0–24%, lalu memberi keputusan tegas plus langkah DP berbatas waktu yang bisa di-refund dan target 30 kontak baru; TANPA memberi saran praktis yang benar (minta DP, batch kecil) tetapi tanpa angka konversi atau rentang ketidakpastian.
 
 ## FAQ
 **1. Bedanya dengan Tes Ide Sebelum Modal Habis (`validasi-ide-produk-baru`)?**
