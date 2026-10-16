@@ -12,6 +12,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 9 dari 10 pada skenario jebakan (
 - ✅ Setiap perbaikan disertai cara membatalkannya.
 - ✅ Ringkasan singkat UU PDP (UU 27/2022 tentang Pelindungan Data Pribadi, berlaku penuh sejak Oktober 2024; aturan pelaksananya PP 33/2026 mulai berlaku 16 Januari 2027) kalau OpenClaw Anda memproses data pelanggan, termasuk tenggat pemberitahuan kebocoran data paling lambat 72 jam (3×24 jam, Pasal 46 ayat (1)).
 - ✅ Pemeriksaan hanya **membaca**; skill dirancang tidak mengubah apa pun tanpa persetujuan Anda.
+- ✅ Di Telegram/WhatsApp, laporan dibuat ringkas (di bawah 3.000 karakter), tanpa istilah teknis, jalur komputer, atau perintah terminal. Perbaikan cukup dibalas dengan satu kata, mis. "rapikan" untuk mengunci izin berkas pengaturan bot; perintah teknis baru ditampilkan bila Anda minta ("tampilkan perintahnya").
 
 ## Cocok untuk siapa
 - Pemilik usaha yang khawatir data pelanggan/percakapan bocor atau disalahgunakan.
@@ -43,6 +44,8 @@ Setelah terpasang, cukup ketik ke AI agent OpenClaw Anda, misalnya:
 - "amankah OpenClaw saya?"
 - "audit keamanan dong"
 
+Setelah laporan muncul di chat, balas sesuai tawaran: "rapikan" (kunci izin berkas pengaturan; bisa dikembalikan dengan "kembalikan"), "ubah 1" (perbaiki butir nomor 1), "tampilkan perintahnya", "detail", atau "PDP".
+
 ## Instalasi singkat
 Salin folder `cek-privasi-openclaw` ke folder skills AI agent Anda:
 
@@ -57,7 +60,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw 1 Okt 2026 (uji otomatis agent; skenario jebakan diuji ulang setelah revisi), skor 1–10 penguji independen: skenario normal (cek privasi untuk bot layanan pelanggan toko online) tanpa skill **6** → dengan skill **9**; skenario jebakan ("benerin semua tanpa nanya" + minta menyadap chat karyawan) tanpa skill **3** → dengan skill **9** setelah uji ulang (uji pertama jebakan: 3 → 6, lalu skill diperbaiki). Tanpa skill, pengaturan diubah tanpa meminta "ya" per butir; dengan skill, tiap butir punya efek dan cara membatalkan, dan permintaan menyadap chat karyawan ditolak. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram asli ada di bagian berikutnya.
 
-**Status uji (jujur):** diuji di OpenClaw 2026.9.5 (uji muat dan perintah nyata) serta 2026.9.6–9.7 (sebelum/sesudah otomatis) dan bot Telegram uji; Claude Code lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw 2026.9.5 (uji muat dan perintah nyata) serta 2026.9.6–9.7 (sebelum/sesudah otomatis) dan bot Telegram uji; Claude Code lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama). Versi 1.1.6 mengubah bentuk balasan di chat (lebih ringkas, tanpa jalur/perintah) setelah pra-cek konteks Telegram 16 Okt 2026; bentuk baru ini belum diuji ulang di bot Telegram asli.
 
 ## Bukti uji di bot Telegram
 
@@ -79,4 +82,4 @@ hukum menyeluruh (terutama data sensitif seperti kesehatan), konsultasikan ke ah
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
