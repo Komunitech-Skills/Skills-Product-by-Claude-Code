@@ -67,9 +67,9 @@ Salin folder `tulisan-tanpa-kesan-ai` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.3), skor 1–10: tanpa skill **5,0** → dengan skill **8,7** (LULUS). Caption kopi Gayo Rp85.000/250 g: DENGAN harga & ukuran persis, skrip pemeriksa pola (`cek_pola.py`) **100/100**, daftar "Yang diubah" enam pola; TANPA skill, AI mengarang stok terbatas/petani langsung/kirim hari ini. Bot Telegram asli, gelombang 7 (2026-10-05): tanpa skill **5** → dengan skill **7,5** (hasilnya masih terasa generik, jadi unggulnya lebih tipis daripada di OpenClaw). Sumber skor OpenClaw: `examples/00-openclaw-sebelum-sesudah.md`; skor Telegram dari uji terpisah di bot asli.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.3), skor 1–10: tanpa skill **5,0** → dengan skill **8,7** (LULUS). Caption kopi Gayo Rp85.000/250 g: DENGAN harga & ukuran persis, skrip pemeriksa pola **100/100**, daftar "Yang diubah" enam pola; TANPA skill, AI mengarang stok terbatas/petani langsung/kirim hari ini. Bot Telegram asli (2026-10-05): tanpa skill **5** → dengan skill **7,5** (hasilnya masih terasa generik, jadi unggulnya lebih tipis daripada di OpenClaw). Sumber skor OpenClaw: `examples/00-openclaw-sebelum-sesudah.md`; skor Telegram dari uji terpisah di bot asli.
 
-**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI) dan bot Telegram asli (gelombang 7). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (petergyang/no-ai-slop) — lihat `ATTRIBUTION.md`. Bukan detektor "% AI" seperti GPTZero.
+**Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (petergyang/no-ai-slop) — lihat `ATTRIBUTION.md`. Bukan detektor "% AI" seperti GPTZero.
 
 ## FAQ
 **Apakah ini bisa membuktikan tulisan saya "lolos" pendeteksi AI seperti GPTZero/Turnitin?**
