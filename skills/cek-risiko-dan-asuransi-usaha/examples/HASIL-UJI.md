@@ -89,3 +89,6 @@ Selisih +2,1.
 
 ## Usulan skor kualitas
 **9** (cacat berat B1–B3 v1.0.0 terbukti beres; siap naik ke status `lulus`).
+
+---
+Catatan riwayat (2026-10-17, v1.0.3): pra-cek konteks Telegram menemukan tabel 7 kolom tidak terbaca di HP. Versi 1.0.3 menambah mode chat (blok per risiko, 3 prioritas di awal, maks. 3.500 karakter per pesan). Hasil uji di berkas ini tetap milik versi yang disebut di judulnya; contoh format baru ada di `11-format-chat-telegram.md`. Uji ulang di bot Telegram untuk 1.0.3 menunggu penguji independen.

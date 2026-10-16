@@ -2,7 +2,7 @@
 """Hitung skor risiko usaha dan dana darurat. Python standar saja.
 
 Pakai (Windows: python / py):
-  python3 scripts/cek_risiko.py risiko berkas.json
+  python3 scripts/cek_risiko.py risiko berkas.json [--dana 47400000] [--tampilan tabel|chat]
   python3 scripts/cek_risiko.py dana --biaya "Sewa=3000000,Gaji=8000000" --bulan 3 [--kas 5000000] [--cicil 6]
 
 berkas.json: [{"nama": "Kebakaran", "kemungkinan": 2, "dampak": 5, "kerugian_rp": 80000000}, ...]
@@ -13,6 +13,8 @@ kategori: opsional. "bpjs" = risiko karyawan cedera/sakit/kecelakaan kerja; kolo
 label BPJS otomatis. Tanpa field ini, nama risiko yang jelas soal karyawan cedera/sakit/kecelakaan
 kerja dikenali otomatis. "umum" = matikan pengenalan otomatis.
 Angka: tulis 3000000 atau 3.000.000 (titik = ribuan); desimal ditolak.
+--tampilan chat (v1.0.3): untuk Telegram/WhatsApp. Tanpa tabel; ringkasan 3 prioritas teratas,
+lalu satu blok berbutir pendek per risiko (bagian "Langkah pencegahan" diisi agen).
 """
 import argparse
 import json
@@ -20,8 +22,8 @@ import re
 import sys
 
 LABEL_BPJS = ("BPJS: kewajiban pemberi kerja, cek aturan terbaru "
-              "(JKK untuk kecelakaan kerja; BPJS Kesehatan untuk sakit)")
-RESPONS_BPJS = "Kurangi (K3, perlengkapan kerja) + daftarkan BPJS karyawan"
+              "(JKK/jaminan kecelakaan kerja untuk cedera di tempat kerja; BPJS Kesehatan untuk sakit)")
+RESPONS_BPJS = "Kurangi (K3/keselamatan kerja, perlengkapan kerja) + daftarkan BPJS karyawan"
 KATEGORI_SAH = ("umum", "bpjs")
 _PEKERJA = r"(karyawan|pegawai|pekerja|buruh|staf|staff|kasir|koki|barista|mekanik|teknisi|kurir|pelayan|asisten)"
 _KERJA = r"cedera kerja|kecelakaan kerja|\bk3\b"
@@ -170,6 +172,39 @@ def parse_biaya(teks):
     return biaya
 
 
+# arti nilai dampak 1-5, sama dengan references/skala-nilai.md
+ARTI_DAMPAK = {1: "kecil, hari itu beres",
+               2: "setara beberapa hari omzet",
+               3: "setara sekitar 1 bulan biaya tetap",
+               4: "lebih dari 3 bulan biaya tetap, bisa tutup berminggu-minggu",
+               5: "usaha bisa bangkrut / ada korban cedera berat"}
+BLOK_PER_PESAN = 4  # menjaga tiap pesan chat tetap <= 3.500 karakter
+PENANDA_PESAN = ("<<< PESAN BERIKUTNYA: kirim setelah pengguna membalas 'lanjut'. "
+                 "Baris penanda ini jangan ditampilkan ke pengguna. >>>")
+
+
+def format_chat(h):
+    """Tampilan chat (Telegram/WhatsApp): tanpa tabel; tiap risiko satu blok berbutir pendek."""
+    n = len(h)
+    baris = ["Tiga prioritas teratas:"]
+    for i, r in enumerate(h[:3], 1):
+        baris.append(f"{i}. {r['nama']} \u00b7 {r['tingkat']} (skor {r['skor']})")
+    baris += ["", "Rincian per risiko:"]
+    for i, r in enumerate(h, 1):
+        dampak = f"{ARTI_DAMPAK[r['dampak']]} (nilai {r['dampak']} dari 5)"
+        if r["kerugian_rp"] is not None:
+            dampak += f"; perkiraan rugi {rp(r['kerugian_rp'])}"
+        if i > 1 and (i - 1) % BLOK_PER_PESAN == 0:
+            baris += ["", PENANDA_PESAN]
+        baris += ["",
+                  f"{i}. {r['nama']} \u00b7 {r['tingkat']} (skor {r['skor']} = kemungkinan {r['kemungkinan']} x dampak {r['dampak']})",
+                  f"- Dampak kira-kira: {dampak}",
+                  "- Langkah pencegahan: [isi 1-2 langkah murah minggu ini]",
+                  f"- Perlindungan/asuransi: {r['perlu_asuransi']}",
+                  f"- Prioritas: {i} dari {n}. Sikap: {r['respons']}"]
+    return "\n".join(baris)
+
+
 def kata_cukup(o):
     if o.get("tercukupi_bulan") is None:
         return "(biaya tetap Rp0, lama cukup tidak dihitung)"
@@ -182,6 +217,8 @@ def main(argv=None):
     a = sub.add_parser("risiko")
     a.add_argument("berkas")
     a.add_argument("--dana", type=str, help="dana darurat (Rp) untuk pembanding kerugian_rp")
+    a.add_argument("--tampilan", choices=("tabel", "chat"), default="tabel",
+                   help="tabel (layar lebar, default) atau chat (Telegram/WhatsApp, tanpa tabel)")
     b = sub.add_parser("dana")
     b.add_argument("--biaya", required=True)
     b.add_argument("--bulan", type=str, default="3")
@@ -197,11 +234,14 @@ def main(argv=None):
                 raise ValueError(f"berkas tidak bisa dibaca: {e}")
             dana = parse_angka(args.dana, "--dana") if args.dana else None
             h = hitung_risiko(data, dana)
-            print("| No | Risiko | K | D | Skor | Tingkat | Respons | Perlu asuransi? |")
-            print("|---|---|---|---|---|---|---|---|")
-            for i, r in enumerate(h, 1):
-                print(f"| {i} | {r['nama']} | {r['kemungkinan']} | {r['dampak']} | {r['skor']} | "
-                      f"{r['tingkat']} | {r['respons']} | {r['perlu_asuransi']} |")
+            if args.tampilan == "chat":
+                print(format_chat(h))
+            else:
+                print("| No | Risiko | K | D | Skor | Tingkat | Respons | Perlu asuransi? |")
+                print("|---|---|---|---|---|---|---|---|")
+                for i, r in enumerate(h, 1):
+                    print(f"| {i} | {r['nama']} | {r['kemungkinan']} | {r['dampak']} | {r['skor']} | "
+                          f"{r['tingkat']} | {r['respons']} | {r['perlu_asuransi']} |")
         else:
             o = hitung_dana(parse_biaya(args.biaya), parse_angka(args.bulan, "--bulan"),
                             parse_angka(args.kas, "--kas") if args.kas else None,
