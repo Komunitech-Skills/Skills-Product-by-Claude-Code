@@ -21,3 +21,8 @@ Rincian lengkap: `00-openclaw-sebelum-sesudah.md`.
 - Script `scripts/rapor.py` tidak dipakai (12 percakapan < ambang ~15); skill tetap bekerja penuh tanpa script.
 
 **Verdik uji OpenClaw sebelum/sesudah: LULUS** (sesudah 8,25 ≥ 8; selisih +3,5 ≥ 1,5).
+
+## Riwayat: pra-cek Telegram 1.0.1 → revisi 1.0.2 (2026-10-16)
+- Temuan pra-cek (konteks kanal Telegram, data contoh 01, 10 percakapan): tabel 8 kriteria semuanya 90% (9 dari 10) dan teks "5 dari 10 percakapan bersih"; panjang ±4.000 karakter; nama skill lain tertulis apa adanya.
+- Hitungan ulang dengan skrip dari penilaian di `data/01-skincare-minggu2.txt`: 8 × 90% **benar** (tiap kriteria gagal tepat di 1 percakapan berbeda: P3 fakta+janji, P2 nyambung+panjang, P5 konteks, P7 nada, P6 bocor, P4 teknis); yang salah adalah percakapan bersih: seharusnya **4 dari 10** (P1, P8, P9, P10), sesuai `01-skincare-minggu2.md`.
+- Perbaikan 1.0.2: hitungan wajib dari daftar penilaian per percakapan (skrip `--nilai` bila Python bisa dijalankan) + cek konsistensi; format ringkas ≤ 3.000 karakter dengan "balas 'rinci'" (`06-format-ringkas-chat.md`); tanpa nama skill bertanda hubung di hasil. Belum diuji ulang oleh penguji independen.
