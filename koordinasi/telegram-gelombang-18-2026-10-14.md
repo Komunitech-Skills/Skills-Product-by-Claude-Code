@@ -291,3 +291,11 @@ Smoke `./oc.sh agent --local -m "balas satu kata: OK" --json` → **HTTP 530** (
 ## Run 2026-10-16 ~00:00 UTC (Akun C automation)
 
 Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~96 s, Ninerouter Error 1016). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-16 ~00:30 UTC (Akun C automation)
+
+Smoke `./oc.sh agent --local -m "balas satu kata: OK"` → **HTTP 530** (~96 s, Ninerouter Error 1016 origin DNS, 7 retry). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
+
+## Run 2026-10-16 ~01:00 UTC (Akun C automation)
+
+Smoke `GET …/v1/models` (uji asap C25) → **HTTP 403** (~0,1 s, error 1010). getUpdates topik 242: kosong. **C25–C34 selesai** — tidak ada pekerjaan tanpa-router; G18 tidak dilanjutkan; pesan 2–10 masih belum dikirim.
