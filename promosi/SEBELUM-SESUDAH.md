@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, dan bila sudah diuji di bot Telegram asli, hasil terakhirnya memenuhi acuan yang sama. Jumlah: **116 skill** dari 141 yang diuji; 0 di antaranya juga teruji di bot Telegram asli.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, dan bila sudah diuji di bot Telegram asli, hasil terakhirnya memenuhi acuan yang sama. Jumlah: **116 skill** dari 141 yang diuji; 3 di antaranya juga teruji di bot Telegram asli.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -505,6 +505,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Menyatakan invoice 'sesuai' padahal PPN 12% penuh dipakai untuk jasa non-mewah; kesalahan pajak tidak terdeteksi.
 - **Dengan skill:** Menemukan PPN seharusnya Rp165.000 (11% dari DPP Rp1.500.000), total seharusnya Rp1.665.000, kelebihan Rp15.000; digit buram ditandai TIDAK TERBACA, tidak ditebak.
 - **Angka kunci:** PPN invoice Rp180.000 ('sesuai') → seharusnya Rp165.000 (kelebihan Rp15.000)
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 4,5 menjadi 8,5. AI biasa menyatakan invoice CV Cetak Kilat "sudah cocok semua" dan file Excel-nya berisi rumus yang salah, sedangkan dengan skill bot menemukan PPN jasa cetak seharusnya Rp165.000 (bukan Rp180.000, kelebihan tagih Rp15.000) dan menyarankan bertanya ke penjual sebelum bayar, sambil langsung mengirim file rekapnya di chat.
 - **Catatan jujur:** Pembulatan PPN belum dicocokkan dengan Coretax. Kategori pengeluaran ditebak tanpa disebut asumsi. Di bot Telegram asli (2026-10-16): 4,5 → 7,5, BELUM; Hanya DENGAN yang menangkap PPN invoice CV Cetak Kilat dihitung 12% penuh (untuk jasa biasa seharusnya Rp165.000, kelebihan tagih Rp15.000) dan menyarankan bertanya ke penjual sebelum bayar; TANPA menyatakan invoice "sudah cocok semua" dan berkas Excel-nya berisi rumus yang salah, tetapi DENGAN tidak melampirkan berkas Excel yang diminta.
 
 ### Laporan Harian Otomatis Tanpa Dashboard Berbayar — 6 → 9
@@ -576,6 +577,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Mencatat nominal ambigu '38.5' apa adanya sebagai pengeluaran dan memindahkan file asli ke Trash tanpa konfirmasi.
 - **Dengan skill:** Menanyakan apakah 38.5 maksudnya Rp38.500, tidak pernah menghapus file asli, dan memblokir nota dobel lewat hash isi file.
 - **Angka kunci:** Tercatat 'Rp38,5' (salah) → ditanyakan dulu, dicatat Rp38.500
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 7 menjadi 8,5. Dengan skill, bot lebih dulu menunjukkan rencana (nama file lama → nama baru di folder arsip/2026/09) dan baru menyalin setelah dijawab "ya". File asli tetap utuh dan foto dobel dilewati. Tanpa skill, bot langsung mengganti nama file asli dan memindahkan foto dobel tanpa bertanya.
 - **Catatan jujur:** Skill bukan OCR (nominal dari pengguna). Butuh sampai 3 giliran chat untuk satu struk karena minta konfirmasi berulang. Di bot Telegram asli (2026-10-16): 7 → 8, BELUM; DENGAN menyalin 3 nota ke arsip setelah konfirmasi dan membiarkan file asli utuh, sedangkan TANPA langsung mengganti nama file asli; nota dobel terdeteksi lewat isi file di kedua sisi dan rekapnya sama (Rp1.887.500).
 
 ### Buku Piutang Tanpa Langganan, Cukup Lewat Chat — 5,75 → 8,75
@@ -776,6 +778,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Menyebut sekitar 10 nama pelanggan di laporan dan salah hitung jumlah chat (16, padahal 13).
 - **Dengan skill:** Data pelanggan disamarkan dan angka disalin dari script; temuan 88,9% keluhan WhatsApp (8 dari 9) tidak dibalas admin, plus draf balasan siap kirim per jenis keluhan.
 - **Angka kunci:** Jumlah chat WA 16 (salah) → 13 (benar); 88,9% keluhan WA tidak dibalas
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 5 menjadi 8,5. Hanya versi dengan skill yang menemukan bahwa 5 dari 7 keluhan pelanggan di WhatsApp (71,4%) sama sekali belum dibalas admin. Versi itu juga menyusun 3 perbaikan lengkap dengan penanggung jawab, tenggat, dan target berangka, plus 2 draf balasan untuk dikirim manual, tanpa menyebut nama pelanggan. Versi tanpa skill berhenti di daftar masalah dengan saran umum, tanpa persentase, penanggung jawab, tenggat, atau draf balasan, dan menyebut nama pelanggan satu per satu.
 - **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6.9 → 8.6 (2026-10-02, v1.0.10)). Satu nama pelanggan lolos di laporan; 'jamur 5' bisa terbaca keliru (4 jamur + 1 semut). Uji ke-2b sempat BELUM. Di bot Telegram asli (2026-10-16): 6 → 5, BELUM; DENGAN memberi backlog berpenanggung jawab dan bertenggat, draf balasan, dan temuan keluhan WA yang tidak dibalas tanpa menyebut nama pelanggan, tetapi melewatkan satu keluhan WA ("Kurir telat lagi, nunggu lama. Tolong dibenahi") sehingga beberapa angkanya salah; TANPA menghitung keluhan per isu dengan benar tetapi tidak memberi rencana kerja.
 
 ### Gaji Nggak Numpang Lewat Lagi — 6,5 → 9
