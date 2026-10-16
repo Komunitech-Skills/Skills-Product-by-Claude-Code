@@ -61,6 +61,7 @@ PRATINJAU — buat tabel 'Pelanggan' di dokumen (docId: docABC123):
   ...
 Belum dibuat. Jalankan ulang dengan --ya setelah pengguna menjawab 'ya'.
 ```
+(Tulisan `--ya` di layar itu urusan teknis agent; Anda cukup membalas "ya" di chat.)
 Setelah Anda menjawab "ya", tabel dibuat. Kolom rumus **WA Rapi** (merapikan semua format nomor jadi `62812...`, siap disalin ke tautan `wa.me/`) ditempel sendiri di layar Grist; agent memberi kode rumusnya siap salin.
 
 ## Cara pakai (instan, tanpa setup rumit)
