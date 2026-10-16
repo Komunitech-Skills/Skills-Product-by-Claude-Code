@@ -47,7 +47,7 @@ Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/01-modul-ajar
 …
 #### Pertemuan 1 (120 menit — pembukaan 15’ + inti 90’ + penutup 15’, **status COCOK**)
 ```
-Hasil lengkapnya juga memuat LKPD "Ekosistem Sawah di Sekitar Kita", 5 soal uraian + kunci jawaban + rubrik skor 1–4. Contoh ini dibuat dengan versi awal yang menebak 3 JP per pertemuan; bila Anda tidak menyebut JP, bawaan sekarang 2 JP per pertemuan.
+Hasil lengkapnya juga memuat LKPD "Ekosistem Sawah di Sekitar Kita", 5 soal uraian + kunci jawaban + rubrik skor 1–4. Contoh ini dibuat dengan versi awal skill yang menebak 3 JP (jam pelajaran) per pertemuan; sekarang, bila Anda tidak menyebut jam pelajaran, dipakai bawaan 2 JP per pertemuan.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -75,7 +75,7 @@ bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10 penguji independen.
 - **Uji OpenClaw (lingkungan uji terpisah), Okt 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,75** (uji v1.0.5) → dengan skill **8,7** (uji ulang v1.0.11, rata-rata tiga percobaan), LULUS. Tanpa skill ada kesalahan matematika pecahan senilai dan rujukan CP yang sudah usang; dengan skill modul + LKPD + kunci + rubrik tampil utuh di chat, alokasi menit dihitung skrip, dan CP tidak dikarang.
-- **Uji bot Telegram asli, gelombang 6 (2026-10-05):** pernah BELUM karena isi tidak utuh di chat; versi 1.0.11 dirancang agar modul tampil utuh di chat (catatan ada di `examples/00-openclaw-sebelum-sesudah.md`).
+- **Uji bot Telegram asli (2026-10-05):** pernah belum lulus karena isi tidak utuh di chat; versi 1.0.11 dirancang agar modul tampil utuh di chat (catatan ada di `examples/00-openclaw-sebelum-sesudah.md`).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI). Claude Code (simulasi agent). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
 
