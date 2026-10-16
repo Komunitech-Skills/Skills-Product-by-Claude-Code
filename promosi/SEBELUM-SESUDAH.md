@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **114 skill** dari 140 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **115 skill** dari 140 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -120,8 +120,9 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 110 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
 | 111 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
 | 112 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 113 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
-| 114 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 113 | Tahu Kapan Kas Menipis, Sebelum Terlambat (`arus-kas-13minggu`) | Keuangan & Akuntansi | 6,75 → 8,4 | +1,65 |
+| 114 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
+| 115 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -1132,6 +1133,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** TER A 0,75% × Rp6.000.000 = Rp45.000; diterima Rp6.000.000 dengan DTP (PMK 105/2025); Desember K/1: lebih potong Rp220.000
 - **Catatan jujur:** Selisih tipis (+1,65): tanpa skill angkanya juga benar di uji ini. Versi 1.0.4 sempat salah menulis diterima Rp6.045.000 (dikoreksi 1.0.5, diverifikasi independen 13 kasus). PERLU REVIEW konsultan pajak; pembulatan belum dicocokkan dengan Coretax.
 
+### Tahu Kapan Kas Menipis, Sebelum Terlambat — 6,75 → 8,4
+`arus-kas-13minggu` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-16
+
+- **Permintaan:** Usaha kue dengan gaji akhir bulan dan piutang masuk: proyeksi kas 13 minggu, minggu mana yang minus, dan apakah pesanan armada bengkel diambil; juga CSV perusahaan dengan dana jaga Rp25 juta.
+- **Tanpa skill:** Di kanal Telegram menyebut "kas aman, tidak pernah minus" padahal gaji 28 Oktober terlewat dan minggu 3 sebenarnya −Rp700.000; defisit struktural −Rp45,4 juta terlewat; saran tanpa angka.
+- **Dengan skill:** Tabel 13 minggu cocok 100% dengan hitung ulang independen di semua skenario; minggu minus dan di bawah batas aman ditandai; setiap pilihan tindakan disertai angka dan pos yang digeser; kasus toko sembako: menolak menunda pajak/gaji dan pinjol, lalu menghitung jalan keluar tanpa minggu minus.
+- **Angka kunci:** Toko sembako kas Rp9 jt + DP kulkas Rp12 jt: minus di 11 dari 13 minggu (terendah −Rp6,2 jt). Tanpa skill AI tidak menjawab dalam 3 percobaan; dengan skill jawaban lengkap dalam 236 detik dengan jalan keluar bersaldo akhir Rp9,9 jt.
+- **Keterangan:** Uji ulang 1.0.5 (16 Okt 2026); 3 skenario diuji ulang, skor lain dari uji 14 Okt 2026
+- **Catatan jujur:** Uji ulang 1.0.5 (16 Okt 2026): 3 skenario diuji ulang, skor lain dipakai ulang dari 14 Okt; S5 tanpa skill tidak menghasilkan jawaban (3 percobaan) sehingga rata-rata tanpa skill dari 4 skenario. Sisa cacat: satu kalimat narasi kurang tepat, syarat pinjaman tanpa label asumsi, jawaban S1 8 menit, agent sempat find / dan menulis berkas di /tmp.
+
 ### Rekap Penjualan Otomatis dari File Kasir — 7,5 → 9
 `rekap-penjualan-csv` · Data & Analisis · versi 1.2.3 · diuji 2026-10-01
 
@@ -1158,7 +1169,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | `pantau-website-toko` | 4,75 → 7,9 | BELUM | belum lulus |
 | `konten-mingguan` | 4,25 → 7,3 | BELUM | belum lulus |
 | `laporan-status-kantor` | 6,3 → 9 | BELUM | belum lulus |
-| `arus-kas-13minggu` | 6,75 → 8,5 | BELUM | belum lulus |
 | `cari-prospek-web` | 6,7 → 8,2 | LULUS | selisih < 1,5 |
 | `kalender-konten-30hari` | 5,67 → 7,1 | BELUM | belum lulus |
 | `analisis-pesaing-strategis` | 6,8 → 8,1 | LULUS | selisih < 1,5 |
