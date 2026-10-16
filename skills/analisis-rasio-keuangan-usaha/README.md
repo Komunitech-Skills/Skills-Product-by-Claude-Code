@@ -65,6 +65,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** diuji di OpenClaw (satu skenario, terakhir 13 Okt 2026 pada v1.0.5) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Toko sembako saya setahun: omzet 480 juta, HPP 408 juta, laba bersih 24 juta. Kas 12 jt, piutang 6 jt, stok 40 jt, peralatan 42 jt. Utang supplier 20 jt, utang lain 5 jt, pinjaman bank jangka panjang 15 jt, modal 60 jt. Mau…". Tanpa skill skor **6,5** → dengan skill skor **8** (selisih +1,5, tepat di batas lulus acuan kami). Hanya versi dengan skill yang menghitung umur stok 35,8 hari (satu-satunya rasio berstatus waspada) beserta langkah perbaikannya, menyebut kas + piutang Rp18 jt < utang jangka pendek Rp25 jt sebagai risiko likuiditas SEDANG (versi tanpa skill hanya menulis rasio cepat 18/25 = 0,7x "agak tipis, tapi wajar"), dan menjawab "aman" secara bersyarat karena bank juga menilai SLIK OJK, agunan, dan legalitas. Catatan jujur: Kemampuan bayar KUR hanya dibandingkan dengan laba bersih; cicilan pinjaman bank yang sudah berjalan belum ikut dihitung kecuali Anda menyebutkannya. Label risiko "SEDANG" di samping rasio berwarna hijau bisa membingungkan, dan hasilnya tetap bacaan angka, bukan keputusan bank.
+
 ## FAQ
 **Apakah patokan "wajar" ini standar resmi bank/OJK?**
 Bukan. Patokannya pedoman praktis yang disusun dari buku rujukan analisis laporan keuangan (Kasmir), contoh tolok ukur industri, dan bunga KUR yang berlaku. Semua sumber dicatat di `references/ambang-wajar.md`. Setiap bank punya penilaian internal sendiri.

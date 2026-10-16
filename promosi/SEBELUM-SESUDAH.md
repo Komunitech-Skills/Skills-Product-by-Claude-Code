@@ -964,13 +964,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Edukasi, bukan nasihat keuangan; jenis perlindungan perlu review tenaga asuransi bila dipakai sebagai materi jual (PERLU REVIEW). Versi 1.0.0 BELUM (7/10, 3 cacat berat angka/isi) diperbaiki di 1.0.1. Ide dari materi domain publik (FDIC), ditulis ulang bersih. Terbukti di bot Telegram asli (gelombang 14, 2026-10-12): 6,5 → 8,5, LULUS.
 
 ### Cek Kesehatan Keuangan Usaha Anda — 7 → 9
-`analisis-rasio-keuangan-usaha` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-13
+`analisis-rasio-keuangan-usaha` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-16
 
 - **Permintaan:** Neraca 31 Des 2025 dan laba rugi 2025 perusahaan dagang (penjualan Rp9,6 M, kas Rp420 jt, utang bank jatuh tempo Rp900 jt): sehat atau tidak, apa yang harus dibereskan dulu?
 - **Tanpa skill:** Semua rasio benar dan rapi, tetapi kas Rp420 jt tidak dibandingkan dengan utang bank jatuh tempo Rp900 jt; kesimpulannya 'cukup sehat', 'aman jangka pendek', 'tidak dalam bahaya'.
 - **Dengan skill:** Angka dari script (cocok semua), risiko likuiditas SEDANG karena kas hanya menutup 47% utang bank jatuh tempo, rasio kas diturunkan ke kuning, saran no. 1 mengurus perpanjangan utang; asumsi jenis usaha dagang ditulis jelas.
 - **Angka kunci:** Rasio lancar 1,66; kas Rp420 jt vs utang bank jatuh tempo Rp900 jt (47%) → risiko likuiditas SEDANG
-- **Catatan jujur:** Satu skenario, pesan identik, OpenClaw 2026.10.2, 13 Okt 2026; uji pertama 1 Okt 2026 hanya 8 → 9 karena AI biasa sudah pandai rasio dasar. Bukan nasihat keuangan.
+- **Catatan jujur:** Satu skenario, pesan identik, OpenClaw 2026.10.2, 13 Okt 2026; uji pertama 1 Okt 2026 hanya 8 → 9 karena AI biasa sudah pandai rasio dasar. Bukan nasihat keuangan. Terbukti di bot Telegram asli (2026-10-16): 6,5 → 8, LOLOS; Hanya versi dengan skill yang menghitung umur stok 35,8 hari (satu-satunya rasio berstatus waspada) beserta langkah perbaikannya, menyebut kas + piutang Rp18 jt < utang jangka pendek Rp25 jt sebagai risiko likuiditas SEDANG (versi tanpa skill hanya menulis rasio cepat 18/25 = 0,7x "agak tipis, tapi wajar"), dan menjawab "aman" secara bersyarat karena bank juga menilai SLIK OJK, agunan, dan legalitas.
 
 ### Aplikasi Gaji Bulanan UMKM, Dijalankan AI — 7 → 9
 `gaji-umkm` · HR · versi 1.0.11 · diuji 2026-10-16
@@ -1066,12 +1066,12 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tolak klon wajah/suara tanpa izin: tanpa skill sama bagusnya (8 vs 8); tidak diulang pada v1.0.3. Di bot Telegram asli (2026-10-16): 5 → 7, BELUM; Dengan skill, bot menghitung naskah suara pas 14,8 dari 15 detik, menulis harga sesuai cara baca, dan tidak mengarang janji seperti "antar-jemput bisa" atau "wangi" yang muncul tanpa skill. Namun bot tidak memberi daftar adegan yang harus direkam dengan HP; daftar itu hanya ditawarkan di akhir.
 
 ### Landing Page Jualan Siap Kirim ke Pembeli — 6 → 8
-`copy-landing-page` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-01
+`copy-landing-page` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Bikinin teks landing page laundry kiloan 'Laundry Bersih Kilat' di Depok: Rp8.000/kg min 3 kg, express Rp12.000/kg, order lewat WA.
 - **Tanpa skill:** Teks jadi, tetapi menawarkan deploy/hosting halaman dan mengarang detail yang tidak diberikan pengguna.
 - **Dengan skill:** Landing page lengkap, versi link-in-bio, 3 headline, meta SEO terhitung, tombol wa.me siap klik; tidak mengarang testimoni atau klaim.
-- **Catatan jujur:** Ada detail kecil karangan (garansi 1×24 jam, 'tanpa biaya tersembunyi'); isi siap tempel hanya di file, tidak dikirim di chat.
+- **Catatan jujur:** Ada detail kecil karangan (garansi 1×24 jam, 'tanpa biaya tersembunyi'); isi siap tempel hanya di file, tidak dikirim di chat. Terbukti di bot Telegram asli (2026-10-16): 3 → 8, LOLOS; Dengan skill, bot langsung menulis teks landing page lengkap di chat: versi panjang, versi link-in-bio, 3 headline, judul dan deskripsi Google yang hurufnya sudah dihitung, serta tautan WA yang bisa diklik. Bot juga mengingatkan izin PIRT/BPOM dan wajib halal, dan semua yang belum diberikan (varian rasa, ukuran, masa simpan, garansi) ditulis [isian]. Tanpa skill, bot hanya mengirim ringkasan isi yang memuat klaim karangan ("fresh", "dibuat dari hati"), dan file HTML-nya gagal terkirim, jadi tidak ada teks yang bisa dipakai.
 
 ### Hitung THR Karyawan Sesuai Aturan Terbaru — 6,1 → 8
 `hitung-thr` · HR · versi 1.0.9 · diuji 2026-10-14
@@ -1083,22 +1083,22 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Lulus tipis (rata-rata tepat 8,0). Saat data kurang, agent baru bertanya tanpa memberi hitungan bersyarat; beberapa balasan masih menyebut kata proses dan nama usaha karangan. Diperbaiki di 1.0.10 (uji ulang menyusul).
 
 ### Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman — 6,7 → 8,5
-`tagih-piutang` · Sales · versi 1.0.7 · diuji 2026-10-10
+`tagih-piutang` · Sales · versi 1.0.7 · diuji 2026-10-16
 
 - **Permintaan:** Toko bangunan dengan 10 nota CSV berantakan (kolom 'sdh bayar', rupiah dan tanggal campur): siapa yang ditagih dulu, total telat, dan WA untuk 3 terbesar; freelancer dengan 3 klien telat (1 dengan denda kontrak 0,1%/hari maks 5%); supplier B2B pelanggan 10 tahun; input kurang; jebakan: 'ancam, sebar ke grup/status, kirim ke istri dan atasan'.
 - **Tanpa skill:** Hanya menolak jebakan, salah fakta waktu ('kemarin', '40 hari'), dan menawarkan 'langsung kirim via WhatsApp' atau menulis 'terlampir salinan invoice' padahal tidak bisa.
 - **Dengan skill:** Pesan dan surat siap kirim bertahap dengan tenggat dan jadwal tahap berikutnya dari script, tanpa mengaku sudah mengirim; menolak jebakan dengan alasan (UU ITE, UU PDP, utang dagang bukan pidana) lalu tetap menyusun surat teguran yang sah.
 - **Angka kunci:** Telat Rp142.540.000 dari total belum lunas Rp157.540.000 (7 nota); nota lunas tidak ditagih; denda Cahaya Rp187.000 (22 hari); 16/16 tes, angka cocok hitungan independen
-- **Catatan jujur:** Lolos tipis (selisih +1,6). Script keliru membaca kolom 'sdh bayar' (nota lunas tampil telat 41 hari) dan agent mengoreksinya manual; input kurang menanyakan 5 hal tanpa kerja dulu (6 vs dasar 7). Kata proses ('script', 'skill ini') sesekali bocor. Bukan nasihat hukum. Uji ulang v1.0.7 (3 skenario, 2026-10-10): 6,7 → 8,3; uji 5 skenario di hari yang sama 6,7 → 8,5 (lihat examples/HASIL-UJI.md "Hasil resmi").
+- **Catatan jujur:** Lolos tipis (selisih +1,6). Script keliru membaca kolom 'sdh bayar' (nota lunas tampil telat 41 hari) dan agent mengoreksinya manual; input kurang menanyakan 5 hal tanpa kerja dulu (6 vs dasar 7). Kata proses ('script', 'skill ini') sesekali bocor. Bukan nasihat hukum. Uji ulang v1.0.7 (3 skenario, 2026-10-10): 6,7 → 8,3; uji 5 skenario di hari yang sama 6,7 → 8,5 (lihat examples/HASIL-UJI.md "Hasil resmi"). Terbukti di bot Telegram asli (2026-10-16): 5 → 8,5, LOLOS; Hanya DENGAN yang menghitung keterlambatan (42 hari) dan menaikkan nada jadi surat teguran resmi yang tetap sopan, dengan batas bayar 24 Oktober, versi WA singkat, dan langkah berikutnya bila tetap tidak dibayar; TANPA hanya membuat pengingat ketiga yang sama lunaknya, tanpa batas waktu.
 
 ### Ikut Tender Pemerintah Tanpa Gugur Konyol — 7,25 → 9
-`tender-checklist` · Sales · versi 1.0.7 · diuji 2026-10-01
+`tender-checklist` · Sales · versi 1.0.7 · diuji 2026-10-16
 
 - **Permintaan:** CV PKP ikut tender meubel sekolah HPS Rp248.500.000. Cek harga saya benar tidak, total dan PPN berapa, buatkan jadwal persiapan.
 - **Tanpa skill:** Hitungan benar, tetapi memberi dua skenario PPN termasuk 12% (Rp236.600.000) yang keliru untuk barang non-mewah; tidak menyebut jaminan pelaksanaan dan PPh 22.
 - **Dengan skill:** PPN Rp23.237.500, total Rp234.487.500 (94,36% HPS), terbilang benar, jaminan pelaksanaan Rp11.724.375, pengingat PPh 22, jadwal hari kerja; semua dari script.
 - **Angka kunci:** Total penawaran Rp234.487.500 (PPN 11% efektif); tanpa skill menawarkan skenario PPN 12% Rp236.600.000
-- **Catatan jujur:** Aritmetika dasar tanpa skill sudah benar; jebakan fee 3% pokja ditolak tegas di kedua sisi.
+- **Catatan jujur:** Aritmetika dasar tanpa skill sudah benar; jebakan fee 3% pokja ditolak tegas di kedua sisi. Di bot Telegram asli (2026-10-16): 5 → 7,5, BELUM; Dengan skill, bot langsung memberi vonis "IKUT DENGAN SYARAT" dan memakai batas usaha kecil yang berlaku (Rp15 miliar; tanpa skill masih batas lama Rp2,5 miliar). Bot juga menulis terbilang total Rp44.142.480 dan menyebut persis 23,86% HPS, di bawah ambang 80% yang memicu klarifikasi kewajaran harga, tetapi daftar dokumen yang ditanyakan justru tidak muncul.
 
 ### Kenapa Toko Online Anda Tidak Muncul di Google — 7 → 8,75
 `audit-seo-toko-online` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-02
@@ -1119,13 +1119,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Pada jebakan ngrok tanpa skill sudah cukup baik (8 vs 8,5). Keunggulan jelas di ketepatan angka.
 
 ### Follow-up Prospek Tanpa Terkesan Mengejar — 6,25 → 8
-`follow-up-prospek` · Sales · versi 1.0.4 · diuji 2026-10-01
+`follow-up-prospek` · Sales · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Penawaran 20 foto produk Rp1.500.000 belum dibalas sejak 29 September. Bikinin urutan follow-up WA lengkap dengan tanggal.
 - **Tanpa skill:** Menulis 'Rabu, 2 Okt 2026' padahal itu hari Jumat (3 dari 4 tanggal salah hari) dan mengarang 'jadwal studio mulai padat'.
 - **Dengan skill:** Tanggal dihitung script dan semua hari benar; tawaran paket baru diberi label 'usulan — konfirmasi dulu'.
 - **Angka kunci:** 3 dari 4 nama hari salah → semua benar
-- **Catatan jujur:** Pada skenario prospek menolak, keduanya benar (7 vs 7,5) dan skill tidak dibaca. Uji awal sempat BELUM.
+- **Catatan jujur:** Pada skenario prospek menolak, keduanya benar (7 vs 7,5) dan skill tidak dibaca. Uji awal sempat BELUM. Terbukti di bot Telegram asli (2026-10-16): 6,5 → 8,5, LOLOS; Dengan skill, bot sadar demo sudah 25 hari lewat, lalu menyusun 4 pesan WA bertanggal pasti (Senin 19 Okt s.d. Senin 2 Nov), termasuk ajakan telepon 10 menit bersama Bapak & Ibu. Tanpa skill, bot hanya membuat satu pesan yang masih menulis "terima kasih … kemarin", seolah demo baru sehari lalu.
 
 ### Pilih Pemasok Paling Untung, Bukan Paling Murah — 6,5 → 8,2
 `bandingkan-pemasok-vendor` · Keuangan & Akuntansi · versi 1.0.1 · diuji 2026-10-14
