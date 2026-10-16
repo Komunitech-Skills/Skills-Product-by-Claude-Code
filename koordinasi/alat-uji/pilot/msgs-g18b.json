@@ -70,5 +70,13 @@
   "topic": 1599,
   "text": "@KTclaude2bot kak saya punya toko kue online Kue Nara. ini chat WA pelanggan (data/chat-wa-september.txt) sama ulasan shopee bulan september (data/ulasan-shopee-september.csv). tolong dibaca semua ya, apa yg harus saya benahi duluan? yg chat dari 'Admin Kue Nara' itu admin saya",
   "gel": 18
+ },
+ {
+  "skill": "arsip-nota",
+  "sisi": "sesudah-ya",
+  "topic": 1597,
+  "text": "ya",
+  "balas": true,
+  "catatan": "giliran 2 konfirmasi pratinjau (SKILL.md arsip-nota mewajibkan pratinjau sebelum menyalin); sama dengan alur uji internal examples/00"
  }
 ]
