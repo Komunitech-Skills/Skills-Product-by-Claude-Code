@@ -20,8 +20,9 @@ akun pengguna masih memakai iklan pencarian Tokopedia (dulu TopAds) dengan kata 
 cek Shopee (`S`) yang logikanya sama (kata kunci, bid, ROAS impas, etalase) dan catat di kolom
 `catatan` bahwa platformnya Tokopedia.
 
-## Pertanyaan singkat bila tidak ada screenshot (tanyakan sekali, satu pesan)
-Pilih yang relevan dengan platform yang dipakai; maksimal 8 pertanyaan.
+## Pertanyaan singkat bila bukti masih sebagian (tanyakan sekali, di AKHIR balasan)
+Berikan dulu audit pendahuluan dari angka yang sudah ada, baru tanya. Pilih maksimal 5 yang paling
+mengubah skor/prioritas dan belum terjawab di pesan pengguna; daftar di bawah urutannya bebas, bukan urutan nilai.
 1. Iklan diarahkan ke mana: WhatsApp, website, atau produk di marketplace?
 2. Siapa saja yang punya akses akun iklan? Verifikasi 2 langkah sudah aktif?
 3. Tujuan kampanye yang dipilih saat membuat iklan (Penjualan / Prospek / Pesan / Traffic / Boost)?

@@ -53,6 +53,10 @@ Cakupan bukti per platform:
 | 60–79,99% | sementara | Wajib ditulis "sementara" |
 | < 60% | bukti kurang | Skor & label mutu **tidak** ditampilkan ("BUKTI BELUM CUKUP"); minta bukti dulu |
 
+Audit pendahuluan (SKILL.md, v1.0.7): untuk balasan pertama saat bukti masih sebagian, cakupan 30–59,99%
+boleh menyebut `skor_indikatif` (keluaran `--json`) sebagai "perkiraan awal", bukan nilai akun; di bawah 30%
+angka skor tidak disebut. Ini aturan penyajian saja; rumus di bagian 3 tidak berubah.
+
 Skor gabungan beberapa platform = rata-rata tertimbang **porsi belanja** (bila belanja semua
 platform layak diketahui) atau rata-rata biasa (ditandai sementara). Platform berstatus bukti
 kurang dikeluarkan dari gabungan dan disebutkan.
