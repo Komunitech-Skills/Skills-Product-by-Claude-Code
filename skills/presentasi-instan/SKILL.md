@@ -5,7 +5,7 @@ description: Membuat presentasi/pitch deck Indonesia sebagai satu file HTML mand
 
 # Presentasi Instan
 
-> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya (kecuali di kanal chat, lihat langkah 7), dan simpan hasil di folder kerja yang disepakati (bukan /tmp); jangan menyebut nama skill atau alat internal ke pengguna (lihat langkah 7).
 
 Mengubah poin-poin dari pengguna menjadi presentasi HTML siap pakai — satu file,
 tanpa instalasi, tanpa internet setelah file jadi, langsung bisa dibuka di browser
@@ -101,12 +101,15 @@ pakai default masuk akal di atas dan sebutkan asumsi yang dipakai di ringkasan a
      perbaiki HTML lalu jalankan ulang sampai lulus.
    - Jika ada **peringatan** (mis. slide terlalu padat teks), pertimbangkan
      memperbaikinya; boleh dikirim ke pengguna apa adanya jika pengguna memang minta
-     konten sepadat itu, tapi sebutkan peringatannya.
+     konten sepadat itu, tapi sebutkan peringatannya dalam bahasa awam.
    - Jika Python tidak bisa dijalankan di lingkungan pengguna, periksa manual: pastikan
      tidak ada teks `http://`/`https://` di dalam file, ada blok `@media print`, dan
      tidak ada slide yang terlihat penuh sesak — lalu beri tahu pengguna bahwa
      pengecekan otomatis dilewati.
 7. **Sampaikan hasil ke pengguna** mengikuti format output di bawah.
+   - **Berkas hasil di kanal chat (Telegram/WhatsApp):** pengguna di HP tidak bisa membuka folder di komputer agent. Setelah file `.html` jadi dan lolos `validasi_html.py`, **WAJIB lampirkan/kirim file `.html` itu sebagai dokumen** bila kanal bisa mengirim file. Bila tidak bisa, **jangan menyebut jalur/folder kerja atau nama file di komputer**; ringkas isi slide per slide di chat (satu baris per slide) dan cukup tawarkan "balas 'kirim file'". Jangan menawarkan "kirim file" sebagai pengganti mencoba melampirkan.
+   - **Tampilan di chat:** jangan pakai tabel Markdown; ringkasan slide ditulis sebagai daftar bernomor.
+   - **Bahasa ke pengguna:** tulis hasil cek `validasi_html.py` dengan kalimat awam (mis. "file bisa dibuka tanpa internet dan siap dicetak jadi PDF"); jangan memakai kata "LULUS"/"validasi". **Jangan menyebut nama skill atau alat internal** (mis. `rekap-penjualan-csv`, `pengajuan-kur`, "skill laporan keuangan") — cukup sebut hasilnya ("rekap penjualan", "simulasi cicilan KUR"). Bila perlu saran, sebut kebutuhannya, bukan nama skill-nya.
 
 ## Format output
 
@@ -121,9 +124,11 @@ Cara pakai:
 
 Asumsi yang dipakai (kalau ada): [...]
 Bagian yang masih perlu Anda lengkapi (kalau ada): [...]
-Catatan kelayakan pinjaman (khusus KUR, kalau ada, TIDAK ditaruh di slide): [mis. "rasio cicilan/laba 46,6% = kategori BERAT menurut pengajuan-kur; plafon yang lebih aman sekitar Rp ..."]
-Hasil cek otomatis: [ringkasan LULUS/ada peringatan dari validasi_html.py]
+Catatan kelayakan pinjaman (khusus KUR, kalau ada, TIDAK ditaruh di slide): [mis. "rasio cicilan/laba 46,6% = kategori BERAT menurut simulasi KUR; plafon yang lebih aman sekitar Rp ..."]
+Sudah dicek: [bahasa awam, mis. "file bisa dibuka tanpa internet dan siap dicetak jadi PDF"; bila ada peringatan, sebutkan apa yang perlu diperbaiki, mis. "slide 4 terlalu padat, sebaiknya dipecah jadi dua"]
 ```
+
+Di kanal chat (Telegram/WhatsApp): kirim file `.html`-nya sebagai dokumen bersama pesan ini (langkah 7); baris "Presentasi ... sudah jadi" cukup memuat judul dan jumlah slide, tanpa jalur/folder komputer.
 
 ## Contoh
 
@@ -147,7 +152,7 @@ Perlu Anda lengkapi: jumlah karyawan, alamat usaha, dan legalitas usaha (NIB/NPW
 Catatan: presentasi ini pelengkap, bukan pengganti formulir resmi KUR — cek syarat 
 terbaru ke bank/penyalur KUR yang dituju.
 
-Hasil cek otomatis: LULUS, tanpa peringatan.
+Sudah dicek: file bisa dibuka tanpa internet dan siap dicetak jadi PDF.
 ```
 
 ## Angka pinjaman/cicilan (khusus KUR/kredit) — WAJIB, jangan hitung kira-kira
@@ -161,12 +166,12 @@ atau kelayakan plafon/agunan — itu adalah pekerjaan skill `pengajuan-kur`:
   `templates/pengajuan-kur.md`. **Jangan** menaruh label penilaian kelayakan seperti
   "BERAT"/"AMAN" dari `pengajuan-kur` di slide yang akan dilihat pihak bank — itu
   penilaian internal untuk pengguna, bukan untuk presentasi ke bank. Sampaikan label
-  kelayakan itu (mis. "rasio 46,6% = kategori BERAT") beserta perkiraan plafon yang lebih
+  kelayakan itu (mis. "rasio 46,6% = kategori BERAT menurut simulasi KUR") beserta perkiraan plafon yang lebih
   aman ke **pengguna** di ringkasan akhir, supaya dipertimbangkan sebelum diajukan.
 - Jika skill `pengajuan-kur` **tidak terpasang**: jangan mengarang atau menghitung
   kira-kira di kepala. Tulis `[isi]` pada angka cicilan/rasio, dan tambahkan catatan di
   slide (font kecil) atau di ringkasan akhir: "Cicilan & rasio kemampuan bayar perlu
-  dihitung dengan skill/alat simulasi KUR resmi sebelum dipakai ke bank."
+  dihitung dengan simulasi KUR resmi (mis. dari bank penyalur) sebelum dipakai ke bank."
 - Angka omzet/laba yang jadi dasar rasio (lihat bagian CSV di bawah) juga wajib berasal
   dari data pengguna atau hasil rekap, bukan perkiraan.
 
@@ -194,6 +199,8 @@ perlu dihitung, **masukkan hasilnya ke slide, jangan menghitung ulang manual/kir
 - [ ] Ada `@page { size: 1920px 1080px; margin: 0; }` dan blok `@media print`, sudah dicoba cetak PDF-nya tidak terpotong.
 - [ ] Tidak ada klaim tanpa dasar (halal, BPOM, "terlaris", "pelanggan bertambah", "selesai 1–2 hari") kecuali diberikan pengguna; selain itu `[isi: ...]`.
 - [ ] Bagian yang belum terisi ditandai jelas, bukan dikarang seolah-olah data asli.
+- [ ] Kanal chat: file `.html` dilampirkan sebagai dokumen; bila tidak bisa, tidak ada jalur/folder disebut, isi slide diringkas per slide, dan hanya ditawarkan "balas 'kirim file'"; tidak ada tabel Markdown.
+- [ ] Balasan memakai bahasa awam: tanpa kata "LULUS"/"validasi" dan tanpa nama skill/alat internal.
 
 ## Batasan & penanganan error
 - **Bukan pengganti PowerPoint/Canva penuh** — tidak ada transisi 3D, tidak ada

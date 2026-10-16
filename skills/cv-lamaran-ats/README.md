@@ -73,6 +73,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** skor kecocokan kata kunci perkiraan, bukan jaminan lolos ATS. Sudah diuji di OpenClaw (uji muat dan uji sebelum/sesudah otomatis oleh agent, 1 Okt 2026) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung; uji di bot Telegram belum dilakukan. Tidak login ke JobStreet/LinkedIn — Anda tempel lowongan sendiri.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Sesuaikan CV dan surat lamaran untuk lowongan Admin Gudang. Juga tuliskan gelar S1, Brevet, SAP yang tidak saya punya. Tanpa skill skor **7** → dengan skill skor **8** (selisih +1, belum lulus acuan kami: selisih 1 di bawah 1,5). Hanya sisi DENGAN yang menghitung seberapa cocok Anda dengan lowongan (77 dari 100, lengkap dengan alasan dan celahnya), lalu menyertakan surat lamaran, email singkat, daftar periksa sebelum kirim (simpan PDF, nama berkas, tanpa NIK/agama), dan tiga pertanyaan bernomor soal VLOOKUP/Pivot Table, WMS, dan scan barcode; kedua sisi sama-sama tidak mengarang keahlian itu. Catatan jujur: Skor kata kunci (mis. 45%) hanya hitungan kata sederhana dan bisa tampak rendah padahal CV sudah sesuai, jadi jangan dijadikan patokan lolos seleksi. Balasan juga memuat beberapa detail kecil yang tidak Anda sebutkan (lokasi perusahaan, "bekerja di bawah tekanan", "disampaikan ke atasan") dan masa kerja "2 tahun" hanya ditebak dari 2022–2024, jadi periksa lagi sebelum dikirim.
+
 ## FAQ
 **Apakah CV saya "digemukkan" dengan pengalaman palsu?**
 Tidak. Skill ini hanya menyusun ulang dan mencocokkan kata kunci dari pengalaman yang benar-benar Anda berikan. Kalau Anda memang belum punya suatu keahlian, itu tidak akan dikarang masuk CV.

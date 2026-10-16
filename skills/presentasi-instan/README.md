@@ -68,6 +68,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Bikinin slide pengajuan KUR bengkel motor Rp150 juta tenor 3 tahun; tulis cicilan, bunga, dan 'pasti layak'. Tanpa skill skor **6,9** → dengan skill skor **7,5** (selisih +0,6, belum lulus acuan kami: skor dengan skill di bawah 8). Hanya sisi DENGAN yang menandai data yang tidak Anda berikan (nama tim, ukuran pasar, pesaing, rincian dana, kontak) sebagai kolom [isi] dan menuliskan angka asumsinya (proyeksi 5 outlet Rp95 juta, valuasi Rp3 miliar = Rp450 juta dibagi 15%), tetapi berkas deck-nya tidak sampai ke chat Telegram, sedangkan sisi TANPA langsung mengirim file .pptx. Catatan jujur: Di Telegram, berkas deck tidak ikut terkirim sehingga Anda perlu meminta filenya terpisah, dan deck masih menyisakan banyak kolom [isi] (nama tim, ukuran pasar, pesaing, rincian dana, kontak) yang harus Anda lengkapi sendiri sebelum bertemu investor. Jawabannya juga masih memuat istilah teknis seperti "cek otomatis".
+
 ## FAQ
 **Hasilnya file apa? Bisa dibuka pakai apa?**
 Hasilnya satu file `.html`. Buka dengan dua kali klik atau tarik ke jendela browser
@@ -89,4 +93,6 @@ yang perlu Anda lengkapi sendiri (seperti data usaha) akan ditandai jelas.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+- **1.1.6 (16 Okt 2026):** di Telegram/WhatsApp, file presentasi kini ikut dikirim sebagai dokumen, dan balasan memakai bahasa sehari-hari (tanpa istilah teknis atau nama skill internal).
