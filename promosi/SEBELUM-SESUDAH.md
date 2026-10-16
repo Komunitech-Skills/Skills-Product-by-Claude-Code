@@ -499,13 +499,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Bot Telegram gelombang 9: 6,5 → 8,5 (gelombang 8 dengan 1.0.8 masih 7,5). Proposal kadang menambah janji yang tidak diberikan pengguna (mis. display/cooler); periksa sebelum kirim.
 
 ### Foto Nota Jadi Tabel Excel, Sudah Dicek — 6 → 9
-`ekstrak-nota-faktur` · Keuangan & Akuntansi · versi 1.0.4 · diuji 2026-10-01
+`ekstrak-nota-faktur` · Keuangan & Akuntansi · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Rekap 3 nota toko kue ke Excel dan cek hitungannya; satu invoice jasa cetak mencantumkan PPN 12% Rp180.000.
 - **Tanpa skill:** Menyatakan invoice 'sesuai' padahal PPN 12% penuh dipakai untuk jasa non-mewah; kesalahan pajak tidak terdeteksi.
 - **Dengan skill:** Menemukan PPN seharusnya Rp165.000 (11% dari DPP Rp1.500.000), total seharusnya Rp1.665.000, kelebihan Rp15.000; digit buram ditandai TIDAK TERBACA, tidak ditebak.
 - **Angka kunci:** PPN invoice Rp180.000 ('sesuai') → seharusnya Rp165.000 (kelebihan Rp15.000)
-- **Catatan jujur:** Pembulatan PPN belum dicocokkan dengan Coretax. Kategori pengeluaran ditebak tanpa disebut asumsi.
+- **Catatan jujur:** Pembulatan PPN belum dicocokkan dengan Coretax. Kategori pengeluaran ditebak tanpa disebut asumsi. Di bot Telegram asli (2026-10-16): 4,5 → 7,5, BELUM; Hanya DENGAN yang menangkap PPN invoice CV Cetak Kilat dihitung 12% penuh (untuk jasa biasa seharusnya Rp165.000, kelebihan tagih Rp15.000) dan menyarankan bertanya ke penjual sebelum bayar; TANPA menyatakan invoice "sudah cocok semua" dan berkas Excel-nya berisi rumus yang salah, tetapi DENGAN tidak melampirkan berkas Excel yang diminta.
 
 ### Laporan Harian Otomatis Tanpa Dashboard Berbayar — 6 → 9
 `laporan-harian-usaha` · Data & Analisis · versi 1.1.4 · diuji 2026-10-01
@@ -517,13 +517,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Bila aplikasi kasir dan CRM terpasang, tanpa skill pun rekap bisa benar; pembeda ada pada format baku dan kepatuhan privasi.
 
 ### Notulen Rapat Rapi dari Catatan Berantakan — 6 → 9
-`notulen-rapat` · Produktivitas · versi 1.0.4 · diuji 2026-10-13
+`notulen-rapat` · Produktivitas · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Catatan rapat mingguan 1 Okt yang berantakan ('sales sept 2,1M target 2,5M', 'forklift 2 rusak', 'jumat depan', 'sebelum rabu'): jadikan notulen rapi plus pesan WA ke tim.
 - **Tanpa skill:** Struktur rapi, tetapi '2,1M' ditulis Rp2,1 juta tanpa tanda ragu, 'forklift 2 rusak' dibaca 2 unit rusak, tanggal relatif dibiarkan ('Jumat depan', 'Sebelum Rabu'), dan tenggat sewa forklift dikarang.
 - **Dengan skill:** Tanggal dihitung script (sebelum Rabu 7 Okt, besok Jumat 2 Okt, rapat berikutnya Kamis 8 Okt), 'Jumat depan' ditandai ambigu (2 atau 9 Okt) di tabel dan pesan WA, satuan 'M' diberi [cek: …], 'Forklift 2' ditulis sebagai nomor unit, tanpa tugas tambahan karangan.
 - **Angka kunci:** 4 tanggal relatif dikonversi benar (dicek ulang kalender Python); 1 ambigu ditandai; 0 tugas karangan (v1.0.3 masih 1)
-- **Catatan jujur:** Satu skenario, pesan identik, OpenClaw 2026.10.2, 13 Okt 2026; uji pertama 1 Okt 2026 6 → 8,5 lalu 9. Tanggal 'tadi pagi' di pesan memakai tanggal rapat 1 Okt di kedua sisi.
+- **Catatan jujur:** Satu skenario, pesan identik, OpenClaw 2026.10.2, 13 Okt 2026; uji pertama 1 Okt 2026 6 → 8,5 lalu 9. Tanggal 'tadi pagi' di pesan memakai tanggal rapat 1 Okt di kedua sisi. Terbukti di bot Telegram asli (2026-10-16): 5 → 8,5, LOLOS; Hanya DENGAN yang membaca "2,1M" sebagai Rp2.100.000.000 (TANPA menulis Rp2,1 juta), mengubah semua tanggal relatif ke tanggal pasti (besok = Jumat 2 Okt, sebelum Rabu 7 Okt, rapat berikutnya Kamis 8 Okt), menandai "Jumat depan" ambigu (2 atau 9 Okt), dan menambah pesan siap kirim ke grup WA.
 
 ### Siap Ajukan KUR Tanpa Bingung — 6 → 9
 `pengajuan-kur` · Keuangan & Akuntansi · versi 1.2.3 · diuji 2026-10-01
@@ -543,13 +543,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** 19.30 WIB = 20.30 WITA di Makassar
 
 ### Rencana Marketing Usaha Siap Jalan — 6 → 9
-`rencana-marketing-usaha` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-02
+`rencana-marketing-usaha` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Rencana marketing nugget ayam: jual Rp30.000, modal Rp27.000, iklan Rp10 juta/bulan, blast WA ke 2.000 nomor beli list.
 - **Tanpa skill:** Tetap menyusun rencana iklan Rp10 juta dengan omzet contoh karangan dan memberi cara blast WA ke nomor beli list (risiko UU PDP dan blokir nomor).
 - **Dengan skill:** Menangkap margin Rp0, menolak membakar iklan Rp10 juta sebelum harga dibenahi, menolak blast ke nomor beli list dengan dasar UU PDP, lalu bertanya sekali.
 - **Angka kunci:** Margin per produk Rp0 (30.000 − 27.000 − 3.000); iklan Rp10 juta hanya menambah rugi
-- **Catatan jujur:** Hitung margin benar di kedua sisi; pembeda ada di keamanan blast dan kelengkapan rencana. Skill belum menawarkan rencana organik sementara.
+- **Catatan jujur:** Hitung margin benar di kedua sisi; pembeda ada di keamanan blast dan kelengkapan rencana. Skill belum menawarkan rencana organik sementara. Terbukti di bot Telegram asli (2026-10-16): 6,5 → 8, LOLOS; DENGAN memberi target terukur (+10 porsi malam/hari), anggaran per kanal yang jumlahnya pas Rp9.000.000, batas biaya iklan per pelanggan (Rp10.000 makan di tempat, Rp6.000 GoFood) dengan aturan berhenti, dan menyimpulkan GoFood jangan jadi andalan iklan; TANPA justru menaruh pos terbesar (Rp1.000.000/bulan) di promo GoFood yang marginnya paling tipis dan tanpa target angka.
 
 ### Spesifikasi Produk Usaha Siap Kirim ke Maklon — 6 → 9
 `spesifikasi-produk-usaha` · Produktivitas · versi 1.0.4 · diuji 2026-10-02
@@ -570,13 +570,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tanpa skill sudah menolak lompat ke produksi besar dan menyarankan DP; pembeda ada di angka rentang dan keputusan tegas.
 
 ### Arsip Nota Otomatis, Tanpa Langganan — 5,75 → 8,75
-`arsip-nota` · Produktivitas · versi 1.0.6 · diuji 2026-10-01
+`arsip-nota` · Produktivitas · versi 1.0.6 · diuji 2026-10-16
 
 - **Permintaan:** Tolong rapikan nota-nota di folder nota/, tandai yang dobel, lalu rekap pengeluaran bulan ini.
 - **Tanpa skill:** Mencatat nominal ambigu '38.5' apa adanya sebagai pengeluaran dan memindahkan file asli ke Trash tanpa konfirmasi.
 - **Dengan skill:** Menanyakan apakah 38.5 maksudnya Rp38.500, tidak pernah menghapus file asli, dan memblokir nota dobel lewat hash isi file.
 - **Angka kunci:** Tercatat 'Rp38,5' (salah) → ditanyakan dulu, dicatat Rp38.500
-- **Catatan jujur:** Skill bukan OCR (nominal dari pengguna). Butuh sampai 3 giliran chat untuk satu struk karena minta konfirmasi berulang.
+- **Catatan jujur:** Skill bukan OCR (nominal dari pengguna). Butuh sampai 3 giliran chat untuk satu struk karena minta konfirmasi berulang. Di bot Telegram asli (2026-10-16): 7 → 8, BELUM; DENGAN menyalin 3 nota ke arsip setelah konfirmasi dan membiarkan file asli utuh, sedangkan TANPA langsung mengganti nama file asli; nota dobel terdeteksi lewat isi file di kedua sisi dan rekapnya sama (Rp1.887.500).
 
 ### Buku Piutang Tanpa Langganan, Cukup Lewat Chat — 5,75 → 8,75
 `buku-piutang` · Keuangan & Akuntansi · versi 1.0.4 · diuji 2026-10-01
@@ -770,13 +770,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** 1.0.0 lulus 8,3 dengan 5 temuan (barang yang pasti kosong tidak disorot, aturan tren meredam kenaikan, nama '(isi 3)' dianggap barang mati) → diperbaiki di 1.0.1, uji ulang terbatas 8,7. Sisa dua slip kecil tanpa dampak keputusan (hari habis ±139 vs 140; kalimat batas tren yang tidak terpakai) diperbaiki di 1.0.2 tanpa uji ulang. Belum diuji di bot Telegram asli maupun oleh manusia. Di bot Telegram asli (2026-10-14): versi 1.0.2 hanya 7 → 8 (tanpa skill pun sudah benar, berupa kisaran); 1.0.3 salah membaca total mingguan sebagai harian (jumlah pesan +40–60 %, skor 4); 1.0.4 (deteksi otomatis data mingguan) 7 → 9, LOLOS — jumlah 47/82/75 dicek ulang, draf WA ke grosir dan tanggal pesan tampil.
 
 ### Dari Keluhan Jadi Perbaikan Tiap Bulan — 5,9 → 8,5
-`iterasi-dari-masukan-pelanggan` · Produktivitas · versi 1.0.11 · diuji 2026-10-13
+`iterasi-dari-masukan-pelanggan` · Produktivitas · versi 1.0.11 · diuji 2026-10-16
 
 - **Permintaan:** Toko kue online: baca semua chat WA pelanggan dan ulasan Shopee September, apa yang harus saya benahi duluan?
 - **Tanpa skill:** Menyebut sekitar 10 nama pelanggan di laporan dan salah hitung jumlah chat (16, padahal 13).
 - **Dengan skill:** Data pelanggan disamarkan dan angka disalin dari script; temuan 88,9% keluhan WhatsApp (8 dari 9) tidak dibalas admin, plus draf balasan siap kirim per jenis keluhan.
 - **Angka kunci:** Jumlah chat WA 16 (salah) → 13 (benar); 88,9% keluhan WA tidak dibalas
-- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6.9 → 8.6 (2026-10-02, v1.0.10)). Satu nama pelanggan lolos di laporan; 'jamur 5' bisa terbaca keliru (4 jamur + 1 semut). Uji ke-2b sempat BELUM.
+- **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6.9 → 8.6 (2026-10-02, v1.0.10)). Satu nama pelanggan lolos di laporan; 'jamur 5' bisa terbaca keliru (4 jamur + 1 semut). Uji ke-2b sempat BELUM. Di bot Telegram asli (2026-10-16): 6 → 5, BELUM; DENGAN memberi backlog berpenanggung jawab dan bertenggat, draf balasan, dan temuan keluhan WA yang tidak dibalas tanpa menyebut nama pelanggan, tetapi melewatkan satu keluhan WA ("Kurir telat lagi, nunggu lama. Tolong dibenahi") sehingga beberapa angkanya salah; TANPA menghitung keluhan per isu dengan benar tetapi tidak memberi rencana kerja.
 
 ### Gaji Nggak Numpang Lewat Lagi — 6,5 → 9
 `atur-keuangan-pribadi` · Kehidupan Pribadi · versi 1.0.11 · diuji 2026-10-02
