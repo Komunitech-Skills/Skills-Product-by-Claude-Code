@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **109 skill** dari 133 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **110 skill** dari 134 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -105,18 +105,19 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 95 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
 | 96 | Harga Jual Marketplace Anti Boncos (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
 | 97 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 98 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 99 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 100 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 101 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
-| 102 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
-| 103 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 104 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 105 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 106 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 107 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
-| 108 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 109 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 98 | Promo 11.11 Sampai Lebaran, Tetap Untung (`promo-kalender`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 99 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 100 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 101 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 102 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
+| 103 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 104 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 105 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 106 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
+| 107 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 108 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
+| 109 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 110 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -988,6 +989,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Total Rp35.100, kembalian Rp64.900, nota urut tersimpan di komputer, struk 58 mm; pajak resto diluruskan sebagai PBJT, bukan PPN.
 - **Angka kunci:** Total Rp35.100, kembalian Rp64.900; pajak resto = PBJT, bukan PPN
 - **Catatan jujur:** Untuk satu transaksi tunggal, hasil tanpa skill juga benar; nilai tambah ada di database, nomor nota, tutup kasir, dan pajak.
+
+### Promo 11.11 Sampai Lebaran, Tetap Untung — 6,5 → 8,5
+`promo-kalender` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-01
+
+- **Permintaan:** Penjual serum minta rencana promo 11.11: diskon 30% untuk serum harga normal Rp89.000, modal Rp41.000, potongan Shopee sekitar 12% + Rp1.250 per pesanan, biasanya laku 60 botol sebulan. Masih untung atau tidak, dan bagaimana rencananya?
+- **Tanpa skill:** Angka per botol sudah benar (laba normal Rp36.070; harga diskon 30% jadi Rp62.300 dengan laba Rp12.574), tetapi target "173 botol" membandingkan promo 1-3 hari dengan laba sebulan penuh, memakai klaim pasar tanpa dasar (lonjakan 2-4x), dan tidak ada syarat & ketentuan promo.
+- **Dengan skill:** Jawaban "masih untung", batas diskon maksimal 46%, target 6 botol untuk promo 1 hari, linimasa bertanggal, dan syarat & ketentuan dengan isian [isi: ...] untuk hal yang tidak diberikan pemilik. Uji pertama (skor 8) punya periode promo yang tidak konsisten (target dihitung 3 hari, linimasa dan S&K 1 hari) dan janji "Dikirim maks 2 hari kerja" yang tidak diberikan pemilik; keduanya hilang pada uji ulang v1.0.3 (skor 8,5).
+- **Angka kunci:** Skor 6,5 → 8 (uji pertama) → 8,5 (uji ulang v1.0.3). Laba normal Rp36.070 per botol; diskon 30% (Rp62.300) laba Rp12.574; batas diskon maksimal 46%; target 6 botol untuk promo 1 hari, sedangkan tanpa skill menyebut 173 botol dengan kerangka sebulan penuh.
+- **Keterangan:** Uji satu skenario dalam uji solusi VIP Toko Online (versi 1.0.3; versi sekarang 1.0.4)
+- **Catatan jujur:** Hanya satu skenario (promo 11.11 diskon 30% untuk serum) yang diuji di OpenClaw, sebagai bagian uji solusi VIP Toko Online 2026-10-01 (satu skenario per skill, bukan 5 skenario per skill); sisi tanpa skill dijalankan sekali dan uji ulang hanya sisi dengan skill. Versi uji pertama tidak dicatat (sebelum revisi 1.0.3); uji ulang v1.0.3, sedangkan versi katalog sekarang 1.0.4 (belum ada uji OpenClaw untuk 1.0.4). Regresi kecil pada uji ulang: opsi bundling 2 botol (laba Rp24.375 per botol), peringatan harga coret palsu, dan pengingat cek potongan di Seller Center tidak muncul lagi, sehingga jawaban lebih tipis; tidak ada angka salah. PPh 22 marketplace 0,5% tidak dimasukkan di kedua sisi karena pemilik menyebut potongan "kira-kira 12%"; bila belum termasuk, laba diskon 30% turun menjadi Rp12.263 (hitungan penguji).
 
 ### Picking List & Urutan Resi dari File Pesanan — 6,5 → 8,5
 `resi-picking` · E-commerce/Marketplace Indonesia · versi 1.0.4 · diuji 2026-10-01
