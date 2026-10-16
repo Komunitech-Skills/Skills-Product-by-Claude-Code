@@ -1,4 +1,158 @@
-# Uji OpenClaw sebelum/sesudah: pph-final-umkm 1.0.3
+# Uji OpenClaw sebelum/sesudah: pph-final-umkm
+
+## Uji ulang 1.0.5 (2026-10-16, penguji independen)
+
+- **Tanggal:** 2026-10-16, dijalankan ±15.35-15.42 WIB ("hari ini" di semua skenario = Jumat, 16 Oktober 2026; batas setor masa September, Kamis 15 Oktober 2026, sudah lewat 1 hari).
+- **Penguji:** agent penguji independen Komunitech (bukan pembuat skill; hanya membaca folder skill, pesan uji, jawaban, dan jejak alat).
+- **Versi skill:** 1.0.5 (perubahan 1.0.4/1.0.5 di `CHANGELOG.md`: PPh 22 marketplace dikreditkan per bulan, jangka waktu tarif mengikuti PP 20/2026, "hari ini"/subtotal/proyeksi dicetak oleh hitungan, mode tabel kemungkinan).
+- **Cara uji:** OpenClaw 2026.10.2 lokal (`openclaw agent --local`, satu giliran per skenario), model router Komunitech (`claude-sonnet-5`), TZ Asia/Jakarta. Home dibuat ulang bersih (`mk-home.sh`) berisi **hanya** `pph-final-umkm`. Pesan identik dengan uji 14 Oktober. Skenario 1 juga dijalankan di konteks kanal Telegram (`uji-tg.sh`, `--channel telegram`, tanpa mengirim). Kelima skenario berhasil pada percobaan pertama.
+- **Pembanding TANPA skill:** skor uji 14 Oktober 2026 dipakai ulang (rata-rata **6,8**), tidak diuji ulang. Catatan: "hari ini" baseline = Rabu 14 Oktober (masa September belum lewat), uji ini = Jumat 16 Oktober.
+- **Alat yang dipanggil agent:** `skills_read` lalu `pph_final.py` lewat exec di kelima skenario, selalu dengan `--hari-ini 2026-10-16` (1/1T: `--tahun-terdaftar 2020 --marketplace --pph22 ...`; 2: `--jenis badan --jenis-badan pt-perorangan`; 3: `--bulan-awal 7 --omzet-sebelumnya 410jt --proyeksi-mulai 10`; 4: `--kemungkinan`). Balasan menyalin keluaran hitungan hampir apa adanya. **Di kelima run agent lebih dulu menjalankan `find /` untuk mencari skrip** (dihentikan sendiri dalam beberapa detik; lihat catatan jujur).
+- **Durasi agent:** 54-68 detik per skenario (total per percobaan 64-114 detik).
+- **Data:** fiktif.
+
+### Ringkasan skor
+
+| Skenario | Tanpa skill (14 Okt) | Dengan skill 1.0.5 | Alasan ringkas (sisi DENGAN) |
+|---|:-:|:-:|---|
+| 1. Olshop Shopee + toko, NPWP 2020, Jan-Sep, PPh 22 Shopee (lokal) | 8 | **9** | Angka benar; PPh 22 dikreditkan (Agustus lebih Rp72.500, September kurang Rp165.000); "hari ini" Jumat 16 Okt benar, masa September ditandai sudah lewat; tanpa batas tahun (PP 20/2026); pengingat surat pernyataan bersyarat (Senin 31 Agustus 2026). Kurang: tabel 9 kolom dengan 7 baris nol |
+| 1T. Skenario 1 di konteks Telegram | 6,5 | **8,5** | Utuh 3.801 karakter (satu pesan), kalimat pertama langsung "kurang Rp165.000 ... sudah lewat batas waktu". Kurang: klaim tambahan "DJP hanya memperbolehkan pengembalian, bukan pemindahan saldo"; syarat surat pernyataan dihilangkan; tabel lebar di ponsel |
+| 2. PT perorangan katering, "baru 409 juta" | 5,5 | **9** | Koreksi di kalimat pertama; 9 masa (total Rp2.045.000) benar dan semuanya sudah lewat; batas setor digeser libur; PT perorangan tanpa batas tahun (tanpa skill keliru "3 tahun, 2026 terakhir"); tanya omzet gabungan Rp4,8 miliar |
+| 3. Bengkel, Jan-Jun gelondongan 410 juta + proyeksi Okt-Des | 7 | **9** | Kalimat pertama: Juli-September Rp975.000 (salah Rp995.000 versi 1.0.3 hilang), Juli-Desember Rp2.475.000; masa lewat ditandai; Oktober -> Senin 16 Nov; proyeksi berlabel. Kurang: 4.217 karakter, 9 butir catatan |
+| 4. Input kurang: "omzet oktober kira2 85jt" | 7 | **8,5** | Kerjakan dulu: tabel kemungkinan (s.d. Rp415 juta = Rp0; Rp500 juta+/badan = Rp425.000), batas Senin 16 Nov 2026 (31 hari lagi), 3 pertanyaan. Kurang: baris tengah tanpa contoh angka; "dll" tambahan agent |
+| **Rata-rata** | **6,8** | **8,8** | |
+
+- **Selisih:** +2,0 poin (acuan ≥ 1,5).
+- **Kesalahan angka pajak di sisi DENGAN skill:** tidak ada (lihat verifikasi di bawah).
+- **Verdik: LULUS** (DENGAN 8,8 ≥ 8; selisih 2,0 ≥ 1,5; tanpa salah angka pajak).
+
+**Kalimat pembeda:** Dengan skill, setiap jawaban berisi tabel per bulan yang mengkreditkan PPh 22 marketplace (Agustus lebih Rp72.500 bisa diminta kembali, September kurang Rp165.000), menandai masa yang sudah lewat batas setor per hari ini lengkap dengan pergeseran libur, dan menyatakan tarif 0,5% orang pribadi/PT perorangan tanpa batas tahun sesuai PP 20/2026; tanpa skill batas setor hanya "tanggal 15" dan batas 3/4/7 tahun yang sudah usang masih disebut.
+
+**Konteks Telegram (1T):** isi utuh dan sama dengan versi lokal (tabel, ringkasan, catatan, disclaimer, 3 pertanyaan), 3.801 karakter, muat dalam satu pesan Telegram (batas 4.096), tanpa kata proses. Tampilan tabel 9 kolom di aplikasi Telegram belum dilihat di bot asli.
+
+### Verifikasi angka independen (penguji)
+
+Kalkulator Python milik penguji (tidak mengimpor script skill): orang pribadi = 0,5% × bagian omzet kumulatif di atas Rp500 juta; badan = 0,5% × omzet; dibulatkan ke bawah; kurang setor = maks(0, PPh − PPh 22), lebih = maks(0, PPh 22 − PPh); batas setor tanggal 15 bulan berikutnya digeser ke hari kerja memakai daftar libur & cuti bersama 2026 yang disusun penguji sendiri; nama hari dari kalender Python.
+
+| Kasus | Hitung ulang penguji | Balasan DENGAN 1.0.5 |
+|---|---|---|
+| Hari ini / batas masa September | Jumat 16 Okt 2026; 15 Okt 2026 = Kamis (bukan libur) -> sudah lewat 1 hari | sama (semua skenario) ✓ |
+| 1/1T Agustus | kumulatif Rp521.500.000, kena Rp21.500.000, PPh Rp107.500, PPh 22 Rp180.000 -> lebih Rp72.500 (tidak telat) | sama ✓ |
+| 1/1T September | PPh Rp330.000 − Rp165.000 = kurang Rp165.000; batas Kamis 15 Okt 2026, sudah lewat | sama ✓ |
+| 1/1T total & lain | PPh Rp437.500; kurang Rp165.000; lebih Rp72.500; sisa ke Rp4,8 miliar Rp4.212.500.000; akhir bulan lewat Rp500 juta = Senin 31 Agustus 2026 | sama ✓ |
+| 1/1T jangka waktu | NPWP 2020: batas lama 2020-2026; PP 20/2026 (menurut `references/`) menghapus Pasal 59 -> tanpa batas | "tidak ada lagi batas tahun" ✓ |
+| 2 PT perorangan | 175.000 / 210.000 / 190.000 / 250.000 / 235.000 / 220.000 / 255.000 / 245.000 / 265.000 = Rp2.045.000; batas Rabu 18 Feb, Senin 16 Mar, Rabu 15 Apr, Senin 18 Mei, Senin 15 Jun, Rabu 15 Jul, Selasa 18 Agu, Selasa 15 Sep, Kamis 15 Okt (semua lewat); sisa Rp4.391.000.000 | sama ✓ |
+| 3 orang pribadi mulai Juli | Juli kena Rp5.000.000 -> Rp25.000; Agustus Rp440.000; September Rp510.000; subtotal Rp975.000; Okt-Des 3 × Rp500.000; Juli-Desember Rp2.475.000; Oktober -> Senin 16 Nov 2026; Desember -> Jumat 15 Jan 2027; sisa Rp3.805.000.000 | sama ✓ |
+| 4 omzet Oktober Rp85 juta | orang pribadi Jan-Sep ≤ Rp415.000.000 -> Rp0; ≥ Rp500 juta atau badan -> Rp425.000 (contoh Rp450 juta -> Rp175.000); batas Senin 16 Nov 2026, 31 hari dari 16 Okt | sama ✓ |
+
+Teks peralihan PP 20/2026 di luar sampel juga dicek dengan menjalankan CLI script (PT perorangan NPWP 2021 -> saran memastikan ke DJP; orang pribadi NPWP 2018 -> boleh lagi lewat Pasal II angka 1 huruf a; koperasi 2021 -> s.d. 2029; CV 2020 -> sisa jangka waktu sudah lewat): konsisten dengan `references/regulasi.md`. Naskah resmi tidak dibaca ulang penguji.
+
+### Catatan jujur (untuk pembuat)
+1. **`find /` di kelima run.** Hasil `skills_read` OpenClaw tidak menyebut lokasi folder skill, sehingga agent mencari `pph_final.py` ke seluruh disk sebelum `ls ~/.openclaw/skills/pph-final-umkm` (melanggar aturan kerja "jangan `find /`"; dihentikan sendiri, tidak terlihat di balasan). Di komputer member ini memindai seluruh disk dan menambah waktu. Saran: tulis langkah cari terbatas di SKILL.md (cek dulu folder skill platform sesuai `docs/instalasi.md`, mis. `~/.openclaw/skills/pph-final-umkm/scripts/`).
+2. **Klaim lebih pasti dari sumber (1T):** "DJP hanya memperbolehkan pengajuan pengembalian, bukan pemindahan saldo", padahal rujukan 1.0.5 hanya menyebut FAQ versi 2.0 tidak mengatur kompensasi; syarat pengingat surat pernyataan ("bila pernah menyampaikan surat pernyataan s.d. Rp500 juta") dihilangkan.
+3. **Tanggal mulai pemungutan tidak diingatkan:** pengguna menyebut Shopee memotong PPh 22 sejak Agustus, sedangkan rujukan skill sendiri menyebut pemungutan Shopee/Tokopedia/Lazada/Blibli mulai 1 Oktober 2026. Saran: bila PPh 22 diisi untuk bulan sebelum Oktober 2026, hasil hitungan mencetak catatan "pastikan potongan itu PPh 22 di dokumen tagihan marketplace".
+4. **Panjang untuk chat:** tabel 9 kolom dengan 7 baris Rp0 (1/1T); jawaban 3 = 4.217 karakter dengan 9 butir catatan (akan terpecah bila lewat bot Telegram). Saran mode ringkas: bulan bebas pajak digabung satu baris, catatan penting maks. ±5 butir.
+5. **Skenario 4:** "dll" pada baris badan ditambahkan agent (CV/firma/PT biasa hanya meneruskan sisa jangka waktu lama); baris tengah sebaiknya diberi satu contoh angka.
+6. Baseline TANPA berasal dari 14 Oktober ("hari ini" berbeda); verdik tidak bergantung pada perbedaan itu karena sisi DENGAN tidak punya salah angka. Skenario jebakan (memecah/menyembunyikan omzet) dan file CSV tidak diuji ulang di OpenClaw pada putaran ini. PT perorangan yang batas lamanya berakhir 2024 tetap **PERLU REVIEW** konsultan.
+
+<details>
+<summary>Jawaban DENGAN skill 1.0.5, skenario 1 (lokal), utuh</summary>
+
+> Omzet Anda baru kena pajak mulai Agustus (sudah lewat Rp500 juta bebas pajak); Januari–Juli masih Rp0. Ada yang telat: masa September.
+>
+> ## PPh Final UMKM 0,5% - Tahun 2026 (Orang pribadi)
+> Hari ini (tanggal acuan hitungan): Jumat 16 Oktober 2026
+>
+> | Bulan | Omzet | Omzet kumulatif | Omzet kena pajak | PPh final 0,5% | PPh 22 dipungut marketplace | Kurang/lebih setor | Setor paling lambat | Keterangan |
+> |---|---:|---:|---:|---:|---:|---|---|---|
+> | Januari | Rp52.000.000 | Rp52.000.000 | Rp0 | Rp0 | - | - | - | masih dalam Rp500 juta bebas |
+> | Februari | Rp48.500.000 | Rp100.500.000 | Rp0 | Rp0 | - | - | - | masih dalam Rp500 juta bebas |
+> | Maret | Rp95.000.000 | Rp195.500.000 | Rp0 | Rp0 | - | - | - | masih dalam Rp500 juta bebas |
+> | April | Rp61.000.000 | Rp256.500.000 | Rp0 | Rp0 | - | - | - | masih dalam Rp500 juta bebas |
+> | Mei | Rp58.000.000 | Rp314.500.000 | Rp0 | Rp0 | - | - | - | masih dalam Rp500 juta bebas |
+> | Juni | Rp64.000.000 | Rp378.500.000 | Rp0 | Rp0 | - | - | - | masih dalam Rp500 juta bebas |
+> | Juli | Rp70.000.000 | Rp448.500.000 | Rp0 | Rp0 | - | - | - | masih dalam Rp500 juta bebas |
+> | Agustus | Rp73.000.000 | Rp521.500.000 | Rp21.500.000 | Rp107.500 | Rp180.000 | lebih Rp72.500 | - | melewati Rp500 juta; hanya Rp21.500.000 yang kena pajak; PPh 22 lebih dipungut, bisa diminta kembali |
+> | September | Rp66.000.000 | Rp587.500.000 | Rp66.000.000 | Rp330.000 | Rp165.000 | kurang Rp165.000 (setor sendiri) | Kamis 15 Okt 2026 - SUDAH LEWAT | - |
+> | **Total (Januari–September)** | **Rp587.500.000** | | | **Rp437.500** | Rp345.000 | kurang Rp165.000; lebih Rp72.500 | | |
+>
+> **Ringkasan**
+> - Omzet kumulatif tahun 2026: Rp587.500.000
+> - Total PPh final (Januari–September): Rp437.500
+> - PPh 22 yang sudah dipungut Shopee: Rp345.000
+> - Total kurang setor (disetor sendiri): Rp165.000 — ini bulan September
+> - Total lebih dipungut (dapat diajukan pengembalian): Rp72.500 — ini bulan Agustus
+> - Batas Rp500 juta bebas pajak sudah terlewati di Agustus
+> - Sisa ruang sebelum batas Rp4,8 miliar: Rp4.212.500.000
+>
+> **Catatan penting**
+> - Orang pribadi: omzet s.d. Rp500 juta setahun tidak kena PPh final. Batas ini untuk total omzet SEMUA usaha Anda setahun (online dan offline digabung).
+> - Tidak ada lagi batas tahun untuk tarif 0,5% orang pribadi. PP 20/2026 (berlaku 22 April 2026) menghapus aturan lama yang membatasi 7 tahun pajak; tarif 0,5% boleh dipakai selama omzet setahun tidak melebihi Rp4,8 miliar dan Anda tidak memilih tarif umum.
+> - Batas setor September (Rp165.000) sudah lewat per hari ini, 16 Oktober 2026. Kalau belum disetor, segera setor dan cek kemungkinan sanksi keterlambatan ke DJP.
+> - PPh 22 yang dipungut Shopee sudah jadi bagian pelunasan pajak bulanan: kekurangan disetor sendiri (September), kelebihan bisa diajukan pengembalian ke DJP (Agustus Rp72.500). Simpan bukti pungutnya.
+> - Omzet setahun Anda melewati Rp500 juta di Agustus: kalau dulu pernah mengirim surat pernyataan omzet s.d. Rp500 juta ke Shopee, Anda perlu kirim surat pernyataan baru bermeterai bahwa omzet sudah lewat Rp500 juta, batasnya seharusnya Senin 31 Agustus 2026 — tanggal ini juga sudah lewat, sebaiknya segera dikirim kalau belum.
+> - Tarif 0,5% dihitung dari omzet (peredaran bruto), bukan laba.
+> - Batas setor = tanggal 15 bulan berikutnya; kalau jatuh akhir pekan/libur, digeser ke hari kerja berikutnya.
+>
+> _Dasar: PP 55/2022 jo. PP 20/2026; PMK 37/2025 & FAQ DJP (PPh 22 marketplace); PMK 81/2024 (batas setor). Ini alat bantu hitung, bukan nasihat pajak resmi — untuk kepastian hubungi Kring Pajak 1500200 atau konsultan pajak._
+>
+> Tiga hal yang bisa membantu melengkapi:
+> 1. September sudah disetor sendiri Rp165.000 belum, atau masih outstanding?
+> 2. Mau saya hitung sekalian proyeksi Oktober–Desember kalau omzetnya diperkirakan mirip bulan-bulan sebelumnya?
+> 3. Surat pernyataan omzet lewat Rp500 juta ke Shopee itu sudah pernah dikirim atau belum?
+
+</details>
+
+<details>
+<summary>Jawaban DENGAN skill 1.0.5, skenario 3, utuh</summary>
+
+> PPh final Anda untuk Juli–September total **Rp975.000**, dan kalau Oktober–Desember benar rata-rata Rp100 juta/bulan, total setahun (Juli–Desember) jadi sekitar **Rp2.475.000** — ini dengan asumsi usaha atas nama pribadi dan omzet Januari–Juni memang Rp410 juta (sudah di bawah Rp500 juta sehingga belum kena pajak saat itu).
+>
+> ## PPh Final UMKM 0,5% - Tahun 2026 (Orang pribadi)
+> Hari ini (tanggal acuan hitungan): Jumat 16 Oktober 2026
+> Omzet tahun ini sebelum periode tabel: Rp410.000.000
+>
+> | Bulan | Omzet | Omzet kumulatif | Omzet kena pajak | PPh final 0,5% | Setor paling lambat | Keterangan |
+> |---|---:|---:|---:|---:|---|---|
+> | Juli | Rp95.000.000 | Rp505.000.000 | Rp5.000.000 | Rp25.000 | Selasa 18 Agu 2026 (tgl 15 libur) - SUDAH LEWAT | melewati Rp500 juta; hanya Rp5.000.000 yang kena pajak |
+> | Agustus | Rp88.000.000 | Rp593.000.000 | Rp88.000.000 | Rp440.000 | Selasa 15 Sep 2026 - SUDAH LEWAT | - |
+> | September | Rp102.000.000 | Rp695.000.000 | Rp102.000.000 | Rp510.000 | Kamis 15 Okt 2026 - SUDAH LEWAT | - |
+> | Oktober (proyeksi) | Rp100.000.000 | Rp795.000.000 | Rp100.000.000 | Rp500.000 | Senin 16 Nov 2026 (tgl 15 libur) | proyeksi |
+> | November (proyeksi) | Rp100.000.000 | Rp895.000.000 | Rp100.000.000 | Rp500.000 | Selasa 15 Des 2026 | proyeksi |
+> | Desember (proyeksi) | Rp100.000.000 | Rp995.000.000 | Rp100.000.000 | Rp500.000 | Jumat 15 Jan 2027 | proyeksi |
+> | **Subtotal data nyata (Juli–September)** | **Rp285.000.000** |  |  | **Rp975.000** |  |  |
+> | **Total termasuk proyeksi (Juli–Desember)** | **Rp585.000.000** |  |  | **Rp2.475.000** |  |  |
+>
+> **Ringkasan**
+> - Omzet kumulatif tahun 2026 (termasuk proyeksi): Rp995.000.000
+> - Total PPh final data nyata (Juli–September): Rp975.000
+> - Perkiraan total PPh final termasuk proyeksi (Juli–Desember): Rp2.475.000
+> - Batas Rp500 juta bebas pajak sudah terlewati (Juli).
+> - Sisa ruang sebelum batas Rp4,8 miliar: Rp3.805.000.000
+>
+> **Catatan penting**
+> - Orang pribadi: omzet s.d. Rp500 juta setahun tidak dikenai PPh final. Batas ini untuk total omzet SEMUA usaha Anda dalam setahun (bengkel dan jual sparepart digabung).
+> - Jangka waktu tarif 0,5% untuk orang pribadi: tidak ada lagi batas tahun. PP 20/2026 (berlaku 22 April 2026, Pasal I angka 6) menghapus Pasal 59 PP 55/2022 yang dulu membatasi 7 tahun pajak; tarif 0,5% boleh dipakai selama omzet setahun tidak melebihi Rp4,8 miliar dan Anda tidak memilih tarif umum.
+> - Bulan Oktober–Desember memakai omzet perkiraan (proyeksi), bukan data nyata; angkanya akan berubah bila omzet sebenarnya berbeda.
+> - Setoran masa Juli 2026: tanggal 15 jatuh pada hari libur (Sabtu 15 Agustus, Minggu 16 Agustus, 17 Agustus/Proklamasi Kemerdekaan RI) → boleh disetor paling lambat hari kerja berikutnya, Selasa 18 Agustus 2026 (PMK 81/2024 Pasal 100 ayat (1)).
+> - Setoran masa Oktober 2026: tanggal 15 jatuh pada hari libur (Minggu 15 November) → boleh disetor paling lambat hari kerja berikutnya, Senin 16 November 2026.
+> - Batas setor sudah lewat per Jumat 16 Oktober 2026 untuk: Juli (Rp25.000), Agustus (Rp440.000), September (Rp510.000). Bila belum disetor, segera setor dan tanyakan ke DJP kemungkinan sanksi administrasi keterlambatan.
+> - Tarif 0,5% dihitung dari OMZET (peredaran bruto), bukan dari laba.
+> - Pembulatan: PPh tiap bulan dibulatkan ke bawah ke rupiah penuh; belum dicocokkan dengan Coretax - bila berbeda, ikuti Coretax.
+> - Batas setor = tanggal 15 bulan berikutnya; bila jatuh Sabtu/Minggu/libur nasional/cuti bersama, boleh disetor hari kerja berikutnya. Pemerintah bisa mengubah kalender libur, cek kalender pajak DJP.
+>
+> _Dasar: PP 55/2022 jo. PP 20/2026 (PPh final UMKM 0,5%); PMK 81/2024 (batas setor). Berlaku per 2026-10-14. Ini alat bantu hitung, bukan nasihat pajak. Untuk kepastian, hubungi DJP (Kring Pajak 1500200 / pajak.go.id) atau konsultan pajak._
+>
+> Pertanyaan:
+> 1. Rincian omzet Januari–Juni memang total Rp410 juta pasti (bukan dibulatkan), atau mau dicek ulang per bulan — soalnya ini menentukan tepat di bulan mana Anda melewati Rp500 juta?
+> 2. Apakah Juli, Agustus, September sudah disetor sendiri (totalnya Rp975.000), atau belum sama sekali?
+> 3. Ada potongan PPh 22 dari marketplace (Shopee/Tokopedia dll) untuk sparepart yang dijual online, atau murni jualan offline/bengkel?
+
+</details>
+
+---
+
+## Uji pertama 1.0.3 (2026-10-14, penguji independen) — verdik BELUM
 
 - **Tanggal:** 2026-10-14 (Asia/Jakarta; "hari ini" di semua skenario = Rabu, 14 Oktober 2026)
 - **Penguji:** agent penguji independen Komunitech (bukan pembuat skill; brief pembuat dan transkrip agent lain tidak dibaca)

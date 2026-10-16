@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **113 skill** dari 140 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **114 skill** dari 140 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -104,23 +104,24 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 94 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
 | 95 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
 | 96 | Harga Tepat, Laku, dan Tetap Untung (`strategi-harga-produk`) | Keuangan & Akuntansi | 7 → 9 | +2 |
-| 97 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 98 | Harga Jual Marketplace Anti Boncos (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
-| 99 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 100 | Promo 11.11 Sampai Lebaran, Tetap Untung (`promo-kalender`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 101 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 102 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 103 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 104 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
-| 105 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
-| 106 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 107 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 108 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
-| 109 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 110 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
-| 111 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 112 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
-| 113 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 97 | Hitung Pajak UMKM 0,5% Tiap Bulan (`pph-final-umkm`) | Keuangan & Akuntansi | 6,8 → 8,8 | +2 |
+| 98 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 99 | Harga Jual Marketplace Anti Boncos (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
+| 100 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 101 | Promo 11.11 Sampai Lebaran, Tetap Untung (`promo-kalender`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 102 | Picking List & Urutan Resi dari File Pesanan (`resi-picking`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 103 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 104 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 105 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
+| 106 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 107 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 108 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 109 | Dasbor Lokal: Satu Layar untuk Data Usaha Anda (`dasbor-lokal`) | Data & Analisis | 7 → 8,75 | +1,75 |
+| 110 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 111 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
+| 112 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 113 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
+| 114 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -985,6 +986,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Margin hampers 34,81% (dibagi 1,12, keliru) vs 35,4% (benar); harga lantai Rp203.500
 - **Catatan jujur:** Satu putaran versi 1.0.9 dengan pesan identik di kedua sisi; varian lain yang hanya diuji dengan skill (8,5; 9,0; 8,5) tidak dirata-rata.
 
+### Hitung Pajak UMKM 0,5% Tiap Bulan — 6,8 → 8,8
+`pph-final-umkm` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-16
+
+- **Permintaan:** Olshop Shopee + toko rumah atas nama pribadi, NPWP 2020, omzet Januari–September 2026 ditempel, Shopee memotong PPh 22 sejak Agustus: pajak 0,5% bulan apa saja dan berapa, setor kapan, ada yang telat?
+- **Tanpa skill:** Membuka web dan menjelaskan dua aturan yang berlaku bersamaan; angka PPh final benar, batas setor hanya "tanggal 15 bulan berikutnya".
+- **Dengan skill:** Tabel per bulan: omzet, PPh 0,5%, potongan PPh 22 marketplace, sisa setor atau lebih bayar, batas setor yang digeser ke hari kerja, masa yang sudah lewat ditandai per hari ini; PT perorangan dihitung dari rupiah pertama; tarif tanpa batas tahun sesuai PP 20/2026.
+- **Angka kunci:** Agustus: PPh Rp107.500 − PPh 22 Rp180.000 = lebih Rp72.500; September: Rp330.000 − Rp165.000 = kurang Rp165.000, batas Kamis 15 Okt 2026 sudah lewat per 16 Okt. PT perorangan katering Jan–Sep: Rp2.045.000.
+- **Keterangan:** Uji ulang 1.0.5 (16 Okt 2026); skor tanpa skill dari uji 14 Okt 2026
+- **Catatan jujur:** Uji ulang 1.0.5 (16 Okt 2026) lulus 6,8→8,8 tanpa salah angka; skor tanpa skill dipakai ulang dari uji 14 Okt. Sisa cacat: jawaban panjang untuk chat (tabel 9 kolom, satu jawaban ±4.200 karakter); satu sampel menulis kalimat pengembalian kelebihan PPh 22 lebih pasti dari rujukan; agent sempat memindai disk (find /) saat mencari skrip.
+
 ### Surat Resmi Rapi Sesuai EYD, Siap Cetak — 6,75 → 8,75
 `surat-resmi` · Legal & Dokumen · versi 1.0.3 · diuji 2026-10-01
 
@@ -1170,4 +1181,3 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | `caption-sosmed-umkm` | 6 → 6,17 | BELUM | belum lulus |
 | `kas-umkm` | 9 → 9 | LULUS | selisih < 1,5 |
 | `asisten-tulis-riset` | 7,5 → 7,5 | BELUM | belum lulus |
-| `pph-final-umkm` | 6,8 → 6,1 | BELUM | belum lulus |
