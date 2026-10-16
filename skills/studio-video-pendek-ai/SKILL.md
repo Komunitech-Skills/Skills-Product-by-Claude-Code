@@ -27,35 +27,36 @@ Bila info kurang: **tanya sekali** dalam satu pesan berisi daftar pendek (maks. 
 - Sulih suara, teks layar, caption, dan prompt hanya boleh memuat **fakta produk yang disebut pengguna** (bahan, rasa, asal, ukuran, harga, promo, bukti). Jangan menambah sifat/keunggulan ("pilihan", "melimpah", "wangi", "segar", "asli dari ...").
 - Fakta kurang: pakai placeholder `[isi: bahan/proses]` (atau `[NAMA PRODUK]`, `[HARGA]`), atau tanyakan sekali. Jangan menebak lalu menulisnya sebagai fakta.
 - **Dilarang** menulis bahwa pengguna menyebut/meminta sesuatu bila tidak (mis. "sesuai yang Kakak sebut"). Hapus kalimat seperti itu.
-- Tulis daftar "Fakta dari pengguna" (kata-kata pengguna apa adanya) di bagian 0, lalu cek: `python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file naskah.txt --fakta "<fakta pengguna>"` (Windows: `python`/`py`). GAGAL = hapus klaim atau ganti `[isi: ...]`, jalankan ulang sampai LULUS. Bila script tak bisa dijalankan, periksa manual tiap kalimat terhadap daftar fakta.
+- Catat fakta pengguna (kata-kata pengguna apa adanya) untuk argumen `--fakta`, lalu cek: `python3 <folder-skill-ini>/scripts/cek_fakta.py --teks-file naskah.txt --fakta "<fakta pengguna>"` (Windows: `python`/`py`). GAGAL = hapus klaim atau ganti `[isi: ...]`, jalankan ulang sampai LULUS. Bila script tak bisa dijalankan, periksa manual tiap kalimat terhadap daftar fakta.
+- **Cek fakta adalah kerja internal.** Jangan menulis label "Fakta dari pengguna" atau kalimat proses seperti "lolos cek fakta" / "sudah dicek" di balasan; tulis hasilnya saja (naskah bersih + placeholder `[isi: ...]` yang perlu diisi). Fakta yang dipakai cukup muncul wajar di baris Asumsi & Brief.
 
 ## Langkah Kerja
 1. **Tangkap brief.** Rangkum dalam 3-4 baris: produk, sasaran, satu janji utama (bukan lebih), bukti nyata yang benar-benar dimiliki (bahan, proses, jumlah terjual yang benar, sertifikat yang ada). Jangan mengarang bukti; bila tak ada, pakai demonstrasi proses.
-2. **Tentukan durasi & jumlah adegan** (tabel di bawah). Video 15 dtk: 3 adegan. 30 dtk: 5-6. 45-60 dtk: 7-9.
-3. **Tulis 3 pilihan hook** (3 detik pertama), masing-masing beda gaya: pertanyaan/masalah, pernyataan berani yang jujur, visual mengejutkan. Beri rekomendasi satu, sertakan alasannya satu kalimat. Lihat pola hook di bawah.
-4. **Tulis naskah per adegan** dengan struktur Hook - Masalah/Konteks - Solusi/Produk - Bukti - CTA. Tiap adegan: nomor, rentang waktu, sulih suara, teks di layar.
+2. **Tentukan durasi & jumlah adegan** (tabel di bawah). Video 15 dtk: **3 adegan** (hook, inti/harga, CTA). 30 dtk: 5-6. 45-60 dtk: 7-9.
+3. **Tulis 3 pilihan hook**, masing-masing beda gaya: pertanyaan/masalah, pernyataan berani yang jujur, visual mengejutkan. Beri rekomendasi satu, sertakan alasannya satu kalimat. Lihat pola hook di bawah. **Hook wajib ≤ 3 detik untuk SEMUA durasi: ±6-7 kata tanpa `[jeda]` (7 kata = 2,8 dtk).** Hook jadi adegan 1 dengan rentang 0-3 dtk; hook lebih panjang → potong.
+4. **Tulis naskah per adegan** dengan struktur Hook - Masalah/Konteks - Solusi/Produk - Bukti - CTA. Tiap adegan: nomor, rentang waktu, sulih suara, teks di layar. **Teks di layar adegan CTA selalu menyediakan isian `[nomor WA]`** (mis. "Pesan via WA: [nomor WA]"); bila pengguna sudah menyebut nomornya, pakai persis; jangan mengarang nomor. Bukan jualan lewat WA: ganti dengan `[akun/link]`.
 5. **Hitung durasi.** Simpan sulih suara per adegan ke berkas teks format `Label | teks` dan jalankan `python3 <folder-skill-ini>/scripts/durasi_naskah.py naskah.txt --target 30` (Windows: `python` atau `py`). `<folder-skill-ini>` = folder tempat SKILL.md ini dibaca (mis. `~/.openclaw/skills/studio-video-pendek-ai`); jangan mencari script ke seluruh komputer (`find /` dsb.) dan jangan memakai salinan script dari folder lain. Jika script tidak bisa dijalankan, hitung manual: **kata / 150 x 60 = detik** (jeda +0,5 dtk per tanda [jeda], +0,3 dtk antar adegan). **Durasi sulih suara harus mendekati target: dalam ±10% (30 dtk -> 27-33 dtk).** Status MELEBIHI: ringkas. Status KEPENDEKAN (di bawah 90% target): tambah adegan/kalimat dari fakta pengguna (bukan klaim baru) atau ubah target video, lalu jalankan script lagi sampai PAS; tulis durasi akhir dari keluaran script. Jika melebihi target, ringkas dulu; jangan menyuruh pengguna bicara lebih cepat dari ±170 kata/menit.
-6. **Buat storyboard + shot list** dalam tabel (format di bawah). Untuk tiap adegan berikan **jalur A (rekam HP)** dan/atau **jalur B (prompt alat video AI)** sesuai pilihan pengguna. Bila belum memilih, berikan keduanya singkat.
+6. **Buat storyboard + shot list** dalam tabel (format di bawah). Untuk tiap adegan berikan **jalur A (rekam HP)** dan/atau **jalur B (prompt alat video AI)** sesuai pilihan pengguna. Bila belum memilih, berikan keduanya singkat. **Pengguna menyebut akan merekam sendiri (HP/kamera) → shot list jalur A WAJIB ada di hasil pertama, termasuk video 15 dtk** (bentuk singkat di Mode Ringkas); jangan ditawarkan belakangan.
 7. **Teks sulih suara final** dalam Bahasa Indonesia sehari-hari: kalimat pendek (maks. ±12 kata), tanda `[jeda]`, penekanan dengan HURUF BESAR seperlunya, angka ditulis cara diucapkan ("dua puluh dua ribu rupiah") supaya suara AI/pemilik tidak salah baca.
 8. **Caption + hashtag** (format di bawah).
 9. **Checklist label & etika** (bagian "Label Konten AI"). Selalu sertakan, sesuaikan dengan jalur produksi yang dipilih.
-10. **Cek akhir sebelum menyerahkan:** durasi dalam target; tidak ada klaim yang tak bisa dibuktikan atau keunggulan produk yang tidak disebut pengguna (mis. "wangi", "tercepat"); tidak ada wajah/suara orang lain; semua kalimat lolos `cek_fakta.py` dan tidak ada "sesuai yang Kakak sebut" yang tak benar; musik dari perpustakaan platform; harga/promo sama dengan input; teks di layar terbaca (maks. 7 kata per layar).
+10. **Cek akhir sebelum menyerahkan:** durasi dalam target; hook ≤ 3 dtk; teks layar CTA memuat `[nomor WA]` (atau nomor dari pengguna); nomor bagian berurutan; tidak ada klaim yang tak bisa dibuktikan atau keunggulan produk yang tidak disebut pengguna (mis. "wangi", "tercepat"); tidak ada wajah/suara orang lain; semua kalimat lolos `cek_fakta.py` dan tidak ada "sesuai yang Kakak sebut" yang tak benar; musik dari perpustakaan platform; harga/promo sama dengan input; teks di layar terbaca (maks. 7 kata per layar).
 
-## Pola Hook (3 detik pertama)
+## Pola Hook (≤ 3 detik, ±6-7 kata)
 | Gaya | Contoh (kopi susu) |
 |---|---|
 | Masalah | "Jam tiga sore, mata udah setengah watt?" |
-| Angka jujur | "Dua puluh dua ribu, sudah dapat kopi yang diseduh baru." |
-| Larangan ringan | "Jangan beli kopi susu dulu sebelum lihat ini." (bukan clickbait bohong; isi harus relevan) |
+| Angka jujur | "Kopi susu cuma dua puluh dua ribu." |
+| Larangan ringan | "Jangan beli kopi susu sebelum lihat ini." (bukan clickbait bohong; isi harus relevan) |
 | Visual | Tuang gula aren cair ke gelas, ASMR, tanpa bicara 2 detik. |
-| Penonton spesifik | "Buat kamu yang kerja WFH dan bosan sama kopi sachet." |
+| Penonton spesifik | "Kerja WFH, bosan kopi sachet?" |
 Hindari hook yang berjanji sesuatu yang tidak dibuktikan di video.
 
 ## Format Output
 Keluarkan urut dengan judul bagian tetap ini:
 
-**0. Asumsi & Brief** (3-4 baris)
-**1. Pilihan Hook** (3 opsi + rekomendasi)
+**0. Asumsi & Brief** (2-4 baris kalimat biasa: produk, harga/promo, sasaran, asumsi; tanpa label "Fakta dari pengguna" dan tanpa kalimat "lolos cek fakta")
+**1. Pilihan Hook** (3 opsi ≤ 3 dtk + rekomendasi)
 **2. Naskah & Timing**
 | # | Waktu | Sulih suara | Teks di layar |
 |---|---|---|---|
@@ -70,7 +71,15 @@ Lalu satu baris: "Perkiraan durasi sulih suara: NN dtk (target NN dtk, 150 kata/
 **6. Checklist Label AI & Etika** (centang sesuai jalur produksi)
 **7. Langkah Produksi Cepat** (urutan kerja 4-6 langkah; aplikasi edit seperti CapCut/InShot boleh disebut sebagai contoh pilihan, bukan kewajiban, dan pengguna bebas memakai aplikasi lain)
 
-**Mode Ringkas (video 15 dtk atau kurang, atau bila pengguna minta cepat):** keluarkan hanya bagian 0 (2 baris), 1 (satu hook terbaik + satu cadangan), 2 (naskah & timing), 4 (sulih suara final), 5 (caption & 3-5 hashtag), dan 6 (checklist label satu baris). Storyboard dan langkah produksi diberikan hanya bila pengguna meminta ("lengkap"). Tawarkan sekali: "Mau versi lengkap dengan storyboard?"
+Nomor bagian selalu berurutan tanpa lompat.
+
+**Mode Ringkas (video 15 dtk atau kurang, atau bila pengguna minta cepat):** keluarkan bagian 0 (2 baris), 1 (satu hook terbaik ≤ 3 dtk + satu cadangan), 2 (naskah & timing; 15 dtk = 3 adegan), **3 (Shot List Singkat)**, 4 (sulih suara final), 5 (caption & 3-5 hashtag), dan 6 (checklist label satu baris). Nomor 0-6 berurutan. Hanya bagian 7 dan storyboard lengkap dua jalur yang menunggu permintaan "lengkap"; tawarkan sekali: "Mau versi lengkap dengan storyboard dua jalur dan langkah produksi?"
+
+**Shot List Singkat (bagian 3 Mode Ringkas)** WAJIB di hasil pertama bila pengguna menyebut akan merekam sendiri (HP/kamera) atau tidak menyebut cara produksi (asumsi rekam HP). Bila pengguna memilih alat video AI: satu baris prompt Inggris singkat per adegan. Satu baris per adegan, isi konkret dari fakta pengguna; properti hanya benda yang wajar ada di usaha itu atau diberi `[siapkan: ...]`, bukan klaim produk:
+
+| # | Waktu | Sudut kamera | Properti/objek | Teks di layar |
+|---|---|---|---|---|
+| 1 | 0-3 dtk | close-up, HP ditopang | (benda yang direkam) | teks hook ≤ 7 kata |
 
 ## Blok Prompt Generik untuk Alat Video/Gambar AI
 Tempel di alat apa pun (teks-ke-video atau gambar-ke-video). Tulis **satu blok per adegan**, klip 3-8 detik, dalam bahasa Inggris (kebanyakan alat lebih akurat), tanpa nama orang/merek terkenal:
@@ -129,6 +138,7 @@ Output (potongan): Asumsi: 30 dtk, jualan, rekam HP, santai. Hook rekomendasi: "
 - Info ini bukan nasihat hukum; aturan platform dan UU (mis. perlindungan data pribadi, hak cipta) bisa berubah.
 
 ## Riwayat versi
+- **1.0.5** (2026-10-16): hasil uji bot Telegram asli (sesudah 7,0): Mode Ringkas 15 dtk kini memuat Shot List Singkat (sudut, properti, teks layar) bila pengguna merekam sendiri; hook ≤ 3 dtk (±6-7 kata) semua durasi; 15 dtk = 3 adegan; teks layar CTA berisi `[nomor WA]`; kalimat proses "lolos cek fakta"/label "Fakta dari pengguna" tidak ditulis di balasan; penomoran bagian berurutan.
 - **1.0.4** (2026-10-13): rujukan ke skill arsip dihapus dari catatan asal `scripts/cek_fakta.py` (hanya komentar).
 - **1.0.3** (2026-10-02): Aturan Fakta (hanya fakta dari pengguna, placeholder, dilarang "sesuai yang Kakak sebut"), `scripts/cek_fakta.py`, durasi sulih suara wajib dalam ±10% target, aplikasi edit hanya contoh pilihan.
 - **1.0.2** (2026-09-29): path script `<folder-skill-ini>/scripts/durasi_naskah.py` (tanpa mencari ke seluruh komputer); tidak menambah keunggulan produk yang tidak disebut pengguna; aturan kerja standar (hasil uji OpenClaw 2026.9.6).
