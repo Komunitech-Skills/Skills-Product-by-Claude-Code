@@ -120,6 +120,120 @@ class UjiNormal(unittest.TestCase):
         self.assertEqual(kode, 0, err)
         self.assertTrue(any("kemungkinan kurang" in p and "KAOS-HT-M" in p for p in data["peringatan"]))
 
+    def test_dilewati_rinci_menyebut_nomor_pesanan(self):
+        # v1.0.5: pesanan/baris yang tidak diproses harus disebut nomornya, bukan hanya jumlahnya.
+        kode, data, _, err = jalankan(self.pesanan, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["jumlah_pesanan_di_file"], 7)            # A1..A7
+        self.assertEqual(data["jumlah_pesanan_aktif"], 4)              # A1..A4
+        self.assertEqual(data["jumlah_pesanan_data_bermasalah"], 2)    # A6, A7
+        self.assertEqual(data["dilewati_status"], {"batal": 1})        # A5
+        # 7 = 4 aktif + 1 batal + 2 data bermasalah
+        self.assertEqual(data["jumlah_pesanan_di_file"],
+                         data["jumlah_pesanan_aktif"] + sum(data["dilewati_status"].values())
+                         + data["jumlah_pesanan_data_bermasalah"])
+        alasan = {e["no_pesanan"]: e["alasan"] for e in data["dilewati_rinci"] if e["no_pesanan"]}
+        self.assertEqual(alasan["240901A5"], "batal")
+        self.assertIn("0", alasan["240901A6"])
+        self.assertIn("tidak terbaca", alasan["240901A7"])
+        # Jumlah rincian = jumlah semua baris yang dilewati + 1 pesanan batal.
+        self.assertEqual(len(data["dilewati_rinci"]), sum(data["baris_dilewati"].values()) + 1)
+        # Urut menurut nomor baris di file.
+        urut = [e["baris"][0] for e in data["dilewati_rinci"]]
+        self.assertEqual(urut, sorted(urut))
+
+    def test_pesanan_aktif_dengan_satu_baris_dilewati_tetap_tercatat(self):
+        isi = ("No. Pesanan,SKU,Nama Produk,Jumlah,Status Pesanan\n"
+               "X1,SKU-A,Barang A,2,Perlu Dikirim\n"
+               "X1,SKU-B,Barang B,0,Perlu Dikirim\n"
+               "X2,SKU-A,Barang A,1,Belum Bayar\n")
+        f = tulis(self.dir, "pesanan-x.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["jumlah_pesanan_di_file"], 2)
+        self.assertEqual(data["jumlah_pesanan_aktif"], 1)
+        self.assertEqual(data["jumlah_pesanan_data_bermasalah"], 0)
+        self.assertEqual(data["dilewati_status"], {"belum bayar": 1})
+        pasangan = {(e["no_pesanan"], e["alasan"]) for e in data["dilewati_rinci"]}
+        self.assertIn(("X1", "jumlah 0 atau negatif"), pasangan)   # baris item X1 yang hilang tetap disebut
+        self.assertIn(("X2", "belum bayar"), pasangan)
+
+    def test_nomor_pesanan_rusak_excel_disebut_apa_adanya(self):
+        isi = ("No. Pesanan,SKU,Nama Produk,Jumlah\n"
+               "R1,SKU-A,Barang A,1\n"
+               "2.4E+17,SKU-A,Barang A,1\n")
+        f = tulis(self.dir, "pesanan-rusak.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        rusak = [e for e in data["dilewati_rinci"] if "rusak" in e["alasan"]]
+        self.assertEqual(len(rusak), 1)
+        self.assertEqual(rusak[0]["no_pesanan"], "2.4E+17")
+        self.assertEqual(data["jumlah_pesanan_di_file"], 1)
+
+    def test_stok_setelah_dikemas_menandai_habis_dan_di_bawah_minimum(self):
+        kode, data, _, err = jalankan(self.pesanan, "--lokasi", self.lokasi, "--stok", self.stok,
+                                      "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        per_sku = {a["sku"]: a for a in data["daftar_ambil"]}
+        # Angka dihitung ulang sendiri: stok - qty. KAOS-HT-M 3-3=0 (habis), KAOS-HT-L 20-3=17, TOPI-01 10-1=9.
+        self.assertEqual(per_sku["KAOS-HT-M"]["stok_setelah"], 0.0)
+        self.assertEqual(per_sku["KAOS-HT-M"]["status_stok_setelah"], "habis")
+        self.assertEqual(per_sku["KAOS-HT-M"]["stok_min"], 10.0)
+        self.assertEqual(per_sku["KAOS-HT-L"]["stok_setelah"], 17.0)
+        self.assertEqual(per_sku["KAOS-HT-L"]["status_stok_setelah"], "aman")
+        self.assertEqual(per_sku["TOPI-01"]["stok_setelah"], 9.0)
+        self.assertEqual(per_sku["TOPI-01"]["status_stok_setelah"], "aman")
+        self.assertIsNone(per_sku["GANTUNGAN-X"]["stok_setelah"])   # tidak ada di file stok
+        # Di bawah minimum tapi belum habis: stok TOPI-01 diubah jadi 5 -> setelah 4 < min 5.
+        stok2 = tulis(self.dir, "stok2.csv", STOK_BUKU_STOK.replace(
+            "B3,TOPI-01,Topi Bucket,Krem,pcs,10,5,20000,200000,45000,aman",
+            "B3,TOPI-01,Topi Bucket,Krem,pcs,5,5,20000,100000,45000,aman"))
+        kode, data, _, err = jalankan(self.pesanan, "--stok", stok2, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        topi = {a["sku"]: a for a in data["daftar_ambil"]}["TOPI-01"]
+        self.assertEqual(topi["stok_setelah"], 4.0)
+        self.assertEqual(topi["status_stok_setelah"], "di bawah minimum")
+
+    def test_stok_tanpa_kolom_minimum_hanya_menandai_habis_atau_kurang(self):
+        stok = tulis(self.dir, "stok-polos.csv", "sku,stok\nKAOS-HT-M,2\nKAOS-HT-L,20\nTOPI-01,1\nGANTUNGAN-X,9\n")
+        kode, data, _, err = jalankan(self.pesanan, "--stok", stok, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        per_sku = {a["sku"]: a for a in data["daftar_ambil"]}
+        self.assertEqual(per_sku["KAOS-HT-M"]["status_stok_setelah"], "kurang")   # 2 - 3 = -1
+        self.assertEqual(per_sku["KAOS-HT-L"]["status_stok_setelah"], "aman")     # tanpa minimum
+        self.assertEqual(per_sku["TOPI-01"]["status_stok_setelah"], "habis")      # 1 - 1 = 0
+        self.assertIsNone(per_sku["TOPI-01"]["stok_min"])
+
+    def test_markdown_memuat_dilewati_dan_stok_setelah_dikemas(self):
+        kode, data, _, err = jalankan(self.pesanan, "--lokasi", self.lokasi, "--stok", self.stok,
+                                      "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        isi = Path(data["file_keluaran"]["daftar_ambil_md"]).read_text(encoding="utf-8")
+        self.assertIn("Pesanan di file: 7", isi)
+        self.assertIn("Dilewati:", isi)
+        for nomor in ("240901A5", "240901A6", "240901A7"):
+            self.assertIn("#" + nomor, isi)
+        self.assertIn("## Stok setelah dikemas", isi)
+        self.assertIn("KAOS-HT-M", isi.split("## Stok setelah dikemas")[1])
+        self.assertIn("HABIS", isi)
+
+    def test_markdown_tanpa_file_stok_tidak_ada_bagian_stok(self):
+        kode, data, _, err = jalankan(self.pesanan, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        isi = Path(data["file_keluaran"]["daftar_ambil_md"]).read_text(encoding="utf-8")
+        self.assertNotIn("Stok setelah dikemas", isi)
+        self.assertIsNone(data["daftar_ambil"][0]["stok_setelah"])
+
+    def test_tidak_ada_yang_dilewati_dilaporkan_tegas(self):
+        isi = "No. Pesanan,SKU,Nama Produk,Jumlah\nT1,SKU-A,Barang A,2\n"
+        f = tulis(self.dir, "bersih.csv", isi)
+        kode, data, _, err = jalankan(f, "--json", cwd=self.dir)
+        self.assertEqual(kode, 0, err)
+        self.assertEqual(data["dilewati_rinci"], [])
+        self.assertEqual(data["jumlah_pesanan_di_file"], 1)
+        md = Path(data["file_keluaran"]["daftar_ambil_md"]).read_text(encoding="utf-8")
+        self.assertIn("Dilewati: tidak ada.", md)
+
     def test_urutan_resi_dikelompokkan_per_kurir(self):
         kode, data, _, err = jalankan(self.pesanan, "--json", cwd=self.dir)
         self.assertEqual(kode, 0, err)

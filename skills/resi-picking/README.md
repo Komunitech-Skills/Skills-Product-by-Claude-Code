@@ -95,4 +95,4 @@ Tidak. Skill ini sengaja tidak mengambil data otomatis dari akun penjual Anda da
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
