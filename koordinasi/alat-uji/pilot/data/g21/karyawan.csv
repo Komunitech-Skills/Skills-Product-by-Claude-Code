@@ -1,0 +1,13 @@
+kode;nama;jabatan;jenis;ptkp;gaji_pokok;tunjangan_tetap;tunjangan_tidak_tetap;bpjs;jkk;hari_kerja;masuk;nik;bank;rekening;atas_nama;kode_absensi
+K01;Andi Fiktif;Kepala Gudang;tetap;K/1;6.500.000;750.000;400.000;kes,tk,jp;0,54;6;2019-03-01;;BCA;0000000001;Andi Fiktif;A01
+K02;Budi Fiktif;Sopir;tetap;K/2;5.400.000;300.000;500.000;kes,tk,jp;0,54;6;2020-06-15;;BRI;0000000002;Budi Fiktif;A02
+K03;Citra Fiktif;Kasir;tetap;TK/0;5.400.000;;300.000;kes,tk,jp;0,54;6;2021-01-10;;BCA;0000000003;Citra Fiktif;A03
+K04;Dewi Fiktif;Admin;tetap;TK/0;5.600.000;250.000;;kes,tk,jp;0,54;6;2021-09-01;;Mandiri;0000000004;Dewi Fiktif;A04
+K05;Eko Fiktif;Staf Gudang;kontrak;K/0;5.400.000;;350.000;kes,tk;0,54;6;2024-02-01;;BRI;0000000005;Eko Fiktif;A05
+K06;Fajar Fiktif;Staf Gudang;kontrak;TK/0;5.400.000;;350.000;kes,tk;0,54;6;2024-02-01;;BRI;0000000006;Fajar Fiktif;A06
+K07;Gita Fiktif;Marketing;tetap;TK/0;6.000.000;500.000;;kes,tk,jp;0,54;6;2022-04-18;;BCA;0000000007;Gita Fiktif;A07
+K08;Hadi Fiktif;Teknisi;tetap;K/3;7.000.000;600.000;;kes,tk,jp;0,54;6;2018-11-05;;Mandiri;0000000008;Hadi Fiktif;A08
+K09;Indah Fiktif;Staf Produksi;tetap;TK/0;5.400.000;;300.000;kes,tk,jp;0,54;6;2023-03-13;;BCA;0000000009;Indah Fiktif;A09
+K10;Joko Fiktif;Staf Produksi;kontrak;K/1;5.400.000;;300.000;kes,tk;0,54;6;2025-01-06;;BRI;0000000010;Joko Fiktif;A10
+K11;Kiki Fiktif;Staf Produksi;kontrak;TK/0;5.400.000;;;kes,tk;0,54;6;2026-09-15;;BCA;0000000011;Kiki Fiktif;A11
+K12;Lina Fiktif;Supervisor;tetap;K/0;10.000.000;1.000.000;;kes,tk,jp;0,54;6;2017-08-01;;Mandiri;0000000012;Lina Fiktif;A12
