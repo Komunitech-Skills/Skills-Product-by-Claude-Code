@@ -3,8 +3,8 @@ analisis-excel,telegram,"analisis-excel (1.0.18) masih terbuka untuk Telegram: t
 analisis-excel,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 analisis-rasio-keuangan-usaha,telegram,"Skill analisis-rasio-keuangan-usaha (beta v1.0.5, uji sebelum/sesudah 7 ke 9) masih punya satu item terbuka: tampil di bot Telegram asli pada G22. Pesan G22 sud",buka,,
 analisis-rasio-keuangan-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-arsip-nota,telegram,"arsip-nota (beta, v1.0.7, skor 8, bukan arsip) masih menunggu G18 di bot Telegram asli: hanya 1 dari 10 pesan G18 yang terkirim (milik rencana-marketing-usaha, ",buka,,
-arsip-nota,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+arsip-nota,telegram,"arsip-nota (beta, v1.0.7, skor 8, bukan arsip) masih menunggu G18 di bot Telegram asli: hanya 1 dari 10 pesan G18 yang terkirim (milik rencana-marketing-usaha, ",selesai,2026-10-16,gelombang 18 2026-10-16: BELUM 7→8 (v1.0.7)
+arsip-nota,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,gelombang 18 2026-10-16: BELUM 7→8 (v1.0.7)
 arus-kas-13minggu,uji-ulang,Revisi 1.0.5 arus-kas-13minggu sudah ada tetapi belum diuji ulang oleh penguji independen (skenario 5 yang habis waktu pada 1.0.4 belum dijalankan lagi); skill ,selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,75→8,4 (3 skenario ulang, cacat habis waktu/piutang/CSV hilang); keluar beta-tunda"
 arus-kas-13minggu,uji-ulang,"uji ulang 1.0.5 (skenario 5 habis waktu, opsi piutang, pemisah CSV; beta-tunda)",selesai,2026-10-16,"uji ulang 1.0.5 penguji independen 2026-10-16: LULUS 6,75→8,4 (3 skenario ulang, cacat habis waktu/piutang/CSV hilang); keluar beta-tunda"
 audit-akun-iklan,telegram,"Gelombang Telegram 19 untuk audit-akun-iklan masih terbuka: topik 1534–1543, msgs-g19.json dan salinan skill ke home bot sudah disiapkan, tetapi pesan belum dik",buka,,
@@ -29,8 +29,8 @@ cv-lamaran-ats,telegram,"Item masih terbuka: G19 (cv-lamaran-ats) baru siap seca
 cv-lamaran-ats,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 dasbor-lokal,telegram,"Skill dasbor-lokal (G23, topik 1578–1583, 6 pesan bersama audit-seo-toko-online dan analisis-excel) masih terbuka: pra-cek uji-tg.sh belum dijalankan dan pesan ",buka,,
 dasbor-lokal,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-ekstrak-nota-faktur,telegram,Pesan Telegram G18 untuk ekstrak-nota-faktur (topik 1486/1487) belum dikirim dan pra-cek uji-tg.sh belum dijalankan; gelombang G18 terhenti di pesan 1 dari 10 k,buka,,
-ekstrak-nota-faktur,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+ekstrak-nota-faktur,telegram,Pesan Telegram G18 untuk ekstrak-nota-faktur (topik 1486/1487) belum dikirim dan pra-cek uji-tg.sh belum dijalankan; gelombang G18 terhenti di pesan 1 dari 10 k,selesai,2026-10-16,"gelombang 18 2026-10-16: BELUM 4,5→7,5 (v1.0.4)"
+ekstrak-nota-faktur,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 18 2026-10-16: BELUM 4,5→7,5 (v1.0.4)"
 follow-up-prospek,telegram,"Skill follow-up-prospek (beta, v1.0.4, skor 8, selisih +1,75) masih terbuka: pesan G22 belum pernah dikirim ke bot Telegram asli karena router masih HTTP 530, p",buka,,
 follow-up-prospek,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
 foto-produk-brief,telegram,"Pesan G20 untuk foto-produk-brief (bersama balas-chat-cs, sop-writer, laporan-insiden-usaha, surat-resmi) belum dikirim ke bot Telegram asli; sisa: pra-cek uji-",buka,,
@@ -40,8 +40,8 @@ gaji-umkm,telegram,"gaji-umkm (v1.0.12, beta) masih terbuka untuk uji Telegram: 
 harga-jual-marketplace,uji-ulang,"Item masih terbuka tetapi hanya berupa pekerjaan dokumentasi, bukan uji baru: salin hasil uji OpenClaw 6,5 ke 8,5 dari solusi-vip/toko-online ke skills/harga-ju",selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 6,5→8,5 v1.0.4, commit 4c3aa3a"
 harga-jual-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 6,5→8,5 v1.0.4, commit 4c3aa3a"
 hitung-thr,uji-ulang,uji ulang 1.0.11 (placeholder nama usaha),selesai,2026-10-14,"uji ulang 1.0.10 LULUS (penguji independen 2026-10-14), patch 1.0.11 placeholder"
-iterasi-dari-masukan-pelanggan,telegram,"Masih terbuka: gelombang G18 (topik 1482-1491) untuk iterasi-dari-masukan-pelanggan belum terkirim ke bot Telegram asli, hanya 1 dari 10 pesan yang terkirim (mi",buka,,
-iterasi-dari-masukan-pelanggan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+iterasi-dari-masukan-pelanggan,telegram,"Masih terbuka: gelombang G18 (topik 1482-1491) untuk iterasi-dari-masukan-pelanggan belum terkirim ke bot Telegram asli, hanya 1 dari 10 pesan yang terkirim (mi",selesai,2026-10-16,gelombang 18 2026-10-16: BELUM 6→5 (v1.0.11)
+iterasi-dari-masukan-pelanggan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,gelombang 18 2026-10-16: BELUM 6→5 (v1.0.11)
 kalender-pajak,uji-ulang,"kalender-pajak (beta, 1.0.7) masih perlu uji sebelum/sesudah OpenClaw per skill oleh penguji independen. Berkas 00-openclaw-sebelum-sesudah.md hanya salinan rin",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (5,0→8,5 v1.0.7, promosi), commit dea3b20; keputusan otomatis 89"
 kas-umkm,uji-ulang,"Uji ulang sebelum/sesudah per skill untuk kas-umkm (1.0.12) belum dikerjakan: berkasnya masih salinan ringkasan uji solusi VIP 2026-10-01, tanpa baris di jsonl ",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (9,0→9,0 v1.0.11, tidak dipromosikan, selisih <1,5), commit 97c8b0c; keputusan otomatis 89"
 kelayakan-investasi-usaha,rujukan,OP final vs PP 20/2026 → Sebut OP «selamanya» bila syarat terpenuhi,selesai,2026-10-15,revisi v1.0.6 commit f963446 (verifikasi independen lolos)
@@ -52,8 +52,8 @@ laporan-keuangan-emkm,rujukan,"Laporan arus kas vs 3 laporan SAK EMKM → README
 listing-marketplace,uji-ulang,"Item masih terbuka, tetapi bukan uji dari nol: sisa pekerjaannya membuat skills/listing-marketplace/examples/00-openclaw-sebelum-sesudah.md dari solusi-vip/toko",selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 5,5→9,0 v1.0.4, commit 597aaf6"
 listing-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-15,"bukti uji satu skenario (solusi VIP) didokumentasikan: 5,5→9,0 v1.0.4, commit 597aaf6"
 lowongan-kerja,rujukan,UU PDP rekrutmen → Sama usulan pasal seperti wawancara,selesai,2026-10-15,revisi v1.0.5 commit bbfc74f (verifikasi independen lolos)
-notulen-rapat,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-notulen-rapat,telegram,notulen-rapat masih terbuka untuk uji Telegram: G18 (antrean C24) baru 1 dari 10 pesan yang terkirim (bukan milik notulen-rapat) dan gagal karena router HTTP 53,buka,,
+notulen-rapat,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 18 2026-10-16: LOLOS 5→8,5 (v1.0.4)"
+notulen-rapat,telegram,notulen-rapat masih terbuka untuk uji Telegram: G18 (antrean C24) baru 1 dari 10 pesan yang terkirim (bukan milik notulen-rapat) dan gagal karena router HTTP 53,selesai,2026-10-16,"gelombang 18 2026-10-16: LOLOS 5→8,5 (v1.0.4)"
 panduan-wawancara-kerja,rujukan,"Daftar larangan PHK UU 6/2023 Ps. 153 ayat (1) → Lengkapi huruf ayat (1) sesuai UU, bukan ringkasan pendek",selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
 panduan-wawancara-kerja,rujukan,"Item panduan-wawancara-kerja masih terbuka sebagian: larangan PHK Ps. 153 a-j, UU 8/2016 Ps. 11 dan 53, serta lembur Ps. 78 sudah beres di v1.0.2, tetapi rujuka",selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
 panduan-wawancara-kerja,rujukan,"Lembur Ps. 78 UU 6/2023 → Cantumkan batas 4 jam/hari, 18 jam/minggu; hapus PERLU REVIEW",selesai,2026-10-15,revisi v1.0.3 commit 8f1a930 (verifikasi independen lolos)
@@ -77,8 +77,8 @@ promo-kalender,uji-ulang,"promo-kalender 1.0.4 (beta) baru punya salinan ringkas
 proposal-kerjasama,rujukan,Bea meterai UU 10/2020 → Tandai COCOK di `regulasi.md`,selesai,2026-10-15,revisi v1.0.11 commit 3c4d239 (verifikasi independen lolos)
 rekap-penjualan-csv,uji-ulang,Uji sebelum/sesudah per skill untuk rekap-penjualan-csv 1.2.5 belum pernah dijalankan: berkas 00-nya hanya salinan ringkasan uji solusi VIP Toko Online (1.2.2 d,selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (7,5→9,0 v1.2.3, promosi), commit 8a913af; keputusan otomatis 89"
 rekap-penjualan-csv,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (7,5→9,0 v1.2.3, promosi), commit 8a913af; keputusan otomatis 89"
-rencana-marketing-usaha,telegram,"G18 rencana-marketing-usaha di bot Telegram pertama belum tuntas: baru 1 dari 10 pesan (TANPA) terkirim dan gagal HTTP 530, pesan 2–10 serta pra-cek uji-tg.sh b",buka,,
-rencana-marketing-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
+rencana-marketing-usaha,telegram,"G18 rencana-marketing-usaha di bot Telegram pertama belum tuntas: baru 1 dari 10 pesan (TANPA) terkirim dan gagal HTTP 530, pesan 2–10 serta pra-cek uji-tg.sh b",selesai,2026-10-16,"gelombang 18 2026-10-16: LOLOS 6,5→8 (v1.0.6)"
+rencana-marketing-usaha,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),selesai,2026-10-16,"gelombang 18 2026-10-16: LOLOS 6,5→8 (v1.0.6)"
 rencana-restok-barang,rujukan,Kolom SKU Shopee (Induk vs Referensi) → Pisahkan contoh kolom per platform di `data-dan-tindakan.md`,selesai,2026-10-14,kolom resmi Shopee/Tokopedia & alur stok diterapkan di v1.0.5 (commit 2026-10-14)
 rencana-restok-barang,rujukan,Kolom Tokopedia Order ID / SKU ID / Product Name → Ganti label generik «No. Pesanan» → nama kolom resmi EN,selesai,2026-10-14,kolom resmi Shopee/Tokopedia & alur stok diterapkan di v1.0.5 (commit 2026-10-14)
 rencana-restok-barang,rujukan,"Stok Shopee via Mass Update, bukan file order → Tambah alur unduh template stok",selesai,2026-10-14,kolom resmi Shopee/Tokopedia & alur stok diterapkan di v1.0.5 (commit 2026-10-14)

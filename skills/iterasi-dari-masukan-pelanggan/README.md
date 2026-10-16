@@ -66,6 +66,10 @@ Skrip hitung memakai Python standar (`python3`, di Windows `python` atau `py`). 
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Toko kue online: baca semua chat WA pelanggan dan ulasan Shopee September, apa yang harus saya benahi duluan?. Tanpa skill skor **6** → dengan skill skor **5** (selisih -1, belum lulus acuan kami: skor dengan skill di bawah 8). DENGAN memberi backlog berpenanggung jawab dan bertenggat, draf balasan, dan temuan keluhan WA yang tidak dibalas tanpa menyebut nama pelanggan, tetapi melewatkan satu keluhan WA ("Kurir telat lagi, nunggu lama. Tolong dibenahi") sehingga beberapa angkanya salah; TANPA menghitung keluhan per isu dengan benar tetapi tidak memberi rencana kerja. Catatan jujur: Pada uji ini jawaban dengan skill melewatkan satu keluhan WA ("Kurir telat lagi, nunggu lama") karena cacat di script versi 1.0.11: baris "Pesan ini dihapus" tanpa tanggal ikut membuang pesan sebelumnya. Akibatnya beberapa angka salah (12 pesan, 38 masukan, 4 dari 6 keluhan tak dibalas; yang benar 13, 39, 5 dari 7), meski urutan prioritas pembenahannya tetap benar. Tanpa skill angka per isunya benar tetapi tidak ada rencana kerja. Cacat ini diperbaiki di versi 1.0.12 dan akan diuji ulang dengan data yang sama. Uji internal dengan data lain: 5,9 → 8,5. Waktu balas dengan skill di bot ±13 menit.
+
 ## FAQ
 **Apakah data pelanggan dikirim ke luar?** Script berjalan di komputer Anda tanpa internet. Penyamaran nama/nomor otomatis, tetapi tidak
 sempurna; agent membaca ulang kutipan dan Anda tetap perlu menyimpan file mentah dengan aman. Data dibaca oleh AI agent yang Anda pakai,

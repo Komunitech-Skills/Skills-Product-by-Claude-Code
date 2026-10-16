@@ -53,6 +53,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** baru diuji di OpenClaw (uji otomatis agent); Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Rencana marketing nugget ayam: jual Rp30.000, modal Rp27.000, iklan Rp10 juta/bulan, blast WA ke 2.000 nomor beli list. Tanpa skill skor **6,5** → dengan skill skor **8** (selisih +1,5, tepat di batas lulus acuan kami). DENGAN memberi target terukur (+10 porsi malam/hari), anggaran per kanal yang jumlahnya pas Rp9.000.000, batas biaya iklan per pelanggan (Rp10.000 makan di tempat, Rp6.000 GoFood) dengan aturan berhenti, dan menyimpulkan GoFood jangan jadi andalan iklan; TANPA justru menaruh pos terbesar (Rp1.000.000/bulan) di promo GoFood yang marginnya paling tipis dan tanpa target angka. Catatan jujur: AI biasa pun sudah menghitung margin dengan benar; pembedanya ada pada target angka, batas biaya iklan per kanal, dan aturan berhenti. Satu label di jawaban dengan skill keliru: tertulis "target laba Rp8.000/pelanggan", yang dimaksud batas biaya iklan per pelanggan (titik impas iklannya 324 pelanggan); angka lainnya benar. Uji internal versi 1.0.4: 6 → 9; di bot asli selisihnya menyempit karena jawaban tanpa skill lebih baik dan jawaban dengan skill lebih ringkas.
+
 ## FAQ
 1. **Apakah harus punya data penjualan?** Tidak wajib. Tanpa data, skill memakai angka contoh berlabel "asumsi" dan menjadikan pencatatan data sebagai tugas minggu pertama.
 2. **Apakah ini menjamin omzet naik?** Tidak. Target adalah tujuan kerja; hasil tergantung produk, harga, dan eksekusi.

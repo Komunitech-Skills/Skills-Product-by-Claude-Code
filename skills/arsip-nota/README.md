@@ -58,6 +58,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Belum uji bot Telegram asli. Codex dan Cursor belum uji platform asli. Skill ini bukan OCR (pembaca teks dari foto): nominal berasal dari Anda atau dari skill `ekstrak-nota-faktur`.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Tolong rapikan nota-nota di folder nota/, tandai yang dobel, lalu rekap pengeluaran bulan ini. Tanpa skill skor **7** → dengan skill skor **8** (selisih +1, belum lulus acuan kami: selisih 1 di bawah 1,5). DENGAN menyalin 3 nota ke arsip setelah konfirmasi dan membiarkan file asli utuh, sedangkan TANPA langsung mengganti nama file asli; nota dobel terdeteksi lewat isi file di kedua sisi dan rekapnya sama (Rp1.887.500). Catatan jujur: Perbandingan ini tidak bersih: kedua sisi memakai folder nota yang sama, dan sisi tanpa skill lebih dulu mengganti nama file asli, sehingga sisi dengan skill harus menjelaskan nama yang tidak cocok sebelum mengarsipkan. Rekap pengeluaran kedua sisi sama (Rp1.887.500); nota dobel terdeteksi di kedua sisi. Uji internal dengan skenario yang sama: 7 → 9. Akan diuji ulang dengan folder terpisah per sisi sebelum disimpulkan.
+
 ## FAQ
 **File nota asli saya bisa hilang/terhapus?**
 Skill ini tidak menghapus file Anda. Mode bawaan adalah **salin** — file asli tetap di tempatnya, hanya salinannya yang diarsipkan dan diberi nama baku. Ada juga mode "pindah" (opsional) yang hanya memindahkan file ke lokasi baru, dan skill tidak menghapus file.
