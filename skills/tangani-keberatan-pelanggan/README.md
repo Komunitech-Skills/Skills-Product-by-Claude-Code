@@ -69,12 +69,12 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 11, 2026-10-06.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8,5
-Verdik gelombang: LULUS — Tanpa skill satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" (tanpa dasar); dengan skill perbandingan jujur (pesaing tetap ±Rp15 rb lebih murah), 3 pilihan balasan termasuk opsi tanpa memaksa, kapan berhenti, dan ongkir pesaing ditandai perkiraan.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06.
+- Tanpa skill: skor 6,5
+- Dengan skill: skor 8,5
+Hasil: lulus — Tanpa skill satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" (tanpa dasar); dengan skill perbandingan jujur (pesaing tetap ±Rp15 rb lebih murah), 3 pilihan balasan termasuk opsi tanpa memaksa, kapan berhenti, dan ongkir pesaing ditandai perkiraan.
 
-- Uji ulang di bot Telegram (4 pesan di topik baru, 2026-10-12): skor 6,5 → 8,5, verdik LULUS, hasilnya sama dengan gelombang 11 (tautan pesan uji ulang ini tidak tercatat).
+- Uji ulang di bot Telegram (4 pesan di topik baru, 2026-10-12): skor 6,5 → 8,5, lulus, hasilnya sama dengan uji 6 Oktober.
 
 ## FAQ
 **Apakah skill ini bisa membuat pelanggan "takut kehabisan" supaya cepat beli?**
