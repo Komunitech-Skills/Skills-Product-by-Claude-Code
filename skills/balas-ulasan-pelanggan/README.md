@@ -2,7 +2,7 @@
 
 **Tempel ulasan pelanggan, dapat balasan yang menenangkan, sopan, dan membantu calon pembeli tetap percaya.**
 
-*Diuji AI penguji independen: 5,5 → 8,25 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang); pembedanya: balasan tanpa skill mengajak pembeli ke WhatsApp dan meminta ubah rating (dilarang marketplace), dengan skill tidak.*
+*Diuji AI penguji independen: 5,5 → 8,25 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang); pembedanya: tanpa skill, balasan toko 924 karakter dengan klaim karangan "sudah sesuai SLA" (janji layanan) dan agen klinik menawarkan posting otomatis lewat login browser; dengan skill, balasan toko 469 karakter tercek script, dan agen klinik tidak menawarkan posting otomatis.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -52,9 +52,11 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Tanpa skill: balasan memuat 2 pelanggaran kebijakan marketplace sekaligus, yaitu mengajak ke WhatsApp lengkap dengan nomor dan meminta pembeli mengubah rating. Alasan keterlambatan ("lonjakan pesanan") dikarang dan janji ongkir retur ditulis di depan umum.
 - Dengan skill: 0 pelanggaran; balasan publik 294 dari batas 500 karakter dan mengarah ke chat toko, ditambah pesan chat pribadi siap kirim dan urutan "chat pribadi dulu, baru posting balasan publik".
 - Skor penguji independen: 8 dari 10 (lulus uji).
-- Sumber lain, uji OpenClaw 2026-10-01 (agen penguji independen): 5,5 → 8,25 (rata-rata dua skenario ulasan; 8,5 setelah perbaikan dan uji ulang) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+- Sumber lain, uji OpenClaw 2026-10-01 (agen penguji independen): 5,5 → 8,25 (rata-rata dua skenario ulasan, toko online dan klinik; 8,5 setelah perbaikan dan uji ulang). Versi yang diuji: skenario klinik diuji ulang pada versi 1.0.3 dan 1.0.4 (uji pertamanya sebelum itu, versinya tidak tercatat); skenario toko online tidak mencatat versi. Hanya skenario klinik yang diuji ulang, dan versi 1.0.5 (versi sekarang) belum diuji ulang di OpenClaw (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
+
+**PERLU REVIEW:** aturan balasan untuk fasilitas kesehatan (klinik, praktik dokter atau dokter gigi, apotek, dan sejenisnya) belum direview tenaga medis/kepatuhan; tinjau dulu sebelum dipakai sebagai aturan final.
 
 ## FAQ
 **Bolehkah menawarkan voucher supaya pembeli mengubah bintangnya?**
