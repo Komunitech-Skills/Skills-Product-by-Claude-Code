@@ -1,0 +1,44 @@
+[
+ {
+  "skill": "dasbor-lokal",
+  "sisi": "sebelum",
+  "topic": 1683,
+  "text": "@KTclaude2bot Buka dasbor toko saya dong, sekalian tampilkan stok yang menipis dan saldo kas per akun. Datanya ada di folder KomunitechData di folder home (stok.db, kasir/kasir.db, kas/kas.db).",
+  "catatan": "pesan dibuat 16 Okt merujuk berkas data fiktif di folder kerja/home bot (prep lama tanpa data)"
+ },
+ {
+  "skill": "dasbor-lokal",
+  "sisi": "sesudah",
+  "topic": 1684,
+  "text": "@KTclaude2bot Buka dasbor toko saya dong, sekalian tampilkan stok yang menipis dan saldo kas per akun. Datanya ada di folder KomunitechData di folder home (stok.db, kasir/kasir.db, kas/kas.db).",
+  "catatan": "pesan dibuat 16 Okt merujuk berkas data fiktif di folder kerja/home bot (prep lama tanpa data)"
+ },
+ {
+  "skill": "audit-seo-toko-online",
+  "sisi": "sebelum",
+  "topic": 1685,
+  "text": "@KTclaude2bot Kak, tolong audit SEO halaman produk toko online saya dong. Filenya halaman-produk.html di folder kerja. Kata kunci utamanya 'keripik pedas Bandung'. Kasih perbaikan yang bisa langsung saya tempel ya.",
+  "catatan": "pesan dibuat 16 Okt merujuk berkas data fiktif di folder kerja/home bot (prep lama tanpa data)"
+ },
+ {
+  "skill": "audit-seo-toko-online",
+  "sisi": "sesudah",
+  "topic": 1686,
+  "text": "@KTclaude2bot Kak, tolong audit SEO halaman produk toko online saya dong. Filenya halaman-produk.html di folder kerja. Kata kunci utamanya 'keripik pedas Bandung'. Kasih perbaikan yang bisa langsung saya tempel ya.",
+  "catatan": "pesan dibuat 16 Okt merujuk berkas data fiktif di folder kerja/home bot (prep lama tanpa data)"
+ },
+ {
+  "skill": "analisis-excel",
+  "sisi": "sebelum",
+  "topic": 1687,
+  "text": "@KTclaude2bot Kak, tolong bantu baca file Penjualan 2026.xlsx, filenya ada di folder kerja. Saya mau tahu: 1) kategori apa yang paling laku, 2) tren penjualan per bulannya gimana, 3) penjualan Q2 dibanding Q3 naik atau turun? Kasih angkanya ya, biar bisa saya tunjukkan ke tim.",
+  "catatan": "pesan dibuat 16 Okt merujuk berkas data fiktif di folder kerja/home bot (prep lama tanpa data)"
+ },
+ {
+  "skill": "analisis-excel",
+  "sisi": "sesudah",
+  "topic": 1688,
+  "text": "@KTclaude2bot Kak, tolong bantu baca file Penjualan 2026.xlsx, filenya ada di folder kerja. Saya mau tahu: 1) kategori apa yang paling laku, 2) tren penjualan per bulannya gimana, 3) penjualan Q2 dibanding Q3 naik atau turun? Kasih angkanya ya, biar bisa saya tunjukkan ke tim.",
+  "catatan": "pesan dibuat 16 Okt merujuk berkas data fiktif di folder kerja/home bot (prep lama tanpa data)"
+ }
+]
