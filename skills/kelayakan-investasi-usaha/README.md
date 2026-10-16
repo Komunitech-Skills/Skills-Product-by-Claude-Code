@@ -66,7 +66,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech; tautan pesan hanya terbuka untuk anggota grup), 6 Okt 2026, pesan yang sama dikirim tanpa skill lalu dengan skill:
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 6 Okt 2026, pesan yang sama dikirim tanpa skill lalu dengan skill:
 - Tanpa skill: skor 6,5
 - Dengan skill: skor 9
 Hasilnya lulus. Keduanya benar soal balik modal (±1 tahun 1 bulan), tetapi hanya dengan skill ada NPV, IRR, balik modal dengan nilai waktu uang, uji omzet turun 10%/20% dan biaya naik 10%, batas aman, asumsi patokan 12%, dan catatan bukan nasihat keuangan; semuanya cocok dengan hitungan ulang.
