@@ -106,7 +106,7 @@ Butuh Python 3 untuk perhitungan (sudah ada di kebanyakan komputer; Windows: `py
 Tanpa Python, agent menghitung manual dengan rumus di `references/` dan memberi tanda
 "verifikasi ulang".
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **6,1** → dengan skill **9,0** (verdik uji LULUS). Contoh bidan TD 128/86: **MAP 100,0**, 5 faktor sedang Buku KIA 2025, **HPL 19 Maret 2027**, tanpa dosis obat. Bot Telegram gelombang 8 (2026-10-05): tanpa **6** → dengan **8,5**. Sumber: skor OpenClaw dari `examples/00-openclaw-sebelum-sesudah.md`; skor Telegram dari uji bot asli gelombang 8.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **6,1** → dengan skill **9,0** (hasil uji: lulus). Contoh bidan TD 128/86: **MAP 100,0**, 5 faktor sedang Buku KIA 2025, **HPL 19 Maret 2027**, tanpa dosis obat. Bot Telegram (2026-10-05): tanpa **6** → dengan **8,5**. Sumber: skor OpenClaw dari `examples/00-openclaw-sebelum-sesudah.md`; skor Telegram dari uji bot asli gelombang 8.
 
 **Status uji (jujur):** sudah uji OpenClaw otomatis + bot asli (gelombang 8). MoCA/MMSE hanya tafsir skor total (lisensi formulir milik pengguna). Codex/Cursor belum uji platform asli.
 
