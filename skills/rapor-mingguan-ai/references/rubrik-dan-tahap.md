@@ -1,7 +1,13 @@
 # Rubrik tetap, nilai, dan tahap pertumbuhan
 
 ## Delapan kriteria
-Satu percakapan "lolos" suatu kriteria bila tidak ada balasan bot di dalamnya yang melanggar. Kode dipakai pada baris `#gagal:` (boleh pakai kata sehari-hari di kolom tanda kurung).
+Satu percakapan "lolos" suatu kriteria bila tidak ada balasan bot di dalamnya yang melanggar. Kode dipakai di daftar penilaian (`P1=lolos; P2=nyambung,panjang`) dan pada baris `#gagal:` berkas percakapan.
+
+## Hitungan (selalu dari daftar penilaian per percakapan)
+- Per kriteria: gagal = jumlah percakapan yang mencantumkan kode itu; lolos = dinilai - gagal; `lolos % = lolos / dinilai x 100`, satu angka desimal. Tiap kriteria dihitung sendiri-sendiri.
+- Percakapan bersih = percakapan bertanda `lolos` (tidak gagal di kriteria mana pun).
+- Cek konsistensi: bersih ≤ lolos terendah di antara 8 kriteria; (dinilai - bersih) ≤ jumlah semua kegagalan; angka sama di seluruh rapor.
+- Contoh 5 percakapan: `P1=lolos; P2=nada; P3=nada,fakta; P4=lolos; P5=konteks` → nada 60% (3/5), fakta 80% (4/5), konteks 80% (4/5), lima kriteria lain 100% (5/5); bersih 2 dari 5 (P1, P4), dan 2 ≤ lolos terendah 3.
 
 | Kode | Kriteria | Gagal bila... | Kritis? |
 |---|---|---|---|
@@ -32,7 +38,7 @@ Kriteria kritis tidak diberi kelonggaran di tahap mana pun.
 Kurang dari 10 percakapan dinilai: sebut nilai "indikatif". Ideal 20-30 percakapan per minggu, campur yang mudah dan yang sulit.
 
 ## Menyamarkan data
-Nama, nomor HP, email, dan angka panjang (resi, rekening) di contoh rapor ditulis tersamar: `Bu [nama]`, `0812-xxxx-3456`, `[email]`.
+Nama, nomor HP, email, dan angka panjang (resi, rekening) pelanggan tidak ditulis di rapor, termasuk inisial dan 4 digit akhir: tulis `pelanggan A`, `[nomor]`, `[email]`, `[resi]`.
 
 ## Teks siap tempel untuk PR
 - Contoh jawaban benar: pasangan "pelanggan tanya -> jawaban yang diinginkan" dengan fakta dari pemilik, atau `[isian: ...]`.

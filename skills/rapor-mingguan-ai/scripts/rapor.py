@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Hitung angka rapor mingguan karyawan AI. Python standar saja.
 
-Pakai: python3 rapor.py percakapan.txt [--tahap minggu1|minggu2-4|bulan2+] [--lama "fakta=80,nyambung=90"]
-       [--bot "Nama Bot"] [--samarkan-nama "Sari,Budi"] [--json]
+Pakai (utama, dari daftar penilaian per percakapan):
+       python3 rapor.py --nilai "P1=lolos; P2=nyambung,panjang; P3=fakta,janji" [--tahap minggu1|minggu2-4|bulan2+]
+       [--lama "fakta=80,nyambung=90"] [--json]
+Pakai (dari berkas percakapan berpenanda #gagal):
+       python3 rapor.py percakapan.txt [--tahap ...] [--lama ...] [--bot "Nama Bot"] [--samarkan-nama "Sari,Budi"] [--json]
 Windows: python atau py.
+
+Daftar penilaian: butir dipisah ';' atau baris baru, tiap butir 'kode=kriteria,kriteria' ('lolos' = tanpa kesalahan,
+'?' = belum dinilai). Kriteria: fakta, nyambung, konteks, panjang, nada, janji, bocor, teknis.
 
 Format teks: satu percakapan per blok, dipisah baris '---'. Baris 'Pelanggan: ...' dan 'Bot: ...'.
 Penilaian manual (opsional) di dalam blok:  #gagal: konteks, panjang   (atau '#gagal: lolos')
@@ -17,6 +23,7 @@ import json
 import re
 import sys
 
+VERSI = "1.0.2"
 KRITERIA = ["fakta", "nyambung", "konteks", "panjang", "nada", "janji", "bocor", "teknis"]
 NAMA = {
     "fakta": "Fakta benar", "nyambung": "Nyambung dengan pertanyaan", "konteks": "Ingat konteks",
@@ -31,6 +38,8 @@ ALIAS = {
     "panjang": "panjang", "pendek": "panjang", "terlalu_panjang": "panjang", "terlalu_pendek": "panjang",
     "nada": "nada", "brand": "nada", "janji": "janji", "menjanjikan": "janji",
     "bocor": "bocor", "data": "bocor", "privasi": "bocor", "teknis": "teknis", "proses": "teknis",
+    "fakta_salah": "fakta", "ingat_konteks": "konteks", "panjang_pas": "panjang", "nada_brand": "nada",
+    "janji_berlebihan": "janji", "data_pribadi": "bocor", "kata_teknis": "teknis",
 }
 TARGET = {"minggu1": 60, "minggu2-4": 75, "bulan2+": 90}
 TAHAP_NAMA = {"minggu1": "minggu 1 (masih bayi)", "minggu2-4": "minggu 2-4 (belajar)", "bulan2+": "bulan 2 ke atas (dewasa)"}
@@ -62,11 +71,15 @@ def samarkan(teks, nama_ekstra=()):
     return teks
 
 
+KATA_LOLOS = ("lolos", "ok", "bersih", "tidak_ada", "none", "0")
+PEMISAH_KODE = r"[,;/+]+|\s+dan\s+"
+
+
 def kode_kriteria(teks, peringatan):
     hasil = []
-    for bagian in re.split(r"[,;/]+", teks):
+    for bagian in re.split(PEMISAH_KODE, teks):
         k = bagian.strip().lower().replace(" ", "_").replace("-", "_")
-        if not k or k in ("lolos", "ok", "tidak_ada", "none", "0"):
+        if not k or k in KATA_LOLOS:
             continue
         if k in ALIAS:
             if ALIAS[k] not in hasil:
@@ -123,6 +136,81 @@ def parse_teks(teks, bot_ekstra, peringatan):
         if c["turn"]:
             hasil.append(c)
     return hasil
+
+
+def parse_nilai(teks, peringatan):
+    """Daftar penilaian langsung: 'P1=lolos; P2=nyambung,panjang'. Pemisah butir ';' atau baris baru; '=' atau ':'."""
+    hasil, per = [], {}
+    for bag in re.split(r"[;\n]+", teks):
+        bag = bag.strip().strip("`").strip()
+        if not bag:
+            continue
+        m = re.match(r"^([^=:]{1,20}?)\s*[=:]\s*(.*)$", bag)
+        if not m:
+            peringatan.append("butir penilaian tanpa '=' diabaikan: " + bag[:30])
+            continue
+        cid, isi = m.group(1).strip(), m.group(2).strip()
+        bagian = [b.strip().lower().replace(" ", "_") for b in re.split(PEMISAH_KODE, isi) if b.strip()]
+        if not bagian or isi.lower() in ("?", "belum"):
+            gagal = None
+            if not bagian:
+                peringatan.append("%s tanpa penilaian (tulis 'lolos' atau kode kriteria); tidak dihitung" % cid)
+        else:
+            gagal = kode_kriteria(isi, peringatan)
+            if not gagal and not all(b in KATA_LOLOS for b in bagian):
+                gagal = None
+                peringatan.append("%s: kode tidak dikenal, percakapan tidak dihitung; perbaiki daftar penilaian" % cid)
+        if cid in per:
+            peringatan.append("kode percakapan %s muncul dua kali; penilaiannya digabung" % cid)
+            c = per[cid]
+            if gagal is not None:
+                c["gagal"] = (c["gagal"] or []) + [k for k in gagal if k not in (c["gagal"] or [])]
+            continue
+        per[cid] = {"id": cid, "turn": [], "gagal": gagal, "catatan": ""}
+        hasil.append(per[cid])
+    return hasil
+
+
+def cek_konsistensi(n, gagal, bersih, matriks=None):
+    """Periksa angka rapor sebelum ditulis. Kosong = konsisten.
+
+    n: jumlah percakapan dinilai; gagal: {kriteria: jumlah percakapan yang gagal}; bersih: jumlah percakapan
+    tanpa satu pun kesalahan; matriks (opsional): daftar kode gagal per percakapan, sumber kebenaran angka.
+    """
+    masalah = []
+    if n <= 0:
+        return masalah
+    if not 0 <= bersih <= n:
+        masalah.append("percakapan bersih %d di luar 0-%d" % (bersih, n))
+    for k, g in gagal.items():
+        if not 0 <= g <= n:
+            masalah.append("%s: gagal %d di luar 0-%d" % (k, g, n))
+    if gagal:
+        lolos_min = min(n - g for g in gagal.values())
+        if bersih > lolos_min:
+            masalah.append("percakapan bersih %d melebihi lolos terendah %d (bersih harus lolos semua kriteria)"
+                           % (bersih, lolos_min))
+        total = sum(gagal.values())
+        if n - bersih > total:
+            masalah.append("%d percakapan tidak bersih tetapi total kesalahan di tabel hanya %d" % (n - bersih, total))
+    if matriks is not None:
+        if len(matriks) != n:
+            masalah.append("jumlah dinilai %d berbeda dengan daftar penilaian %d" % (n, len(matriks)))
+        for k, g in gagal.items():
+            nyata = sum(1 for kode in matriks if k in kode)
+            if g != nyata:
+                masalah.append("%s: tertulis gagal %d, menurut daftar penilaian %d" % (k, g, nyata))
+        nyata_bersih = sum(1 for kode in matriks if not kode)
+        if bersih != nyata_bersih:
+            masalah.append("percakapan bersih tertulis %d, menurut daftar penilaian %d" % (bersih, nyata_bersih))
+    return masalah
+
+
+def persen_id(x):
+    """90.0 -> '90%', 83.3 -> '83,3%' (gaya penulisan Indonesia)."""
+    if x is None:
+        return "-"
+    return ("%d%%" % x) if float(x).is_integer() else ("%s%%" % x).replace(".", ",")
 
 
 def parse_csv(teks, bot_ekstra, peringatan):
@@ -214,7 +302,8 @@ def hitung(cs, tahap, lama, maks_panjang, nama_ekstra, peringatan):
     lolos = {k: (round(100.0 * (n - len(gagal[k])) / n, 1) if n else None) for k in KRITERIA}
     kriteria = []
     for k in KRITERIA:
-        row = {"kode": k, "nama": NAMA[k], "kritis": k in KRITIS, "gagal": len(gagal[k]), "lolos_persen": lolos[k],
+        row = {"kode": k, "nama": NAMA[k], "kritis": k in KRITIS, "gagal": len(gagal[k]), "lolos": n - len(gagal[k]),
+               "dinilai": n, "gagal_di": [c["id"] or "-" for c in gagal[k]], "lolos_persen": lolos[k],
                "nilai": predikat(lolos[k], k in KRITIS) if n else None}
         if n and k not in KRITIS:
             row["target_tahap"] = TARGET[tahap]
@@ -238,13 +327,17 @@ def hitung(cs, tahap, lama, maks_panjang, nama_ekstra, peringatan):
     if umum in ("A", "B") and kena_kritis:
         umum = "C"
     sudah_bersih = sum(1 for c in dinilai if not c["gagal"])
+    masalah = cek_konsistensi(n, {k: len(gagal[k]) for k in KRITERIA}, sudah_bersih, [c["gagal"] for c in dinilai])
+    nilai_unik = {lolos[k] for k in KRITERIA}
+    semua_sama = bool(n) and len(nilai_unik) == 1 and lolos[KRITERIA[0]] < 100
     peringatan = list(peringatan)
     if n and n < 10:
         peringatan.append("hanya %d percakapan dinilai: nilai bersifat indikatif, jangan ditarik kesimpulan besar" % n)
     if not n:
         peringatan.append("belum ada penilaian: tidak ada angka yang bisa dihitung")
     if belum:
-        peringatan.append("%d percakapan belum dinilai (tanpa baris #gagal) dan tidak dihitung" % len(belum))
+        peringatan.append("%d percakapan belum dinilai (tanpa penilaian/#gagal) dan tidak dihitung: %s"
+                          % (len(belum), ", ".join(c["id"] or "-" for c in belum)))
     tak_tercatat = []
     for c in dinilai:
         ekstra = [k for k in dugaan(c, maks_panjang) if k not in c["gagal"]]
@@ -252,6 +345,7 @@ def hitung(cs, tahap, lama, maks_panjang, nama_ekstra, peringatan):
             tak_tercatat.append({"id": c["id"] or "-", "dugaan": ekstra})
     dugaan_belum = [{"id": c["id"] or "-", "dugaan": dugaan(c, maks_panjang)} for c in belum if dugaan(c, maks_panjang)]
     return {
+        "versi": VERSI,
         "tahap": tahap, "tahap_nama": TAHAP_NAMA[tahap], "percakapan_total": len(cs), "dinilai": n,
         "belum_dinilai": len(belum), "percakapan_bersih": sudah_bersih,
         "bersih_persen": round(100.0 * sudah_bersih / n, 1) if n else None,
@@ -259,27 +353,45 @@ def hitung(cs, tahap, lama, maks_panjang, nama_ekstra, peringatan):
         "lolos_persen": {k: lolos[k] for k in KRITERIA if lolos[k] is not None},
         "tiga_kesalahan_teratas": top, "kena_kriteria_kritis": sorted(kena_kritis, key=KRITERIA.index),
         "ada_rapor_lama": bool(lama),
+        "konsistensi": {"ok": not masalah, "masalah": masalah}, "semua_kriteria_sama_persen": semua_sama,
         "dugaan_tak_tercatat_pada_yang_dinilai": tak_tercatat, "dugaan_pada_yang_belum_dinilai": dugaan_belum,
         "peringatan": peringatan,
     }
 
 
 def blok_agent(h):
+    n = h["dinilai"]
     L = ["=== UNTUK AGENT SAJA: jangan ditempel ke pengguna, tulis ulang dengan bahasa biasa ===",
-         "tahap: %s | dinilai: %d dari %d | bersih (tanpa kesalahan): %s | rata lolos: %s | nilai umum: %s"
-         % (h["tahap_nama"], h["dinilai"], h["percakapan_total"],
-            "-" if h["bersih_persen"] is None else "%s%%" % h["bersih_persen"],
-            "-" if h["rata_lolos_persen"] is None else "%s%%" % h["rata_lolos_persen"], h["nilai_umum"] or "-")]
+         "salin angka persis dari blok ini; jangan menghitung ulang di kepala",
+         "tahap: %s | dinilai: %d dari %d | bersih (lolos SEMUA kriteria): %s | rata lolos: %s | nilai umum: %s"
+         % (h["tahap_nama"], n, h["percakapan_total"],
+            "-" if h["bersih_persen"] is None else "%d dari %d (%s)" % (h["percakapan_bersih"], n, persen_id(h["bersih_persen"])),
+            persen_id(h["rata_lolos_persen"]), h["nilai_umum"] or "-")]
     for k in h["kriteria"]:
-        s = "%-9s %-28s gagal %d | lolos %s | nilai %s" % (
-            k["kode"], k["nama"], k["gagal"], "-" if k["lolos_persen"] is None else "%s%%" % k["lolos_persen"], k["nilai"] or "-")
+        s = "%-9s %-28s lolos %s | nilai %s | gagal di: %s" % (
+            k["kode"], k["nama"], "-" if k["lolos_persen"] is None else "%d dari %d (%s)" % (k["lolos"], n, persen_id(k["lolos_persen"])),
+            k["nilai"] or "-", ", ".join(k["gagal_di"]) or "-")
         if "vs_target" in k:
             s += " | target %d%% (%s)" % (k["target_tahap"], k["vs_target"])
         if "selisih_poin" in k:
-            s += " | minggu lalu %s%% (%+g poin)" % (k["lama_persen"], k["selisih_poin"])
+            sp = k["selisih_poin"]
+            arah = "tetap" if sp == 0 else "%s %s poin" % ("naik" if sp > 0 else "turun", persen_id(abs(sp)).rstrip("%"))
+            s += " | minggu lalu %s (%s)" % (persen_id(k["lama_persen"]), arah)
         L.append(s)
+    if n:
+        kons = h["konsistensi"]
+        lolos_min = min(k["lolos"] for k in h["kriteria"])
+        total = sum(k["gagal"] for k in h["kriteria"])
+        if kons["ok"]:
+            L.append("cek konsistensi: OK (bersih %d <= lolos terendah %d; tidak bersih %d <= total kesalahan %d)"
+                     % (h["percakapan_bersih"], lolos_min, n - h["percakapan_bersih"], total))
+        else:
+            L.append("cek konsistensi: MASALAH -> " + "; ".join(kons["masalah"]))
+    if h.get("semua_kriteria_sama_persen"):
+        L.append("catatan: semua kriteria sama persen karena jumlah gagalnya kebetulan sama (lihat 'gagal di'); "
+                 "tulis satu kalimat penjelas di rapor agar tidak dikira salah hitung")
     for i, t in enumerate(h["tiga_kesalahan_teratas"], 1):
-        ex = "; ".join("%s: \"%s\"" % (e["id"], e["pelanggan_awal"]) for e in t["contoh"])
+        ex = "; ".join(("%s: \"%s\"" % (e["id"], e["pelanggan_awal"])) if e["pelanggan_awal"] else e["id"] for e in t["contoh"])
         L.append("kesalahan #%d: %s (%d percakapan) contoh %s" % (i, t["nama"], t["jumlah"], ex))
     if h["kena_kriteria_kritis"]:
         L.append("kritis kena: " + ", ".join(h["kena_kriteria_kritis"]) + " -> wajib masuk keputusan pemilik")
@@ -295,7 +407,8 @@ def blok_agent(h):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Hitung angka rapor mingguan karyawan AI")
-    ap.add_argument("berkas")
+    ap.add_argument("berkas", nargs="?", help="berkas percakapan (.txt berpenanda #gagal atau .csv); boleh diganti --nilai")
+    ap.add_argument("--nilai", default="", help='daftar penilaian: "P1=lolos; P2=nyambung,panjang; P3=fakta,janji"')
     ap.add_argument("--tahap", choices=list(TARGET), default="minggu2-4")
     ap.add_argument("--lama", default="", help='rapor lama: "fakta=80,nyambung=90" atau berkas JSON keluaran sebelumnya')
     ap.add_argument("--bot", default="", help="nama tampilan bot, pisahkan dengan koma")
@@ -303,6 +416,16 @@ def main(argv=None):
     ap.add_argument("--maks-panjang", type=int, default=700, help="batas karakter satu balasan bot (default 700)")
     ap.add_argument("--json", action="store_true", help="keluarkan JSON saja")
     a = ap.parse_args(argv)
+    if a.nilai.strip():
+        peringatan = []
+        cs = parse_nilai(a.nilai, peringatan)
+        if not cs:
+            print("Daftar penilaian kosong. Contoh: --nilai \"P1=lolos; P2=nyambung,panjang\"", file=sys.stderr)
+            return 2
+        return tampilkan(hitung(cs, a.tahap, baca_lama(a.lama), a.maks_panjang, [], peringatan), a.json)
+    if not a.berkas:
+        print("Berikan berkas percakapan atau --nilai \"P1=lolos; P2=nyambung\".", file=sys.stderr)
+        return 2
     try:
         with open(a.berkas, "rb") as f:
             mentah = f.read()
@@ -336,7 +459,11 @@ def main(argv=None):
         return 2
     h = hitung(cs, a.tahap, baca_lama(a.lama), a.maks_panjang,
                [x.strip() for x in a.samarkan_nama.split(",")], peringatan)
-    if a.json:
+    return tampilkan(h, a.json)
+
+
+def tampilkan(h, hanya_json):
+    if hanya_json:
         print(json.dumps(h, ensure_ascii=False, indent=2))
     else:
         print(blok_agent(h))
