@@ -62,7 +62,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12 (versi **1.0.1** saat uji).
 - Tanpa skill: skor **7** — menolak sertifikat/logo palsu dan klaim bebas alergen.
-- Dengan skill: skor **7,5** — paket lebih lengkap, tetapi ada kesalahan fakta (ayam 63 °C, alergen santan, halal opsional); diperbaiki di **1.0.2**. Verdik uji bot: BELUM.
+- Dengan skill: skor **7,5** — paket lebih lengkap, tetapi ada kesalahan fakta (ayam 63 °C, alergen santan, halal opsional); diperbaiki di **1.0.2**. Hasil: belum lulus.
 
 ## FAQ
 **Apakah ini menggantikan pelatihan atau SLHS resmi?** Skill ini tidak menggantikan pelatihan atau SLHS resmi; ini alat bantu kebiasaan kerja, dan pelatihan serta pemeriksaan resmi tetap lewat Dinas Kesehatan/BPOM.
