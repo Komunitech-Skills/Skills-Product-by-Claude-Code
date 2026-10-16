@@ -57,6 +57,8 @@ h1{font:800 clamp(30px,5vw,48px)/1.05 var(--display);margin:0;text-wrap:balance;
 .side.a{background:var(--after-soft)} .side.a b{color:var(--after)}
 .key{margin:0;font:500 13.5px/1.45 var(--mono);color:var(--ink);overflow-wrap:anywhere}
 .note{margin:0;font-size:13.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+.tg{margin:0;font-size:13.5px;color:var(--ink);background:var(--after-soft);border-radius:8px;padding:8px 10px}
+.tg b{display:block;font:500 11px/1.2 var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--after);margin-bottom:3px}
 footer{color:var(--muted);font-size:13.5px;max-width:70ch;display:grid;gap:8px}
 footer p{margin:0}
 .empty{color:var(--muted)}
@@ -65,11 +67,12 @@ footer p{margin:0}
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">Hasil uji · OpenClaw · __TANGGAL__</div>
-  <h1>Pertanyaan yang sama, bot yang sama. Bedanya hanya skill.</h1>
-  <p class="lede">Setiap skill kami uji dengan pesan sehari-hari dan pesan jebakan, sekali tanpa skill dan sekali dengan skill. Di bawah ini hanya skill yang bedanya jelas.</p>
+  <div class="eyebrow">Hasil uji di OpenClaw (asisten AI yang dipakai member Komunitech) · diperbarui __TANGGAL__</div>
+  <h1>Pertanyaan yang sama, asisten AI yang sama. Bedanya hanya satu: ada atau tidaknya skill Komunitech.</h1>
+  <p class="lede">Setiap skill kami uji dengan pesan sehari-hari dan satu pesan yang sengaja memancing kesalahan, sekali tanpa skill dan sekali dengan skill. Di bawah ini hanya skill yang bedanya terlihat jelas pada uji kami.</p>
   <div class="stats">
-    <div class="stat"><b id="nSkill">0</b><span>skill dengan bukti jelas</span></div>
+    <div class="stat"><b id="nSkill">0</b><span>skill yang bedanya terlihat jelas pada uji kami</span></div>
+    <div class="stat"><b id="nTg">0</b><span>di antaranya juga teruji di bot Telegram sungguhan</span></div>
     <div class="stat"><b id="avgB">0</b><span>rata-rata skor tanpa skill</span></div>
     <div class="stat"><b id="avgA">0</b><span>rata-rata skor dengan skill</span></div>
   </div>
@@ -77,11 +80,11 @@ footer p{margin:0}
 
 <section class="method" aria-labelledby="cara">
   <h2 id="cara">Cara kami menguji</h2>
-  <div class="step"><b>Pesan sama persis</b><p>Dua pesan gaya chat WA: pekerjaan biasa dan satu jebakan (data kurang, aturan baru, permintaan berisiko). Data di pesan fiktif.</p></div>
-  <div class="step"><b>Bot & model sama</b><p>Satu-satunya beda: skill dimatikan atau aktif.</p></div>
+  <div class="step"><b>Pesan sama persis</b><p>Dua pesan gaya chat WA: pekerjaan biasa dan satu pesan sulit (data kurang, aturan baru, atau permintaan berisiko). Data di pesan fiktif.</p></div>
+  <div class="step"><b>Asisten AI yang sama</b><p>Satu-satunya beda: skill dimatikan atau dinyalakan. Sebagian skill kami uji ulang di bot Telegram sungguhan yang dipakai member.</p></div>
   <div class="step"><b>Penilai terpisah</b><p>Dinilai AI penguji yang bukan pembuat skill, wajib jujur bila tanpa skill sudah sama bagus.</p></div>
-  <div class="step"><b>Angka dihitung ulang</b><p>Gaji, pajak, harga, tanggal dihitung ulang dengan kalkulator terpisah; aturan yang dikutip dicek.</p></div>
-  <p class="rule">Skor 1–10 menilai ketepatan, siap pakai, aturan Indonesia, keamanan &amp; privasi, dan kejelasan. Skill tampil di sini bila skor dengan skill ≥ 8, lebih tinggi ≥ 1,5 poin, dan tidak ada angka atau fakta yang salah. Penilainya AI, jadi selisih kecil tidak berarti banyak; hasil bisa berbeda di model AI lain.</p>
+  <div class="step"><b>Angka dihitung ulang</b><p>Gaji, pajak, harga, tanggal kami hitung ulang dengan kalkulator terpisah; aturan yang dikutip kami cek ke sumbernya (beberapa masih ditandai perlu ditinjau ahli).</p></div>
+  <p class="rule">Skor 1–10 menilai ketepatan, siap pakai, aturan Indonesia, keamanan &amp; privasi, dan kejelasan; 10 berarti jawabannya bisa langsung dipakai tanpa diperbaiki. Skill tampil di sini bila skor dengan skill minimal 8, lebih tinggi minimal 1,5 poin, dan pada uji terakhir kami tidak menemukan angka atau fakta yang salah. Bila skill itu juga sudah diuji di bot Telegram sungguhan, hasil terakhirnya harus memenuhi acuan yang sama. Sisa kekurangan yang kami temukan ditulis di tiap kartu. Penilainya AI, jadi selisih kecil tidak berarti banyak; hasil bisa berbeda di model AI lain.</p>
 </section>
 
 <section aria-label="Daftar skill" style="display:grid;gap:16px">
@@ -102,6 +105,7 @@ const fmt = x => (Math.round(x*100)/100).toString().replace('.', ',');
 const esc = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const list = document.getElementById('list'), empty = document.getElementById('empty');
 document.getElementById('nSkill').textContent = DATA.length;
+document.getElementById('nTg').textContent = DATA.filter(r=>r.tg).length;
 document.getElementById('avgB').textContent = fmt(DATA.reduce((s,r)=>s+r.b,0)/DATA.length);
 document.getElementById('avgA').textContent = fmt(DATA.reduce((s,r)=>s+r.a,0)/DATA.length);
 function card(r){
@@ -116,6 +120,7 @@ function card(r){
     <p class="task">“${esc(r.tugas)}”</p>
     <div class="cmp"><div class="side b"><b>Tanpa skill</b>${esc(r.tanpa)}</div><div class="side a"><b>Dengan skill</b>${esc(r.dengan)}</div></div>
     ${r.angka ? `<p class="key">${esc(r.angka)}</p>` : ''}
+    ${r.tg ? `<p class="tg"><b>Bot Telegram sungguhan</b>${esc(r.tg)}</p>` : ''}
     ${r.catatan ? `<p class="note">${esc(r.catatan)}</p>` : ''}
   </article>`;
 }
