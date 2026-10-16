@@ -7,7 +7,7 @@
 | `template-halaman.html` | Templat halaman promosi. | Bila desain berubah |
 | `SEBELUM-SESUDAH.md`, `halaman-sebelum-sesudah.html` | Dibuat otomatis oleh `python3 scripts/promosi_sebelum_sesudah.py`. | **Tidak** |
 
-Aturan tampil (keputusan pemilik 2026-10-03): verdik terakhir LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, kolom `label` tampil sebagai keterangan di kartu (mis. "Belum direview tenaga medis", keputusan pemilik 2026-10-03).
+Aturan tampil (keputusan pemilik 2026-10-03 + keputusan otomatis 100, 2026-10-16): verdik terakhir LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, DAN bila ada uji sebelum/sesudah di bot Telegram asli (`telegram_terakhir` — diisi otomatis oleh pemroses gelombang: `ada`, `tanggal`, `gelombang`, `versi_diuji`, `skor_tanpa`, `skor_dengan`, `verdik_aturan` LOLOS/BELUM/TIDAK-DINILAI, `pembeda_awam`, `sumber`), `verdik_aturan` bukan BELUM. Kolom `label` tampil sebagai keterangan di kartu (mis. "Belum direview tenaga medis"). Kolom turunan `selisih` dan `lolos_promosi` diselaraskan otomatis oleh skrip. Teks kartu (`catatan_jujur` dll.) ditulis untuk pembeli awam: tanpa nomor gelombang/keputusan, tanpa nama berkas atau istilah agent, singkatan dijelaskan sekali.
 
 ## Artifact yang dibagikan
 - Nama: **Bukti Sebelum–Sesudah Komunitech** — https://claude.ai/artifact/6zja3WtPTK7YE3MbDTXUtM (private; pemilik membagikan lewat menu Share).

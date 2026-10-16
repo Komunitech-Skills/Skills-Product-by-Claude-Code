@@ -36,7 +36,7 @@ Pakai sebagai **daftar periksa umum**. Syarat pasti tiap paket ada di **dokumen 
 - [ ] Bukti TKDN / PDN (bila dipersyaratkan; ambang TKDN "paling sedikit 25%" = ≥ 25%)
 
 **Harga**
-- [ ] Rincian harga (daftar kuantitas & harga): volume sama dengan dokumen, **volume × harga satuan** benar, subtotal, PPN (bila PKP), total → jalankan `scripts/cek_penawaran.py`
+- [ ] Rincian harga (daftar kuantitas & harga): volume sama dengan dokumen, **volume × harga satuan** benar, subtotal, PPN (bila PKP), total → dihitung ulang sebelum unggah
 - [ ] Total penawaran **≤ HPS**; cek persen terhadap HPS; bila < 80% siapkan bukti kewajaran harga
 - [ ] **Angka = terbilang** di surat penawaran
 - [ ] Harga satuan timpang? (satu item jauh di atas HPS satuan) — siap klarifikasi

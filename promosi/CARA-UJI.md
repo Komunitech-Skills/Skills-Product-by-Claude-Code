@@ -25,8 +25,9 @@ Skor akhir tiap jawaban adalah penilaian penguji berdasarkan lima hal itu, denga
 
 ## Kapan skill kami tampilkan
 - Skor **dengan skill minimal 8**,
-- **lebih tinggi minimal 1,5 poin** dibanding tanpa skill, dan
-- **tidak ada satu pun** angka atau fakta yang salah.
+- **lebih tinggi minimal 1,5 poin** dibanding tanpa skill,
+- pada uji terakhir kami **tidak menemukan** angka atau fakta yang salah (sisa kekurangan yang kami temukan ditulis di tiap kartu), dan
+- bila skill itu juga sudah diuji di **bot Telegram sungguhan** yang dipakai member (pesan sama, bot sama, skill dimatikan lalu dinyalakan), hasil terakhirnya harus memenuhi acuan yang sama. Skill yang belum memenuhi disembunyikan sampai lulus uji ulang.
 
 Skill yang bedanya tipis tidak kami jual sebagai pembeda.
 

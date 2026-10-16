@@ -355,11 +355,11 @@ def jenis_total(label):
 def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, sementara=False, ppn_mode=None):
     """Cocokkan baris total/pajak di file dengan angka script SESUAI labelnya.
     Tidak pernah menyatakan 'cocok' bila basisnya berbeda (sebelum vs sesudah PPN), dan tidak
-    menyatakan 'cocok' bila hitungan script masih SEMENTARA (TOTAL BELUM FINAL)."""
+    menyatakan 'cocok' bila hasil hitung masih SEMENTARA (TOTAL BELUM FINAL)."""
     jenis = jenis_total(label)
     ppn_aktif = nilai_ppn > 0
-    kedua = (f"hitungan script: sebelum PPN {rupiah(dpp)}, PPN {rupiah(nilai_ppn)}, sesudah PPN {rupiah(total)}"
-             if ppn_aktif else f"hitungan script: total {rupiah(total)}, tanpa PPN")
+    kedua = (f"hasil hitung: sebelum PPN {rupiah(dpp)}, PPN {rupiah(nilai_ppn)}, sesudah PPN {rupiah(total)}"
+             if ppn_aktif else f"hasil hitung: total {rupiah(total)}, tanpa PPN")
 
     def cocok(apa):
         if sementara:
@@ -370,9 +370,9 @@ def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, se
 
     if jenis == "ppn":
         if nilai == nilai_ppn:
-            cocok("PPN hitungan script")
+            cocok("PPN hasil hitung")
         else:
-            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi PPN hitungan script {rupiah(nilai_ppn)} "
+            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi PPN hasil hitung {rupiah(nilai_ppn)} "
                      f"(selisih {rupiah(nilai_ppn - nilai)}; {kedua}). Cek rumus PPN/DPP di Excel.")
         return
     if jenis == "dpp_lain":
@@ -395,7 +395,7 @@ def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, se
             P.append(f"Baris '{label}' di file ({rupiah(nilai)}) sama dengan total SESUDAH PPN, padahal labelnya "
                      f"menyebut SEBELUM PPN/DPP ({kedua}). Perbaiki label atau rumusnya.")
         else:
-            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi jumlah SEBELUM PPN hitungan script "
+            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi jumlah SEBELUM PPN hasil hitung "
                      f"{rupiah(dpp)} (selisih {rupiah(dpp - nilai)}; {kedua}). Cek rumus di Excel.")
         return
     if jenis == "subtotal":
@@ -407,18 +407,18 @@ def bandingkan_total(label, nilai, dpp, nilai_ppn, total, termasuk_ppn, P, I, se
             P.append(f"Baris '{label}' di file ({rupiah(nilai)}) sama dengan total SESUDAH PPN, padahal label ini "
                      f"biasanya berarti jumlah SEBELUM PPN ({kedua}). Pastikan label & rumusnya benar.")
         else:
-            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi jumlah hitungan script "
+            P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi jumlah hasil hitung "
                      f"{rupiah(total if termasuk_ppn else dpp)} (selisih {rupiah((total if termasuk_ppn else dpp) - nilai)}; "
                      f"{kedua}). Cek rumus di Excel.")
         return
     if nilai == total:
-        cocok("TOTAL" + (" sesudah PPN" if ppn_aktif else "") + " hitungan script")
+        cocok("TOTAL" + (" sesudah PPN" if ppn_aktif else "") + " hasil hitung")
     elif ppn_aktif and nilai == dpp:
         P.append(f"Baris '{label}' di file ({rupiah(nilai)}) = jumlah SEBELUM PPN. Total di file BELUM TERMASUK PPN: "
                  f"total yang benar {rupiah(total)} (sebelum PPN {rupiah(dpp)} + PPN {rupiah(nilai_ppn)}). "
                  "Total tanpa PPN di surat penawaran bisa menggugurkan/merugikan - perbaiki.")
     else:
-        P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi TIDAK cocok dengan total hitungan script "
+        P.append(f"Baris '{label}' di file bernilai {rupiah(nilai)} tetapi TIDAK cocok dengan total hasil hitung "
                  f"{rupiah(total)} (selisih {rupiah(total - nilai)}; {kedua}). Cek rumus di Excel/dokumen.")
 
 
@@ -538,10 +538,10 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=Non
         P.append(f"{len(masalah)} baris tidak bisa dibaca dan TIDAK ikut dihitung -> TOTAL BELUM FINAL. Perbaiki dulu.")
     if selisih_baris:
         P.append(f"{len(selisih_baris)} baris: kolom Jumlah di file TIDAK sama dengan volume x harga satuan "
-                 "(lihat 'Baris salah hitung'). Script memakai hasil volume x harga satuan; perbaiki file Anda.")
+                 "(lihat 'Baris salah hitung'). Hasil hitung memakai volume x harga satuan; perbaiki file Anda.")
         if all("jumlah_file" in i for i in item):
             jml_file = sum(i["jumlah_file"] for i in item)
-            P.append(f"Jumlah kolom Jumlah di file {rupiah(jml_file)} vs hitungan script {rupiah(subtotal)} "
+            P.append(f"Jumlah kolom Jumlah di file {rupiah(jml_file)} vs hasil hitung {rupiah(subtotal)} "
                      f"(selisih {rupiah(subtotal - jml_file)}).")
     I.extend(info_baris)
     for label, nilai in total_tertempel:
@@ -559,12 +559,12 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=Non
             continue
         jenis = "tampak seperti baris total" if POLA_MIRIP_TOTAL.search(label) else "mungkin subtotal bagian/total"
         if nilai == dpp and nilai_ppn > 0:
-            banding = f"nilainya SAMA dengan jumlah SEBELUM PPN hitungan script ({rupiah(dpp)}; sesudah PPN {rupiah(total)})"
+            banding = f"nilainya SAMA dengan jumlah SEBELUM PPN hasil hitung ({rupiah(dpp)}; sesudah PPN {rupiah(total)})"
         elif nilai == total:
-            banding = f"nilainya SAMA dengan total hitungan script ({rupiah(total)})"
+            banding = f"nilainya SAMA dengan total hasil hitung ({rupiah(total)})"
         else:
             banding = (f"nilainya TIDAK sama dengan jumlah sebelum PPN ({rupiah(dpp)}) maupun total ({rupiah(total)}) "
-                       "hitungan script")
+                       "hasil hitung")
         I.append(f"Baris {no_file} '{label}' ({rupiah(nilai)}) {jenis}, tetapi labelnya tidak dikenali -> TIDAK "
                  f"diperiksa otomatis; {banding}. Bila ini total penawaran, pastikan angkanya benar"
                  + (" (sementara: TOTAL BELUM FINAL)." if masalah else "."))
@@ -656,8 +656,49 @@ def hitung(path, ppn="tidak", termasuk_ppn=False, hps=None, pagu=None, jenis=Non
     return hasil
 
 
+def pengingat(h):
+    """Pengingat untuk tampilan teks saja (v1.0.9): tidak mengubah angka maupun isi hasil --json.
+    1) Jaminan penawaran dipisah tegas dari jaminan pelaksanaan (HPS > Rp10 M sudah dibahas di Info).
+    2) Potongan bendahara saat pembayaran (PPN & PPh) -> dampak arus kas."""
+    jenis, hps, out = h.get("jenis"), h.get("hps"), []
+    nama = NAMA_JENIS.get(jenis, jenis)
+    dasar = ("jaminan penawaran hanya untuk pekerjaan konstruksi & pekerjaan terintegrasi dengan HPS di atas "
+             "Rp10 miliar - Perpres 16/2018 jo. 46/2025 Pasal 30 ayat (2) & Pasal 31")
+    beda = ("" if jenis == "konsultansi" else
+            " Ini BERBEDA dengan jaminan pelaksanaan (kontrak di atas Rp200 juta, disiapkan bila menang).")
+    if hps is not None and hps <= BATAS_JAMINAN_PENAWARAN:
+        out.append(f"Jaminan penawaran: TIDAK disyaratkan Perpres untuk paket ini (HPS s.d. Rp10 miliar; {dasar}). "
+                   f"Ikuti dokumen pemilihan bila tetap memintanya.{beda}")
+    elif hps is None and jenis in JENIS_JAMINAN_PENAWARAN:
+        out.append(f"Jaminan penawaran ({nama}): wajib bila HPS di atas Rp10 miliar, 1%-3% dari HPS"
+                   + (" (terintegrasi: dari pagu anggaran)" if jenis == "terintegrasi" else "")
+                   + f" - Pasal 30 ayat (2) & Pasal 31; sebutkan HPS untuk kepastian.{beda}")
+    elif hps is None and jenis:
+        out.append(f"Jaminan penawaran: TIDAK disyaratkan Perpres untuk pengadaan {nama} ({dasar}). "
+                   f"Ikuti dokumen pemilihan bila tetap memintanya.{beda}")
+    elif hps is None:
+        out.append(f"Jaminan penawaran: {dasar}; barang/jasa lainnya/konsultansi tidak disyaratkan Perpres.{beda}")
+    if jenis in ("konstruksi", "terintegrasi"):
+        pph = "PPh final jasa konstruksi (PP 9/2022; tarif tergantung kualifikasi/SBU - tanyakan konsultan pajak)"
+    elif jenis in ("jasa-lainnya", "konsultansi"):
+        pph = "PPh atas jasa (umumnya PPh Pasal 23)"
+    elif jenis == "barang":
+        pph = "PPh Pasal 22 sebesar 1,5% dari harga tanpa PPN (pembelian barang)"
+    else:
+        pph = ("PPh Pasal 22 sebesar 1,5% dari harga tanpa PPN bila pembelian barang (jasa: umumnya PPh Pasal 23; "
+               "konstruksi: PPh final)")
+    if h["mode_ppn"] == "tidak":
+        out.append(f"Saat dibayar: tanpa PPN (bukan PKP), tetapi bendahara instansi tetap memotong {pph} -> uang yang "
+                   "masuk ke rekening lebih kecil dari total penawaran; siapkan arus kas.")
+    else:
+        out.append(f"Saat dibayar: bendahara instansi memungut PPN ({rupiah(h['ppn'])}) dan memotong {pph} -> uang "
+                   "yang masuk ke rekening lebih kecil dari total penawaran; siapkan arus kas. Nilai penawaran & "
+                   "perbandingan dengan HPS tetap TERMASUK PPN.")
+    return out
+
+
 def tampil_harga(h):
-    out = ["RINCIAN PENAWARAN HARGA (hasil hitung script)", ""]
+    out = ["RINCIAN PENAWARAN HARGA (hasil hitung)", ""]
     lebar_u = min(40, max(8, *(len(i["uraian"]) for i in h["item"])))
     out.append(f"{'No':>3}  {'Uraian':<{lebar_u}}  {'Volume':>10}  {'Sat':<8}  {'Harga Satuan':>18}  {'Jumlah':>18}")
     for i in h["item"]:
@@ -696,6 +737,9 @@ def tampil_harga(h):
             out.append("")
             out.append(f"{judul}:")
             out.extend(f"  - {x}" for x in isi)
+    out.append("")
+    out.append("Pengingat:")
+    out.extend(f"  - {x}" for x in pengingat(h))
     out.append("")
     out.append("Pembulatan: jumlah baris ke rupiah terdekat; PPN dihitung persis dari DPP lalu dibulatkan ke bawah. "
                "Belum dicocokkan dengan Coretax/SPSE. Pastikan format & aturan pembulatan mengikuti dokumen pemilihan.")
@@ -786,7 +830,7 @@ def jadwal(batas, hari_ini, pengumuman=None, penjelasan=None, libur=(), sabtu=Fa
             (" AJUKAN JAMINAN PENAWARAN ke bank/asuransi/penjaminan (proses bisa beberapa hari)." if jaminan else "")),
         (5, "Susun dokumen teknis: spesifikasi/brosur, metode pelaksanaan, jadwal, surat dukungan (bila diminta). "
             "Minta harga tertulis dari pemasok."),
-        (3, "Finalisasi harga: jalankan cek_penawaran.py (volume x harga, PPN, total, % HPS, terbilang). "
+        (3, "Finalisasi harga: hitung ulang volume x harga, PPN, total, % HPS, dan terbilang. "
             "Siapkan surat penawaran (masa berlaku sesuai dokumen), tanda tangan pihak berwenang."),
         (2, "Pemeriksaan silang: checklist administrasi/teknis/harga; cocokkan nama paket, kode tender, nilai "
             "angka vs terbilang; cek format & ukuran file." +

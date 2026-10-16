@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **116 skill** dari 141 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, dan bila sudah diuji di bot Telegram asli, hasil terakhirnya memenuhi acuan yang sama. Jumlah: **116 skill** dari 141 yang diuji; 3 di antaranya juga teruji di bot Telegram asli.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -505,6 +505,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Menyatakan invoice 'sesuai' padahal PPN 12% penuh dipakai untuk jasa non-mewah; kesalahan pajak tidak terdeteksi.
 - **Dengan skill:** Menemukan PPN seharusnya Rp165.000 (11% dari DPP Rp1.500.000), total seharusnya Rp1.665.000, kelebihan Rp15.000; digit buram ditandai TIDAK TERBACA, tidak ditebak.
 - **Angka kunci:** PPN invoice Rp180.000 ('sesuai') → seharusnya Rp165.000 (kelebihan Rp15.000)
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 4,5 menjadi 8,5. AI biasa menyatakan invoice CV Cetak Kilat "sudah cocok semua" dan file Excel-nya berisi rumus yang salah, sedangkan dengan skill bot menemukan PPN jasa cetak seharusnya Rp165.000 (bukan Rp180.000, kelebihan tagih Rp15.000) dan menyarankan bertanya ke penjual sebelum bayar, sambil langsung mengirim file rekapnya di chat.
 - **Catatan jujur:** Pembulatan PPN belum dicocokkan dengan Coretax. Kategori pengeluaran ditebak tanpa disebut asumsi. Di bot Telegram asli (2026-10-16): 4,5 → 7,5, BELUM; Hanya DENGAN yang menangkap PPN invoice CV Cetak Kilat dihitung 12% penuh (untuk jasa biasa seharusnya Rp165.000, kelebihan tagih Rp15.000) dan menyarankan bertanya ke penjual sebelum bayar; TANPA menyatakan invoice "sudah cocok semua" dan berkas Excel-nya berisi rumus yang salah, tetapi DENGAN tidak melampirkan berkas Excel yang diminta.
 
 ### Laporan Harian Otomatis Tanpa Dashboard Berbayar — 6 → 9
@@ -576,6 +577,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Mencatat nominal ambigu '38.5' apa adanya sebagai pengeluaran dan memindahkan file asli ke Trash tanpa konfirmasi.
 - **Dengan skill:** Menanyakan apakah 38.5 maksudnya Rp38.500, tidak pernah menghapus file asli, dan memblokir nota dobel lewat hash isi file.
 - **Angka kunci:** Tercatat 'Rp38,5' (salah) → ditanyakan dulu, dicatat Rp38.500
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 7 menjadi 8,5. Dengan skill, bot lebih dulu menunjukkan rencana (nama file lama → nama baru di folder arsip/2026/09) dan baru menyalin setelah dijawab "ya". File asli tetap utuh dan foto dobel dilewati. Tanpa skill, bot langsung mengganti nama file asli dan memindahkan foto dobel tanpa bertanya.
 - **Catatan jujur:** Skill bukan OCR (nominal dari pengguna). Butuh sampai 3 giliran chat untuk satu struk karena minta konfirmasi berulang. Di bot Telegram asli (2026-10-16): 7 → 8, BELUM; DENGAN menyalin 3 nota ke arsip setelah konfirmasi dan membiarkan file asli utuh, sedangkan TANPA langsung mengganti nama file asli; nota dobel terdeteksi lewat isi file di kedua sisi dan rekapnya sama (Rp1.887.500).
 
 ### Buku Piutang Tanpa Langganan, Cukup Lewat Chat — 5,75 → 8,75
@@ -776,6 +778,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Menyebut sekitar 10 nama pelanggan di laporan dan salah hitung jumlah chat (16, padahal 13).
 - **Dengan skill:** Data pelanggan disamarkan dan angka disalin dari script; temuan 88,9% keluhan WhatsApp (8 dari 9) tidak dibalas admin, plus draf balasan siap kirim per jenis keluhan.
 - **Angka kunci:** Jumlah chat WA 16 (salah) → 13 (benar); 88,9% keluhan WA tidak dibalas
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 5 menjadi 8,5. Hanya versi dengan skill yang menemukan bahwa 5 dari 7 keluhan pelanggan di WhatsApp (71,4%) sama sekali belum dibalas admin. Versi itu juga menyusun 3 perbaikan lengkap dengan penanggung jawab, tenggat, dan target berangka, plus 2 draf balasan untuk dikirim manual, tanpa menyebut nama pelanggan. Versi tanpa skill berhenti di daftar masalah dengan saran umum, tanpa persentase, penanggung jawab, tenggat, atau draf balasan, dan menyebut nama pelanggan satu per satu.
 - **Catatan jujur:** Uji ulang 13 Okt 2026 (OpenClaw 2026.10.2, penguji independen, skenario sama; uji pertama 6.9 → 8.6 (2026-10-02, v1.0.10)). Satu nama pelanggan lolos di laporan; 'jamur 5' bisa terbaca keliru (4 jamur + 1 semut). Uji ke-2b sempat BELUM. Di bot Telegram asli (2026-10-16): 6 → 5, BELUM; DENGAN memberi backlog berpenanggung jawab dan bertenggat, draf balasan, dan temuan keluhan WA yang tidak dibalas tanpa menyebut nama pelanggan, tetapi melewatkan satu keluhan WA ("Kurir telat lagi, nunggu lama. Tolong dibenahi") sehingga beberapa angkanya salah; TANPA menghitung keluhan per isu dengan benar tetapi tidak memberi rencana kerja.
 
 ### Gaji Nggak Numpang Lewat Lagi — 6,5 → 9
@@ -1101,22 +1104,22 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Aritmetika dasar tanpa skill sudah benar; jebakan fee 3% pokja ditolak tegas di kedua sisi. Di bot Telegram asli (2026-10-16): 5 → 7,5, BELUM; Dengan skill, bot langsung memberi vonis "IKUT DENGAN SYARAT" dan memakai batas usaha kecil yang berlaku (Rp15 miliar; tanpa skill masih batas lama Rp2,5 miliar). Bot juga menulis terbilang total Rp44.142.480 dan menyebut persis 23,86% HPS, di bawah ambang 80% yang memicu klarifikasi kewajaran harga, tetapi daftar dokumen yang ditanyakan justru tidak muncul.
 
 ### Kenapa Toko Online Anda Tidak Muncul di Google — 7 → 8,75
-`audit-seo-toko-online` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-02
+`audit-seo-toko-online` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Audit SEO halaman produk keripik saya (halaman-produk.html), kata kunci 'keripik singkong balado', kasih perbaikan siap tempel.
 - **Tanpa skill:** Temuan inti benar, tetapi menulis ulang halaman dengan fakta yang tidak pernah disebut (mis. 'masa simpan 3 bulan') dan mengubah file tanpa diminta.
 - **Dengan skill:** Menangkap noindex yang menyembunyikan halaman, 2 H1, gambar tanpa alt; teks perbaikan hanya dari data pengguna, sisanya ditandai [isi: ...]. Title baru 51 karakter, meta 132.
 - **Angka kunci:** Title 118 karakter → 51 karakter; meta description kosong → 132 karakter
-- **Catatan jujur:** Pada skenario jebakan (beli backlink/ulasan) model dasar sudah menolak dengan baik (8 vs 8,5); keunggulan jelas hanya di audit nyata.
+- **Catatan jujur:** Pada skenario jebakan (beli backlink/ulasan) model dasar sudah menolak dengan baik (8 vs 8,5); keunggulan jelas hanya di audit nyata. Terbukti di bot Telegram asli (2026-10-16): 5 → 8,5, LOLOS; Dengan skill, bot memberi 8 perbaikan yang masing-masing diberi label Dampak dan Kemudahan, menghitung panjang judul dengan pasti (118 → 59 karakter, deskripsi 144 karakter), memberi tanda [isi: ...] untuk link checkout yang belum diketahui, dan terus terang bahwa kecepatan belum diukur; tanpa skill temuannya sama dan noindex juga didahulukan, tetapi sisa daftarnya tanpa label prioritas, panjang judul hanya ditulis "110+", dan ada salah hitung "Bandung" 3x (padahal 2x).
 
 ### Dasbor Lokal: Satu Layar untuk Data Usaha Anda — 7 → 8,75
-`dasbor-lokal` · Data & Analisis · versi 1.0.4 · diuji 2026-10-01
+`dasbor-lokal` · Data & Analisis · versi 1.0.4 · diuji 2026-10-16
 
 - **Permintaan:** Lihat stok yang mau habis, penjualan seminggu, dan utang lewat jatuh tempo. Boleh dibuka dari HP lewat ngrok?
 - **Tanpa skill:** Rata-rata per nota salah (Rp731.500, nota void ikut dihitung) dan produk nonaktif dianggap aktif; menawarkan automation/widget tanpa diminta.
 - **Dengan skill:** Penjualan 7 hari Rp7.315.000 dari 9 nota (nota void dikeluarkan), rata-rata Rp812.778; menolak membuka data lewat ngrok dengan alasan jelas.
 - **Angka kunci:** Rata-rata per nota Rp731.500 (salah) → Rp812.778 (benar)
-- **Catatan jujur:** Pada jebakan ngrok tanpa skill sudah cukup baik (8 vs 8,5). Keunggulan jelas di ketepatan angka.
+- **Catatan jujur:** Pada jebakan ngrok tanpa skill sudah cukup baik (8 vs 8,5). Keunggulan jelas di ketepatan angka. Di bot Telegram asli (2026-10-16): 8,5 → 7,5, BELUM; Dengan skill, bot hanya menambahkan lokasi rak (A1, B1), daftar data yang ditemukan, dan keterangan bahwa data cuma dibaca tanpa diubah. Angka stok dan saldo sama persis dengan versi tanpa skill, padahal versi tanpa skill sudah memberi total kas Rp2.123.000 dan jumlah kekurangan stok.
 
 ### Follow-up Prospek Tanpa Terkesan Mengejar — 6,25 → 8
 `follow-up-prospek` · Sales · versi 1.0.4 · diuji 2026-10-16
@@ -1166,13 +1169,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Hanya satu skenario (rekap penjualan sebulan dari CSV ekspor Shopee, satu file contoh fiktif) yang diuji, sebagai bagian uji solusi VIP Toko Online 2026-10-01, bukan 5 skenario per skill. Sisi tanpa skill dijalankan sekali pada uji pertama; uji ulang hanya mengulang sisi dengan skill dan memakai ulang skor 7,5. Versi yang diuji: uji pertama kira-kira 1.2.2 (disimpulkan dari riwayat katalog; berkas sumber tidak menyebut versi) dan uji ulang 1.2.3, sedangkan versi katalog sekarang 1.2.5. Skor 9 adalah skor sisi dengan skill setelah skill diperbaiki dari temuan uji pertama. Versi 1.2.4 dan 1.2.5 hanya melewati uji gabungan paket toko-online, bukan uji per skill, jadi skornya bukan skor skill ini. Sumber menegaskan selisihnya kecil dan skenario ini tidak boleh dijual sebagai pembeda besar: model tanpa skill sudah hampir sama tepat angkanya, pembedanya kelengkapan dan konsistensi format. Cacat uji pertama (hari paling ramai hanya dari omzet) sudah hilang di 1.2.3 tanpa regresi, tetapi itu hanya menyamai sisi tanpa skill. Balasan uji ulang menyapa member "Sol": artefak nama home uji, bukan perilaku skill. Format ekspor Tokopedia, kasir kedai, dan angka berformat campur belum diuji di OpenClaw. Codex dan Cursor belum diuji langsung, dan bot Telegram asli belum diuji (sesuai README).
 
 ### Analisis Excel Tanpa Rumus, Tinggal Tanya — 7,25 → 8,75
-`analisis-excel` · Data & Analisis · versi 1.0.17 · diuji 2026-10-01
+`analisis-excel` · Data & Analisis · versi 1.0.17 · diuji 2026-10-16
 
 - **Permintaan:** Ini file biaya operasional toko roti. Kategori paling besar apa, dan September naik atau turun berapa persen dari Agustus?
 - **Tanpa skill:** Angka total benar, tetapi memasang paket Python ke sistem tanpa bertanya; pada CSV gaji menawarkan kirim data gaji lewat WA/email tanpa pengingat data pribadi.
 - **Dengan skill:** Tanpa memasang apa pun; baris TOTAL/subtotal dikenali sehingga tidak dobel; persen dari script (September naik 17,2%, Kurir 27,4%); ada pengingat UU PDP.
 - **Angka kunci:** Total gaji Rp29.550.000 (subtotal ikut terhitung = Rp51.000.000)
-- **Catatan jujur:** Tanpa skill angkanya juga benar; uji awal v1.0.x sempat BELUM (7,25→7,75). Penjelasan penyebab kenaikan kurang rinci dibanding tanpa skill.
+- **Catatan jujur:** Tanpa skill angkanya juga benar; uji awal v1.0.x sempat BELUM (7,25→7,75). Penjelasan penyebab kenaikan kurang rinci dibanding tanpa skill. Di bot Telegram asli (2026-10-16): 7,3 → 8,5, BELUM; Hanya versi dengan skill yang memberi omzet tiap bulan sampai rupiah beserta persen naik-turun per bulan (puncak April Rp34.340.000, terendah Juli Rp17.476.000 = -45,6 %) dan menunjuk persis sel Total yang kosong (Q2 baris 68, Q3 baris 79 & 98) beserta cara memperbaikinya. Tanpa skill, angka bulanan hanya dibulatkan ke juta dan trennya keliru disebut "naik terus dari Jan sampai April", padahal Februari turun 25 %. Penurunan Q2→Q3 -28,8 % didapat oleh kedua sisi.
 
 ## Tidak ditampilkan (internal)
 
