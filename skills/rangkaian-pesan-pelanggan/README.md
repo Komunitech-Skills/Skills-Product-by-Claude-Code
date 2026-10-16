@@ -65,9 +65,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 12, 2026-10-12 (tautan pesan tidak tercatat di log ini).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
 - Skor: 7,5 tanpa skill menjadi 8,75 dengan skill.
-Verdik gelombang: BELUM — Dengan skill jadwal bertanggal, opt-out `stop`, dan tabel lebih terstruktur; tanpa skill sudah menolak blast dan diskon untuk bintang 5, sehingga selisihnya (+1,25) belum mencapai acuan 1,5.
+Hasil: belum lulus — Dengan skill jadwal bertanggal, opt-out `stop`, dan tabel lebih terstruktur; tanpa skill sudah menolak blast dan diskon untuk bintang 5, sehingga selisihnya (+1,25) belum mencapai acuan 1,5.
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan?**

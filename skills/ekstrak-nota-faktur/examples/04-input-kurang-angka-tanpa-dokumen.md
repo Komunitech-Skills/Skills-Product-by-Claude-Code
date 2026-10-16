@@ -10,6 +10,8 @@ S4 — input tidak lengkap. Pengguna tidak mengirim foto. Ia hanya mengetik tiga
 JSON minimal: `{"id":"I1","jenis":"invoice","dpp":"15 juta","ppn":"1,8 juta","total":"16,8 juta"}` → `cek_nota.py`. Script memberi info "tanggal tidak tercantum; aturan PPN diasumsikan yang berlaku sekarang" dan peringatan 12% × DPP penuh.
 
 ## Output
+> **Disegarkan ke v1.0.5 (2026-10-16):** dijalankan ulang dengan `scripts/cek_nota.py --hari-ini 2026-09-23` dari JSON minimal yang sama. Status, PPN seharusnya Rp 1.650.000, dan selisih Rp 150.000 tidak berubah; yang baru, **total seharusnya Rp 16.650.000 kini dihitung script** (baris "[!] Bila PPN dihitung benar …" dan kolom CSV **Total Seharusnya**), tidak lagi dihitung agent. Tampilan di bawah untuk Claude Code/Cursor; versi kanal chat ada di bagian berikutnya.
+
 
 **Hasil cek (dari angka yang Anda ketik)**
 
@@ -30,6 +32,18 @@ Dua hal yang bisa mengubah kesimpulan. Jawab kalau tahu:
 2. Bisa kirim foto invoice-nya? Nanti sekalian saya cek NPWP penjual, nomor faktur, terbilang, dan saya buatkan tabel/CSV-nya.
 
 _Dasar PPN: UU HPP & PMK 131/2024, per 23 September 2026. Alat bantu cek, bukan nasihat pajak; untuk kepastian hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
+
+## Versi kanal chat (Telegram/WhatsApp) — ditambahkan 2026-10-16 (v1.0.5)
+Tanpa tabel Markdown:
+
+> **Hasil cek (dari angka yang Anda ketik)**
+> I1 · tanggal & penjual belum disebut · Invoice · Rp 16.800.000 · ⚠️ Perlu dicek
+>
+> **Yang perlu Anda cek**
+> • PPN Rp 1.800.000 = 12% × DPP penuh. Untuk barang/jasa biasa seharusnya Rp 1.650.000, total seharusnya Rp 16.650.000 (lebih Rp 150.000). Tanyakan ke vendor sebelum membayar.
+> • Penjumlahan 15.000.000 + 1.800.000 = 16.800.000 sendiri cocok.
+>
+> (Asumsi & dua pertanyaan sama dengan di atas.)
 
 ## Catatan penguji
 - Sesuai SKILL.md: tidak menahan jawaban dengan banyak pertanyaan. Default (jenis biasa, aturan sekarang) dipakai dan disebut. Hanya 2 pertanyaan yang benar-benar mengubah hasil.

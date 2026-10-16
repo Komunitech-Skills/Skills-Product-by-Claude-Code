@@ -70,3 +70,16 @@ Uji A/B: skill **jelas lebih baik**. Tanpa skill, agent keliru menuduh PPN 12% �
 
 ## Ide dari pesaing (bukan salinan)
 Tambahkan kolom jatuh tempo dan rekening tujuan (juga untuk mencegah penipuan "ganti rekening"), jenis PO/surat jalan, dan promosikan `--format json` untuk impor ERP.
+
+## Contoh disegarkan ke v1.0.5 (2026-10-16)
+Bukan uji baru: skor **8/10 — LULUS** (uji 2026-09-23) **tidak berubah**. Keluaran script di contoh 01–04 dijalankan ulang dengan `scripts/cek_nota.py` v1.0.5 (`--hari-ini 2026-09-23`, data hasil baca yang sama) agar kolom, label, dan status sama dengan versi sekarang. Angka kunci dihitung ulang terpisah dengan `Decimal`: cocok semua.
+
+| Contoh | Yang berubah di keluaran | Angka kunci (tidak berubah kecuali disebut) |
+|---|---|---|
+| 01 rekap 4 nota | CSV memakai kolom **Subtotal Hitung Ulang / DPP Hitung Ulang / PPN Seharusnya / Total Seharusnya / Total Untuk Rekap**; Subtotal N1 & N2 kini kosong (tidak tertulis di dokumen) dan hasil jumlah pindah ke Subtotal Hitung Ulang (temuan Ringan 1 selesai) | N2 Subtotal Hitung Ulang 720.500 vs Total 730.500 (selisih Rp 10.000); rekap Rp 9.792.700; PPN tercantum Rp 154.813 |
+| 02 faktur PPN 12% penuh | **F2 kini COCOK** (NPWP 15 digit pada faktur 2024 hanya info; temuan Ringan 2 selesai); PPN/Total Seharusnya F1 dari script (temuan Ringan 3 selesai) | F1 PPN seharusnya Rp 1.182.500, total seharusnya Rp 11.932.500, beda Rp 107.500; rekap Rp 17.590.000; PPN faktur pajak Rp 1.840.000 |
+| 03 foto buram | sel tak terbaca seragam `TIDAK_TERBACA` (temuan Ringan 4 selesai); catatan pola `?` (v1.0.4) dan INPUT TIDAK VALID per dokumen (temuan Ringan 5 selesai) | belum masuk rekap; total pengeluaran 0; besi 12 × 87.500 = 1.050.000 |
+| 04 input kurang | total seharusnya kini dari script | PPN seharusnya Rp 1.650.000, total seharusnya Rp 16.650.000, beda Rp 150.000 |
+| 05 di luar cakupan | tidak memuat keluaran script; tidak berubah | ilustrasi PPN Rp 2.200.000 |
+
+Kanal chat (aturan v1.0.5): contoh 01–04 kini punya bagian **"Versi kanal chat (Telegram/WhatsApp)"** tanpa tabel Markdown — satu baris padat per dokumen, berkas CSV dilampirkan sebagai dokumen (tanpa menyebut jalur folder), dan bila CSV ikut ditampilkan di chat memakai `--pemisah tab` dengan kolom yang kosong di semua baris dibuang. Tampilan bertabel di bagian "Output" tetap untuk Claude Code/Cursor. Temuan lama di "Daftar cacat" dibiarkan sebagai riwayat uji.

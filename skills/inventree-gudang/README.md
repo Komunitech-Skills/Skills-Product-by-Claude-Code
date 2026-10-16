@@ -47,7 +47,8 @@ Kode batch: SK-2909
 
 Belum disimpan. Cocokkan dengan surat jalan/nota pemasok. Bila benar, ulangi perintah + --ya.
 ```
-(Cuplikan dari transkrip uji pembuat skill pada InvenTree 1.5.6 asli dengan data fiktif, bukan hasil uji independen; sebagian baris dipotong. Selengkapnya di `examples/uji-pembuat/transkrip-inventree-1.5.6.txt`.)
+(Tulisan `--ya` di layar itu urusan teknis agent; Anda cukup membalas "ya" di chat.)
+(Cuplikan dari catatan uji pembuat skill pada InvenTree 1.5.6 asli dengan data fiktif, bukan hasil uji independen; sebagian baris dipotong. Selengkapnya di folder `examples/`.)
 
 ## Cara pakai
 Setelah InvenTree terpasang dan tersambung, cukup ketik:

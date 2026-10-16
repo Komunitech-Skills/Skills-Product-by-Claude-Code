@@ -68,7 +68,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 2026-10-03). Versi yang diuji tidak tercatat di catatan uji (versi repo saat itu: 1.0.5); skor angka tidak dicatat pada uji itu. PPh 21 Desember **tanpa skill** Rp165.000 (premi BPJS/JKK/JKM yang dibayar perusahaan tidak dimasukkan ke bruto pajak), gaji bersih Rp7.035.000; **dengan skill** Rp321.595, gaji bersih Rp6.878.405, plus biaya perusahaan Rp8.268.000 dan file slip (selisih Rp156.595; angka dicek ulang dengan Python dan cocok).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 2026-10-03). Versi yang diuji tidak tercatat (versi skill saat itu: 1.0.5); skor angka tidak dicatat pada uji itu. PPh 21 Desember **tanpa skill** Rp165.000 (premi BPJS/JKK/JKM yang dibayar perusahaan tidak dimasukkan ke bruto pajak), gaji bersih Rp7.035.000; **dengan skill** Rp321.595, gaji bersih Rp6.878.405, plus biaya perusahaan Rp8.268.000 dan file slip (selisih Rp156.595; angka dicek ulang dengan Python dan cocok).
 
 Diperbaiki di versi 1.0.7 (slip gaji tampil utuh di chat Telegram; 1.0.6 memperjelas catatan PPh 21 DTP di slip, hitungan tidak berubah), belum diuji ulang di bot Telegram. Versi 1.0.8 hanya memperbarui rujukan aturan JKK (PP 37/2021 dan perubahannya, PP 6/2025); angka slip tidak berubah.
 

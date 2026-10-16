@@ -68,9 +68,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06 dan 2026-10-10 (versi repo saat uji: 1.0.2).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06 dan 2026-10-10 (versi skill saat uji: 1.0.2).
 - Percobaan pertama: tanpa skill skor **7**; jawaban lengkap dengan skill tidak terekam di transkrip.
-- Percobaan ulang (percakapan terpisah): **7 → 8** (selisih +1,0). Verdik: BELUM, artinya belum memenuhi acuan lulus kami (skor dengan skill minimal 8 dan selisih minimal 1,5). Dengan skill ada segmen A/B/C dan template terstruktur; tanpa skill sudah cukup lengkap, tetapi tanpa pilihan berhenti ("balas STOP") dan tanpa izin menerima pesan dari pelanggan (opt-in).
+- Percobaan ulang (percakapan terpisah): **7 → 8** (selisih +1,0). Hasil: belum lulus, artinya belum memenuhi acuan lulus kami (skor dengan skill minimal 8 dan selisih minimal 1,5). Dengan skill ada segmen A/B/C dan template terstruktur; tanpa skill sudah cukup lengkap, tetapi tanpa pilihan berhenti ("balas STOP") dan tanpa izin menerima pesan dari pelanggan (opt-in).
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan pasif?**

@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 4,7 → 8,4 dari 10 (tanpa skill ada te
 
 **Dengan skill:** file `index.html` tampil utuh di chat siap disalin, tombol WhatsApp benar dengan pesan terisi, pada uji tidak ada testimoni/harga/pelacak karangan (yang belum ada ditulis `[isian]`), permintaan menyesatkan ditolak terang-terangan sambil halamannya tetap dibuat, plus panduan tayang gratis. Angka ujinya ada di bagian "Hasil uji" di bawah.
 
-Cuplikan isi file hasil uji (potongan dari `examples/data/hasil-sesudah-v101-s1.html`; bagian `[isian]` Anda ganti sendiri):
+Cuplikan isi file hasil uji (bagian `[isian]` Anda ganti sendiri):
 
 ```html
 <h1>Sofa Kotor di Rumah? Kami Cuci Langsung di Tempat</h1>
@@ -62,10 +62,10 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python t
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 15, 2026-10-12.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 4
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8
-Verdik gelombang: LULUS — Tanpa skill halaman hanya disimpan sebagai file di komputer bot dan chat tidak berisi halamannya; dengan skill HTML utuh tersedia di chat, siap tempel, tanpa testimoni palsu, klaim "terbaik", atau pixel diam-diam, plus langkah tayang gratis.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
+- Tanpa skill: skor 4
+- Dengan skill: skor 8
+Hasil: lulus — Tanpa skill halaman hanya disimpan sebagai file di komputer bot dan chat tidak berisi halamannya; dengan skill HTML utuh tersedia di chat, siap tempel, tanpa testimoni palsu, klaim "terbaik", atau pixel diam-diam, plus langkah tayang gratis.
 
 ## FAQ
 **Apakah benar-benar gratis?**

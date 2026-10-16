@@ -71,10 +71,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 9, 2026-10-05.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 5,5
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 8
-Verdik gelombang: LULUS — DENGAN memberi rundown 30 menit bertanggal jam, tabel promo yang benar (hemat Rp7.000/20%, paket Rp26.000/pcs, hemat Rp18.000/25%), stok sebagai `[stok nyata]`, dan bank jawaban tanpa klaim karangan; TANPA mengarang klaim produk ("tanpa pengawet", "tahan lama", "paling nagih") dan menyarankan "stok terbatas" serta "tersisa X botol … buat efek urgensi".
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
+- Tanpa skill: skor 5,5
+- Dengan skill: skor 8
+Hasil: lulus — DENGAN memberi rundown 30 menit bertanggal jam, tabel promo yang benar (hemat Rp7.000/20%, paket Rp26.000/pcs, hemat Rp18.000/25%), stok sebagai `[stok nyata]`, dan bank jawaban tanpa klaim karangan; TANPA mengarang klaim produk ("tanpa pengawet", "tahan lama", "paling nagih") dan menyarankan "stok terbatas" serta "tersisa X botol … buat efek urgensi".
 
 ## FAQ
 **Kenapa tidak boleh bilang "stok tinggal sedikit" untuk memancing pembeli?**

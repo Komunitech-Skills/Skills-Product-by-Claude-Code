@@ -36,7 +36,7 @@
   biaya bulanan.
 
 ## Sebelum / sesudah
-**Tanpa skill** (gambaran dari uji pembanding awal 26 Sep 2026; pada uji OpenClaw 2 Okt, AI modern sudah menandai tarik tunai sebagai pindah dana, jadi unggulnya ada di cek saldo, top up e-wallet, dan keamanan data): mutasi BCA dibuka di Excel, kolom disusun ulang manual, angka `"1,500,000.00"` dan tanggal `'01/09`
+**Tanpa skill** (gambaran dari uji pembanding awal 26 Sep 2026; pada uji OpenClaw 2 Okt, AI zaman sekarang sudah menandai tarik tunai sebagai pindah dana, jadi unggulnya ada di cek saldo, top up e-wallet, dan keamanan data): mutasi BCA dibuka di Excel, kolom disusun ulang manual, angka `"1,500,000.00"` dan tanggal `'01/09`
 dibetulkan satu per satu. Tarik tunai ikut terhitung pengeluaran sehingga anggaran terlihat jebol padahal tidak.
 Sisa anggaran hanya bisa dilihat dengan membuka aplikasi.
 

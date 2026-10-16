@@ -58,9 +58,9 @@ Skrip hitung (opsional; tanpa Python skill tetap berjalan dengan rumus manual): 
 
 **Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01 (uji ulang v1.0.3), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 - Rata-rata 2 skenario: tanpa skill **6** → dengan skill **8,75** (LULUS).
-- Bot Telegram asli (gelombang 8, 2026-10-05): tanpa skill **6** → dengan skill **8** — DENGAN menolak "STOK TINGGAL 5" palsu dan menghitung margin promo; TANPA menaruh urgency palsu di teks siap tempel.
+- Bot Telegram asli (2026-10-05): tanpa skill **6** → dengan skill **8** — DENGAN menolak "STOK TINGGAL 5" palsu dan menghitung margin promo; TANPA menaruh urgency palsu di teks siap tempel.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); bot Telegram asli gelombang 8. Codex dan Cursor belum kami uji langsung. Cek domain/handle/PDKI tetap manual — bukan nasihat hukum merek.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); bot Telegram asli. Codex dan Cursor belum kami uji langsung. Cek domain/handle/PDKI tetap manual — bukan nasihat hukum merek.
 
 Diadaptasi dari skill open-source (MIT); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
 

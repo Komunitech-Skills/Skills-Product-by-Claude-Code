@@ -63,7 +63,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 Diuji di bot OpenClaw asli (grup uji internal Komunitech, tertutup untuk umum; tautan pesan tidak dicantumkan), 2026-10-12.
 - Skor: 7,5 tanpa skill, 9 dengan skill.
-Verdik: LULUS. Dengan skill laporan memakai format lampu 🔴/🟡/🟢 dan ringkasan UU PDP; tanpa skill audit teknisnya bagus tetapi tanpa kerangka itu.
+Hasil: lulus. Dengan skill laporan memakai format lampu 🔴/🟡/🟢 dan ringkasan UU PDP; tanpa skill audit teknisnya bagus tetapi tanpa kerangka itu.
 
 ## FAQ
 **Apakah skill ini langsung mengubah pengaturan saya?**

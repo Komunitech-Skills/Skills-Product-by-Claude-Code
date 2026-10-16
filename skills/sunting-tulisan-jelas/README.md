@@ -53,10 +53,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 14, 2026-10-12.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 7
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 7,5
-Verdik gelombang: BELUM — Kedua sisi sama-sama merapikan dan menolak klaim BPOM/10.000 pelanggan/garansi tanpa bukti; dengan skill email lebih ringkas dan dibuka dengan permintaan maaf, tetapi satu angka keterbacaan (12,5 kata per kalimat, seharusnya 15,0) tidak cocok dengan teks yang diberikan.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
+- Tanpa skill: skor 7
+- Dengan skill: skor 7,5
+Hasil: belum lulus — Kedua sisi sama-sama merapikan dan menolak klaim BPOM/10.000 pelanggan/garansi tanpa bukti; dengan skill email lebih ringkas dan dibuka dengan permintaan maaf, tetapi satu angka keterbacaan (12,5 kata per kalimat, seharusnya 15,0) tidak cocok dengan teks yang diberikan.
 
 ## FAQ
 **Apakah isi tulisan saya akan berubah?**

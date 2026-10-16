@@ -67,10 +67,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 5, 2026-10-03.
-- Tanpa skill: (pesan di grup uji internal Komunitech) — skor 6
-- Dengan skill: (pesan di grup uji internal Komunitech) — skor 6,5
-Verdik gelombang: BELUM — DENGAN lebih benar isinya (jadwal 4 cicilan, total Rp36 jt, peringatan status hak pakai kios pasar, meterai), tetapi **file perjanjian lengkap gagal terkirim** sehingga pengguna hanya menerima ringkasan; TANPA memberi naskah utuh siap cetak meski lebih tipis.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-03.
+- Tanpa skill: skor 6
+- Dengan skill: skor 6,5
+Hasil: belum lulus — DENGAN lebih benar isinya (jadwal 4 cicilan, total Rp36 jt, peringatan status hak pakai kios pasar, meterai), tetapi **file perjanjian lengkap gagal terkirim** sehingga pengguna hanya menerima ringkasan; TANPA memberi naskah utuh siap cetak meski lebih tipis.
 
 Kekurangan ini diperbaiki di versi 1.0.5–1.0.6 (naskah utuh tampil di chat, biaya dicek konsisten, tanpa pengosongan sepihak sebagai bawaan); sudah diuji ulang di OpenClaw lokal, belum diuji ulang di bot Telegram.
 

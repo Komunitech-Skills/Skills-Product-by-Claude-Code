@@ -73,10 +73,10 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech): gelombang 4, 2026-10-03.
-- Tanpa skill: (pesan di grup uji internal Komunitech)
-- Dengan skill: (pesan di grup uji internal Komunitech)
-(Gelombang ini tidak memberi skor angka.) Verdik gelombang: TANPA langsung membuat SP2; DENGAN menahan karena SP1 sudah berakhir masa berlakunya dan menyarankan SP1 baru kecuali peraturan perusahaan mengatur lain (beda paling jelas).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-03.
+- Tanpa skill: skor tidak dicatat
+- Dengan skill: skor tidak dicatat
+(Uji ini tidak memberi skor angka.) Hasil: TANPA langsung membuat SP2; DENGAN menahan karena SP1 sudah berakhir masa berlakunya dan menyarankan SP1 baru kecuali peraturan perusahaan mengatur lain (beda paling jelas).
 
 ## Catatan penting
 - Draf ini bantuan administrasi, **bukan nasihat hukum**. Masa berlaku SP 6 bulan mengikuti PP 35/2021 Pasal 52 (per 23 September 2026), kecuali perjanjian kerja / peraturan perusahaan / PKB mengatur lain.

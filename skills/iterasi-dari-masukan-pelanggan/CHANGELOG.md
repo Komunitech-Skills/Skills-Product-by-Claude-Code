@@ -7,6 +7,7 @@ Catatan teknis per versi.
 - Teks sistem hanya dibuang bila SELURUH isi pesan adalah teks sistem. Pesan pelanggan yang kebetulan memuat kata seperti "pesan ini dihapus" atau "telah ditambahkan" di tengah kalimat tidak lagi ikut terbuang. Baris sistem bertanggal ("Budi: Pesan ini dihapus") dan pemberitahuan enkripsi tetap dibuang seperti dulu.
 - Baris sistem yang disisipkan di antara pesan pelanggan dan balasan admin tidak lagi memutus hitungan "dibalas atau belum".
 - Data contoh `examples/data/chat-wa.txt` memuat baris yang sama, jadi rekapnya ikut berubah: 52 masukan (sebelumnya 51), keluhan pengiriman 10 (sebelumnya 9), keluhan WhatsApp tanpa balasan 5 dari 7. Hasil contoh lama di folder `examples/` ditulis sebelum perbaikan ini.
+- Contoh disegarkan (2026-10-16): `examples/01`–`05` disamakan dengan keluaran v1.0.12 (52 masukan, WhatsApp 13, Pengiriman 10 = 19,2%, keluhan WA tanpa balasan 5 dari 7) dan `examples/data/anonim-2026-09.csv` dibuat ulang dengan perintah contoh 01. Skor/verdik uji tidak berubah; rincian di `examples/HASIL-UJI.md` bagian "Contoh disegarkan ke v1.0.12". `00-*.md`, `06`–`10`, dan `HASIL-UJI-ULANG.md` dibiarkan sebagai catatan uji historis.
 - Uji baru di `scripts/uji_olah_masukan.py` (kelas `UjiPesanSistemWA`); angka contoh di `tests/uji_regresi_106.py` dan `tests/uji_regresi_107.py` disesuaikan.
 
 ## Catatan revisi 1.0.11 (2026-10-02)

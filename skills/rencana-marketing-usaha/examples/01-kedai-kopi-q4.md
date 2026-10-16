@@ -71,6 +71,7 @@ Cek: jumlah semua = anggaran (OK). Sisa pembulatan Rp diserap kanal dengan sisa 
 ```
 
 ## 8. Target angka (keluaran script, iklan Meta Rp 1.350.000 = alokasi Meta Ads)
+> **Disegarkan ke v1.0.7 (2026-10-16):** blok di bawah adalah keluaran ulang `scripts/alokasi_anggaran.py target --harga-jual 25000 --hpp 9000 --biaya-platform 20 --biaya-per-pesanan 1000 --laba-target-per-pesanan 3000 --pembelian-ulang 1 --anggaran-iklan 1350000`. Label lama "Minimal pesanan agar balik modal iklan: 193" kini "Minimal pelanggan agar sesuai target (…): 193", ditambah baris "Titik impas iklan: 135". Angka lain tidak berubah.
 ```
 Harga jual Rp 25.000 | HPP Rp 9.000 | biaya platform Rp 5.000 | biaya/pesanan Rp 1.000
 Margin kontribusi per pesanan: Rp 10.000 (40.0%)  STATUS: AMAN
@@ -79,11 +80,12 @@ Margin kontribusi per pesanan: Rp 10.000 (40.0%)  STATUS: AMAN
 - CAC impas termasuk pembelian ulang: Rp 20.000
 - CAC target: Rp 7.000
 - ROAS target: 3.58
-- Minimal pesanan agar balik modal iklan (bukan perkiraan): 193
-- Omzet minimal dari iklan (bukan perkiraan): Rp 4.825.000
-Cara baca: angka 'minimal' = syarat agar iklan tidak rugi, BUKAN perkiraan hasil iklan.
+- Titik impas iklan (pelanggan agar biaya iklan tertutup margin, tanpa laba target; bukan perkiraan): 135
+- Minimal pelanggan agar sesuai target (biaya iklan maks. Rp 7.000/pelanggan, laba Rp 3.000/pelanggan; bukan perkiraan): 193
+- Omzet bila jumlah pelanggan sesuai target tercapai (bukan perkiraan): Rp 4.825.000
+Cara baca: titik impas = batas agar iklan tidak rugi; angka 'sesuai target' = syarat agar laba target tercapai. Keduanya syarat, BUKAN perkiraan hasil iklan.
 ```
-Artinya: dengan margin sekitar Rp 10.000 per gelas, biaya iklan untuk mendapat 1 pesanan tidak boleh lebih dari Rp 10.000 (impas) dan idealnya Rp 7.000 (sisa laba Rp 3.000). Karena pelanggan beli ulang rata-rata 1x, batas impas efektif Rp 20.000 — tetap pakai target lebih ketat sampai data 4 minggu ada.
+Artinya: dengan margin sekitar Rp 10.000 per gelas, biaya iklan untuk mendapat 1 pesanan tidak boleh lebih dari Rp 10.000 (impas) dan idealnya Rp 7.000 (sisa laba Rp 3.000). Iklan Meta Rp 1.350.000 balik modal bila mendatangkan 135 pelanggan baru, dan sesuai target laba bila mendatangkan 193. Karena pelanggan beli ulang rata-rata 1x, batas impas efektif Rp 20.000 — tetap pakai target lebih ketat sampai data 4 minggu ada.
 
 Corong untuk 600 pesanan/kuartal (asumsi konversi; ganti dengan data setelah 2 minggu):
 ```
