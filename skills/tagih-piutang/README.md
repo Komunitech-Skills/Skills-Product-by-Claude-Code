@@ -65,6 +65,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent; satu skenario juga di konteks Telegram tanpa mengirim pesan nyata) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Saya punya usaha Katering Dapur Sehati Fiktif di Surabaya. Tagihan makan siang bulan Agustus ke PT Fiktif Makmur Sejahtera Rp 6.300.000, invoice INV-KT-0825, jatuh tempo 5 September. Sudah saya WA tanggal 8 dan 15 September…". Tanpa skill skor **5** → dengan skill skor **8,5** (selisih +3,5, lulus acuan kami). Hanya DENGAN yang menghitung keterlambatan (42 hari) dan menaikkan nada jadi surat teguran resmi yang tetap sopan, dengan batas bayar 24 Oktober, versi WA singkat, dan langkah berikutnya bila tetap tidak dibayar; TANPA hanya membuat pengingat ketiga yang sama lunaknya, tanpa batas waktu. Salah angka yang ditemukan penilai: Sisi TANPA: rekening ditulis "a.n. Dapur Sehati", padahal data pengguna "a.n. Dapur Sehati Fiktif" (nama pemilik rekening berubah di instruksi transfer). Catatan jujur: Untuk pelanggan lama, langkah sesudah tenggat langsung menyarankan advokat atau gugatan sederhana tanpa langkah lunak (telepon atau bertemu), dan tenggatnya jatuh hari Sabtu. Jawaban juga menganggap layanan katering masih berjalan padahal pengguna tidak menyebutnya.
+
 ## FAQ
 **Boleh saya tambahkan denda keterlambatan?**
 Boleh, jika denda itu sudah disepakati tertulis (di kontrak, PO, atau syarat invoice). Jika tidak ada, skill akan mengingatkan agar denda tidak dicantumkan.
