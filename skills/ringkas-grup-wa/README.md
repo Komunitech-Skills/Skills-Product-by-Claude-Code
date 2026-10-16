@@ -2,7 +2,7 @@
 
 **Kirim ekspor chat grup, dalam semenit tahu mana yang perlu ditanggapi — tanpa scroll ratusan pesan.**
 
-*Diuji AI penguji independen: 7,5 → 8 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang; selisih skor kecil); pembedanya: ringkasan dengan skill memuat kutipan asli, jam, dan tabel tugas siapa-kapan, sedangkan tanpa skill berupa narasi tanpa kutipan.*
+*Diuji AI penguji independen: 7,5 → 8 dari 10 di OpenClaw (8,5 pada v1.0.4 setelah perbaikan dan uji ulang; selisih skor kecil); pembedanya: ringkasan dengan skill memuat kutipan asli, jam, dan tabel tugas siapa-kapan, sedangkan tanpa skill berupa narasi dengan satu kutipan tanpa jam dan tanpa tabel tugas.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -79,11 +79,11 @@ Salin folder `ringkas-grup-wa` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
-**Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; grup renovasi toko, 99 pesan).
+**Hasil uji (angka nyata):** uji banding tanpa vs dengan skill oleh agen penguji independen (simulasi Claude Code; grup renovasi toko, 99 pesan; sumber: `examples/00-pembanding-tanpa-skill.md` dan `examples/HASIL-UJI.md`).
 - Tanpa skill: ringkasan berupa narasi; nominal dibulatkan ("Rp 12 jutaan"), tanpa kutipan atau jam, dan keliru menyimpulkan "keputusan sudah diambil" / "sisanya menyusul" padahal pemilik belum menjawab (sisa pembayaran Rp 6.250.000 dan budget material masih menggantung).
 - Dengan skill: 11 butir Perlu Perhatian dengan kutipan asli + jam, tabel tugas siapa-kapan, statistik dihitung script (program kecil), dan 2 hal yang belum dijawab pemilik ditandai ⚠️ "belum ada jawaban dari Anda".
 - Skor akhir penguji independen (v1.0.1): 8 dari 10; 68 dari 68 uji otomatis bawaan lulus.
-- Sumber lain, uji OpenClaw 2026-10-01 (agen penguji independen): 7,5 → 8 (8,5 setelah perbaikan dan uji ulang; selisih kecil) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+- Sumber lain, uji OpenClaw 2026-10-01 (agen penguji independen): 7,5 → 8 (8,5 pada v1.0.4 setelah perbaikan dan uji ulang; selisih kecil) (lihat `examples/00-openclaw-sebelum-sesudah.md`). Perbaikan 1.0.5 dan 1.0.6 belum tercatat diuji ulang di OpenClaw.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
