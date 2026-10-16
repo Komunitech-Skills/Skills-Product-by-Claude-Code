@@ -6,7 +6,7 @@
 
 ## 0. Rencana siap salin saat terblokir
 Tampilkan seluruh bagian ini dengan nilai terisi (jadwal job, nama; folder ditulis `[isian: folder pantauan Anda]`), tutup "Lanjut? (ya/tidak)":
-1. Tabel job (nama, jadwal dalam kata-kata, toleransi, jadwal berikutnya dari keluaran `daftar`).
+1. Daftar job (nama, jadwal dalam kata-kata, toleransi, jadwal berikutnya dari keluaran `daftar`); di kanal chat satu baris per job, bukan tabel Markdown.
 2. Per job, perintah edit prompt (bagian 2) dengan `<id-job>` diisi dari `openclaw automations list --all` bila ada, bila tidak `[isian: id job]`.
 3. Dua perintah pengawas (bagian 3), tujuan `[isian: ID chat Telegram Anda]`.
 4. Satu kalimat awam: belum ada izin ke pengatur jadwal OpenClaw; salin perintah ke terminal sendiri atau minta pemilik/penyedia OpenClaw memberi izin.
@@ -38,6 +38,7 @@ Job harus boleh menjalankan perintah (tool `exec`). Bila job dibuat dengan `--to
 **Job berupa perintah** (`--command-argv`): tambahkan `python3 .../pantau_cron.py ping <nama>` sebagai perintah terakhir di script job itu.
 
 ## 3. Job pengawas (tanpa model AI, tanpa biaya token)
+`<ID chat Telegram pemilik>` di bawah = tujuan kabar. Bila pengguna belum menyebutnya, jangan bertanya ulang sesudah "ya": pakai tujuan sementara = obrolan/topik tempat pengguna meminta (tirukan penulisan tujuan jadwal yang sudah ada di `openclaw automations list --all`), sebut jelas bahwa itu sementara dan boleh dipindah nanti (pasang ulang kedua pengawas dengan tujuan baru, atau ubah lewat Control UI `Settings -> Automations`).
 Tiap jam, hanya bicara bila ada masalah:
 ```bash
 openclaw automations add --cron "5 * * * *" --tz "Asia/Jakarta" \
@@ -61,6 +62,7 @@ Folder data lain dari bawaan: tambahkan `"--folder", "<alamat>"` di argv semua p
 2. `openclaw automations run <id-pengawas> --wait`, lalu `openclaw automations runs <id-pengawas>` -> berhasil, tidak ada pesan saat tenang.
 3. Alarm palsu terkendali (setelah "ya"): `tambah uji-alarm --jam <HH.MM tiga menit dari sekarang> --toleransi 1`, tunggu ±5 menit (jadwal harus lewat SESUDAH job didaftarkan), jalankan pengawas sekali -> pesan HILANG masuk Telegram; lalu `hapus uji-alarm` (pengawas akan mengirim PULIH atau diam).
 4. Jalankan satu job asli (`automations run <id-job> --wait`) -> `riwayat <nama>` menampilkan ping baru.
+5. **Verifikasi akhir (wajib sebelum menyatakan terpasang):** `openclaw automations list --all` dibaca SESUDAH pasang dan dibandingkan dengan daftar sebelum pasang: dua pengawas baru muncul (nama, jadwal, tujuan) dan job yang diubah menunjukkan perubahan nyata. Tidak ada perubahan nyata -> jangan tulis "sudah dipasang"; tulis "BELUM TERPASANG" + sebabnya.
 
 ## 5. Opsi lanjutan: Healthchecks milik sendiri (tanpa wajib, tidak berafiliasi)
 Kelemahan pengawas lokal: bila komputer/gateway mati total, pengawas ikut diam. Layanan Healthchecks (open-source; bisa dipasang sendiri atau memakai versi hosted milik pengguna) memantau dari luar: ia yang mengabari bila ping berhenti datang. Komunitech tidak berafiliasi dengan proyek atau layanannya; kebijakan harga dan batas layanan hosted mengikuti penyedianya.

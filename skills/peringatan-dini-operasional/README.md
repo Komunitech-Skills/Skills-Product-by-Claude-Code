@@ -65,6 +65,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 **Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-02). Claude Code/Codex/Cursor belum uji platform asli. Jadwal otomatis ke Telegram belum diuji langsung. Perkiraan stok/hari = estimasi kasar, bukan ramalan pasti.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Ini log harian pabrik roti saya 30 hari terakhir (fiktif), filenya data/log-roti-30hari.csv. Ada yang perlu saya waspadai? Pemasok tepung biasanya kirim 2 hari setelah dipesan. Nama usaha: Roti Bu Ratna Fiktif. (Catatan:…". Tanpa skill skor **5** → dengan skill skor **8,5** (selisih +3,5, lulus acuan kami). Hanya versi dengan skill yang menghitung tepat kapan tepung habis (cukup sampai Jumat 2 Okt, mulai kurang Sabtu 3 Okt) dan memberi tanda merah/oranye/kuning untuk tiap angka tanpa salah hitung; versi tanpa skill salah menghitung hari telat kirim (9, padahal 8). Salah angka yang ditemukan penilai: TANPA: telat kirim disebut terjadi di 9 dari 29 hari kerja (~31%); hitung ulang dari CSV = 8 hari (2, 8, 11, 14, 16, 19, 20, 25 Sep) = 27,6%; TANPA (tidak tepat, bukan salah angka): 'dari situ [28 Sep, tepung baru] reject naik tajam: 34 → 39 → 46 → 63'; angka 34 dan 39 terjadi pada 26–27 Sep, sebelum tepung baru dipakai. Catatan jujur: Laporan memakai istilah statistik (σ, batas 3σ) yang bisa membingungkan pembaca awam. Laporan juga tidak menyebut tegas bahwa kiriman tepung mingguan dari pemasok berhenti sejak 19 Sep; laporan hanya menanyakan kapan terakhir memesan.
+
 ## FAQ
 **Apakah ini bisa meramal masalah dengan pasti?**
 Tidak. Ini peringatan dini statistik: memberi tahu angka yang "tidak biasa" dibanding pola usaha Anda sendiri, supaya dicek lebih awal. Perkiraan (mis. "±4 hari lagi melewati target", "stok habis Jumat") ditandai sebagai perkiraan kasar. Penyebab tetap dicari bersama tim lewat pertanyaan cek dan 5 kenapa.

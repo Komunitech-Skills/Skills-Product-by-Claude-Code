@@ -137,6 +137,24 @@ class StatusDanToleransi(Dasar):
         self.assertEqual((j["status"], j["menunggu_jadwal_pertama"]), ("OK", True))
         self.assertEqual(self.cek_json("2026-10-13T21:31+07:00")["harian"]["status"], "HILANG")
 
+    def test_job_lama_tidak_disebut_baru_dan_tanggal_daftar_tampil(self):
+        # Job terdaftar 12 Okt, jadwal pertamanya belum tiba pada 16 Okt: jangan disebut "baru didaftarkan".
+        self.tambah("mingguan", "0 2 * * 0", "2026-10-12T10:37+07:00")
+        c, o, e = jalan(self.f, "cek", "--tanpa-catat", "--sekarang", "2026-10-16T22:00+07:00")
+        self.assertEqual(c, 0, e)
+        self.assertNotIn("baru didaftarkan", o)
+        self.assertIn("terdaftar sejak 12 Okt 10.37 WIB", o)
+        c, o, e = jalan(self.f, "daftar", "--sekarang", "2026-10-16T22:00+07:00")
+        self.assertIn("terdaftar sejak 12 Okt 10.37 WIB", o)
+        self.assertTrue(o.isascii())
+
+    def test_ganti_memulai_ulang_hitungan_terlewat(self):
+        self.tambah("harian", "0 21 * * *", "2026-10-12T10:00+07:00")
+        self.assertEqual(self.cek_json("2026-10-16T22:00+07:00")["harian"]["terlewat"], 5)
+        self.tambah("harian", "0 21 * * *", "2026-10-16T21:50+07:00", "--ganti")
+        j = self.cek_json("2026-10-16T22:00+07:00")["harian"]
+        self.assertEqual((j["status"], j["terlewat"]), ("OK", 0))
+
     def test_ping_sebelum_jadwal_tidak_menutupi_jadwal(self):
         self.tambah("harian", "0 21 * * *")
         self.ping("harian", "2026-10-12T14:00+07:00")    # uji manual siang hari

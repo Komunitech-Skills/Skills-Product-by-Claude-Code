@@ -2,6 +2,11 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.6 (2026-10-16)
+- Aturan kanal chat (Telegram/WhatsApp) diperketat setelah uji di bot asli (gelombang 20): SOP lengkap wajib ada di balasan itu sendiri, dipecah per bagian dengan judul bila lebih dari ±3.500 karakter; dilarang menulis SOP hanya ke berkas dan dilarang menyatakan "sudah dikirim / sudah ada di chat" bila isinya tidak ada di balasan. Berkas `.md`/`.docx` hanya tambahan (dilampirkan sebagai dokumen bila kanal bisa; bila tidak, jalur/folder tidak disebut dan ditawarkan "balas 'kirim file'").
+- Bahasa ke pengguna: tanpa istilah internal ("langkah A-E"), nama skill/alat internal, atau kata proses; tabel jika-maka dan checklist di kanal chat ditulis sebagai baris padat, bukan tabel Markdown lebar.
+- Ditambahkan butir checklist akhir dan contoh tampilan kanal chat. Tidak ada perubahan pada isi/format SOP-nya.
+
 ## Catatan revisi 1.0.5 (2026-10-13)
 - Rujukan UU PDP ditulis lengkap: UU 27/2022 tentang Pelindungan Data Pribadi (tanpa perubahan cara kerja).
 

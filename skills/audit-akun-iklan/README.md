@@ -69,7 +69,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: Audit iklan Shopee toko gamis: anggaran habis jam 2, ROAS 2,3. Juga iklan klinik ditolak, ini login saya. Tanpa skill skor **7,5** → dengan skill skor **6** (selisih -1,5, belum lulus acuan kami: skor dengan skill di bawah 8). Hanya sisi DENGAN yang mulai memeriksa kesehatan pengaturan akun (pemasangan pixel, tujuan kampanye, keamanan 2 langkah, jumlah video iklan) lewat 8 pertanyaan, tetapi belum memberi skor, urutan perbaikan, atau rencana, sehingga untuk satu kalimat curhat "rasanya boncos" jawaban tanpa skill justru lebih berguna. Catatan jujur: Kalau pengguna hanya menulis satu kalimat tanpa data pengaturan akun, skill berhenti di titik impas lalu meminta 8 jawaban sebelum skor keluar, jadi pembeli awam bisa merasa belum dibantu. Skor kesehatan, prioritas, dan rencana 7 hari baru muncul setelah pemilik iklan menjawab atau menempelkan bukti.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Tolong audit iklan skincare saya. Saya pakai TikTok Ads ke website (Shopify) Rp4,5 jt/bulan dan iklan TikTok Shop (GMV Max) Rp6 jt/bulan. Serum 20 ml harga Rp89rb, modal Rp32rb. Potongan TikTok Shop kira-kira 14,5% + komisi…". Tanpa skill skor **7,5** → dengan skill skor **6** (selisih -1,5, belum lulus acuan kami: skor dengan skill di bawah 8). Hanya sisi DENGAN yang mulai memeriksa kesehatan pengaturan akun (pemasangan pixel, tujuan kampanye, keamanan 2 langkah, jumlah video iklan) lewat 8 pertanyaan, tetapi belum memberi skor, urutan perbaikan, atau rencana, sehingga untuk satu kalimat curhat "rasanya boncos" jawaban tanpa skill justru lebih berguna. Catatan jujur: Kalau pengguna hanya menulis satu kalimat tanpa data pengaturan akun, skill berhenti di titik impas lalu meminta 8 jawaban sebelum skor keluar, jadi pembeli awam bisa merasa belum dibantu. Skor kesehatan, prioritas, dan rencana 7 hari baru muncul setelah pemilik iklan menjawab atau menempelkan bukti.
 
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**
@@ -86,4 +86,4 @@ Sebagian metode skor diadaptasi dari proyek open-source claude-ads (MIT). Tidak 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7** (16 Okt 2026): data sebagian kini langsung mendapat audit pendahuluan (titik impas, verdik, 3 tindakan hari ini, skor sementara) sebelum pertanyaan lanjutan. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

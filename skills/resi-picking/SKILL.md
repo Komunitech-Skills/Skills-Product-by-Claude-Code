@@ -5,7 +5,7 @@ description: Buat daftar ambil barang (picking list) per SKU/rak dan urutan kema
 
 # resi-picking
 
-> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; simpan hasil di folder kerja yang disepakati (bukan /tmp). Terminal/IDE: sebut lokasi file hasil. Kanal chat (Telegram/WhatsApp): jangan sebut jalur/folder berkas, lihat "Aturan kanal chat" di bawah.
 
 ## Tujuan
 Mengubah file ekspor pesanan marketplace (yang sudah diunduh pengguna sendiri dari Seller Center)
@@ -67,13 +67,25 @@ pengguna cuma punya file pesanan, tetap jalankan tanpa lokasi/stok dan sebutkan 
      `--kolom-sku`, `--kolom-nama`, `--kolom-varian`, `--kolom-qty`, `--kolom-kurir`, `--kolom-resi`,
      `--kolom-catatan`, atau `--kolom-status` (isi `-` untuk sengaja mengabaikan kolom itu).
    - `peringatan` — sampaikan semuanya ke pengguna apa adanya (SKU tak dikenal, jumlah 0/negatif,
-     baris duplikat, resi kosong, pesanan dilewati karena batal/retur/belum bayar, kolom ambigu, dst.).
+     baris duplikat, resi kosong, pesanan dilewati karena batal/retur/belum bayar, kolom ambigu, dst.);
+     peringatan yang sudah tercakup baris "Dilewati:" (dengan nomor pesanannya) cukup disebut sekali.
    - `kolom_ambigu` — kalau tidak kosong, ada kolom yang punya lebih dari satu kandidat cocok (mis.
      dua kolom yang sama-sama terlihat seperti SKU); tunjukkan ke pengguna kandidat mana saja dan
      kolom mana yang dipakai, supaya bisa dikoreksi dengan `--kolom-...` kalau salah.
-   - `file_keluaran` — path file `daftar-ambil.md` dan `urutan-resi.md` yang sudah ditulis ke disk;
-     tempelkan isinya ke pesan balasan (Markdown-nya langsung terbaca rapi di chat) dan sebutkan lokasi
-     filenya untuk dicetak/dibagikan ke admin gudang.
+   - `jumlah_pesanan_di_file` — jumlah nomor pesanan SEBENARNYA di file (mis. 7); inilah yang disebut
+     "pesanan di file". Jangan pakai `jumlah_pesanan_total` untuk itu (hanya menghitung pesanan yang
+     barisnya terbaca, jadi lebih kecil). Hitungannya selalu: di file = `jumlah_pesanan_aktif` +
+     `dilewati_status` (batal/belum bayar/retur) + `jumlah_pesanan_data_bermasalah`.
+   - `dilewati_rinci` — daftar SETIAP pesanan/baris yang tidak diproses: `no_pesanan`, `alasan`, `baris`.
+     Sumber baris "Dilewati:" di balasan. Isi `no_pesanan` kosong berarti barisnya tak punya nomor
+     (mis. baris Total).
+   - `daftar_ambil[].stok_setelah` dan `status_stok_setelah` (`habis` / `kurang` / `di bawah minimum` /
+     `aman`) — hanya terisi bila file stok diberikan; `stok_min` hanya bila file stok punya kolom
+     stok minimum. Sumber bagian "Stok setelah dikemas".
+   - `file_keluaran` — path file `daftar-ambil.md` dan `urutan-resi.md` yang sudah ditulis ke disk.
+     Isinya (sudah memuat "Pesanan di file", "Dilewati", dan "Stok setelah dikemas") ditampilkan
+     langsung di balasan. Terminal/IDE: sebutkan lokasi file untuk dicetak/dibagikan ke admin gudang.
+     Kanal chat: ikuti "Aturan kanal chat" (jangan sebut path).
 4. Kalau pengguna minta versi HTML (untuk dibuka di browser lalu diprint) atau CSV (untuk Excel),
    jalankan ulang dengan tambahan `--html` dan/atau `--csv`.
 5. Kalau gagal (`ok: false`), pesan `error` SUDAH menyebutkan kolom yang ada di file (`kolom_ada`) dan
@@ -90,6 +102,13 @@ Dua dokumen Markdown (isinya juga cocok ditempel langsung ke chat/WA):
 ...
 **Total: 4 pesanan aktif, 4 jenis barang, 12 pcs.**
 
+**Pesanan di file: 7 (4 diproses, 1 batal, 2 datanya bermasalah).**
+
+Dilewati:
+- #240901A5: batal (baris 7)
+- #240901A6: jumlah 0 atau negatif (baris 8)
+- #240901A7: jumlah tidak terbaca (baris 9)
+
 ## Pesanan dengan catatan khusus (baca dulu sebelum packing)
 - Pesanan #240901A1: "Tolong dibungkus rapi ya kak"
 
@@ -97,9 +116,43 @@ Dua dokumen Markdown (isinya juga cocok ditempel langsung ke chat/WA):
 ### A1
 - [ ] **KAOS-HT-M** Kaos Polos Pria - Hitam - M x 3 pcs (2 pesanan)
 ...
+## Stok setelah dikemas
+- KAOS-HT-M (...): stok 3, setelah dikemas 0 -> HABIS, minimum 10
 ## Peringatan
 - ...
 ```
+
+### Balasan ke pengguna - wajib memuat (urut)
+1. **Total** (pesanan aktif, jenis barang, pcs, jumlah per kurir) - salin dari script.
+2. **Pesanan di file:** angka `jumlah_pesanan_di_file` + rinciannya, mis. "7 di file: 4 diproses,
+   1 batal, 2 datanya bermasalah". Jangan menulis "5 pesanan total" atau angka lain yang menyembunyikan
+   pesanan yang dilewati.
+3. **Dilewati:** baris tersendiri yang menyebut SETIAP nomor pesanan yang tidak diproses beserta
+   alasannya (belum bayar / batal / retur / status yang diabaikan manual / jumlah 0 / jumlah tidak
+   terbaca / nomor rusak), dari `dilewati_rinci`. Tulis nomornya, bukan hanya jumlahnya. Contoh:
+   `Dilewati: #240901A5 batal; #240901A6 jumlah 0; #240901A7 jumlah tidak terbaca.`
+   Maksimal 10 nomor di chat, sisanya "dan N lainnya"; tidak ada yang dilewati -> "Dilewati: tidak
+   ada." Baris dobel/Total yang diabaikan tapi pesanannya tetap diproses disebut terpisah. Pesanan yang
+   datanya bermasalah perlu dicek pemilik di Seller Center - katakan itu. Bila pengguna menyebut status
+   (mis. "belum bayar") yang ternyata tidak ada di file, bilang terus terang.
+4. **Catatan pembeli (baca dulu)** sebagai bagian sendiri, bukan butir yang mirip barang.
+5. **Daftar ambil** per rak, lalu **urutan kemas per kurir**.
+6. **Stok setelah dikemas:** sebut setiap SKU yang `habis`, `kurang`, atau `di bawah minimum` setelah
+   pesanan ini (stok sekarang -> setelah dikemas, minimum bila ada), mis. "KAOS-HT-M: stok 3 -> 0,
+   HABIS (minimum 10)"; tidak ada yang bermasalah -> "Stok aman setelah dikemas". SKU yang tidak ada di
+   file stok disebut terpisah. Tanpa file stok -> "Stok tidak dicek (tidak ada file stok)."
+7. Pemetaan kolom, peringatan, dan asumsi (mis. tanpa file lokasi rak).
+
+### Aturan kanal chat (Telegram/WhatsApp)
+- **Jangan menyebut jalur, folder, atau nama berkas di komputer bot** (mis. `data/daftar-ambil.md`) dan
+  jangan menulis "tersimpan di folder". Isi lengkap ditulis langsung di chat.
+- **Berkas hasil** (daftar ambil, urutan resi, HTML siap cetak, CSV): lampirkan sebagai dokumen bila
+  kanal/alat bisa mengirim file. Bila tidak bisa, jangan sebut berkasnya; tutup dengan: *Balas "kirim
+  file" bila ingin versi siap cetak dan Excel.* Bila pengguna membalas "kirim file" tapi lampiran tetap
+  tidak bisa, jelaskan sederhana bahwa file ada di komputer tempat asisten berjalan dan tawarkan
+  menampilkan daftar per rak/per kurir langsung di chat.
+- **Tanpa tabel Markdown lebar:** pakai daftar baris padat, satu barang atau pesanan per baris.
+- Bahasa awam: tulis "diambil/disiapkan", bukan "dipicking", "JSON", atau "script".
 
 ```
 # Urutan Kemas / Tempel Resi
@@ -133,8 +186,11 @@ uji, termasuk peringatan SKU tak dikenal dan stok menipis).
 - Kalau kolom status **tidak** terdeteksi sama sekali, semua baris dianggap perlu dikemas — beri tahu
   pengguna dan sarankan mengekspor pesanan berstatus "Perlu Dikirim" saja bila platformnya bisa
   memfilter itu, supaya pesanan yang sudah dikirim tidak ikut muncul lagi.
-- "SKU tidak dikenal" dan "stok kemungkinan kurang" hanya muncul kalau `--stok` diberikan; tanpa itu,
-  script tidak tahu SKU mana yang belum terdaftar.
+- "SKU tidak dikenal", "stok kemungkinan kurang", dan "Stok setelah dikemas" hanya muncul kalau `--stok`
+  diberikan; tanpa itu, script tidak tahu SKU mana yang belum terdaftar. Batas "di bawah minimum" hanya
+  dicek kalau file stok punya kolom stok minimum (mis. `stok_min` dari `buku-stok`); tanpa kolom itu
+  hanya "habis"/"kurang" yang ditandai. Sisa stok dihitung dari stok tercatat dikurangi pesanan aktif
+  hari ini - bukan memotong stok (lihat `buku-stok` untuk itu).
 - **PERLU REVIEW:** nama kolom ekspor Seller Center berubah-ubah antar waktu dan negara. Kata kunci
   deteksi di `scripts/resi.py` (variabel `SINONIM_PESANAN`) disusun dari panduan/forum seller, dari
   skill `buku-stok`, dan (untuk TikTok Shop) dari halaman bantuan resmi - rincian mana yang

@@ -23,7 +23,7 @@ Member VIP dan pengguna OpenClaw yang sudah punya beberapa laporan/jadwal otomat
 |---|---|
 | Baru sadar laporan mati saat dibutuhkan, berhari-hari kemudian. Asisten tanpa skill hanya menjawab "sudah terpasang dan aktif" tanpa bukti, dan tidak ada pengawas bagi jadwal yang hilang | Daftar jadwal yang dipantau, satu langkah "lapor selesai" di akhir tiap laporan, pengawas siap salin, dan peringatan Telegram hanya saat ada yang terlambat atau hilang |
 
-Versi 1.0.3. Laporan pantauan memisahkan blok **BERMASALAH** (HILANG/TERLAMBAT) dan blok **OK**.
+Versi 1.0.4. Laporan pantauan memisahkan blok **BERMASALAH** (HILANG/TERLAMBAT) dan blok **OK**.
 
 ## Contoh isi peringatan (keluaran nyata dari uji)
 Data contoh fiktif (Toko Bangunan Sinar Jaya), uji OpenClaw 12 Okt 2026; teks ini yang diteruskan ke Telegram (`examples/02-job-mana-yang-terlambat-hari-ini.md`):
@@ -77,4 +77,4 @@ Bisa. Zona WIB, WITA, WIT didukung, dan jadwal otomatis seperti "tanggal 1 tiap 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

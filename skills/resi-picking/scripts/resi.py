@@ -25,7 +25,7 @@ import unicodedata
 from collections import OrderedDict
 from pathlib import Path
 
-VERSI = "1.0.4"
+VERSI = "1.0.5"
 BATAS_UKURAN = 200 * 1024 * 1024
 
 
@@ -216,7 +216,35 @@ SINONIM_STOK = OrderedDict([
     ("stok", ["stok saat ini", "sisa stok", "quantity", "qty", "stock", "stok"]),
     ("lokasi", SINONIM_LOKASI["lokasi"]),
     ("nama", ["nama produk", "nama"]),
+    # Batas stok minimum (opsional; ada di ekspor buku-stok). Dipakai hanya untuk menandai barang yang
+    # jatuh di bawah minimum SETELAH pesanan dikemas - tidak mengubah hitungan daftar ambil.
+    ("stok_min", ["stok minimum", "stok min", "minimum stok", "min stok", "stock minimum", "min stock"]),
 ])
+
+# Alasan baris dilewati dalam bahasa sehari-hari (untuk daftar "Dilewati" di hasil).
+ALASAN_BARIS = {
+    "nomor_pesanan_rusak": "nomor pesanan rusak (biasanya karena dibuka di Excel)",
+    "tanpa_nomor_pesanan": "tanpa nomor pesanan",
+    "jumlah_tidak_terbaca": "jumlah tidak terbaca",
+    "jumlah_nol_atau_negatif": "jumlah 0 atau negatif",
+    "tanpa_identitas_barang": "tanpa SKU dan nama barang",
+    "baris_duplikat": "baris dobel (sama persis dengan baris lain, dihitung sekali)",
+    "baris_ringkasan_diabaikan": "baris Total/ringkasan, bukan pesanan",
+}
+
+
+def status_stok_setelah(setelah, minimum):
+    """'kurang' (stok tidak cukup), 'habis' (tepat 0), 'di bawah minimum', atau 'aman'; None bila stok tidak diketahui."""
+    if setelah is None:
+        return None
+    setelah = round(setelah, 3)
+    if setelah < 0:
+        return "kurang"
+    if setelah == 0:
+        return "habis"
+    if minimum is not None and setelah < minimum:
+        return "di bawah minimum"
+    return "aman"
 
 
 def _token(s):
@@ -444,6 +472,13 @@ def proses(args):
              "baris_ringkasan_diabaikan": []}
     dilihat_dupe = set()
     no_sebelum = None
+    rinci_baris = []        # rincian tiap baris yang dilewati (nomor baris, nomor pesanan, alasan)
+    nop_di_file = OrderedDict()  # semua nomor pesanan yang tampak di file (termasuk yang datanya dilewati)
+
+    def lewati(kunci, no_baris, nop_tampil=""):
+        lewat[kunci].append(no_baris)
+        rinci_baris.append({"jenis": "baris", "no_pesanan": nop_tampil, "alasan": ALASAN_BARIS[kunci],
+                            "baris": [no_baris]})
     pola_ringkasan = re.compile(r"^(grand\s*)?(total|subtotal|jumlah\s*total|ringkasan)\b")
     for no, r in enumerate(baris[hi + 1:], start=hi + 2):
         if not any((c or "").strip() for c in r):
@@ -456,31 +491,32 @@ def proses(args):
         # Baris ringkasan/total di bagian bawah ekspor (tanpa nomor pesanan sendiri) -> jangan
         # dianggap lanjutan pesanan sebelumnya.
         if not nop and (pola_ringkasan.match(norm(sku)) or pola_ringkasan.match(norm(nama))):
-            lewat["baris_ringkasan_diabaikan"].append(no)
+            lewati("baris_ringkasan_diabaikan", no)
             continue
         if re.search(r"\d[.,]\d+e\+?\d+", nop.lower()):
-            lewat["nomor_pesanan_rusak"].append(no)
+            lewati("nomor_pesanan_rusak", no, nop_raw)
             continue
         if not nop:
             if no_sebelum:
                 nop = no_sebelum
             else:
-                lewat["tanpa_nomor_pesanan"].append(no)
+                lewati("tanpa_nomor_pesanan", no)
                 continue
+        nop_di_file[nop] = True
         q = parse_angka(sel(r, kol["qty"]))
         if q is None:
-            lewat["jumlah_tidak_terbaca"].append(no)
+            lewati("jumlah_tidak_terbaca", no, nop)
             continue
         if q <= 0:
-            lewat["jumlah_nol_atau_negatif"].append(no)
+            lewati("jumlah_nol_atau_negatif", no, nop)
             continue
         no_sebelum = nop
         if not sku and not nama:
-            lewat["tanpa_identitas_barang"].append(no)
+            lewati("tanpa_identitas_barang", no, nop)
             continue
         kunci_dupe = (nop, norm(sku), norm(nama), norm(varian), round(q, 3))
         if kunci_dupe in dilihat_dupe:
-            lewat["baris_duplikat"].append(no)
+            lewati("baris_duplikat", no, nop)
             continue
         dilihat_dupe.add(kunci_dupe)
 
@@ -511,12 +547,15 @@ def proses(args):
                     pemetaan=pemetaan, baris_dilewati=lewat)
 
     dilewati_status = {}
+    rinci_pesanan = []
     aktif = []
     for nop in urut:
         ps = pesanan[nop]
         if ps["kategori"] in KATEGORI_DIKECUALIKAN:
             label = LABEL_KATEGORI.get(ps["kategori"], ps["kategori"])
             dilewati_status[label] = dilewati_status.get(label, 0) + 1
+            rinci_pesanan.append({"jenis": "pesanan", "no_pesanan": ps["no"], "alasan": label,
+                                  "baris": [it["baris"] for it in ps["item"]]})
             continue
         aktif.append(ps)
 
@@ -555,6 +594,7 @@ def proses(args):
                 "lokasi": cari_lokasi(sku_norm) if sku_norm else "",
                 "sku_dikenal": (not args.stok) or (sku_norm in stok_map) if sku_norm else None,
                 "stok_tercatat": stok_map.get(sku_norm, {}).get("stok") if sku_norm else None,
+                "stok_min_tercatat": stok_map.get(sku_norm, {}).get("stok_min") if sku_norm else None,
             })
             a["qty"] += it["qty"]
             a["pesanan"].add(ps["no"])
@@ -568,12 +608,19 @@ def proses(args):
         for a in ambil.values():
             stok_angka = parse_angka(a.get("stok_tercatat")) if a.get("stok_tercatat") not in (None, "") else None
             a["stok_angka"] = stok_angka
+            minimum = parse_angka(a.get("stok_min_tercatat")) if a.get("stok_min_tercatat") not in (None, "") else None
+            a["stok_min"] = minimum
+            a["stok_setelah"] = round(stok_angka - a["qty"], 3) if stok_angka is not None else None
+            a["status_stok_setelah"] = status_stok_setelah(a["stok_setelah"], minimum)
             if stok_angka is not None and stok_angka < a["qty"]:
                 peringatan.append("Stok '%s' kemungkinan kurang: butuh %s, stok tercatat %s."
                                   % (a["sku"], fq(a["qty"]), fq(stok_angka)))
     else:
         for a in ambil.values():
             a["stok_angka"] = None
+            a["stok_min"] = None
+            a["stok_setelah"] = None
+            a["status_stok_setelah"] = None
 
     for label_lewat, nomor_baris in lewat.items():
         if nomor_baris:
@@ -622,6 +669,8 @@ def proses(args):
 
     total_qty = sum(a["qty"] for a in daftar_ambil)
     kurir_ringkas = OrderedDict((k, len(v)) for k, v in kelompok.items())
+    dilewati_rinci = sorted(rinci_pesanan + rinci_baris, key=lambda e: e["baris"][0])
+    pesanan_data_bermasalah = [n for n in nop_di_file if n not in pesanan]
 
     return {
         "file_pesanan": str(Path(args.file).resolve()),
@@ -632,6 +681,8 @@ def proses(args):
         "pemetaan_stok": pemetaan_stok,
         "jumlah_baris_dibaca": len(baris) - hi - 1,
         "jumlah_pesanan_total": len(pesanan),
+        "jumlah_pesanan_di_file": len(nop_di_file),
+        "jumlah_pesanan_data_bermasalah": len(pesanan_data_bermasalah),
         "jumlah_pesanan_aktif": len(aktif),
         "jumlah_sku_unik": len(daftar_ambil),
         "total_barang": round(total_qty, 3),
@@ -640,6 +691,7 @@ def proses(args):
         "jumlah_resi_kosong": len(resi_kosong),
         "dilewati_status": dilewati_status,
         "baris_dilewati": {k: len(v) for k, v in lewat.items() if v},
+        "dilewati_rinci": dilewati_rinci,
         "peringatan": peringatan,
         "daftar_ambil": daftar_ambil,
         "kelompok_kurir": kelompok,
@@ -651,6 +703,49 @@ def proses(args):
 # ---------------------------------------------------------------------------
 # Rendering keluaran (Markdown siap cetak + HTML sederhana opsional)
 # ---------------------------------------------------------------------------
+
+def render_dilewati(hasil):
+    """Baris 'Pesanan di file' + daftar 'Dilewati' (nomor pesanan & alasan) supaya tidak ada pesanan
+    yang tidak diproses tanpa sepengetahuan pemilik."""
+    bagian = ["%d diproses" % hasil["jumlah_pesanan_aktif"]]
+    for label, n in hasil["dilewati_status"].items():
+        bagian.append("%d %s" % (n, label))
+    if hasil["jumlah_pesanan_data_bermasalah"]:
+        bagian.append("%d datanya bermasalah" % hasil["jumlah_pesanan_data_bermasalah"])
+    t = ["**Pesanan di file: %d (%s).**" % (hasil["jumlah_pesanan_di_file"], ", ".join(bagian)), ""]
+    if hasil["dilewati_rinci"]:
+        t.append("Dilewati:")
+        for e in hasil["dilewati_rinci"]:
+            baris = ", ".join(str(n) for n in e["baris"])
+            if e["no_pesanan"]:
+                t.append("- #%s: %s (baris %s)" % (e["no_pesanan"], e["alasan"], baris))
+            else:
+                t.append("- baris %s: %s" % (baris, e["alasan"]))
+        t.append("")
+    else:
+        t.append("Dilewati: tidak ada.")
+        t.append("")
+    return t
+
+
+def render_stok_setelah(hasil):
+    """Bagian 'Stok setelah dikemas': hanya barang yang habis / kurang / di bawah minimum."""
+    t = ["## Stok setelah dikemas"]
+    ditandai = [a for a in hasil["daftar_ambil"] if a.get("status_stok_setelah") in ("kurang", "habis", "di bawah minimum")]
+    for a in ditandai:
+        nama = a["nama"] + (" - " + a["varian"] if a["varian"] else "") if a["nama"] else ""
+        label = {"kurang": "KURANG (stok tidak cukup)", "habis": "HABIS",
+                 "di bawah minimum": "di bawah minimum"}[a["status_stok_setelah"]]
+        ket_min = ", minimum %s" % fq(a["stok_min"]) if a["stok_min"] is not None else ""
+        t.append("- %s%s: stok %s, setelah dikemas %s -> %s%s" % (
+            a["sku"], " (%s)" % nama if nama else "", fq(a["stok_angka"]), fq(a["stok_setelah"]), label, ket_min))
+    tak_dikenal = [a["sku"] for a in hasil["daftar_ambil"] if a["sku_dikenal"] is False]
+    if tak_dikenal:
+        t.append("- Stok tidak bisa dicek (SKU tidak ada di file stok): %s" % ", ".join(tak_dikenal))
+    if not ditandai and not tak_dikenal:
+        t.append("- Semua barang yang diambil masih di atas stok minimum setelah pesanan ini.")
+    return t
+
 
 def render_daftar_ambil(hasil, sumber_nama):
     t = []
@@ -666,6 +761,7 @@ def render_daftar_ambil(hasil, sumber_nama):
     t.append("**Total: %d pesanan aktif, %d jenis barang, %s pcs.**" % (
         hasil["jumlah_pesanan_aktif"], hasil["jumlah_sku_unik"], fq(hasil["total_barang"])))
     t.append("")
+    t.extend(render_dilewati(hasil))
     if hasil["catatan_khusus"]:
         t.append("## Pesanan dengan catatan khusus (baca dulu sebelum packing)")
         for ps in hasil["catatan_khusus"]:
@@ -687,6 +783,9 @@ def render_daftar_ambil(hasil, sumber_nama):
             flag = "  _(stok tercatat %s, kemungkinan kurang)_" % fq(a["stok_angka"])
         t.append("- [ ] **%s** %s x %s pcs (%d pesanan)%s" % (
             a["sku"], nama, fq(a["qty"]), len(a["pesanan"]), flag))
+    if hasil["pemetaan_stok"]:
+        t.append("")
+        t.extend(render_stok_setelah(hasil))
     if hasil["peringatan"]:
         t.append("")
         t.append("## Peringatan")
@@ -836,7 +935,9 @@ def main(argv=None):
         data["daftar_ambil"] = [
             {"sku": a["sku"], "nama": a["nama"], "varian": a["varian"], "lokasi": a["lokasi"],
              "qty": round(a["qty"], 3), "jumlah_pesanan": len(a["pesanan"]),
-             "sku_dikenal": a["sku_dikenal"], "stok_tercatat": a["stok_angka"]}
+             "sku_dikenal": a["sku_dikenal"], "stok_tercatat": a["stok_angka"],
+             "stok_min": a["stok_min"], "stok_setelah": a["stok_setelah"],
+             "status_stok_setelah": a["status_stok_setelah"]}
             for a in hasil["daftar_ambil"]
         ]
         print(json.dumps(data, ensure_ascii=False, indent=2, default=str))

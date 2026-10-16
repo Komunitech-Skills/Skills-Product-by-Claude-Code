@@ -1,3 +1,5 @@
 # Riwayat perubahan — studio-video-pendek-ai
 
+## 1.0.5 (2026-10-16) — hasil uji bot Telegram asli gelombang 21 (sesudah 7,0 vs tanpa 5,0): (1) Mode Ringkas video 15 dtk kini WAJIB memuat Shot List Singkat (sudut kamera, properti/objek, teks layar) bila pengguna merekam sendiri dengan HP/kamera atau tidak menyebut cara produksi, bukan ditawarkan belakangan; (2) hook ≤ 3 detik (±6-7 kata tanpa jeda) untuk semua durasi, contoh Pola Hook dipersingkat; (3) video 15 dtk = 3 adegan (hook, inti/harga, CTA); (4) teks layar adegan CTA menyediakan isian `[nomor WA]`; (5) kalimat proses "lolos cek fakta" dan label kaku "Fakta dari pengguna" tidak ditulis di balasan (cek fakta tetap dijalankan internal); (6) penomoran bagian output berurutan (Mode Ringkas 0-6, tanpa lompat 2 ke 4). Rumus durasi (kata/150 x 60 + jeda 0,5 + pergantian adegan 0,3), aturan cara baca harga, dan script tidak berubah.
+
 ## 1.0.4 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`) dihapus dari catatan asal modul di `scripts/cek_fakta.py` (hanya teks komentar; logika tidak berubah).

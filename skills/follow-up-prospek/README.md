@@ -63,6 +63,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor memakai format skill yang sama; belum uji platform asli di kedua platform itu. Bot Telegram asli belum diuji.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Kemarin (22 Sept) saya demo aplikasi kasir KasirPintar Fiktif ke Pak Joni, pemilik Resto Padang Rasa Minang Fiktif di Depok. Paket 199rb/bulan, gratis setup. Dia bilang bagus, tapi mau diskusi dulu sama istrinya yang pegang…". Tanpa skill skor **6,5** → dengan skill skor **8,5** (selisih +2, lulus acuan kami). Dengan skill, bot sadar demo sudah 25 hari lewat, lalu menyusun 4 pesan WA bertanggal pasti (Senin 19 Okt s.d. Senin 2 Nov), termasuk ajakan telepon 10 menit bersama Bapak & Ibu. Tanpa skill, bot hanya membuat satu pesan yang masih menulis "terima kasih … kemarin", seolah demo baru sehari lalu. Catatan jujur: Hasilnya berupa urutan 4 pesan lengkap dengan aturan main, lebih panjang dari satu pesan WA yang diminta. Pesan ke-2 memuat contoh fitur (laporan penjualan di HP) yang perlu Anda pastikan memang ada di produk sebelum dikirim, dan jadwal disusun dengan anggapan belum pernah ada follow-up sebelumnya.
+
 ## FAQ
 **Apakah pesannya dikirim otomatis?**
 Tidak. Anda tinggal menyalin dan mengirim sendiri sesuai tanggal yang tertera, jadi tetap terkendali.

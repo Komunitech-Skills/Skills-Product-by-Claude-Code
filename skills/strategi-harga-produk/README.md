@@ -69,6 +69,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Aku jualan kopi susu gula aren literan (botol 1 liter) di Semarang, namanya Kopi Teras Fiktif. Modal per botol 22 ribu udah sama botol & stiker. Sekarang jual 45 ribu, laku sekitar 400 botol sebulan. Biaya tetap 5,2 juta…". Tanpa skill skor **7** → dengan skill skor **8** (selisih +1, belum lulus acuan kami: selisih 1 di bawah 1,5). Hanya versi dengan skill yang memberi daftar harga bertingkat siap pakai (eceran Rp49.900, reseller Rp42.415 dengan minimal 12 botol, kantor Rp37.425) beserta untung per botol, harga terendah aman Rp36.667, simulasi tiga tingkat kepekaan pembeli, dan teks pengumuman WA. Namun versi ini lupa memperhitungkan modal yang naik karena gula aren, padahal hal itu justru diingatkan versi tanpa skill. Catatan jujur: Semua hitungan memakai modal yang Anda sebutkan. Bila bahan baku naik, sebutkan modal barunya supaya harga reseller, harga kantor, dan titik impas dihitung ulang, karena tidak dihitung otomatis. Untuk kasus sederhana seperti ini, AI tanpa bantuan pun sudah bisa memberi hitungan dasar (titik impas, laba, volume aman) yang benar; nilai tambahnya ada pada daftar harga bertingkat, batas harga terendah, simulasi, dan teks siap kirim.
+
 ## FAQ
 **Apa bedanya margin dan markup? Saya bilang "untung 50%".**
 Margin = untung dibagi harga jual; markup = untung dibagi modal. Modal Rp10.000 dijual Rp15.000 itu markup 50% tapi margin hanya 33,33%. Skill ini menampilkan keduanya dan bertanya bila maksud Anda belum jelas.
