@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **110 skill** dari 134 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **111 skill** dari 135 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -117,7 +117,8 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 107 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
 | 108 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
 | 109 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 110 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
+| 110 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
+| 111 | Analisis Excel Tanpa Rumus, Tinggal Tanya (`analisis-excel`) | Data & Analisis | 7,25 → 8,75 | +1,5 |
 
 ## Rincian per skill
 
@@ -1097,6 +1098,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Cek KLU dulu, lalu: PPh dipotong Rp45.000, DTP dibayar tunai Rp45.000, setoran Rp0, diterima Rp6.000.000 (tanpa DTP Rp5.955.000); Desember+THR dihitung script dalam ±40 detik.
 - **Angka kunci:** TER A 0,75% × Rp6.000.000 = Rp45.000; diterima Rp6.000.000 dengan DTP (PMK 105/2025); Desember K/1: lebih potong Rp220.000
 - **Catatan jujur:** Selisih tipis (+1,65): tanpa skill angkanya juga benar di uji ini. Versi 1.0.4 sempat salah menulis diterima Rp6.045.000 (dikoreksi 1.0.5, diverifikasi independen 13 kasus). PERLU REVIEW konsultan pajak; pembulatan belum dicocokkan dengan Coretax.
+
+### Rekap Penjualan Otomatis dari File Kasir — 7,5 → 9
+`rekap-penjualan-csv` · Data & Analisis · versi 1.2.3 · diuji 2026-10-01
+
+- **Permintaan:** Pemilik toko menulis santai bahwa file penjualan-september.csv (ekspor Shopee fiktif, 72 baris: 66 Selesai, 4 Batal, 2 Pengembalian Dana) sudah ada di folder kerja, lalu minta direkap: omzet sebulan berapa, produk paling laku apa, dan hari paling ramai kapan.
+- **Tanpa skill:** Angkanya benar: omzet Rp3.038.000 dari 66 pesanan Selesai, dengan 4 batal dan 2 pengembalian dana dikecualikan. Produk terlaris diurutkan menurut jumlah terjual (Pashmina Ceruty Babydoll, 30 pcs). Hari paling ramai dijawab dari dua sisi: omzet tertinggi 30 September (Rp285.000) dan jumlah pesanan terbanyak 1 & 5 September (masing-masing 5 transaksi). Yang tidak ada: persentase kontribusi, rata-rata harian, maupun insight tindakan; hanya satu kesimpulan singkat (Pashmina Ceruty Babydoll best seller-nya).
+- **Dengan skill:** Uji pertama (±1.2.2, skor 8,5): laporan berformat baku dengan total omzet Rp3.038.000, 66 transaksi, rata-rata harian (kalender Rp101.267; hari berjualan Rp108.500 dari 28 hari ada penjualan), tabel 5 produk dengan persentase kontribusi (44,4% / 21,9% / 17,5% / 8,3% / 7,9%), hari terbaik 30 September, hari terendah 4 September (Rp12.000), dan 3 insight; kekurangannya, hari paling ramai hanya dijawab dari omzet. Uji ulang (1.2.3, skor 9): ditambah baris transaksi terbanyak (1 & 5 September, 5 pesanan unik), catatan data (6 baris dibuang, tidak ada baris error), dan insight bahwa 3 produk teratas menyumbang 84% omzet. Semua angka cocok dengan hitungan ulang penguji memakai Python.
+- **Angka kunci:** Skor tanpa skill 7,5 (uji pertama, tidak diulang) → dengan skill 8,5 (±1.2.2), lalu 9 (1.2.3); selisih +1 lalu +1,5. Omzet Rp3.038.000 (66 pesanan Selesai) benar di kedua sisi. Pembeda: persentase kontribusi (Pashmina 44,4%), rata-rata harian Rp101.267 (kalender) dan Rp108.500 (hari berjualan), insight tindakan (3 produk teratas = 84% omzet).
+- **Keterangan:** Uji satu skenario dalam uji solusi VIP Toko Online (uji pertama ±1.2.2, uji ulang 1.2.3; versi katalog sekarang 1.2.5)
+- **Catatan jujur:** Hanya satu skenario (rekap penjualan sebulan dari CSV ekspor Shopee, satu file contoh fiktif) yang diuji, sebagai bagian uji solusi VIP Toko Online 2026-10-01, bukan 5 skenario per skill. Sisi tanpa skill dijalankan sekali pada uji pertama; uji ulang hanya mengulang sisi dengan skill dan memakai ulang skor 7,5. Versi yang diuji: uji pertama kira-kira 1.2.2 (disimpulkan dari riwayat katalog; berkas sumber tidak menyebut versi) dan uji ulang 1.2.3, sedangkan versi katalog sekarang 1.2.5. Skor 9 adalah skor sisi dengan skill setelah skill diperbaiki dari temuan uji pertama. Versi 1.2.4 dan 1.2.5 hanya melewati uji gabungan paket toko-online, bukan uji per skill, jadi skornya bukan skor skill ini. Sumber menegaskan selisihnya kecil dan skenario ini tidak boleh dijual sebagai pembeda besar: model tanpa skill sudah hampir sama tepat angkanya, pembedanya kelengkapan dan konsistensi format. Cacat uji pertama (hari paling ramai hanya dari omzet) sudah hilang di 1.2.3 tanpa regresi, tetapi itu hanya menyamai sisi tanpa skill. Balasan uji ulang menyapa member "Sol": artefak nama home uji, bukan perilaku skill. Format ekspor Tokopedia, kasir kedai, dan angka berformat campur belum diuji di OpenClaw. Codex dan Cursor belum diuji langsung, dan bot Telegram asli belum diuji (sesuai README).
 
 ### Analisis Excel Tanpa Rumus, Tinggal Tanya — 7,25 → 8,75
 `analisis-excel` · Data & Analisis · versi 1.0.17 · diuji 2026-10-01
