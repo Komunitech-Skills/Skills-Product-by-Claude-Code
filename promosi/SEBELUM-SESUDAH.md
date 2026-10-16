@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **112 skill** dari 136 yang diuji.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5. Jumlah: **112 skill** dari 137 yang diuji.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -1155,5 +1155,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | `hitung-hpp` | 8 → 8,5 | LULUS | selisih < 1,5 |
 | `pdf-lokal` | 8,75 → 9 | LULUS | selisih < 1,5 |
 | `caption-sosmed-umkm` | 6 → 6,17 | BELUM | belum lulus |
+| `kas-umkm` | 9 → 9 | LULUS | selisih < 1,5 |
 | `asisten-tulis-riset` | 7,5 → 7,5 | BELUM | belum lulus |
 | `pph-final-umkm` | 6,8 → 6,1 | BELUM | belum lulus |
