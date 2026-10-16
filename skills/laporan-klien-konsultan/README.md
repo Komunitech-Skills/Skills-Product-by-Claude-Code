@@ -3,7 +3,7 @@
 **Catat pekerjaan sekali jalan saat dikerjakan, minta "buatkan laporan mingguan untuk klien X",
 langsung dapat draf siap tinjau — email, WA/Telegram, dan Markdown (teks berformat untuk disimpan sebagai dokumen), jam dihitung otomatis.**
 
-Diuji AI penguji independen di OpenClaw: 8 → 8,5 dari 10 (setelah perbaikan v1.0.5; selisih kecil, karena tanpa skill pun jumlah jam sudah benar; pembedanya file catatan kerja CSV dari Excel/Sheets terbaca langsung dan bagian "rencana berikutnya" tidak dikarang).
+Diuji AI penguji independen di OpenClaw: 8 → 8,5 dari 10 (setelah perbaikan v1.0.5; selisih kecil, karena tanpa skill pun jumlah jam sudah benar dan file CSV awam juga terbaca; pembedanya bagian "rencana berikutnya" tidak dikarang dan format laporan konsisten). Versi terkini 1.0.6 belum diuji ulang sebelum/sesudah di OpenClaw.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -90,7 +90,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 **Hasil uji (angka nyata):** tiga sumber yang terpisah, skor 1–10.
 - **Uji perbandingan oleh penguji independen (simulasi agent):** skor kualitas 9/10. Uji A/B (skenario PT Maju Jaya): tanpa skill, catatan hilang begitu sesi berganti, hanya ada satu versi teks, dan total jam dikira-kira agent; dengan skill, tiga versi (email, WA/Telegram, Markdown) lahir dari data yang sama dan total 4 jam dihitung script. Rincian: `examples/00-pembanding-tanpa-skill.md`.
 - **Uji pemasangan di OpenClaw 2026.9.6** (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/UJI-PLATFORM.md`.
-- **Uji sebelum/sesudah OpenClaw, 2026-10-01** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): 8 → 7 sebelum perbaikan (skill sempat kalah dari AI tanpa skill), 8 → 8,5 setelah perbaikan v1.0.5.
+- **Uji sebelum/sesudah OpenClaw, 2026-10-01** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): 8 → 7 sebelum perbaikan (skill sempat kalah dari AI tanpa skill), 8 → 8,5 setelah perbaikan v1.0.5. Versi 1.0.6 (versi terkini) belum diuji ulang sebelum/sesudah di OpenClaw; menurut `CHANGELOG.md`, cara kerjanya tidak berubah dari 1.0.5.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal otomatis ke Telegram diuji sungguhan di bot uji 2026-10-13 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 

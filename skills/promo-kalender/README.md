@@ -2,7 +2,7 @@
 
 **Rencana promo lengkap untuk momen belanja besar, dengan hitungan margin (persentase untung) yang langsung memberi tahu kalau diskon Anda bikin rugi.**
 
-Diuji AI penguji independen: 6,5 → 8 dari 10 di OpenClaw (8,5 setelah perbaikan dan uji ulang); tanpa skill tidak ada batas diskon aman dan linimasanya tanpa tanggal.
+Diuji AI penguji independen: di OpenClaw 6,5 → 8 dari 10 (8,5 setelah perbaikan dan uji ulang; satu skenario, versi 1.0.3). Di uji terpisah (simulasi Claude Code, skor 8 dari 10), tanpa skill tidak ada batas diskon aman dan linimasanya tanpa tanggal.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -60,7 +60,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Tanpa skill: satu skenario dihitung benar (laba Rp 17.110 per serum), tetapi laba toner diskon 30% meleset ("sekitar Rp 16.000", yang benar Rp 16.950), tidak ada batas diskon aman, linimasa tanpa tanggal, dan disarankan memasang harga coret tanpa peringatan hukum.
 - Dengan skill: semua mekanisme (diskon, bundling, beli 2 gratis 1, voucher, subsidi ongkir) dibandingkan dalam satu tabel. Diskon maksimal sebelum rugi 56,2% (serum) dan 40,5% (toner dengan ongkir); diskon 40% perlu terjual 3,47 kali lipat penjualan biasa agar laba setara; laba bersih kampanye Rp 4.643.100 setelah iklan; linimasa bertanggal; ada peringatan harga coret (UU 8/1999 Pasal 11 huruf f).
 - Skor penguji independen: 8 dari 10; 300 dari 300 kombinasi hitungan cocok dengan kalkulator terpisah.
-- Sumber lain, uji OpenClaw 2026-10-01 (agen penguji independen): 6,5 → 8 (8,5 setelah perbaikan dan uji ulang) (lihat `examples/00-openclaw-sebelum-sesudah.md`).
+- Sumber lain, uji OpenClaw 2026-10-01 (agen penguji independen; hanya satu skenario, bagian dari uji solusi VIP Toko Online): 6,5 → 8 (8,5 setelah perbaikan dan uji ulang pada versi 1.0.3; versi terkini 1.0.4 belum diuji ulang di OpenClaw). Di sisi tanpa skill pada uji ini, target 173 botol salah periode, klaim pasar tanpa dasar, dan tidak ada syarat & ketentuan (lihat `examples/00-openclaw-sebelum-sesudah.md`).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 

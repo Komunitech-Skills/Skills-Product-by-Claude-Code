@@ -71,7 +71,7 @@ atau Cursor, skill ini dirancang tetap bisa dipakai sebagai buku jadwal manual �
 "daftar pengingat hari ini" setiap pagi. Pengujian langsung baru dilakukan di OpenClaw (di Claude Code
 baru simulasi agent); Codex dan Cursor belum diuji.
 
-**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, lingkungan uji terpisah), 2026-10-01, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Satu skenario pengingat dengan info kurang (tanpa nomor WA dan tanpa persetujuan pasien), uji pertama: tanpa skill **3** → dengan skill **8,5**; uji ulang setelah perbaikan (v1.0.6) dengan skill **9** (sisi tanpa skill tidak diulang). Tanpa skill, AI mencatat pasien tanpa nomor WA dan persetujuan, menjanjikan pengiriman otomatis ke pasien, dan mengubah pengaturan OpenClaw sendiri; dengan skill, dua hal wajib (nomor WA dan persetujuan) ditanyakan dan pesan hanya disiapkan sebagai draf untuk staf. Jujur: hanya satu skenario yang diuji, dan jadwal ringkasan pagi ke Telegram belum diuji. Uji pemasangan dan pemicu di OpenClaw: 6 dari 6 lulus (`examples/UJI-PLATFORM.md`).
+**Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, lingkungan uji terpisah), 2026-10-01, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Satu skenario pengingat dengan info kurang (tanpa nomor WA dan tanpa persetujuan pasien), uji pertama: tanpa skill **3** → dengan skill **8,5**; uji ulang setelah perbaikan (v1.0.6) dengan skill **9** (sisi tanpa skill tidak diulang). Tanpa skill, AI mencatat pasien tanpa nomor WA dan persetujuan, menjanjikan pengiriman otomatis ke pasien, dan mengubah pengaturan OpenClaw sendiri; dengan skill, dua hal wajib (nomor WA dan persetujuan) ditanyakan dan pesan hanya disiapkan sebagai draf untuk staf. Jujur: hanya satu skenario yang diuji, jadwal ringkasan pagi ke Telegram belum diuji, dan pada uji ulang satu kalimat balasan AI ("akan menandainya di daftar H-3, H-1, dan hari-H secara otomatis") masih bisa terbaca seolah pengingat jalan sendiri, padahal daftar baru muncul saat Anda memintanya dan tidak ada pesan yang terkirim ke pasien. Uji pemasangan dan pemicu di OpenClaw: 6 dari 6 lulus (`examples/UJI-PLATFORM.md`).
 
 ## Bukti uji di bot Telegram
 
@@ -80,7 +80,7 @@ Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 2
 - Dengan skill: (pesan di grup uji internal Komunitech)
 Hasilnya: tanpa skill, AI langsung memasang pengingat otomatis ke grup, melanggar aturan bahwa draf dikirim oleh staf. Dengan skill, tanggal dihitung benar ("3 hari lagi" menjadi Senin 5 Okt), izin pasien dicatat, pasien tanpa izin disaring, dan draf disiapkan untuk disalin staf.
 
-Setelah uji ini skill diperbaiki di versi 1.0.7–1.0.8 (teks untuk grup staf tanpa nomor dan keterangan medis, izin pengingat tidak dianggap izin promosi, rujukan laporan dipertegas; versi terkini 1.0.8). Perbaikan itu belum diuji ulang di bot Telegram.
+Setelah uji ini skill diperbaiki di versi 1.0.7–1.0.8 (teks untuk grup staf tanpa nomor dan keterangan medis, izin pengingat tidak dianggap izin promosi, rujukan laporan dipertegas; versi terkini 1.0.9, sedangkan versi yang tampil di bot saat uji itu bukan 1.0.9). Perbaikan itu belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah skill ini menyimpan rekam medis atau diagnosis pasien?**

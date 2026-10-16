@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — laporan-klien-konsultan
 
-Sumber (ada di paket VIP): `solusi-vip/konsultan/UJI-OPENCLAW.md` (rincian: `solusi-vip/konsultan/uji-openclaw/04-laporan-progres-klien.md` dan `04-laporan-progres-klien-ulang.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.5); uji ulang = 1.0.5 (sama dengan versi katalog saat ini). Penguji: agent penguji independen (bukan pembuat skill).
+Sumber (ada di paket VIP): `solusi-vip/konsultan/UJI-OPENCLAW.md` (rincian: `solusi-vip/konsultan/uji-openclaw/04-laporan-progres-klien.md` dan `04-laporan-progres-klien-ulang.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.5); uji ulang = 1.0.5. Versi katalog saat ini 1.0.6 belum diuji ulang sebelum/sesudah di OpenClaw (menurut `CHANGELOG.md`, 1.0.6 hanya merapikan referensi jadwal dan penanda versi; cara kerja tidak berubah). Penguji: agent penguji independen (bukan pembuat skill).
 
 Berkas ini hanya menyalin ringkasan dari catatan uji internal di atas; balasan utuh kedua sisi ada di berkas sumber. Hasil uji pemasangan/pemicu OpenClaw (6 dari 6 butir) ada terpisah di `UJI-PLATFORM.md`; itu bukan uji sebelum/sesudah.
 

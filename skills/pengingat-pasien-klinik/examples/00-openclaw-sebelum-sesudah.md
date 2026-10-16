@@ -1,6 +1,6 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — pengingat-pasien-klinik
 
-Sumber (ada di paket VIP): `solusi-vip/klinik/UJI-OPENCLAW.md` (rincian: `solusi-vip/klinik/uji-openclaw/03-pengingat-kontrol-info-kurang.md` dan `03-pengingat-kontrol-info-kurang-ulang.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.6); uji ulang = 1.0.6 (versi katalog saat ini 1.0.8). Penguji: agent penguji independen (bukan pembuat skill).
+Sumber (ada di paket VIP): `solusi-vip/klinik/UJI-OPENCLAW.md` (rincian: `solusi-vip/klinik/uji-openclaw/03-pengingat-kontrol-info-kurang.md` dan `03-pengingat-kontrol-info-kurang-ulang.md`). Tanggal uji: 2026-10-01 (Asia/Jakarta). Versi skill saat uji: uji pertama tidak dicatat di sumber (sebelum revisi 1.0.6); uji ulang = 1.0.6 (versi katalog saat ini 1.0.9). Penguji: agent penguji independen (bukan pembuat skill).
 
 Berkas ini hanya menyalin ringkasan dari catatan uji internal di atas; balasan utuh kedua sisi ada di berkas sumber. Semua data pasien fiktif.
 

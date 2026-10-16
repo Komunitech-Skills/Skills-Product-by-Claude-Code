@@ -2,7 +2,7 @@
 
 **Tenggat setor dan lapor pajak usaha Anda dalam satu kalender — digeser otomatis kalau jatuh di hari libur. Alat bantu jadwal, bukan nasihat pajak.**
 
-Diuji AI penguji independen di OpenClaw (satu skenario, 1 Okt 2026, di dalam paket 25 skill untuk konsultan pajak): 5 → 8,5 dari 10 pada uji ulang v1.0.7; uji pertama 5 → 7 belum lulus (tanpa skill, AI menyebut setor PPh 21 paling lambat tanggal 10 dengan dasar aturan lama; dengan skill, tenggat dari skrip sesuai PMK 81/2024 dan batas omzet Rp500 juta dihitung, bukan ditebak). Skor tanpa skill berasal dari uji pertama; uji ulang hanya mengulang sisi dengan skill.
+Diuji AI penguji independen di OpenClaw (satu skenario, 1 Okt 2026, di dalam paket 25 skill untuk konsultan pajak): 5 → 8,5 dari 10 pada uji ulang v1.0.7 (batas omzet Rp500 juta kini dihitung skrip, bukan ditebak); uji pertama 5 → 7 belum lulus (tanpa skill, AI menyebut setor PPh 21 paling lambat tanggal 10 dengan dasar aturan lama; dengan skill, tenggat dari skrip sesuai PMK 81/2024, tetapi model keliru menebak ambang Rp500 juta sudah lewat dan mengarang kode KAP). Skor tanpa skill berasal dari uji pertama; uji ulang hanya mengulang sisi dengan skill.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
