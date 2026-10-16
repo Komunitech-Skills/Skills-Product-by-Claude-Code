@@ -24,7 +24,9 @@ Kirim butuh env tester_bot_token (bot penguji) -> grup uji, topik 242, tag pemil
 Token tidak pernah dicetak atau disimpan.
 """
 import csv
+import html
 import json
+import re
 import os
 import sys
 import urllib.parse
@@ -209,51 +211,76 @@ def _tanggal_id(dt):
     return f"{dt.day} {bulan[dt.month - 1]} {dt.year}, {dt:%H:%M} UTC"
 
 
-def susun_pesan(ringkasan, laporan, nomor, baru, dt=None, katalog="", catatan=""):
+def _esc(t):
+    return html.escape(str(t), quote=False)
+
+
+def susun_pesan(ringkasan, laporan, nomor, baru, dt=None, katalog="", catatan="", format_html=True):
+    """Susun laporan. format_html=True -> HTML Telegram (parse_mode=HTML, hanya <b>/<i>/<code>);
+    False -> teks polos (cadangan bila Telegram menolak HTML). Panjang dijaga <= BATAS_TELEGRAM
+    dengan memangkas daftar, bukan memotong di tengah tag."""
     dt = dt or sekarang()
     total = len(ringkasan["tuntas"]) + len(ringkasan["sisa"])
     sebelumnya = laporan[-1] if laporan else None
     acuan = f" sejak laporan #{sebelumnya['no']} ({sebelumnya['tanggal'][:10]})" if sebelumnya else ""
-    baris = [
-        f"{TAG} LAPORAN HELIKOPTER #{nomor} — {_tanggal_id(dt)}",
-        "Otomatis tiap 10 skill tuntas (keputusan otomatis no. 88). "
-        "Skill tuntas = semua pekerjaan terbuka untuknya selesai (rujukan aturan, uji ulang, tampil di bot Telegram).",
-        "",
-        f"TUNTAS: {len(baru)} skill baru{acuan} — total {len(ringkasan['tuntas'])} dari {total} skill antrean",
-    ]
-    for s in baru[:AMBANG + 5]:
-        bukti = [b["bukti"] for b in ringkasan["per_skill"][s] if b["bukti"]]
-        baris.append(f"- {s}" + (f" — {bukti[-1]}" if bukti else ""))
-    if len(baru) > AMBANG + 5:
-        baris.append(f"- +{len(baru) - AMBANG - 5} skill lagi (lihat koordinasi/helikopter-laporan.md)")
-    baris += ["", f"BELUM TUNTAS: {len(ringkasan['sisa'])} skill ({ringkasan['item_buka']} pekerjaan)"]
-    for j in JENIS:
-        nama = ringkasan["per_jenis"][j]
-        if nama:
-            baris.append(f"- {LABEL[j]}: {len(nama)} skill ({_daftar(nama, 600)})")
-    baris.append("(satu skill bisa punya lebih dari satu pekerjaan)")
-    if katalog:
-        baris += ["", f"KATALOG: {katalog}."]
-    if catatan:
-        baris.append(f"CATATAN: {catatan}")
-    pesan = "\n".join(baris)
-    if len(pesan) > BATAS_TELEGRAM:
-        pesan = pesan[:BATAS_TELEGRAM - 20].rstrip() + "\n(…dipotong)"
-    return pesan
+    E = _esc if format_html else (lambda t: str(t))
+    B = (lambda t: f"<b>{t}</b>") if format_html else (lambda t: t)
+    I = (lambda t: f"<i>{t}</i>") if format_html else (lambda t: t)
+
+    def bangun(maks_baru, maks_daftar):
+        baris = [
+            f"{TAG} {B('LAPORAN HELIKOPTER #' + str(nomor))} — {E(_tanggal_id(dt))}",
+            I(E("Otomatis tiap 10 skill tuntas (keputusan otomatis no. 88). "
+                "Skill tuntas = semua pekerjaan terbuka untuknya selesai (rujukan aturan, uji ulang, tampil di bot Telegram).")),
+            "",
+            B(f"✅ TUNTAS: {len(baru)} skill baru") + E(f"{acuan} — total {len(ringkasan['tuntas'])} dari {total} skill antrean"),
+        ]
+        for s_ in baru[:maks_baru]:
+            bukti = [b["bukti"] for b in ringkasan["per_skill"][s_] if b["bukti"]]
+            baris.append(f"• {E(s_)}" + (f" — {E(bukti[-1])}" if bukti else ""))
+        if len(baru) > maks_baru:
+            baris.append(E(f"• +{len(baru) - maks_baru} skill lagi (lihat koordinasi/helikopter-laporan.md)"))
+        baris += ["", B(f"⏳ BELUM TUNTAS: {len(ringkasan['sisa'])} skill") + E(f" ({ringkasan['item_buka']} pekerjaan)")]
+        for jn in JENIS:
+            nama = ringkasan["per_jenis"][jn]
+            if nama:
+                baris.append(f"• {E(LABEL[jn])}: {len(nama)} skill ({E(_daftar(nama, maks_daftar))})")
+        baris.append(I(E("(satu skill bisa punya lebih dari satu pekerjaan)")))
+        if katalog:
+            baris += ["", B("📦 KATALOG: ") + E(katalog) + "."]
+        if catatan:
+            baris.append(B("📝 CATATAN: ") + E(catatan))
+        return "\n".join(baris)
+
+    for maks_baru, maks_daftar in ((AMBANG + 5, 600), (AMBANG, 300), (5, 150), (3, 80), (0, 40)):
+        pesan = bangun(maks_baru, maks_daftar)
+        if len(pesan) <= BATAS_TELEGRAM:
+            return pesan
+    return pesan[:BATAS_TELEGRAM - 20].rsplit("\n", 1)[0] + "\n(…dipotong)"
 
 
-def kirim_telegram(teks, chat_id=CHAT_ID, topik=TOPIK):
+def kirim_telegram(teks, chat_id=CHAT_ID, topik=TOPIK, format_html=True):
     tok = os.environ.get("tester_bot_token")
     if not tok:
         raise RuntimeError("env tester_bot_token tidak ada; laporan tidak dikirim")
-    data = urllib.parse.urlencode({"chat_id": chat_id, "message_thread_id": topik, "text": teks,
-                                   "disable_web_page_preview": "true"}).encode()
-    req = urllib.request.Request(f"https://api.telegram.org/bot{tok}/sendMessage", data=data)
-    try:
-        with urllib.request.urlopen(req, timeout=40) as r:
-            return json.load(r)
-    except urllib.error.HTTPError as e:
-        return json.loads(e.read() or b"{}") | {"http": e.code}
+    def _kirim(t, mode):
+        param = {"chat_id": chat_id, "message_thread_id": topik, "text": t, "disable_web_page_preview": "true"}
+        if mode:
+            param["parse_mode"] = mode
+        data = urllib.parse.urlencode(param).encode()
+        req = urllib.request.Request(f"https://api.telegram.org/bot{tok}/sendMessage", data=data)
+        try:
+            with urllib.request.urlopen(req, timeout=40) as r:
+                return json.load(r)
+        except urllib.error.HTTPError as e:
+            return json.loads(e.read() or b"{}") | {"http": e.code}
+
+    hasil = _kirim(teks, "HTML" if format_html else None)
+    if format_html and not hasil.get("ok") and "parse" in str(hasil.get("description", "")).lower():
+        # Telegram menolak HTML (mis. tag tak seimbang) -> kirim teks polos tanpa tag
+        polos = re.sub(r"</?(b|i|code)>", "", teks)
+        hasil = _kirim(html.unescape(polos), None) | {"fallback": "teks polos"}
+    return hasil
 
 
 # ---------- CLI ----------

@@ -98,7 +98,7 @@ class TesPesan(unittest.TestCase):
         r = h.ringkas(b)
         kirim, baru = h.perlu_kirim(r, [])
         dt = datetime(2026, 10, 15, 9, 55, tzinfo=timezone.utc)
-        p = h.susun_pesan(r, [], 1, baru, dt=dt, katalog="3 skill = 2 beta, 1 uji", catatan="router 530")
+        p = h.susun_pesan(r, [], 1, baru, dt=dt, katalog="3 skill = 2 beta, 1 uji", catatan="router 530", format_html=False)
         self.assertTrue(p.startswith(h.TAG + " LAPORAN HELIKOPTER #1 — 15 Okt 2026, 09:55 UTC"))
         self.assertIn("TUNTAS: 12 skill baru — total 12 dari 14 skill antrean", p)
         self.assertIn("BELUM TUNTAS: 2 skill (3 pekerjaan)", p)
@@ -116,6 +116,36 @@ class TesPesan(unittest.TestCase):
         p = h.susun_pesan(r, [], 3, baru, katalog="x" * 100, catatan="y" * 100)
         self.assertLessEqual(len(p), h.BATAS_TELEGRAM)
         self.assertIn("+", p)  # daftar dipadatkan "+N lagi"
+
+    def test_pesan_html_aman(self):
+        r = h.ringkas([
+            {"skill": "a<b>&c", "jenis": "telegram", "keterangan": "x & y", "status": "selesai",
+             "tanggal_selesai": "2026-10-16", "bukti": "skor 5 -> 8 <ok>"},
+            {"skill": "sisa-1", "jenis": "rujukan", "keterangan": "k", "status": "buka", "tanggal_selesai": "", "bukti": ""},
+        ])
+        p = h.susun_pesan(r, [], 4, ["a<b>&c"], dt=datetime(2026, 10, 16, 18, 0, tzinfo=timezone.utc),
+                          katalog="1 < 2 & 3", catatan="cek <angka>")
+        self.assertIn("<b>LAPORAN HELIKOPTER #4</b>", p)
+        self.assertIn("a&lt;b&gt;&amp;c", p)          # nama skill di-escape
+        self.assertIn("skor 5 -&gt; 8 &lt;ok&gt;", p)  # bukti di-escape
+        self.assertIn("1 &lt; 2 &amp; 3", p)
+        self.assertNotIn("<ok>", p)
+        # tag seimbang
+        for tag in ("b", "i"):
+            self.assertEqual(p.count(f"<{tag}>"), p.count(f"</{tag}>"))
+        polos = h.susun_pesan(r, [], 4, ["a<b>&c"], format_html=False)
+        self.assertNotIn("<b>LAPORAN", polos)
+        self.assertIn("a<b>&c", polos)
+
+    def test_pesan_html_tidak_melebihi_batas(self):
+        baru = [f"skill-panjang-sekali-{i:03d}" for i in range(60)]
+        r = h.ringkas([{"skill": s, "jenis": "telegram", "keterangan": "k" * 50, "status": "selesai",
+                        "tanggal_selesai": "2026-10-16", "bukti": "gelombang 99 2026-10-16: LOLOS 5->9 (v1.0.0)" * 3}
+                       for s in baru] + [{"skill": f"sisa-{i:03d}", "jenis": "uji-ulang", "keterangan": "k",
+                                          "status": "buka", "tanggal_selesai": "", "bukti": ""} for i in range(200)])
+        p = h.susun_pesan(r, [], 5, baru, katalog="x" * 200, catatan="y" * 300)
+        self.assertLessEqual(len(p), h.BATAS_TELEGRAM)
+        self.assertEqual(p.count("<b>"), p.count("</b>"))
 
     def test_kirim_tanpa_token_gagal_tanpa_bocor(self):
         lama = os.environ.pop("tester_bot_token", None)
