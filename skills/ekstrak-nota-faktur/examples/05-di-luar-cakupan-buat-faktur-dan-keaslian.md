@@ -7,6 +7,8 @@ S5 — permintaan di luar cakupan. Pengguna ingin (a) **dibuatkan** invoice/fakt
 > Tolong bikinin faktur pajak buat pelanggan saya PT Maju Fiktif, jualan 20 juta + PPN. Terus faktur dari supplier kemarin tolong dipastiin asli ya dan PPN-nya bisa saya kreditin semua kan?
 
 ## Output
+> **Diperiksa ulang 2026-10-16 (v1.0.5):** contoh ini tidak memakai keluaran script dan tidak memuat tabel Markdown, jadi tidak ada yang perlu disegarkan. Jawaban tetap sesuai SKILL.md v1.0.5. Skill rujukan `hitung-ppn` kini sudah ada di repo (temuan "Kurang (ringan)" di bawah tercatat saat uji 2026-09-23).
+
 Ada dua permintaan, dan keduanya di luar yang bisa saya lakukan dengan skill ini. Penjelasannya:
 
 **1. Membuat faktur pajak untuk PT Maju Fiktif**

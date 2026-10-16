@@ -38,6 +38,8 @@ Isi foto (transkripsi yang dibaca agent):
 ```
 
 ## Output
+> **Disegarkan ke v1.0.5 (2026-10-16):** CSV di bawah adalah keluaran ulang `scripts/cek_nota.py --hari-ini 2026-09-23 --format csv --pemisah ";"` dari data hasil baca yang sama. Sejak v1.0.4/1.0.5 kolom angka dokumen dipisah dari kolom hitungan (**Subtotal Hitung Ulang**, **DPP Hitung Ulang**, **PPN Seharusnya**, **Total Seharusnya**, **Total Untuk Rekap**, dst.), dan judul lama "… Dihitung Script" tidak dipakai lagi. Status, selisih, dan rekap tidak berubah. Tampilan di bawah ini untuk Claude Code/Cursor; versi kanal chat (Telegram/WhatsApp, tanpa tabel Markdown) ada di bagian berikutnya.
+
 
 **Hasil baca & cek 4 dokumen**
 
@@ -76,15 +78,40 @@ Kategori ditebak dari isi dokumen. Beri tahu saya kalau Anda memakai kategori la
 
 **CSV (siap tempel ke Excel, pemisah ;)**
 ```csv
-No;ID;Tanggal;Jenis;Nomor Dokumen;Penjual;NPWP Penjual;Pembeli;Kategori;Subtotal;Diskon;DPP;PPN;PPh;Biaya Lain;Total;Metode Bayar;Status Cek;Kolom Tidak Terbaca;Catatan
-1;N1;2026-09-03;struk;TRX-0903-0045;Minimarket Sumber Rejeki Fiktif;;;Bahan baku;119200;;107387;11813;;;119200;QRIS;COCOK;;
-2;N2;2026-09-05;nota;"=""0172""";Toko Bahan Kue Aneka Fiktif;;;Bahan baku;720500;;;;;;730500;tunai;ADA SELISIH;;Nota tulisan tangan
-3;I1;2026-09-10;invoice;INV/SJT/2026/0911;CV Sejuk Teknik Fiktif;"=""0001234567890000""";Dapur Kue Bu Rina (fiktif);Perbaikan & perawatan;1300000;;1300000;143000;;;1443000;transfer BCA;COCOK;;
-4;K1;2026-09-12;kuitansi;017/KW/IX/26;Persewaan Tenda Pak Budi (fiktif);;;Sewa;;;;;;;7500000;tunai;COCOK;;
+No;ID;Tanggal;Jenis;Nomor Dokumen;Penjual;NPWP Penjual;Pembeli;Kategori;Subtotal;Diskon;DPP;PPN;PPh;Biaya Lain;Total;Subtotal Hitung Ulang;DPP Hitung Ulang;PPN Seharusnya;Total Seharusnya;Total Untuk Rekap;Ikut Rekap;Jatuh Tempo;Rekening Tujuan;Metode Bayar;Status Cek;Kolom Tidak Terbaca;Catatan
+1;N1;2026-09-03;struk;TRX-0903-0045;Minimarket Sumber Rejeki Fiktif;;;Bahan baku;;;107387;11813;;;119200;119200;;11813;119200;119200;ya;;;QRIS;COCOK;;
+2;N2;2026-09-05;nota;"=""0172""";Toko Bahan Kue Aneka Fiktif;;;Bahan baku;;;;;;;730500;720500;;;720500;730500;ya;;;tunai;ADA SELISIH;;Nota tulisan tangan
+3;I1;2026-09-10;invoice;INV/SJT/2026/0911;CV Sejuk Teknik Fiktif;"=""0001234567890000""";Dapur Kue Bu Rina (fiktif);Perbaikan & perawatan;1300000;;1300000;143000;;;1443000;;;143000;1443000;1443000;ya;;;transfer BCA;COCOK;;
+4;K1;2026-09-12;kuitansi;017/KW/IX/26;Persewaan Tenda Pak Budi (fiktif);;;Sewa;;;;;;;7500000;;;;;7500000;ya;;;tunai;COCOK;;Untuk sewa tenda & kursi acara 12 September 2026, meterai tidak terlihat
 ```
-Cara pakai: simpan sebagai `rekap-nota.csv` lalu buka di Excel. File yang sama juga sudah saya simpan sebagai `rekap-nota.csv` (UTF-8 BOM). Catatan: kolom Subtotal N2 (720500) adalah **hasil jumlah script** karena di nota tidak tertulis subtotal.
+Cara pakai: simpan sebagai `rekap-nota.csv` lalu buka di Excel. File yang sama juga sudah saya simpan sebagai `rekap-nota.csv` (UTF-8 BOM). Kolom Subtotal/DPP/PPN/Total berisi angka yang tertulis di dokumen saja; hasil hitung ulang ada di kolom terpisah. Contoh: N2 tidak menulis subtotal, jadi kolom **Subtotal** kosong dan **Subtotal Hitung Ulang** = 720500 (jumlah 3 barang); **Total Seharusnya** 720500 vs **Total** 730500 menunjukkan selisih Rp 10.000.
 
 _Dasar PPN: UU HPP & PMK 131/2024, per 23 September 2026. Format NPWP/NITKU/nomor faktur: belum terverifikasi dari dokumen resmi, hanya peringatan. Alat bantu cek, bukan nasihat pajak; untuk kepastian hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
+
+## Versi kanal chat (Telegram/WhatsApp) — ditambahkan 2026-10-16 (v1.0.5)
+Di kanal chat tabel Markdown tidak dipakai. Isi dan angka sama dengan di atas (keluaran script yang sama), hanya bentuknya:
+
+> **Hasil baca & cek 4 dokumen**
+> N1 · 03-09-2026 · Minimarket Sumber Rejeki Fiktif · Struk · Rp 119.200 · ✅ Cocok
+> N2 · 05-09-2026 · Toko Bahan Kue Aneka Fiktif · Nota · Rp 730.500 · ❌ Ada selisih
+> I1 · 10-09-2026 · CV Sejuk Teknik Fiktif · Invoice · Rp 1.443.000 · ✅ Cocok
+> K1 · 12-09-2026 · Persewaan Tenda Pak Budi (fiktif) · Kuitansi · Rp 7.500.000 · ✅ Cocok (cek meterai)
+>
+> **Yang perlu Anda cek** (sama dengan daftar di atas)
+>
+> **Rekap pengeluaran:** total Rp 9.792.700 · PPN tercantum Rp 154.813 (bukan dari faktur pajak) · Sewa Rp 7.500.000 (1) · Perbaikan & perawatan Rp 1.443.000 (1) · Bahan baku Rp 849.700 (2) · September 2026: 4 dokumen
+>
+> 📎 rekap-nota.csv (dilampirkan sebagai dokumen; buka di Excel)
+
+Bila CSV juga ditampilkan di chat: `--pemisah tab`, kolom yang kosong di semua baris dibuang utuh (Diskon, PPh, Biaya Lain, DPP Hitung Ulang, Jatuh Tempo, Rekening Tujuan, Kolom Tidak Terbaca), isi sel tidak diubah:
+```
+No	ID	Tanggal	Jenis	Nomor Dokumen	Penjual	NPWP Penjual	Pembeli	Kategori	Subtotal	DPP	PPN	Total	Subtotal Hitung Ulang	PPN Seharusnya	Total Seharusnya	Total Untuk Rekap	Ikut Rekap	Metode Bayar	Status Cek	Catatan
+1	N1	2026-09-03	struk	TRX-0903-0045	Minimarket Sumber Rejeki Fiktif			Bahan baku		107387	11813	119200	119200	11813	119200	119200	ya	QRIS	COCOK	
+2	N2	2026-09-05	nota	"=""0172"""	Toko Bahan Kue Aneka Fiktif			Bahan baku				730500	720500		720500	730500	ya	tunai	ADA SELISIH	Nota tulisan tangan
+3	I1	2026-09-10	invoice	INV/SJT/2026/0911	CV Sejuk Teknik Fiktif	"=""0001234567890000"""	Dapur Kue Bu Rina (fiktif)	Perbaikan & perawatan	1300000	1300000	143000	1443000		143000	1443000	1443000	ya	transfer BCA	COCOK	
+4	K1	2026-09-12	kuitansi	017/KW/IX/26	Persewaan Tenda Pak Budi (fiktif)			Sewa				7500000				7500000	ya	tunai	COCOK	Untuk sewa tenda & kursi acara 12 September 2026, meterai tidak terlihat
+```
+Bila kanal tidak bisa melampirkan berkas: jalur/folder kerja tidak disebut, cukup tawarkan "balas 'kirim file'".
 
 ## Catatan penguji
 - Script: `cek_nota.py nota.json` (teks) dan `--format csv --pemisah ";" --output rekap-nota.csv`. Status, selisih, dan rekap diambil apa adanya.
@@ -95,4 +122,5 @@ _Dasar PPN: UU HPP & PMK 131/2024, per 23 September 2026. Format NPWP/NITKU/nomo
   - rekap 119.200 + 730.500 + 1.443.000 + 7.500.000 = 9.792.700 dan PPN 11.813 + 143.000 = 154.813 benar
   - terbilang I1 dan K1 benar
 - Bagus: pengingat meterai, pemisahan "PPN tercantum" vs "PPN dari faktur pajak", NPWP/nomor ber-nol di depan dibungkus `="…"`.
+- *(Catatan 2026-10-16: temuan di bawah sudah diperbaiki sejak v1.0.4 — Subtotal N1/N2 kini kosong dan hasil jumlah ada di kolom "Subtotal Hitung Ulang"; CSV di atas sudah disegarkan. Penilaian penguji tetap penilaian uji 2026-09-23.)*
 - **Kurang (ringan):** kolom **Subtotal** di CSV untuk N2 berisi 720500 hasil jumlah script, padahal di dokumen tidak ada subtotal (`subtotal: null`). Tidak ada penanda di CSV/JSON, sehingga bertentangan dengan aturan `references/skema-data.md` bagian 1 ("angka hasil hitungan hanya boleh muncul sebagai 'dihitung script'"). Agent di sini menambahkan catatan manual.

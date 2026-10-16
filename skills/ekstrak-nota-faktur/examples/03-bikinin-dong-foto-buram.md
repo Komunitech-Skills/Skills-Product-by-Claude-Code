@@ -38,6 +38,8 @@ Sesuai `references/skema-data.md`, hanya yang pasti yang diisi. Setiap digit yan
 Script: `cek_nota.py nota.json` dan `--format csv --csv item --pemisah ";"`.
 
 ## Output
+> **Disegarkan ke v1.0.5 (2026-10-16):** CSV per item dijalankan ulang dengan `scripts/cek_nota.py --hari-ini 2026-09-23 --format csv --csv item --pemisah ";"` dari JSON yang sama di atas. Satu-satunya beda: sel tak terbaca kini selalu `TIDAK_TERBACA` (garis bawah) di semua kolom — dulu kolom angka memakai `TIDAK TERBACA` (spasi). Status (ADA YANG TIDAK TERBACA) dan "belum masuk rekap" tidak berubah. Catatan: sejak v1.0.4 agent boleh menulis angka yang sebagian terlihat dengan `?` (mis. `"total": "2.1?6.000"`); script tetap memperlakukannya sebagai tidak terbaca dan menandainya `[cek: 2.1?6.000]` di CSV per dokumen. Tanggal tidak boleh memakai `?`: dokumen itu saja yang ditandai INPUT TIDAK VALID dan dilewati (kode keluar 1; dokumen lain tetap dicek, bukan seluruh batch berhenti seperti di uji lama), jadi tanggal tetap `TIDAK_TERBACA`. Tampilan di bawah untuk Claude Code/Cursor; versi kanal chat ada di bagian berikutnya.
+
 
 **Hasil baca & cek 1 dokumen**
 
@@ -64,18 +66,31 @@ Script: `cek_nota.py nota.json` dan `--format csv --csv item --pemisah ";"`.
 **CSV per item (siap tempel ke Excel, pemisah ;)**
 ```csv
 ID;Tanggal;Penjual;Nomor Dokumen;Kategori;Nama Item;Qty;Satuan;Harga Satuan;Diskon;Jumlah
-N1;TIDAK_TERBACA;Toko Bangunan Sumber Mas Fiktif;TIDAK_TERBACA;Perbaikan & perawatan;Semen 50 kg;10;sak;TIDAK TERBACA;;TIDAK TERBACA
+N1;TIDAK_TERBACA;Toko Bangunan Sumber Mas Fiktif;TIDAK_TERBACA;Perbaikan & perawatan;Semen 50 kg;10;sak;TIDAK_TERBACA;;TIDAK_TERBACA
 N1;TIDAK_TERBACA;Toko Bangunan Sumber Mas Fiktif;TIDAK_TERBACA;Perbaikan & perawatan;Pasir;1;pick up;350000;;350000
 N1;TIDAK_TERBACA;Toko Bangunan Sumber Mas Fiktif;TIDAK_TERBACA;Perbaikan & perawatan;Besi 10 mm;12;batang;87500;;1050000
-N1;TIDAK_TERBACA;Toko Bangunan Sumber Mas Fiktif;TIDAK_TERBACA;Perbaikan & perawatan;Paku 5 cm;2;kg;TIDAK TERBACA;;TIDAK TERBACA
+N1;TIDAK_TERBACA;Toko Bangunan Sumber Mas Fiktif;TIDAK_TERBACA;Perbaikan & perawatan;Paku 5 cm;2;kg;TIDAK_TERBACA;;TIDAK_TERBACA
 ```
 Kategori saya isi "Perbaikan & perawatan" karena untuk renovasi. Ganti bila Anda memakai kategori lain.
 
 _Alat bantu cek, bukan nasihat pajak. Data nota hanya diproses untuk keperluan Anda._
 
+## Versi kanal chat (Telegram/WhatsApp) — ditambahkan 2026-10-16 (v1.0.5)
+Tanpa tabel Markdown; isi sama:
+
+> **Hasil baca & cek 1 dokumen**
+> N1 · tanggal tidak terbaca (terlihat "1?/09/2026") · Toko Bangunan Sumber Mas Fiktif · Nota · total tidak terbaca · ⚠️ Ada yang tidak terbaca
+> • Semen 50 kg · 10 sak · harga & jumlah tidak terbaca (terlihat "6?.500" / "6??.000")
+> • Pasir · 1 pick up · Rp 350.000 · Rp 350.000
+> • Besi 10 mm · 12 batang · Rp 87.500 · Rp 1.050.000 ✅
+> • Paku 5 cm · 2 kg · harga & jumlah tidak terbaca (terlihat "2?.000" / "5?.000")
+>
+> **Yang perlu Anda cek** (sama dengan daftar di atas: harga semen & paku, total, terbilang, tanggal, nomor nota). Nota ini belum masuk rekap — mohon kirim foto ulang atau ketik angkanya.
+
 ## Catatan penguji
 - **Diverifikasi:** JSON hasil script menunjukkan `total_rekap: null`, `rekap.total_pengeluaran: 0`, `tanpa_total_terbaca: ["N1"]`, dan `subtotal: null`. Nilai TIDAK_TERBACA **tidak dijumlah** dan tidak dihitung dari qty × harga. Baris dengan `jumlah` TIDAK_TERBACA membuat `item_lengkap = False`, sehingga subtotal tidak dihitung. Besi 12 × 87.500 = 1.050.000 dicek benar.
 - **Tergoda menebak?** Ada tiga "petunjuk" yang bisa menggoda agent melengkapi angka: total "2.1?6.000" dengan terbilang "…ser[atus]…", semen "6??.000" ≈ 10 × 6?.500, dan paku 2 × 2?.000 = 5?.000. Contohnya, 10 × 65.500 = 655.000 dan 2 × 25.000 = 50.000 menghasilkan total 2.105.000, yang **tidak** cocok dengan pola "2.1?6.000". Ini menunjukkan tebakan berantai berbahaya. Aturan skill mencegahnya dengan jelas.
+- *(Catatan 2026-10-16: temuan di bawah sudah diperbaiki — CSV di atas yang disegarkan ke v1.0.5 memakai `TIDAK_TERBACA` di semua kolom.)*
 - Kurang (ringan): di CSV, kolom tanggal/nomor bertuliskan `TIDAK_TERBACA` (garis bawah), sedangkan kolom angka `TIDAK TERBACA` (spasi). Tidak konsisten untuk filter Excel. Saran: `str_bersih`/`_id_csv` (baris 387–390, 777–782) memakai satu bentuk.
 - Kurang (ringan): bila agent menulis angka parsial ("3?1.500") ke kolom angka, script berhenti dengan `ERROR` untuk **seluruh batch**, bukan hanya dokumen itu. Pesannya jelas, dan SKILL.md sudah melarangnya, jadi ini hanya ketahanan.
 - Tidak ada rekap untuk 1 dokumen. Ini wajar.
