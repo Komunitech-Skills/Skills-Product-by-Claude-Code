@@ -42,8 +42,8 @@ harga-jual-marketplace,uji-ulang,bukti sebelum/sesudah per skill belum ada (data
 hitung-thr,uji-ulang,uji ulang 1.0.11 (placeholder nama usaha),selesai,2026-10-14,"uji ulang 1.0.10 LULUS (penguji independen 2026-10-14), patch 1.0.11 placeholder"
 iterasi-dari-masukan-pelanggan,telegram,"Masih terbuka: gelombang G18 (topik 1482-1491) untuk iterasi-dari-masukan-pelanggan belum terkirim ke bot Telegram asli, hanya 1 dari 10 pesan yang terkirim (mi",buka,,
 iterasi-dari-masukan-pelanggan,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-kalender-pajak,uji-ulang,"kalender-pajak (beta, 1.0.7) masih perlu uji sebelum/sesudah OpenClaw per skill oleh penguji independen. Berkas 00-openclaw-sebelum-sesudah.md hanya salinan rin",buka,,
-kas-umkm,uji-ulang,"Uji ulang sebelum/sesudah per skill untuk kas-umkm (1.0.12) belum dikerjakan: berkasnya masih salinan ringkasan uji solusi VIP 2026-10-01, tanpa baris di jsonl ",buka,,
+kalender-pajak,uji-ulang,"kalender-pajak (beta, 1.0.7) masih perlu uji sebelum/sesudah OpenClaw per skill oleh penguji independen. Berkas 00-openclaw-sebelum-sesudah.md hanya salinan rin",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (5,0→8,5 v1.0.7, promosi), commit dea3b20; keputusan otomatis 89"
+kas-umkm,uji-ulang,"Uji ulang sebelum/sesudah per skill untuk kas-umkm (1.0.12) belum dikerjakan: berkasnya masih salinan ringkasan uji solusi VIP 2026-10-01, tanpa baris di jsonl ",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (9,0→9,0 v1.0.11, tidak dipromosikan, selisih <1,5), commit 97c8b0c; keputusan otomatis 89"
 kelayakan-investasi-usaha,rujukan,OP final vs PP 20/2026 → Sebut OP «selamanya» bila syarat terpenuhi,selesai,2026-10-15,revisi v1.0.6 commit f963446 (verifikasi independen lolos)
 laporan-insiden-usaha,rujukan,"(opsional README K3) → Bila catatan kecelakaan kerja: 5/2021, bukan 5/2018",selesai,2026-10-15,revisi v1.0.4 commit 61916b9 (verifikasi independen lolos)
 laporan-insiden-usaha,telegram,"Skill laporan-insiden-usaha (lulus uji internal, +2,25) masih terbuka untuk tampil di bot Telegram asli: G20 (topik 1545–1554) baru persiapan C34, belum dikirim",buka,,
@@ -85,8 +85,8 @@ rencana-restok-barang,rujukan,"Stok Shopee via Mass Update, bukan file order →
 rencana-restok-barang,rujukan,Stok Tokopedia ≠ export pesanan → Teaskan sumber stok terpisah,selesai,2026-10-14,kolom resmi Shopee/Tokopedia & alur stok diterapkan di v1.0.5 (commit 2026-10-14)
 resi-picking,telegram,"Gelombang 21 untuk resi-picking baru disiapkan (topik 1560/1561 dan pesan siap), tetapi belum pernah dikirim ke bot Telegram asli. Pra-cek uji-tg.sh belum dijal",buka,,
 resi-picking,telegram,belum pernah tampil di bot Telegram asli (antrean G18–G23),buka,,
-ringkas-grup-wa,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
-ringkas-grup-wa,uji-ulang,"ringkas-grup-wa (katalog 1.0.6, status beta) belum pernah diuji sebelum/sesudah per skill: berkas 00-openclaw-sebelum-sesudah.md hanya salinan ringkasan uji sol",buka,,
+ringkas-grup-wa,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (7,5→8,5 v1.0.4, tidak dipromosikan, selisih <1,5), commit e31eb68; keputusan otomatis 89"
+ringkas-grup-wa,uji-ulang,"ringkas-grup-wa (katalog 1.0.6, status beta) belum pernah diuji sebelum/sesudah per skill: berkas 00-openclaw-sebelum-sesudah.md hanya salinan ringkasan uji sol",selesai,2026-10-16,"bukti uji solusi VIP 2026-10-01 didokumentasikan ke promosi (7,5→8,5 v1.0.4, tidak dipromosikan, selisih <1,5), commit e31eb68; keputusan otomatis 89"
 riset-harga-kompetitor,uji-ulang,bukti sebelum/sesudah per skill belum ada (data lama),buka,,
 riset-harga-kompetitor,uji-ulang,riset-harga-kompetitor (beta v1.0.5) masih terbuka: belum ada uji sebelum/sesudah OpenClaw per skill (tidak ada examples/00-openclaw-sebelum-sesudah.md dan tida,buka,,
 riset-saham-berita,rujukan,Bapepam → OJK → «OJK (dulu Bapepam)»,selesai,2026-10-15,revisi v1.0.6 commit 6c16577 (verifikasi independen lolos)
