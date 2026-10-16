@@ -88,8 +88,8 @@ class UjiRegresiHasilUji(unittest.TestCase):
         baris = list(csv.DictReader(io.StringIO(teks), delimiter=";"))[0]
         self.assertEqual(baris["Subtotal"], "")
         self.assertEqual(baris["DPP"], "")
-        self.assertEqual(baris["Subtotal Dihitung Script"], "20000")
-        self.assertEqual(baris["DPP Dihitung Script"], "20000")
+        self.assertEqual(baris["Subtotal Hitung Ulang"], "20000")
+        self.assertEqual(baris["DPP Hitung Ulang"], "20000")
 
     def test_npwp_15_digit_faktur_2024_bukan_peringatan(self):
         d = cek({"jenis": "faktur_pajak", "tanggal": "2024-12-10", "nsfp": "010.000-24.12345678",
