@@ -70,7 +70,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 5 Okt 2026: bot penguji mengirim pesan yang sama ke bot tanpa skill dan bot dengan skill.
 - Tanpa skill: skor 6,5
 - Dengan skill: skor 8,5
-Verdik uji bot: LULUS — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv = rekap omzet dari file kasir, balas-chat-cs mode draf = draf balasan chat pelanggan yang Anda kirim sendiri, promo-kalender = rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan. Catatan jujur: jawaban dengan skill cukup panjang (±60 baris) untuk pengguna awam.
+Hasil: lulus — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv = rekap omzet dari file kasir, balas-chat-cs mode draf = draf balasan chat pelanggan yang Anda kirim sendiri, promo-kalender = rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan. Catatan jujur: jawaban dengan skill cukup panjang (±60 baris) untuk pengguna awam.
 
 ## FAQ
 **Apakah AI langsung memasang skill lain tanpa izin saya?**
