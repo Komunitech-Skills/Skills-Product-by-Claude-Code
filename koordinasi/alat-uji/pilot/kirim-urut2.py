@@ -9,13 +9,18 @@ H = os.environ.get("OPENCLAW_AGENT_DB", _default_db)
 def st(t):
     c=sqlite3.connect(f"file:{H}?mode=ro",uri=True)
     r=c.execute("select status,updated_at from session_nodes where session_key like ?",(f"%topic:{t}",)).fetchone(); c.close(); return r
-def tunggu(t,lama=420):
-    end=time.time()+lama; time.sleep(20)
+def tunggu(t,lama=420,sejak_ms=0):
+    # Hanya terima status yang DIPERBARUI setelah pesan dikirim (sejak_ms); status lama dari sesi
+    # sebelumnya (mis. 'failed' karena router jatuh) diabaikan. Bila sampai habis waktu tidak ada
+    # pembaruan sama sekali -> 'tidak-diterima' (gateway kemungkinan tidak menerima pesan).
+    end=time.time()+lama; time.sleep(20); ada_baru=False
     while time.time()<end:
         r=st(t)
-        if r and r[0] not in("running","active"): return r[0]
+        if r and (r[1] or 0)>=sejak_ms:
+            ada_baru=True
+            if r[0] not in("running","active"): return r[0]
         time.sleep(10)
-    return "masih-berjalan"
+    return "masih-berjalan" if ada_baru else "tidak-diterima"
 f,idx=sys.argv[1],[int(x) for x in sys.argv[2:]]
 msgs=json.load(open(f)); log=open("sent-g2.jsonl","a")
 for n,i in enumerate(idx):
@@ -30,6 +35,7 @@ for n,i in enumerate(idx):
             if x.get("message_thread_id")==m["topic"] and x.get("from",{}).get("username","").startswith("KTclaude") and not x.get("text","").startswith("Working"): rid=x["message_id"]
         if rid: kw["reply_parameters"]={"message_id":rid}
         print("reply_to",rid,flush=True)
+    t0_ms=int(time.time()*1000)-5000
     r=call("sendMessage",**kw)
     rec={"skill":m["skill"],"sisi":m["sisi"],"topic":m["topic"],"ok":r.get("ok"),"desc":r.get("description"),"message_id":r.get("result",{}).get("message_id"),"time":datetime.datetime.now().astimezone().isoformat(timespec="seconds")}
-    rec["hasil"]=tunggu(m["topic"]); time.sleep(5); print(rec,flush=True); log.write(json.dumps(rec)+"\n"); log.flush()
+    rec["hasil"]=tunggu(m["topic"],sejak_ms=t0_ms); time.sleep(5); print(rec,flush=True); log.write(json.dumps(rec)+"\n"); log.flush()
