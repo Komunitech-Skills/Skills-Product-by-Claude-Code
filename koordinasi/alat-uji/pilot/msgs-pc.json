@@ -1,0 +1,27 @@
+[
+ {
+  "skill": "pantau-cron-openclaw",
+  "sisi": "sesudah",
+  "topic": 1696,
+  "gel": "23c",
+  "text": "@KTclaude2bot Tolong pantau laporan harian jam 21.00 dan tagih piutang 07.45 Senin-Jumat di OpenClaw saya, kabari lewat Telegram kalau ada yang gagal jalan.",
+  "catatan": "uji alur pasang pantau-cron-openclaw 1.0.3 di bot asli (helikopter uji-ulang): jadwal 'Laporan Harian (21:00)' dan 'Tagih Piutang (07:45)' sudah ada di automations bot-2 (sisa uji lama, announce topik 1250)"
+ },
+ {
+  "skill": "pantau-cron-openclaw",
+  "sisi": "sesudah-ya",
+  "topic": 1696,
+  "gel": "23c",
+  "balas": true,
+  "text": "ya",
+  "catatan": "giliran 2: konfirmasi rencana pemasangan"
+ },
+ {
+  "skill": "pantau-cron-openclaw",
+  "sisi": "sesudah-cek",
+  "topic": 1696,
+  "gel": "23c",
+  "text": "@KTclaude2bot Job mana yang terlambat hari ini?",
+  "catatan": "giliran 3: pengecekan setelah pengawas terpasang"
+ }
+]
