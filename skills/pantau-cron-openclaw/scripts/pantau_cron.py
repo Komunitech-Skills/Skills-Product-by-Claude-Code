@@ -370,6 +370,7 @@ def evaluasi(nama, j, pings, sekarang):
         "jadwal_berikutnya": nxt.strftime("%Y-%m-%dT%H:%M") + " " + zona,
         "jadwal_berikutnya_lokal": fmt_waktu(nxt, zona, now.year),
         "menunggu_jadwal_pertama": menunggu,
+        "terdaftar_lokal": fmt_waktu(dibuat_l, zona, now.year),
     }
 
 
@@ -413,7 +414,7 @@ def susun_laporan(hasil, sekarang, hanya_masalah=False, pulih=None, tersembunyi=
             baris.append("OK (%d):" % len(ok))
         for h in ok:
             if h["menunggu_jadwal_pertama"]:
-                baris.append("- %s: baru didaftarkan, menunggu jadwal pertama %s." % (h["nama"], h["jadwal_berikutnya_lokal"]))
+                baris.append("- %s: terdaftar sejak %s, jadwal pertama %s belum tiba." % (h["nama"], h["terdaftar_lokal"], h["jadwal_berikutnya_lokal"]))
             else:
                 baris.append("- %s: terakhir lapor selesai %s; berikutnya %s." % (h["nama"], h["ping_terakhir_lokal"], h["jadwal_berikutnya_lokal"]))
     elif ok:
@@ -526,9 +527,9 @@ def cmd_daftar(a):
         print("Belum ada job terdaftar. Tambahkan dengan perintah tambah (nama + jadwal, mis. tiap hari 21.00).")
         return
     for h in hasil:
-        print("- %s | \"%s\" %s | toleransi %d mnt | terakhir lapor selesai: %s | berikutnya %s%s"
+        print("- %s | \"%s\" %s | toleransi %d mnt | terakhir lapor selesai: %s | berikutnya %s | terdaftar sejak %s%s"
               % (h["nama"], h["jadwal"], h["zona"], h["toleransi_menit"], h["ping_terakhir_lokal"] or "belum ada",
-                 h["jadwal_berikutnya_lokal"], " | layanan luar: ya" if h["layanan_luar"] else ""))
+                 h["jadwal_berikutnya_lokal"], h["terdaftar_lokal"], " | layanan luar: ya" if h["layanan_luar"] else ""))
 
 
 def cmd_cek(a):

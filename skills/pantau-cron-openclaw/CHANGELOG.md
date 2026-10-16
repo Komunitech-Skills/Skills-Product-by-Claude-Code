@@ -2,6 +2,12 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.4 (2026-10-16)
+- Revisi dari uji alur pasang di bot OpenClaw asli (16 Okt 2026, skor 5): setelah pengguna menjawab "ya", bot hanya mengubah pesan dua jadwal lalu berhenti dan bertanya ulang tujuan kabar, sehingga pengawas tidak terpasang. Kini satu "ya" berlaku untuk seluruh rencana: tujuan kabar yang belum disebut memakai obrolan/topik tempat pengguna meminta (sementara, boleh dipindah), dua pengawas dipasang, uji peringatan dan jalan-sekali dijalankan, lalu hasilnya DIVERIFIKASI dengan membaca ulang daftar jadwal OpenClaw. Dilarang menulis "sudah dipasang/selesai" bila daftar sesudah pasang tidak menunjukkan pengawas baru atau perubahan nyata (tulis "BELUM TERPASANG" + sebabnya).
+- Daftar pantauan: hanya job yang diminta pengguna. Job yang sudah terdaftar sejak lama disebut "sudah ada di pantauan sejak <tanggal>" (bukan "baru didaftarkan") dan dihitung ulang dengan `--ganti`; job lama yang tidak diminta ditawarkan untuk dihapus. Angka "terlewat" selalu disebut bersama rentangnya dan dibedakan dari "gagal berturut-turut" di daftar jadwal OpenClaw.
+- Jawaban "job mana yang terlambat hari ini" dibuka dengan keluaran `cek` apa adanya (susunan PANTAU CRON), maksimal tiga kalimat tambahan, dan jujur bila jadwal belum pernah dijalankan sekali. Bahasa: kata "proses" dilarang; di kanal chat tanpa tabel Markdown.
+- Script (hanya teks keluaran, logika deteksi tidak berubah): `daftar` menampilkan "terdaftar sejak <tanggal>"; baris job yang belum punya jadwal jatuh tempo kini berbunyi "terdaftar sejak <tanggal>, jadwal pertama <waktu> belum tiba" (sebelumnya "baru didaftarkan", keliru untuk job lama). Ditambah 2 uji regresi (32 uji lulus).
+
 ## Catatan revisi 1.0.3 (2026-10-13)
 - Pembersihan kata teknis di jawaban untuk pengguna awam: nama perintah/CLI ikut dilarang muncul, kata "Gateway" diganti "OpenClaw", dan setelah memasang, jadwal dan cara menjeda ditampilkan dalam kalimat biasa ("minta saya menjeda jadwal ini"); perintah teknis hanya bila pengguna memintanya. Logika dan script tidak berubah.
 
