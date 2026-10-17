@@ -58,3 +58,6 @@ Catatan: rak dan "sisa 3 pcs" kemungkinan berasal dari data lama di workspace bo
 |---|---|---|
 | absensi-lokal | 2185 / 2186 | TANPA (2185) lengkap. DENGAN (2186) giliran 2 gagal (router HTTP 530). **Menunggu kirim ulang**, belum dinilai. |
 | pph-final-umkm | 2187 / 2188 | Gagal router. **Menunggu kirim ulang**, belum dinilai. |
+
+## Catatan Akun A (17 Okt)
+Sisi TANPA buku-stok (2183) kemungkinan membaca berkas sisa uji lain di workspace bot (`data/stok.csv`, `data/lokasi-rak.csv` dari A1 resi-picking) — asal "sisa 3 pcs" & rak A3/B4. Pengaruhnya menurunkan skor TANPA, jadi selisih +4,0 mungkin sedikit lebih besar dari semestinya; walau TANPA dinaikkan ke 7, selisih tetap ≥ 1,5 (LULUS tetap). Sejak 08:05 UTC sisa berkas uji lama di workspace bot dipindahkan ke cadangan scratchpad sebelum tiap gelombang.
