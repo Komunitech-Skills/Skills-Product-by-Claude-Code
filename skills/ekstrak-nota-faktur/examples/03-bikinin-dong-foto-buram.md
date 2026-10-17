@@ -76,7 +76,7 @@ Kategori saya isi "Perbaikan & perawatan" karena untuk renovasi. Ganti bila Anda
 _Alat bantu cek, bukan nasihat pajak. Data nota hanya diproses untuk keperluan Anda._
 
 ## Versi kanal chat (Telegram/WhatsApp) — ditambahkan 2026-10-16 (v1.0.5)
-Tanpa tabel Markdown; isi sama:
+Tanpa tabel Markdown; isi sama dengan di atas. *Disusun ulang dari keluaran di atas mengikuti aturan kanal chat v1.0.5; bukan hasil uji baru.*
 
 > **Hasil baca & cek 1 dokumen**
 > N1 · tanggal tidak terbaca (terlihat "1?/09/2026") · Toko Bangunan Sumber Mas Fiktif · Nota · total tidak terbaca · ⚠️ Ada yang tidak terbaca

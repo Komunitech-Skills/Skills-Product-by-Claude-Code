@@ -36,7 +36,7 @@ for _s in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSI = "1.0.13"
+VERSI = "1.0.14"
 
 
 class Gagal(Exception):

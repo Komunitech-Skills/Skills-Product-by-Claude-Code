@@ -2,6 +2,11 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.14 (2026-10-17)
+- Hanya dokumen, logika script tidak berubah (konstanta `VERSI` dinaikkan). "Contoh singkat" di SKILL.md masih memakai angka lama (51 masukan, Pengiriman 9 = 17,6%, Kemasan naik 6,4 poin, pelaksana "Ibu Rini"); kini disamakan dengan keluaran script pada data contoh dan `examples/01`-`02`: 52 masukan (WhatsApp 13), Pengiriman 10 = 19,2% di 4 kanal, Kemasan 6 keluhan = 11,5% dan naik 6,0 poin, backlog pengiriman "Pak Andi, 7 Okt".
+- `examples/03-bulan-kedua-tren.md`: catatan yang menyebut angka September lama (23,5% dan 11,8%) sebagai "keluaran v1.0.1" dikoreksi. Angka itu ilustrasi tulisan tangan, bukan keluaran script; script v1.0.1 pada data yang sama menghasilkan Pengiriman 6 dari 34 = 17,6% dan Kemasan 5 dari 34 = 14,7%. Kolom Sept sekarang (20,0% dan 14,3%) dicek ulang dengan script v1.0.13.
+- README: cuplikan uji OpenClaw diberi keterangan bahwa datanya (toko kue "Kue Nara", 31 masukan) berbeda dari data contoh katering (52 masukan).
+
 ## Catatan revisi 1.0.13 (2026-10-16)
 - Perbaikan dari temuan penguji independen (Akun A): permintaan menu atau paket produk ("boleh tambah menu vegetarian? semoga ada paket tanpa daging", "semoga ada paket hemat untuk kantor") ikut dihitung sebagai saran **Pengiriman**. Penyebabnya bukan kata "kirim" atau "antar", melainkan kata "paket": script mengira semua "paket" adalah barang kiriman. Kata "instan" ("mie instan") punya masalah yang sama.
 - Sekarang kata lemah itu hanya dihitung Pengiriman bila memang berarti barang kiriman. Bila konteksnya produk/menu ("paket hemat", "paket nasi box", "paket tanpa daging", "ada/tambah/bikin paket ...", "mie instan"), Pengiriman dilepas. Permintaan paket ikut tema **Varian / menu / pilihan** (saran), jadi tidak hilang dari laporan. Contoh: "semoga ada paket hemat untuk kantor" kini masuk Harga + Varian/menu.

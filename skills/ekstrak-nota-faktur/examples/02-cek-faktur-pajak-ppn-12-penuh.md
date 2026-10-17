@@ -62,7 +62,7 @@ Catatan: faktur F2 bertanggal Desember 2024. Apakah PPN masukannya masih bisa di
 _Dasar PPN: UU HPP & PMK 131/2024, per 23 September 2026. Format NPWP/NITKU/nomor faktur: belum terverifikasi dari dokumen resmi, hanya peringatan. Alat bantu cek, bukan nasihat pajak; untuk kepastian hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
 
 ## Versi kanal chat (Telegram/WhatsApp) — ditambahkan 2026-10-16 (v1.0.5)
-Tanpa tabel Markdown; angka sama dengan keluaran script di atas:
+Tanpa tabel Markdown; angka sama dengan keluaran script di atas. *Disusun ulang dari keluaran di atas mengikuti aturan kanal chat v1.0.5; bukan hasil uji baru.*
 
 > **Hasil baca & cek 2 dokumen**
 > F1 · 15-09-2026 · PT Kemas Jaya Fiktif · Faktur pajak · Rp 12.040.000 · ⚠️ Perlu dicek

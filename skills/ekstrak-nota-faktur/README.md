@@ -23,18 +23,18 @@
 
 **Sesudah (cukup ketik):** "Mbak/Mas, tolong cek 2 faktur pajak dari PT Kemas Jaya ini. PPN-nya udah bener belum? Yang satu faktur bulan ini, satunya faktur lama Desember 2024 yang baru ketemu di laci. [2 PDF terlampir]"
 
-*Cuplikan dari uji simulasi Claude Code (data fiktif), `examples/02-cek-faktur-pajak-ppn-12-penuh.md`; sisa temuan, rekap pengeluaran, dan CSV dipotong:*
+*Cuplikan dikutip persis dari `examples/02-cek-faktur-pajak-ppn-12-penuh.md` (uji simulasi Claude Code, 23 September 2026, data fiktif; keluaran hitungannya disegarkan ke v1.0.5 pada 16 Oktober 2026). Bagian lain (temuan lain, rekap pengeluaran, CSV) dipotong:*
 ```
 **Hasil baca & cek 2 dokumen**
 
 | # | Tanggal | Penjual | Jenis | Total | Status |
 |---|---|---|---|---|---|
 | F1 | 15-09-2026 | PT Kemas Jaya Fiktif | Faktur pajak | Rp 12.040.000 | ⚠️ Perlu dicek |
-| F2 | 18-12-2024 | PT Kemas Jaya Fiktif | Faktur pajak | Rp 5.550.000 | ⚠️ Perlu dicek (hanya format NPWP) |
+| F2 | 18-12-2024 | PT Kemas Jaya Fiktif | Faktur pajak | Rp 5.550.000 | ✅ Cocok |
 
 **Yang perlu Anda cek**
 - **F1: PPN ditulis Rp 1.290.000, yaitu 12% × DPP penuh Rp 10.750.000.** Tarif 12% penuh hanya untuk barang mewah. Untuk kardus dan lakban (barang biasa), aturan sejak 2025 adalah 12% × DPP nilai lain (11/12 × DPP), jadi **PPN seharusnya Rp 1.182.500** (efektif 11%).
-  - Kelebihan PPN: Rp 1.290.000 − Rp 1.182.500 = **Rp 107.500**. Jumlah yang seharusnya dibayar: Rp 10.750.000 + Rp 1.182.500 = **Rp 11.932.500** (di faktur tertulis Rp 12.040.000).
+  - Kelebihan PPN: **Rp 107.500**. Total seharusnya (hitung ulang): **Rp 11.932.500** (di faktur tertulis Rp 12.040.000).
 …
 ```
 
@@ -63,9 +63,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Kak tolong rekap nota belanja toko kue aku ke Excel ya, sekalian cek hitungannya bener ga: 1) Toko Bahan Kue Sari, 03/09/2026, tunai — Tepung terigu 10 kg x 13.500 = 135.000; Gula pasir 5 kg x 17.000 = 85.000; Mentega 2 kg x…". Tanpa skill skor **4,5** → dengan skill skor **7,5** (selisih +3, belum lulus acuan kami: skor dengan skill di bawah 8). Hanya DENGAN yang menangkap PPN invoice CV Cetak Kilat dihitung 12% penuh (untuk jasa biasa seharusnya Rp165.000, kelebihan tagih Rp15.000) dan menyarankan bertanya ke penjual sebelum bayar; TANPA menyatakan invoice "sudah cocok semua" dan berkas Excel-nya berisi rumus yang salah, tetapi DENGAN tidak melampirkan berkas Excel yang diminta. Catatan jujur: Hitungan dengan skill benar semua (termasuk PPN jasa 12% × 11/12 = Rp165.000, kelebihan tagih Rp15.000), tetapi di bot Telegram berkas Excel yang diminta tidak dilampirkan, hanya disebut tersimpan di folder kerja, sehingga skor dengan skill 7,5. Tanpa skill, invoice yang kelebihan PPN dinyatakan "cocok semua" dan berkas Excel-nya berisi rumus yang salah (satu selisih −37.500 bertanda cocok, total Rp2.024.000 yang seharusnya Rp2.061.500). Kekurangan dengan skill ada pada cara menyerahkan berkas di kanal chat, bukan pada hitungan; sedang diperbaiki dan akan diuji ulang. Uji internal (lokal, berkas di folder kerja wajar): 5,5–6 → 9.
+Uji terbaru (16 Okt 2026, versi 1.0.5), di bot OpenClaw asli (grup uji internal Komunitech). Satu pesan yang sama dikirim ke dua sisi, satu tanpa skill dan satu dengan skill: "Kak tolong rekap nota belanja toko kue aku ke Excel ya, sekalian cek hitungannya bener ga: 1) Toko Bahan Kue Sari, 03/09/2026, tunai — Tepung terigu 10 kg x 13.500 = 135.000; Gula pasir 5 kg x 17.000 = 85.000; Mentega 2 kg x…". Tanpa skill skor **4,5** → dengan skill skor **8,5** (selisih +4, lulus acuan kami). Penilaiannya oleh AI penilai independen, lalu angkanya dihitung ulang oleh pemeriksa kedua.
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Kak tolong rekap nota belanja toko kue aku ke Excel ya, sekalian cek hitungannya bener ga: 1) Toko Bahan Kue Sari, 03/09/2026, tunai — Tepung terigu 10 kg x 13.500 = 135.000; Gula pasir 5 kg x 17.000 = 85.000; Mentega 2 kg x…". Tanpa skill skor **4,5** → dengan skill skor **8,5** (selisih +4, lulus acuan kami). AI biasa menyatakan invoice CV Cetak Kilat "sudah cocok semua" dan file Excel-nya berisi rumus yang salah, sedangkan dengan skill bot menemukan PPN jasa cetak seharusnya Rp165.000 (bukan Rp180.000, kelebihan tagih Rp15.000) dan menyarankan bertanya ke penjual sebelum bayar, sambil langsung mengirim file rekapnya di chat. Salah angka yang ditemukan penilai: TANPA: menulis "Invoice CV Cetak Kilat sudah cocok semua" padahal PPN Rp180.000 = 12% × DPP penuh. Untuk jasa biasa (PMK 131/2024) PPN = 12% × 11/12 × Rp1.500.000 = Rp165.000, total Rp1.665.000, sehingga ada kelebihan tagih Rp15.000.; TANPA (isi berkas Rekap_Nota_Toko_Kue_Sep2026.xlsx): sel selisih Nota 2 berisi =I11−I12 dan merujuk sel kosong, jadi tampil −37.500 di samping "✓ COCOK". Di sheet Ringkasan, Total Hasil Cek Minimarket Berkah merujuk I11 (kosong) sehingga 0, dan total hasil cek menjadi Rp2.024.000 padahal seharusnya Rp2.061.500. Sheet faktur juga menyatakan "✓ SEMUA HITUNGAN COCOK" dengan PPN = DPP × 12%.. Catatan jujur: File rekap yang dikirim berformat CSV (bisa dibuka di Excel), bukan .xlsx. Isinya satu baris per nota tanpa rincian barang, dan karena memakai pemisah titik koma, kolomnya bisa menumpuk jadi satu di Excel berbahasa Inggris atau aplikasi di HP. Kategori pengeluaran ditebak dari isi nota dan sebaiknya disesuaikan dengan pembukuan sendiri.
+**Pembedanya:** AI biasa menyatakan invoice CV Cetak Kilat "sudah cocok semua", padahal PPN-nya dihitung 12% dari harga penuh. Dengan skill, bot menemukan PPN jasa cetak seharusnya Rp165.000 (bukan Rp180.000, jadi kelebihan tagih Rp15.000), menyarankan bertanya ke penjual sebelum bayar, dan langsung mengirim file rekapnya di chat. File Excel dari AI biasa pun berisi rumus yang salah rujuk: satu selisih −37.500 tampil di samping tanda "cocok", dan total hasil ceknya salah.
+
+**Catatan jujur:** file rekap yang dikirim dengan skill berformat CSV (bisa dibuka di Excel), bukan .xlsx. Isinya satu baris per nota tanpa rincian barang, dan karena memakai pemisah titik koma, kolomnya bisa menumpuk jadi satu di Excel berbahasa Inggris atau aplikasi di HP. Kategori pengeluaran ditebak dari isi nota (bot menyebutnya sebagai tebakan), jadi sesuaikan dengan pembukuan Anda. Ini satu pesan uji per sisi, bukan uji berulang.
+
+**Uji Telegram sebelumnya (versi 1.0.4, hari yang sama):** 4,5 → 7,5, belum lulus acuan kami. Hitungan dengan skill sudah benar, tetapi berkas Excel yang diminta tidak terkirim ke chat; itu yang diperbaiki di versi 1.0.5. Uji internal di komputer lokal (berkas di folder kerja wajar): 6,0 → 9,0 (lihat "Hasil uji (angka nyata)" di atas).
 
 ## FAQ
 **AI agent saya harus bisa membaca foto?**

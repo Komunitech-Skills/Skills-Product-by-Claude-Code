@@ -89,7 +89,7 @@ Cara pakai: simpan sebagai `rekap-nota.csv` lalu buka di Excel. File yang sama j
 _Dasar PPN: UU HPP & PMK 131/2024, per 23 September 2026. Format NPWP/NITKU/nomor faktur: belum terverifikasi dari dokumen resmi, hanya peringatan. Alat bantu cek, bukan nasihat pajak; untuk kepastian hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
 
 ## Versi kanal chat (Telegram/WhatsApp) — ditambahkan 2026-10-16 (v1.0.5)
-Di kanal chat tabel Markdown tidak dipakai. Isi dan angka sama dengan di atas (keluaran script yang sama), hanya bentuknya:
+Di kanal chat tabel Markdown tidak dipakai. Isi dan angka sama dengan di atas (keluaran script yang sama), hanya bentuknya. *Disusun ulang dari keluaran di atas mengikuti aturan kanal chat v1.0.5; bukan hasil uji baru.*
 
 > **Hasil baca & cek 4 dokumen**
 > N1 · 03-09-2026 · Minimarket Sumber Rejeki Fiktif · Struk · Rp 119.200 · ✅ Cocok
