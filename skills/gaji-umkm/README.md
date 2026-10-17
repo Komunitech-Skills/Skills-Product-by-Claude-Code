@@ -9,7 +9,7 @@ Diuji AI penguji independen di OpenClaw: 7 → 9 dari 10 pada uji ulang v1.0.11 
 ## Manfaat
 - ✅ **Tutup gaji sebulan lewat chat.** Tulis bonus, kasbon, dan lembur bulan ini, lalu AI menghitung gaji semua karyawan sekaligus: gaji kotor, potongan BPJS karyawan, iuran BPJS perusahaan, PPh 21, dan gaji bersih.
 - ✅ **Tahu berapa yang harus dibayar.** Setiap bulan keluar ringkasan "Yang harus dibayar/disetor": total transfer gaji, setoran BPJS Kesehatan, BPJS Ketenagakerjaan, PPh 21, dan total biaya gaji perusahaan.
-- ✅ **Desember dan karyawan resign tidak bikin pusing.** PPh 21 bulan terakhir wajib dihitung ulang setahun. Aplikasi mengambil sendiri data Januari sampai bulan lalu dari riwayatnya, lalu mengecek ulang hasilnya dengan kalkulator PPh 21 terpisah sebagai bahan bukti potong.
+- ✅ **Desember dan karyawan resign tidak bikin pusing.** PPh 21 bulan terakhir wajib dihitung ulang setahun. Aplikasi mengambil sendiri data Januari sampai bulan lalu dari riwayatnya, lalu mengecek ulang hasilnya dengan kalkulator PPh 21 terpisah sebagai bahan bukti potong. Baru mulai memakai aplikasi dan data lama karyawan yang resign belum ada? Gaji karyawan lain tetap langsung dihitung; yang datanya kurang ditandai "tertunda" lengkap dengan daftar angka yang dibutuhkan (atau dihitung dulu dengan angka sementara yang diberi label jelas).
 - ✅ **Gaji yang sudah final tidak bisa diubah diam-diam.** Setelah dikunci, perubahan hanya lewat revisi dengan alasan tertulis. Selisih per karyawan tercatat, dan file transfer revisi hanya berisi kekurangannya.
 - ✅ **Slip dan file transfer siap pakai.** Slip per karyawan siap dikirim satu per satu, dan file daftar transfer (format CSV, file tabel yang bisa dibuka di Excel) bisa Anda unggah sendiri ke internet banking. NIK dan nomor rekening disamarkan secara bawaan (nomor rekening lengkap hanya bila Anda memintanya untuk diunggah ke bank). Pengingat tanggal gajian dan batas setor pajak/BPJS bisa dijadwalkan ke Telegram Anda lewat OpenClaw (pengiriman sungguhan belum diuji langsung).
 
@@ -44,7 +44,7 @@ Yang harus dibayar/disetor:
 
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa ke AI agent Anda, misalnya:
-- "Mulai pakai aplikasi gaji. Ini daftar karyawan saya" (kirim nama, status PTKP, gaji pokok, tunjangan, tanggal masuk; status PTKP = status pajak, mis. TK/0 = belum menikah tanpa tanggungan, K/1 = menikah dengan 1 tanggungan)
+- "Mulai pakai aplikasi gaji. Ini daftar karyawan saya" (kirim nama, status PTKP, gaji pokok, tunjangan, tanggal masuk; status PTKP = status pajak, mis. TK/0 = belum menikah tanpa tanggungan, K/1 = menikah dengan 1 tanggungan). Rekap gaji langsung keluar di balasan pertama, sebelum ada yang disimpan; data baru disimpan setelah Anda balas "simpan".
 - "Hitung gaji September. Andi bonus 500 ribu, Sari kasbon 250 ribu"
 - "Kunci gaji September, buatkan slip dan file transfernya"
 - "Joko resign tanggal 14 November" / "Ada karyawan baru, Dewi, masuk 15 Oktober"
@@ -85,18 +85,18 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Mulai pakai aplikasi gaji. Daftar 12 karyawan saya ada di data/karyawan.csv. UMK kota kami Rp 5.396.761, JKK 0,54%, gajian tgl 25. Gaji September 2026 fiktif: Andi bonus 500 ribu & kasbon 250 ribu, Indah lembur 2 jam dan 3 jam…". Tanpa skill skor **0** → dengan skill skor **4** (selisih +4, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot mengimpor 12 karyawan beserta UMK, JKK, bonus/kasbon Andi dan lembur Indah, serta benar menandai September sebagai Masa Pajak Terakhir Lina, tetapi belum memberi satu pun angka slip atau setoran karena menunggu data Lina Januari–Agustus; tanpa skill, bot habis batas waktu tanpa jawaban. Catatan jujur: Pada pemakaian pertama, bila ada karyawan yang keluar di bulan berjalan, aplikasi menahan seluruh hitungan gaji sampai pemilik memberi total gaji, PPh 21, dan iuran JHT/JP karyawan itu sejak Januari. Balasan pertamanya juga baru datang ±7 menit kemudian (setelah pesan "ya" terkirim), belum berisi angka slip maupun setoran, dan pesan "ya" tidak dijawab.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Mulai pakai aplikasi gaji. Daftar 12 karyawan saya ada di data/karyawan.csv. UMK kota kami Rp 5.396.761, JKK 0,54%, gajian tgl 25. Gaji September 2026 fiktif: Andi bonus 500 ribu & kasbon 250 ribu, Indah lembur 2 jam dan 3 jam…". Tanpa skill skor **0** → dengan skill skor **4** (selisih +4, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot mengimpor 12 karyawan beserta UMK, JKK, bonus/kasbon Andi dan lembur Indah, serta benar menandai September sebagai Masa Pajak Terakhir Lina, tetapi belum memberi satu pun angka slip atau setoran karena menunggu data Lina Januari–Agustus; tanpa skill, bot habis batas waktu tanpa jawaban. Catatan jujur: Pada pemakaian pertama, bila ada karyawan yang keluar di bulan berjalan, aplikasi menahan seluruh hitungan gaji sampai pemilik memberi total gaji, PPh 21, dan iuran JHT/JP karyawan itu sejak Januari. Balasan pertamanya juga baru datang ±7 menit kemudian (setelah pesan "ya" terkirim), belum berisi angka slip maupun setoran, dan pesan "ya" tidak dijawab. Perbaikan v1.0.13 (17 Okt 2026, belum diuji ulang di bot): angka semua karyawan yang datanya lengkap langsung keluar di balasan pertama, dan karyawan yang datanya kurang ditandai "tertunda" beserta data yang dibutuhkan.
 
 ## FAQ
 **Apakah hitungan BPJS dan PPh 21-nya benar?**
 Angkanya dihitung oleh script (program kecil) dari skill Komunitech yang sudah diuji, yaitu Slip Gaji & BPJS (`slip-gaji-bpjs`, menghitung BPJS dan membuat slip), PPh 21 TER (`pph21-ter`, menghitung pajak penghasilan karyawan per bulan), dan Hitung THR (`hitung-thr`, tunjangan hari raya), dengan dasar Perpres 64/2020, PP 44–46/2015, PP 35/2021, PP 58/2023, PMK 168/2023, dan Permenaker 6/2016 (berlaku per 23 September 2026). Pembulatan belum dicocokkan dengan Coretax (sistem pajak DJP) atau aplikasi BPJS; bila berbeda, ikuti sistem resmi. Ini alat bantu hitung, bukan nasihat pajak. Untuk kasus khusus, tanyakan ke konsultan pajak.
 
 **Karyawan masuk atau keluar di tengah bulan, gajinya diprorata (dihitung sesuai jumlah hari kerja)?**
-Tidak otomatis, karena cara prorata tergantung perjanjian kerja masing-masing usaha. Aplikasi akan mengingatkan, lalu Anda cukup menyebutkan nominal yang dibayar. PPh 21 bulan keluar tetap dihitung ulang setahun sesuai aturan.
+Tidak otomatis, karena cara prorata tergantung perjanjian kerja masing-masing usaha. Gaji dihitung penuh dulu, dan di rekap yang sama AI menunjukkan hitungan prorata per hari kalender beserta rumusnya (mis. masuk 15 September: Rp 5.400.000 × 16 ÷ 30 hari = Rp 2.880.000). Cukup jawab "pakai prorata" atau sebutkan nominal yang dibayar. Karyawan lain tidak ikut tertahan. PPh 21 bulan keluar tetap dihitung ulang setahun sesuai aturan.
 
 **Apakah bisa transfer gaji langsung dari aplikasi?**
 Tidak, dan memang disengaja. Aplikasi hanya membuat file CSV daftar transfer. Anda yang mengunggah ke internet banking dan menyetujuinya. Nomor rekening di file disamarkan, kecuali Anda memintanya lengkap untuk diunggah ke bank.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.13**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

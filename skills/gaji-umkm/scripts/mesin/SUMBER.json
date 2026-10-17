@@ -5,8 +5,8 @@
     "payroll.py": {
       "skill_sumber": "slip-gaji-bpjs",
       "path_sumber": "scripts/payroll.py",
-      "versi_skill_sumber": "1.0.6",
-      "sha256": "3f4a9d7b72a29334f5203d22104ef506b29e95e1a2e8a6558c1bcc5cdf23a0e4"
+      "versi_skill_sumber": "1.0.8",
+      "sha256": "73a39233e42dc3ecd1e1c776fc57a1ce2245e257b91ff939fdc3bad657854ca5"
     },
     "pph21.py": {
       "skill_sumber": "pph21-ter",
