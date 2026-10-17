@@ -67,3 +67,35 @@ Catatan teknis: mode `--channel telegram` tanpa `--deliver` tidak memperlihatkan
 - Cacat: "Tabel skor per kriteria" berkolom 10 (Kode, 6 kriteria, Wajib, Tambah, Skor) dan satu tabel lain; di Telegram tampil sebagai teks mentah lebar. Panjang 6.882 karakter (2 pesan) dengan bagian ganda (ranking, tabel, detail, rekap). Timeout sebelumnya diduga karena 12 CV (6,8 KB); 5 CV berjalan lancar. Istilah "NIK/alamat/tanggal lahir tidak saya tampilkan" aman.
 - Perbaikan yang disarankan: hapus tabel skor lebar (ganti satu baris per kandidat), pangkas bagian rekap supaya < 4.096 karakter bila memungkinkan.
 - Bukti: "Tabel skor per kriteria ... | Kode | Shopee/Tokopedia (3) | Excel/Sheet (2) | Chat/komplain (2) | Canva (1) | Iklan (1) | Foto/konten (1) | Wajib | Tambah | Skor |"
+
+## Cadangan (2026-10-17)
+
+Pra-cek uji simulasi kanal Telegram (uji-tg.sh), sisi DENGAN saja, berurutan, tanpa kirim apa pun. Hasil: keempatnya TIDAK SIAP KIRIM.
+
+| Skill | Versi | Nilai | Verdik | Panjang |
+|---|---|---|---|---|
+| audit-akun-iklan | 1.0.7 | 6,5 | TIDAK SIAP | 2.384 |
+| positioning-persona-usaha | 1.0.6 | 6,5 | TIDAK SIAP | 2.266 |
+| cv-lamaran-ats | 1.1.3 | 7 | TIDAK SIAP | 5.904 |
+| iterasi-dari-masukan-pelanggan | 1.0.14 | 6,5 | TIDAK SIAP | 6.878 |
+
+### audit-akun-iklan 1.0.7: TIDAK SIAP (6,5)
+- Angka benar: 33.695 (GMV Max, 37,9 %), 55.500 (website, 62,4 %), ROAS impas 1,61 dan 2,65, titik impas ±82 dan ±179 pesanan; titik impas, 3 tindakan, skor sementara "belum bisa dihitung" (bukti ±10 %), 5 pertanyaan ada di balasan pertama.
+- Cacat lama MASIH ada: verdik "BELUM BISA DIPASTIKAN" (bukan satu label BONCOS/TIPIS/SEHAT; batas per jalur hanya dijelaskan); tindakan 2 (verifikasi 2 langkah) dan 3 (kesehatan akun/pelanggaran) tidak berkaitan dengan keluhan boncos. Frasa "File kerja: belum ada" SUDAH hilang.
+- Bukti: "VERDIK – BELUM BISA DIPASTIKAN (ROAS aktual Anda belum disebut ...)" / "2. Cek verifikasi 2 langkah di TikTok Business Center + Shopify admin"
+
+### positioning-persona-usaha 1.0.6: TIDAK SIAP (6,5)
+- Pesan = msgs-g19b idx 5 tanpa mention. Tools: read, ls, write, exec. Isi ringkas dan siap tempel (bio 133 karakter, judul grup FB, sapaan WA), tanpa tabel, tanpa klaim bahan dikarang.
+- Cacat: penutup membocorkan jalur berkas "File kerja: /opt/ochome/.openclaw/workspace/segmen-rantang-bu-wulan.csv"; segmen utama dipilih "Anak kos" (skor 79) padahal karyawan kantor/pabrik skor 83 (alasan "paling gampang dilayani" tidak konsisten dengan skor); tokoh "Rian, 24, kerja shift" rekaan.
+- Bukti: "File kerja: /opt/ochome/.openclaw/workspace/segmen-rantang-bu-wulan.csv"
+
+### cv-lamaran-ats 1.1.3: TIDAK SIAP (7)
+- Pesan = msgs-g19b idx 7 tanpa mention. Tidak ada jalur berkas. Tidak mengarang VLOOKUP/Pivot/WMS/barcode (bagus), 3 pertanyaan klarifikasi, CV + surat + email + daftar periksa lengkap.
+- Cacat: tabel Markdown 3 kolom (tampil mentah di Telegram); 5.904 karakter (2 pesan); skor kata kunci 48 % berisik (daftar kata "mesin", "aplikasi", "staff", "sederajat"); CV menulis "Bekasi" di bawah CV Berkah Jaya (lokasi perusahaan tidak disebut pengguna) dan "pengalaman 2 tahun" ditebak dari 2022-2024.
+- Bukti: "| Dimensi | Skor | Catatan |" / "48% kata kunci lowongan ditemukan di draf CV (12/25)"
+
+### iterasi-dari-masukan-pelanggan 1.0.14: TIDAK SIAP (6,5)
+- Pesan: skenario 01 (katering Dapur Bu Rini, 4 berkas dari examples/data/ disalin ke data/). Tools: read, ls, exec, write.
+- Angka cocok skrip: 52 masukan; WA 13 / Shopee 26 / IG 5 / survei 8; Pengiriman 10 = 19,2 %; keluhan WA tanpa balasan 5 dari 7 (71,4 %). Permintaan menu vegetarian masuk "Saran pelanggan", BUKAN Pengiriman (perbaikan berhasil). Kalimat "workspace" sudah hilang.
+- Cacat: penutup/catatan metode MASIH menyebut nama berkas kerja: "file: `data/backlog-perbaikan-2026-09.csv`", "File kerja ada di folder `data/`: `anonim-2026-09.csv`, `koreksi.csv`, ..."; kata proses "skrip", "saringan tema", "koreksi tema manual", "Simpan file ini"; 6.878 karakter (2 pesan); jargon "baseline", "Bias".
+- Bukti: "File kerja ada di folder `data/`: `anonim-2026-09.csv` (data tersamar), `koreksi.csv`, `backlog-perbaikan-2026-09.csv`."

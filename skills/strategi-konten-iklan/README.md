@@ -50,7 +50,7 @@ Bagian hitung juga bisa dijalankan sendiri bila Anda terbiasa dengan terminal (W
 
 **Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01–05 (v1.0.6), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 - Rata-rata uji lokal (2 skenario awal): tanpa skill **6,75** → dengan skill **8,25**; uji ulang v1.0.5+: tanpa **6,75** → dengan **8,5** (LULUS).
-- Pra-cek konteks Telegram (3 percobaan, tanpa kirim): rata **8,0** — menolak klaim "turun 5kg seminggu", ROAS impas 2,50x, target aman 3,58x.
+- Pra-cek dengan pengaturan seperti bot Telegram (bukan bot sungguhan), 3 percobaan, tanpa kirim: rata **8,0** — menolak klaim "turun 5kg seminggu", ROAS impas 2,50x, target aman 3,58x.
 - Bot Telegram asli (2026-10-05): tanpa skill **6** → dengan skill **8,5**.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent + bot Telegram). Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Tidak ada jaminan ROAS/penjualan — hanya batas impas dan pembagian anggaran.

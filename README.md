@@ -7,15 +7,15 @@ Library **agent skills** siap pakai untuk pengusaha & profesional Indonesia, ole
 > ⚠️ **Repo ini PRIVATE dan berisi produk berbayar.** Jangan ubah visibilitas repo menjadi publik
 > dan jangan bagikan isi repo di luar tim internal.
 
-## Isi library (per 2026-10-05)
+## Isi library (per 2026-10-17)
 
-Katalog: **140 skill** = 119 `beta` + 17 `lulus` + 0 `uji` + 4 `arsip` (136 aktif; 97 orisinal, 43 kurasi). Belum ada yang `rilis`.
-Kategori: Produktivitas (25), Keuangan & Akuntansi (24), Marketing & Konten (23), Data & Analisis (12), HR (10),
-Sales (9), E-commerce/Marketplace Indonesia (8), Customer Service (7), Legal & Dokumen (3), Pendidikan (1), Kehidupan Pribadi (1).
+Katalog: **143 skill** = 123 `beta` + 16 `lulus` + 4 `arsip` (139 aktif; 97 orisinal, 42 kurasi). Belum ada yang `rilis`.
+Kategori: Keuangan & Akuntansi (29), Produktivitas (28), Marketing & Konten (23), HR (13), Data & Analisis (12),
+Sales (10), E-commerce/Marketplace Indonesia (10), Customer Service (7), Legal & Dokumen (4), Pendidikan (2), Kehidupan Pribadi (1) — hitungan skill aktif (tanpa `arsip`).
 
 | Jalur | Isi |
 |---|---|
-| **1. Skill** | 136 skill aktif: keuangan & pajak, HR & gaji & KPI, marketing & strategi produk (positioning, riset pesaing, harga, peluncuran, uji pasar), toko online/marketplace, sales, customer service, produktivitas, data, kesehatan (khusus nakes), kripto. Tiga skill diarsipkan (`caption-sosmed-umkm`, `kalender-konten-30hari`, `brainstorming-ide-usaha`; folder tidak dihapus) |
+| **1. Skill** | 139 skill aktif: keuangan & pajak, HR & gaji & KPI, marketing & strategi produk (positioning, riset pesaing, harga, peluncuran, uji pasar), toko online/marketplace, sales, customer service, produktivitas, data, kesehatan (khusus nakes), kripto. Empat skill diarsipkan (`caption-sosmed-umkm`, `kalender-konten-30hari`, `brainstorming-ide-usaha`, `jadwal-pelajaran-sekolah`; folder tidak dihapus) |
 | **2. Produk siap pakai pengganti SaaS** | Software yang jalan di komputer pembeli (data lokal, tanpa biaya bulanan), dioperasikan AI agent: kasir, stok, absensi, piutang, CRM WA, dasbor, PDF, serta asisten untuk Frappe Books, Dolibarr, hledger, Actual Budget, Grist, Vikunja, SiYuan, Open Notebook, Uptime Kuma, InvenTree, Umami (analitik web), listmonk (newsletter), Fider (masukan pelanggan), Odoo, Kanboard. Nama produk pihak ketiga hanya penyebut; **tidak berafiliasi** |
 | **3. Solusi member VIP** | Paket skill + konfigurasi OpenClaw (jadwal, Telegram) + panduan: toko online, klinik, konsultan, usaha offline, kantor & manajemen, riset kripto & keuangan pribadi — lihat [`solusi-vip/`](solusi-vip/) |
 
@@ -23,7 +23,7 @@ Kurasi kini mencakup proyek top **semua lisensi** (keputusan 2026-10-05); proyek
 hanya untuk alat **internal** Komunitech (tidak dijual ke audiens awam, tidak dipasang di bot produksi).
 
 Sumber kebenaran daftar skill, status, versi, tier, dan harga: [`catalog.csv`](catalog.csv).
-Status mengikuti alur `ide → draft → uji → lulus → beta → rilis`; hanya `rilis` yang dijual ke pembeli.
+Status mengikuti alur `ide → draft → uji → lulus → beta → rilis` (atau `ditolak` / `arsip`); hanya `rilis` yang dijual ke pembeli, `beta` hanya untuk beta tester (`build.py --beta`). Saat ini belum ada skill `rilis`.
 
 ## Model distribusi
 
@@ -62,7 +62,7 @@ research/                # backlog, riset harga, audit sumber & lisensi
 promosi/                 # bahan jualan sebelum/sesudah (SSOT sebelum-sesudah.jsonl, halaman HTML, CARA-UJI); hanya skill lolos uji
 rejected/                # skill yang gagal audit + alasannya
 templates/               # template SKILL.md, README.md, ATTRIBUTION.md
-scripts/                 # validate.py, build.py, uji_openclaw.sh, promosi_sebelum_sesudah.py
+scripts/                 # validate.py, build.py, uji_openclaw.sh, promosi_sebelum_sesudah.py, pracek_rilis.py, rilis_batch.py, helikopter.py, rapikan_readme.py (+ test_*.py)
 reports/                 # laporan per sesi kerja
 koordinasi/              # papan tugas, rutinitas, pra-cek & catatan gelombang pilot Telegram
 CLAUDE.md                # aturan kerja kurator (alur Tahap 1–8, lisensi, keamanan)
@@ -92,7 +92,7 @@ bash scripts/uji_openclaw.sh         # uji muat di OpenClaw (eligible/terlihat m
 
 python3 scripts/build.py --pembeli "Nama Pembeli" --skill kasir-lokal       # paket ecer
 python3 scripts/build.py --pembeli "Nama Pembeli" --bundle paket-toko-online # paket bundle
-python3 scripts/build.py --pembeli "Member VIP #0123" --vip                  # paket VIP
+python3 scripts/build.py --pembeli "Member VIP #0123" --vip                  # paket VIP (hanya skill `rilis`; ikut solusi-vip/*.md + templates/openclaw-AGENTS-komunitech.md)
 python3 scripts/build.py --pembeli "Beta #01" --vip --beta                   # paket beta tester
 ```
 
