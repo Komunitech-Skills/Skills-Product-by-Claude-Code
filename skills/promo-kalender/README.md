@@ -68,6 +68,10 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Ringkasan aturan promo (UU 8/1999 tentang Perlindungan Konsumen, berlaku per 23 September 2026) **bukan nasihat hukum**. Untuk undian berhadiah, tanyakan ke Dinas Sosial/Kemensos.
 - Hitungan laba memakai angka modal dan potongan platform yang Anda berikan, jadi pastikan sesuai rincian di Seller Center Anda.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "kak 11.11 nanti aku mau diskon 30% buat serum wajah aku. harga normal 89rb, modal 41rb. jualnya di shopee potongan admin dll totalnya kira2 12% + 1250 per pesanan. masih untung ga? biasanya sebulan laku 60 botol. bikinin…". Tanpa skill skor **6,7** → dengan skill skor **8** (selisih +1,3, belum lulus acuan kami: selisih 1,3 di bawah 1,5). Dengan skill, bot menghitung batas diskon aman (maks. 46%) dan membandingkan diskon 30% dengan diskon 20% serta paket 2 botol, lengkap dengan labanya. Bot juga memberi target 6 botol untuk menyamai laba hari biasa, linimasa bertanggal, dan S&K siap tempel. Tanpa skill, bot membandingkan promo sehari dengan laba sebulan penuh, lalu menyuruh menjual ±170 botol dan menyetok 150–200 botol. Catatan jujur: Bot menyebut laba diskon 20% 'hampir 2x lipat' dibanding diskon 30%, padahal hanya sekitar 1,6 kali. Kalimat '6 botol … sisanya laba bersih' maksudnya laba promo sudah menyamai hari biasa, karena setiap botol promo tetap untung Rp12.574. Total kampanye juga dihitung dengan asumsi 60 botol laku dalam sehari; bot menandainya optimis dan menawarkan hitung ulang.
+
 ## FAQ
 **Saya tidak tahu persen potongan marketplace saya. Bagaimana?**
 Buka rincian penghasilan satu pesanan di Seller Center, atau menu biaya layanan. Skill sengaja tidak memakai angka tebakan karena tarif berbeda per kategori dan sering berubah.
