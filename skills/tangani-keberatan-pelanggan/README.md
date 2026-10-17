@@ -65,7 +65,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 **Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (v1.0.0), skor 1–10 dari penguji independen, 2 tugas: tanpa skill **6,0** → dengan skill **8,75** (LULUS). Tugas "kemahalan, di toko sebelah 150 ribu" (hoodie Rp185.000 sudah termasuk ongkir): selisih Rp15.000 (8,1%), sekitar Rp253 per hari selama 2 tahun. Tanpa skill, AI menyebut barang toko sebelah "gampang rusak" tanpa bukti; dengan skill ada 3 balasan siap kirim berbeda arah, pertanyaan lanjutan, dan batas kapan berhenti. Tugas "stok tinggal 2" dan diskon coret palsu: kedua sisi menolak, tetapi tanpa skill AI mengarang janji "bisa tukar kok" yang tidak pernah Anda tawarkan; dengan skill ada dasar UU 8/1999 Pasal 9 dan 10 serta 3 pesan jujur. Jujur: hitungan selisih sudah benar juga tanpa skill, jadi pembedanya ada di cara membalas, bukan di angka. Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`. Hasil di bot Telegram asli ada di bagian berikut.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk konteks kanal Telegram) dan di bot Telegram OpenClaw asli. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk dengan pengaturan seperti bot Telegram (bukan bot sungguhan)) dan di bot Telegram OpenClaw asli. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
