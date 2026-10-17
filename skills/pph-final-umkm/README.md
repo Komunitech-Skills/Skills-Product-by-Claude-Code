@@ -7,7 +7,7 @@
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Tabel PPh final (pajak penghasilan tetap 0,5% dari omzet) per bulan lengkap dengan omzet kumulatif (dijumlah sejak Januari) dan batas setor yang sudah digeser ke hari kerja bila tanggal 15 jatuh hari libur
+- ✅ Rincian PPh final (pajak penghasilan tetap 0,5% dari omzet) per bulan, ringkas untuk chat (satu baris pendek per bulan) atau tabel lengkap untuk disimpan, dengan omzet kumulatif (dijumlah sejak Januari) dan batas setor yang sudah digeser ke hari kerja bila tanggal 15 jatuh hari libur
 - ✅ Otomatis menerapkan Rp500 juta pertama bebas pajak untuk orang pribadi, termasuk bulan saat batas terlewati
 - ✅ PPh 22 yang sudah dipotong marketplace (Shopee, Tokopedia, Lazada, Blibli) langsung diperhitungkan: terlihat per bulan berapa yang masih harus disetor sendiri dan berapa yang kelebihan dan bisa diminta kembali
 - ✅ Langsung terlihat bulan mana yang batas setornya sudah lewat, mana yang jatuh besok, plus perkiraan pajak sampai akhir tahun
@@ -23,19 +23,23 @@
 
 **Sesudah (cukup ketik):** "Saya jualan baju di Shopee sama toko kecil di rumah, atas nama pribadi. Omzet 2026: Jan 52jt, Feb 48,5jt, Mar 95jt, Apr 61jt, Mei 58jt, Jun 64jt, Jul 70jt, Agu 73jt, Sep 66jt. Shopee potong PPh 22 Agu 180rb, Sep 165rb. Ada yang telat?"
 
-*Cuplikan hasil hitungan versi 1.0.4 untuk pesan di atas (data fiktif, tanggal acuan 14 Oktober 2026; baris Januari–Juli dan catatan dipotong):*
-```
-| Bulan | Omzet | Omzet kumulatif | Omzet kena pajak | PPh final 0,5% | PPh 22 dipungut marketplace | Kurang/lebih setor | Setor paling lambat | Keterangan |
-|---|---:|---:|---:|---:|---:|---|---|---|
-…
-| Agustus | Rp73.000.000 | Rp521.500.000 | Rp21.500.000 | Rp107.500 | Rp180.000 | lebih Rp72.500 | - | melewati Rp500 juta; hanya Rp21.500.000 yang kena pajak; PPh 22 lebih dipungut, bisa diminta kembali |
-| September | Rp66.000.000 | Rp587.500.000 | Rp66.000.000 | Rp330.000 | Rp165.000 | kurang Rp165.000 (setor sendiri) | Kamis 15 Okt 2026 - BESOK | - |
-| **Total (Januari–September)** | **Rp587.500.000** |  |  | **Rp437.500** | Rp345.000 | kurang Rp165.000; lebih Rp72.500 |  |  |
+*Cuplikan hasil hitungan versi 1.0.6 (tampilan chat) untuk pesan di atas (data fiktif, tanggal acuan 14 Oktober 2026; judul, sebagian ringkasan, dan catatan dipotong):*
 
-- Total kurang setor (disetor sendiri): Rp165.000
-- Total lebih dipungut (dapat diajukan pengembalian): Rp72.500
-- Batas setor terdekat yang belum lewat: Kamis 15 Oktober 2026 (besok), masa September, setor sendiri Rp165.000
-```
+> **Per bulan**
+> **Januari–Juli** · omzet Rp448.500.000 · PPh Rp0
+> Total 7 bulan; masih dalam Rp500 juta bebas. Tidak ada setoran.
+> **Agustus** · omzet Rp73.000.000 · PPh Rp107.500
+> Melewati Rp500 juta; yang kena pajak hanya Rp21.500.000. Dipungut marketplace Rp180.000; lebih Rp72.500 (bisa diminta kembali), tidak perlu setor.
+> **September** · omzet Rp66.000.000 · PPh Rp330.000
+> Dipungut marketplace Rp165.000; kurang Rp165.000, setor sendiri paling lambat Kamis 15 Okt 2026 (BESOK).
+>
+> **Ringkasan**
+> - Total PPh final Januari–September: Rp437.500
+> - Kurang setor (setor sendiri): Rp165.000
+> - Lebih dipungut (bisa diminta kembali): Rp72.500
+> - Setor terdekat: Rp165.000 (masa September)
+> - Paling lambat: Kamis 15 Okt 2026 (besok)
+
 Artinya: tidak ada yang telat. Agustus sudah tertutup potongan Shopee (malah lebih Rp72.500), September tinggal Rp165.000 yang disetor sendiri paling lambat besok. Tanpa memperhitungkan PPh 22, Anda bisa menyetor Rp272.500 lebih banyak dari yang perlu.
 
 ## Cara pakai
@@ -78,4 +82,4 @@ Orang pribadi dan PT perorangan: bisa, karena PP 20/2026 menghapus batas 7 tahun
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6** — tampilan hasil untuk Telegram/WhatsApp dirancang tanpa tabel lebar (satu baris pendek per bulan) dan akan diuji ulang di bot asli; angka hitungan tidak berubah. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
