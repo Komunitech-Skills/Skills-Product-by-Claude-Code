@@ -67,6 +67,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di Claude Code (simulasi agent, 23 September 2026, versi awal) dan OpenClaw (uji muat CLI; uji sebelum/sesudah otomatis oleh agen AI, bukan oleh manusia, 1 Oktober 2026, satu skenario pada versi 1.0.3 dan 1.0.4, keduanya LULUS dengan nilai 8,5). Versi 1.0.5 dan 1.0.6 belum diuji ulang di OpenClaw. Codex dan Cursor belum kami uji langsung.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "kak aku jual tumbler stainless modal 38rb udh sm packing, mau jual di shopee. admin 8% , ikut gratis ongkir xtra 4% maks 10rb, biaya proses 1250 per pesanan. mau untung 25% brp harga jualnya ya". Tanpa skill skor **6,5** → dengan skill skor **8,5** (selisih +2, lulus acuan kami). Hanya versi dengan skill yang ikut memotong PPh 22 marketplace 0,5% (Rp315) yang dipungut Shopee sejak 1 Oktober 2026 dan memberi harga balik modal Rp44.858. Tanpa skill, PPh 22 terlewat, sehingga untung di harga Rp55.400 tampak Rp9.502 padahal setelah dipotong pajak tinggal Rp9.225 (di bawah target 25% dari modal). Catatan jujur: "Untung 25%" otomatis dihitung sebagai 25% dari harga jual, bukan dari modal. Bila maksud Anda 25% dari modal, harga cukup sekitar Rp56.000, jadi minta hitung ulang. Persentase biaya marketplace tetap harus Anda cocokkan sendiri dengan Seller Center.
+
 ## FAQ
 **Kenapa saya harus mengisi sendiri persentase biaya admin?**
 Biaya marketplace berbeda per kategori dan program, dan sering berubah. Supaya hasilnya akurat, ambil angka terbaru dari Seller Center Anda. Kalau cuma ingin gambaran, skill bisa memakai angka contoh yang diberi label jelas.

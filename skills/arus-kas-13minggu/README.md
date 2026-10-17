@@ -66,6 +66,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 **Status uji (jujur):** versi 1.0.5 lulus uji ulang penguji AI independen di OpenClaw 2026.10.2 pada 16 Oktober 2026 (6,75 → 8,4; tiga skenario diuji ulang, dua dipakai ulang dari 14 Oktober; tanpa salah angka). Uji dengan pengaturan seperti bot Telegram (bukan bot sungguhan) terakhir pada versi 1.0.4 (14 Oktober, skor 8,5); versi 1.0.5 belum diuji ulang dengan pengaturan itu. Belum diuji manusia dan belum melalui program beta; Claude Code (simulasi agent) versi lama; Codex dan Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "Halo kak, saya punya usaha kue online. Uang di rekening + kas sekarang sekitar 15 juta. Jualan rata-rata 9 juta seminggu. Belanja bahan sekitar 4,5 juta per minggu. Gaji 3 karyawan total 9 juta tiap tanggal 28, sewa dapur 4…". Tanpa skill skor **4** → dengan skill skor **8,5** (selisih +4,5, lulus acuan kami). Dengan skill, AI tidak melewatkan satu tagihan pun, jadi menemukan kas minus Rp700.000 di minggu 3. Tanpa skill, AI melewatkan tagihan listrik 20 Okt dan menyimpulkan kas "aman". Sisi dengan skill juga memberi 4 pilihan jalan keluar yang saldonya sudah dihitung, plus tabel CSV terlampir untuk dibuka di Excel. Catatan jujur: Dengan skill tidak ada salah angka: ke-13 saldo mingguan, batas aman Rp10.107.692, dan keempat pilihan dihitung ulang terpisah dan cocok. Balasan butuh sekitar 4 menit. Pilihan "mundurkan pembayaran bahan 2 minggu" hanya menggeser tagihan sampai minggu 12 tanpa dijelaskan, dan alasan beberapa minggu di bawah batas aman dirangkum terlalu umum; cek rinciannya di tabel CSV sebelum bernegosiasi.
+
 ## FAQ
 **Saya tidak punya data rapi, hanya perkiraan. Bisa?**
 Bisa. Cukup jawab beberapa pertanyaan singkat dari AI (saldo sekarang, penjualan per minggu, pengeluaran rutin). Perkiraan kasar pun sudah sangat membantu, lalu perbarui tiap minggu.
