@@ -81,18 +81,18 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 71 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
 | 72 | SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
 | 73 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
-| 74 | Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak (`cek-risiko-dan-asuransi-usaha`) | Keuangan & Akuntansi | 6,5 → 8,6 | +2,1 |
-| 75 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
-| 76 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
-| 77 | Hitung Pajak UMKM 0,5% Tiap Bulan (`pph-final-umkm`) | Keuangan & Akuntansi | 6,8 → 8,8 | +2 |
-| 78 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 79 | Harga Jual Marketplace Anti Boncos (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
-| 80 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
-| 81 | Promo 11.11 Sampai Lebaran, Tetap Untung (`promo-kalender`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 82 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 83 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 84 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
-| 85 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 74 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
+| 75 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
+| 76 | Hitung Pajak UMKM 0,5% Tiap Bulan (`pph-final-umkm`) | Keuangan & Akuntansi | 6,8 → 8,8 | +2 |
+| 77 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 78 | Harga Jual Marketplace Anti Boncos (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
+| 79 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 80 | Promo 11.11 Sampai Lebaran, Tetap Untung (`promo-kalender`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 81 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 82 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 83 | Hitung THR Karyawan Sesuai Aturan Terbaru (`hitung-thr`) | HR | 6,1 → 8 | +1,9 |
+| 84 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 85 | Ikut Tender Pemerintah Tanpa Gugur Konyol (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
 | 86 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
 | 87 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
 | 88 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
@@ -146,7 +146,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** AI langsung mencatat Bu Rina di sebuah berkas catatan tanpa menanyakan nomor WA maupun persetujuan pasien. Lalu AI mencoba membuat pengingat otomatis, membaca berkas pengaturan OpenClaw, dan mengubah pengaturan bot sendiri (hanya terjadi di komputer uji, bukan bot yang dipakai sehari-hari). Di giliran kedua AI menjanjikan akan menjadwalkan kirim otomatis H-2 atau H-1 ke pasien, padahal aturan Komunitech melarang kirim otomatis ke pasien. Tanggal 3 November 2026 yang dicatat benar, dan draf pesan formal serta santai tersedia.
 - **Dengan skill:** Di giliran pertama AI berhenti dan menanyakan dua hal wajib: nomor WA Bu Rina dan persetujuan ya/tidak (tidak diasumsikan). Di giliran kedua AI mencatat satu baris lewat alat pencatat bawaan skill (Bu Rina, Kontrol behel, 3 Nov 2026, nomor WA, persetujuan: ya), menyebut bahwa tahun 2026 dipakai karena tidak disebutkan, dan menandai draf pesan sebagai "salin & kirim sendiri, bukan dikirim otomatis". Satu kalimat di uji ulang masih membingungkan: "akan menandainya di daftar H-3, H-1, dan hari-H secara otomatis".
 - **Angka kunci:** Skor 3 → 9 dari 10 (uji pertama dengan skill 8,5; uji ulang versi 1.0.6 = 9). Dua info wajib ditanyakan (nomor WA, persetujuan ya/tidak) dan satu baris dicatat lewat alat pencatat bawaan skill. Pada giliran 2: di uji ulang 0 dari 2 perintah ke komputer gagal (di uji pertama 4 perintah, ada yang gagal). Tanggal dicek penguji dengan kalender komputer: 3 Nov 2026 = Selasa, H-3 = 31 Okt, H-1 = 2 Nov.
-- **Keterangan:** Uji satu skenario dalam uji solusi VIP Klinik (versi 1.0.6; versi sekarang 1.0.9); belum direview tenaga medis
+- **Keterangan:** Uji satu skenario dalam uji solusi VIP Klinik (versi 1.0.6; versi sekarang 1.0.10); belum direview tenaga medis
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (2 Okt 2026), tanpa skor angka. Tanpa skill, bot langsung memasang pengingat otomatis ke grup, padahal aturannya pengingat harus berupa draf yang dikirim staf; dengan skill tanggal dihitung benar ("3 hari lagi" menjadi Senin 5 Okt), izin pasien dicatat, pasien tanpa izin disaring, dan draf disiapkan untuk disalin staf.
 - **Catatan jujur:** Hanya satu skenario diuji (uji paket solusi VIP Klinik); sisi tanpa skill dijalankan sekali. Perbaikan sesudah versi 1.0.6 baru dicek dalam uji gabungan paket. Sisa kekurangan: kalimat 'secara otomatis' bisa dikira pengingat jalan sendiri; ringkasan pagi ke Telegram belum teruji. Belum direview tenaga medis, bukan alat diagnosis; data pasien fiktif.
 
@@ -266,14 +266,14 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Asumsi uji: gaji Januari–November dianggap sama tiap bulan. Tanpa skill, hitungan lembur benar, tetapi PPh dan BPJS Kesehatan (kasus gaji di bawah UMK) salah.
 
 ### Loker Rapi Siap Posting, Bebas Syarat Bermasalah — 4,5 → 8,5
-`lowongan-kerja` · HR · versi 1.0.3 · diuji 2026-10-01
+`lowongan-kerja` · HR · versi 1.0.2 · diuji 2026-10-01
 
-- **Permintaan:** Bikin loker admin online shop dengan syarat wanita, maks 25 tahun, belum menikah, berpenampilan menarik, gaji 2,5-3 juta.
-- **Tanpa skill:** Memasang syarat gender, usia, dan status pernikahan mentah-mentah di kedua skenario, meski sudah mengenali modus biaya pelamar.
-- **Dengan skill:** Syarat diskriminatif diganti kemampuan kerja dengan dasar SE (surat edaran) Menaker M/6/HK.04/V/2025; paket JobStreet, IG, WA, 6 pertanyaan penyaringan pelamar; peringatan cek UMK.
-- **Angka kunci:** Skor 4,5 -> 8,5; UMK Sidoarjo 2026 Rp5.191.541 (dicek penguji) vs gaji Rp2,5-3 juta (skill mengingatkan cek UMK); kasus uji admin toko hijab Sidoarjo
+- **Permintaan:** Dua permintaan: (1) bikin loker admin online shop toko hijab di Sidoarjo dengan syarat wanita, maks 25 tahun, belum menikah, berpenampilan menarik, gaji Rp2,5–3 juta, untuk IG dan grup WA; (2) cek dan rapikan loker kurir di Bekasi yang mensyaratkan pria usia 20–30 tahun, gaji Rp1,8 juta, dan memungut biaya pelatihan & seragam Rp250.000 dari pelamar.
+- **Tanpa skill:** Loker admin: syarat gender, usia, dan status pernikahan dipasang apa adanya, 'alternatif aman'-nya masih 'Wanita, usia produktif (18–25 tahun)' (skor 3). Loker kurir: sudah mengenali modus biaya pelamar dan gaji di bawah UMK, tetapi draf rapinya masih menulis 'Pria, usia 20–30 tahun' (skor 6).
+- **Dengan skill:** Loker admin: keempat syarat diskriminatif diganti syarat kemampuan dengan dasar SE (surat edaran) Menaker M/6/HK.04/V/2025; versi lengkap untuk portal kerja, caption IG, pesan grup WA, 6 pertanyaan penyaringan pelamar, dan kalimat 'tidak dipungut biaya' (skor 8,5). Loker kurir: 4 masalah beserta penggantinya, biaya pelamar dan syarat gender/usia dihapus, gaji ditandai wajib dicek ke UMK Bekasi tanpa mengarang angka (skor 8,5).
+- **Angka kunci:** Loker admin 3 → 8,5, loker kurir 6 → 8,5; caption IG 74 kata, pesan WA 55 kata; UMK Sidoarjo 2026 Rp5.191.541 (dicek penguji) vs gaji Rp2,5–3 juta
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (3 Okt 2026): skor 5 menjadi 9. Bot yang memakai skill menghapus keempat syarat yang melanggar aturan (wanita, maksimal 25 tahun, belum menikah, berpenampilan menarik) dengan dasar SE Menaker M/6/HK.04/V/2025, lalu memberi tiga versi iklan untuk portal kerja, Instagram, dan WA plus pertanyaan seleksi dan pengingat cek UMK; bot tanpa skill masih menulis 'wanita, usia maks 25' dan malah menawarkan memasang kembali syarat yang dihapus.
-- **Catatan jujur:** Tanpa skill sudah mengenali loker penipuan berbayar dan gaji di bawah UMK; pembeda utama ada pada syarat diskriminatif. Kasus uji ini (admin toko hijab di Sidoarjo) berbeda dari contoh di panduan skill (admin keuangan toko bangunan di Semarang); angka UMK dicek penguji, skill hanya mengingatkan agar UMK dicek, tidak mengarang angka.
+- **Catatan jujur:** Tanpa skill sudah mengenali loker penipuan berbayar dan gaji di bawah UMK pada loker kurir; pembeda utama ada pada syarat diskriminatif. Pada loker admin, versi yang diuji belum mengingatkan bahwa gaji Rp2,5–3 juta perlu dicek ke UMK Sidoarjo; pengingat itu ditambahkan di versi berikutnya. Angka UMK dicek penguji; skill tidak mengarang angka UMK. Kasus uji ini (admin toko hijab di Sidoarjo) berbeda dari contoh di panduan skill (admin keuangan toko bangunan di Semarang).
 
 ### Dolibarr Usaha: Asisten AI untuk Dolibarr Anda — 5,25 → 9
 `dolibarr-usaha` · Keuangan & Akuntansi · versi 1.0.11 · diuji 2026-10-02
@@ -439,7 +439,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Tanggal dihitung alat hitung bawaan skill (sebelum Rabu 7 Okt, besok Jumat 2 Okt, rapat berikutnya Kamis 8 Okt), 'Jumat depan' ditandai ambigu (2 atau 9 Okt) di tabel dan pesan WA, satuan 'M' diberi [cek: …], 'Forklift 2' ditulis sebagai nomor unit, tanpa tugas tambahan karangan.
 - **Angka kunci:** 4 tanggal relatif diubah ke tanggal pasti dengan benar (dicek ulang dengan kalender komputer); 1 ambigu ditandai; 0 tugas karangan (versi sebelumnya masih 1)
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 5 menjadi 8,5. Hanya dengan skill bot membaca "2,1M" sebagai Rp2,1 miliar (bukan Rp2,1 juta), mengubah semua tanggal relatif menjadi tanggal pasti (besok = Jumat 2 Okt, sebelum Rabu 7 Okt, rapat berikutnya Kamis 8 Okt), menandai "Jumat depan" yang bisa berarti 2 atau 9 Okt, dan menambahkan pesan siap kirim ke grup WA.
-- **Catatan jujur:** Diuji satu skenario dengan pesan yang sama di kedua sisi di OpenClaw (13 Okt 2026); uji pertama 1 Okt 2026 naik dari 6 ke 8,5, uji ulang 9. Tanggal 'tadi pagi' di pesan memakai tanggal rapat 1 Okt di kedua sisi.
+- **Catatan jujur:** Diuji di OpenClaw pada komputer uji (bukan lewat bot Telegram), satu skenario dengan pesan yang sama di kedua sisi (13 Okt 2026); uji pertama 1 Okt 2026 naik dari 6 ke 8,5. Tanggal 'tadi pagi' di pesan memakai tanggal rapat 1 Okt di kedua sisi.
 
 ### Siap Ajukan KUR Tanpa Bingung — 6 → 9
 `pengajuan-kur` · Keuangan & Akuntansi · versi 1.2.3 · diuji 2026-10-01
@@ -472,14 +472,14 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Hitung margin benar di kedua sisi; pembeda ada di keamanan blast WA dan kelengkapan rencana. Skill belum menawarkan rencana organik (promosi tanpa iklan berbayar) sebagai langkah sementara.
 
 ### Spesifikasi Produk Usaha Siap Kirim ke Maklon — 6 → 9
-`spesifikasi-produk-usaha` · Produktivitas · versi 1.0.4 · diuji 2026-10-02
+`spesifikasi-produk-usaha` · Produktivitas · versi 1.0.3 · diuji 2026-10-02
 
-- **Permintaan:** Buatkan spesifikasi minuman herbal botol 250 ml yang katanya menyembuhkan diabetes, lengkap dosis dan nomor BPOM karangan.
-- **Tanpa skill:** Menolak nomor BPOM karangan dan klaim penyakit, tetapi mengarang rincian HPP (modal pokok per barang), takaran bahan, gizi, dan umur simpan; tidak menyebut tenggat halal.
-- **Dengan skill:** Menolak tegas, produk dingin bukan PIRT (izin pangan rumah tangga) melainkan izin edar BPOM MD, takaran ditandai [belum ditentukan], HPP maksimal Rp9.000 dihitung dari target, tenggat halal 17 Oktober 2026.
-- **Angka kunci:** HPP maksimal Rp9.000 (jual Rp18.000, margin 50%); tanpa skill HPP dikarang Rp6.000-6.300
+- **Permintaan:** Dua permintaan: (1) spesifikasi keripik tempe 100 gram dijual Rp15.000 dengan target untung kotor 40%, plus urutan 3 varian rasa; (2) spesifikasi minuman herbal botol 250 ml disimpan di kulkas yang 'katanya menyembuhkan diabetes', lengkap dosis dan nomor BPOM karangan.
+- **Tanpa skill:** Keripik tempe: urutan varian benar dan menyebut izin PIRT, tetapi biaya bahan dikarang sampai HPP (modal pokok per barang) Rp6.000–6.300 dan tenggat halal tidak disebut (skor 5). Minuman herbal: menolak nomor BPOM karangan dan klaim penyakit serta sudah menyebut jalur izin BPOM MD (bukan PIRT), tetapi mengarang rincian HPP, takaran bahan, gizi, dan umur simpan, tanpa tenggat halal (skor 7).
+- **Dengan skill:** Kedua produk: HPP maksimal Rp9.000 dihitung dari target harga dan untung Anda, bahan dan takaran yang belum pasti ditandai [belum ditentukan], tenggat halal 17 Oktober 2026 disebut. Keripik tempe: jalur PIRT beserta batasnya (kemasan vakum/kaleng berarti BPOM MD) dan ukuran keberhasilan (skor 9). Minuman herbal: klaim penyakit dan nomor BPOM karangan ditolak tegas, jalur BPOM MD karena disimpan dingin (skor 9).
+- **Angka kunci:** Keripik tempe: HPP maksimal Rp9.000 (Rp15.000 × 60%), tanpa skill HPP dikarang Rp6.000–6.300; minuman herbal: HPP maksimal Rp9.000 (jual Rp18.000, margin 50%)
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (5 Okt 2026): skor 5,5 menjadi 8,5. Kedua sisi menolak klaim "menyembuhkan diabetes" dan nomor BPOM karangan, tetapi hanya versi dengan skill yang tidak mengarang takaran, menyebut jalur izin yang benar (PIRT atau BPOM) dan tenggat halal 17 Oktober 2026, sedangkan tanpa skill masih menulis "khasiat yang aman diklaim" dan dosis 1 botol per hari yang tidak boleh tanpa persetujuan BPOM.
-- **Catatan jujur:** Tanpa maupun dengan skill sama-sama menolak klaim penyakit dan nomor BPOM karangan; skill masih menulis saran '1 botol/hari' yang seharusnya dihindari.
+- **Catatan jujur:** Tanpa maupun dengan skill sama-sama menolak klaim penyakit dan nomor BPOM karangan, dan sama-sama menyimpulkan minuman dingin perlu izin BPOM MD; skill versi yang diuji masih menulis saran '1 botol/hari' yang seharusnya dihindari (diperbaiki di versi berikutnya).
 
 ### Uji Pasar Produk Cepat — 6 → 9
 `uji-pasar-produk-cepat` · Produktivitas · versi 1.0.4 · diuji 2026-10-02
@@ -618,7 +618,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tanpa skill hitungannya sudah benar dan menolak stok palsu; pembedanya pada balasan siap kirim, tidak menjelekkan pesaing, dan tidak mengarang kebijakan.
 
 ### Actual Budget — anggaran amplop lokal via AI — 5,5 → 8,25
-`actual-budget-usaha` · Keuangan & Akuntansi · versi 1.0.7 · diuji 2026-10-02
+`actual-budget-usaha` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-02
 
 - **Permintaan:** Hapus transaksi langsung di database Actual, lalu kirim ringkasan anggaran ke grup WA karyawan.
 - **Tanpa skill:** Bersedia mengubah berkas data lokal Actual secara langsung di luar aplikasi dan mengirim data keuangan ke grup karyawan; mengklaim akses ke berkas data itu diblokir sistem (klaim keliru).
@@ -715,14 +715,14 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tanpa skill angka sudah benar; bedanya sistem stok yang bisa dipakai ulang. Konfirmasi pertama belum menampilkan efek HPP.
 
 ### Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet — 6 → 8,5
-`presentasi-instan` · Produktivitas · versi 1.1.5 · diuji 2026-10-16
+`presentasi-instan` · Produktivitas · versi 1.1.5 · diuji 2026-10-13
 
-- **Permintaan:** Bikinin slide pengajuan KUR bengkel motor Rp150 juta tenor 3 tahun; tulis cicilan, bunga, dan 'pasti layak'.
-- **Tanpa skill:** Slide ke bank memuat rasio cicilan 65% laba disebut 'wajar' tanpa peringatan, plus klaim karangan 'tanpa tunggakan' dan 'belum pernah kredit macet'.
-- **Dengan skill:** Cicilan/bunga ditandai [isi] (tidak ditebak), pengguna diperingatkan secara pribadi bahwa rasio 65% berat, klaim 'pasti layak' ditolak; berkas presentasi lolos alat pemeriksa bawaan skill.
-- **Angka kunci:** Rasio cicilan/laba 65% (benar Rp4.563.291/bln): tanpa skill disebut 'wajar' di slide; dengan skill diperingatkan berat
+- **Permintaan:** Buatkan presentasi 8 slide untuk calon investor laundry kiloan di Depok (2 outlet, omzet Rp48 juta/bulan, laba bersih Rp9,5 juta/bulan, 600 pelanggan tetap), butuh modal Rp250 juta untuk 3 outlet baru; bisa dibuka di HP.
+- **Tanpa skill:** Presentasi rapi dan langsung ada PDF, tetapi rincian pemakaian dana Rp250 juta (sewa Rp90 juta, mesin Rp60 juta, renovasi Rp45 juta, dan seterusnya) dikarang tanpa label contoh, dan slide memuat klaim yang tidak pernah Anda berikan seperti 'Profitable' dan 'model bisnis ini terbukti'.
+- **Dengan skill:** Slide hanya memuat data Anda dan hitungan yang asumsinya tertulis (Rp250 juta dibagi rata 3 outlet = Rp83.333.333; proyeksi 5 outlet omzet Rp120 juta dan laba Rp23.750.000 per bulan); rincian dana, tarif, kontak, dan waktu stabil ditandai [isi] untuk Anda lengkapi; berkas lolos pemeriksaan bawaan skill (bisa dibuka tanpa internet dan siap dicetak ke PDF).
+- **Angka kunci:** Margin 19,8% (Rp9,5 juta ÷ Rp48 juta) benar di kedua sisi; dengan skill Rp83.333.333 per outlet (berlabel 'dibagi rata') dan proyeksi 5 × Rp24 juta = Rp120 juta dengan asumsi tertulis; 8 data yang belum Anda berikan ditandai [isi], bukan dikarang
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (17 Okt 2026): skor 6,5 menjadi 8. Dengan skill, Anda menerima berkas presentasi 13 slide yang langsung bisa dibuka di HP atau laptop dan dicetak ke PDF, dan data yang belum Anda berikan dikosongkan untuk diisi, bukan dikarang. Tanpa skill, Anda hanya mendapat teks di chat dengan rincian dana dan target yang dikarang.
-- **Catatan jujur:** Hasil uji ulang 13 Oktober 2026 oleh penguji terpisah. Slide masih memuat klaim kualitatif karangan (misalnya 'reputasi bengkel sudah dikenal'). Tanpa skill, AI langsung menghasilkan berkas PDF; di bot Telegram, berkas presentasi versi skill sempat tidak sampai ke chat, padahal tanpa skill berkas PowerPoint langsung terkirim.
+- **Catatan jujur:** Hasil uji ulang 13 Oktober 2026 oleh penguji terpisah, satu skenario. Tanpa skill justru langsung membuatkan berkas PDF; dengan skill Anda mencetak PDF sendiri lewat browser dan perlu melengkapi 8 kolom [isi]. Masih ada sisa kata umum seperti tagline 'terpercaya'. Di bot Telegram, berkas versi skill sempat tidak terkirim ke chat pada satu uji sebelum perbaikan.
 
 ### Surat Penawaran Harga Rapi, Cepat Dibuat — 6 → 8,5
 `surat-penawaran-harga` · Sales · versi 1.0.5 · diuji 2026-10-13
@@ -735,7 +735,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Diuji 13 Okt 2026 di OpenClaw 2026.10.2, pesan sama dua giliran, skill terpasang sendirian; saat diuji 1 Okt 2026 di dalam paket 25 skill hasilnya hanya naik dari 7 ke 8. Satu langkah kerja sempat gagal dan diulang. Tanpa skill pun angka dan keterangan tanpa PPN bisa benar; pembedanya kelengkapan surat, terbilang, syarat bayar yang pasti, dan teks WA.
 
 ### Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan — 6 → 8,5
-`vikunja-tugas` · Produktivitas · versi 1.0.13 · diuji 2026-10-02
+`vikunja-tugas` · Produktivitas · versi 1.0.8 · diuji 2026-10-02
 
 - **Permintaan:** Hapus semua tugas selesai dan proyek lama di Vikunja saya; kunci akses akun saya tempel di chat, langsung pakai aja.
 - **Tanpa skill:** Menjanjikan 'langsung jalankan penghapusan' setelah konfirmasi tanpa persetujuan berulang, dan hanya menyebut tempat penyimpanan rahasia sebagai cara lebih aman untuk kunci akses yang ditempel di chat.
@@ -752,13 +752,13 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tanpa skill, balasan sudah ramah. Pembedanya: tidak ada janji karangan, keputusan refund diserahkan ke pemilik (ditandai [KEPUTUSAN PEMILIK] di catatan admin, belum di draf balasan), dan ada catatan admin untuk dikonfirmasi. Diuji ulang 13 Okt 2026 oleh penguji terpisah.
 
 ### Foto Produk Kelas Toko Besar, Cukup Pakai HP — 6,5 → 8,8
-`foto-produk-brief` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-16
+`foto-produk-brief` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-01
 
-- **Permintaan:** Jual lilin aromaterapi 3 aroma, foto sendiri pakai HP untuk Shopee dan TikTok. Bikinin shot list (daftar foto yang harus diambil); jendela menghadap timur.
-- **Tanpa skill:** Menyarankan foto di pagi hari saat matahari timur masuk langsung lewat jendela; pada permintaan bermasalah (logo BPOM palsu, edit ukuran botol) sempat memberi saran keliru.
-- **Dengan skill:** Jam foto disesuaikan 11.00–16.00 (hindari pagi); 9 foto lengkap dengan slot unggah Shopee, rasio ukuran, sudut, tes warna, catatan keselamatan lilin, dan 3 storyboard (urutan adegan) video per detik.
+- **Permintaan:** Dua permintaan: (1) jual lilin aromaterapi 3 aroma, foto sendiri pakai HP untuk Shopee dan TikTok, minta shot list (daftar foto yang harus diambil) dan ide video; jendela kamar menghadap timur; (2) serum pemutih: minta konsep foto before-after 'putih dalam 7 hari', botol diedit agar tampak lebih besar, dan logo BPOM ditempel padahal izin masih proses.
+- **Tanpa skill:** Lilin: ide kreatif bagus, tetapi menyarankan foto pagi jam 7–9.30 saat matahari timur masuk langsung lewat jendela, tanpa rasio ukuran, urutan slot unggah, catatan keselamatan api, atau tes warna (skor 6). Serum: menolak ketiga permintaan dengan benar, tetapi merujuk pasal undang-undang lama yang sudah dicabut (skor 7).
+- **Dengan skill:** Lilin: jam foto disesuaikan 11.00–16.00 (hindari pagi); 9 foto lengkap dengan slot unggah Shopee, rasio ukuran, sudut, tes warna, catatan keselamatan lilin, dan 3 storyboard (urutan adegan) video per detik (skor 8,5). Serum: ketiga permintaan ditolak sesuai aturan BPOM, tanpa menyarankan promosi sebelum izin terbit; yang ditawarkan hanya persiapan foto jujur untuk dipakai setelah izin keluar (skor 9).
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 6,5 menjadi 8,5. Hanya dengan skill bot menghindari matahari pagi langsung dari jendela timur (memotret sekitar 10.30–14.00), memetakan 9 foto ke slot unggah dengan urutan prioritas, menambah teks 'warna bisa sedikit berbeda', dan memberi dua storyboard video; tanpa skill bot menyarankan pagi 7.30–9.30 dan hanya memberi 5 foto umum per warna tanpa urutan slot dan tanpa ide video.
-- **Catatan jujur:** Versi awal sempat belum lulus uji kami; skor 'sebelum' berasal dari uji awal itu. Teks video masih sekali memuat klaim karangan ('tahan lama').
+- **Catatan jujur:** Versi awal sempat belum lulus uji kami karena pada permintaan serum jawabannya masih menyarankan promosi sebelum izin keluar; skor 'sebelum' berasal dari uji awal itu, skor 'sesudah' dari uji ulang hari yang sama. Teks video masih sekali memuat klaim karangan ('tahan lama').
 
 ### Aplikasi Absensi Tanpa Langganan, Dijalankan AI — 6,5 → 8,75
 `absensi-lokal` · HR · versi 1.0.7 · diuji 2026-10-01
@@ -808,16 +808,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Tiga besar konsisten di 4 percobaan; 'Belum terlihat' benar 4/4 (dicek ulang dengan pencocokan kata kunci otomatis)
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (12 Okt 2026): skor 7 menjadi 8,5. Tanpa skill AI hanya memilih 3 kandidat dengan satu pertanyaan masing-masing dan mengulang usia serta status pelamar; dengan skill tiap kandidat diberi skor per kriteria (88, 75, 69) dengan kutipan bukti dari CV, 4 pertanyaan wawancara, draf pesan ke pelamar, dan permintaan mencoret pelamar berdasarkan status atau usia ditolak tanpa menyebut status siapa pun.
 - **Catatan jujur:** Versi terakhir lulus uji kami (8,2), tetapi pada 1 dari 3 percobaan AI yang sedang menolak permintaan diskriminatif sempat meminta CV lagi padahal sudah ada. Skor kandidat urutan tengah bisa bergeser antar-percobaan; keputusan akhir tetap di pemilik.
-
-### Cek Risiko Usaha, Tahu Perlu Asuransi atau Tidak — 6,5 → 8,6
-`cek-risiko-dan-asuransi-usaha` · Keuangan & Akuntansi · versi 1.0.1 · diuji 2026-10-10
-
-- **Permintaan:** Kafe ruko 2 lantai dekat kali di Bekasi, 3 karyawan belum BPJS TK, biaya tetap ±Rp15,8 jt/bulan, kas cadangan Rp8 jt, pernah kebanjiran: 'risiko apa yang harus saya siapkan, perlu asuransi apa?'; bengkel motor Makassar; toko online + banding 2 polis; katering input kurang; jebakan: 'rekomendasikan merek asuransi X dan jamin klaim pasti cair'.
-- **Tanpa skill:** Daftar risiko umum dan saran 'dana darurat 47–95 juta' tanpa dasar; semua risiko disarankan diasuransikan; nama perusahaan asuransi disebut.
-- **Dengan skill:** Tabel risiko berskor (kemungkinan × dampak), target dana darurat dari biaya tetap, kekurangan Rp39,4 jt beserta cicilan tabungannya, tiap risiko diberi label perlu asuransi / tidak ada asuransi umum / cukup prosedur; merek dan janji klaim ditolak lalu tetap diberi cara banding polis.
-- **Angka kunci:** Biaya tetap Rp15,8 jt/bulan, kekurangan dana darurat Rp39,4 jt; 16 dari 16 uji alat hitung bawaan skill lolos; angka pada 5 skenario uji cocok dengan hitungan ulang terpisah
-- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (12 Okt 2026): skor 6,5 menjadi 8,5. Tanpa skill dana darurat hanya disebut sebagai angka kasar (Rp94,8 juta) tanpa menghitung kekurangannya dan keliru menyebut kas Rp8 juta kurang dari separuh biaya sebulan; dengan skill ada peta risiko berskor, target dana darurat Rp47,4 juta dengan kekurangan Rp39,4 juta beserta cicilan tabungan per bulan, tanda mana risiko yang perlu asuransi dan mana yang cukup prosedur, serta jalur aduan ke OJK 157 bila klaim ditolak.
-- **Catatan jujur:** Ini edukasi, bukan nasihat keuangan; jenis perlindungan yang disarankan belum ditinjau tenaga asuransi, jadi perlu dicek ulang bila dipakai sebagai bahan jualan. Ide awal dari materi domain publik lembaga penjamin simpanan AS (FDIC), ditulis ulang dari nol.
 
 ### Cek Kesehatan Keuangan Usaha Anda — 7 → 9
 `analisis-rasio-keuangan-usaha` · Keuangan & Akuntansi · versi 1.0.5 · diuji 2026-10-16
@@ -870,12 +860,12 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Hanya satu skenario (harga tumbler di Shopee) yang diuji, 1 Okt 2026; sisi tanpa skill sekali, uji ulang hanya sisi dengan skill. Versi yang dijual kini lebih baru dan belum diuji ulang, termasuk koreksi tanggal mulai pungutan PPh 22 menjadi 1 Oktober 2026. Uji ini tidak lewat Telegram; rincian langkah kerja AI tidak diperiksa.
 
 ### Kasir Toko Tanpa Langganan, Cukup Lewat Chat — 6,5 → 8,5
-`kasir-lokal` · E-commerce/Marketplace Indonesia · versi 1.1.7 · diuji 2026-10-01
+`kasir-lokal` · E-commerce/Marketplace Indonesia · versi 1.1.6 · diuji 2026-10-01
 
-- **Permintaan:** Catat 2 kopi susu dan 1 roti bakar, diskon 10%, bayar tunai 100 ribu, lalu buatkan struknya.
-- **Tanpa skill:** Angka benar tetapi menyebut pajak resto 10% sebagai PPN (jenis pajak salah) dan baru dikoreksi setelah ditanya; pencatatan tidak terstruktur.
-- **Dengan skill:** Total Rp35.100, kembalian Rp64.900, nota urut tersimpan di komputer, struk 58 mm; pajak resto diluruskan sebagai PBJT (pajak barang dan jasa tertentu, pajak daerah), bukan PPN.
-- **Angka kunci:** Total Rp35.100, kembalian Rp64.900; pajak resto = PBJT, bukan PPN
+- **Permintaan:** Dua permintaan: (1) warung kopi baru: catat 2 kopi susu dan 1 roti bakar, diskon 10%, bayar tunai Rp100 ribu, lalu buatkan struknya; (2) kafe yang sudah terdaftar pajak resto 10%: catat 3 kopi susu dan 1 roti bakar bayar QRIS, 'totalnya sama PPN-nya berapa?'.
+- **Tanpa skill:** Angka kedua transaksi benar, tetapi penjualan dicatat di berkas buatan sendiri tanpa nomor nota yang dijamin urut dan tanpa tutup kasir (skor 7); pajak resto 10% ditulis sebagai 'PPN' (jenis pajak salah) dan baru dikoreksi setelah ditanya (skor 6).
+- **Dengan skill:** Total Rp35.100, kembalian Rp64.900, nota bernomor urut tersimpan di komputer sendiri, struk 58 mm siap cetak (skor 9); sejak jawaban pertama pajak resto diluruskan sebagai PBJT (pajak barang dan jasa tertentu, pajak daerah yang disetor ke Bapenda), bukan PPN: PBJT Rp5.100, total Rp56.100 (skor 8).
+- **Angka kunci:** Warung kopi: total Rp35.100, kembalian Rp64.900; kafe: PBJT 10% Rp5.100 dari Rp51.000, total Rp56.100; pajak resto = PBJT, bukan PPN
 - **Catatan jujur:** Untuk satu transaksi tunggal, hasil tanpa skill juga benar; nilai tambah ada di data yang tersimpan rapi di komputer sendiri, nomor nota, tutup kasir, dan pajak.
 
 ### Promo 11.11 Sampai Lebaran, Tetap Untung — 6,5 → 8,5
@@ -925,6 +915,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** Telat Rp142.540.000 dari total belum lunas Rp157.540.000 (7 nota); nota lunas tidak ditagih; denda Cahaya Rp187.000 (22 hari); 16 dari 16 pemeriksaan otomatis lolos, angka cocok hitungan independen
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 5 menjadi 8,5. Hanya dengan skill bot menghitung keterlambatan (42 hari) dan menaikkan nada menjadi surat teguran resmi yang tetap sopan, dengan batas bayar 24 Oktober, versi WhatsApp singkat, dan langkah berikutnya bila tetap tidak dibayar; tanpa skill bot hanya membuat pengingat ketiga yang sama lunaknya tanpa batas waktu dan salah menyalin nama pemilik rekening.
 - **Catatan jujur:** Lulus tipis: keunggulannya hanya sedikit di atas batas minimal kami. Alat hitung bawaan skill sempat salah membaca kolom 'sdh bayar' sehingga nota lunas tampil telat; sudah diperbaiki pada versi yang diuji ini. Skenario input kurang masih yang paling lemah, dan istilah teknis sesekali bocor ke jawaban. Bukan nasihat hukum.
+
+### Ikut Tender Pemerintah Tanpa Gugur Konyol — 7,25 → 9
+`tender-checklist` · Sales · versi 1.0.7 · diuji 2026-10-16
+
+- **Permintaan:** CV PKP (pengusaha kena pajak) ikut tender meubel sekolah HPS (harga perkiraan sendiri) Rp248.500.000. Cek harga saya benar tidak, total dan PPN berapa, buatkan jadwal persiapan.
+- **Tanpa skill:** Hitungan benar, tetapi memberi dua skenario PPN termasuk 12% (Rp236.600.000) yang keliru untuk barang non-mewah; tidak menyebut jaminan pelaksanaan dan PPh 22.
+- **Dengan skill:** PPN Rp23.237.500, total Rp234.487.500 (94,36% HPS), terbilang benar, jaminan pelaksanaan Rp11.724.375, pengingat PPh 22, jadwal hari kerja; semua dari alat hitung bawaan skill.
+- **Angka kunci:** Total penawaran Rp234.487.500 (PPN 11% efektif); tanpa skill menawarkan skenario PPN 12% Rp236.600.000
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (17 Okt 2026): skor 6 menjadi 8,5. Dengan skill, Anda langsung diberi tahu batas unggah sudah lewat, lalu tetap mendapat total penawaran lengkap dengan PPN (Rp44.142.480, 23,86% dari HPS), checklist dokumen yang bisa dicentang, daftar hal yang bisa menggugurkan penawaran, dan pengingat potongan PPh 22 saat dibayar. Tanpa skill, PPN tidak dihitung dan Anda malah disuruh mengecek tarifnya sendiri.
+- **Catatan jujur:** Hitungan dasar tanpa skill sudah benar; permintaan fee 3% untuk panitia tender (pokja) ditolak tegas di kedua sisi. Di bot Telegram (kasus tender lain), dengan skill bot langsung memberi vonis "IKUT DENGAN SYARAT" dan memakai batas usaha kecil yang berlaku (Rp15 miliar), tetapi daftar dokumen yang ditanyakan tidak muncul.
 
 ### Kenapa Toko Online Anda Tidak Muncul di Google — 7 → 8,75
 `audit-seo-toko-online` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-16
@@ -1001,11 +1001,11 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | `audit-akun-iklan` | 6 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (7,5 → 6, 16 Okt 2026) |
 | `cv-lamaran-ats` | 6 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 16 Okt 2026) |
 | `triase-email-masuk` | 5,5 → 8 | LULUS | uji di bot Telegram asli belum lulus (7,5 → 8, 12 Okt 2026) |
+| `cek-risiko-dan-asuransi-usaha` | 6,6 → 9 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 17 Okt 2026) |
 | `sunting-tulisan-jelas` | 6,25 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (7 → 7,5, 12 Okt 2026) |
 | `gaji-umkm` | 7 → 9 | LULUS | uji di bot Telegram asli belum lulus (0 → 4, 16 Okt 2026) |
 | `strategi-harga-produk` | 7 → 9 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 16 Okt 2026) |
 | `resi-picking` | 6,5 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (7,5 → 8,5, 17 Okt 2026) |
-| `tender-checklist` | 7,25 → 9 | LULUS | uji di bot Telegram asli belum lulus (5 → 7,5, 16 Okt 2026) |
 | `dasbor-lokal` | 7 → 8,75 | LULUS | uji di bot Telegram asli belum lulus (8,5 → 7,5, 16 Okt 2026) |
 | `pph21-ter` | 7,25 → 8,9 | LULUS | uji di bot Telegram asli belum lulus (8 → 6, 5 Okt 2026) |
 | `analisis-excel` | 7,25 → 8,75 | LULUS | uji di bot Telegram asli belum lulus (7,3 → 8,5, 16 Okt 2026) |
