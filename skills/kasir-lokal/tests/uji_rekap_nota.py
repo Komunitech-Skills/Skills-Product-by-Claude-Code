@@ -214,6 +214,13 @@ class UjiRekapNota(unittest.TestCase):
         self.assertEqual(out["nota_batal"], ["1"])
         self.assertEqual(out["omzet_tercatat"], 0)
 
+    def test_versi_sama_dengan_kasir(self):
+        import kasir as K
+        self.assertEqual(R.VERSI, "1.1.8")
+        self.assertEqual(R.VERSI, K.VERSI)
+        _, out = jalankan("Nota 1: 2 Es Teh @6rb - tunai")
+        self.assertEqual(out["versi"], "1.1.8")
+
     def test_cli_stdin(self):
         p = subprocess.run([sys.executable, SCRIPT, "-", "--json"], input="Nota 1: 2 Es Teh @6rb - tunai\n",
                            capture_output=True, text=True)

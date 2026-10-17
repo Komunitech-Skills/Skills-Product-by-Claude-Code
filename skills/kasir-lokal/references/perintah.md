@@ -8,6 +8,7 @@ Waktu: `2026-09-24 10:15` atau `24/09/2026 10.15`. Tanggal: `hari-ini`, `kemarin
 | Perintah | Fungsi | Opsi penting |
 |---|---|---|
 | `init` (tulis) | Buat database. Jika sudah ada, tidak mengubah apa pun | `--nama-toko` (wajib) `--alamat --telp --footer --npwp --pajak tanpa\|ppn-belum\|ppn-termasuk\|pbjt-belum\|pbjt-termasuk --pkp ya\|tidak --tarif-pbjt N --service-charge N --sc-kena-pajak ya\|tidak --zona WIB\|WITA\|WIT --stok tidak\|kasir\|buku-stok --kertas 58\|80` |
+| `mulai` (tulis) | **Pemakaian pertama, satu konfirmasi:** `init` + `produk impor` + `jual` dalam satu perintah. Tanpa `--ya` = pratinjau gabungan (daftar produk, pengaturan toko dengan bagian "Saya anggap", nota + struk teks); dicoba dulu di salinan sementara sehingga bila gagal buku kasir asli tidak tersentuh. Ditolak bila buku kasir sudah ada. JSON: `asumsi`, `produk_baru`, `no`, `total`, `kembalian`, `struk_teks`, `struk_baris`, `nota` | `--produk FILE` (wajib) `--nama-toko` (wajib) `--pesan "..."` (opsional; tanpa ini tidak ada nota) `--kasir --catatan` + semua opsi toko seperti `init` |
 | `atur` (tulis) | Ubah pengaturan (berlaku untuk nota berikutnya) | sama seperti `init` |
 | `info` | Lokasi DB, pengaturan, jumlah produk/nota, sesi kasir, backup terakhir; peringatan bila zona jam komputer ≠ zona toko | — |
 | `produk tambah` (tulis) | Tambah produk | `--kode --nama --harga` wajib; `--varian --satuan --stok` |
@@ -15,7 +16,7 @@ Waktu: `2026-09-24 10:15` atau `24/09/2026 10.15`. Tanggal: `hari-ini`, `kemarin
 | `produk cari [kata]` | Cari produk | `--semua` (termasuk nonaktif) |
 | `produk impor FILE` (tulis, backup) | Impor CSV. Kolom dikenali: Kode/SKU/PLU/Barcode, Nama/Produk/Menu, Varian, Harga/Harga Jual, Satuan, Stok. Kode kosong → otomatis `P001`… | `--perbarui` (perbarui nama/harga kode yang sudah ada) |
 | `stok` (tulis) | Barang datang / hasil hitung fisik (mode stok `kasir`) | `--kode` + `--tambah N` atau `--jadi N`; `--catatan` |
-| `jual` (tulis) | Catat nota penjualan | `--pesan "..."` atau `--item` (berulang); `--diskon` (nota); `--bayar metode=jumlah` (berulang); `--kasir --catatan --waktu --izinkan-duplikat --izinkan-minus --struk 58\|80` |
+| `jual` (tulis) | Catat nota penjualan. Hasil (pratinjau dan tersimpan) memuat `struk_teks` (blok kode; 32 kolom untuk kertas 58 mm, 48 untuk 80 mm) dan `struk_baris`; `teks` setelah `--ya` = nomor nota, total, kembalian, catatan, lalu struk. Di `--pesan`, awalan "Tolong catat penjualan:" dan permintaan struk ("bikinin struknya", "kirim struknya ke sini ya") diabaikan; kata "struk" di dalam nama barang ("kertas struk") tidak pernah dibuang; "struk 58mm" ditolak (pakai `--kertas`) | `--pesan "..."` atau `--item` (berulang); `--diskon` (nota); `--bayar metode=jumlah` (berulang); `--kasir --catatan --waktu --izinkan-duplikat --izinkan-minus --struk 58\|80` |
 | `retur` (tulis) | Retur sebagian barang (entri balik `R-…`) | `--nota --item` (berulang) `--alasan` wajib; `--refund tunai\|qris\|transfer…`; `--stok-kembali ya\|tidak`; `--waktu` |
 | `void` (tulis) | Batalkan seluruh nota (entri balik `R-…`) | `--nota --alasan` wajib; `--stok-kembali`; `--waktu` |
 | `nota` | Satu nota (`--no N-…`) atau daftar nota per `--tanggal` | — |

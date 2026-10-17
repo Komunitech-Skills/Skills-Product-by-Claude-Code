@@ -59,5 +59,5 @@ openclaw automations add --name "Rekap kasir (agent)" --cron "0 21 * * *" --tz A
 - `Gateway not reachable` → Gateway belum jalan; nyalakan OpenClaw/komputer.
 - `requires credentials` → jalankan dari perangkat yang sudah dipasangkan (paired) atau dengan token Gateway pemilik (`--token`).
 - `deliveryStatus: not-delivered` + `Telegram bot token missing` → kanal Telegram belum disiapkan.
-- `summary` berisi `GAGAL: Database kasir belum ada` → path `--db` di jadwal berbeda dengan yang dipakai saat chat; samakan.
+- `summary` berisi `GAGAL: Buku kasir belum ada` → path `--db` di jadwal berbeda dengan yang dipakai saat chat; samakan.
 - `summary` berisi "sedang dipakai program lain" → saat jadwal berjalan ada transaksi yang sedang disimpan; data aman, jalankan `automations run <id>` lagi.

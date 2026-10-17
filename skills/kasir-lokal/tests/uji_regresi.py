@@ -18,6 +18,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import shutil
 import sqlite3
 import sys
@@ -721,6 +722,275 @@ class UjiV110Lain(Dasar):
         o = self.jual("1 kopi hitam, bayar pas")                  # kolom baru ditambahkan otomatis
         self.assertEqual(o["total"], 12000)
 
+
+
+PRODUK_BOT_CSV = "Kode;Nama;Varian;Harga Jual;Satuan\nKH;Kopi Hitam;;8.000;cup\nKS;Kopi Susu;;12.000;cup\n" \
+                 "ETM;Es Teh Manis;;5.000;gelas\nRB;Roti Bakar;Coklat;15.000;porsi\n"
+PESAN_BOT = "2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb"
+KATA_JARGON = ("database", "dipetakan", "sistem kasir", "html", "file lokal", "sqlite", "json")
+# Toko perlengkapan kasir/ATK: kata "struk" ADA di nama barang (bukan permintaan struk).
+PRODUK_ATK_CSV = ("kode,nama,harga,satuan\nKR,Kertas,500,lembar\nKST,Kertas Struk,6000,roll\n"
+                  "PS,Printer Struk,350000,pcs\nPI,Printer Inkjet,900000,pcs\n")
+
+
+class UjiV118(Dasar):
+    """v1.1.8 (temuan uji bot Telegram 17 Okt 2026): struk teks SELALU ikut di balasan setelah nota tersimpan, dan
+    pemakaian pertama (produk + pengaturan + penjualan pertama) cukup SATU konfirmasi.
+    Angka kunci uji bot (menu bot: Kopi Susu 12.000, Roti Bakar Coklat 15.000): 2 x 12.000 + 1 x 15.000 = 39.000;
+    diskon 10% = 3.900; total 35.100; tunai 100.000; kembalian 64.900.
+    Angka produk-contoh.csv (Kopi Susu Gula Aren 18.000): 2 x 18.000 + 15.000 = 51.000; diskon 5.100; total 45.900;
+    kembalian 54.100."""
+
+    def baru(self):
+        """Folder kerja kosong (belum ada buku kasir) + file produk, seperti pembeli yang baru memasang skill."""
+        self.dir2 = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.dir2, ignore_errors=True)
+        self.db = os.path.join(self.dir2, "data", "kasir.db")
+        self.csv = os.path.join(self.dir2, "produk.csv")
+        with open(self.csv, "w", encoding="utf-8", newline="") as f:
+            f.write(PRODUK_BOT_CSV)
+
+    def mulai(self, *extra, pesan=PESAN_BOT):
+        argv = ["mulai", "--produk", self.csv, "--nama-toko", "Warung Kopi Mbak Sri", "--alamat", "Jl. Melati 5, Bekasi"]
+        if pesan:
+            argv += ["--pesan", pesan]
+        return self.ok(*(argv + list(extra)))
+
+    def test_70_version_sama_di_semua_berkas(self):
+        self.assertEqual(K.VERSI, "1.1.8")
+        spec = importlib.util.spec_from_file_location("rekap_nota", os.path.join(AKAR, "scripts", "rekap_nota.py"))
+        rn = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(rn)
+        self.assertEqual(rn.VERSI, K.VERSI)
+        self.assertIn("## Catatan revisi %s (2026-10-17)" % K.VERSI, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
+        self.assertIn("Versi terkini: **%s**" % K.VERSI, isi_file(os.path.join(AKAR, "README.md")))
+
+    def test_71_jual_tersimpan_memuat_struk_teks_58mm(self):
+        o = self.jual(PESAN_BOT)
+        self.assertEqual((o["total"], o["kembalian"]), (45900, 54100))
+        self.assertEqual(o["struk_kertas"], "58")
+        self.assertTrue(o["struk_teks"].startswith("```\n") and o["struk_teks"].endswith("\n```"))
+        self.assertTrue(all(len(b) <= 32 for b in o["struk_baris"]), o["struk_baris"])        # muat kertas 58 mm
+        for kata in (o["no"], "Subtotal                  51.000", "Diskon 10%                -5.100", "Rp 45.900",
+                     "Tunai                    100.000", "Kembalian                 54.100"):
+            self.assertIn(kata, o["struk_teks"])
+        self.assertIn(o["struk_teks"], o["teks"])                      # balasan yang disalin apa adanya sudah memuat struk
+        self.assertNotIn("belum disimpan", o["teks"])
+        s = self.ok("struk", "--nota", o["no"], "--teks")               # sama persis dengan perintah struk terpisah
+        self.assertEqual(s["baris"], o["struk_baris"])
+
+    def test_71b_permintaan_struk_di_kalimat_bukan_barang(self):
+        """Kalimat nyata uji bot: '..., terus bikinin struknya ya' dulu ditolak sebagai produk tak dikenal."""
+        for tambahan in (", terus bikinin struknya ya", " terus bikinin struknya ya", ", tolong cetak struk",
+                         " dan struknya", ", bikinin struk dong", ", struk"):
+            o = self.ok("jual", "--pesan", PESAN_BOT + tambahan, "--waktu", "2026-09-24 10:00")
+            self.assertEqual((o["total"], o["kembalian"]), (45900, 54100), tambahan)
+            self.assertEqual([b["kode"] for b in o["baris"]], ["KSGA", "RB"], tambahan)
+        self.gagal("jual", "--pesan", "2 kopi susu, 1 nasi rendang, bikinin struknya")   # produk asing tetap ditolak
+
+    def test_72_jual_struk_80mm_bila_kertas_80(self):
+        self.ok("atur", "--kertas", "80", "--ya")
+        o = self.jual("3 es teh manis, bayar pas")
+        self.assertEqual(o["struk_kertas"], "80")
+        self.assertTrue(all(len(b) <= 48 for b in o["struk_baris"]))
+        self.assertTrue(any(len(b) > 32 for b in o["struk_baris"]))
+
+    def test_73_pratinjau_jual_tidak_mengubah_buku_dan_tetap_ada_struk_teks(self):
+        o = self.ok("jual", "--pesan", PESAN_BOT, "--waktu", "2026-09-24 10:00")
+        self.assertEqual(o["mode"], "pratinjau")
+        self.assertTrue(o["perlu_konfirmasi"])
+        self.assertIn("belum disimpan", o["teks"])
+        self.assertIn("struk_teks", o)
+        self.assertEqual(self.ok("info")["nota"], 0)
+        nyata = self.jual(PESAN_BOT)                                   # nomor & struk pratinjau = yang benar-benar tersimpan
+        self.assertEqual((nyata["no"], nyata["struk_baris"]), (o["no"], o["struk_baris"]))
+
+    def test_74_pengingat_kasir_belum_dibuka_singkat_dan_awam(self):
+        o = self.jual("1 kopi hitam, bayar pas")
+        ingat = [p for p in o["peringatan"] if "dibuka" in p]
+        self.assertEqual(len(ingat), 1, o["peringatan"])
+        self.assertLess(len(ingat[0]), 190)
+        for jargon in ("buka-kasir", "--waktu", "--kas-awal", "sesi"):
+            self.assertNotIn(jargon, ingat[0])
+        self.assertIn("buka kasir, modal", ingat[0])
+        self.ok("buka-kasir", "--kas-awal", "100rb", "--waktu", "2026-09-24 07:00", "--ya")
+        self.assertFalse([p for p in self.jual("1 es teh manis, bayar pas")["peringatan"] if "dibuka" in p])
+
+    def test_75_mulai_pratinjau_satu_pesan_tidak_menulis_apa_pun(self):
+        self.baru()
+        o = self.mulai()
+        self.assertEqual((o["mode"], o["perlu_konfirmasi"]), ("pratinjau", True))
+        self.assertFalse(os.path.exists(os.path.dirname(self.db)), "pratinjau tidak boleh membuat folder/buku kasir")
+        self.assertEqual((o["produk_baru"], o["total"], o["kembalian"], o["no"]), (4, 35100, 64900, "N-260924-0001"))
+        t = o["teks"]
+        for bagian in ("DAFTAR PRODUK - 4 produk", "Kopi Susu - Rp 12.000/cup", "Roti Bakar Coklat - Rp 15.000/porsi",
+                       "Warung Kopi Mbak Sri | Jl. Melati 5, Bekasi", "Saya anggap - koreksi bila beda:",
+                       "nota N-260924-0001 (belum disimpan)", "Total Rp 35.100", "Kembalian Rp 64.900",
+                       'Balas "ya" kalau sudah sesuai'):
+            self.assertIn(bagian, t)
+        self.assertIn(o["struk_teks"], t)                               # struk teks ikut di pesan konfirmasi PERTAMA
+        self.assertTrue(all(len(b) <= 32 for b in o["struk_baris"]))
+        for jargon in KATA_JARGON:
+            self.assertNotIn(jargon, t.lower())
+
+    def test_76_mulai_asumsi_ditandai_dan_hilang_bila_disebut(self):
+        self.baru()
+        o = self.mulai()
+        gabung = " | ".join(o["asumsi"])
+        for kata in ("tanpa pajak", "kertas 58 mm", "stok barang tidak dihitung", "WIB", "tanpa nomor telepon"):
+            self.assertIn(kata, gabung)
+        self.assertNotIn("tanpa alamat", gabung)                         # alamat sudah disebut pengguna
+        self.assertNotIn("sudah saya buat", o["teks"])                    # asumsi tidak boleh ditulis seperti fakta
+        o2 = self.mulai("--pajak", "tanpa", "--kertas", "80", "--telp", "0812", "--stok", "tidak", "--zona", "WIB")
+        self.assertEqual(o2["asumsi"], [])
+        self.assertNotIn("Saya anggap", o2["teks"])
+        self.assertEqual(o2["struk_kertas"], "80")
+        self.assertTrue(any(len(b) > 32 for b in o2["struk_baris"]))
+        o3 = self.mulai("--kertas", "80")                                 # koreksi pengguna: kertas tidak lagi asumsi
+        self.assertFalse([a for a in o3["asumsi"] if "kertas" in a])
+
+    def test_77_mulai_ya_menyimpan_semuanya_dan_sama_dengan_pratinjau(self):
+        self.baru()
+        pratinjau = self.mulai()
+        o = self.mulai("--ya")
+        self.assertEqual((o["mode"], o["perlu_konfirmasi"]), ("tersimpan", False))
+        for k in ("no", "total", "kembalian", "struk_baris", "produk_baru"):
+            self.assertEqual(o[k], pratinjau[k], k)                      # waktu tetap (--hari-ini) -> struk identik
+        self.assertTrue(o["teks"].startswith("TERSIMPAN."))
+        self.assertIn(o["struk_teks"], o["teks"])
+        self.assertIn("Pengaturan yang dipakai: tanpa pajak, struk kertas 58 mm", o["teks"])
+        info = self.ok("info")
+        self.assertEqual((info["produk_aktif"], info["nota"]), (4, 1))
+        self.assertEqual(info["pengaturan"]["nama_toko"], "Warung Kopi Mbak Sri")
+        self.assertEqual(self.ok("struk", "--nota", o["no"], "--teks")["baris"], o["struk_baris"])
+        kode, out = self.run_cli("mulai", "--produk", self.csv, "--nama-toko", "Lain")     # tidak menimpa buku kasir
+        self.assertEqual(kode, 1)
+        self.assertIn("sudah ada", out["error"])
+
+    def test_78_mulai_gagal_tidak_menyentuh_buku_kasir(self):
+        self.baru()
+        for pesan, kata in (("2 kopi susu, 1 nasi rendang, bayar tunai 100rb", "nasi rendang"),
+                            ("2 kopi susu, bayar tunai 10rb", "KURANG")):
+            for ya in ([], ["--ya"]):
+                kode, out = self.run_cli("mulai", "--produk", self.csv, "--nama-toko", "Toko", "--pesan", pesan, *ya)
+                self.assertEqual(kode, 1, out)
+                self.assertIn(kata, out["error"])
+                self.assertFalse(os.path.exists(os.path.dirname(self.db)), "gagal tidak boleh meninggalkan buku kasir setengah jadi")
+        kode, out = self.run_cli("mulai", "--produk", os.path.join(self.dir2, "tidak-ada.csv"), "--nama-toko", "Toko", "--ya")
+        self.assertEqual(kode, 1, out)
+        self.assertFalse(os.path.exists(os.path.dirname(self.db)))
+
+    def test_79_mulai_tanpa_pesan_hanya_produk_dan_toko(self):
+        self.baru()
+        p = self.mulai(pesan=None)
+        self.assertEqual((p["mode"], p["produk_baru"], "struk_teks" in p), ("pratinjau", 4, False))
+        self.assertNotIn("Penjualan pertama", p["teks"])
+        self.assertFalse(os.path.exists(os.path.dirname(self.db)))
+        o = self.mulai("--ya", pesan=None)
+        self.assertEqual((o["produk_baru"], "no" in o, "struk_teks" in o), (4, False, False))
+        info = self.ok("info")
+        self.assertEqual((info["produk_aktif"], info["nota"]), (4, 0))
+
+    def test_80_mulai_catatan_dan_pembayaran_lain(self):
+        self.baru()
+        o = self.mulai("--ya", "--kasir", "Rina", "--catatan", "meja 4", pesan="2 kopi hitam, bayar qris")
+        self.assertEqual((o["total"], o["kembalian"]), (16000, 0))
+        self.assertIn("QRIS", o["struk_teks"])
+        self.assertIn("Rina", o["struk_teks"])
+        self.assertIn("meja 4", o["struk_teks"])
+
+    def test_81_kata_struk_di_dalam_nama_barang_tidak_pernah_dibuang(self):
+        """Temuan penguji independen: 'struk' dulu dibuang dari mana saja, jadi '2 kertas struk' tercatat sebagai
+        2 x Kertas (Rp 1.000) padahal Kertas Struk (2 x Rp 6.000 = Rp 12.000). Produk tidak boleh berganti diam-diam."""
+        self.db = os.path.join(self.dir, "atk.db")
+        self.ok("init", "--nama-toko", "Toko ATK", "--ya")
+        self.ok("produk", "impor", self.file("atk.csv", PRODUK_ATK_CSV), "--ya")
+        for pesan in ("2 kertas struk, bayar pas", "2 kertas struk, bayar pas, terus bikinin struknya ya",
+                      "2 kertas struk bikinin struknya, bayar pas", "kertas struk x2, sama struknya, bayar pas"):
+            o = self.ok("jual", "--pesan", pesan, "--waktu", "2026-09-24 10:00")
+            self.assertEqual([(b["kode"], b["qty"]) for b in o["baris"]], [("KST", 2)], pesan)
+            self.assertEqual(o["total"], 12000, pesan)
+            self.assertFalse([p for p in o["peringatan"] if "dibaca sebagai" in p], pesan)
+        o = self.ok("jual", "--pesan", "1 printer struk, bayar pas", "--waktu", "2026-09-24 10:00")
+        self.assertEqual((o["baris"][0]["kode"], o["total"]), ("PS", 350000))
+        o = self.ok("jual", "--pesan", "2 kertas, bayar tunai 10rb struknya ya", "--waktu", "2026-09-24 10:00")
+        self.assertEqual((o["baris"][0]["kode"], o["total"], o["kembalian"]), ("KR", 1000, 9000))
+        # nama yang tidak ada ditolak jelas dengan saran, tidak diam-diam diganti produk lain
+        for pesan in ("1 printer struk bluetooth, bayar pas", "2 kertas cetak struk, bayar pas"):
+            o = self.gagal("jual", "--pesan", pesan, "--waktu", "2026-09-24 10:00")
+            self.assertIn("tidak dikenal", o["error"], pesan)
+            self.assertEqual(self.ok("info")["nota"], 0)
+
+    def test_82_variasi_ucapan_penutup_struk_diterima(self):
+        for tambahan in (", terus kirim struknya ke sini ya", ", struknya kirim ya", ". Bikinin struknya ya",
+                         ". Tolong, bikinin struknya ya", " bikinin struknya ya", ", sama struknya",
+                         ", sekalian struknya", ", minta struknya dong", ", trus print struknya", "."):
+            o = self.ok("jual", "--pesan", PESAN_BOT + tambahan, "--waktu", "2026-09-24 10:00")
+            self.assertEqual((o["total"], o["kembalian"]), (45900, 54100), tambahan)
+            self.assertEqual([b["kode"] for b in o["baris"]], ["KSGA", "RB"], tambahan)
+        # ukuran kertas bukan bagian pesanan: ditolak jelas (agent membuangnya dan memakai --kertas)
+        o = self.gagal("jual", "--pesan", PESAN_BOT + ", bikinin struk 58mm ya", "--waktu", "2026-09-24 10:00")
+        self.assertIn("struk 58mm", o["error"])
+        self.assertEqual(self.ok("jual", "--pesan", PESAN_BOT, "--waktu", "2026-09-24 10:00")["total"], 45900)
+
+    def test_83_awalan_catat_penjualan_bukan_barang(self):
+        """Bentuk pesan uji bot: 'Tolong catat penjualan: 2 kopi susu, ...' dulu ditolak sebagai produk tak dikenal."""
+        for awal in ("Tolong catat penjualan: ", "catat penjualan ", "tolong catat penjualan baru ini: ", "Catat: ",
+                     "Penjualan: ", "masukin transaksi tadi: ", ""):
+            o = self.ok("jual", "--pesan", awal + PESAN_BOT + ", terus bikinin struknya ya", "--waktu",
+                        "2026-09-24 10:00")
+            self.assertEqual((o["total"], o["kembalian"]), (45900, 54100), awal)
+            self.assertEqual([b["kode"] for b in o["baris"]], ["KSGA", "RB"], awal)
+        o = self.ok("jual", "--pesan", "catatan: meja 4, 2 kopi hitam, bayar pas", "--waktu", "2026-09-24 10:00")
+        self.assertEqual((o["baris"][0]["kode"], o["total"]), ("KH", 24000))      # 'catatan' tetap catatan, bukan awalan
+        self.assertIn("meja 4", o["struk_teks"])
+
+    def test_84_buku_belum_ada_menunjuk_ke_mulai_bukan_init(self):
+        self.baru()
+        for perintah in (["info"], ["jual", "--pesan", PESAN_BOT]):
+            kode, out = self.run_cli(*perintah)
+            self.assertEqual(kode, 1, out)
+            self.assertIn("Buku kasir belum ada", out["error"])
+            self.assertIn("mulai --produk FILE", out["error"])
+            self.assertNotIn("Jalankan dulu: kasir.py init", out["error"])
+            self.assertNotIn("Database", out["error"])
+        self.assertFalse(os.path.exists(os.path.dirname(self.db)))
+
+    def test_85_pengingat_kasir_satu_kalimat_dan_tidak_bertentangan_dengan_pratinjau(self):
+        def kalimat(teks):
+            return [x for x in re.split(r"(?<=[.!?])\s+", teks.strip()) if x]
+        o = self.jual("1 kopi hitam, bayar pas")
+        ingat = [p for p in o["peringatan"] if "dibuka" in p]
+        self.assertEqual(len(ingat), 1)
+        self.assertEqual(len(kalimat(ingat[0])), 1, ingat[0])                  # SKILL.md: "satu kalimat"
+        self.assertNotIn("tersimpan", ingat[0])                                 # pratinjau berkata "belum ada yang disimpan"
+        self.ok("buka-kasir", "--kas-awal", "100rb", "--waktu", "2026-09-24 07:00", "--ya")
+        self.ok("tutup-kasir", "--kas-fisik", "100rb", "--waktu", "2026-09-24 08:00", "--ya")
+        o = self.ok("jual", "--pesan", "1 kopi hitam, bayar pas", "--waktu", "2026-09-24 20:30")
+        ditutup = [p for p in o["peringatan"] if "DITUTUP" in p]
+        self.assertEqual(len(ditutup), 1)
+        self.assertEqual(len(kalimat(ditutup[0])), 1, ditutup[0])
+        self.baru()
+        t = self.mulai()["teks"]
+        self.assertIn("belum ada yang disimpan", t)
+        self.assertIn('Kasir belum "dibuka"', t)
+        self.assertNotIn("tersimpan", t.lower().replace("belum ada yang disimpan", ""))
+
+    def test_86_jawaban_sama_dengan_asumsi_menghasilkan_catatan_yang_sama(self):
+        """SKILL.md A.3: 'tanpa pajak, 58mm, stok tidak dilacak, simpan aja' = setuju. Dua cara agent menjalankannya
+        (perintah sama + --ya, atau perintah dengan opsi yang menyebut asumsi itu + --ya) harus identik."""
+        self.baru()
+        a = self.mulai("--ya")
+        self.baru()
+        b = self.mulai("--pajak", "tanpa", "--stok", "tidak", "--kertas", "58", "--ya")
+        for k in ("no", "total", "kembalian", "struk_baris", "produk_baru"):
+            self.assertEqual(a[k], b[k], k)
+        self.assertEqual((b["total"], b["kembalian"], b["struk_kertas"]), (35100, 64900, "58"))
+        self.assertTrue(all(len(x) <= 32 for x in b["struk_baris"]))
+
+    def test_87_changelog_menyebut_jumlah_uji_v118_dengan_benar(self):
+        jumlah = len([n for n in UjiV118.__dict__ if n.startswith("test_")])
+        self.assertIn("`UjiV118` (%d uji)" % jumlah, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
 
 
 class UjiSingkatanFlag(unittest.TestCase):
