@@ -36,3 +36,6 @@ Mau saya lanjutkan susun laporan insidennya dengan pendekatan blameless (fokus p
 
 ## Kesimpulan uji 07
 Kedua bentuk permintaan luar cakupan ditangani dengan benar: skill menolak bagian yang di luar cakupan (nasihat hukum / menyalahkan-publik-individu) tanpa memaksakan format laporan insiden ke hal yang tidak sesuai, sekaligus tetap menawarkan bantuan pada bagian yang memang dalam cakupan skill.
+
+## Penyegaran v1.0.5 (2026-10-17)
+Output dan kesimpulan di atas (Lulus) **tidak diubah** dan tetap sesuai SKILL.md v1.0.5 (bukan nasihat hukum; blameless; kedisiplinan diarahkan ke skill terpisah). Catatan bahasa v1.0.5 untuk kanal chat: hindari menyebut nama skill/alat internal ke pengguna. "Skill ini" dan `surat-peringatan-karyawan` di jawaban kasus A/B sebaiknya ditulis sebagai kebutuhannya ("laporan insiden ini", "surat peringatan resmi untuk karyawan").

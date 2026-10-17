@@ -42,3 +42,11 @@ Tidak ada temuan lain yang memerlukan revisi sebelum rilis.
 - (−1) Satu celah minor di cakupan eksplisit untuk kasus kesehatan/keracunan makanan (temuan #1) — tidak menyebabkan kegagalan pada uji ini, tapi cukup penting untuk domain sensitif sehingga sebaiknya diperjelas sebelum rilis luas, bukan hanya mengandalkan bagian Batasan umum.
 
 **Rekomendasi:** skill ini **layak lanjut ke tahap berikutnya** (uji muat OpenClaw, lalu uji platform asli) sesuai pedoman kurasi Komunitech tahap 6. Temuan #1 sebaiknya ditindaklanjuti sebagai revisi kecil oleh Akun A (menambah satu kalimat eksplisit di SKILL.md) sebelum status naik ke `lulus`, namun skor 9/10 sudah di atas ambang batas 7 sehingga tidak wajib menghalangi progres — keputusan revisi vs lanjut diserahkan ke pemilik/Akun A.
+
+---
+## Penyegaran contoh v1.0.5 (2026-10-17)
+Penyegaran dokumentasi, **bukan uji ulang**: skor dan verdik di atas tidak berubah (v1.0.0 9/10).
+- `01`–`07` diberi bagian "Penyegaran v1.0.5 (2026-10-17)" yang menunjukkan baris-baris yang kini ditulis berbeda: tindakan dipisah "Sudah dilakukan" (hanya dari pesan pengguna) dan "Disarankan (belum dilakukan)"; hasil yang belum dikonfirmasi tidak ditulis sebagai hasil; langkah "kenapa" di luar pesan pengguna bertanda `(dugaan, perlu dikonfirmasi)` + pertanyaan konfirmasi; draf pendek per pesanan/WA pribadi, bukan broadcast/status WA. `01` memuat versi segar lengkap untuk bagian yang berubah.
+- Temuan saat penyegaran (contoh lama, sebelum v1.0.5): `01` menulis "25 paket berhasil dibatalkan", `05` menulis "Membalas 6 pelanggan" padahal tidak disebut pengguna, dan `01`, `03`, `04` menyarankan broadcast/status WA untuk versi pendek. Semuanya sudah dicatat di bagian penyegaran masing-masing; skor lama tidak diubah.
+- Skill tidak punya skrip. Angka dicek ulang dengan Decimal: 25 + 15 = 40 dan 40 − 5 = 35 (01); 10 + 30 = 40 (03); 200 − 6 = 194 (05).
+- **Hasil bot Telegram asli v1.0.5:** `koordinasi/telegram-gelombang-A1-2026-10-17.md`, topik 1884/1885 (skenario 01) — TANPA 6,0 → DENGAN 8,5 (+2,5) **LULUS**. Pra-cek konteks Telegram: `koordinasi/pracek-telegram-akun-a-2026-10-16.md` (8, SIAP KIRIM).
