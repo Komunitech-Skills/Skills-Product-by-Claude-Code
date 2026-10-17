@@ -36,4 +36,4 @@ Berkas contoh yang tidak tersimpan (meta-minggu-ini/lalu.csv, penjualan-septembe
 
 ## Rangkuman pra-cek A-cepat (13 skill)
 
-SIAP KIRIM (8): laporan-otomatis-terjadwal, checklist-keamanan-pangan-usaha, pph21-ter, hitung-thr, laporan-harian-usaha, kasir-lokal, buku-piutang, kalender-pajak, rekap-penjualan-csv (9 dengan rekap). TIDAK SIAP (4): pph-final-umkm (tabel 10 kolom), buku-stok (jalur file), absensi-lokal (5 pertanyaan + jalur), laporan-iklan-mingguan (salah paham WA + istilah proses). Daftar siap kirim: `scratchpad/openclaw-real/pilot/kandidat-a-cepat.json`.
+SIAP KIRIM (9): laporan-otomatis-terjadwal, checklist-keamanan-pangan-usaha, pph21-ter, hitung-thr, laporan-harian-usaha, kasir-lokal, buku-piutang, kalender-pajak, rekap-penjualan-csv. TIDAK SIAP (4): pph-final-umkm (tabel 10 kolom), buku-stok (jalur file), absensi-lokal (5 pertanyaan + jalur), laporan-iklan-mingguan (salah paham WA + istilah proses). Daftar siap kirim: `scratchpad/openclaw-real/pilot/kandidat-a-cepat.json`.
