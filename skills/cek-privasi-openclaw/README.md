@@ -73,7 +73,7 @@ Catatan jujur: di uji itu balasan lengkap butuh lebih dari 7 menit. Sejak itu be
 ## FAQ
 **Apakah skill ini langsung mengubah pengaturan saya?**
 Skill ini dirancang agar tidak langsung mengubah pengaturan Anda. Pemeriksaan awal hanya membaca. Perubahan ditawarkan satu per satu dan baru dijalankan setelah Anda
-menjawab "ya" untuk tiap butir. (Pada satu uji awal, AI sempat mengubah izin file sebelum daftar perbaikan lengkap ditampilkan; hal itu sudah diperbaiki dan tidak terulang pada uji ulang.)
+menjawab "ya" untuk tiap butir. (Pada satu uji awal, AI sempat mengubah izin file sebelum daftar perbaikan lengkap ditampilkan; hal itu sudah diperbaiki dan tidak terulang pada uji ulang yang kami jalankan.)
 
 **Apakah hasil audit saya dikirim ke Komunitech?**
 Skill ini tidak mengirim hasil audit ke Komunitech: pemeriksaan berjalan di OpenClaw Anda sendiri dan hasilnya muncul di percakapan Anda. Seperti percakapan AI lainnya, isi percakapan tetap diproses oleh penyedia model AI yang Anda pakai.

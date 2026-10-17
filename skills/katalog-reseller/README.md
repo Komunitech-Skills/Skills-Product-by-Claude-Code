@@ -1,6 +1,6 @@
 # Buka Reseller & Agen, Harga Terhitung Rapi
 
-**Daftar harga bertingkat, syarat kemitraan, dan pesan rekrut yang jujur, dengan hitungan yang membantu Anda dan reseller Anda sama-sama untung.**
+**Daftar harga bertingkat, syarat kemitraan, dan pesan rekrut yang jujur, dengan hitungan yang membantu menjaga ruang untung Anda dan reseller Anda.**
 
 Diuji AI penguji independen di OpenClaw: 3,0 → 8,5 dari 10 (1 Okt 2026, v1.0.4, dua skenario). Tanpa skill: menyusun skema bonus rekrut berjenjang dan mengabaikan potongan Shopee. Dengan skill: skema itu ditolak dan harga tiap tingkat dihitung dari modal serta untung mitra.
 
@@ -8,7 +8,7 @@ Diuji AI penguji independen di OpenClaw: 3,0 → 8,5 dari 10 (1 Okt 2026, v1.0.4
 
 ## Manfaat
 - ✅ Harga dropshipper (penjual tanpa stok sendiri), reseller, dan agen dihitung otomatis dari modal atau harga eceran, bukan kira-kira
-- ✅ Langsung ketahuan kalau untung reseller Anda terlalu tipis (salah satu penyebab reseller banting harga atau berhenti)
+- ✅ Ketahuan dari hitungan kalau untung reseller Anda terlalu tipis (salah satu penyebab reseller banting harga atau berhenti)
 - ✅ Dua versi daftar harga: versi internal (dengan margin Anda) dan versi siap kirim ke reseller (tanpa modal)
 - ✅ Syarat & ketentuan siap tempel: minimal order, pembayaran, retur, harga minimum, penggunaan foto
 - ✅ Pesan ajakan jadi reseller untuk WA dan Instagram dengan contoh untung yang jujur, tanpa skema piramida
