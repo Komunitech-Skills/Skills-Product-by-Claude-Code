@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.13 (2026-10-17)
+- Contoh rekap harian di `SKILL.md` diganti keluaran asli dari `examples/contoh-01-warung-sehari.md` (angka sebelumnya tidak punya berkas sumber); cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.12 (2026-10-02)
 - Biaya operasional umum (operasional, bensin/BBM/solar, uang makan sopir, tol, parkir, transport, ongkir, uang jalan) kini dikenali sebagai pengeluaran usaha, sehingga untung tidak tampak terlalu besar.
 - Bila masih ada baris yang belum jelas ("perlu dicek"), hasil usaha ditulis sebagai **sementara** beserta angka bila baris itu ternyata biaya usaha, agar tidak menyesatkan. 102 uji otomatis lulus.

@@ -1,6 +1,6 @@
 # Rekap Penjualan Otomatis dari File Kasir
 
-**Kirim file penjualan, dapat laporan omzet dan produk terlaris dalam semenit.**
+**Kirim file penjualan, dapat laporan omzet dan produk terlaris tanpa rekap manual.**
 
 *Diuji AI penguji independen di OpenClaw: 7,5 → 9 dari 10 (angka sama-sama benar; dengan skill laporan lebih lengkap: persentase tiap produk, rata-rata harian, dan saran yang bisa dijalankan).*
 
@@ -18,7 +18,7 @@
 - Admin yang setiap minggu harus membuat laporan penjualan
 
 ## Contoh sebelum & sesudah
-**Sebelum:** Rekap manual di Excel memakan waktu 1–2 jam.
+**Sebelum:** Rekap manual di Excel memakan waktu: menjumlah per produk, mengurutkan, lalu mencari hari terbaik satu per satu.
 
 **Sesudah (cukup ketik):** "Halo, ini file export kasir kedai kopi aku 2 minggu pertama September (kasir-kopi-sept.csv). Tolong direkap ya, mau tau menu mana yang paling laku sama hari apa yang paling rame."
 

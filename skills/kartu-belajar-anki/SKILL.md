@@ -94,9 +94,9 @@ Contoh cloze:
 - Pengguna hanya minta "jadwal belajar" tanpa materi: tolak bagian kartu, beri template rencana kosong + minta materi.
 
 ## Contoh singkat
-**Input:** "10 istilah logistik dari SOP gudang kami: FIFO, FEFO, ..." (daftar ditempel).
+**Input:** "10 istilah logistik dari SOP gudang kami: FIFO, FEFO, ..." (daftar ditempel), 20 menit/hari, maksimal 12 kartu baru per hari.
 
-**Output:** 12 kartu basic (termasuk 2 kartu "kapan dipakai"), tag `sop-gudang`, rencana 15 kartu/hari → selesai hari ke-1, sisanya review; blok TSV siap impor.
+**Output:** 12 kartu basic, tag `sop-gudang`, rencana 12 kartu baru/hari → selesai hari ke-1, sisanya review; blok TSV siap impor.
 
 ---
 

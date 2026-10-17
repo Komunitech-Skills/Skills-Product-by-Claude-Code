@@ -76,10 +76,17 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 Memakai pemeriksa kebijakan tanpa AI: jalankan `python3 scripts/cek_kebijakan.py kebijakan.md` dari folder skill (Windows: `python` atau `py`). Tidak perlu instal apa pun selain Python.
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
-- **Uji OpenClaw otomatis agent, 1 Oktober 2026** (v1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,0** → dengan skill **9,0** (LULUS). Tanpa skill ada kalimat "dianggap setuju", promo tanpa persetujuan terpisah, tanpa klausul kebocoran dan transfer ke luar negeri, serta salah hitung tenggat (sekitar 34 jam, seharusnya sekitar 10 jam).
-- **Uji bot Telegram asli, 3 Okt 2026:** **5,5** → **8,5**. Dengan skill memuat dasar pemrosesan per tujuan, masa simpan, transfer ke luar negeri, kebocoran 3×24 jam, dan hak pemilik data (UU PDP); tanpa skill, Meta Pixel disebut "bukan data pribadi" dan transfer ke luar negeri, kebocoran, serta masa simpan terlewat.
+- **Uji OpenClaw otomatis agent, 1 Oktober 2026** (versi sebelum 1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,0** → dengan skill **9,0** (lulus). Tanpa skill ada kalimat "dianggap setuju", promo tanpa persetujuan terpisah, tanpa klausul kebocoran dan transfer ke luar negeri, serta salah hitung tenggat (sekitar 34 jam, seharusnya sekitar 10 jam).
+- **Uji bot Telegram asli, 3 Okt 2026 (v1.0.7):** tanpa skill **5,5** → dengan skill **8,5**, lulus acuan kami. Rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (3 Okt 2026). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Catatan: detail PP 33/2026 berasal dari sumber sekunder dan belum dicek ke naskah resminya.
+
+## Bukti uji di bot Telegram
+
+Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal) pada 3 Okt 2026, versi skill 1.0.7. Pesan yang sama dikirim ke bot tanpa skill dan bot dengan skill: minta kebijakan privasi untuk sebuah toko online. Tanpa skill **5,5** → dengan skill **8,5** dari 10 (selisih +3): lulus acuan kami.
+- Dengan skill: kebijakan memuat dasar pemrosesan untuk tiap tujuan, masa simpan data, pengiriman data ke luar negeri, kewajiban memberi tahu kebocoran dalam 3×24 jam, dan hak pemilik data. Shopify dan WhatsApp juga disebut sebagai pihak penerima data.
+- Tanpa skill: hasilnya langsung jadi, tetapi data Meta Pixel disebut "bukan data pribadi" dan klausul pengiriman data ke luar negeri, kebocoran data, serta masa simpan terlewat.
+- Catatan jujur: karena pesan ujinya minta "langsung jadi", hasil dengan skill berstatus belum siap dengan 11 isian kosong di 14 tempat. Itu jujur dan aman, tetapi Anda tetap harus mengisinya sebelum kebijakan dipakai.
 
 ## FAQ
 **Apakah usaha kecil juga wajib punya kebijakan privasi?**

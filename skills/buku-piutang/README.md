@@ -7,7 +7,7 @@
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **Bon tidak mudah terlupa.** Setiap pagi Anda tahu tagihan yang **terlewat**, yang **jatuh tempo hari ini**, dan yang **jatuh tempo minggu ini**, lengkap dengan sisa dan berapa kali sudah diingatkan. Bisa dikirim otomatis ke Telegram Anda (OpenClaw; jadwal otomatis diuji di bot Telegram uji 13 Okt 2026).
+- ✅ **Bon tidak mudah terlupa.** Setiap pagi Anda tahu tagihan yang **terlewat**, yang **jatuh tempo hari ini**, dan yang **jatuh tempo minggu ini**, lengkap dengan sisa dan berapa kali sudah diingatkan. Bisa dikirim otomatis ke Telegram Anda (OpenClaw; satu jadwal sekali jalan sudah diuji terkirim ke grup uji Telegram Komunitech 13 Okt 2026, jadwal berulang tiap pagi belum diuji).
 - ✅ **Pembayaran dicicil pun tetap rapi.** "Kafe Senja transfer 1 juta" langsung dipotong dari nota tertua dan sisanya dihitung. Kalau pelanggan membayar **lebih**, buku tidak diam-diam jadi minus: Anda ditanya dulu, lalu kelebihannya disimpan sebagai deposit atau dicatat sudah dikembalikan.
 - ✅ **Pesan tagihan siap kirim dalam satu klik.** Nadanya menyesuaikan: pengingat halus sebelum jatuh tempo, "hari ini jatuh tempo", sampai menanyakan rencana bayar untuk yang lama menunggak. Tanpa ancaman, tanpa denda karangan. Klik tautan, WhatsApp terbuka dengan teks terisi, periksa, lalu tekan Kirim sendiri.
 - ✅ **Laporan yang biasanya ada di aplikasi akuntansi berbayar.** Saldo per pelanggan, **umur piutang** (berapa lama tagihan tertunggak: belum jatuh tempo, 1–30, 31–60, 61–90, lebih dari 90 hari), rekap bulanan (piutang baru, uang masuk, posisi akhir bulan). Semua angka dihitung script dan rumusnya bisa ditampilkan.
@@ -58,7 +58,7 @@ Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
 - "Siapa saja yang belum bayar?" / "Umur piutang akhir bulan" / "Saldo Kafe Senja"
 - "Bikinin pesan tagihan untuk Kafe Senja" → klik tautan, kirim sendiri, lalu bilang "sudah kukirim"
 - "Masukkan daftar bon dari Excel ini" (kirim file CSV) / "Rekap piutang bulan ini" / "Ekspor ke Excel"
-- "Kirim ringkasan piutang ke Telegram saya tiap pagi" (OpenClaw; jadwal otomatis diuji di bot Telegram uji 13 Okt 2026)
+- "Kirim ringkasan piutang ke Telegram saya tiap pagi" (OpenClaw; satu pengiriman terjadwal sekali jalan sudah diuji 13 Okt 2026, jadwal berulang belum)
 
 ## Instalasi singkat
 Salin folder `buku-piutang` ke folder skills AI agent Anda:
@@ -76,7 +76,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 
 **Hasil uji (angka nyata):** penguji AI independen, skor 1–10, di OpenClaw (uji otomatis agent, 1 Oktober 2026; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,75 tanpa skill menjadi 8,75 dengan skill. Untuk mencatat bon dan mengecek yang telat, kedua sisi sama-sama benar (7 vs 8,5). Pembeda besarnya di keamanan dan pembukuan: tanpa skill agent bersedia membuat jadwal WhatsApp tagihan otomatis plus denda 5% per minggu (berisiko nomor diblokir) dan salah mengganti nama pelanggan; dengan skill ia menolak kirim otomatis dan denda sepihak, menyiapkan draf dan tautan untuk dikirim sendiri, serta mencatat bon, pembayaran, dan deposit Rp 50.000 di buku piutang lokal dengan cadangan. Soal kelebihan bayar, kedua sisi sama-sama bertanya dulu ke Anda; bedanya hanya di pencatatannya.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal kirim otomatis ke Telegram: diuji di bot Telegram uji pada 13 Okt 2026 (jadwal sekali jalan yang diatur 5 menit ke depan, pesan tiba tepat waktu; angka total piutang Rp 1.300.000 dan terlewat Rp 800.000 cocok dengan hitungan terpisah; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Jadwal yang berulang tiap pagi dan alur konfirmasi lewat chat bot belum diuji.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal kirim otomatis ke Telegram: diuji di grup uji Telegram Komunitech pada 13 Okt 2026 (jadwal sekali jalan yang diatur 5 menit ke depan, pesan tiba tepat waktu; angka total piutang Rp 1.300.000 dan terlewat Rp 800.000 cocok dengan hitungan terpisah; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Jadwal yang berulang tiap pagi dan alur konfirmasi lewat chat bot belum diuji.
 
 ## Yang perlu Anda tahu (jujur)
 - **Tidak mengirim pesan sendiri.** Skill hanya menyiapkan draf + tautan WhatsApp (wa.me); Anda yang menekan Kirim. Ini disengaja: kiriman otomatis lewat WhatsApp tidak resmi bisa membuat nomor diblokir.
@@ -85,7 +85,7 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - **Bukan pembukuan lengkap.** Tidak ada jurnal, laba rugi, atau hutang ke pemasok.
 - **Satu komputer, satu file data.** Jangan buka file yang sama dari dua komputer lewat Google Drive/Dropbox.
 - **Data pribadi pelanggan.** Nama, nomor HP, dan utang pelanggan hanya tersimpan di komputer Anda. Ringkasan ke Telegram disarankan versi disamarkan (nama jadi inisial).
-- Ringkasan terjadwal hanya berjalan saat komputer dan Gateway OpenClaw (program OpenClaw yang berjalan di latar belakang) menyala. Jadwal otomatis ke Telegram sudah diuji di bot Telegram uji pada 13 Okt 2026, di mesin uji, bukan di komputer Anda.
+- Ringkasan terjadwal hanya berjalan saat komputer dan Gateway OpenClaw (program OpenClaw yang berjalan di latar belakang) menyala. Satu jadwal sekali jalan ke Telegram sudah diuji di grup uji Telegram Komunitech pada 13 Okt 2026, di mesin uji, bukan di komputer Anda.
 - Alat bantu pencatatan dan penagihan, bukan nasihat keuangan, pajak, atau hukum. Sengketa utang yang besar sebaiknya dibawa ke advokat.
 
 ## FAQ

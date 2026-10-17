@@ -111,7 +111,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Diuji dengan SiYuan tiruan di komputer uji (hanya meniru sebagian fungsi SiYuan), bukan aplikasi sungguhan. Windows dan Mac belum diuji.
 
 ### Kontrak Karyawan Kontrak, Minim Salah Pasal — 2,25 → 9,25
-`kontrak-kerja-pkwt` · HR · versi 1.0.7 · diuji 2026-10-01
+`kontrak-kerja-pkwt` · HR · versi 1.0.8 · diuji 2026-10-01
 
 - **Permintaan:** Karyawan kontrak diberhentikan 15 Oktober 2026, kontrak sampai Januari 2027. Wajib bayar apa dan berapa totalnya?
 - **Tanpa skill:** Hanya menghitung kompensasi sekitar Rp3,7 juta dan melewatkan ganti rugi sisa kontrak (sekitar Rp17,6 juta); untuk kontrak kasir, semua klausul terlarang dimasukkan.
@@ -246,7 +246,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Diuji pada server tiruan berisi rekaman InvenTree 1.5.6, bukan aplikasi yang berjalan; belum menawarkan alternatif penghapusan yang menjaga riwayat.
 
 ### Kebijakan Privasi Sesuai UU PDP, Siap Tempel — 5 → 9
-`kebijakan-privasi-pdp` · Legal & Dokumen · versi 1.0.7 · diuji 2026-10-01
+`kebijakan-privasi-pdp` · Legal & Dokumen · versi 1.0.6 · diuji 2026-10-01
 
 - **Permintaan:** Bikinin kebijakan privasi untuk toko batik online: Shopify, WA, Midtrans, Meta Pixel, kadang kirim promo ke WA.
 - **Tanpa skill:** Menulis 'Anda dianggap setuju', promo opt-out (dikirim dulu, pelanggan harus menolak sendiri), tanpa klausul kebocoran dan transfer luar negeri, serta pada skenario kebocoran data salah hitung tenggat lapor (ditulis sudah lewat sekitar 34 jam, padahal sebenarnya sekitar 10 jam).
@@ -403,7 +403,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Diuji 3 skenario dalam uji gabungan paket solusi kripto Komunitech bersama skill pendamping dan aturan paket, jadi sebagian perbaikan datang dari aturan paket. Sisi tanpa skill dijalankan sekali. Sisa kekurangan: draf jadwal tampil ringkas, disclaimer baku tidak muncul di skenario jebakan, nama folder kerja kadang tampil; pemasangan jadwal sesudah 'ya' belum diuji.
 
 ### Proposal Kerja Sama yang Bikin Mitra Tertarik — 5,17 → 8,33
-`proposal-kerjasama` · Sales · versi 1.0.9 · diuji 2026-10-05
+`proposal-kerjasama` · Sales · versi 1.0.7 · diuji 2026-10-01
 
 - **Permintaan:** Bikinin proposal titip jual kopi susu botol ke minimarket, porsi toko 35%, tulis 'sudah BPOM' dan 'paling laris se-Solo'.
 - **Tanpa skill:** Menulis 'sudah BPOM' dan 'paling laris' langsung ke proposal, skema rugi tetap ditulis, modal dan 'rugi Rp1.000/botol' bocor ke dokumen untuk mitra.
@@ -432,7 +432,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Bila aplikasi kasir dan CRM (pencatat data pelanggan) terpasang, tanpa skill pun rekap bisa benar; pembeda ada pada format baku dan kepatuhan privasi.
 
 ### Notulen Rapat Rapi dari Catatan Berantakan — 6 → 9
-`notulen-rapat` · Produktivitas · versi 1.0.4 · diuji 2026-10-16
+`notulen-rapat` · Produktivitas · versi 1.0.4 · diuji 2026-10-13
 
 - **Permintaan:** Catatan rapat mingguan 1 Okt yang berantakan ('sales sept 2,1M target 2,5M', 'forklift 2 rusak', 'jumat depan', 'sebelum rabu'): jadikan notulen rapi plus pesan WA ke tim.
 - **Tanpa skill:** Struktur rapi, tetapi '2,1M' ditulis Rp2,1 juta tanpa tanda ragu, 'forklift 2 rusak' dibaca 2 unit rusak, tanggal relatif dibiarkan ('Jumat depan', 'Sebelum Rabu'), dan tenggat sewa forklift dikarang.
@@ -452,7 +452,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Balasan untuk satu pertanyaan chat sangat panjang; tanpa skill pun jawaban pada kasus biasa sudah bernilai 7,5.
 
 ### Pesan Pertama ke Calon Pelanggan, Tak Terkesan Spam — 6 → 9
-`pesan-prospek-wa` · Sales · versi 1.0.6 · diuji 2026-10-01
+`pesan-prospek-wa` · Sales · versi 1.0.5 · diuji 2026-10-01
 
 - **Permintaan:** Bikin chat pertama ke pemilik kafe di Makassar, nomor dari Google Maps; rencana kirim malam ini jam 19.30 WIB.
 - **Tanpa skill:** Menawarkan mengirim pesan langsung ke nomor prospek lewat WhatsApp (pihak ketiga).
@@ -589,7 +589,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Pada tugas baca-ringkas stok, tanpa skill pun sudah benar; keunggulan ada di keamanan. Jalur sambungan otomatis ke Grist versi server (REST API) belum diuji.
 
 ### Laporan Iklan Mingguan, Bahasa Awam — 6 → 8,75
-`laporan-iklan-mingguan` · Marketing & Konten · versi 1.0.10 · diuji 2026-10-01
+`laporan-iklan-mingguan` · Marketing & Konten · versi 1.0.9 · diuji 2026-10-01
 
 - **Permintaan:** Ekspor iklan FB/IG minggu ini dan lalu, bikin laporan mingguan; omzet 18,5 juta. Iklan mana dimatikan?
 - **Tanpa skill:** Menebak kurs dolar dari internet dan memotong sebagian belanja; biaya per hasil hanya dari sebagian kampanye (Rp25.900).
@@ -598,7 +598,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Saran 'matikan' kadang mengabaikan tujuan kampanye (misalnya iklan untuk kunjungan atau pengenalan merek), dan catatan kolom mana yang dibaca kadang terpotong.
 
 ### Strategi Merek Usaha: Nama & Penawaran yang Siap Jual — 6 → 8,75
-`strategi-merek-usaha` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-01
+`strategi-merek-usaha` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-01
 
 - **Permintaan:** Promo sambal bawang diskon 20% plus stiker; tulis 'STOK TINGGAL 5' dan harga coret supaya laku, hitung untungnya.
 - **Tanpa skill:** Angka benar dan menolak stok/harga coret palsu, tetapi teks siap tempel mengarang 'tanpa pengawet' dan 'tahan lama', memakai 'stok terbatas, buruan', menyebut broadcast WA.
@@ -686,7 +686,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Di chat, tabel jadwal 6 kolom kurang nyaman dibaca di ponsel; pesan sambutan WA baru dibuat bila diminta.
 
 ### Strategi Konten & Anggaran Iklan - konten jelas, uang iklan tidak bocor — 6,5 → 9
-`strategi-konten-iklan` · Marketing & Konten · versi 1.0.6 · diuji 2026-10-05
+`strategi-konten-iklan` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-01
 
 - **Permintaan:** Budget iklan '1,500' sebulan teh herbal pelangsing di TikTok, margin 0,4; tagline 'turun 5kg seminggu', kasih tahu ROAS (omzet dibagi biaya iklan) pastinya.
 - **Tanpa skill:** Menebak '1,500' sebagai Rp1,5 juta tanpa bertanya, tidak menanyakan margin, memakai angka tanpa sumber sebagai fakta, dan membolehkan testimoni sebelum/sesudah.
@@ -725,7 +725,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Hasil uji ulang 13 Oktober 2026 oleh penguji terpisah. Slide masih memuat klaim kualitatif karangan (misalnya 'reputasi bengkel sudah dikenal'). Tanpa skill, AI langsung menghasilkan berkas PDF; di bot Telegram, berkas presentasi versi skill sempat tidak sampai ke chat, padahal tanpa skill berkas PowerPoint langsung terkirim.
 
 ### Surat Penawaran Harga Rapi, Cepat Dibuat — 6 → 8,5
-`surat-penawaran-harga` · Sales · versi 1.0.5 · diuji 2026-10-16
+`surat-penawaran-harga` · Sales · versi 1.0.5 · diuji 2026-10-13
 
 - **Permintaan:** Surat penawaran ke CV Berkah Jaya Bakery: desain logo + brand guideline Rp7,5 jt dan 12 templat Rp1,8 jt, diskon 10%, DP 50%, penjual bukan PKP (pengusaha kena pajak); lanjut minta versi WA.
 - **Tanpa skill:** Angka benar, tetapi surat hanya disimpan sebagai file (chat cuma ringkasan angka), kota 'Jakarta' dikarang, dan tertulis 'Harga di atas belum termasuk PPN' padahal penjual bukan PKP; tanpa terbilang.
@@ -790,7 +790,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Ini simulasi, bukan penawaran; angka final tetap dari lembaga pembiayaan. Batas bunga pinjol mengacu Surat Edaran OJK (SEOJK) 19/SEOJK.06/2023 dengan catatan 'cek aturan OJK terbaru'. Pada versi 1.0.1, skill menangani jebakan brosur 'bunga 0%' pada 3 dari 3 percobaan.
 
 ### SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham — 6,5 → 8,75
-`sop-writer` · Produktivitas · versi 1.0.4 · diuji 2026-10-16
+`sop-writer` · Produktivitas · versi 1.0.4 · diuji 2026-10-01
 
 - **Permintaan:** Bikinin SOP closing kasir laundry kiloan: tutup jam 9 malam, tunai dan QRIS, modal laci Rp200.000, dicek pemilik besok pagi.
 - **Tanpa skill:** Isi benar tetapi tidak siap cetak dari chat; tanpa kontrol dokumen dan indikator, struktur SOP kurang lengkap.
@@ -850,7 +850,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Uji ulang versi 1.0.5 (16 Okt 2026, 5 skenario) lulus tanpa salah angka; skor tanpa skill dari uji 14 Okt. Kekurangan: jawaban panjang untuk chat (tabel 9 kolom, satu jawaban ±4.200 karakter); satu percobaan menulis soal pengembalian kelebihan PPh 22 lebih pasti dari sumbernya; di kelima percobaan AI memindai seluruh komputer uji mencari alat hitungnya.
 
 ### Surat Resmi Rapi Sesuai EYD, Siap Cetak — 6,75 → 8,75
-`surat-resmi` · Legal & Dokumen · versi 1.0.3 · diuji 2026-10-16
+`surat-resmi` · Legal & Dokumen · versi 1.0.3 · diuji 2026-10-01
 
 - **Permintaan:** Buatkan undangan Rapat Anggota Tahunan koperasi, Jumat 17 Oktober 2026 jam 9 pagi, untuk seluruh anggota.
 - **Tanpa skill:** Mencetak 'Jumat, 17 Oktober 2026' tanpa memeriksa (17 Oktober 2026 jatuh pada Sabtu); format 'Kepada Yth.' dan tanda tangan kurang baku.
@@ -899,7 +899,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Untuk permintaan klon wajah/suara tanpa izin, tanpa skill pun jawabannya sama baiknya (8 vs 8); skenario itu tidak diulang pada versi 1.0.3. Pada percobaan lewat bot Telegram, daftar adegan yang harus direkam dengan HP tidak langsung diberikan, hanya ditawarkan di akhir.
 
 ### Landing Page Jualan Siap Kirim ke Pembeli — 6 → 8
-`copy-landing-page` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-16
+`copy-landing-page` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-01
 
 - **Permintaan:** Bikinin teks landing page laundry kiloan 'Laundry Bersih Kilat' di Depok: Rp8.000/kg min 3 kg, express Rp12.000/kg, order lewat WA.
 - **Tanpa skill:** Teks jadi, tetapi menawarkan bantuan menayangkan halaman ke internet dan mengarang detail yang tidak diberikan pengguna.
@@ -927,7 +927,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Lulus tipis: keunggulannya hanya sedikit di atas batas minimal kami. Alat hitung bawaan skill sempat salah membaca kolom 'sdh bayar' sehingga nota lunas tampil telat; sudah diperbaiki pada versi yang diuji ini. Skenario input kurang masih yang paling lemah, dan istilah teknis sesekali bocor ke jawaban. Bukan nasihat hukum.
 
 ### Kenapa Toko Online Anda Tidak Muncul di Google — 7 → 8,75
-`audit-seo-toko-online` · Marketing & Konten · versi 1.0.4 · diuji 2026-10-16
+`audit-seo-toko-online` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-16
 
 - **Permintaan:** Audit SEO halaman produk keripik saya (berkas halaman webnya saya lampirkan), kata kunci 'keripik singkong balado', kasih perbaikan siap tempel.
 - **Tanpa skill:** Temuan inti benar, tetapi menulis ulang halaman dengan fakta yang tidak pernah disebut (mis. 'masa simpan 3 bulan') dan mengubah file tanpa diminta.

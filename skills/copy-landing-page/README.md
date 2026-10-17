@@ -31,13 +31,13 @@ Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/01-keripik-pe
 
 **[Pesan Sekarang lewat WhatsApp →](https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Keripik%20Setan%20Mak%20Iyem%20dari%20halaman%20ini)**
 …
-- Rasa dan tingkat pedas: [isian: varian rasa/level pedas yang tersedia sesuai produkmu].
+- Rasa dan tingkat pedas: [isian: varian rasa/level pedas yang tersedia dan deskripsi rasa sesuai produkmu].
 …
 ## Kata Mereka yang Sudah Coba
 [ISI TESTIMONI ASLI — nama & kota pembeli. Hapus bagian ini sampai ada testimoni asli.]
 …
 ## Garansi
-[isi: garansi/retur, hanya yang benar-benar kamu berlakukan.]
+[isi: garansi/retur Keripik Setan Mak Iyem, hanya yang benar-benar kamu berlakukan. Hapus bagian ini bila belum ada kebijakan.]
 ```
 Hasil lengkapnya juga memuat struktur masalah–manfaat–penawaran–garansi–FAQ, 3 variasi judul untuk dites, serta judul dan deskripsi Google yang panjangnya sudah diukur.
 
@@ -61,13 +61,18 @@ Salin folder `copy-landing-page` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill struktur halaman jualan lengkap, judul/deskripsi Google dan tautan WhatsApp diperiksa skrip, testimoni tidak dikarang. Catatan jujur: pada uji ini masih ada detail layanan kecil yang dikarang (mis. garansi 1×24 jam), jadi periksa janji layanan di hasil sebelum Anda publish.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,0** (lulus). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill struktur halaman jualan lengkap, judul/deskripsi Google dan tautan WhatsApp diperiksa skrip, testimoni tidak dikarang. Catatan jujur: pada uji ini masih ada detail layanan kecil yang dikarang (mis. garansi 1×24 jam), jadi periksa janji layanan di hasil sebelum Anda publish.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Buatkan landing page untuk keripik pedas saya, harga 25 ribu per bungkus. Namanya Keripik Setan Mak Iyem, WA 0812-3456-7890, kirim se-Jabodetabek pakai ojol/kurir sendiri kalau dekat, luar kota pakai ekspedisi, bayar…". Tanpa skill skor **3** → dengan skill skor **8** (selisih +5, lulus acuan kami). Dengan skill, bot langsung menulis teks landing page lengkap di chat: versi panjang, versi link-in-bio, 3 headline, judul dan deskripsi Google yang hurufnya sudah dihitung, serta tautan WA yang bisa diklik. Bot juga mengingatkan izin PIRT/BPOM dan wajib halal, dan semua yang belum diberikan (varian rasa, ukuran, masa simpan, garansi) ditulis [isian]. Tanpa skill, bot hanya mengirim ringkasan isi yang memuat klaim karangan ("fresh", "dibuat dari hati"), dan file HTML-nya gagal terkirim, jadi tidak ada teks yang bisa dipakai. Salah angka yang ditemukan penilai: TANPA: daftar 'Kenapa harus beli' memuat klaim 'fresh' dan 'dibuat dari hati'. Pemilik tidak pernah menyebut keduanya, jadi ini klaim karangan dan skor dibatasi maks 5. DENGAN: tidak ada salah angka/fakta. Yang sudah dicek ulang: nomor WA 0812-3456-7890 → wa.me/6281234567890 (URL di balik tautan sudah di-encode benar), panjang meta title 47/60 dan deskripsi 135/155 karakter, serta tanggal wajib halal UMK makanan-minuman 18 Okt 2026 (cocok dengan rujukan BPJPH). Kalimat asumsi 'satuan harga tidak disebut' adalah salah baca pesan pemilik; dicatat sebagai cacat, bukan salah fakta di isi halaman.. Catatan jujur: Harga ditulis "Rp25.000 [isian: per bungkus/ukuran]" walaupun pemilik sudah menyebut "per bungkus", jadi isian itu harus dihapus sendiri. Hasilnya berupa teks untuk ditempel ke pembuat halaman web atau link-in-bio, bukan file halaman web yang langsung jadi.
+Diuji di bot OpenClaw asli milik Komunitech (grup uji internal) pada 16 Okt 2026, versi skill 1.0.7. Pesan yang sama dikirim ke bot tanpa skill dan bot dengan skill: minta landing page untuk Keripik Setan Mak Iyem (Rp25.000 per bungkus, kirim Jabodetabek dan luar kota). Tanpa skill **3** → dengan skill **8** dari 10 (selisih +5): lulus acuan kami.
+- Dengan skill: bot langsung menulis teks landing page lengkap di chat, yaitu versi panjang, versi link-in-bio, 3 judul utama, judul dan deskripsi Google yang hurufnya sudah dihitung, dan tautan WhatsApp yang bisa diklik. Bot juga mengingatkan izin PIRT/BPOM dan kewajiban halal, dan semua yang belum Anda sebutkan (varian rasa, ukuran, masa simpan, garansi) ditulis sebagai isian.
+- Tanpa skill: bot hanya mengirim ringkasan berisi klaim karangan seperti "fresh" dan "dibuat dari hati" (pemilik tidak pernah menyebutnya), dan file halaman webnya gagal terkirim, jadi tidak ada teks yang bisa dipakai.
+- Yang dicek ulang: nomor WhatsApp 0812-3456-7890 menjadi tautan wa.me/6281234567890, judul Google 47 dari 60 karakter, deskripsi Google 135 dari 155 karakter, dan tanggal wajib halal usaha mikro-kecil makanan-minuman 18 Okt 2026 (cocok dengan rujukan BPJPH). Tidak ada salah angka atau fakta pada hasil dengan skill.
+- Catatan jujur: harga ditulis "Rp25.000 [isian: per bungkus/ukuran]" padahal Anda sudah menyebut "per bungkus", jadi isian itu harus Anda hapus sendiri. Hasilnya berupa teks untuk ditempel ke pembuat halaman web atau link-in-bio, bukan file halaman web yang langsung jadi.
+- Uji sebelumnya di OpenClaw komputer uji (v1.0.4, 1 Okt 2026): 6,0 → 8,0. Saat itu isi hanya ada di file dan garansi 1×24 jam dikarang; dua hal itu tidak muncul lagi di uji Telegram ini.
 
 ## FAQ
 **Apakah testimoni/rating di halaman jualan dibuatkan otomatis?**
@@ -81,6 +86,6 @@ Tidak wajib. Kalau Python ada, tautan WhatsApp dan panjang meta title/descriptio
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
 
 Skill ini diadaptasi dari struktur marketing skill open-source (MIT, coreyhaines31/marketingskills); teks, contoh Indonesia, script, dan ceklis kepatuhan milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber.

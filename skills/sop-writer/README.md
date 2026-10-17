@@ -21,7 +21,7 @@
 ## Contoh sebelum & sesudah
 **Sebelum:** Cara closing kasir hanya diajarkan lisan. Selisih uang baru ketahuan di akhir bulan, dan tidak jelas siapa yang bertanggung jawab.
 
-**Sesudah (cukup ketik):** "Bikinin SOP closing kasir buat laundry kiloan aku, Laundry Bersih Wangi di Yogyakarta ... pembayaran ada tunai sama QRIS. Modal laci tiap hari Rp200.000 ..." Cuplikan jawaban asli dari uji di OpenClaw (hasil lengkap juga memuat tujuan, penanggung jawab, indikator keberhasilan, dan checklist harian siap cetak):
+**Sesudah (cukup ketik):** "Bikinin SOP closing kasir buat laundry kiloan aku, Laundry Bersih Wangi di Yogyakarta ... pembayaran ada tunai sama QRIS. Modal laci tiap hari Rp200.000 ..." Cuplikan jawaban asli dari uji pertama di OpenClaw, 1 Okt 2026 (`examples/00-openclaw-sebelum-sesudah.md`; hasil lengkap juga memuat tujuan, penanggung jawab, indikator keberhasilan, dan checklist harian siap cetak):
 ```
 # SOP: Closing Kasir Harian
 ...
@@ -66,7 +66,11 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026, versi 1.0.6) dengan pesan yang sama: "Tolong buatkan SOP packing pesanan untuk online shop skincare saya, Glowria Skin di Tangerang. Pesanan sekitar 150 paket per hari dari Shopee dan TikTok Shop. Staf packing ada 2 orang, dicek sama admin (Mbak Sinta). Kurir…". Tanpa skill skor **7** → dengan skill skor **8,5** (selisih +1,5, lulus acuan kami). Dengan skill, SOP lengkap tampil utuh di chat dalam format baku: langkah kritis ditandai, ada daftar "jika terjadi masalah", target ukur, checklist harian dengan paraf, dan riwayat revisi. Tanpa skill, isinya berupa daftar tips yang praktis tetapi bukan dokumen SOP resmi. Catatan jujur: ada beberapa asumsi kecil yang belum ditandai (serum dianggap botol kaca, batas waktu 14.45), ide praktis pencegah salah varian seperti stiker warna per ukuran justru muncul di versi tanpa skill, dan SOP tampil dalam 3 pesan berurutan. Uji sebelumnya: 16 Okt 2026 (versi 1.0.5) tanpa skill 7 → dengan skill 3; saat itu SOP lengkap tidak tampil di chat.
+Diuji di bot Telegram OpenClaw yang asli (grup uji internal Komunitech) pada 17 Oktober 2026, versi 1.0.6, dengan permintaan SOP packing pesanan untuk online shop skincare (sekitar 150 paket per hari dari Shopee dan TikTok Shop, 2 staf packing, dicek admin). Skor kami (skala 10), tanpa skill → dengan skill: **7** → **8,5**, selisih +1,5, **lulus acuan kami**, tepat di batas (artinya skor dengan skill minimal 8 dan selisih minimal 1,5 poin).
+
+Dengan skill, SOP lengkap tampil utuh di chat dalam format baku: langkah kritis ditandai, ada daftar "jika terjadi masalah", target ukur, checklist harian dengan paraf, dan riwayat revisi. Tanpa skill, isinya berupa daftar tips yang praktis, tetapi bukan dokumen SOP resmi.
+
+Catatan jujur: ada beberapa asumsi kecil yang belum ditandai (serum dianggap botol kaca, batas waktu 14.45), ide praktis pencegah salah varian seperti stiker warna per ukuran justru muncul di versi tanpa skill, dan SOP tampil dalam 3 pesan berurutan. Uji sebelumnya: 16 Oktober 2026 (versi 1.0.5), tanpa skill **7** → dengan skill **3**, belum lulus acuan kami karena SOP lengkap tidak sampai ke pembeli (hanya ringkasan); itu diperbaiki di versi 1.0.6.
 
 ## FAQ
 **Saya belum punya cara kerja yang baku. Tetap bisa?**

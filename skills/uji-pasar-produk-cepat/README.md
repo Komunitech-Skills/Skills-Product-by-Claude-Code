@@ -67,10 +67,11 @@ Skrip hitung (opsional, Python standar): `python3 scripts/hasil_eksperimen.py ha
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
-- Tanpa skill: skor 7
-- Dengan skill: skor 8,5
-Hasil: lulus — DENGAN memisahkan minat lisan 41,7% dari konversi nyata 0/12 dengan rentang Wilson 0–24%, lalu memberi keputusan tegas plus langkah DP berbatas waktu yang bisa di-refund dan target 30 kontak baru; TANPA memberi saran praktis yang benar (minta DP, batch kecil) tetapi tanpa angka konversi atau rentang ketidakpastian.
+Uji terakhir: 5 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), dengan pesan yang sama di kedua sisi (brownies matcha ditawarkan ke 12 orang, 5 bilang "mau", belum ada yang transfer, rencana modal Rp15 juta). Tanpa skill skor **7** → dengan skill skor **8,5** (selisih +1,5): lulus acuan kami, tepat di batasnya.
+
+Pembedanya: dengan skill, minat lisan 41,7% dipisahkan dari pembelian nyata 0 dari 12 orang, lengkap dengan rentang wajar 0%–24%, lalu ada keputusan tegas untuk mengulang uji dengan DP kecil berbatas waktu yang bisa dikembalikan dan target 30 kontak baru. Tanpa skill, sarannya praktis dan benar (minta DP, produksi kecil dulu) tetapi tanpa angka konversi dan tanpa rentang ketidakpastian.
+
+Catatan jujur: kelulusannya mepet. Nama keputusan di balasan bot ("belum ada komitmen nyata") tidak sama dengan label baku skill ("ULANGI UJI"), dan nominal DP Rp10–20 ribu per box disarankan tanpa tahu harga jual Anda, jadi sesuaikan dengan harga box Anda. Sebelumnya, uji otomatis agent (2 Okt 2026) menghasilkan 6,0 → 9,0; angkanya ada di bagian Hasil uji di atas.
 
 ## FAQ
 **1. Bedanya dengan Tes Ide Sebelum Modal Habis (`validasi-ide-produk-baru`)?**

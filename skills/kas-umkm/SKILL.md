@@ -147,20 +147,25 @@ Asumsi: kategori baris 2 'prive' saya tebak dari kata 'jajan'.
 Saldo setelah dicatat: Laci kas Rp 1.600.000
 Simpan? Balas "ya".
 ```
-**Rekap harian** (contoh nyata data uji, dipotong):
+**Rekap harian** (keluaran asli skrip pada data fiktif, dari `examples/contoh-01-warung-sehari.md`, dipotong):
 ```
-BUKU KAS Warung Bu Sri
+BUKU KAS Warung Bu Sri (fiktif)
 Rekap harian Sabtu, 26/09/2026
-UANG MASUK: Rp 1.500.000
-- Penjualan: Rp 1.500.000
-UANG KELUAR: Rp 131.500
-- Prive (ambil pribadi): Rp 100.000
-- Pengeluaran lain-lain: Rp 31.500
-HASIL USAHA (masuk usaha - keluar usaha): Rp 1.468.500
+
+UANG MASUK: Rp 1.020.000
+- Penjualan: Rp 1.020.000
+UANG KELUAR: Rp 261.000
+- Beli stok/bahan: Rp 28.000
+- Prive (ambil pribadi): Rp 200.000
+- Pengeluaran lain-lain: Rp 30.000
+- Selisih laci kurang: Rp 3.000
+
+HASIL USAHA (masuk usaha - keluar usaha): Rp 959.000
+
 SALDO per akhir 26/09/2026:
-- Laci kas: Rp 5.317.500
-- BRI: Rp 12.817.000
-Total: Rp 18.284.500 (awal periode Rp 16.916.000, naik Rp 1.368.500)
+- Laci kas: Rp 2.829.000
+- BRI: Rp 11.480.000
+Total: Rp 14.309.000 (awal periode Rp 13.550.000, naik Rp 759.000)
 ```
 
 ## Checklist sebelum menjawab

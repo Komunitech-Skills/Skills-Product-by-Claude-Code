@@ -60,9 +60,17 @@ Salin folder `spt-tahunan-op` ke folder skills AI agent Anda (OpenClaw, Codex, C
 **Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 - Uji lengkap terakhir (versi 1.0.3, 1 Okt 2026), rata-rata 2 skenario: tanpa skill **3,75** → dengan skill **8,5** (selisih +4,75). Karyawan pindah kerja dengan 2 bukti potong A1: **6** → **9**; kedua sisi menghitung kurang bayar Rp4.125.000 dengan benar, pembedanya prosedur Coretax (tanpa skill masih menyuruh memakai formulir 1770 S lama, padahal sejak tahun pajak 2025 sudah diganti SPT OP Coretax) dan status tenggat. Konsultan IT yang memakai PPh final 0,5%: **1,5** → **8**; tanpa skill menyimpulkan lebih bayar Rp1.900.000 (keliru), dengan skill pekerjaan bebas dan NPPN diluruskan dan kurang bayar Rp14.400.000 dihitung. Uji ini belum lulus karena satu saran tanggal yang sudah lewat (pemberitahuan NPPN tahun 2026); diperbaiki di versi 1.0.4, dan pada uji ulang kesalahan itu tidak muncul lagi (2 dari 2 sesi, skor dengan skill 9). Uji pertama (1 Okt 2026, versi sebelumnya): rata-rata 4,75 → 8,75.
 - Uji ulang versi 1.0.5 (3 Okt 2026), hanya kasus konsultan IT: tanpa skill **2** → dengan skill **9** (LULUS). Tanpa skill AI menulis "Deadline lapor: 31 Maret 2026" tanpa menyebut sudah lewat dan memakai formulir lama; dengan skill baris pertama menyebut sudah terlambat 186 hari (pada tanggal uji), denda Rp100.000, dan kurang bayar Rp14.400.000 dihitung. Penguji menyarankan hasilnya tetap dicek konsultan pajak.
-- Bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 3 Okt 2026: tanpa skill tidak memberi jawaban; dengan skill skema pajaknya diluruskan dan kurang bayar Rp14.400.000 dihitung setelah giliran lanjutan.
+- Bot Telegram asli (3 Okt 2026): tampil tanpa skor angka; rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan di bot Telegram uji. Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Hasil hitungan adalah pembanding, bukan pengganti pelaporan ke DJP (lihat peringatan di atas).
+
+## Bukti uji di bot Telegram
+
+Uji terakhir: 3 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), dengan pesan yang sama di kedua sisi: konsultan IT yang memakai PPh final 0,5% dan belum pernah memberitahukan NPPN. Uji ini tampil di bot **tanpa skor angka** (belum dinilai sebelum/sesudah), jadi belum bisa disebut lulus atau belum lulus acuan kami.
+
+Yang terjadi: tanpa skill, bot tidak memberi jawaban sama sekali (sesi selesai tanpa balasan). Dengan skill, bot meluruskan bahwa konsultan IT adalah pekerjaan bebas yang tidak boleh memakai PPh final 0,5%, lalu meminta empat data. Setelah empat data itu dijawab, bot menghitung kurang bayar Rp14.400.000 (penghasilan kena pajak Rp136.000.000), dan hitungan itu cocok dengan hitungan ulang kami.
+
+Catatan jujur: bot dengan skill masih menyebut batas lapor 31 Maret 2026 tanpa menyatakan bahwa per Oktober 2026 sudah terlambat. Hal ini diperbaiki di versi 1.0.5 dan diuji ulang di uji otomatis agent (skor 2 → 9, lihat Hasil uji di atas), tetapi belum dikirim ulang ke bot Telegram. Jawaban bot juga memakan waktu cukup lama karena banyak langkah pencarian.
 
 ## FAQ
 **1. Apakah skill ini melaporkan SPT saya ke DJP?**

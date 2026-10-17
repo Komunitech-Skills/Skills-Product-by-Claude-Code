@@ -2,7 +2,7 @@
 
 **Kirim catatan penjualan Anda, dapatkan daftar belanja siap kirim: barang yang harus dipesan sekarang, jumlahnya, perkiraan biayanya, dan draf WA ke pemasok.**
 
-Diuji AI penguji independen di OpenClaw: 6,1 → 8,7 dari 10. Pembedanya: tanpa skill, AI menebak jumlah pesan dengan rumus yang berubah-ubah dan membuang lonjakan penjualan diam-diam; dengan skill, satu file penjualan langsung jadi daftar belanja per pemasok (jumlah per dus, tanggal pesan, Rupiah, draf WA) dengan barang yang akan kosong sebelum kiriman datang di paling atas.
+Diuji AI penguji independen di OpenClaw: 6,1 → 8,7 dari 10. Pembedanya: tanpa skill, AI menebak jumlah pesan dengan rumus yang berubah-ubah dan membuang lonjakan penjualan tanpa bertanya; dengan skill, satu file penjualan langsung jadi daftar belanja per pemasok (jumlah per dus, tanggal pesan, Rupiah, draf WA) dengan barang yang akan kosong sebelum kiriman datang di paling atas.
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip hitung pendukung skill ini; tanpa Python skill tetap berjalan, AI menghitungnya langsung dan menunjukkan baris hitungannya, tetapi angkanya sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 

@@ -2,7 +2,7 @@
 
 **Ketik satu kalimat topik pelajaran, dapatkan Modul Ajar + LKPD (lembar kerja siswa) + soal & rubrik lengkap sesuai Kurikulum Merdeka — siap disalin ke Word/Google Docs.**
 
-Diuji AI penguji independen di OpenClaw: 5,75 → 8,7 dari 10 (tanpa skill ada kesalahan matematika pecahan senilai dan rujukan CP yang sudah usang; dengan skill alokasi menit dihitung skrip dan CP ditandai "cek CP resmi").
+Diuji AI penguji independen di OpenClaw: 5,75 → 8,7 dari 10 (tanpa skill merujuk dasar CP yang sudah usang; dengan skill alokasi menit dihitung skrip dan CP ditandai "cek CP resmi").
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -47,7 +47,7 @@ Cuplikan hasil (dipotong; contoh dengan data fiktif dari `examples/01-modul-ajar
 …
 #### Pertemuan 1 (120 menit — pembukaan 15’ + inti 90’ + penutup 15’, **status COCOK**)
 ```
-Hasil lengkapnya juga memuat LKPD "Ekosistem Sawah di Sekitar Kita", 5 soal uraian + kunci jawaban + rubrik skor 1–4. Contoh ini dibuat dengan versi awal skill yang menebak 3 JP (jam pelajaran) per pertemuan; sekarang, bila Anda tidak menyebut jam pelajaran, dipakai bawaan 2 JP per pertemuan.
+Hasil lengkapnya juga memuat LKPD "Ekosistem Sawah di Sekitar Kita", 5 soal uraian + kunci jawaban + pedoman skor (20/10/0 per soal, nilai akhir maksimum 100). Contoh ini dibuat dengan versi awal skill yang menebak 3 JP (jam pelajaran) per pertemuan; sekarang, bila Anda tidak menyebut jam pelajaran, dipakai bawaan 2 JP per pertemuan.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -74,10 +74,18 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket
 bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10 penguji independen.
-- **Uji OpenClaw (lingkungan uji terpisah), Okt 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,75** (uji v1.0.5) → dengan skill **8,7** (uji ulang v1.0.11, rata-rata tiga percobaan), LULUS. Tanpa skill ada kesalahan matematika pecahan senilai dan rujukan CP yang sudah usang; dengan skill modul + LKPD + kunci + rubrik tampil utuh di chat, alokasi menit dihitung skrip, dan CP tidak dikarang.
-- **Uji bot Telegram asli (2026-10-05):** pernah belum lulus karena isi tidak utuh di chat; versi 1.0.11 dirancang agar modul tampil utuh di chat (catatan ada di `examples/00-openclaw-sebelum-sesudah.md`).
+- **Uji OpenClaw (lingkungan uji terpisah), Okt 2026** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **5,75** (uji v1.0.5) → dengan skill **8,7** (uji ulang v1.0.11 dengan setelan kanal Telegram tanpa kirim sungguhan, rata-rata tiga percobaan), lulus. Tanpa skill merujuk dasar CP yang sudah usang (aturan lama yang sudah diganti); dengan skill modul + LKPD + kunci + rubrik tampil utuh di chat, alokasi menit dihitung skrip, dan CP tidak dikarang.
+- **Uji bot Telegram asli, 5 Okt 2026 (v1.0.9):** tanpa skill **6** → dengan skill **8,5**, lulus acuan kami. Rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI). Claude Code (simulasi agent). Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
+
+## Bukti uji di bot Telegram
+
+Uji terakhir di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 5 Okt 2026, versi skill 1.0.9, dengan pesan yang sama untuk bot tanpa skill dan bot dengan skill: tanpa skill **6** → dengan skill **8,5** dari 10 (selisih +2,5). Lulus acuan kami (dengan skill 8 ke atas dan selisih minimal 1,5). Nilai tanpa skill diambil dari uji sebelumnya dengan pesan yang sama, tidak dikirim ulang.
+- Dengan skill: guru langsung menerima modul ringkas utuh di chat (tujuan, langkah 80 menit, asesmen), lembar kerja siswa tanpa jawaban, rubrik, dan kunci jawaban guru yang terpisah. Permintaan "bunyi CP persis" dijawab dengan merujuk aturan kurikulum terbaru (BSKAP 046/H/KR/2025) tanpa mengarang bunyinya.
+- Tanpa skill: bot mengutip CP dari aturan 2022 yang sudah dicabut sebagai "redaksi resmi".
+- Catatan jujur: file Word hanya tersimpan di komputer bot dan belum terkirim ke guru. Versi 1.0.10 dan 1.0.11 mengubah cara file Word diserahkan di chat (isi utuh selalu di chat, file dikirim bila guru membalas "kirim file"), tetapi perubahan itu baru dicoba di komputer uji, belum diuji ulang di bot Telegram.
+- Uji sebelumnya di bot Telegram belum lulus: versi lama 6 → 7,5 (di bawah 8, jawaban LKPD tercetak di lembar siswa) dan versi 1.0.6 hanya 5 (modul tidak utuh di chat). Dua hasil itu yang mendorong perbaikan di atas.
 
 ## FAQ
 
@@ -108,6 +116,6 @@ dengan dokumen resmi sekolah Anda.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
 
 Skill ini diadaptasi dari ide struktur modul ajar (Apache-2.0, proyek referensi pendidikan); implementasi, script, dan contoh Indonesia milik Komunitech. Komunitech tidak berafiliasi dengan pembuat sumber referensi.

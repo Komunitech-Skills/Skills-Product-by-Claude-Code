@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.8 (2026-10-17)
+- SKILL.md bagian Contoh dan README (cuplikan hasil): tiga baris cuplikan (rasa dan tingkat pedas, garansi, masa simpan) disamakan kata demi kata dengan `examples/01-keripik-pedas-normal.md`. Aturan dan perilaku skill tidak berubah; tidak ada perubahan skrip.
+
 ## Catatan revisi 1.0.7 (2026-10-13)
 - SKILL.md bagian Contoh dan README (cuplikan hasil) tidak lagi mengutip contoh lama yang memuat atribut karangan (renyah 3 bulan, level pedas 1-5, 200 gr, garansi); diganti cuplikan dari `examples/01-keripik-pedas-normal.md` yang memakai `[isian: ...]`.
 - `examples/uji-pembuat-01-keripik-pedas.md` dipertahankan sebagai arsip uji pembuat 1.0.0 dengan catatan peringatan di baris paling atas; isi lainnya tidak diubah. Tidak ada perubahan skrip.

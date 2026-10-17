@@ -25,7 +25,7 @@ Diuji AI penguji independen di OpenClaw: 8 → 8,5 dari 10 (setelah perbaikan v1
   profesional lain yang menangani beberapa klien sekaligus dan harus rutin lapor progres.
 - Anda yang selama ini menulis laporan klien dari ingatan atau menggali ulang chat WA lama.
 - Member VIP komunitech.com yang sudah pakai OpenClaw — draf ini bisa dijadwalkan otomatis muncul
-  di Telegram Anda tiap Jumat sore (diuji di bot Telegram uji 2026-10-13; panduan ada di dalam paket; tetap Anda yang mengirim ke klien). Pola `openclaw automations` + `laporan_klien.py` sudah terbukti one-shot di Gateway VM uji (lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+  di Telegram Anda tiap Jumat sore (panduan ada di dalam paket; tetap Anda yang mengirim ke klien). Satu draf terjadwal sekali jalan sudah terkirim ke grup uji Telegram Komunitech pada 13 Okt 2026 dengan total jam yang cocok; jadwal berulang tiap Jumat belum diuji (lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 
 **Kurang cocok:** ingin laporan otomatis langsung terkirim ke klien tanpa ditinjau (skill ini
 sengaja tidak melakukan itu), atau butuh laporan internal ke atasan/tim sendiri (pakai skill
@@ -45,8 +45,7 @@ PT Maju Jaya."
 *Laporan Progres -- PT Maju Jaya*
 _Minggu ini (21 September 2026 - 27 September 2026)_
 
-Minggu ini (...): 1 pekerjaan selesai, 1 sedang berjalan, 1 terkendala.
-Total jam tercatat: 4 jam.
+Minggu ini (21 September 2026 - 27 September 2026): 1 pekerjaan selesai, 1 sedang berjalan, 1 terkendala. Total jam tercatat: 4 jam.
 
 *Selesai:*
 - Rekonsiliasi bank September (Pembukuan bulanan, 2,5 jam)
@@ -54,10 +53,17 @@ Total jam tercatat: 4 jam.
 *Berjalan:*
 - Susun draf SPT Masa PPN (Pembukuan bulanan, 1,5 jam)
 
+*Terkendala:*
+- Diskusi strategi PPh Badan (Konsultasi pajak)
+
 *Butuh dari Bapak/Ibu:*
 - Faktur pajak masukan Oktober belum dikirim
+
+*Rencana berikutnya:*
+- [isi: langkah berikutnya untuk "Susun draf SPT Masa PPN" + target tanggal]
+- [isi: langkah berikutnya untuk "Diskusi strategi PPh Badan" + target tanggal]
 ```
-(Contoh lengkap tiga versi + Markdown: `examples/uji-pembuat-01-konsultan-pajak.md`.)
+(Keluaran asli skrip versi 1.0.6 pada data fiktif yang sama dengan `examples/uji-pembuat-01-konsultan-pajak.md`, bagian WA/Telegram. Berkas contoh itu masih memuat keluaran versi lama: judul periode, kalimat ringkasan, dan bagian "Rencana berikutnya"-nya berbeda, sisanya sama. Isian `[isi: ...]` sengaja dibiarkan supaya Anda yang melengkapi, tidak dikarang AI. Contoh tiga versi + Markdown ada di berkas itu.)
 
 ## Cara pakai
 Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
@@ -67,7 +73,7 @@ Setelah terpasang, cukup ketik ke AI agent Anda, misalnya:
 - "Klien saya siapa saja yang tercatat?"
 - "Bikinin laporan 22–26 Sep buat PT Sentosa dari file catatan-kerja.csv" (file catatan Anda
   sendiri dari Excel/Sheets langsung dibaca: pemisah koma/titik koma, "2,5 jam", "90 menit")
-- "Kirim draf laporan tiap Jumat sore ke Telegram saya" (OpenClaw, opsional; jadwal otomatis diuji di bot Telegram uji 2026-10-13)
+- "Kirim draf laporan tiap Jumat sore ke Telegram saya" (OpenClaw, opsional; satu pengiriman terjadwal sekali jalan sudah diuji 13 Okt 2026, jadwal berulang belum)
 
 ## Syarat
 Butuh Python di komputer (biasanya sudah ada di Mac/Linux; di Windows bisa dipasang gratis dari
@@ -92,7 +98,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 - **Uji pemasangan di OpenClaw 2026.9.6** (uji otomatis agent, bukan manusia): 6 dari 6 butir lulus (terpasang, terpicu otomatis, permintaan malas, hitungan script, tidak salah picu, kualitas). Rincian: `examples/UJI-PLATFORM.md`.
 - **Uji sebelum/sesudah OpenClaw, 2026-10-01** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): 8 → 7 sebelum perbaikan (skill sempat kalah dari AI tanpa skill), 8 → 8,5 setelah perbaikan v1.0.5. Versi 1.0.6 (versi terkini) belum diuji ulang sebelum/sesudah di OpenClaw; menurut `CHANGELOG.md`, cara kerjanya tidak berubah dari 1.0.5.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Jadwal otomatis ke Telegram diuji sungguhan di bot uji 2026-10-13 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Satu draf terjadwal sekali jalan terkirim sungguhan ke grup uji Telegram Komunitech pada 13 Okt 2026, tiba tepat waktu dengan total jam yang cocok; jadwal berulang tiap Jumat belum diuji (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
 
 ## FAQ
 **Data pekerjaan klien saya dikirim ke internet?**
