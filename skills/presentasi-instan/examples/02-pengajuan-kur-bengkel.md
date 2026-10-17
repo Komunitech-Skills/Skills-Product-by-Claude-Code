@@ -53,3 +53,26 @@ Sesuai aturan baru SKILL.md, label kelayakan **tidak lagi ditaruh di slide**: sl
 Catatan kelayakan pinjaman (tidak ditaruh di slide): rasio cicilan/laba 46,6% = kategori BERAT menurut pengajuan-kur. Plafon yang lebih aman (rasio ≤ 30%, cicilan maks Rp 2.940.000/bulan) sekitar Rp 96.640.000. Plafon > Rp 100.000.000 → bank boleh meminta agunan tambahan. Pertimbangkan ini sebelum mengajukan.
 ```
 File: `kur-maju-jaya-motor.html` (Hijau Amanah) dan `kur-maju-jaya-motor-gelap.html` (Hitam Emas Premium, `--warna-teks-lembut: #cfc8b8`).
+
+## Penyegaran v1.1.6 (2026-10-17)
+> Menyegarkan format balasan sesuai SKILL.md v1.1.6. Isi slide, angka, catatan penguji, dan skor di atas **tidak diubah**. `kur-maju-jaya-motor.html` dan `kur-maju-jaya-motor-gelap.html` dicek ulang dengan `scripts/validasi_html.py`: keduanya lolos tanpa peringatan.
+
+Perubahan format: "Sudah dicek: ..." menggantikan "Hasil cek otomatis: LULUS"; catatan kelayakan ditulis tanpa menyebut nama skill/alat internal (dulu "menurut pengajuan-kur", kini "menurut simulasi KUR"); cara cetak PDF tanpa pilih orientasi; di kanal chat berkas dilampirkan, tanpa jalur folder.
+
+Balasan ke pengguna (format v1.1.6, kanal chat):
+```
+Presentasi Pengajuan KUR - Bengkel Maju Jaya Motor sudah jadi (10 slide). Filenya saya lampirkan sebagai dokumen.
+
+Cara pakai:
+- Buka file-nya dua kali klik, bisa dibuka di laptop maupun HP, tanpa internet.
+- Navigasi: panah kiri/kanan, geser jari di HP, atau tombol ‹ ›.
+- Cetak jadi PDF: Ctrl+P / Cmd+P → Simpan sebagai PDF → margin Tidak ada → centang Grafis latar.
+
+Asumsi yang dipakai: palet "Hijau Amanah"; cicilan memakai bunga acuan KUR 6% efektif per tahun (anuitas, 36 bulan) — angka resmi mengikuti tabel angsuran bank.
+Bagian yang masih perlu Anda lengkapi: alamat usaha, layanan tambahan, perkiraan kenaikan omzet setelah dana cair + asumsinya, status bukti sewa tempat.
+Catatan kelayakan pinjaman (tidak ditaruh di slide): cicilan Rp 4.563.291/bulan = 46,6% dari laba bersih Rp 9.800.000, kategori BERAT menurut simulasi KUR. Plafon yang lebih aman (cicilan maks Rp 2.940.000/bulan, rasio 30%) sekitar Rp 96.640.000. Plafon di atas Rp 100.000.000 → bank boleh meminta agunan tambahan.
+Catatan: presentasi ini pelengkap, bukan pengganti formulir resmi KUR — cek syarat terbaru ke bank/penyalur KUR.
+Sudah dicek: file bisa dibuka tanpa internet dan siap dicetak jadi PDF.
+```
+
+Angka dijalankan ulang (2026-10-17): `skills/pengajuan-kur/scripts/simulasi_kur.py --plafon 150000000 --tenor 36 --kur --sektor produksi --penggunaan investasi --laba-bersih 9800000` → cicilan anuitas Rp 4.563.291 (terakhir Rp 4.563.277), total bunga Rp 14.278.462, rasio 46,6% "BERAT — perlu hati-hati", sisa laba Rp 5.236.709, plafon maks rasio 30% Rp 96.640.000. Hitung ulang Decimal terpisah: anuitas 150.000.000 × (0,06/12) ÷ (1 − (1 + 0,005)^−36) = 4.563.291; aset 65 + 18 + 30 = Rp 113.000.000; porsi dana 56,7% / 33,3% / 10,0%. Semua cocok dengan isi di atas.

@@ -119,3 +119,11 @@ tetap ada by design dan `uji_openclaw.sh`/uji platform asli belum dijalankan ula
 `platform_teruji` yang sudah tercatat di `catalog.csv` berasal dari uji sebelumnya, bukan sesi ini).
 Layak lanjut ke tahap uji platform asli (Tahap 6 poin 10) sebelum naik status ke `beta`.
 
+
+---
+## Penyegaran contoh v1.0.5 (2026-10-17)
+Penyegaran dokumentasi, **bukan uji ulang**: skor di atas tidak berubah (v1.0.0 7/10; uji ulang v1.0.2 9/10).
+- Output contoh yang dirujuk SKILL.md dibuat ulang dengan `scripts/resi.py` v1.0.5: `01-picking-dasar/output-ringkasan.json` (kini memuat `jumlah_pesanan_di_file` 7, `jumlah_pesanan_data_bermasalah` 2, `dilewati_rinci`, `stok_min`/`stok_setelah`/`status_stok_setelah`, `kolom_ambigu`), `output-daftar-ambil.md` (bagian "Pesanan di file / Dilewati" dan "Stok setelah dikemas"), `output-urutan-resi.md` (tidak berubah), serta `02-input-tidak-lengkap/output-error.json` dan `03-di-luar-cakupan/output-error.json` (pesan error lebih lengkap). Jalur absolut di JSON diganti jalur relatif folder skill.
+- Angka kunci `01-picking-dasar` dihitung ulang dari CSV (Decimal): 4 pesanan aktif, 4 SKU, 12 pcs; 7 nomor pesanan = 4 + 1 batal + 2 bermasalah; JNE 2, SiCepat 1, J&T 1; KAOS-HT-M stok 3 → 0 HABIS (min 10). Total aktif dan pcs sama dengan output lama.
+- `01`–`05` diberi bagian "Penyegaran v1.0.5 (2026-10-17)". `01` memuat contoh balasan kanal chat v1.0.5. Input skenario 01–05 asli tidak ada di repo, jadi skenario itu tidak dijalankan ulang.
+- **Hasil bot Telegram asli v1.0.5:** `koordinasi/telegram-gelombang-A1-2026-10-17.md`, topik 1888/1889 — TANPA 7,5 → DENGAN 8,5 (+1,0) **BELUM** (selisih < 1,5). Pra-cek konteks Telegram: `koordinasi/pracek-telegram-akun-a-2026-10-16.md` (9, SIAP KIRIM).

@@ -38,3 +38,18 @@ script: `Skor gabungan: BELUM BISA DIBERIKAN - bukti kurang dari 60%`, 3 cek kri
   bukti 25,0% (BUKTI KURANG - jangan dijadikan nilai akun)`. Label kualitas pada skor bukti kurang
   mudah tersalin ke jawaban dan bertentangan dengan aturan "tidak boleh disebut nilai akun"
   (claude-ads juga melarang). Sebaiknya script tidak mencetak skor/label untuk status bukti kurang.
+
+## Penyegaran v1.0.7 (2026-10-17)
+> Jawaban asli di atas (8 pertanyaan, v1.0.0) dan catatan penguji **tidak diubah**. Sejak v1.0.7 batas pertanyaan **maks. 5**. Pesan "iklanku boncos, cek dong" tidak berisi satu pun angka atau bukti, jadi bertanya lebih dulu masih diperbolehkan (SKILL.md bagian Input), tetapi dengan batas yang sama. Label skor pada bukti kurang yang dikritik penguji sudah tidak dicetak skrip (kini "BUKTI BELUM CUKUP ... skor & label tidak diberikan"; dicek ulang dengan skrip v1.0.7 pada 2026-10-17).
+
+Balasan (format v1.0.7):
+```
+Siap, saya bantu cek. Supaya bisa langsung saya hitung, jawab singkat saja (boleh "tidak tahu"):
+1. Iklannya di mana dan diarahkan ke mana? (mis. TikTok/Meta/Google/Shopee; ke WhatsApp, website, atau produk marketplace)
+2. Harga jual, modal, dan potongan marketplace produk utama? (untuk menghitung batas untung)
+3. Belanja iklan sebulan dan ROAS/biaya per pesanan rata-rata 7–14 hari terakhir?
+4. Siapa saja yang punya akses akun iklan, dan verifikasi 2 langkah sudah aktif?
+5. Ada iklan ditolak atau akun dibatasi 30 hari terakhir?
+
+Jawab nomor 2 dan 3 saja pun cukup — saya langsung hitung titik impas dan verdik boncos/tipis/sehat. Screenshot daftar kampanye juga boleh. Jangan kirim password/OTP.
+```

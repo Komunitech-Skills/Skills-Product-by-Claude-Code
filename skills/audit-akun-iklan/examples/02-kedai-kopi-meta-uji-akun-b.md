@@ -46,3 +46,6 @@ Plus: barista lama masih admin (hapus), iklan jalan sampai 22.00 tapi WA hanya d
   adalah menurunkan anggaran/menambah materi, bukan memperluas. Patokan frekuensi ≤ 3 sudah ditandai
   "patokan Komunitech", tetapi SKILL.md tidak meminta agent merekonsiliasi perbaikan yang berlawanan.
 - M05 "tujuan tidak bisa diganti setelah terbit" — benar (sesuai panduan umum Meta).
+
+## Penyegaran v1.0.7 (2026-10-17)
+> Hasil, angka, dan skor di atas **tidak diubah**. Dicocokkan dengan SKILL.md v1.0.7: skenario ini memakai screenshot Ads Manager sehingga bukti akhirnya 90% (≥ 60%) → tetap **Format output audit lengkap**. Bedanya di v1.0.7: pertanyaan (admin, jam balas WA, catatan chat → order, frekuensi 7 hari) diajukan **di akhir balasan, maks. 5**, setelah hasil sementara dari screenshot, bukan sebelum ada hasil. Karena harga/modal belum ada, ROAS impas tidak ditebak: jelaskan cara hitung impas dalam satu kalimat dan jadikan harga & modal pertanyaan nomor 1. Di kanal chat, ID cek (M04, M02, ...) boleh dibuang dan tanpa tabel Markdown. Saran M08 di skrip sudah diperbarui sejak v1.0.1 (lihat `08-uji-ulang-v101-akun-b.md`). Skrip v1.0.7 tidak mengubah rumus, jadi skor 42,7/100 tetap berlaku untuk jawaban yang sama.

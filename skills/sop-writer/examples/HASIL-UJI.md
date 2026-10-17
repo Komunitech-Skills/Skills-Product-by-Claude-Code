@@ -48,3 +48,11 @@ Skill ini mengubah penjelasan lisan menjadi SOP yang benar-benar bisa dipraktikk
 - **R4 – Tidak ada referensi bersumber untuk batas hak karyawan** (*Batasan* butir 3 melarang tahan KTP/ijazah dan potong gaji otomatis, tapi tanpa dasar aturan). Agent harus menjelaskan secara umum. *Saran:* tambahkan `references/batas-hak-karyawan.md` bertanggal, dengan sumber resmi (mis. ketentuan pengupahan untuk potongan gaji) dan tanda ⚠️ PERLU VERIFIKASI, lalu rujuk dari SKILL.md.
 - **R5 – Privasi video/CCTV di SOP kasir/packing** tidak disinggung (SKILL.md *Batasan* PDP hanya untuk data pelanggan yang dicatat). *Saran:* tambahkan "Jika SOP memakai rekaman video, arahkan kamera ke area kerja (meja/uang/paket), simpan seperlunya, lalu hapus."
 - **R6 – README merujuk `CARA-INSTAL.md`** dan ATTRIBUTION merujuk `LISENSI.txt`, dan keduanya tidak ada di folder skill. Pastikan keduanya ikut dalam paket rilis.
+
+---
+## Penyegaran contoh v1.0.6 (2026-10-17)
+Penyegaran dokumentasi, **bukan uji ulang**: skor dan verdik di atas tidak berubah (8/10 LULUS, 2026-09-23).
+- `01` diberi tampilan kanal chat v1.0.6 lengkap untuk SOP yang sama: 4 pesan berurutan "(1/4)–(4/4)", tanpa tabel Markdown, kontrol dokumen satu baris, jika-maka dan checklist sebagai baris, tanpa klaim "sudah dikirim" dan tanpa jalur berkas, berkas hanya ditawarkan ("balas 'kirim file'"). Dicek ulang: 21 langkah (semua ≤ 15 kata), 11 butir checklist, 4 baris jika-maka, 4 indikator, sama dengan isi lama; total ±4.200 karakter, jadi dipecah (tiap bagian < 3.500).
+- `02`, `03`: catatan perubahan tampilan kanal chat (isi SOP tidak berubah). `05`: frasa "di luar cakupan skill ini" diganti tanpa menyebut skill. `04`: sudah sesuai.
+- Skill tidak punya skrip; tidak ada angka uang baru yang ditulis.
+- **Hasil bot Telegram asli v1.0.6:** `koordinasi/telegram-gelombang-A1-2026-10-17.md`, topik 1882/1883 (skenario 01) — TANPA 7,0 → DENGAN 8,5 (+1,5) **LULUS** (batas bawah). Pra-cek konteks Telegram: `koordinasi/pracek-telegram-akun-a-2026-10-16.md` (8, SIAP KIRIM).

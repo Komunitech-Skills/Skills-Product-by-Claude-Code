@@ -224,3 +224,11 @@ Cacat ringan 1–2 diperbaiki langsung di `references/kerangka-html.md`: blok pe
 - Skor tanpa skill **6,0** -> dengan skill **8,5** (selisih +2,5), **LULUS** acuan (sesudah >= 8 dan selisih >= 1,5). Validator skill: SESUDAH LULUS tanpa peringatan.
 - Perbaikan v1.1.5 terbukti: klaim "selesai 1-2 hari" dan "repeat order rutin tiap minggu" tidak muncul lagi; rincian dana, tarif, dan kontak ditulis `[isi ...]`. Tanpa skill, rincian dana Rp 250 juta dan klaim "profitable/terbukti" dikarang sebagai fakta.
 - Sisa temuan ringan: tagline "terpercaya" dan satu kalimat pasar umum di slide 2; chat hanya memuat urutan judul slide, angka kunci, asumsi, dan daftar yang harus dilengkapi (teks tiap slide hanya di berkas HTML); tidak ada PDF otomatis.
+
+---
+## Penyegaran contoh v1.1.6 (2026-10-17)
+Penyegaran dokumentasi, **bukan uji ulang**: skor dan verdik di atas tidak berubah (terakhir v1.1.1 8/10 LULUS; OpenClaw v1.1.5 6,0 → 8,5 LULUS).
+- `01`–`05` diberi bagian "Penyegaran v1.1.6 (2026-10-17)": balasan ditulis ulang mengikuti format SKILL.md v1.1.6 ("Sudah dicek: ..." menggantikan "Hasil cek otomatis: LULUS"; berkas dilampirkan di kanal chat tanpa jalur folder; tanpa nama skill/alat internal; cetak PDF margin "Tidak ada" + "Grafis latar").
+- `scripts/validasi_html.py` dijalankan ulang pada 4 deck di folder ini (`pitch-bersih-kilat.html`, `kur-maju-jaya-motor.html`, `kur-maju-jaya-motor-gelap.html`, `laporan-agustus-2026.html`): semua lolos tanpa peringatan.
+- Angka dijalankan ulang: `simulasi_kur.py` (cicilan Rp 4.563.291, rasio 46,6% BERAT, plafon aman Rp 96.640.000) dan `rekap.py` (Rp 41.190.000, 138 baris, 7 produk), lalu dicek Decimal terpisah (kategori, mingguan, 91,5%, valuasi Rp 3.000.000.000 / sebelum pendanaan Rp 2.550.000.000). Semua cocok dengan angka lama.
+- **Hasil bot Telegram asli v1.1.6** (bot pertama, 17 Okt): `koordinasi/telegram-gelombang-A1-2026-10-17.md`, topik 1880/1881 — TANPA 6,5 → DENGAN 8,0 (+1,5) **LULUS** (batas bawah); berkas deck 13 slide terkirim sebagai dokumen (cacat G19 teratasi). Pra-cek konteks Telegram: `koordinasi/pracek-telegram-akun-a-2026-10-16.md` (7,5, SIAP KIRIM bersyarat).

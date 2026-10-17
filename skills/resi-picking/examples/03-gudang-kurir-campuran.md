@@ -31,3 +31,6 @@ bubble wrap") muncul tepat di baris pesanan SiCepat yang benar.
 Semua angka, pengelompokan kurir, dan peringatan stok/SKU tidak dikenal 100% benar pada uji ini.
 Ini skenario dengan header paling "ramah" (mirip persis daftar sinonim bawaan) — kontras dengan
 skenario 02 yang headernya lebih dekat ke nama kolom marketplace asli.
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Hasil dan skor uji asli di atas **tidak diubah**. File input (`in_gudang_kecil.csv`, `stok_gudang.csv`) tidak disimpan di repo, jadi skrip tidak dijalankan ulang. Dengan file stok, v1.0.5 menambah bagian **Stok setelah dikemas** (field `stok_setelah` / `status_stok_setelah`). Dari angka di atas: BOTOL-500 stok 6 → −1 (kurang 1), TUMBLER-01 2 → −1 (kurang 1), TOTEBAG-01 3 → −7 (kurang 7), dan SKU-GHOST-99 disebut terpisah karena tidak ada di file stok (dihitung ulang: 6 − 7, 2 − 3, 3 − 10). Baris "Pesanan di file: 6 (6 diproses)" dan "Dilewati: tidak ada." juga wajib ditulis.

@@ -68,6 +68,8 @@ Catatan jujur: skor tanpa skill 4 berasal dari uji 12 Okt dengan pesan yang sedi
 
 Uji sebelumnya: 12 Okt 2026, tanpa skill **4** → dengan skill **8** (daftar 3 jadwal, langkah lapor selesai, dua pengawas siap salin, dan konfirmasi "Lanjut? (ya/tidak)" sebelum apa pun dipasang); uji alur pasang awal pada 16 Okt (versi 1.0.3) hanya mendapat 5 karena pengawas tidak terpasang setelah "ya", lalu diperbaiki di versi 1.0.4.
 
+Uji ulang di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026, versi 1.0.5, hanya sisi dengan skill, pesan sama dengan uji 16 Okt): skor dengan skill **7,5** (tanpa skill 4 dari uji 12 Okt dengan pesan yang sedikit berbeda) — **belum lulus acuan kami**. Perbaikan versi 1.0.5 terbukti di bot asli: rencana menyebut uji jalan-sekali sebelum memasang, kedua laporan jalan sekali dan isinya sampai utuh ke grup (tanpa kalimat penutup yang menggantikan isi), laporan penutup sampai utuh, dan jawaban "job mana yang terlambat hari ini" benar. Yang belum: pengawas lama yang dipasang dari obrolan lain tidak ditawarkan untuk diganti, sehingga ada dua pengawas tiap jam dan dua ringkasan pagi; peringatan bisa masuk ke obrolan lama. Diperbaiki di versi berikutnya lalu diuji ulang.
+
 ## FAQ
 **1. Apakah ini memata-matai komputer saya atau karyawan?**
 Tidak. Skill hanya mencatat "jadwal X melapor selesai pukul sekian" di komputer Anda. Ia tidak membaca layar, pesan, atau file, dan menolak dipakai untuk mengawasi orang lain diam-diam.

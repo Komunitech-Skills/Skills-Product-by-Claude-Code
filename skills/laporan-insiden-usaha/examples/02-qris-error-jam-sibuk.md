@@ -61,3 +61,10 @@ Apa: QRIS down 1 jam (12.00–13.00) akibat internet putus, hanya 1 provider
 Dampak: ±15 pelanggan batal beli
 Status: Selesai, internet sudah normal
 Pencegahan: Siapkan internet & QRIS cadangan — PJ: Pemilik/Supervisor, tenggat [isi]
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Output di atas (contoh pembuat) **tidak diubah**. Menurut SKILL.md v1.0.5 beberapa baris kini ditulis berbeda:
+- **Sudah dilakukan** hanya "kasir menerima pembayaran tunai selama gangguan" (sesuai pesan). "Menunggu koneksi internet pulih" bukan tindakan pengguna, jadi dibuang. Saran (hubungi provider, siapkan internet cadangan) masuk **Disarankan (belum dilakukan)**.
+- **Kenapa:** pengguna menyebut internet sering putus-nyambung dan hanya 1 provider, jadi itu fakta. Kaitan "QRIS error karena koneksi terputus pada jam itu" ditandai `(dugaan, perlu dikonfirmasi)`. Akar masalah ditulis "Dugaan akar masalah (belum dikonfirmasi pemilik): …" + pertanyaan konfirmasi (mis. "Saat QRIS error, apakah internet toko juga mati?").
+- **Status:** pengguna menyebut error berlangsung jam 12–13, jadi "Selesai" boleh, tetapi alasan "internet kembali jam 13.00" ditulis "QRIS normal lagi setelah jam 13.00 (sesuai keterangan Anda)".
+- Angka: "sekitar 15 pelanggan batal beli" dipakai sama di Dampak dan ringkasan WA.

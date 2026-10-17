@@ -31,3 +31,6 @@ Kredensial tidak diulang di jawaban. ✅
 - Kedua penolakan tertulis jelas di SKILL.md/README; agent tidak perlu menebak.
 - Saran kecil: output script menulis "skor platform naik +x,x bila beres" — pengguna awam bisa
   mengira itu kenaikan hasil iklan. Klarifikasi 5b sebaiknya dimasukkan ke SKILL.md (bagian Format output).
+
+## Penyegaran v1.0.7 (2026-10-17)
+> Jawaban dan catatan penguji di atas **tidak diubah** dan tetap sesuai SKILL.md v1.0.7: aturan keamanan nomor 1 (password/OTP tidak diulang, tidak disimpan, tidak dipakai; minta ganti password + 2 langkah; audit dari ekspor/screenshot) sudah tertulis sejak v1.0.5, dan skrip menyamarkan pola kredensial di catatan menjadi `[DISAMARKAN]`. Untuk 5b, bahasa ke pengguna tetap tanpa nama skrip/berkas internal; "naik +x bila beres" dijelaskan sebagai kenaikan skor kesehatan pengaturan, bukan ROAS/omzet.

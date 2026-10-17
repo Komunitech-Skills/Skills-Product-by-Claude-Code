@@ -36,3 +36,10 @@ Tes regresi 17/17 OK. Dicoba langsung: adegan hanya emoji/kosong -> peringatan j
 Verifikasi `references/label-ai.md` ke URL resmi (diambil ulang hari ini): YouTube 14328491 (wajib bila realistis; pengecualian naskah/judul/thumbnail/sulih suara suara sendiri; "AI use" di YouTube Studio; label otomatis; musik AI; tidak ada kata Shorts, sudah dicatat jujur), Meta about.fb.com (C2PA/IPTC; wajib ungkap video/audio realistis; sanksi), TikTok newsroom 2023 (label AIGC realistis; stiker/keterangan; efek AI berlabel) dan 2024 (Content Credentials/C2PA) - semua COCOK. Klaim "jangan menyesatkan meski berlabel" (TikTok) tidak tampak di kutipan yang saya baca; kecil, sebaiknya dilepas atau diberi sumber.
 Temuan RENDAH: tabel jeda absurd tetap diterima tanpa peringatan (mis. [jeda 40000]).
 **Skor: 8/10. Lulus.**
+
+## Penyegaran contoh v1.0.5 (2026-10-17)
+Penyegaran dokumentasi, **bukan uji ulang**: skor dan keputusan di atas tidak berubah (v1.0.0 8/10; uji ulang v1.0.1 8/10 Lulus).
+- `01` diberi keluaran Mode Ringkas v1.0.5 lengkap (bagian 0–6, Shot List Singkat, hook 7 kata, `[nomor WA]`; "jadi dalam dua hari" yang tidak disebut pengguna dibuang). `durasi_naskah.py` → 13,9 dtk PAS (target 15); `cek_fakta.py` → LULUS.
+- `02` dan `03`: catatan perbedaan v1.0.5 (hook ≤ 3 dtk, CTA `[nomor WA]`, tanpa blok "Fakta dari pengguna"/"Cek fakta: LULUS") + script dijalankan ulang: 02 36,5 → 35,2 dtk (masih KEPENDEKAN, di v1.0.5 harus ditambah kalimat atau target diubah); 03 29,5 → 28,6 dtk PAS. `04`, `05`: catatan kesesuaian.
+- Semua durasi dihitung ulang dengan Decimal (kata ÷ 150 × 60 + jeda + 0,3 per pergantian adegan) dan cocok dengan script.
+- **Hasil bot Telegram asli v1.0.5:** `koordinasi/telegram-gelombang-A1-2026-10-17.md`, topik 1886/1887 — TANPA 5,5 → DENGAN 8,0 (+2,5) **LULUS** (batas bawah). Pra-cek konteks Telegram: `koordinasi/pracek-telegram-akun-a-2026-10-16.md` (8,5, SIAP KIRIM).

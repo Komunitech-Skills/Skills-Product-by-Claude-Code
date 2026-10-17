@@ -72,3 +72,30 @@ Pencegahan: Verifikasi label per batch sebelum ke kurir — PJ: Supervisor Gudan
 - Format output mengikuti urutan template persis: Kronologi → Dampak → 5 Kenapa → Tindakan Cepat → Pencegahan → Draf Maaf → Ringkasan WA.
 - Skenario ini tidak menyangkut data pelanggan, sehingga bagian "Kewajiban Pemberitahuan Data Pribadi" benar-benar dihilangkan (bukan ditulis kosong) — sesuai instruksi "[Jika menyangkut data pelanggan]" bersyarat.
 - **Lulus** — output langsung siap pakai, tidak ada klaim berlebihan di draf minta maaf.
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Output simulasi dan kesimpulan penguji (Lulus, skor 9/10 di `HASIL-UJI.md`) **tidak diubah**. Uji ini dijalankan pada v1.0.0. Menurut SKILL.md v1.0.5 bagian-bagian berikut kini ditulis berbeda:
+
+**Status:** Masih ditangani
+
+**Akar Masalah (5 Kenapa)**
+1. Kenapa 40 label tertukar? → Dua batch pesanan digabung manual saat jam sibuk (sesuai keterangan Anda).
+2. Kenapa digabung manual? → (dugaan, perlu dikonfirmasi) sistem gudang tidak memisahkan batch otomatis saat volume flash sale.
+3. Kenapa tidak dicek ulang? → (dugaan, perlu dikonfirmasi) belum ada langkah verifikasi label per batch sebelum kurir mengambil.
+
+**Dugaan akar masalah (belum dikonfirmasi pemilik):** SOP packing belum mengatur verifikasi label per batch saat penggabungan manual.
+Mohon konfirmasi: Apakah sistem gudang bisa mencetak label per batch terpisah? Apakah sudah ada langkah cek label sebelum serah terima kurir?
+
+**Tindakan Cepat**
+Sudah dilakukan (sesuai keterangan Anda):
+- Menahan 10 paket sebelum diambil kurir.
+- Menghubungi kurir untuk menahan paket yang masih bisa ditahan; hasil untuk 30 paket yang sudah diambil kurir: [isi: berapa yang berhasil ditahan].
+
+Disarankan (belum dilakukan):
+- Hubungi proaktif semua pembeli 40 pesanan lewat chat pesanannya masing-masing (jumlah yang sudah komplain: [isi: jumlah]).
+
+**Draf pendek:** dikirim per pesanan lewat chat marketplace, bukan broadcast/status WA (yang terdampak hanya 40 pembeli).
+
+**Ringkasan WA, baris Status:** 10 paket ditahan; 30 paket sudah diambil kurir, hasil penahanan belum ada kabar.
+
+Cek angka (Decimal, 2026-10-17): 10 + 30 = 40; kerugian sekitar Rp2.000.000 dipakai sama di Dampak dan ringkasan.

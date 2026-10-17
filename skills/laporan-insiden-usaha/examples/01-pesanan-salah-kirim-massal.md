@@ -63,3 +63,51 @@ Apa: 40 pesanan salah label alamat, data dari sheet lama
 Dampak: ±Rp1,5jt ongkir kirim ulang, 5 komplain masuk
 Status: 25 paket dibatalkan, 15 sudah terlanjur jalan
 Pencegahan: SOP cek ulang alamat sebelum cetak label — PJ: Supervisor Gudang, tenggat [isi]
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Output di atas adalah contoh pembuat sebelum v1.0.5 (terakhir disunting v1.0.3) dan **tidak diubah**. Di bawah ini bagian-bagian yang kini ditulis berbeda menurut SKILL.md v1.0.5. Bagian lain (Rencana Pencegahan, draf maaf versi lengkap) tetap sama polanya. Ini penyegaran dokumentasi, bukan uji ulang.
+
+Yang berubah: (1) tindakan dipisah **Sudah dilakukan** (hanya yang disebut pengguna) dan **Disarankan (belum dilakukan)**; hasil yang belum dikonfirmasi tidak ditulis sebagai hasil ("25 paket berhasil dibatalkan" di atas tidak didukung pesan pengguna); (2) langkah "kenapa" yang tidak disebut pengguna bertanda `(dugaan, perlu dikonfirmasi)` dan akar masalah ditulis sebagai dugaan + pertanyaan konfirmasi; (3) 35 pelanggan yang belum komplain dihubungi proaktif; (4) draf pendek lewat chat per pesanan, bukan broadcast/status WA; (5) angka dicek konsisten di semua bagian.
+
+**Status:** Masih ditangani
+
+**Kronologi (baris yang berubah)**
+[isi: jam] — Pemilik/tim menghubungi kurir untuk membatalkan 25 paket yang belum diambil; 15 paket sudah terlanjur jalan. Hasil pembatalan: [isi: berapa yang dikonfirmasi berhasil dibatalkan kurir].
+
+**Dampak**
+- Pesanan dengan label alamat salah: 40 pesanan (25 diminta dibatalkan + 15 terlanjur jalan)
+- Sudah komplain: 5 pelanggan
+- Belum komplain, perlu dihubungi proaktif: 35 pesanan (asumsi 1 pesanan = 1 pembeli)
+- Kerugian: sekitar Rp1.500.000 (ongkir kirim ulang)
+
+**Akar Masalah (5 Kenapa)**
+1. Kenapa 40 pesanan salah alamat? → Label dicetak dari data yang disalin admin dari sheet lama (sesuai keterangan Anda).
+2. Kenapa admin memakai sheet lama? → (dugaan, perlu dikonfirmasi) sheet lama dan sheet terbaru sama-sama tersedia, tanpa penanda mana yang berlaku.
+3. Kenapa tidak ketahuan sebelum dicetak? → (dugaan, perlu dikonfirmasi) tidak ada langkah cek ulang alamat sebelum cetak label saat volume promo tinggi.
+4. Kenapa langkah cek ulang itu tidak ada? → (dugaan, perlu dikonfirmasi) SOP packing belum disesuaikan untuk periode promo.
+
+**Dugaan akar masalah (belum dikonfirmasi pemilik):** SOP packing belum mengatur sumber data alamat yang berlaku dan langkah cek ulang sebelum cetak label massal.
+Mohon konfirmasi: Benar ada lebih dari satu sheet alamat yang dipakai bergantian? Apakah SOP packing sudah punya langkah cek alamat sebelum cetak?
+
+**Tindakan Cepat**
+Sudah dilakukan (sesuai keterangan Anda):
+- Menghubungi kurir untuk membatalkan 25 paket yang belum diambil; hasil pembatalan: [isi: berapa yang dikonfirmasi berhasil dibatalkan].
+
+Disarankan (belum dilakukan):
+- Balas 5 pelanggan yang sudah komplain lewat chat pesanannya masing-masing.
+- Hubungi proaktif 35 pembeli lain yang pesanannya ikut terdampak, sebelum mereka komplain.
+- Lacak 15 paket yang terlanjur jalan bersama kurir: status sekarang belum ada kabar.
+
+**Draf pendek (chat marketplace/WA per pesanan, untuk 35 pembeli yang belum komplain):**
+Halo Kak [Nama], kami dari Kedai Rempah Bu Sri. Mohon maaf, label alamat pesanan Kakak pada promo 9.9 ternyata salah cetak. Kami sedang mengurusnya dengan kurir dan akan [isi: langkah untuk pesanan Kakak — kirim ulang/ganti]. Boleh konfirmasi alamat lengkap Kakak? 🙏
+
+**Ringkasan untuk Tim/Pemilik (WA)**
+*Insiden: Salah Label Alamat 40 Pesanan Promo 9.9*
+Apa: 40 pesanan memakai label dari sheet alamat lama
+Dampak: 5 pelanggan komplain, 35 belum komplain; ±Rp1,5 jt ongkir kirim ulang
+Status: kurir sudah dihubungi untuk membatalkan 25 paket, hasilnya belum ada kabar; 15 paket terlanjur jalan
+Pencegahan: cek ulang alamat sebelum cetak label — PJ: [isi: jabatan], tenggat [isi: tanggal]
+
+Cek angka (Decimal, 2026-10-17): 25 + 15 = 40; 40 − 5 = 35; dipakai sama di Dampak, Tindakan, draf, dan ringkasan.
+
+Rujukan bot Telegram asli (skenario yang sama, v1.0.5): `koordinasi/telegram-gelombang-A1-2026-10-17.md` — topik 1884/1885, TANPA 6,0 → DENGAN 8,5 (+2,5) **LULUS**; 35 pelanggan proaktif dan tanda dugaan muncul. Sisa temuan di sana: ringkasan WA bot menulis "25 paket berhasil dihentikan" (tidak konsisten dengan bagian Tindakan), dan ada satu frasa rusak.

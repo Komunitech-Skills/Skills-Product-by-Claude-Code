@@ -170,3 +170,10 @@ bagian uji platform asli (Tahap 6.10) sebelum `beta`.
 
 **platform_teruji tetap jujur:** `claude-code (simulasi agent)` — pengujian ini simulasi agent,
 bukan uji platform asli manusia.
+
+---
+## Penyegaran contoh v1.0.7 (2026-10-17)
+Penyegaran dokumentasi, **bukan uji ulang**: skor dan verdik di atas tidak berubah (v1.0.0 8/10; uji ulang v1.0.1 9/10).
+- `01`–`05` diberi bagian "Penyegaran v1.0.7 (2026-10-17)". `01` kini memuat balasan pertama berformat **audit pendahuluan** ("jawab dulu, tanya kemudian", pertanyaan di akhir maks. 5); `04` memangkas pertanyaan dari 8 menjadi 5; `02`, `03`, `05` hanya catatan kesesuaian.
+- Skrip `skor_audit.py` v1.0.7 dijalankan ulang: `roas-impas` (impas 2,65 / laba Rp33.695; 1,61 / Rp55.500; 1,60 / Rp750.000; ROI 2 → RUGI ±Rp10.805/pesanan) dan `hitung` data sebagian skenario 01 (bukti TikTok Shop 10,3%, skor tidak diberikan). Semua angka dicek ulang dengan Decimal dan cocok.
+- **Pra-cek konteks Telegram v1.0.7:** `koordinasi/pracek-telegram-akun-a-2026-10-16.md` — **6,5, TIDAK SIAP** (tidak dikirim ke bot asli). Angka benar; temuan terbuka: verdik "BELUM BISA DIPASTIKAN" saat ROAS aktual belum ada, dan tindakan yang kurang nyambung ke keluhan boncos.
