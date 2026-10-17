@@ -17,6 +17,7 @@
     "Catatan pembeli": "Catatan dari Pembeli",
     "Status pesanan": "Status Pesanan"
   },
+  "kolom_ambigu": {},
   "pemetaan_lokasi": {
     "sku": "SKU",
     "lokasi": "Lokasi"
@@ -25,10 +26,13 @@
     "sku": "sku",
     "stok": "stok",
     "lokasi": "lokasi",
-    "nama": "nama"
+    "nama": "nama",
+    "stok_min": "stok_min"
   },
   "jumlah_baris_dibaca": 10,
   "jumlah_pesanan_total": 5,
+  "jumlah_pesanan_di_file": 7,
+  "jumlah_pesanan_data_bermasalah": 2,
   "jumlah_pesanan_aktif": 4,
   "jumlah_sku_unik": 4,
   "total_barang": 12.0,
@@ -48,6 +52,48 @@
     "baris_duplikat": 1,
     "baris_ringkasan_diabaikan": 1
   },
+  "dilewati_rinci": [
+    {
+      "jenis": "pesanan",
+      "no_pesanan": "240901A5",
+      "alasan": "batal",
+      "baris": [
+        7
+      ]
+    },
+    {
+      "jenis": "baris",
+      "no_pesanan": "240901A6",
+      "alasan": "jumlah 0 atau negatif",
+      "baris": [
+        8
+      ]
+    },
+    {
+      "jenis": "baris",
+      "no_pesanan": "240901A7",
+      "alasan": "jumlah tidak terbaca",
+      "baris": [
+        9
+      ]
+    },
+    {
+      "jenis": "baris",
+      "no_pesanan": "240901A1",
+      "alasan": "baris dobel (sama persis dengan baris lain, dihitung sekali)",
+      "baris": [
+        10
+      ]
+    },
+    {
+      "jenis": "baris",
+      "no_pesanan": "",
+      "alasan": "baris Total/ringkasan, bukan pesanan",
+      "baris": [
+        11
+      ]
+    }
+  ],
   "peringatan": [
     "SKU tidak ada di file stok (input-stok-buku-stok.csv): GANTUNGAN-X. Kemungkinan salah ketik atau produk baru.",
     "1 baris 'jumlah tidak terbaca' dilewati (baris 9).",
@@ -67,7 +113,10 @@
       "qty": 3.0,
       "jumlah_pesanan": 2,
       "sku_dikenal": true,
-      "stok_tercatat": 3.0
+      "stok_tercatat": 3.0,
+      "stok_min": 10.0,
+      "stok_setelah": 0.0,
+      "status_stok_setelah": "habis"
     },
     {
       "sku": "KAOS-HT-L",
@@ -77,7 +126,10 @@
       "qty": 3.0,
       "jumlah_pesanan": 1,
       "sku_dikenal": true,
-      "stok_tercatat": 20.0
+      "stok_tercatat": 20.0,
+      "stok_min": 10.0,
+      "stok_setelah": 17.0,
+      "status_stok_setelah": "aman"
     },
     {
       "sku": "TOPI-01",
@@ -87,7 +139,10 @@
       "qty": 1.0,
       "jumlah_pesanan": 1,
       "sku_dikenal": true,
-      "stok_tercatat": 10.0
+      "stok_tercatat": 10.0,
+      "stok_min": 5.0,
+      "stok_setelah": 9.0,
+      "status_stok_setelah": "aman"
     },
     {
       "sku": "GANTUNGAN-X",
@@ -97,7 +152,10 @@
       "qty": 5.0,
       "jumlah_pesanan": 1,
       "sku_dikenal": false,
-      "stok_tercatat": null
+      "stok_tercatat": null,
+      "stok_min": null,
+      "stok_setelah": null,
+      "status_stok_setelah": null
     }
   ]
 }

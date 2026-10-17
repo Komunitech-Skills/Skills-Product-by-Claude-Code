@@ -1,6 +1,6 @@
 {
   "ok": false,
-  "error": "Judul kolom pesanan tidak dikenali. Pastikan ini file ekspor PESANAN marketplace (bukan laporan lain), dan bukan hasil buka-tutup di Excel yang mengubah nomor pesanan. Kalau nama kolomnya memang tidak umum, sebutkan manual mis. --kolom-no-pesanan \"Nama Kolom\".",
+  "error": "Judul kolom pesanan tidak dikenali. Pastikan ini file ekspor PESANAN marketplace (bukan laporan lain), dan bukan hasil buka-tutup di Excel yang mengubah nomor pesanan. Kolom yang ada di file: Tanggal, Total Omzet. Kalau nama kolomnya memang tidak umum, sebutkan manual salah satu atau lebih flag berikut (isi dengan nama kolom PERSIS seperti di file): --kolom-no-pesanan \"Nama Kolom\", --kolom-sku \"Nama Kolom\", --kolom-nama \"Nama Kolom\", --kolom-varian \"Nama Kolom\", --kolom-qty \"Nama Kolom\", --kolom-kurir \"Nama Kolom\", --kolom-resi \"Nama Kolom\", --kolom-catatan \"Nama Kolom\", --kolom-status \"Nama Kolom\".",
   "kolom_ada": [
     "Tanggal",
     "Total Omzet"

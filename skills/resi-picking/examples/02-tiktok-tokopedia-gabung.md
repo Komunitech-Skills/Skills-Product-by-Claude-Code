@@ -51,3 +51,6 @@ keberhasilan auto-deteksi kolom pada 2 contoh header TikTok Shop/Tokopedia yang 
 ini adalah **0 dari 2** tanpa override — jauh dari klaim "instan, cukup satu kalimat". Sudah ada
 jalan keluar (pesan error jelas + flag `--kolom-...`), tapi agent yang memakai skill WAJIB
 membaca `pemetaan_kolom`/error dan tahu cara menawarkan override, bukan hanya lapor gagal.
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Hasil dan skor uji asli di atas **tidak diubah**. File input skenario ini tidak disimpan di repo, jadi skrip tidak dijalankan ulang. Sejak v1.0.5 setiap jalan (satu per file) wajib menampilkan "Pesanan di file", "Dilewati:" dengan nomor pesanan, dan "Stok setelah dikemas" (tanpa file stok: "Stok tidak dicek (tidak ada file stok)."); di kanal chat tanpa jalur berkas dan tanpa tabel lebar. Keterbatasan satu file per jalan (gabung dua kanal manual) tidak berubah dan tetap perlu disebut ke pengguna.
