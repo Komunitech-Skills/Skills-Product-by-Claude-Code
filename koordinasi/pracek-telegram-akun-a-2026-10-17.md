@@ -45,3 +45,16 @@ Uji simulasi kanal Telegram (uji-tg.sh), sisi DENGAN, HOME baru berisi hanya gaj
 | Skill | Versi | Skor | Verdik | Catatan |
 |---|---|---:|---|---|
 | gaji-umkm | 1.0.13 | 8,5 | SIAP KIRIM | Giliran 1 (3.379 karakter, 1 bagian): 11 karyawan langsung dihitung, Lina **tertunda** dengan pilihan (a) data Jan–Agu / (b) angka SEMENTARA + tanya penuh/prorata (4.666.667 / 466.667). Setoran tanpa Lina: transfer Rp 65.412.866, BPJS Kes Rp 3.265.000, BPJS TK Rp 5.581.620, PPh 21 Rp 522.059, biaya Rp 75.031.545; Kiki prorata 5.400.000 × 16 ÷ 30 = 2.880.000 sebagai pilihan. Semua angka per karyawan & total dihitung ulang penguji (Decimal, TER A/B/C, BPJS, lembur Indah 9 × 5.400.000/173 = 280.925): **identik**. Tanpa nama perintah/opsi/jalur file. Giliran 2 "ya" (1.448 karakter): dianggap "simpan", data benar-benar tersimpan (database terbentuk di HOME uji), periode jujur belum dikunci, pertanyaan Lina & Kiki diulang, menawarkan slip draf 11 karyawan. Kurang: tabel Markdown 7 kolom tampil mentah di Telegram; prorata Kiki/Lina disebut "hari kerja" padahal hitungannya hari kalender (16/30, 14/30); label (a)/(b) hilang di giliran 2 |
+
+## Kelompok 5 (pra-cek ulang, 2026-10-17)
+
+Uji simulasi kanal Telegram (uji-tg.sh), sisi DENGAN, HOME baru berisi hanya skill versi repo, pesan sama dengan pra-cek lama (`pilot/kandidat-a-cepat.json`), data fiktif yang sama di `pilot/data-a-cepat/`. Tidak ada yang dikirim. Angka dihitung ulang penguji dengan Python.
+
+| Skill | Versi | Skor | Verdik | Catatan |
+|---|---|---:|---|---|
+| pph-final-umkm | 1.0.6 | 8,5 | SIAP KIRIM | Cacat lama (tabel 10 kolom) hilang: daftar per bulan, 2.497 karakter. Agustus Rp107.500 (kena pajak Rp21.500.000), September Rp330.000, total Rp437.500; PPh 22 Rp345.000; kurang setor Rp165.000 (batas 15 Okt sudah lewat); Agustus lebih Rp72.500; sisa batas Rp4.212.500.000: benar. Disclaimer & pembulatan Coretax ada. Satu pertanyaan penutup |
+| buku-stok | 1.1.7 | 8,5 | SIAP KIRIM | Cacat lama (jalur file) hilang. Pratinjau dulu, "Balas ya". SKU & HPP dijelaskan. HPP (24x35.000 + 50x34.500)/74 = Rp34.662, ongkir 25.000/50 = Rp500 per pcs, persediaan Rp3.825.000: benar. Giliran "ya" menyimpan dan jujur |
+| absensi-lokal | 1.0.8 | 8,5 | SIAP KIRIM | Cacat lama hilang: giliran 1 langsung merekap (telat Andi 3x/66 mnt, Joko 3x/75 mnt, Sari 0; bolong 14/09, Sari 21-22/09, Andi 25/09 tanpa tap pulang) + 3 pertanyaan di akhir, tanpa jalur file. Giliran "ya" menyimpan 121 catatan (41+38+42). Kecil: total jam kerja selisih <=10 menit dari hitung detik penguji. Berkas absen-sept.csv fiktif dibuat penguji |
+| laporan-iklan-mingguan | 1.0.12 | 8,0 | SIAP KIRIM | Cacat lama hilang: tidak lagi menawarkan sambung WhatsApp / gateway / pairing, tanpa baris "Kolom dibaca". Belanja Rp4.200.000 (+40,0%), 114 chat (+22,6%), Rp36.842/chat (+14,2%), 22,7% omzet, Hijab Instan Baru Rp91.667/chat (2,5x) disarankan ditinjau, iklan trafik/awareness tidak dinilai dari chat: semua benar. Kecil: periode tampil format ISO, istilah CPC/CPM/CTR tanpa penjelasan |
+
+Rangkuman kelompok 5: keempatnya SIAP KIRIM; `pilot/kandidat-a-cepat.json` diperbarui (kelompok 5).
