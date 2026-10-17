@@ -1,11 +1,11 @@
-# Dasar aturan gaji-umkm — berlaku per 23 September 2026 (diperbarui 26 September 2026, v1.0.2)
+# Dasar aturan gaji-umkm — berlaku per 23 September 2026 (diperbarui 17 Oktober 2026, v1.0.13)
 
 > Ringkasan untuk alat bantu hitung, bukan nasihat hukum/pajak. **gaji-umkm tidak menetapkan tarif sendiri.** Semua tarif, batas upah, tabel TER, dan rumus berasal dari script skill Komunitech berikut, disalin persis di `scripts/mesin/` (sha256 di `scripts/mesin/SUMBER.json`). Rincian sumber resmi & status verifikasi ada di dokumen skill sumbernya.
 
 | Hitungan | Mesin (skill sumber, versi) | Dasar aturan (dicatat skill sumber, status per 2026-09-23) |
 |---|---|---|
-| BPJS Kesehatan 4% perusahaan + 1% karyawan; dasar = gaji pokok + tunjangan tetap, min. UMK (bila diisi), maks. Rp 12.000.000 | `payroll.py` (slip-gaji-bpjs 1.0.1) | Perpres 82/2018 jo. Perpres 64/2020 Pasal 30 & 32 |
-| JHT 3,7% + 2%; JKK 0,24/0,54/0,89/1,27/1,74% (perusahaan); JKM 0,3% (perusahaan); dasar = gaji pokok + tunjangan tetap | `payroll.py` | PP 44/2015 Pasal 16, 18, 19; PP 46/2015 |
+| BPJS Kesehatan 4% perusahaan + 1% karyawan; dasar = gaji pokok + tunjangan tetap, min. UMK (bila diisi), maks. Rp 12.000.000 | `payroll.py` (slip-gaji-bpjs 1.0.8; tarif tidak berubah sejak 1.0.1) | Perpres 82/2018 jo. Perpres 64/2020 Pasal 30 & 32 |
+| JHT 3,7% + 2%; JKK 0,24/0,54/0,89/1,27/1,74% (perusahaan; 0,14% di antaranya direkomposisi untuk JKP, iuran yang dibayar tetap tarif ini — mesin memperingatkan bila diisi tarif JKK neto 0,10/0,40/…); JKM 0,3% (perusahaan); dasar = gaji pokok + tunjangan tetap | `payroll.py` | PP 44/2015 Pasal 16, 18, 19; PP 46/2015; PP 6/2025 Pasal 11 ayat (5) (dicatat slip-gaji-bpjs 1.0.8) |
 | JP 2% + 1%, batas upah **Rp 10.547.400 (Mar 2025–Feb 2026)** dan **Rp 11.086.300 (Mar 2026–Feb 2027)**; di luar rentang itu script meminta `--batas-jp` | `payroll.py` | PP 45/2015; surat BPJS Ketenagakerjaan B/1226/022026 (25 Feb 2026) |
 | Lembur: 1/173 upah sebulan; hari kerja jam ke-1 ×1,5, berikutnya ×2; hari libur sesuai tangga pola 5/6 hari | `payroll.py` | PP 35/2021 Pasal 26, 31, 32 |
 | PPh 21 TER bulanan (kategori A/B/C), bruto pajak termasuk premi JKK, JKM, BPJS Kesehatan perusahaan | `payroll.py` + `ter_core.py` + `ter_tabel.json` | PP 58/2023 (tabel TER), PMK 168/2023 |
@@ -20,8 +20,15 @@
 ## Aturan yang diikuti untuk masuk/keluar tengah bulan
 - Bulan masuk dihitung sebagai satu bulan kerja untuk PPh 21 (`bulan_mulai` = bulan tanggal masuk bila di tahun berjalan) — cara `slip-gaji-bpjs`/`pph21-ter`.
 - Bulan keluar = Masa Pajak Terakhir (`berhenti=ya`): PPh 21 dihitung ulang setahun; kelebihan potong dikembalikan di slip (kecuali DTP).
-- **Prorata gaji tidak diatur di skill sumber**, jadi tidak dihitung otomatis. Nominal yang benar-benar dibayar diisi pemilik sesuai perjanjian kerja (`--gaji-pokok-dibayar`); mesin memakainya sebagai gaji pokok bulan itu (termasuk dasar iuran BPJS & lembur).
+- **Prorata gaji tidak diatur di skill sumber** (dan cara hitungnya tidak diatur rinci oleh aturan pajak/BPJS; ikut perjanjian kerja), jadi default-nya gaji dihitung **penuh** dan rekap menampilkan rumus prorata hari kalender sebagai pilihan. Nominal yang benar-benar dibayar diisi pemilik sesuai perjanjian kerja (`--gaji-pokok-dibayar`); mesin memakainya sebagai gaji pokok bulan itu (termasuk dasar iuran BPJS & lembur).
+- v1.0.13: pilihan **prorata hari kalender** (`hitung --prorata kalender`, hanya bila pemilik memilihnya): gaji pokok & tunjangan tetap × hari kalender bekerja ÷ jumlah hari dalam bulan itu, dibulatkan ke rupiah terdekat per komponen (standar pembulatan library). Hari bekerja dihitung inklusif: masuk 15 September = 15–30 = 16 hari; keluar 14 September = 1–14 = 14 hari; keluar di hari terakhir bulan = sebulan penuh. Karena mesin memakai gaji dibayar sebagai dasar iuran, iuran BPJS bulan itu ikut prorata (BPJS Kesehatan tetap minimal UMK bila diisi) — rekap mengingatkan untuk mencocokkan dengan tagihan BPJS, karena BPJS bisa menagih iuran penuh untuk bulan masuk/keluar. **PERLU REVIEW** (praktik penagihan iuran bulan masuk/keluar belum diverifikasi ke BPJS). Peringatan UMK di teks pemilik membandingkan gaji pokok + tunjangan tetap **sebulan penuh** di data karyawan (UMK berlaku untuk upah sebulan penuh), bukan nominal yang dibayar sebagian; rincian mesin tetap ada di JSON.
 - Potongan tidak masuk hanya bila diatur di PK/PP/PKB (PP 36/2021; lihat `absensi-lokal`) dan dipotong sebagai "potongan lain" setelah pajak, sama seperti `slip-gaji-bpjs`.
+
+## Karyawan tertunda & PPh 21 sementara (v1.0.13, 17 Oktober 2026)
+- **Dasar:** PMK 168/2023 — pada Masa Pajak Terakhir (Desember, atau bulan pegawai tetap berhenti bekerja) PPh 21 dihitung ulang setahun/bagian tahun dengan tarif Pasal 17 dikurangi PPh 21 yang sudah dipotong pada masa sebelumnya; hasilnya menjadi dasar bukti potong tahunan 1721-A1 (BPA1 di Coretax). Perhitungan ini butuh total bruto, iuran pensiun/JHT/JP karyawan, dan PPh 21 Januari (atau bulan mulai bekerja) s.d. bulan sebelumnya.
+- **Yang dilakukan script bila data itu tidak ada:** karyawan tersebut **tertunda** (tidak dihitung, tidak masuk total), karyawan lain tetap dihitung. Script tidak pernah mengarang data bulan lalu.
+- **Pilihan (b) "PPh 21 sementara"** (hanya bulan keluar selain Desember, atas pilihan pemilik): bulan itu dihitung dengan TER bulanan (PP 58/2023) sebagai angka **sementara** yang diberi label jelas di rekap, slip, dan baris setoran. Ini **bukan** perhitungan Masa Pajak Terakhir yang benar; periode tidak bisa dikunci sampai data lengkap dan dihitung ulang setahun. Bila angka sementara sudah telanjur dibayar/disetor, selisihnya diselesaikan saat perhitungan setahun (kelebihan dikembalikan ke karyawan, PMK 168/2023 Pasal 21; kekurangan dipotong/disetor) — konfirmasi ke konsultan pajak, termasuk bila SPT Masa perlu pembetulan.
+- Desember tidak punya pilihan (b): PPh 21 Desember memang wajib dihitung ulang setahun.
 
 ## Tenggat untuk `pengingat` (dicek 26 September 2026)
 | Tenggat | Ketentuan | Status | Sumber |
@@ -44,6 +51,7 @@
 ## Pagar kepatuhan BPJS (v1.0.1)
 - UU 24/2011 Pasal 15 ayat (1)–(2): pemberi kerja wajib mendaftarkan dirinya dan pekerjanya ke BPJS serta memberikan data yang lengkap dan benar. PP 86/2013: sanksi administratif (teguran tertulis, denda, tidak mendapat pelayanan publik tertentu). Perpres 82/2018 jo. 64/2020 Pasal 32: dasar iuran BPJS Kesehatan = gaji pokok + tunjangan tetap, batas atas Rp 12.000.000 (batas bawah UMK di mesin slip-gaji-bpjs).
 - v1.0.2: gaji pokok/tunjangan tetap "dibayar" (`isi`) yang lebih kecil dari data karyawan pada bulan **penuh** ikut dipagari, karena dasar iuran BPJS (Kesehatan & Ketenagakerjaan) bulan itu ikut turun; bulan masuk/keluar tengah bulan (prorata) tidak dipagari.
+- v1.0.13: `hitung-cepat` (tanpa database) memakai pagar yang sama; tanpa persetujuan khusus pemilik, karyawan yang terkena pagar ditandai tertunda (tidak dihitung). Kalimat "disimpan dengan persetujuan khusus pemilik" di rekap hanya muncul bila log aplikasi benar-benar mencatat persetujuan itu.
 - JP tidak dipagari karena kewajiban JP bertahap menurut skala usaha (usaha mikro/kecil belum wajib JP) — tetap tampil di data karyawan.
 
 ## Sumber

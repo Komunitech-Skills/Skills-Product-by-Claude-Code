@@ -11,3 +11,29 @@ Penguji: sub-agent penguji. Cara: uji simulasi kanal Telegram (`uji-tg.sh`, Open
 | pph21-ter | 1.0.6 | 8,5 | SIAP KIRIM | Jan-Nov Rp2.040.000 (Maret 7% Rp1.190.000), setahun Rp1.945.750 (neto Rp101.915.000, PKP Rp38.915.000), Desember lebih potong Rp94.250: dihitung ulang, benar. Tabel 4 kolom, 2.939 karakter. Disclaimer ada |
 | hitung-thr | 1.0.11 | 8,0 | SIAP KIRIM | Andi Rp4.200.000, Sari Rp2.933.333, Dodi Rp1.808.333, Yanto Rp3.500.000, total Rp12.441.666, batas Rabu 3 Maret 2027, masa kerja 74/11/7/13 bulan: benar. Tabel 6 kolom agak lebar; draf grup tanpa nominal. 2.512 karakter |
 | pph-final-umkm | 1.0.5 | 7,5 | TIDAK SIAP | Semua angka benar (Rp107.500 / Rp330.000 / total Rp437.500; kurang setor Rp165.000; sisa batas Rp4.212.500.000). Cacat tampilan: tabel 10 kolom di blok kode selebar ~120 karakter, harus digeser di ponsel (uji 16 Okt memakai tabel Markdown). Bila dikirim, hasil kemungkinan tetap sama; saran: kurator mempersempit kolom (mis. gabung "Kena pajak" dan "Batas setor" ke baris catatan) |
+
+## Kelompok 2
+
+Data contoh yang tidak tersimpan di `examples/` (absen-sept.csv, produk.csv) dan data kasir+CRM dibuat ulang oleh penguji (fiktif) di `scratchpad/openclaw-real/pilot/data-a-cepat/` dan `pilot/seed-laporan-harian.sh`; pesan uji sama persis dengan uji internal. Skenario dua giliran dijalankan dua giliran di sesi yang sama.
+
+| Skill | Versi | Skor | Verdik | Catatan |
+|---|---|---:|---|---|
+| laporan-harian-usaha | 1.1.4 | 8,0 | SIAP KIRIM | Data diisi lewat skrip alat (kasir 16-17 Okt, CRM 3 kontak). Hari ini Rp172.600 (4 nota) vs kemarin Rp179.000 turun 3,6%, terlaris Kopi Susu Gula Aren 5x Rp84.600, metode bayar QRIS Rp88.000 / tunai Rp84.600: dihitung ulang, benar. Kurang: "Konversi 0,0% (0 dari 1)" di samping "Deal 1" terbaca kontradiktif (cacat lama S2). Data wajib ditanam di HOME bot; kasir-lokal + crm-wa harus terpasang |
+| buku-stok | 1.1.6 | 7,5 | TIDAK SIAP | Angka benar: HPP kaos hitam M (24x35.000 + 50x34.500)/74 = Rp34.662, stok 74, nilai persediaan Rp3.825.000. Cacat: jalur `~/KomunitechData/stok.db` dan folder cadangan disebut di dua balasan; istilah SKU/HPP tanpa penjelasan |
+| kasir-lokal | 1.1.7 | 8,0 | SIAP KIRIM | 2 kopi susu + 1 roti bakar Rp39.000, diskon 10% Rp3.900, total Rp35.100, kembalian Rp64.900: benar. Struk teks 32 kolom muat di ponsel. Kecil: nama perintah `buka-kasir` bocor di balasan ke-2; perlu produk.csv di workspace |
+| absensi-lokal | 1.0.7 | 7,0 | TIDAK SIAP | Angka benar (Andi 3x/66 mnt, Joko 3x/75 mnt, Sari 0; bolong 14/09, Sari 21-22/09, Andi 25/09 tanpa tap pulang). Cacat: balasan pertama bertanya 5 hal (batas 3) tanpa mengerjakan apa pun dan menyebut jalur `~/KomunitechData/absensi/absensi.db`; rekap baru muncul setelah "ya". Berkas absen-sept.csv dibuat ulang penguji (121 tap) |
+| buku-piutang | 1.0.5 | 8,0 | SIAP KIRIM | Jatuh tempo Bu Tini 15 Sep (lewat 32 hari), Kafe Senja 12 Sep sisa Rp1.400.000 (lewat 35 hari), Pak Joko 25 Okt; total lewat Rp2.650.000: benar. Draf tagih + tautan wa.me (manusia yang kirim). Tautan panjang ±900 karakter |
+
+## Kelompok 3
+
+Berkas contoh yang tidak tersimpan (meta-minggu-ini/lalu.csv, penjualan-september.csv) dibuat ulang penguji (fiktif) di `scratchpad/openclaw-real/pilot/data-a-cepat/`, dirancang agar angkanya sama dengan uji 1 Okt. Pesan uji sama persis dengan uji internal. kalender-pajak diuji sendirian (uji 1 Okt memakai paket 25 skill) dalam dua giliran.
+
+| Skill | Versi | Skor | Verdik | Catatan |
+|---|---|---:|---|---|
+| laporan-iklan-mingguan | 1.0.11 | 7,0 | TIDAK SIAP | Semua angka benar (belanja Rp4.200.000 naik 40,0%; 114 chat naik 22,6% dari 93; Rp36.842/chat; 22,7% dari omzet; Hijab Instan Baru Rp91.667/chat = 2,5x; CPC/CTR iklan trafik benar). Cacat: kalimat "hasilnya itu chat WA masuk" disalahpahami sebagai perintah kirim ke WA, jawaban dibuka dengan "gateway", "pairing", "script resmi" dan menawarkan menyambung WhatsApp (bertentangan dengan aturan kanal); baris teknis "Kolom dibaca: nama='Campaign name' ..." ikut tampil |
+| kalender-pajak | 1.0.7 | 8,0 | SIAP KIRIM | Giliran 1: 4 pertanyaan + tawaran asumsi cepat (sesuai desain skill, 513 karakter). Giliran 2: omzet Rp600jt merata -> kumulatif Rp500jt di Oktober (belum lewat), lewat di November, setoran pertama masa November paling lambat Selasa 15 Des 2026, SPT Tahunan 31 Maret 2027: benar. Kecil: kata "skill" muncul sekali |
+| rekap-penjualan-csv | 1.2.5 | 8,5 | SIAP KIRIM | Omzet Rp5.519.000 (hanya Selesai), batal Rp238.000, refund Rp272.000, produk terlaris, tertinggi 5 Sep Rp549.000, terendah 18 Sep Rp35.000, seri 5 pesanan di 1 & 5 Sep: semua dihitung ulang, benar. Kecil: kata "script" sekali |
+
+## Rangkuman pra-cek A-cepat (13 skill)
+
+SIAP KIRIM (9): laporan-otomatis-terjadwal, checklist-keamanan-pangan-usaha, pph21-ter, hitung-thr, laporan-harian-usaha, kasir-lokal, buku-piutang, kalender-pajak, rekap-penjualan-csv. TIDAK SIAP (4): pph-final-umkm (tabel 10 kolom), buku-stok (jalur file), absensi-lokal (5 pertanyaan + jalur), laporan-iklan-mingguan (salah paham WA + istilah proses). Daftar siap kirim: `scratchpad/openclaw-real/pilot/kandidat-a-cepat.json`.

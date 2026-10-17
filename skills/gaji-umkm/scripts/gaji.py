@@ -41,7 +41,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
-VERSI = "1.0.11"
+VERSI = "1.0.13"
 APLIKASI = "gaji-umkm"
 SKEMA = 1
 FOLDER = Path(__file__).resolve().parent
@@ -52,12 +52,12 @@ import ter_core as tc  # noqa: E402  (salinan persis; hanya dipakai untuk baca a
 
 SIMPAN_BACKUP_HARIAN = 30
 NOL = Decimal(0)
-DISCLAIMER = ("Alat bantu hitung, bukan nasihat hukum/pajak. Angka BPJS, lembur, PPh 21 TER, dan THR berasal dari "
-              "script skill slip-gaji-bpjs, pph21-ter, dan hitung-thr (dasar: Perpres 64/2020, PP 44/2015, PP 45/2015, "
-              "PP 46/2015, PP 35/2021, PP 58/2023, PMK 168/2023, PMK 105/2025, Permenaker 6/2016), berlaku per 23 "
-              "September 2026. Pembulatan: iuran BPJS & lembur ke rupiah terdekat, PPh 21 ke bawah; belum dicocokkan "
-              "dengan Coretax/aplikasi BPJS - bila berbeda, ikuti sistem resmi. Untuk kasus khusus hubungi konsultan "
-              "pajak, Kring Pajak 1500200, BPJS, atau Disnaker.")
+DISCLAIMER = ("Alat bantu hitung, bukan nasihat hukum/pajak. Angka dari mesin hitung gaji, PPh 21 dan THR Komunitech. "
+              "Dasar: Perpres 64/2020; PP 44, 45, 46/2015 & PP 6/2025 (BPJS); PP 35/2021 "
+              "(lembur); PP 58/2023 & PMK 168/2023 (PPh 21); PMK 105/2025 (DTP); Permenaker 6/2016 (THR); berlaku per "
+              "23 September 2026. Pembulatan: iuran BPJS & lembur ke "
+              "rupiah terdekat, PPh 21 ke bawah; belum dicocokkan dengan Coretax/aplikasi BPJS - bila berbeda, ikuti "
+              "sistem resmi. Kasus khusus: konsultan pajak, Kring Pajak 1500200, BPJS, atau Disnaker.")
 PESAN_TERKUNCI = ("Database sedang dipakai program lain (mis. jadwal OpenClaw). Data aman; tunggu sebentar lalu "
                   "ulangi perintahnya.")
 SARAN_PULIH = ("Pulihkan: gaji.py backup --daftar (lihat cadangan), lalu gaji.py restore --dari <file cadangan> "
@@ -464,19 +464,40 @@ def jalankan_tulis(args, perintah, kerja, besar=False, label_backup=None):
         data["backup"] = backup
     if data["peringatan"]:
         teks += "\n\n" + "\n".join("Catatan: " + p for p in data["peringatan"])
+    langkah = data.setdefault("langkah_berikut", [])
     if simpan and besar:
-        teks = "TERSIMPAN.\n" + teks + (("\nCadangan sebelum perubahan: " + backup) if backup else "")
+        teks = "TERSIMPAN.\n" + teks + ("\n(Cadangan otomatis dibuat sebelum perubahan.)" if backup else "")
     elif not simpan and data.get("perlu_persetujuan_khusus"):
-        teks = ("PRATINJAU (belum disimpan):\n" + teks +
-                "\n\nBELUM BISA DISIMPAN DENGAN --ya SAJA: data ini butuh persetujuan khusus pemilik (lihat PERLU "
-                "PERSETUJUAN KHUSUS di atas). Sarankan memperbaiki datanya. Hanya bila pemilik sendiri sudah membaca "
-                "peringatan dan menyetujuinya, jalankan perintah yang sama + --ya " + FLAG_PAHAM +
-                " --alasan-khusus \"...\" (dicatat di log). Jangan menambahkan " + FLAG_PAHAM + " atas inisiatif sendiri.")
+        # teks untuk pemilik tanpa nama perintah/opsi; instruksi menyimpan hanya untuk agent (langkah_berikut)
+        teks = ("PRATINJAU (belum disimpan):\n" + teks + "\n\n" + PENUTUP_PERSETUJUAN)
+        langkah.insert(0, LANGKAH_PERSETUJUAN)
     elif not simpan:
-        teks = ("PRATINJAU (belum disimpan):\n" + teks +
-                "\n\nSimpan? Jalankan perintah yang sama + --ya setelah pengguna setuju.")
+        teks = "PRATINJAU (belum disimpan):\n" + teks + "\n\n" + penutup_pratinjau(perintah)
+        langkah.insert(0, LANGKAH_SIMPAN)
     data["teks"] = teks
     return data, teks
+
+
+LANGKAH_SIMPAN = "Simpan hanya setelah pemilik setuju: jalankan perintah yang sama + --ya."
+LANGKAH_PERSETUJUAN = (
+    "BELUM BISA DISIMPAN DENGAN --ya SAJA: data ini butuh persetujuan khusus pemilik (masalah_kepatuhan). Sarankan "
+    "memperbaiki datanya. Hanya bila pemilik sendiri sudah membaca peringatan dan menyetujuinya dengan alasan sah: "
+    "jalankan perintah yang sama + --ya --ya-saya-paham --alasan-khusus \"...\" (dicatat di log). Jangan menambahkan "
+    "--ya-saya-paham atas inisiatif sendiri.")
+PENUTUP_PERSETUJUAN = ("Belum bisa disimpan begitu saja: data ini perlu persetujuan khusus pemilik (lihat PERLU "
+                       "PERSETUJUAN KHUSUS di atas). Sebaiknya datanya diperbaiki; bila ada alasan sah, sebutkan "
+                       "alasannya dan nyatakan setuju.")
+
+
+def penutup_pratinjau(perintah):
+    """Kalimat penutup pratinjau untuk pemilik (tanpa nama perintah/opsi)."""
+    if perintah == "final":
+        return "Sudah benar? Balas \"kunci\" - setelah dikunci, angka bulan ini hanya bisa diubah lewat revisi tercatat."
+    if perintah == "restore":
+        return "Lanjut memulihkan? Balas \"pulihkan\"."
+    if perintah == "revisi":
+        return "Buka revisi? Balas \"ya\"."
+    return "Sudah benar? Balas \"simpan\" untuk menyimpan."
 
 
 def baca(args, kerja):
@@ -798,15 +819,16 @@ def pagar_kepatuhan(args, baru, langsung_simpan=False):
         teks = ("PERLU PERSETUJUAN KHUSUS - data ini tidak sesuai kewajiban BPJS:\n- " + "\n- ".join(pesan) +
                 "\nDasar: " + DASAR_KEPATUHAN + ". Karyawan juga kehilangan perlindungan (berobat, kecelakaan "
                 "kerja, hari tua).\nBila ada alasan sah (mis. iuran sudah dibayar lewat sistem lain, atau sudah "
-                "dikonfirmasi ke BPJS), pemilik harus membaca peringatan ini lalu menjalankan perintah yang sama + "
-                "--ya " + FLAG_PAHAM + " [--alasan-khusus \"...\"]. Persetujuan ini dicatat di log aplikasi.")
+                "dikonfirmasi ke BPJS), pemilik sendiri harus membaca peringatan ini dan menyetujuinya secara khusus "
+                "beserta alasannya. Persetujuan ini dicatat di log aplikasi.")
         if getattr(args, "ya", False) or langsung_simpan:
-            raise Gagal("Belum disimpan. " + teks, masalah_kepatuhan=sorted(baru))
+            raise Gagal("Belum disimpan. " + teks + " (Untuk agent: " + LANGKAH_PERSETUJUAN + ")",
+                        masalah_kepatuhan=sorted(baru), langkah_berikut=[LANGKAH_PERSETUJUAN])
         return [teks], None
     catat = {"masalah": sorted(baru), "pesan": pesan, "alasan": bersih(getattr(args, "alasan_khusus", "") or "", 200),
              "waktu": stempel()}
-    return ["DISIMPAN DENGAN PERSETUJUAN KHUSUS PEMILIK (%s%s), tercatat di log aplikasi:\n- %s\nRisiko tetap "
-            "ditanggung pemberi kerja (%s)." % (FLAG_PAHAM, "; alasan: " + catat["alasan"] if catat["alasan"] else "",
+    return ["DISIMPAN DENGAN PERSETUJUAN KHUSUS PEMILIK%s, tercatat di log aplikasi:\n- %s\nRisiko tetap "
+            "ditanggung pemberi kerja (%s)." % (" (alasan: %s)" % catat["alasan"] if catat["alasan"] else "",
                                                 "\n- ".join(pesan), DASAR_KEPATUHAN)], catat
 
 
@@ -829,12 +851,11 @@ def masalah_dasar_turun(k, isi, kode):
     if dibayar >= penuh:
         return {}
     return {"dasar_bpjs_turun_bulan_penuh": (
-        "%s: gaji pokok + tunjangan tetap %s diisi %s, lebih kecil dari data karyawan %s, padahal %s bekerja sebulan "
-        "penuh (bukan bulan masuk/keluar). Dasar iuran BPJS Kesehatan & Ketenagakerjaan bulan ini ikut turun. Bila "
-        "gaji memang dipotong karena alasan sah (mis. cuti di luar tanggungan menurut perjanjian kerja), jelaskan di "
-        "--alasan-khusus; bila tujuannya menghemat iuran (mis. bonus dinaikkan, gaji pokok diturunkan), itu tidak "
-        "dibenarkan - pakai data gaji penuh." % (k["nama"], nama_periode(kode), rp(dibayar), rp(penuh),
-                                                 k["nama"]))}
+        "%s: gaji pokok + tunjangan tetap %s diisi %s, di bawah data karyawan %s padahal bekerja sebulan penuh "
+        "(bukan bulan masuk/keluar), jadi dasar iuran BPJS Kesehatan & Ketenagakerjaan ikut turun. Bila "
+        "gaji memang dipotong karena alasan sah (mis. cuti di luar tanggungan menurut perjanjian kerja), sebutkan "
+        "alasannya; bila tujuannya menghemat iuran (mis. bonus dinaikkan, gaji pokok diturunkan), itu tidak "
+        "dibenarkan - pakai data gaji penuh." % (k["nama"], nama_periode(kode), rp(dibayar), rp(penuh)))}
 
 
 def cmd_karyawan_tambah(args):
@@ -877,28 +898,35 @@ def cmd_karyawan_ubah(args):
         baru_m = {kd: ps for kd, ps in masalah_kepatuhan(dict(k2), cfg).items() if kd not in lama_m}
         pr_k, catat = pagar_kepatuhan(args, baru_m)
         rahasia = {"nik", "rekening"}
-        baris = ["- %s: %s -> %s" % (c, samarkan(lama[c]) if c in rahasia else (lama[c] or "(kosong)"),
+        baris = ["- %s: %s -> %s" % (c.replace("_", " "),
+                                     samarkan(lama[c]) if c in rahasia else (lama[c] or "(kosong)"),
                                      samarkan(o[c]) if c in rahasia else (o[c] or "(kosong)")) for c in beda]
         t = "Ubah data %s (%s):\n%s" % (k["nama"], k["kode"], "\n".join(baris))
         pr = pr_k + (peringatan_karyawan(dict(k2), cfg) if ("dtp" in beda or "gaji_pokok" in beda) else [])
         draf = [r["kode"] for r in conn.execute("SELECT kode FROM periode WHERE status='draf' ORDER BY kode")]
+        langkah = []
         if draf:
-            pr.append("Periode draf %s memakai data lama sampai dihitung ulang: jalankan gaji.py hitung --bulan <periode>."
-                      % ", ".join(draf))
+            pr.append("Gaji %s (draf) masih memakai data lama sampai dihitung ulang." % ", ".join(
+                nama_periode(x) for x in draf))
+            langkah += ["hitung --bulan %s" % x for x in draf]
         final = [r["kode"] for r in conn.execute("SELECT kode FROM periode WHERE status='final' ORDER BY kode")]
         if final:
-            pr.append("Periode yang sudah final (%s) TIDAK berubah. Jika perubahan ini juga berlaku untuk bulan yang "
-                      "sudah final, buat revisi: gaji.py revisi --bulan <periode> --alasan \"...\"." % ", ".join(final))
+            pr.append("Gaji yang sudah dikunci (%s) TIDAK berubah. Bila perubahan ini juga berlaku untuk bulan yang "
+                      "sudah dikunci, bulan itu perlu direvisi (dengan alasan tercatat)." % ", ".join(
+                          nama_periode(x) for x in final))
+            langkah.append("Bila pemilik minta bulan final ikut berubah: revisi --bulan <periode> --alasan \"...\"")
         if "tanggal_keluar" in beda and o["tanggal_keluar"]:
             kp = o["tanggal_keluar"][:7]
-            pr.append("%s keluar %s: periode %s menjadi Masa Pajak Terakhir (PPh 21 dihitung ulang setahun, butuh "
-                      "periode sebelumnya tahun ini sudah final atau saldo awal). Gaji bulan itu tetap penuh kecuali "
-                      "Anda mengisi gaji yang dibayar: gaji.py isi --bulan %s --karyawan %s --gaji-pokok-dibayar ..."
-                      % (k["nama"], ftgl(date.fromisoformat(o["tanggal_keluar"])), kp, kp, k["kode"]))
+            pr.append("%s keluar %s: %s menjadi Masa Pajak Terakhir (PPh 21 dihitung ulang setahun, butuh gaji bulan "
+                      "sebelumnya tahun ini sudah dikunci atau saldo awal). Gaji bulan itu tetap penuh kecuali Anda "
+                      "menyebut gaji yang dibayar (mis. prorata)." % (
+                          k["nama"], ftgl(date.fromisoformat(o["tanggal_keluar"])), nama_periode(kp)))
+            langkah.append("Gaji dibayar bulan keluar: isi --bulan %s --karyawan %s --gaji-pokok-dibayar .. atau hitung "
+                           "--bulan %s --prorata kalender" % (kp, k["kode"], kp))
         ringkasan = {"kode": k["kode"], "kolom": beda}
         if catat:
             ringkasan["konfirmasi_kepatuhan"] = catat
-        return {"karyawan": ringkas_karyawan(k2), "berubah": beda, "peringatan": pr,
+        return {"karyawan": ringkas_karyawan(k2), "berubah": beda, "peringatan": pr, "langkah_berikut": langkah,
                 "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
                 "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "karyawan ubah", kerja, besar=True, label_backup="karyawan")
@@ -959,6 +987,39 @@ ALIAS_IMPOR = {"nama_karyawan": "nama", "status_ptkp": "ptkp", "gaji": "gaji_pok
                "jkk_persen": "jkk", "pola_hari_kerja": "hari_kerja", "tanggal_keluar": "keluar"}
 
 
+def impor_baris_karyawan(conn, cfg, rows, masuk_default=None):
+    """Simpan baris CSV karyawan ke conn. Kembalikan (baru, peringatan, masalah_kepatuhan, galat, tanpa_masuk).
+    masuk_default (hitung-cepat): tanggal masuk dipakai bila kolom masuk kosong (nama dicatat di tanpa_masuk)."""
+    galat, baru, pr, masalah, tanpa_masuk = [], [], [], {}, []
+    for r in rows:
+        r = {ALIAS_IMPOR.get(k, k): v for k, v in r.items()}
+        d = {k: r[k] for k in ("nama", "jabatan", "jenis", "ptkp", "gaji_pokok", "tunjangan_tetap",
+                               "tunjangan_tidak_tetap", "zakat", "bpjs", "hari_kerja", "dtp",
+                               "bruto_tetap_januari", "nik", "bank", "rekening", "atas_nama", "kode_absensi",
+                               "dasar_bpjs_kesehatan") if r.get(k) not in (None, "")}
+        if r.get("jkk"):
+            d["jkk_persen"] = r["jkk"]
+        if r.get("masuk"):
+            d["tanggal_masuk"] = r["masuk"]
+        elif masuk_default:
+            d["tanggal_masuk"] = masuk_default
+            tanpa_masuk.append(bersih(r.get("nama") or "baris %d" % r["_baris"], 80))
+        if r.get("keluar"):
+            d["tanggal_keluar"] = r["keluar"]
+        try:
+            o = normalisasi_karyawan(d)
+            if r.get("kode"):
+                o["kode"] = r["kode"]
+            k = simpan_karyawan_baru(conn, o)
+            baru.append(k)
+            pr += peringatan_karyawan(dict(k), cfg)
+            for kd, ps in masalah_kepatuhan(dict(k), cfg).items():
+                masalah["%s:%s" % (k["kode"], kd)] = "baris %d, %s" % (r["_baris"], ps)
+        except Gagal as e:
+            galat.append("baris %d: %s" % (r["_baris"], e.pesan))
+    return baru, pr, masalah, galat, tanpa_masuk
+
+
 def cmd_karyawan_impor(args):
     def kerja(conn, cfg):
         kepala, rows = baca_tabel(args.file)
@@ -966,30 +1027,7 @@ def cmd_karyawan_impor(args):
         if not {"nama", "ptkp", "gaji_pokok", "masuk"} <= set(kepala):
             raise Gagal("File wajib punya kolom nama, ptkp, gaji_pokok, masuk (tanggal masuk). Contoh: "
                         "templates/karyawan-contoh.csv. Kolom ditemukan: %s" % ", ".join(kepala))
-        galat, baru, pr, masalah = [], [], [], {}
-        for r in rows:
-            r = {ALIAS_IMPOR.get(k, k): v for k, v in r.items()}
-            d = {k: r[k] for k in ("nama", "jabatan", "jenis", "ptkp", "gaji_pokok", "tunjangan_tetap",
-                                   "tunjangan_tidak_tetap", "zakat", "bpjs", "hari_kerja", "dtp",
-                                   "bruto_tetap_januari", "nik", "bank", "rekening", "atas_nama", "kode_absensi",
-                                   "dasar_bpjs_kesehatan") if r.get(k) not in (None, "")}
-            if r.get("jkk"):
-                d["jkk_persen"] = r["jkk"]
-            if r.get("masuk"):
-                d["tanggal_masuk"] = r["masuk"]
-            if r.get("keluar"):
-                d["tanggal_keluar"] = r["keluar"]
-            try:
-                o = normalisasi_karyawan(d)
-                if r.get("kode"):
-                    o["kode"] = r["kode"]
-                k = simpan_karyawan_baru(conn, o)
-                baru.append(k)
-                pr += peringatan_karyawan(dict(k), cfg)
-                for kd, ps in masalah_kepatuhan(dict(k), cfg).items():
-                    masalah["%s:%s" % (k["kode"], kd)] = "baris %d, %s" % (r["_baris"], ps)
-            except Gagal as e:
-                galat.append("baris %d: %s" % (r["_baris"], e.pesan))
+        baru, pr, masalah, galat, _ = impor_baris_karyawan(conn, cfg, rows)
         if galat:
             raise Gagal("Tidak ada yang disimpan; perbaiki dulu:\n- " + "\n- ".join(galat), galat=galat)
         pr_k, catat = pagar_kepatuhan(args, masalah)
@@ -1122,51 +1160,79 @@ def cmd_isi(args):
         pr_k, catat = [], None
         if "gaji_pokok" in nilai or "tunjangan_tetap" in nilai:
             pr_k, catat = pagar_kepatuhan(args, masalah_dasar_turun(k, isi, kode), langsung_simpan=True)
-        t = "Tersimpan untuk %s, %s (belum dihitung): %s\nLanjut: gaji.py hitung --bulan %s" % (
-            k["nama"], nama_periode(kode), teks_isian(isi), kode)
+        t = "Tersimpan untuk %s, %s (belum dihitung): %s" % (k["nama"], nama_periode(kode), teks_isian(isi))
         ringkasan = {"periode": kode, "karyawan": k["kode"], "kolom": sorted(nilai)}
         if catat:
             ringkasan["konfirmasi_kepatuhan"] = catat
         return {"karyawan": k["kode"], "periode": kode, "isian": isi, "peringatan": pr_k + pr,
                 "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
-                "ringkasan": ringkasan}, t
+                "langkah_berikut": ["hitung --bulan %s" % kode], "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "isi", kerja)
+
+
+ALIAS_KOMPONEN = {"gaji_pokok_dibayar": "gaji_pokok", "tunjangan_tetap_dibayar": "tunjangan_tetap"}
+KOLOM_ABAIKAN = {"kode", "nama", "no", "nomor", "jabatan"}      # bukan komponen, sengaja tidak dipakai
+
+
+def isi_dari_tabel(conn, per, path):
+    """isi --file / hitung-cepat --komponen: komponen banyak karyawan dari CSV. Kembalikan (ok, masalah, galat, asing);
+    asing = judul kolom yang tidak dikenal (tidak dipakai) supaya bisa disampaikan, bukan diam-diam diabaikan."""
+    kode = per["kode"]
+    kepala, rows = baca_tabel(path)
+    kepala = [ALIAS_KOMPONEN.get(c, c) for c in kepala]
+    rows = [{ALIAS_KOMPONEN.get(c, c): v for c, v in r.items()} for r in rows]
+    asing = [c for c in kepala if c and c not in ISIAN and c != "kasbon" and c not in KOLOM_ABAIKAN]
+    kolom = [c for c in kepala if c in ISIAN or c == "kasbon"]
+    if not ({"kode", "nama"} & set(kepala)) or not kolom:
+        raise Gagal("File wajib punya kolom kode atau nama, dan minimal satu komponen (%s)." %
+                    ", ".join(sorted(ISIAN)))
+    galat, ok, masalah = [], [], {}
+    aktif = {k["id"] for k in karyawan_periode(conn, kode)}
+    for r in rows:
+        try:
+            k = cari_karyawan(conn, r.get("kode") or r.get("nama"))
+            if k["id"] not in aktif:
+                raise Gagal("%s tidak aktif di %s" % (k["nama"], nama_periode(kode)))
+            diisi = [c for c in kolom if r.get(c, "") != ""]
+            for c in diisi:
+                set_isian(conn, per, k, "potongan_lain" if c == "kasbon" else c, r[c])
+            isi_k = isian_karyawan(conn, per, k)
+            if "lembur_rp" in isi_k and ("lembur_hari_kerja" in isi_k or "lembur_hari_libur" in isi_k):
+                raise Gagal("%s: isi jam lembur ATAU lembur_rp, jangan keduanya" % k["nama"])
+            if {"gaji_pokok", "tunjangan_tetap"} & set(diisi):
+                for kd, ps in masalah_dasar_turun(k, isi_k, kode).items():
+                    masalah["%s:%s" % (kd, k["kode"])] = ps
+            ok.append((k, isi_k))
+        except Gagal as e:
+            galat.append("baris %d: %s" % (r["_baris"], e.pesan))
+    return ok, masalah, galat, asing
+
+
+def teks_kolom_asing(asing):
+    """Kalimat awam untuk judul kolom komponen yang tidak dikenal (tanpa garis bawah/nama teknis)."""
+    nama = ['"%s"' % c.replace("_", " ") for c in asing]
+    daftar = nama[0] if len(nama) == 1 else "%s dan %s" % (", ".join(nama[:-1]), nama[-1])
+    return ("Isian %s di daftar komponen tidak dikenali, jadi TIDAK dihitung. Bila itu bagian gaji, sebutkan masuk "
+            "tunjangan tidak tetap (mis. uang makan/transport), bonus, lembur, kasbon, atau gaji pokok yang dibayar."
+            % daftar)
 
 
 def cmd_isi_file(args, kode):
     def kerja(conn, cfg):
         per = ambil_periode(conn, kode, buat=True)
         wajib_draf(per)
-        kepala, rows = baca_tabel(args.file)
-        kolom = [c for c in kepala if c in ISIAN or c == "kasbon"]
-        if not ({"kode", "nama"} & set(kepala)) or not kolom:
-            raise Gagal("File wajib punya kolom kode atau nama, dan minimal satu komponen (%s)." %
-                        ", ".join(sorted(ISIAN)))
-        galat, ok, masalah = [], [], {}
-        aktif = {k["id"] for k in karyawan_periode(conn, kode)}
-        for r in rows:
-            try:
-                k = cari_karyawan(conn, r.get("kode") or r.get("nama"))
-                if k["id"] not in aktif:
-                    raise Gagal("%s tidak aktif di %s" % (k["nama"], nama_periode(kode)))
-                diisi = [c for c in kolom if r.get(c, "") != ""]
-                for c in diisi:
-                    set_isian(conn, per, k, "potongan_lain" if c == "kasbon" else c, r[c])
-                isi_k = isian_karyawan(conn, per, k)
-                if {"gaji_pokok", "tunjangan_tetap"} & set(diisi):
-                    for kd, ps in masalah_dasar_turun(k, isi_k, kode).items():
-                        masalah["%s:%s" % (kd, k["kode"])] = ps
-                ok.append((k, isi_k))
-            except Gagal as e:
-                galat.append("baris %d: %s" % (r["_baris"], e.pesan))
+        ok, masalah, galat, asing = isi_dari_tabel(conn, per, args.file)
         if galat:
             raise Gagal("Tidak ada yang disimpan; perbaiki dulu:\n- " + "\n- ".join(galat), galat=galat)
-        pr_k, catat = pagar_kepatuhan(args, masalah)
+        pr_k, catat = pagar_kepatuhan(args, masalah)       # HANYA masalah kepatuhan BPJS (pagar persetujuan)
         t = "Komponen %s:\n%s" % (nama_periode(kode), "\n".join("- %s: %s" % (k["nama"], teks_isian(i)) for k, i in ok))
         ringkasan = {"periode": kode, "jumlah": len(ok)}
         if catat:
             ringkasan["konfirmasi_kepatuhan"] = catat
-        return {"periode": kode, "jumlah": len(ok), "peringatan": pr_k,
+        # kolom asing: catatan biasa untuk pemilik (bahasa awam) + daftar teknis di JSON; tidak pernah memicu
+        # perlu_persetujuan_khusus (bukan masalah kepatuhan)
+        return {"periode": kode, "jumlah": len(ok), "peringatan": pr_k + ([teks_kolom_asing(asing)] if asing else []),
+                "kolom_tidak_dikenal": asing, "kolom_dikenal": sorted(set(ISIAN) | {"kasbon"} | set(ALIAS_KOMPONEN)),
                 "perlu_persetujuan_khusus": bool(pr_k) and not catat, "konfirmasi_kepatuhan": catat,
                 "ringkasan": ringkasan}, t
     return jalankan_tulis(args, "isi --file", kerja, besar=True, label_backup="isian")
@@ -1294,25 +1360,28 @@ def riwayat_tahun(conn, k, kode):
     if sa:
         if sa["sampai_bulan"] >= bl:
             raise Gagal("%s: saldo awal %d sampai bulan %d, padahal periode ini %s. Perbaiki saldo awal." % (
-                k["nama"], th, sa["sampai_bulan"], nama_periode(kode)))
+                k["nama"], th, sa["sampai_bulan"], nama_periode(kode)), saldo_awal_salah=True,
+                bulan_mulai=bulan_mulai)
         tot["bruto"] += D(sa["bruto"])
         tot["pph"] += D(sa["pph21"])
         tot["iuran"] += D(sa["iuran"])
         tot["zakat"] += D(sa["zakat"])
         mulai_cari = max(bulan_mulai, sa["sampai_bulan"] + 1)
         sumber.append("saldo awal s.d. %s" % tc.NAMA_BULAN[sa["sampai_bulan"] - 1])
-    kurang = []
+    kurang, bulan_kurang = [], []
     for b in range(mulai_cari, bl):
         kp = "%04d-%02d" % (th, b)
         per = conn.execute("SELECT * FROM periode WHERE kode=?", (kp,)).fetchone()
         if not per or per["status"] != "final":
-            kurang.append("%s (%s)" % (nama_periode(kp), "belum ada" if not per else
-                                       "belum final" if per["revisi"] == 0 else "sedang direvisi"))
+            jenis = "belum ada" if not per else "belum final" if per["revisi"] == 0 else "sedang direvisi"
+            kurang.append("%s (%s)" % (nama_periode(kp), jenis))
+            bulan_kurang.append([b, jenis])
             continue
         h = conn.execute("SELECT data FROM hasil WHERE periode_id=? AND revisi=? AND karyawan_id=?",
                          (per["id"], per["revisi"], k["id"])).fetchone()
         if not h:
             kurang.append("%s (tidak ada data %s)" % (nama_periode(kp), k["nama"]))
+            bulan_kurang.append([b, "belum ada"])
             continue
         p = json.loads(h["data"])["payroll"]
         tot["bruto"] += D(p["pph_info"]["bruto"])
@@ -1325,8 +1394,192 @@ def riwayat_tahun(conn, k, kode):
                     "bulan lalu. Belum lengkap: %s. Finalkan periode itu, atau isi saldo awal (gaji.py saldo-awal "
                     "--karyawan %s --tahun %d --sampai-bulan <bulan> --bruto ... --pph21 ... --iuran ...) bila bulan itu "
                     "tidak dihitung di aplikasi ini." % (k["nama"], nama_periode(kode), tc.NAMA_BULAN[bulan_mulai - 1],
-                                                          "; ".join(kurang), k["kode"], th), kurang=kurang)
+                                                          "; ".join(kurang), k["kode"], th), kurang=kurang,
+                    bulan_kurang=bulan_kurang, bulan_mulai=bulan_mulai,
+                    bulan_pertama_aplikasi=bulan_pertama_aplikasi(conn, th, bl, sa["sampai_bulan"] if sa else None),
+                    bulan_periode_pertama=bulan_pertama_aplikasi(conn, th, bl))
     return bulan_mulai, tot, sumber
+
+
+# --------------------------------------------------------------------------- v1.0.13: tertunda, PPh sementara, prorata
+def bulan_pertama_aplikasi(conn, th, bl, saldo_sampai=None):
+    """Bulan pertama tahun th yang punya periode di aplikasi (draf/final). Bulan sebelum ini = sebelum aplikasi dipakai
+    (datanya hanya bisa lewat saldo awal); bulan sejak ini yang belum ada = terlewat (bisa dihitung & dikunci).
+    saldo_sampai: saldo awal karyawan ini sudah mencakup s.d. bulan itu, jadi aplikasi dianggap dipakai sejak bulan
+    berikutnya (mis. saldo s.d. Agustus, periode pertama Oktober -> September terlewat: hitung & kunci, atau saldo awal)."""
+    r = conn.execute("SELECT MIN(kode) FROM periode WHERE kode LIKE ?", ("%04d-%%" % th,)).fetchone()[0]
+    pertama = int(r[5:7]) if r else bl
+    return min(pertama, saldo_sampai + 1) if saldo_sampai else pertama
+
+
+def rentang_bulan(th, b1, b2):
+    a, z = tc.NAMA_BULAN[b1 - 1], tc.NAMA_BULAN[b2 - 1]
+    return ("%s %d" % (a, th)) if b1 == b2 else ("%s–%s %d" % (a, z, th))
+
+
+def hari_dibayar(k, kode):
+    """(hari kalender bekerja, hari dalam bulan) bila masuk/keluar di tengah bulan; None bila sebulan penuh."""
+    if bulan_penuh(k, kode):
+        return None
+    awal, akhir = rentang_periode(kode)
+    mulai = max(awal, date.fromisoformat(k["tanggal_masuk"]))
+    selesai = min(akhir, date.fromisoformat(k["tanggal_keluar"])) if k["tanggal_keluar"] else akhir
+    return (selesai - mulai).days + 1, (akhir - awal).days + 1
+
+
+def saran_prorata(k, kode):
+    """Prorata HARI KALENDER (pilihan, bukan aturan): nominal x hari bekerja / hari dalam bulan, dibulatkan ke rupiah
+    terdekat per komponen. Kembalikan dict atau None bila sebulan penuh."""
+    h = hari_dibayar(k, kode)
+    if not h:
+        return None
+    hari, n = h
+    gp, tt = D(k["gaji_pokok"]), D(k["tunjangan_tetap"])
+    gp_p, tt_p = tc.bulat_terdekat(gp * hari / n), tc.bulat_terdekat(tt * hari / n)
+    rumus = "gaji pokok %s × %d ÷ %d hari = %s" % (rp(gp), hari, n, rp(gp_p))
+    if tt:
+        rumus += "; tunjangan tetap %s × %d ÷ %d = %s" % (rp(tt), hari, n, rp(tt_p))
+    return {"kode": k["kode"], "nama": k["nama"], "hari": hari, "hari_bulan": n, "gaji_pokok": gp,
+            "tunjangan_tetap": tt, "gaji_pokok_prorata": gp_p, "tunjangan_tetap_prorata": tt_p, "rumus": rumus}
+
+
+KET_PRORATA = "prorata hari kalender (otomatis)"
+
+
+def catatan_iuran_prorata(cfg):
+    """Catatan iuran untuk gaji prorata, sesuai cara mesin: JHT/JKK/JKM/JP memakai gaji pokok + tunjangan tetap yang
+    dibayar (prorata); dasar BPJS Kesehatan juga, tetapi tidak di bawah UMK bila UMK diisi (Perpres 64/2020)."""
+    if cfg.get("umk"):
+        return ("Iuran BPJS ikut angka prorata, tetapi dasar BPJS Kesehatan minimal UMK; cocokkan dengan tagihan BPJS "
+                "(bisa menagih iuran penuh untuk bulan masuk/keluar).")
+    return ("Iuran BPJS Kesehatan & Ketenagakerjaan ikut angka prorata; cocokkan dengan tagihan BPJS (bisa menagih "
+            "iuran penuh untuk bulan masuk/keluar).")
+
+
+def terapkan_prorata(conn, per, cara):
+    """hitung --prorata kalender: isi gaji pokok/tunjangan tetap DIBAYAR untuk karyawan masuk/keluar tengah bulan yang
+    belum punya nominal dari pemilik. --prorata penuh: hapus isian prorata otomatis (kembali gaji penuh).
+    Nominal yang diisi pemilik sendiri (isi --gaji-pokok-dibayar) tidak pernah ditimpa."""
+    diubah = []
+    for k in karyawan_periode(conn, per["kode"]):
+        s = saran_prorata(k, per["kode"])
+        if not s:
+            continue
+        ket = {r["kolom"]: r["keterangan"] for r in conn.execute(
+            "SELECT kolom, keterangan FROM isian WHERE periode_id=? AND karyawan_id=? AND kolom IN "
+            "('gaji_pokok','tunjangan_tetap')", (per["id"], k["id"]))}
+        if cara == "kalender":
+            if ket:
+                continue
+            set_isian(conn, per, k, "gaji_pokok", teks_angka(s["gaji_pokok_prorata"]), KET_PRORATA)
+            if s["tunjangan_tetap"]:
+                set_isian(conn, per, k, "tunjangan_tetap", teks_angka(s["tunjangan_tetap_prorata"]), KET_PRORATA)
+            diubah.append(s)
+        elif cara == "penuh" and ket and all(v == KET_PRORATA for v in ket.values()):
+            for kol in ket:
+                set_isian(conn, per, k, kol, "-")
+            diubah.append(s)
+    return diubah
+
+
+def info_tertunda(k, kode, e, keluar, sudah_dibayar=False, sementara_diminta=False):
+    """Gagal dari riwayat_tahun -> keterangan 'tertunda' berbahasa awam (untuk pemilik) + langkah (untuk agent).
+    teks = subjek + ': ' + inti [+ tanya_prorata]; inti sama untuk karyawan dengan kebutuhan sama (bisa digabung)."""
+    th, bl = int(kode[:4]), int(kode[5:7])
+    d = e.detail
+    bm = d.get("bulan_mulai") or 1
+    pertama = d.get("bulan_pertama_aplikasi") or bl
+    sebab = ("keluar %s" % ftgl(date.fromisoformat(k["tanggal_keluar"]))) if keluar else "Desember"
+    bisa_sementara = bool(keluar) and bl != 12 and not d.get("saldo_awal_salah")
+    belum_ada = [b for b, j in d.get("bulan_kurang", []) if j == "belum ada"]
+    sebelum = [b for b in belum_ada if b < pertama]          # sebelum aplikasi dipakai -> hanya lewat saldo awal
+    terlewat = [b for b in belum_ada if b >= pertama]        # aplikasi sudah dipakai, bulan itu terlewat
+    belum_final = [b for b, j in d.get("bulan_kurang", []) if j != "belum ada"]
+    nb = lambda bs: ", ".join(nama_periode("%04d-%02d" % (th, x)) for x in bs)        # noqa: E731
+    butuh, langkah = [], []
+    if d.get("saldo_awal_salah"):
+        butuh.append("Saldo awal yang tercatat melewati bulan ini: perbaiki angkanya.")
+        langkah.append("saldo-awal --karyawan %s --tahun %d --sampai-bulan %d --bruto .. --pph21 .. --iuran .." % (
+            k["kode"], th, bl - 1))
+    if sebelum:
+        butuh.append("Butuh total %s: (1) penghasilan bruto (angka di bukti potong bulanan, termasuk iuran JKK, "
+                     "JKM & BPJS Kesehatan bagian perusahaan), (2) PPh 21 yang sudah dipotong, (3) iuran JHT 2%% + "
+                     "JP 1%% yang dipotong dari gajinya." % rentang_bulan(th, bm, max(sebelum)))
+        langkah.append("saldo-awal --karyawan %s --tahun %d --sampai-bulan %d --bruto <1> --pph21 <2> --iuran <3>" % (
+            k["kode"], th, max(sebelum)))
+    if terlewat:
+        butuh.append("Gaji %s belum dihitung & dikunci di aplikasi ini: hitung dan kunci dulu bulan itu (bila gajinya "
+                     "dibayar di luar aplikasi, kirim totalnya %s sebagai saldo awal)." % (
+                         nb(terlewat), rentang_bulan(th, bm, max(terlewat))))
+        for x in terlewat:
+            langkah += ["hitung --bulan %04d-%02d" % (th, x), "final --bulan %04d-%02d (pratinjau, lalu --ya)" % (th, x)]
+        if max(terlewat) < (d.get("bulan_periode_pertama") or bl):
+            # bulan terlewat tepat setelah saldo awal & sebelum periode pertama: perpanjang saldo awal juga wajar
+            langkah.append("atau, bila gaji %s dibayar di luar aplikasi: saldo-awal --karyawan %s --tahun %d "
+                           "--sampai-bulan %d --bruto <total %s> --pph21 .. --iuran .. (menggantikan saldo awal lama)" % (
+                               nb(terlewat), k["kode"], th, max(terlewat), rentang_bulan(th, bm, max(terlewat))))
+    if belum_final:
+        butuh.append("Gaji %s di aplikasi ini masih draf/direvisi: kunci (final) dulu bulan itu." % nb(belum_final))
+        langkah += ["final --bulan %04d-%02d (pratinjau, lalu --ya)" % (th, x) for x in belum_final]
+    langkah.append("hitung --bulan %s" % kode)
+    inti = "%s adalah Masa Pajak Terakhir: PPh 21-nya dihitung ulang setahun. %s" % (
+        nama_periode(kode), " ".join(butuh))
+    if bisa_sementara:
+        inti += (" Pilihan: (a) %s, lalu dihitung ulang setahun (final); atau (b) hitung bulan ini saja dengan tarif "
+                 "bulanan (TER) sebagai angka SEMENTARA - wajib dilengkapi sebelum bukti potong 1721-A1 dibuat." % (
+                     "kirim angka itu" if sebelum and not (terlewat or belum_final) else "lengkapi data di atas"))
+    subjek = "%s (%s, %s)" % (k["nama"], k["kode"], sebab)
+    pr = None if sudah_dibayar else saran_prorata(k, kode)
+    tanya = ("Gaji terakhir %s penuh atau prorata %d/%d hari kalender (%s)?" % (
+        k["nama"], pr["hari"], pr["hari_bulan"], pr["rumus"])) if pr else ""
+    return {"kode": k["kode"], "nama": k["nama"], "alasan": "berhenti bekerja" if keluar else "Desember",
+            "rentang_data": (rentang_bulan(th, bm, max(sebelum)) if sebelum else nb(terlewat or belum_final)
+                             if (terlewat or belum_final) else rentang_bulan(th, bm, max(bm, bl - 1))),
+            "tanggal_keluar": k["tanggal_keluar"] if keluar else "", "bulan_kurang": e.detail.get("kurang", []),
+            "data_dibutuhkan": butuh, "bisa_pph_sementara": bisa_sementara,
+            "sementara_diabaikan": bool(sementara_diminta and not bisa_sementara),
+            "subjek": subjek, "sebab": sebab, "inti": inti, "tanya_prorata": tanya,
+            "teks": "%s: %s%s" % (subjek, inti, " " + tanya if tanya else ""),
+            "langkah_agent": langkah + (["atau pilihan (b): hitung --bulan %s --pph-sementara" % kode]
+                                        if bisa_sementara else []),
+            "saran_prorata": pr}
+
+
+def baris_tertunda(tertunda):
+    """Baris teks tertunda untuk pemilik: karyawan dengan kebutuhan sama digabung jadi satu baris."""
+    grup, urut = {}, []
+    for t in tertunda:
+        kunci = t.get("inti") or t["teks"]
+        if kunci not in grup:
+            grup[kunci] = []
+            urut.append(kunci)
+        grup[kunci].append(t)
+    o = []
+    pagar = [t for t in tertunda if t.get("catatan_pagar")]
+    for kunci in urut:
+        ts = grup[kunci]
+        if len(ts) == 1:
+            t = ts[0]
+            teks = "%s: %s" % (t["subjek"], t["inti"]) if t.get("catatan_pagar") and len(pagar) > 1 else t["teks"]
+            if t.get("tambahan"):
+                lain = [x["nama"] for x in tertunda if x is not t and x.get("inti") == t["tambahan"]]
+                teks += (" Selain itu, data Masa Pajak Terakhir-nya juga belum ada (sama dengan %s%s)." % (
+                    lain[0], " dkk." if len(lain) > 1 else "") if lain else " Selain itu: " + t["tambahan"])
+            o.append(teks)
+            continue
+        sebab = {t.get("sebab") for t in ts}
+        subjek = ("%s (%d karyawan, %s)" % (", ".join("%s (%s)" % (t["nama"], t["kode"]) for t in ts), len(ts),
+                                            sebab.pop()) if len(sebab) == 1 and None not in sebab else
+                  ", ".join(t.get("subjek") or t["nama"] for t in ts))
+        o.append("%s: %s%s" % (subjek, kunci, "".join(" " + t["tanya_prorata"] for t in ts if t.get("tanya_prorata"))))
+    if len(pagar) > 1:                       # kalimat dasar hukum persetujuan khusus cukup sekali
+        o.append("Untuk %s: %s" % (", ".join(t["nama"] for t in pagar), CATATAN_PAGAR))
+    abai = [t["nama"] for t in tertunda if t.get("sementara_diabaikan")]
+    if abai:
+        o.append("Pilihan angka sementara tidak berlaku untuk Desember (PPh 21 Desember memang dihitung ulang "
+                 "setahun), jadi tidak dipakai%s." % ("" if len(abai) == len(tertunda) else
+                                                      " untuk: " + ", ".join(abai)))
+    return o
 
 
 KOLOM_PAYROLL = ["nama", "jabatan", "ptkp", "gaji_pokok", "tunjangan_tetap", "tunjangan_tidak_tetap",
@@ -1336,17 +1589,55 @@ KOLOM_PAYROLL = ["nama", "jabatan", "ptkp", "gaji_pokok", "tunjangan_tetap", "tu
                  "iuran_sd_bulan_lalu", "zakat_sd_bulan_lalu", "bulan_mulai"]
 
 
-def susun_masukan(conn, per, cfg):
+def ada_persetujuan_khusus(conn, kode, kode_k):
+    """True bila log mencatat persetujuan khusus pemilik (--ya-saya-paham) untuk dasar BPJS turun karyawan ini."""
+    for (r,) in conn.execute("SELECT ringkasan FROM log WHERE perintah IN ('isi', 'isi --file')"):
+        try:
+            d = json.loads(r)
+        except ValueError:
+            continue
+        kk = d.get("konfirmasi_kepatuhan") if isinstance(d, dict) else None
+        if not kk or d.get("periode") != kode:
+            continue
+        masalah = kk.get("masalah", [])
+        if (d.get("karyawan") == kode_k and "dasar_bpjs_turun_bulan_penuh" in masalah) or \
+                "dasar_bpjs_turun_bulan_penuh:%s" % kode_k in masalah:
+            return True
+    return False
+
+
+def susun_masukan(conn, per, cfg, pph_sementara=False, tunda=None, pratinjau=False):
+    """Susun baris mesin per karyawan. v1.0.13: karyawan yang datanya kurang (Masa Pajak Terakhir tanpa data Januari
+    s.d. bulan lalu) TIDAK menahan karyawan lain: ia masuk daftar `tertunda` (tidak dihitung), atau - bila
+    pph_sementara=True dan ia keluar di bulan selain Desember - dihitung bulan ini saja dengan TER bulanan dan
+    ditandai PPh 21 SEMENTARA. tunda = {karyawan_id: info} dari hitung-cepat (mis. butuh persetujuan khusus).
+    Kembalikan (masukan, catatan, argv_umum, tertunda)."""
     kode = per["kode"]
     awal, akhir = rentang_periode(kode)
     daftar = karyawan_periode(conn, kode)
     if not daftar:
         raise Gagal("Tidak ada karyawan aktif di %s. Tambah karyawan dulu (gaji.py karyawan tambah)." % nama_periode(kode))
-    masukan, catatan = [], []
-    galat = []
+    masukan, catatan, tertunda = [], [], []
     for k in daftar:
-        isi = isian_karyawan(conn, per, k)
         keluar = k["tanggal_keluar"] and awal.isoformat() <= k["tanggal_keluar"] <= akhir.isoformat()
+        if tunda and k["id"] in tunda:
+            info = tunda[k["id"]]
+            if keluar or int(kode[5:7]) == 12:
+                # tertunda karena pagar BPJS, tetapi data Masa Pajak Terakhir-nya juga kurang: sebut sekarang juga,
+                # supaya pemilik tidak ditanya dua kali (persetujuan dulu, baru data Januari s.d. bulan lalu)
+                try:
+                    riwayat_tahun(conn, k, kode)
+                except Gagal as e:
+                    it = info_tertunda(k, kode, e, keluar, True)
+                    info = dict(info, tambahan=it["inti"], data_dibutuhkan=info["data_dibutuhkan"] +
+                                it["data_dibutuhkan"], langkah_agent=info["langkah_agent"] + [
+                                    "Data Masa Pajak Terakhir juga kurang: " + " -> ".join(it["langkah_agent"])])
+            tertunda.append(info)
+            continue
+        isi = isian_karyawan(conn, per, k)
+        ket_isi = {r["kolom"]: r["keterangan"] for r in conn.execute(
+            "SELECT kolom, keterangan FROM isian WHERE periode_id=? AND karyawan_id=?", (per["id"], k["id"]))}
+        diisi = [c for c in ("gaji_pokok", "tunjangan_tetap") if c in isi]     # nominal DIBAYAR bulan ini
         masuk_tengah = awal.isoformat() < k["tanggal_masuk"] <= akhir.isoformat()
         row = {
             "nama": k["nama"], "jabatan": k["jabatan"], "ptkp": k["ptkp"],
@@ -1362,39 +1653,63 @@ def susun_masukan(conn, per, cfg):
             "bruto_tetap_januari": k["bruto_tetap_januari"], "dasar_bpjs_kesehatan": k["dasar_bpjs_kesehatan"],
             "berhenti": "ya" if keluar else "tidak",
         }
-        for ps in masalah_kepatuhan(dict(k), cfg).values():
-            catatan.append(ps + " Wajib menurut " + DASAR_KEPATUHAN.split(";")[0] + ". Bila iuran sudah dibayar "
-                           "lewat sistem lain, pastikan tercatat; bila belum, daftarkan/perbaiki (gaji.py karyawan "
-                           "ubah --karyawan %s --bpjs kes,tk,jp / --dasar-bpjs-kesehatan -)." % k["kode"])
-        for ps in masalah_dasar_turun(k, isi, kode).values():
-            catatan.append(ps + " (Diisi lewat gaji.py isi; bila sudah disetujui pemilik dengan alasan sah, "
-                           "tercatat di log.)")
-        mt = None
+        mt, sementara = None, None
         if keluar or int(kode[5:7]) == 12:
             try:
                 bm, tot, sumber = riwayat_tahun(conn, k, kode)
             except Gagal as e:
-                galat.append(e.pesan)
-                continue
-            row.update({"bruto_sd_bulan_lalu": teks_angka(tot["bruto"]), "pph21_sd_bulan_lalu": teks_angka(tot["pph"]),
-                        "iuran_sd_bulan_lalu": teks_angka(tot["iuran"]), "zakat_sd_bulan_lalu": teks_angka(tot["zakat"]),
-                        "bulan_mulai": str(bm)})
-            mt = {"alasan": "berhenti bekerja" if keluar else "Desember", "bulan_mulai": bm,
-                  "bruto_sd_bulan_lalu": tot["bruto"], "pph21_sd_bulan_lalu": tot["pph"],
-                  "iuran_sd_bulan_lalu": tot["iuran"], "zakat_sd_bulan_lalu": tot["zakat"], "sumber": sumber}
-        if masuk_tengah and "gaji_pokok" not in isi:
-            catatan.append("%s masuk %s (tengah bulan): gaji dihitung PENUH karena aturan prorata tidak diatur di skill "
-                           "sumber (slip-gaji-bpjs). Bila perjanjian kerja mengatur prorata, isi nominal yang dibayar: "
-                           "gaji.py isi --bulan %s --karyawan %s --gaji-pokok-dibayar ... [--tunjangan-tetap-dibayar ...]"
-                           % (k["nama"], ftgl(date.fromisoformat(k["tanggal_masuk"])), kode, k["kode"]))
-        if keluar and "gaji_pokok" not in isi and k["tanggal_keluar"] != akhir.isoformat():
-            catatan.append("%s keluar %s (tengah bulan): gaji dihitung PENUH (prorata tidak diatur skill sumber). Bila "
-                           "perjanjian kerja mengatur lain, isi --gaji-pokok-dibayar." % (
-                               k["nama"], ftgl(date.fromisoformat(k["tanggal_keluar"]))))
+                info = info_tertunda(k, kode, e, keluar, bool(diisi), pph_sementara)
+                if not (pph_sementara and info["bisa_pph_sementara"]):
+                    tertunda.append(info)
+                    continue
+                # pilihan (b): bulan ini saja, TER bulanan (mesin: berhenti=tidak); ditandai SEMENTARA
+                row["berhenti"] = "tidak"
+                sementara = info
+            else:
+                row.update({"bruto_sd_bulan_lalu": teks_angka(tot["bruto"]),
+                            "pph21_sd_bulan_lalu": teks_angka(tot["pph"]),
+                            "iuran_sd_bulan_lalu": teks_angka(tot["iuran"]),
+                            "zakat_sd_bulan_lalu": teks_angka(tot["zakat"]), "bulan_mulai": str(bm)})
+                mt = {"alasan": "berhenti bekerja" if keluar else "Desember", "bulan_mulai": bm,
+                      "bruto_sd_bulan_lalu": tot["bruto"], "pph21_sd_bulan_lalu": tot["pph"],
+                      "iuran_sd_bulan_lalu": tot["iuran"], "zakat_sd_bulan_lalu": tot["zakat"], "sumber": sumber}
+        for ps in masalah_kepatuhan(dict(k), cfg).values():
+            catatan.append(ps + " Wajib menurut " + DASAR_KEPATUHAN.split(";")[0] + ". Bila iuran sudah dibayar "
+                           "lewat sistem lain, pastikan tercatat; bila belum, daftarkan/perbaiki data BPJS karyawan ini.")
+        for ps in masalah_dasar_turun(k, isi, kode).values():
+            if pratinjau:          # hitung-cepat dengan persetujuan khusus; pratinjau berisi alasan (str) atau True
+                ket = "(Dipakai atas persetujuan khusus pemilik; belum disimpan, dicatat saat disimpan.%s)" % (
+                    " Alasan: %s." % pratinjau.rstrip(".") if isinstance(pratinjau, str) and pratinjau else "")
+            elif ada_persetujuan_khusus(conn, kode, k["kode"]):
+                ket = "(Disimpan dengan persetujuan khusus pemilik, tercatat di log.)"
+            else:
+                ket = "(Tidak ada catatan persetujuan khusus pemilik untuk isian ini; pastikan ada alasan sah.)"
+            # teks pemilik: nama bulan & "(bukan bulan masuk/keluar)" sudah jelas dari rekap bulan ini
+            catatan.append(ps.split(" Bila gaji memang dipotong")[0].replace(" (bukan bulan masuk/keluar)", "").replace(
+                " " + nama_periode(kode) + " diisi", " diisi") + " " + ket)
+        pr = saran_prorata(k, kode)
+        if pr and not diisi:
+            sebab = ("masuk %s" % ftgl(date.fromisoformat(k["tanggal_masuk"]))) if masuk_tengah else (
+                "keluar %s" % ftgl(date.fromisoformat(k["tanggal_keluar"])))
+            catatan.append("%s %s (tengah bulan): gaji dihitung PENUH (asumsi; ikut perjanjian kerja). Bila prorata hari "
+                           "kalender (%d dari %d hari): %s. Mohon pastikan mana yang dipakai." % (
+                               k["nama"], sebab, pr["hari"], pr["hari_bulan"], pr["rumus"]))
+        elif pr and ket_isi.get("gaji_pokok") == KET_PRORATA:
+            catatan.append("%s: gaji diprorata hari kalender (asumsi, %d dari %d hari): %s. %s" % (
+                k["nama"], pr["hari"], pr["hari_bulan"], pr["rumus"], catatan_iuran_prorata(cfg)))
+        elif pr and len(diisi) == 1:
+            # hanya satu komponen yang diisi nominal dibayarnya: komponen lain tetap penuh -> sebut dalam satu kalimat
+            lain = "tunjangan_tetap" if diisi[0] == "gaji_pokok" else "gaji_pokok"
+            if D(k[lain]):
+                label = {"gaji_pokok": "gaji pokok", "tunjangan_tetap": "tunjangan tetap"}
+                catatan.append("%s: %s bulan ini diisi %s; %s %s tetap dihitung penuh. Bila juga dibayar sebagian, "
+                               "sebutkan nominalnya." % (k["nama"], label[diisi[0]], rp(D(isi[diisi[0]])),
+                                                         label[lain], rp(D(k[lain]))))
         masukan.append({"k": k, "row": row, "isi": isi, "masa_terakhir": mt, "keluar": bool(keluar),
-                        "masuk_tengah": masuk_tengah})
-    if galat:
-        raise Gagal("Belum bisa dihitung:\n- " + "\n- ".join(galat), galat=galat)
+                        "masuk_tengah": masuk_tengah, "sementara": sementara})
+    if not masukan:
+        raise Gagal("Belum ada karyawan yang bisa dihitung untuk %s. Data yang kurang:\n- %s" % (
+            nama_periode(kode), "\n- ".join(baris_tertunda(tertunda))), tertunda=tertunda)
     argv_umum = ["--periode", kode, "--format", "json", "--perusahaan", re.sub(r"[;,]", " ", cfg["nama_usaha"] or "")]
     if cfg["umk"]:
         argv_umum += ["--umk", cfg["umk"]]
@@ -1402,48 +1717,151 @@ def susun_masukan(conn, per, cfg):
         argv_umum += ["--jkk", cfg["jkk"]]
     if cfg["batas_jp"]:
         argv_umum += ["--batas-jp", cfg["batas_jp"]]
-    return masukan, catatan, argv_umum
+    return masukan, catatan, argv_umum, tertunda
 
 
-def hitung_periode(conn, per, cfg, tmp):
-    """Jalankan mesin payroll (per kelompok pola hari kerja). Kembalikan (hasil per karyawan, total, peringatan, sidik)."""
-    masukan, catatan, argv_umum = susun_masukan(conn, per, cfg)
+def hitung_periode(conn, per, cfg, tmp, pph_sementara=False, tunda=None, pratinjau=False):
+    """Jalankan mesin payroll (per kelompok pola hari kerja). Kembalikan (hasil per karyawan, total, peringatan, sidik).
+    Karyawan tertunda (data kurang) tidak dihitung; daftarnya ada di total["tertunda"]."""
+    masukan, catatan, argv_umum, tertunda = susun_masukan(conn, per, cfg, pph_sementara, tunda, pratinjau)
     kelompok = {}
     for m in masukan:
         kelompok.setdefault(m["k"]["hari_kerja"], []).append(m)
     sidik = hashlib.sha256()
-    hasil, peringatan = [], list(catatan)
+    hasil, peringatan, dihitung = [], list(catatan), []
     for hk in sorted(kelompok):
         grup = kelompok[hk]
         f = os.path.join(tmp, "masukan-%d.csv" % hk)
-        isi_csv = tulis_csv_mesin(f, KOLOM_PAYROLL, [m["row"] for m in grup])
         argv = ["--data", f, "--hari-kerja", str(hk), "--out", os.path.join(tmp, "out-%d" % hk)] + argv_umum
+        isi_csv = tulis_csv_mesin(f, KOLOM_PAYROLL, [m["row"] for m in grup])
+        try:
+            out = jalankan_mesin("payroll.py", argv)
+        except Gagal as e:
+            if e.detail.get("mesin") != "payroll.py" or BARIS_DITOLAK not in e.pesan:
+                raise                       # galat umum (mis. batas upah JP periode belum tercatat): tetap satu pesan
+            # v1.0.13: satu baris yang ditolak mesin tidak menahan karyawan lain -> cari barisnya, tandai tertunda
+            salah = baris_ditolak_mesin(grup, hk, argv_umum, tmp)
+            if not salah:
+                raise
+            tertunda += [t for _, t in salah]
+            buang = [id(m) for m, _ in salah]
+            grup = [m for m in grup if id(m) not in buang]
+            if not grup:
+                continue
+            isi_csv = tulis_csv_mesin(f, KOLOM_PAYROLL, [m["row"] for m in grup])
+            out = jalankan_mesin("payroll.py", argv)
         sidik.update(isi_csv.encode("utf-8"))
         sidik.update(json.dumps(argv_umum + [str(hk)]).encode("utf-8"))
-        out = jalankan_mesin("payroll.py", argv)
         if len(out["karyawan"]) != len(grup):
             raise Gagal("Jumlah hasil mesin tidak cocok dengan jumlah karyawan.")
         for m, p in zip(grup, out["karyawan"]):
             if bersih(re.sub(r"[;,\t\"]", " ", m["row"]["nama"])) != bersih(p["nama"]):
                 raise Gagal("Urutan hasil mesin tidak cocok (%s vs %s)." % (m["row"]["nama"], p["nama"]))
             p["peringatan"] = [x.replace(p["nama"] + ":", m["k"]["nama"] + ":", 1) for x in p["peringatan"]]
-            if "gaji_pokok" in m["isi"]:
-                p["peringatan"] = [x + (" (Catatan: bulan ini diisi gaji yang DIBAYAR/prorata. UMK berlaku untuk "
-                                        "gaji penuh sebulan; bandingkan dengan gaji pokok penuh di data karyawan.)"
-                                        if "di bawah UMK" in x else "") for x in p["peringatan"]]
+            if "gaji_pokok" in m["isi"] or "tunjangan_tetap" in m["isi"]:
+                p["peringatan"] = [x + catatan_umk_dibayar(m["k"], cfg) if "di bawah UMK" in x else x
+                                   for x in p["peringatan"]]
+            dihitung.append(m)
             hasil.append({"kode": m["k"]["kode"], "karyawan_id": m["k"]["id"], "nama": m["k"]["nama"],
                           "jabatan": m["k"]["jabatan"], "ptkp": m["k"]["ptkp"], "hari_kerja": hk,
                           "tanggal_masuk": m["k"]["tanggal_masuk"], "tanggal_keluar": m["k"]["tanggal_keluar"],
                           "berhenti": m["keluar"], "masuk_tengah_bulan": m["masuk_tengah"], "isian": m["isi"],
                           "potongan_tidak_masuk": D(m["isi"].get("potongan_tidak_masuk")),
                           "potongan_lain_saja": D(m["isi"].get("potongan_lain")),
-                          "masa_terakhir": m["masa_terakhir"], "payroll": p})
+                          "masa_terakhir": m["masa_terakhir"], "payroll": p,
+                          "pph_sementara": bool(m["sementara"]), "masa_terakhir_tertunda": m["sementara"]})
             peringatan += p["peringatan"]
         for x in out.get("peringatan_umum", []):
             if x not in peringatan:
                 peringatan.append(x)
+    if not hasil:
+        raise Gagal("Belum ada karyawan yang bisa dihitung untuk %s. Data yang kurang:\n- %s" % (
+            nama_periode(per["kode"]), "\n- ".join(baris_tertunda(tertunda))), tertunda=tertunda)
     hasil.sort(key=lambda h: h["kode"])
-    return hasil, total_perusahaan(hasil), peringatan, sidik.hexdigest()
+    tertunda.sort(key=lambda t: t["kode"])
+    total = total_perusahaan(hasil)
+    total["tertunda"] = tertunda
+    return hasil, total, peringatan_jkk(peringatan, dihitung, cfg), sidik.hexdigest()
+
+
+def catatan_umk_dibayar(k, cfg):
+    """Tambahan untuk peringatan UMK mesin bila bulan ini diisi gaji yang DIBAYAR (prorata/sebagian): UMK berlaku untuk
+    gaji penuh sebulan, jadi bandingkan dengan gaji penuh di data karyawan (dihitung di sini, bukan oleh pemilik)."""
+    penuh = D(k["gaji_pokok"]) + D(k["tunjangan_tetap"])
+    if cfg.get("umk") and penuh >= D(cfg["umk"]):
+        return (" (Bulan ini diisi gaji yang DIBAYAR/prorata; gaji penuh sebulan di data karyawan %s tidak di bawah "
+                "UMK - UMK berlaku untuk gaji penuh sebulan.)" % rp(penuh))
+    return " (Bulan ini diisi gaji yang DIBAYAR/prorata; gaji penuh sebulan di data karyawan %s juga di bawah UMK.)" % (
+        rp(penuh))
+
+
+JKK_BELUM = "Tarif JKK belum diisi"      # awal peringatan umum mesin bila tarif JKK umum (--jkk) tidak diberikan
+
+
+def peringatan_jkk(peringatan, dihitung, cfg):
+    """Mesin selalu memberi 'Tarif JKK belum diisi: dipakai 0,24%' bila tarif JKK umum kosong, walaupun tiap karyawan
+    punya tarif sendiri di data (yang benar-benar dipakai mesin). Ganti dengan kalimat yang sesuai; mesin tidak diubah."""
+    if cfg.get("jkk") or not any(x.startswith(JKK_BELUM) for x in peringatan):
+        return peringatan
+    tk = [m for m in dihitung if m["k"]["ikut_tk"]]
+    kosong = [m["k"]["nama"] for m in tk if not str(m["row"]["jkk_persen"] or "").strip()]
+    if tk and len(kosong) == len(tk):
+        return peringatan                                   # benar: semua memakai 0,24%
+    per_tarif = {}
+    for m in tk:
+        if str(m["row"]["jkk_persen"] or "").strip():
+            per_tarif.setdefault(tc.format_persen(D(m["row"]["jkk_persen"])), []).append(m["k"]["nama"])
+    ganti = []
+    if per_tarif:
+        siapa = lambda ns: ", ".join(ns) if len(ns) <= 3 else "%d karyawan" % len(ns)      # noqa: E731
+        kal = "Tarif JKK dari data karyawan: %s" % (
+            next(iter(per_tarif)) if len(per_tarif) == 1 and not kosong else
+            ", ".join("%s (%s)" % (t, siapa(ns)) for t, ns in per_tarif.items()))
+        if kosong:
+            kal += ("; belum diisi untuk %s: dipakai 0,24%% (risiko sangat rendah) - ganti dengan tarif di penetapan "
+                    "BPJS Ketenagakerjaan" % siapa(kosong))
+        ganti = [kal + "."]
+    o = []
+    for x in peringatan:
+        if x.startswith(JKK_BELUM):
+            o += ganti
+            ganti = []
+        else:
+            o.append(x)
+    return o
+
+
+BARIS_DITOLAK = "data berikut harus diperbaiki"     # teks mesin slip-gaji-bpjs untuk galat per baris
+
+
+def baris_ditolak_mesin(grup, hk, argv_umum, tmp):
+    """Jalankan mesin per karyawan untuk menemukan baris yang ditolak. Kembalikan [(masukan, info_tertunda)]."""
+    salah = []
+    for i, m in enumerate(grup):
+        f1 = os.path.join(tmp, "cek-%d-%d.csv" % (hk, i))
+        tulis_csv_mesin(f1, KOLOM_PAYROLL, [m["row"]])
+        try:
+            jalankan_mesin("payroll.py", ["--data", f1, "--hari-kerja", str(hk), "--out",
+                                          os.path.join(tmp, "cek-out")] + argv_umum)
+        except Gagal as e:
+            if e.detail.get("mesin") != "payroll.py" or BARIS_DITOLAK not in e.pesan:
+                raise
+            alasan = "; ".join(b[2:].strip() for b in e.pesan.splitlines() if b.startswith("- ")) or \
+                e.pesan.splitlines()[-1]
+            k = m["k"]
+            for awalan in (k["nama"] + ":", bersih(re.sub(r"[;,\t\"]", " ", k["nama"])) + ":"):
+                if alasan.startswith(awalan):
+                    alasan = alasan[len(awalan):].strip()
+                    break
+            salah.append((m, {"kode": k["kode"], "nama": k["nama"], "alasan": "data perlu diperbaiki",
+                              "tanggal_keluar": "", "bulan_kurang": [], "data_dibutuhkan": [alasan],
+                              "bisa_pph_sementara": False, "rentang_data": "",
+                              "teks": "%s (%s): data perlu diperbaiki dulu sebelum dihitung: %s" % (
+                                  k["nama"], k["kode"], alasan),
+                              "langkah_agent": ["perbaiki komponen/data karyawan %s (isi / karyawan ubah)" % k["kode"],
+                                                "hitung --bulan %s" % argv_umum[1]],
+                              "saran_prorata": None}))
+    return salah
 
 
 def total_perusahaan(hasil):
@@ -1513,7 +1931,7 @@ def lengkapi_total(t):
     return t
 
 
-def baris_setor_pph21(total):
+def baris_setor_pph21(total, hasil=None):
     dipotong, kembali = D(total["pph21_dipotong"]), D(total.get("pengembalian_pph21"))
     dtp = D(total.get("pph21_dtp"))
     if not kembali and not dtp:
@@ -1525,17 +1943,18 @@ def baris_setor_pph21(total):
     o = ["- PPh 21 dipotong bulan ini: %s" % rp(dipotong)]
     if dtp:
         o.append("- Bagian PPh 21 DTP (dibayar tunai ke karyawan, tidak disetor, PMK 105/2025): %s" % rp(dtp))
+    siapa = [h["nama"] for h in hasil or [] if D(h["payroll"]["pendapatan"].get("Pengembalian kelebihan PPh 21"))]
+    siapa = (", ".join(siapa) if len(siapa) <= 3 else "%d karyawan" % len(siapa)) + ", " if siapa else ""
     o += [
-         "- Kelebihan PPh 21 dikembalikan ke karyawan (Masa Pajak Terakhir, sudah di gaji bersih): %s" % rp(kembali),
-         "- Perkiraan setor PPh 21: %s (= dipotong - DTP - kelebihan dikembalikan; SPT Masa PPh 21 dihitung gabungan semua "
-         "karyawan, PMK 168/2023 Pasal 21)" % rp(total["setor_pph21"])]
+         "- Kelebihan PPh 21 dikembalikan ke karyawan (%ssudah di gaji bersih): %s" % (
+             siapa, rp(kembali)),
+         "- Perkiraan setor PPh 21: %s (dipotong%s - dikembalikan; SPT Masa digabung semua karyawan, PMK 168/2023 "
+         "Pasal 21)" % (rp(total["setor_pph21"]), " - DTP" if dtp else "")]
     if D(total.get("lebih_bayar_pph21")):
-        o.append("- Lebih bayar PPh 21 %s: tidak ada yang disetor masa ini; kelebihan dapat diperhitungkan dengan PPh 21 "
-                 "bulan berikutnya lewat SPT Masa (PMK 168/2023 Pasal 21 ayat (3)). Tidak dikurangkan otomatis dari "
-                 "bulan berikutnya - catat dan sampaikan ke konsultan pajak." % rp(total["lebih_bayar_pph21"]))
-    o.append("  Catatan: kelebihan wajib benar-benar dikembalikan ke karyawan paling lambat akhir bulan berikutnya "
-             "(PMK 168/2023 Pasal 21 ayat (1)); PPh 21 DTP tidak dikembalikan. Konfirmasi angka setor ke konsultan "
-             "pajak/Coretax sebelum membayar; pembulatan belum dicocokkan dengan Coretax.")
+        o.append("- Lebih bayar PPh 21 %s: tidak disetor; bisa diperhitungkan ke PPh 21 bulan berikutnya lewat SPT Masa "
+                 "(Pasal 21 ayat (3)), tidak otomatis." % rp(total["lebih_bayar_pph21"]))
+    o.append("  Kelebihan dikembalikan ke karyawan paling lambat akhir bulan berikutnya%s. Konfirmasi angka setor ke "
+             "konsultan pajak/Coretax sebelum membayar." % ("; DTP tidak dikembalikan" if dtp else ""))
     return o
 
 
@@ -1551,12 +1970,137 @@ def ke_json(o):
     return o
 
 
-def teks_rekap(kode, per_status, revisi, hasil, total, peringatan, cfg):
+# --------------------------------------------------------------------------- teks pemilik: peringatan ringkas & awam
+_ISTILAH = [("isi tarif JKK (kolom jkk_persen / --jkk) dengan angka itu", "pakai tarif itu"),
+            ("kolom iuran_sd_bulan_lalu (JHT+JP karyawan Jan s.d. bulan lalu) kosong",
+             "iuran JHT+JP karyawan Januari s.d. bulan lalu belum diisi"),
+            ("kolom bruto_tetap_januari kosong", "bruto tetap Januari belum diisi"),
+            ("take home pay negatif", "gaji bersih minus")]
+_POLA_BPJS = re.compile(r"^TIDAK didaftarkan BPJS (Kesehatan|Ketenagakerjaan)")
+_POLA_UMK = re.compile(r"^gaji pokok \+ tunjangan tetap (Rp [\d.]+) di bawah UMK yang Anda isi \((Rp [\d.]+)\)\.(.*)$")
+_POLA_UMK_PENUH = re.compile(r"gaji penuh sebulan di data karyawan (Rp [\d.]+) (tidak|juga) di bawah UMK")
+_POLA_PENUH = re.compile(r"^((?:masuk|keluar) [\d/]+) \(tengah bulan\): gaji dihitung PENUH .*?\((\d+ dari \d+ hari)\): "
+                         r"(.+?)\. Mohon pastikan")
+_POLA_PRORATA = re.compile(r"^gaji diprorata hari kalender \(asumsi, (\d+ dari \d+ hari)\): (.+?)\. (Iuran .*)$")
+_POLA_JKK_NETO = re.compile(r"^tarif JKK (\S+) adalah porsi JKK setelah 0,14% dialihkan untuk JKP .*? Iuran JKK yang "
+                            r"dibayar tetap (\S+) \(PP 44/2015 Pasal 16\)")
+# sudah tampil di "Yang harus dibayar/disetor" (baris kelebihan PPh 21 dikembalikan) -> tidak diulang di teks pemilik
+_POLA_LEBIH_POTONG = re.compile(r"^PPh 21 lebih potong Rp [\d.]+ dikembalikan ke karyawan di slip ini\.$")
+
+
+def awam(teks):
+    """Terjemahkan nama kolom/opsi teknis dari mesin ke bahasa sehari-hari."""
+    for a, b in _ISTILAH:
+        teks = teks.replace(a, b)
+    teks = re.sub(r"\s*\(?--[a-z][a-z-]*\)?", "", teks)
+    return re.sub(r"\b[a-z]+(?:_[a-z0-9]+)+\b", lambda m: m.group(0).replace("_", " "), teks)
+
+
+def ringkas_peringatan(peringatan, nama_karyawan, jumlah, asumsi=None):
+    """Peringatan untuk teks pemilik: istilah teknis diterjemahkan, peringatan yang sama untuk banyak karyawan
+    digabung jadi satu kalimat, dan yang sudah ada di 'Asumsi' tidak diulang. JSON tetap memakai daftar rinci."""
+    asumsi = " ".join(asumsi or [])
+    urut = sorted(set(nama_karyawan), key=len, reverse=True)
+    blok, isi = [], {}
+
+    def taruh(kunci, nilai):
+        if kunci not in isi:
+            isi[kunci] = []
+            blok.append(kunci)
+        isi[kunci].append(nilai)
+
+    for x in peringatan:
+        if (x.startswith((JKK_BELUM, "Tarif JKK dari data")) and "Tarif JKK" in asumsi) or \
+                (x.startswith("UMK tidak diisi") and "UMK" in asumsi):
+            continue
+        nama, sisa = None, x
+        for n in urut:
+            if x.startswith(n + ": ") or x.startswith(n + " "):
+                nama, sisa = n, x[len(n):].lstrip(": ").lstrip()
+                break
+        sisa = awam(sisa.split(" Wajib menurut UU 24/2011")[0])
+        if nama is None:
+            taruh(("umum", sisa), None)
+            continue
+        m = _POLA_BPJS.match(sisa)
+        if m:
+            taruh(("bpjs",), (nama, m.group(1)))
+            continue
+        if _POLA_LEBIH_POTONG.match(sisa):
+            continue
+        m = _POLA_UMK.match(sisa)
+        if m:
+            mp = _POLA_UMK_PENUH.search(m.group(3))
+            if mp and mp.group(2) == "tidak":
+                continue                    # dibayar sebagian, tetapi gaji penuh sebulannya tidak di bawah UMK
+            taruh(("umk", m.group(2)), (nama, mp.group(1) if mp else m.group(1)))
+            continue
+        m = _POLA_PENUH.match(sisa)
+        if m:
+            taruh(("penuh",), (nama, m.group(1), m.group(2), m.group(3)))
+            continue
+        m = _POLA_PRORATA.match(sisa)
+        if m:
+            taruh(("prorata", m.group(3)), (nama, m.group(2)))
+            continue
+        m = _POLA_JKK_NETO.match(sisa)
+        if m:
+            sisa = ("tarif JKK %s adalah porsi JKK murni (0,14%% sudah dialihkan ke JKP, PP 6/2025); iuran JKK yang "
+                    "dibayar perusahaan %s (PP 44/2015 Pasal 16) - pakai %s kecuali tagihan BPJS menyebut lain." % (
+                        m.group(1), m.group(2), m.group(2)))
+        taruh(("sama", sisa), nama)
+    o = []
+    for kunci in blok:
+        v = isi[kunci]
+        if kunci[0] == "umum":
+            o.append(kunci[1])
+        elif kunci[0] == "bpjs":
+            per = {}
+            for n, j in v:
+                per.setdefault(n, []).append(j)
+            o.append("Tidak didaftarkan BPJS: %s. Pekerja penerima upah wajib didaftarkan dengan upah sebenarnya (UU "
+                     "24/2011 Pasal 15); bila iurannya dibayar lewat sistem lain, pastikan tercatat." % "; ".join(
+                         "%s (%s)" % (n, " & ".join(js)) for n, js in per.items()))
+        elif kunci[0] == "umk":
+            per_upah = {}                                   # gaji sama -> satu kelompok (hemat panjang teks)
+            for n, u in v:
+                per_upah.setdefault(u, []).append(n)
+            o.append("Gaji pokok + tunjangan tetap sebulan penuh di bawah UMK yang Anda isi (%s): %s. Pastikan tidak "
+                     "melanggar upah minimum (usaha mikro/kecil punya aturan tersendiri)." % (kunci[1], "; ".join(
+                         "%s (%s%s)" % (", ".join(ns), "masing-masing " if len(ns) > 1 else "", u)
+                         for u, ns in per_upah.items())))
+        elif kunci[0] == "penuh":
+            o.append("Masuk/keluar tengah bulan, gaji dihitung PENUH (asumsi; ikut perjanjian kerja). Bila prorata hari "
+                     "kalender: %s. Mohon pastikan mana yang dipakai." % "; ".join(
+                         "%s (%s): %s" % (n, sb, r) for n, sb, h, r in v))
+        elif kunci[0] == "prorata":
+            o.append("Gaji diprorata hari kalender (asumsi): %s. %s" % (
+                "; ".join("%s, %s" % (n, r) for n, r in v), kunci[1]))
+        else:
+            nama = list(dict.fromkeys(v))
+            if len(nama) == 1:
+                o.append("%s: %s" % (nama[0], kunci[1]))
+            elif len(nama) == jumlah:
+                o.append("Semua karyawan (%d): %s" % (jumlah, kunci[1]))
+            else:
+                o.append("%s (%d karyawan): %s" % (", ".join(nama), len(nama), kunci[1]))
+    return o
+
+
+STATUS_TEKS = {"draf": "DRAF (belum final)", "final": "FINAL (terkunci)",
+               "pratinjau": "PRATINJAU (hitung cepat, belum disimpan)"}
+
+
+def teks_rekap(kode, per_status, revisi, hasil, total, peringatan, cfg, asumsi=None):
+    """Teks rekap untuk pemilik (bahasa awam, tanpa nama perintah/jalur file)."""
     judul = "REKAP GAJI %s - %s" % (nama_periode(kode).upper(), cfg["nama_usaha"] or "(nama usaha)")
-    status = {"draf": "DRAF (belum final)", "final": "FINAL (terkunci)"}[per_status]
-    o = [judul, "Status: %s%s | %d karyawan" % (status, " | revisi ke-%d" % revisi if revisi else "", len(hasil)), "",
-         "| Kode | Nama | Pendapatan | Potongan | PPh 21 | Gaji bersih | Biaya perusahaan |",
+    tertunda = total.get("tertunda") or []
+    sementara = [h for h in hasil if h.get("pph_sementara")]
+    jumlah = "%d karyawan%s" % (len(hasil), " dihitung, %d tertunda" % len(tertunda) if tertunda else "")
+    o = [judul, "Status: %s%s | %s" % (STATUS_TEKS[per_status], " | revisi ke-%d" % revisi if revisi else "", jumlah),
+         "", "| Kode | Nama | Pendapatan | Potongan | PPh 21 | Gaji bersih | Biaya perusahaan |",
          "|---|---|---:|---:|---:|---:|---:|"]
+    rpt = lambda x: rp(x).replace("Rp ", "")                                   # noqa: E731  (tabel: dalam rupiah)
     for h in hasil:
         p = h["payroll"]
         tanda = ""
@@ -1564,27 +2108,82 @@ def teks_rekap(kode, per_status, revisi, hasil, total, peringatan, cfg):
             tanda = " (keluar)"
         elif h["masuk_tengah_bulan"]:
             tanda = " (baru)"
-        pph = rp(p["pph"]) + (" DTP" if p["dtp"] else "") + (" *" if h["masa_terakhir"] else "")
+        pph = rpt(p["pph"]) + (" DTP" if p["dtp"] else "") + (" *" if h["masa_terakhir"] else "") + (
+            " (sementara)" if h.get("pph_sementara") else "")
         o.append("| %s | %s%s | %s | %s | %s | %s | %s |" % (
-            h["kode"], h["nama"], tanda, rp(p["total_pendapatan"]), rp(p["total_potongan"]), pph,
-            rp(p["take_home_pay"]), rp(p["biaya_perusahaan"])))
+            h["kode"], h["nama"], tanda, rpt(p["total_pendapatan"]), rpt(p["total_potongan"]), pph,
+            rpt(p["take_home_pay"]), rpt(p["biaya_perusahaan"])))
     o.append("| | **Total** | **%s** | **%s** | **%s** | **%s** | **%s** |" % (
-        rp(total["total_pendapatan"]), rp(total["potongan_karyawan"]), rp(total["pph21_terutang"]),
-        rp(total["take_home_pay"]), rp(total["biaya_perusahaan"])))
+        rpt(total["total_pendapatan"]), rpt(total["potongan_karyawan"]), rpt(total["pph21_terutang"]),
+        rpt(total["take_home_pay"]), rpt(total["biaya_perusahaan"])))
+    o.append("(angka tabel dalam rupiah)")
     if any(h["masa_terakhir"] for h in hasil):
         o.append("* PPh 21 dihitung ulang setahun (Masa Pajak Terakhir: Desember/bulan keluar).")
-    o += ["", "Yang harus dibayar/disetor:",
+    for h in sementara:
+        info = h.get("masa_terakhir_tertunda") or {}
+        o.append("(sementara) PPh 21 %s dihitung untuk bulan ini saja dengan tarif efektif bulanan (TER) karena data "
+                 "%s belum ada. Perhitungan setahun (Masa Pajak Terakhir) BELUM FINAL - wajib dilengkapi sebelum "
+                 "bukti potong 1721-A1 (BPA1) dibuat; PPh 21 dan gaji bersihnya bisa berubah." % (
+                     h["nama"], info.get("rentang_data", "Januari s.d. bulan lalu")))
+    kepala = "Yang harus dibayar/disetor:"
+    if tertunda:
+        kepala = "Yang harus dibayar/disetor (BELUM termasuk yang tertunda: %s):" % ", ".join(
+            t["nama"] for t in tertunda)
+    o += ["", kepala,
           "- Transfer gaji bersih ke karyawan: %s" % rp(total["take_home_pay"]),
           "- Setor BPJS Kesehatan (4%% perusahaan + 1%% karyawan): %s" % rp(total["setor_bpjs_kesehatan"]),
           "- Setor BPJS Ketenagakerjaan (JHT, JKK, JKM, JP): %s" % rp(total["setor_bpjs_ketenagakerjaan"])]
-    o += baris_setor_pph21(total)
+    o += baris_setor_pph21(total, hasil)
+    if sementara:
+        o.append("  Setoran PPh 21 ini memakai angka SEMENTARA untuk %s; angka finalnya bisa berubah setelah data "
+                 "lengkap." % ", ".join("%s (%s)" % (h["nama"], rp(h["payroll"]["pph"])) for h in sementara))
     if total["pph21_dtp_tunai"]:
         o.append("- PPh 21 DTP dibayar tunai ke karyawan (sudah di gaji bersih): %s" % rp(total["pph21_dtp_tunai"]))
     o.append("- Total biaya gaji perusahaan: %s" % rp(total["biaya_perusahaan"]))
-    if peringatan:
-        o += ["", "Perlu diperhatikan:"] + ["- " + x for x in peringatan]
+    if tertunda:
+        o += ["", "TERTUNDA - belum dihitung, menunggu data:"] + ["- " + x for x in baris_tertunda(tertunda)]
+    if asumsi:
+        o += ["", "Asumsi yang perlu Anda cek:"] + ["%d. %s" % (i, x) for i, x in enumerate(asumsi, 1)]
+    ringkas = ringkas_peringatan(peringatan, [h["nama"] for h in hasil] + [t["nama"] for t in tertunda], len(hasil),
+                                 asumsi)
+    if ringkas:
+        o += ["", "Perlu diperhatikan:"] + ["- " + x for x in ringkas]
     o += ["", "_" + DISCLAIMER + "_"]
     return "\n".join(o)
+
+
+def penutup_pembeli(total, hasil):
+    """Kalimat penutup rekap draf untuk pemilik (tanpa perintah)."""
+    tunda = [t["nama"] for t in (total.get("tertunda") or [])] + [h["nama"] for h in hasil if h.get("pph_sementara")]
+    if tunda:
+        return ("Periode ini belum bisa dikunci (final) sampai data %s lengkap. Angka karyawan lain di atas sudah bisa "
+                "diperiksa sekarang." % ", ".join(tunda))
+    return "Sudah benar? Kalau ya, balas \"kunci\" - setelah dikunci, slip dan file transfer dibuat."
+
+
+def langkah_agent(kode, total, hasil, peringatan, saran, prorata_diterapkan):
+    """Langkah lanjutan untuk AGENT (berisi nama perintah - jangan ditempel ke chat pemilik)."""
+    o = []
+    for t in total.get("tertunda") or []:
+        o.append("Tertunda %s: %s" % (t["nama"], " -> ".join(t["langkah_agent"])))
+    for h in hasil:
+        if h.get("pph_sementara"):
+            o.append("PPh 21 sementara %s: setelah pemilik memberi data, saldo-awal ... lalu hitung --bulan %s (tanpa "
+                     "--pph-sementara)" % (h["nama"], kode))
+    if saran:
+        o.append("Masuk/keluar tengah bulan dihitung penuh (%s). Bila pemilik memilih prorata hari kalender: hitung "
+                 "--bulan %s --prorata kalender; nominal lain: isi --bulan %s --karyawan <kode> --gaji-pokok-dibayar .. "
+                 "[--tunjangan-tetap-dibayar ..]" % (", ".join(x["nama"] for x in saran), kode, kode))
+    if prorata_diterapkan:
+        o.append("Prorata hari kalender diterapkan (%s). Bila pemilik memilih gaji penuh: hitung --bulan %s --prorata "
+                 "penuh" % (", ".join(x["nama"] for x in prorata_diterapkan), kode))
+    if any("TIDAK didaftarkan BPJS" in x or "dasar iuran BPJS Kesehatan diisi" in x for x in peringatan):
+        o.append("Data BPJS yang diperingatkan: karyawan ubah --karyawan <kode> --bpjs kes,tk,jp / "
+                 "--dasar-bpjs-kesehatan - (pratinjau, lalu --ya setelah pemilik setuju)")
+    o.append("Slip draf per karyawan: slip --bulan %s" % kode)
+    if not (total.get("tertunda") or any(h.get("pph_sementara") for h in hasil)):
+        o.append("Kunci setelah pemilik setuju: final --bulan %s (pratinjau, lalu --ya)" % kode)
+    return o
 
 
 def muat_hasil(conn, per, revisi=None):
@@ -1606,8 +2205,9 @@ def cmd_hitung(args):
     def kerja(conn, cfg):
         per = ambil_periode(conn, kode, buat=True)
         wajib_draf(per)
+        prorata = terapkan_prorata(conn, per, args.prorata) if args.prorata else []
         with tempfile.TemporaryDirectory(prefix="gaji-umkm-") as tmp:
-            hasil, total, pr, sidik = hitung_periode(conn, per, cfg, tmp)
+            hasil, total, pr, sidik = hitung_periode(conn, per, cfg, tmp, args.pph_sementara)
         conn.execute("DELETE FROM hasil WHERE periode_id=? AND revisi=?", (per["id"], per["revisi"]))
         for h in hasil:
             conn.execute("INSERT INTO hasil(periode_id, revisi, karyawan_id, data) VALUES (?,?,?,?)",
@@ -1615,13 +2215,24 @@ def cmd_hitung(args):
         conn.execute("INSERT OR REPLACE INTO hasil_periode(periode_id, revisi, dihitung, sidik, total, peringatan) "
                      "VALUES (?,?,?,?,?,?)", (per["id"], per["revisi"], stempel(), sidik,
                                              json.dumps(ke_json(total)), json.dumps(pr, ensure_ascii=False)))
-        t = teks_rekap(kode, "draf", per["revisi"], hasil, total, pr, cfg)
-        t += ("\n\nLangkah berikut: periksa angka ini bersama pemilik. Slip draf: gaji.py slip --bulan %s. Bila sudah "
-              "benar: gaji.py final --bulan %s (pratinjau, lalu --ya)." % (kode, kode))
+        saran = saran_belum_prorata(conn, per, hasil)
+        t = teks_rekap(kode, "draf", per["revisi"], hasil, total, pr, cfg) + "\n\n" + penutup_pembeli(total, hasil)
         return {"periode": kode, "status": "draf", "revisi": per["revisi"], "karyawan": ke_json(hasil),
-                "total": ke_json(total), "peringatan_hitung": pr,
-                "ringkasan": {"periode": kode, "karyawan": len(hasil), "thp": tc.angka_json(total["take_home_pay"])}}, t
+                "total": ke_json(total), "peringatan_hitung": pr, "tertunda": ke_json(total["tertunda"]),
+                "pph_sementara": [h["kode"] for h in hasil if h.get("pph_sementara")],
+                "saran_prorata": ke_json(saran), "prorata_diterapkan": ke_json(prorata),
+                "bisa_final": not (total["tertunda"] or any(h.get("pph_sementara") for h in hasil)),
+                "langkah_berikut": langkah_agent(kode, total, hasil, pr, saran, prorata),
+                "ringkasan": {"periode": kode, "karyawan": len(hasil), "tertunda": len(total["tertunda"]),
+                              "thp": tc.angka_json(total["take_home_pay"])}}, t
     return jalankan_tulis(args, "hitung", kerja)
+
+
+def saran_belum_prorata(conn, per, hasil):
+    """Karyawan masuk/keluar tengah bulan yang dihitung PENUH (belum ada nominal dibayar): saran prorata kalender."""
+    ada = {h["kode"] for h in hasil if "gaji_pokok" not in h["isian"]}
+    return [s for s in (saran_prorata(k, per["kode"]) for k in karyawan_periode(conn, per["kode"]) if k["kode"] in ada)
+            if s]
 
 
 def selisih_revisi(lama, baru):
@@ -1672,8 +2283,19 @@ def cmd_final(args):
         h = muat_hasil(conn, per)
         if not h:
             raise Gagal("Periode %s belum dihitung. Jalankan: gaji.py hitung --bulan %s" % (nama_periode(kode), kode))
+        tertunda = h["total"].get("tertunda") or []
+        sementara = [x["nama"] for x in h["hasil"] if x.get("pph_sementara")]
+        if tertunda or sementara:
+            mtl = "data Januari s.d. bulan lalu untuk Masa Pajak Terakhir belum lengkap"
+            bag = ["%s (tertunda: %s)" % (t["nama"], t["alasan"] if t["alasan"] == "data perlu diperbaiki" else mtl)
+                   for t in tertunda] + ["%s (PPh 21 masih SEMENTARA: %s)" % (n, mtl) for n in sementara]
+            raise Gagal("%s belum bisa dikunci (final) karena: %s. Lengkapi/perbaiki datanya, hitung ulang tanpa angka "
+                        "sementara, lalu kunci. Angka karyawan lain tetap bisa diperiksa di rekap draf." % (
+                            nama_periode(kode), "; ".join(bag)),
+                        tertunda=[t["kode"] for t in tertunda],
+                        pph_sementara=[x["kode"] for x in h["hasil"] if x.get("pph_sementara")])
         with tempfile.TemporaryDirectory(prefix="gaji-umkm-") as tmp:
-            masukan, _, argv_umum = susun_masukan(conn, per, cfg)
+            masukan, _, argv_umum, _ = susun_masukan(conn, per, cfg)
             sidik = hashlib.sha256()
             kel = {}
             for m in masukan:
@@ -1725,18 +2347,22 @@ def cmd_revisi(args):
                      (per["id"], baru, stempel(), alasan))
         # salin isian? isian tetap (satu set per periode) - hasil lama tetap tersimpan di revisi sebelumnya
         t = ("Buka revisi ke-%d untuk %s. Alasan: %s\nHasil final lama (revisi ke-%d) tetap tersimpan sebagai riwayat. "
-             "Lanjut: ubah data (gaji.py isi ...), gaji.py hitung --bulan %s, lalu gaji.py final --bulan %s --ya."
-             % (baru, nama_periode(kode), alasan, per["revisi"], kode, kode))
+             "Setelah itu data bulan ini bisa diubah, dihitung ulang, lalu dikunci lagi." % (
+                 baru, nama_periode(kode), alasan, per["revisi"]))
         pr = []
         nanti = [r["kode"] for r in conn.execute("SELECT kode FROM periode WHERE kode>? AND kode<=? AND status='final'",
                                                   (kode, kode[:4] + "-12"))]
         if nanti:
             pr.append("Periode %s sudah final. Bila ada karyawan keluar/Desember di periode itu, PPh 21-nya memakai "
                       "angka bulan ini - periksa setelah revisi selesai." % ", ".join(nanti))
-        pr.append("Slip & daftar transfer %s yang sudah dibagikan/diunggah menjadi versi lama. Setelah final lagi, "
-                  "buat slip baru; perintah transfer akan berisi SELISIH-nya saja (--penuh bila versi lama belum "
-                  "dibayar)." % nama_periode(kode))
+        pr.append("Slip & daftar transfer %s yang sudah dibagikan/diunggah menjadi versi lama. Setelah dikunci lagi, "
+                  "slip dibuat ulang; daftar transfer berikutnya berisi SELISIH-nya saja (bisa dibuat penuh bila versi "
+                  "lama belum dibayar)." % nama_periode(kode))
         return {"periode": kode, "revisi": baru, "peringatan": pr,
+                "langkah_berikut": ["isi --bulan %s ... (ubah data)" % kode, "hitung --bulan %s" % kode,
+                                    "final --bulan %s (pratinjau, lalu --ya)" % kode,
+                                    "slip --bulan %s; transfer --bulan %s (selisih; --penuh bila versi lama belum "
+                                    "dibayar)" % (kode, kode)],
                 "ringkasan": {"periode": kode, "revisi": baru, "alasan": alasan}}, t
     return jalankan_tulis(args, "revisi", kerja, besar=True, label_backup="revisi")
 
@@ -1752,8 +2378,10 @@ def cmd_periode(args):
             rv = conn.execute("SELECT * FROM revisi WHERE periode_id=? ORDER BY nomor", (p["id"],)).fetchall()
             status = "FINAL" if p["status"] == "final" else ("DRAF" + (" (sedang revisi)" if p["revisi"] else ""))
             baris = "- %s: %s%s" % (nama_periode(p["kode"]), status,
-                                    ", gaji bersih %s, %d karyawan" % (rp(h["total"]["take_home_pay"]), len(h["hasil"]))
-                                    if h else ", belum dihitung")
+                                    ", gaji bersih %s, %d karyawan%s" % (
+                                        rp(h["total"]["take_home_pay"]), len(h["hasil"]),
+                                        ", %d tertunda" % len(h["total"]["tertunda"]) if h["total"].get("tertunda")
+                                        else "") if h else ", belum dihitung")
             for r in rv:
                 baris += "\n    revisi ke-%d (%s): %s%s" % (r["nomor"], r["dibuka"][:10], r["alasan"],
                                                             "" if r["difinalkan"] else " [belum final]")
@@ -1825,6 +2453,269 @@ def rekap_tahun(conn, cfg, th):
     return {"tahun": th, "bulan": data, "total_final": ke_json(jumlah)}, "\n".join(o)
 
 
+# --------------------------------------------------------------------------- v1.0.13: hitung cepat (tanpa database)
+def pisah_nama_tanggal(teks, opsi):
+    if "=" not in str(teks):
+        raise Gagal("%s '%s': tulis NAMA=TANGGAL, mis. %s \"Lina=2026-09-14\"" % (opsi, teks, opsi))
+    nama, tgl = str(teks).rsplit("=", 1)
+    if not nama.strip():
+        raise Gagal("%s '%s': nama kosong" % (opsi, teks))
+    return nama.strip(), tanggal(tgl, "%s %s" % (opsi, nama.strip())).isoformat()
+
+
+def pisah_nama_isian(teks, opsi):
+    """'Andi: bonus=500rb; kasbon=250rb' -> ('Andi', [('bonus', '500rb'), ('kasbon', '250rb')])."""
+    if ":" not in str(teks):
+        raise Gagal("%s '%s': tulis NAMA: kolom=nilai; kolom=nilai, mis. %s \"Andi: bonus=500rb; kasbon=250rb\""
+                    % (opsi, teks, opsi))
+    nama, sisa = str(teks).split(":", 1)
+    pasangan = []
+    for bag in (b.strip() for b in sisa.split(";")):
+        if not bag:
+            continue
+        if "=" not in bag:
+            raise Gagal("%s %s: '%s' harus berbentuk kolom=nilai, mis. bonus=500rb" % (opsi, nama.strip(), bag))
+        kol, nilai = bag.split("=", 1)
+        pasangan.append((re.sub(r"[\s_]+", "-", kol.strip().lower()), nilai.strip()))
+    if not nama.strip() or not pasangan:
+        raise Gagal("%s '%s': nama atau komponen kosong" % (opsi, teks))
+    return nama.strip(), pasangan
+
+
+def cari_di_data(conn, nama, opsi):
+    """cari_karyawan untuk hitung-cepat: pesan galat menyebut nama yang ada di file (bukan perintah)."""
+    try:
+        return cari_karyawan(conn, nama)
+    except Gagal as e:
+        if e.detail.get("pilihan"):
+            raise Gagal("%s: %s Tulis nama lengkap atau kodenya." % (opsi, e.pesan.replace(" Ulangi dengan kodenya.", "")),
+                        pilihan=e.detail["pilihan"])
+        ada = [r["nama"] for r in conn.execute("SELECT nama FROM karyawan ORDER BY kode")]
+        raise Gagal("%s: nama '%s' tidak ada di daftar karyawan. Nama yang ada: %s." % (opsi, nama, ", ".join(ada)))
+
+
+ALASAN_PAGAR = {"tanpa_bpjs_kesehatan": "tidak didaftarkan BPJS Kesehatan",
+                "tanpa_bpjs_ketenagakerjaan": "tidak didaftarkan BPJS Ketenagakerjaan",
+                "dasar_bpjs_kesehatan_rendah": "dasar iuran BPJS Kesehatan diisi lebih kecil dari upah sebenarnya"}
+
+
+def pagar_pratinjau(conn, cfg, per):
+    """Pagar kepatuhan BPJS yang sama dengan alur database, untuk hitung-cepat (tidak ada yang disimpan).
+    Kembalikan {karyawan_id: (karyawan, [kode_masalah], [alasan awam])}."""
+    out = {}
+    for k in karyawan_periode(conn, per["kode"]):
+        isi = isian_karyawan(conn, per, k)
+        kd = sorted(masalah_kepatuhan(dict(k), cfg)) + sorted(masalah_dasar_turun(k, isi, per["kode"]))
+        if not kd:
+            continue
+        alasan = [ALASAN_PAGAR[x] for x in kd if x in ALASAN_PAGAR]
+        if "dasar_bpjs_turun_bulan_penuh" in kd:
+            alasan.append("gaji pokok + tunjangan tetap diisi %s, di bawah data karyawan %s padahal bekerja sebulan "
+                          "penuh, jadi dasar iuran BPJS ikut turun" % (
+                              rp(D(isi.get("gaji_pokok", k["gaji_pokok"])) +
+                                 D(isi.get("tunjangan_tetap", k["tunjangan_tetap"]))),
+                              rp(D(k["gaji_pokok"]) + D(k["tunjangan_tetap"]))))
+        out[k["id"]] = (k, kd, alasan)
+    return out
+
+
+CATATAN_PAGAR = ("Wajib BPJS dengan upah sebenarnya (UU 24/2011 Pasal 15); boleh hanya dengan alasan sah yang disetujui "
+                 "pemilik (mis. iuran lewat sistem lain, cuti di luar tanggungan sesuai perjanjian kerja), bila tidak "
+                 "perbaiki datanya.")
+
+
+def info_pagar(k, kd, alasan, kode):
+    inti = "belum dihitung, perlu persetujuan khusus pemilik: %s." % "; ".join(alasan)
+    subjek = "%s (%s)" % (k["nama"], k["kode"])
+    return {"kode": k["kode"], "nama": k["nama"], "alasan": "perlu persetujuan khusus", "rentang_data": "",
+            "tanggal_keluar": "", "bulan_kurang": [], "data_dibutuhkan": alasan, "bisa_pph_sementara": False,
+            "sementara_diabaikan": False, "subjek": subjek, "sebab": None, "inti": inti, "tanya_prorata": "",
+            "teks": "%s: %s %s" % (subjek, inti, CATATAN_PAGAR), "catatan_pagar": True, "masalah_kepatuhan": kd,
+            "saran_prorata": None,
+            "langkah_agent": ["Tanyakan alasannya ke pemilik. HANYA bila pemilik sendiri menyetujui dengan alasan sah: "
+                              "ulangi hitung-cepat yang sama + --ya-saya-paham --alasan-khusus \"...\" (saat disimpan: "
+                              "impor/isi juga dengan --ya-saya-paham). Bila tidak: perbaiki data (kolom bpjs "
+                              "kes,tk,jp / hapus gaji-pokok-dibayar) lalu hitung-cepat lagi."]}
+
+
+ALIAS_SALDO = {"bruto": "bruto", "penghasilan-bruto": "bruto", "pph21": "pph21", "pph-21": "pph21", "pph": "pph21",
+               "iuran": "iuran", "jht-jp": "iuran", "iuran-jht-jp": "iuran", "zakat": "zakat"}
+
+
+def cmd_hitung_cepat(args):
+    """Pemakaian pertama: hitung gaji sebulan dari file daftar karyawan TANPA database (tidak ada yang disimpan),
+    memakai alur & mesin yang sama dengan `hitung`. Karyawan yang datanya kurang ditandai tertunda."""
+    kode = parse_periode(args.bulan)
+    th, bl = int(kode[:4]), int(kode[5:7])
+    conn = sqlite3.connect(":memory:", isolation_level=None)
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.executescript(SKEMA_SQL)
+        cfg = dict(PENGATURAN_DEFAULT, nama_usaha=bersih(args.nama_usaha or "", 80))
+        if args.umk:
+            cfg["umk"] = teks_angka(uang(args.umk, "--umk"))
+        if args.jkk:
+            cfg["jkk"] = teks_angka(persen(args.jkk, "--jkk"))
+        if args.batas_jp:
+            cfg["batas_jp"] = teks_angka(uang(args.batas_jp, "--batas-jp"))
+        conn.executemany("INSERT INTO meta(kunci, nilai) VALUES (?,?)",
+                         list(dict(cfg, aplikasi=APLIKASI, skema=str(SKEMA)).items()))
+        kepala, rows = baca_tabel(args.data)
+        kepala = [ALIAS_IMPOR.get(k, k) for k in kepala]
+        if not {"nama", "ptkp", "gaji_pokok"} <= set(kepala):
+            raise Gagal("File daftar karyawan wajib punya kolom nama, ptkp (status pajak, mis. TK/0, K/1), dan "
+                        "gaji_pokok. Kolom ditemukan: %s" % ", ".join(kepala))
+        baru, pr_k, _, galat, tanpa_masuk = impor_baris_karyawan(conn, cfg, rows, "%04d-01-01" % th)
+        if galat:
+            raise Gagal("Data karyawan perlu diperbaiki dulu (belum ada yang dihitung):\n- " + "\n- ".join(galat),
+                        galat=galat)
+        for teks in args.masuk or []:
+            nama, tgl = pisah_nama_tanggal(teks, "--masuk")
+            k = cari_di_data(conn, nama, "Tanggal masuk")
+            if k["tanggal_keluar"] and k["tanggal_keluar"] < tgl:
+                raise Gagal("%s: tanggal masuk setelah tanggal keluar" % k["nama"])
+            conn.execute("UPDATE karyawan SET tanggal_masuk=? WHERE id=?", (tgl, k["id"]))
+            tanpa_masuk = [x for x in tanpa_masuk if x != k["nama"]]
+        for teks in args.keluar_tgl or []:
+            nama, tgl = pisah_nama_tanggal(teks, "--keluar")
+            k = cari_di_data(conn, nama, "Tanggal keluar")
+            if tgl < k["tanggal_masuk"]:
+                raise Gagal("%s: tanggal keluar lebih awal dari tanggal masuk" % k["nama"])
+            conn.execute("UPDATE karyawan SET tanggal_keluar=? WHERE id=?", (tgl, k["id"]))
+        for teks in args.saldo_awal or []:
+            nama, pasangan = pisah_nama_isian(teks, "--saldo-awal")
+            k = cari_di_data(conn, nama, "Saldo awal")
+            if bl == 1:
+                raise Gagal("--saldo-awal tidak dipakai untuk periode Januari (belum ada bulan sebelumnya).")
+            nilai = {"bruto": "0", "pph21": "0", "iuran": "0", "zakat": "0"}
+            for kol, v in pasangan:
+                if kol not in ALIAS_SALDO:
+                    raise Gagal("--saldo-awal %s: '%s' tidak dikenal. Pakai bruto=..; pph21=..; iuran=.. [; zakat=..]"
+                                % (k["nama"], kol))
+                nilai[ALIAS_SALDO[kol]] = teks_angka(uang(v, "--saldo-awal %s %s" % (k["nama"], kol)))
+            conn.execute("INSERT OR REPLACE INTO saldo_awal(karyawan_id, tahun, sampai_bulan, bruto, pph21, iuran, "
+                         "zakat) VALUES (?,?,?,?,?,?,?)", (k["id"], th, bl - 1, nilai["bruto"], nilai["pph21"],
+                                                           nilai["iuran"], nilai["zakat"]))
+        per = ambil_periode(conn, kode, buat=True)
+        aktif = {k["id"] for k in karyawan_periode(conn, kode)}
+        asing = []
+        if args.komponen:
+            _, _, galat, asing = isi_dari_tabel(conn, per, args.komponen)
+            if galat:
+                raise Gagal("File komponen perlu diperbaiki dulu:\n- " + "\n- ".join(galat), galat=galat)
+        for teks in args.isi or []:
+            nama, pasangan = pisah_nama_isian(teks, "--isi")
+            k = cari_di_data(conn, nama, "Komponen")
+            if k["id"] not in aktif:
+                raise Gagal("%s tidak aktif di %s (masuk %s%s)." % (
+                    k["nama"], nama_periode(kode), k["tanggal_masuk"],
+                    ", keluar " + k["tanggal_keluar"] if k["tanggal_keluar"] else ""))
+            for kol, v in pasangan:
+                if kol not in OPSI_ISIAN:
+                    raise Gagal("--isi %s: komponen '%s' tidak dikenal. Pilihan: %s" % (
+                        k["nama"], kol, ", ".join(sorted(OPSI_ISIAN))))
+                set_isian(conn, per, k, OPSI_ISIAN[kol], v)
+            isi_k = isian_karyawan(conn, per, k)
+            if "lembur_rp" in isi_k and ("lembur_hari_kerja" in isi_k or "lembur_hari_libur" in isi_k):
+                raise Gagal("%s: isi jam lembur ATAU lembur-rp, jangan keduanya." % k["nama"])
+        prorata = terapkan_prorata(conn, per, args.prorata) if args.prorata else []
+        # pagar kepatuhan BPJS sama dengan alur database (Aturan wajib 7): tanpa persetujuan khusus pemilik,
+        # karyawan itu tertunda (tidak dihitung) - karyawan lain tetap dihitung
+        pagar = pagar_pratinjau(conn, cfg, per)
+        paham = bool(getattr(args, "ya_saya_paham", False))
+        tunda, catat_setuju = {}, []
+        for kid, (k, kd, alasan) in pagar.items():
+            if paham:
+                catat_setuju.append(k["nama"])
+            else:
+                tunda[kid] = info_pagar(k, kd, alasan, kode)
+        with tempfile.TemporaryDirectory(prefix="gaji-umkm-") as tmp:
+            hasil, total, pr, _ = hitung_periode(conn, per, cfg, tmp, args.pph_sementara, tunda,
+                                                 pratinjau=bersih(getattr(args, "alasan_khusus", "") or "", 200) or True)
+        # dasar BPJS turun: keterangan persetujuan (+ alasan) sudah menempel di kalimatnya; kalimat pembuka hanya untuk
+        # kepesertaan BPJS (tanpa BPJS / dasar BPJS Kesehatan rendah) supaya tidak diulang dua kali
+        kepesertaan = [k["nama"] for k, kd, _ in pagar.values() if set(kd) - {"dasar_bpjs_turun_bulan_penuh"}]
+        if catat_setuju and kepesertaan:
+            pr = ["PERSETUJUAN KHUSUS pemilik dipakai untuk data BPJS %s%s. Belum disimpan; dicatat saat disimpan." % (
+                ", ".join(kepesertaan), " - alasan: %s" % bersih(args.alasan_khusus, 200)
+                if getattr(args, "alasan_khusus", None) else "")] + pr
+        saran = saran_belum_prorata(conn, per, hasil)
+        asumsi = []
+        if tanpa_masuk:
+            ada = [k["nama"] for k in baru if k["nama"] not in tanpa_masuk]
+            if len(tanpa_masuk) == len(baru) and len(baru) > 1:
+                siapa = "semua karyawan (%d)" % len(tanpa_masuk)
+            elif len(tanpa_masuk) > 3 and len(ada) <= 3:          # jangan daftar belasan nama satu per satu
+                siapa = "%d karyawan (semua kecuali %s)" % (len(tanpa_masuk), ", ".join(ada))
+            else:
+                siapa = ", ".join(tanpa_masuk)
+            asumsi.append("Tanggal masuk %s tidak ada di data: dianggap bekerja sejak sebelum %d (bukan karyawan baru). "
+                          "Koreksi bila ada yang masuk tahun ini." % (siapa, th))
+        if not cfg["umk"]:
+            asumsi.append("UMK kota/kabupaten belum disebut: cek upah minimum dan batas bawah iuran BPJS Kesehatan "
+                          "dilewati. Sebutkan UMK dari SK Gubernur.")
+        # tarif JKK: kalimat sama dengan alur database (peringatan_jkk; hanya karyawan yang DIHITUNG). Bila sebagian
+        # atau semua memakai 0,24% karena tarif belum ada, kalimat itu masuk "Asumsi" (bukan diulang di peringatan)
+        jkk_data = [x for x in pr if x.startswith("Tarif JKK dari data")]
+        if not cfg["jkk"]:
+            if jkk_data and "belum diisi untuk" in jkk_data[0]:
+                asumsi.append(jkk_data[0])
+            elif not jkk_data and any(x.startswith(JKK_BELUM) for x in pr):
+                asumsi.append("Tarif JKK belum disebut: dipakai 0,24% (risiko sangat rendah). Ganti sesuai penetapan "
+                              "BPJS Ketenagakerjaan usaha Anda.")
+        if "bpjs" not in kepala:
+            asumsi.append("Data BPJS tidak ada: semua dianggap ikut BPJS Kesehatan, Ketenagakerjaan & Jaminan Pensiun.")
+        semua = conn.execute("SELECT * FROM karyawan ORDER BY kode").fetchall()
+        hit = {}
+        for k in semua:
+            hit.setdefault(k["nama"].lower(), []).append(k)
+        ganda = [v for v in hit.values() if len(v) > 1]
+        if ganda:
+            asumsi.append("Nama ganda di data: %s. Pastikan bukan baris dobel; untuk komponen/tanggal sebut kodenya." %
+                          "; ".join("%s (%s)" % (v[0]["nama"], ", ".join(x["kode"] for x in v)) for v in ganda))
+        if asing:
+            asumsi.append(teks_kolom_asing(asing))
+        luar = [k["nama"] for k in semua if k["id"] not in aktif]
+        if luar:
+            asumsi.append("Tidak dihitung karena tanggal masuk/keluarnya di luar %s: %s. Koreksi bila tanggalnya "
+                          "keliru." % (nama_periode(kode), ", ".join(luar)))
+        file_slip = []
+        if args.folder_slip:
+            fol = Path(args.folder_slip).expanduser()
+            fol.mkdir(parents=True, exist_ok=True)
+            for h in hasil:
+                kr = conn.execute("SELECT * FROM karyawan WHERE kode=?", (h["kode"],)).fetchone()
+                f = fol.resolve() / ("slip-%s-%s-PRATINJAU.md" % (kode, h["kode"]))
+                f.write_text(slip_md(h, kode, "pratinjau", 0, cfg, kr) + "\n", encoding="utf-8")
+                file_slip.append(str(f))
+        t = (teks_rekap(kode, "pratinjau", 0, hasil, total, pr + pr_k, cfg, asumsi) + "\n\n" +
+             "Belum disimpan. Bila sudah benar (atau setelah dikoreksi), balas \"simpan\" agar data karyawan & gaji "
+             "bulan ini tersimpan di komputer ini.")
+        langkah = ["Simpan setelah pemilik setuju: init --nama-usaha .. --ya; atur --umk .. --jkk .. "
+                   "[--tanggal-gajian ..]; karyawan impor <file> (pratinjau, lalu --ya; kolom masuk WAJIB di file "
+                   "impor - isi tanggal masuk yang benar, yang kosong tadi memakai asumsi 1 Januari); karyawan keluar "
+                   "--karyawan <kode> --tanggal .. --ya (untuk --keluar); isi --bulan %s ... (untuk --isi); "
+                   "saldo-awal ... (untuk --saldo-awal); hitung --bulan %s [opsi yang sama]" % (kode, kode)]
+        langkah += [x for x in langkah_agent(kode, total, hasil, pr, saran, prorata)
+                    if not x.startswith(("Slip draf", "Kunci setelah"))]
+        return {"ok": True, "mode": "pratinjau", "disimpan": False, "perlu_konfirmasi": True, "periode": kode,
+                "bisa_final": False,
+                "masalah_kepatuhan": sorted("%s:%s" % (k["kode"], x) for k, kd, _ in pagar.values() for x in kd),
+                "perlu_persetujuan_khusus": bool(pagar) and not paham,
+                "konfirmasi_kepatuhan": {"karyawan": [k["kode"] for k, _, _ in pagar.values()],
+                                         "alasan": bersih(getattr(args, "alasan_khusus", "") or "", 200)}
+                if pagar and paham else None,
+                "karyawan": ke_json(hasil), "total": ke_json(total), "peringatan_hitung": pr + pr_k,
+                "tertunda": ke_json(total["tertunda"]),
+                "pph_sementara": [h["kode"] for h in hasil if h.get("pph_sementara")],
+                "saran_prorata": ke_json(saran), "prorata_diterapkan": ke_json(prorata), "asumsi": asumsi,
+                "kolom_tidak_dikenal": asing,
+                "jumlah_karyawan_data": len(semua), "file_slip": file_slip, "langkah_berikut": langkah,
+                "teks": t}, t
+    finally:
+        conn.close()
+
+
 # --------------------------------------------------------------------------- slip & transfer
 def folder_keluaran(args, kode):
     if args.keluar:
@@ -1839,8 +2730,12 @@ def slip_md(h, kode, per_status, revisi, cfg, karyawan_row):
     p = h["payroll"]
     pd, pt, i = p["pendapatan"], p["potongan"], p["iuran"]
     o = []
-    if per_status != "final":
+    if per_status == "pratinjau":
+        o.append("> **PRATINJAU (hitung cepat) - belum disimpan dan belum final. Jangan dibagikan.**\n")
+    elif per_status != "final":
         o.append("> **DRAF - BELUM FINAL. Jangan dibagikan sebelum periode dikunci.**\n")
+    if h.get("pph_sementara"):
+        o.append("> **PPh 21 SEMENTARA - perhitungan setahun (Masa Pajak Terakhir) belum final.**\n")
     o += ["# SLIP GAJI - %s" % (cfg["nama_usaha"] or "(nama usaha)"),
           "**Periode:** %s%s  " % (nama_periode(kode), " (revisi ke-%d)" % revisi if revisi else ""),
           "**Nama:** %s (%s)%s  " % (h["nama"], h["kode"], " - " + h["jabatan"] if h["jabatan"] else ""),
@@ -1877,6 +2772,12 @@ def slip_md(h, kode, per_status, revisi, cfg, karyawan_row):
     else:
         o.append("_PPh 21: TER kategori %s %s%% x penghasilan bruto pajak %s (termasuk premi JKK, JKM, BPJS Kesehatan "
                  "bagian perusahaan)._" % (info["kategori"], str(info["tarif"]).replace(".", ","), rp(info["bruto"])))
+    if h.get("pph_sementara"):
+        mtt = h.get("masa_terakhir_tertunda") or {}
+        o.append("_PPh 21 SEMENTARA: bulan ini %s adalah Masa Pajak Terakhir, tetapi data %s belum ada, jadi PPh 21 "
+                 "dihitung dengan tarif efektif bulanan (TER) saja. Perhitungan setahun belum final dan wajib dilengkapi "
+                 "sebelum bukti potong 1721-A1 (BPA1) dibuat; PPh 21 dan gaji bersih bisa berubah._" % (
+                     h["nama"], mtt.get("rentang_data", "Januari s.d. bulan lalu")))
     if p["dtp"]:
         o.append("_PPh 21 Ditanggung Pemerintah (PMK 105/2025): PPh 21 %s tetap dipotong, lalu %s dibayar tunai kembali "
                  "bersama gaji, jadi gaji bersih tidak berkurang karena pajak. Setoran PPh 21 ke negara untuk karyawan "
@@ -1897,6 +2798,10 @@ def cmd_slip(args):
         if args.karyawan:
             k = cari_karyawan(conn, args.karyawan)
             hasil = [x for x in hasil if x["kode"] == k["kode"]]
+            tunda = [t for t in (h["total"].get("tertunda") or []) if t["kode"] == k["kode"]]
+            if not hasil and tunda:
+                raise Gagal("Slip %s belum bisa dibuat karena masih tertunda. %s" % (k["nama"], tunda[0]["teks"]),
+                            tertunda=[k["kode"]])
             if not hasil:
                 raise Gagal("%s tidak ada di periode %s." % (k["nama"], nama_periode(kode)))
         fol = folder_keluaran(args, kode)
@@ -1910,8 +2815,8 @@ def cmd_slip(args):
             (fol / nama_file).write_text(isi + "\n", encoding="utf-8")
             file.append(str(fol / nama_file))
             semua.append(isi)
-        t = "Slip %s %s (%d file) di %s:\n%s" % (nama_periode(kode), "FINAL" if per["status"] == "final" else "DRAF",
-                                                 len(file), fol, "\n".join("- " + Path(f).name for f in file))
+        t = "Slip %s %s (%d file):\n%s" % (nama_periode(kode), "FINAL" if per["status"] == "final" else "DRAF",
+                                           len(file), "\n".join("- " + Path(f).name for f in file))
         if args.karyawan:
             t += "\n\n" + semua[0]
         t += "\n\nSlip berisi gaji pribadi: kirim ke masing-masing karyawan saja, jangan ke grup."
@@ -1928,15 +2833,16 @@ def cmd_transfer(args):
             raise Gagal("Daftar transfer hanya dibuat untuk periode FINAL (agar tidak membayar angka draf). Kunci dulu: "
                         "gaji.py final --bulan %s" % kode)
         fol = folder_keluaran(args, kode)
-        pr, rows, total, tanpa = [], [], NOL, []
+        pr, rows, total, tanpa, langkah = [], [], NOL, [], []
         selisih = per["revisi"] > 0 and not args.penuh
         lama = {}
         if selisih:
             hl = muat_hasil(conn, per, per["revisi"] - 1)
             lama = {x["kode"]: D(x["payroll"]["take_home_pay"]) for x in hl["hasil"]} if hl else {}
-            pr.append("Periode ini revisi ke-%d: file hanya berisi SELISIH gaji bersih dibanding versi final sebelumnya "
-                      "(dianggap sudah dibayar). Bila versi lama belum pernah dibayar, buat ulang dengan --penuh."
-                      % per["revisi"])
+            pr.append("Periode ini revisi ke-%d: daftar hanya berisi SELISIH gaji bersih dibanding versi final "
+                      "sebelumnya (dianggap sudah dibayar). Bila versi lama belum pernah dibayar, daftar bisa dibuat "
+                      "ulang berisi gaji penuh." % per["revisi"])
+            langkah.append("Versi lama belum dibayar: transfer --bulan %s --penuh" % kode)
         nama = fol / ("transfer-%s-%s%s.csv" % ("selisih" if selisih else "gaji", kode,
                                                 "-rev%d" % per["revisi"] if per["revisi"] else ""))
         for x in h["hasil"]:
@@ -1967,19 +2873,22 @@ def cmd_transfer(args):
             w.writerow(["no", "kode", "nama_penerima", "bank", "no_rekening", "nominal", "keterangan"])
             w.writerows(rows)
         if tanpa:
-            pr.append("Belum ada nomor rekening (bayar tunai/isi dulu dengan karyawan ubah --rekening): %s" %
-                      "; ".join(tanpa))
+            pr.append("Belum ada nomor rekening (bayar tunai, atau sebutkan nomor rekeningnya): %s" % "; ".join(tanpa))
+            langkah.append("Isi rekening: karyawan ubah --karyawan <kode> --bank .. --rekening .. (pratinjau, lalu --ya)")
         if args.rekening_lengkap:
             pr.append("File ini berisi nomor rekening LENGKAP. Simpan di komputer ini saja, unggah sendiri ke internet "
                       "banking, lalu hapus/simpan aman. Jangan dikirim lewat chat.")
         else:
             pr.append("Nomor rekening di file disamarkan. Untuk unggah ke bank, isi nomor lengkap di aplikasi bank, atau "
-                      "buat ulang dengan --rekening-lengkap (file lokal saja; nomor tidak ditampilkan di chat).")
+                      "minta file berisi nomor lengkap (hanya disimpan di komputer ini, tidak ditampilkan di chat).")
+            langkah.append("Bila pemilik minta nomor lengkap untuk unggah ke bank: transfer --bulan %s "
+                           "--rekening-lengkap" % kode)
         pr.append("Format kolom tiap bank berbeda: sesuaikan dengan template unggah massal bank Anda. Tidak ada "
                   "koneksi ke bank; periksa total sebelum menyetujui transfer.")
-        t = "Daftar transfer %s: %d penerima, total %s\nFile: %s" % (nama_periode(kode), len(rows), rp(total), nama)
+        t = "Daftar transfer %s: %d penerima, total %s (file daftar transfer sudah dibuat)" % (
+            nama_periode(kode), len(rows), rp(total))
         return {"periode": kode, "file": str(nama), "jumlah": len(rows), "total": tc.angka_json(total),
-                "peringatan": pr}, t + "\n\n" + "\n".join("Catatan: " + p for p in pr)
+                "peringatan": pr, "langkah_berikut": langkah}, t + "\n\n" + "\n".join("Catatan: " + p for p in pr)
     return baca(args, kerja)
 
 
@@ -2221,12 +3130,13 @@ def cmd_init(args):
     db = path_db(args)
     if db.exists():
         raise Gagal("Database sudah ada di %s. Tidak dibuat ulang (data aman). Lihat: gaji.py info" % db)
-    t = ("Buat database gaji baru di %s%s.\nData gaji & karyawan hanya disimpan di komputer ini (tidak dikirim ke "
-         "mana pun). Cadangan otomatis di folder backup-gaji/." % (db, " untuk %s" % args.nama_usaha
-                                                                   if args.nama_usaha else ""))
+    t = ("Siapkan penyimpanan data gaji%s di komputer ini.\nData gaji & karyawan hanya disimpan di komputer ini "
+         "(tidak dikirim ke mana pun) dan dicadangkan otomatis." % (" untuk %s" % args.nama_usaha
+                                                                    if args.nama_usaha else ""))
     if not args.ya:
-        t = "PRATINJAU (belum disimpan):\n" + t + "\n\nSimpan? Jalankan perintah yang sama + --ya setelah pengguna setuju."
-        return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "db": str(db), "teks": t}, t
+        t = "PRATINJAU (belum disimpan):\n" + t + "\n\n" + penutup_pratinjau("init")
+        return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "db": str(db), "teks": t,
+                "langkah_berikut": [LANGKAH_SIMPAN]}, t
     db.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db))
     try:
@@ -2237,8 +3147,9 @@ def cmd_init(args):
         conn.commit()
     finally:
         conn.close()
-    t = "TERSIMPAN. " + t + "\nLangkah berikut: atur UMK & tarif JKK (gaji.py atur), lalu tambah karyawan."
-    return {"ok": True, "mode": "tersimpan", "db": str(db), "teks": t}, t
+    t = "TERSIMPAN. " + t + "\nBerikutnya: UMK & tarif JKK usaha Anda, lalu data karyawan."
+    return {"ok": True, "mode": "tersimpan", "db": str(db), "teks": t,
+            "langkah_berikut": ["atur --umk .. --jkk .. [--tanggal-gajian ..]", "karyawan impor <file> / karyawan tambah"]}, t
 
 
 def cmd_atur(args):
@@ -2380,9 +3291,10 @@ def cmd_restore(args):
              "rusak": "Database saat ini RUSAK; file itu dipindah (tidak dihapus) ke folder backup-gaji."}[st]
     if not args.ya:
         t = ("PRATINJAU (belum disimpan):\nDatabase %s akan diganti dengan cadangan %s (%d karyawan, %d periode). %s\n"
-             "Perubahan setelah waktu cadangan itu akan hilang dari database aktif (tetap ada di salinan).\n\nLanjut? "
-             "Jalankan perintah yang sama + --ya setelah pengguna setuju." % (db, src, nk, np_, nasib))
-        return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "status_db": st, "teks": t}, t
+             "Perubahan setelah waktu cadangan itu akan hilang dari database aktif (tetap ada di salinan).\n\n%s"
+             % (db, src, nk, np_, nasib, penutup_pratinjau("restore")))
+        return {"ok": True, "mode": "pratinjau", "perlu_konfirmasi": True, "status_db": st, "teks": t,
+                "langkah_berikut": [LANGKAH_SIMPAN]}, t
     db.parent.mkdir(parents=True, exist_ok=True)
     fol = folder_backup(db)
     fol.mkdir(parents=True, exist_ok=True)
@@ -2519,6 +3431,27 @@ def buat_parser():
 
     s = sub.add_parser("hitung", parents=[umum], help="Hitung massal satu periode (draf)", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
+    s.add_argument("--pph-sementara", action="store_true",
+                   help="Karyawan keluar (Masa Pajak Terakhir) tanpa data Januari s.d. bulan lalu: hitung bulan ini "
+                        "saja dengan TER, ditandai SEMENTARA (default: tertunda, tidak dihitung)")
+    s.add_argument("--prorata", choices=["kalender", "penuh"],
+                   help="Masuk/keluar tengah bulan tanpa nominal dibayar: kalender = gaji pokok & tunjangan tetap x "
+                        "hari bekerja / hari dalam bulan; penuh = hapus prorata otomatis (default: tidak diubah)")
+    s = sub.add_parser("hitung-cepat", parents=[umum, paham], help="Pemakaian pertama: hitung sebulan dari file karyawan "
+                       "TANPA database (tidak ada yang disimpan; --db diabaikan)", allow_abbrev=False)
+    s.add_argument("--data", required=True, help="CSV daftar karyawan (kolom seperti karyawan impor; masuk opsional)")
+    s.add_argument("--bulan", required=True)
+    for o in ("nama-usaha", "umk", "jkk", "batas-jp"):
+        s.add_argument("--" + o)
+    s.add_argument("--isi", action="append", help="NAMA: kolom=nilai; kolom=nilai (mis. \"Andi: bonus=500rb; kasbon=250rb\")")
+    s.add_argument("--komponen", help="CSV komponen (format isi --file)")
+    s.add_argument("--masuk", action="append", help="NAMA=YYYY-MM-DD (tanggal masuk)")
+    s.add_argument("--keluar", dest="keluar_tgl", action="append", help="NAMA=YYYY-MM-DD (tanggal keluar/terakhir kerja)")
+    s.add_argument("--saldo-awal", action="append",
+                   help="NAMA: bruto=..; pph21=..; iuran=.. (total Januari/bulan masuk s.d. bulan lalu)")
+    s.add_argument("--pph-sementara", action="store_true")
+    s.add_argument("--prorata", choices=["kalender", "penuh"])
+    s.add_argument("--folder-slip", help="Folder untuk file slip PRATINJAU (opsional)")
     s = sub.add_parser("final", parents=[umum, tulis], help="Kunci periode", allow_abbrev=False)
     s.add_argument("--bulan", required=True)
     s = sub.add_parser("revisi", parents=[umum, tulis], help="Buka revisi tercatat untuk periode final", allow_abbrev=False)
@@ -2574,10 +3507,68 @@ def jalankan(args):
     if p == "isi" and not args.file and not args.karyawan:
         raise Gagal("Sebutkan --karyawan (atau --file untuk banyak karyawan).")
     return {"init": cmd_init, "info": cmd_info, "atur": cmd_atur, "isi": cmd_isi, "impor-absensi": cmd_impor_absensi,
-            "saldo-awal": cmd_saldo_awal, "hitung": cmd_hitung, "final": cmd_final, "revisi": cmd_revisi,
+            "saldo-awal": cmd_saldo_awal, "hitung": cmd_hitung, "hitung-cepat": cmd_hitung_cepat,
+            "final": cmd_final, "revisi": cmd_revisi,
             "periode": cmd_periode, "rekap": cmd_rekap, "slip": cmd_slip, "transfer": cmd_transfer, "thr": cmd_thr,
             "pph21-tahunan": cmd_pph21_tahunan, "pengingat": cmd_pengingat, "backup": cmd_backup,
             "restore": cmd_restore}[p](args)
+
+
+BATAS_PESAN = 3800        # satu pesan Telegram maks. 4.096 karakter; sisakan ruang untuk sapaan/pertanyaan agent
+
+
+def bagi_teks(teks, maks=BATAS_PESAN):
+    """Teks pemilik yang terlalu panjang untuk satu pesan chat -> beberapa bagian <= maks, dipotong di batas bagian
+    (baris kosong), lalu di batas baris (mis. tabel karyawan yang panjang; judul kolom tabel diulang di bagian
+    berikutnya), baru di batas kata. Judul rekap tidak dibiarkan sendirian (bila bagian berikutnya tidak muat
+    bersamanya, bagian itu dipotong per baris), dan bagian terakhir yang sangat pendek (mis. hanya kalimat penutup)
+    diberi bagian sebelumnya (mis. disclaimer). Tidak ada isi yang dibuang atau diubah."""
+    if len(teks) <= maks:
+        return [teks]
+    bagian, cur = [], ""
+    pendek = maks // 4
+
+    def tambah(potongan, sambung):
+        nonlocal cur
+        if cur and len(cur) + len(sambung) + len(potongan) <= maks:
+            cur += sambung + potongan
+            return True
+        if not cur and len(potongan) <= maks:
+            cur = potongan
+            return True
+        return False
+
+    for blok in teks.split("\n\n"):
+        if tambah(blok, "\n\n"):
+            continue
+        if len(blok) <= maks and len(cur) >= pendek:      # bagian utuh muat di pesan berikutnya
+            bagian.append(cur)
+            cur = blok
+            continue
+        barisan = blok.split("\n")                         # terlalu panjang / bagian sebelumnya terlalu pendek
+        kepala = barisan[:2] if len(barisan) > 2 and barisan[0].startswith("|") and barisan[1].startswith("|---") \
+            else []
+        for n, baris in enumerate(barisan):
+            while len(baris) > maks:                       # satu baris sangat panjang: potong di spasi
+                i = baris.rfind(" ", 0, maks)
+                i = i if i > 0 else maks
+                if cur:
+                    bagian.append(cur)
+                bagian.append(baris[:i])
+                cur, baris = "", baris[i:].lstrip(" ")
+            if tambah(baris, "\n" if n else "\n\n"):
+                continue
+            bagian.append(cur)
+            cur = "\n".join(kepala + [baris]) if kepala and n >= 2 and baris.startswith("|") else baris
+    if cur:
+        bagian.append(cur)
+    # bagian terakhir sangat pendek: pindahkan bagian (blok) terakhir dari pesan sebelumnya ke sana bila muat
+    while len(bagian) >= 2 and len(bagian[-1]) < pendek and "\n\n" in bagian[-2]:
+        kepala_, blok = bagian[-2].rsplit("\n\n", 1)
+        if len(blok) + 2 + len(bagian[-1]) > maks or len(kepala_) < pendek:
+            break
+        bagian[-2], bagian[-1] = kepala_, blok + "\n\n" + bagian[-1]
+    return bagian
 
 
 def main(argv=None):
@@ -2594,6 +3585,8 @@ def main(argv=None):
         data = {"ok": False, "error": PESAN_TERKUNCI if _terkunci(e) else "Kesalahan database: %s" % e}
         teks = "GAGAL: " + data["error"]
         kode = 1
+    if isinstance(data.get("teks"), str) and len(data["teks"]) > BATAS_PESAN:
+        data["teks_bagian"] = bagi_teks(data["teks"])      # kirim sebagai beberapa pesan berurutan (lihat SKILL.md)
     if args.json:
         print(json.dumps(ke_json(data), ensure_ascii=False, indent=2))
     else:
