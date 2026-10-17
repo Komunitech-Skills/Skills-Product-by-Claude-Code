@@ -25,6 +25,13 @@ Contoh:
   python3 pph_final.py --tahun 2026 --bulan-awal 7 --omzet-sebelumnya 410jt --omzet 95jt 88jt 102jt 100jt 100jt 100jt --proyeksi-mulai 10
   python3 pph_final.py --kemungkinan --tahun 2026 --bulan-awal 10 --omzet 85jt
   python3 pph_final.py --jenis badan --file omzet.csv --format json
+  python3 pph_final.py --tampilan tabel --tahun 2026 --omzet 45jt 60jt     (tabel lebar untuk terminal/file)
+
+Tampilan (v1.0.6): bawaan `--tampilan chat` = blok siap salin untuk Telegram/WhatsApp, TANPA tabel dan tanpa blok
+kode (satu baris pendek per bulan: bulan · omzet · PPh; kena pajak, PPh 22, batas setor & status di baris keterangan;
+catatan dipersingkat), maks. 3.800 karakter; data sangat panjang -> makin ringkas, atau dibagi dua pesan dengan baris
+`<<< PESAN BERIKUTNYA >>>` (tiap bagian maks. 3.800). `--tampilan tabel` = tabel Markdown lebar (terminal/IDE/file).
+Angka keduanya sama.
 """
 import argparse
 import calendar
@@ -36,10 +43,11 @@ import re
 import sys
 from decimal import Decimal, ROUND_FLOOR, ROUND_HALF_UP, InvalidOperation
 
-VERSI = "1.0.5"
+VERSI = "1.0.6"
 TANGGAL_ATURAN = "2026-10-14"
 DASAR_ATURAN = ("PP 55/2022 jo. PP 20/2026 (PPh final UMKM 0,5%); PMK 37/2025 dan FAQ DJP versi 1 Juli 2026 "
                 "(PPh 22 marketplace); PMK 81/2024 (batas setor)")
+DASAR_ATURAN_CHAT = "PP 55/2022 jo. PP 20/2026; PMK 37/2025 & FAQ DJP 1 Juli 2026 (PPh 22 marketplace); PMK 81/2024"
 TARIF = Decimal("0.005")
 BATAS_BEBAS_OP = Decimal(500000000)
 BATAS_OMZET_UMKM = Decimal(4800000000)
@@ -318,6 +326,18 @@ def rentang_bulan(rows):
     return a if a == b else "{}–{}".format(a, b)
 
 
+def daftar_bulan_ringkas(nomor):
+    """[1,2,3,5] -> 'Januari–Maret, Mei' (bulan berurutan diringkas jadi rentang)."""
+    bagian, awal = [], None
+    for i, b in enumerate(nomor):
+        if awal is None:
+            awal = b
+        if i + 1 == len(nomor) or nomor[i + 1] != b + 1:
+            bagian.append(NAMA_BULAN[awal - 1] if awal == b else "{}–{}".format(NAMA_BULAN[awal - 1], NAMA_BULAN[b - 1]))
+            awal = None
+    return ", ".join(bagian)
+
+
 def bulat_bawah(d):
     return Decimal(d).quantize(Decimal(1), ROUND_FLOOR)
 
@@ -343,18 +363,55 @@ def catatan_jangka_waktu(jenis, jenis_badan, tahun, tahun_terdaftar):
                 "Pasal I angka 6) menghapus Pasal 59 PP 55/2022 yang dulu membatasi {} tahun pajak; tarif 0,5% boleh "
                 "dipakai selama omzet setahun{} tidak melebihi Rp4,8 miliar dan Anda tidak memilih tarif umum."
                 .format(label, JANGKA_WAKTU_LAMA[kunci], gabung))
-        if tahun_terdaftar is not None:
-            akhir_lama = max(tahun_terdaftar, 2018) + JANGKA_WAKTU_LAMA[kunci] - 1
-            if kunci == "pt-perorangan" and akhir_lama < 2025:
-                # Pasal II angka 1 huruf a hanya menyebut PT perorangan yang batas lamanya berakhir 2025.
-                teks += (" Batas lama Anda (NPWP {}) berakhir {}; aturan peralihan PP 20/2026 tidak menyebut PT "
-                         "perorangan yang batasnya berakhir sebelum 2025, jadi pastikan ke DJP apakah tahun pajak {} "
-                         "boleh memakai 0,5%.".format(tahun_terdaftar, akhir_lama, tahun))
-            elif akhir_lama in (2024, 2025):
-                teks += (" Batas lama Anda (NPWP {}) sebenarnya berakhir {}, tetapi PP 20/2026 Pasal II angka 1 "
-                         "huruf a membolehkan kembali memakai 0,5%.".format(tahun_terdaftar, akhir_lama))
-        return teks
+        return teks + _tambahan_peralihan(kunci, tahun, tahun_terdaftar)
 
+    return _jangka_waktu_badan_lain(kunci, tahun, tahun_terdaftar)
+
+
+def catatan_jangka_waktu_chat(jenis, jenis_badan, tahun, tahun_terdaftar, ringkas=False):
+    """Versi pendek untuk tampilan chat (ringkas=True: lebih pendek lagi); isi aturan sama dengan
+    catatan_jangka_waktu()."""
+    kunci = "op" if jenis == "op" else jenis_badan
+    if kunci in ("op", "pt-perorangan"):
+        label = "orang pribadi" if kunci == "op" else "PT perorangan"
+        gabung = (" (digabung PT perorangan yang Anda dirikan)" if kunci == "op" else
+                  " (digabung omzet pendirinya dan PT perorangan lain miliknya)")
+        if ringkas:
+            teks = ("Tarif 0,5% {} tanpa batas tahun (PP 20/2026, berlaku 22 April 2026, Pasal I angka 6, menghapus "
+                    "Pasal 59 PP 55/2022) selama omzet setahun{} tidak lebih dari Rp4,8 miliar dan Anda tidak memilih "
+                    "tarif umum.".format(label, gabung))
+        else:
+            teks = ("Tarif 0,5% untuk {} kini tanpa batas tahun: PP 20/2026 (berlaku 22 April 2026, Pasal I angka 6) "
+                    "menghapus Pasal 59 PP 55/2022 (dulu {} tahun), selama omzet setahun{} tidak lebih dari Rp4,8 "
+                    "miliar dan Anda tidak memilih tarif umum.".format(label, JANGKA_WAKTU_LAMA[kunci], gabung))
+        return teks + _tambahan_peralihan(kunci, tahun, tahun_terdaftar, ringkas=True)
+    return catatan_jangka_waktu(jenis, jenis_badan, tahun, tahun_terdaftar)
+
+
+def _tambahan_peralihan(kunci, tahun, tahun_terdaftar, ringkas=False):
+    """Tambahan untuk OP/PT perorangan yang menyebut tahun NPWP (aturan peralihan PP 20/2026 Pasal II)."""
+    if tahun_terdaftar is None:
+        return ""
+    akhir_lama = max(tahun_terdaftar, 2018) + JANGKA_WAKTU_LAMA[kunci] - 1
+    if kunci == "pt-perorangan" and akhir_lama < 2025:
+        # Pasal II angka 1 huruf a hanya menyebut PT perorangan yang batas lamanya berakhir 2025.
+        if ringkas:
+            return (" NPWP {}: batas lama berakhir {} dan tidak disebut di aturan peralihan PP 20/2026; pastikan ke "
+                    "DJP apakah tahun pajak {} boleh memakai 0,5%.".format(tahun_terdaftar, akhir_lama, tahun))
+        return (" Batas lama Anda (NPWP {}) berakhir {}; aturan peralihan PP 20/2026 tidak menyebut PT "
+                "perorangan yang batasnya berakhir sebelum 2025, jadi pastikan ke DJP apakah tahun pajak {} "
+                "boleh memakai 0,5%.".format(tahun_terdaftar, akhir_lama, tahun))
+    if akhir_lama in (2024, 2025):
+        if ringkas:
+            return (" NPWP {}: batas lama {}, boleh 0,5% lagi (PP 20/2026 Pasal II angka 1 huruf a).".format(
+                tahun_terdaftar, akhir_lama))
+        return (" Batas lama Anda (NPWP {}) sebenarnya berakhir {}, tetapi PP 20/2026 Pasal II angka 1 "
+                "huruf a membolehkan kembali memakai 0,5%.".format(tahun_terdaftar, akhir_lama))
+    return ""
+
+
+def _jangka_waktu_badan_lain(kunci, tahun, tahun_terdaftar):
+    """Koperasi, CV, firma, PT biasa, atau bentuk badan belum disebut."""
     if kunci == "koperasi":
         dasar = ("Koperasi: tarif 0,5% paling lama 4 tahun pajak sejak terdaftar (PP 20/2026 Pasal 57 ayat (2) "
                  "huruf f); koperasi yang terdaftar sebelum 22 April 2026 dan batas lamanya berakhir 2024–2029 "
@@ -427,6 +484,9 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None, proye
     kumulatif = omzet_sebelumnya
     rows = []
     catatan = []
+    # Tampilan chat: pasangan (teks biasa, teks ringkas) - teks ringkas dipakai bila blok chat terlalu panjang
+    # (tingkat >= 2). Isi, angka, tanggal & pasal sama dengan `catatan`; hanya kalimatnya lebih pendek.
+    catatan_chat = []
     bulan_lewat_500 = None
     bulan_lewat_500_angka = None
     bulan_lewat_48 = None
@@ -504,12 +564,17 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None, proye
     if bulan_ada[0] > 1 and omzet_sebelumnya == 0:
         catatan.append("Data mulai {}. Omzet bulan sebelumnya di tahun {} dianggap Rp0; bila ada, sebutkan totalnya "
                        "agar batas Rp500 juta dihitung benar.".format(NAMA_BULAN[bulan_ada[0] - 1], tahun))
+        catatan_chat.append(("Omzet {} sebelum {} dianggap Rp0; bila ada, sebutkan totalnya agar batas Rp500 juta "
+                             "dihitung benar.".format(tahun, NAMA_BULAN[bulan_ada[0] - 1]),) * 2)
     celah = [NAMA_BULAN[x - 1] for x in range(bulan_ada[0], bulan_ada[-1] + 1) if x not in bulan_ada]
     if celah:
         catatan.append("Bulan tanpa data dianggap omzet Rp0: {}.".format(", ".join(celah)))
+        catatan_chat.append((catatan[-1],) * 2)
     if proy:
         catatan.append("Bulan {} memakai omzet perkiraan (proyeksi), bukan data nyata; angkanya akan berubah bila "
                        "omzet sebenarnya berbeda.".format(rentang_bulan(proy)))
+        catatan_chat.append(("{} memakai omzet perkiraan (proyeksi); angkanya berubah bila omzet sebenarnya "
+                             "berbeda.".format(rentang_bulan(proy)),) * 2)
     if bulan_lewat_48:
         teks = ("Omzet kumulatif melewati Rp4,8 miliar pada {}. Tahun pajak ini umumnya masih memakai 0,5%, tetapi "
                 "mulai tahun pajak berikutnya memakai tarif umum dengan pembukuan.".format(bulan_lewat_48))
@@ -518,9 +583,17 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None, proye
                      "perorangan yang didirikannya) yang omzetnya melewati Rp4,8 miliar tidak bisa lagi memakai 0,5% "
                      "di tahun-tahun berikutnya.")
         catatan.append(teks + " Pastikan ke DJP/konsultan pajak.")
+        catatan_chat.append(("Omzet setahun melewati Rp4,8 miliar pada {}: tahun pajak ini umumnya masih 0,5%, tetapi "
+                             "mulai tahun pajak berikutnya memakai tarif umum dengan pembukuan{}. Pastikan ke "
+                             "DJP/konsultan pajak.".format(
+                                 bulan_lewat_48, "; orang pribadi (digabung PT perorangan yang didirikannya) tidak "
+                                 "bisa lagi memakai 0,5% di tahun-tahun berikutnya (PP 20/2026 Pasal 57 ayat (2) huruf e "
+                                 "& ayat (4))" if jenis == "op" else ""),) * 2)
     elif kumulatif > BATAS_OMZET_UMKM * Decimal("0.8"):
         catatan.append("Omzet kumulatif sudah di atas 80% dari batas Rp4,8 miliar. Siapkan pembukuan bila "
                        "batas terlewati.")
+        catatan_chat.append((catatan[-1],) * 2)
+    libur_belum_ada = set()
     for r in rows:
         if r["batas_setor_hari_libur"] and r["setor_sendiri"] > 0:
             tk = datetime.date.fromisoformat(r["setor_hari_kerja"])
@@ -529,32 +602,66 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None, proye
                                r["nama_bulan"], tahun, ", ".join(r["alasan_geser"]), format_tgl(tk),
                                "" if r["data_libur_lengkap"] else " Data libur nasional/cuti bersama tahun itu "
                                "belum tersedia di hitungan ini (hanya Sabtu/Minggu yang dicek); cek kalender pajak DJP."))
+            if not r["data_libur_lengkap"]:
+                libur_belum_ada.add(datetime.date.fromisoformat(r["setor_paling_lambat"]).year)
+    # Tampilan chat: tanggal hari kerja hasil geser sudah tertulis di baris tiap bulan ("tgl 15 libur").
+    if libur_belum_ada:
+        catatan_chat.append(("Data libur nasional/cuti bersama {} belum tersedia (hanya Sabtu/Minggu yang dicek); "
+                             "cek kalender pajak DJP.".format(", ".join(str(x) for x in sorted(libur_belum_ada))),) * 2)
     lewat = [r for r in aktual if r["batas_setor_sudah_lewat"]]
     if lewat:
+        daftar_lewat = ", ".join("{} ({})".format(r["nama_bulan"], format_rp(r["setor_sendiri"])) for r in lewat)
         catatan.append("Batas setor sudah lewat per {} untuk: {}. Bila belum disetor, segera setor dan tanyakan ke DJP "
-                       "kemungkinan sanksi administrasi keterlambatan.".format(
-                           format_tgl(hari_ini), ", ".join("{} ({})".format(r["nama_bulan"], format_rp(r["setor_sendiri"]))
-                                                           for r in lewat)))
+                       "kemungkinan sanksi administrasi keterlambatan.".format(format_tgl(hari_ini), daftar_lewat))
+        catatan_chat.append((
+            "Batas setor sudah lewat per {} untuk: {}. Bila belum disetor, segera setor dan tanyakan ke DJP soal sanksi "
+            "keterlambatan.".format(format_tgl(hari_ini), daftar_lewat),
+            "Batas setor sudah lewat per {}: {} (lihat baris tiap bulan). Bila belum disetor, segera setor; tanyakan "
+            "ke DJP soal sanksi.".format(
+                format_tgl(hari_ini), daftar_bulan_ringkas([r["bulan"] for r in lewat]))))
     if mode_pph22:
         catatan.append("PPh 22 yang dipungut marketplace sudah diperhitungkan sebagai bagian pelunasan PPh final tiap "
                        "bulan: kekurangannya disetor sendiri, kelebihannya dapat diajukan permohonan pengembalian ke DJP "
                        "(FAQ DJP PMK 37/2025 versi 1 Juli 2026, no. 14-15). Simpan bukti pungut atau dokumen tagihan "
                        "dari marketplace.")
+        catatan_chat.append((
+            "PPh 22 marketplace = bagian pelunasan PPh final bulan itu: kurangnya disetor sendiri, lebihnya bisa "
+            "diajukan pengembalian ke DJP (FAQ DJP PMK 37/2025 no. 14-15). Simpan bukti pungutnya.",
+            "PPh 22 marketplace = bagian pelunasan PPh final bulan itu: kurang disetor sendiri, lebih bisa diajukan "
+            "pengembalian ke DJP (FAQ DJP PMK 37/2025 no. 14-15). Simpan bukti pungut."))
         bebas_tapi_dipungut = [r["nama_bulan"] for r in rows if jenis == "op" and r["pph_final"] == 0
                                and r["pph22_dipungut"] > 0 and r["omzet_kumulatif"] <= BATAS_BEBAS_OP]
         if bebas_tapi_dipungut:
             catatan.append("Pada {} marketplace memungut PPh 22 padahal omzet setahun Anda belum lewat Rp500 juta. "
                            "Agar tidak dipungut lagi, sampaikan surat pernyataan bermeterai omzet s.d. Rp500 juta ke "
                            "marketplace (FAQ DJP PMK 37/2025 no. 16).".format(", ".join(bebas_tapi_dipungut)))
+            daftar_bebas = daftar_bulan_ringkas([NAMA_BULAN.index(x) + 1 for x in bebas_tapi_dipungut])
+            catatan_chat.append((
+                "{}: marketplace memungut PPh 22 padahal omzet setahun belum lewat Rp500 juta. Agar tidak dipungut "
+                "lagi, kirim surat pernyataan bermeterai omzet s.d. Rp500 juta ke marketplace (FAQ DJP PMK 37/2025 "
+                "no. 16).".format(daftar_bebas),
+                "{}: PPh 22 dipungut padahal omzet belum lewat Rp500 juta; agar tidak dipungut lagi, kirim surat "
+                "pernyataan bermeterai omzet s.d. Rp500 juta ke marketplace (FAQ DJP PMK 37/2025 no. 16).".format(
+                    daftar_bebas)))
     if (jenis == "op" and bulan_lewat_500_angka and (marketplace or mode_pph22)
             and not (proyeksi_mulai and bulan_lewat_500_angka >= proyeksi_mulai)):
         batas_sp = akhir_bulan(tahun, bulan_lewat_500_angka)
         teks = ("Omzet setahun Anda melewati Rp500 juta pada {}: bila Anda pernah menyampaikan surat pernyataan omzet "
                 "s.d. Rp500 juta ke marketplace, sampaikan surat pernyataan bermeterai bahwa omzet sudah melewati "
                 "Rp500 juta paling lambat {} (FAQ DJP PMK 37/2025 no. 9).".format(bulan_lewat_500, format_tgl(batas_sp)))
+        teks_chat = ("Bila dulu pernah mengirim surat pernyataan omzet s.d. Rp500 juta ke marketplace: omzet lewat "
+                     "Rp500 juta pada {}, jadi kirim surat pernyataan bermeterai baru bahwa omzet sudah melewati "
+                     "Rp500 juta paling lambat {} (FAQ DJP PMK 37/2025 no. 9).".format(bulan_lewat_500,
+                                                                                       format_tgl(batas_sp)))
+        ringkas = ("Bila pernah kirim surat pernyataan omzet s.d. Rp500 juta ke marketplace: kirim surat pernyataan "
+                   "bermeterai baru bahwa omzet sudah melewati Rp500 juta, paling lambat {} (FAQ DJP PMK 37/2025 "
+                   "no. 9).".format(format_tgl(batas_sp)))
         if hari_ini is not None and hari_ini > batas_sp:
             teks += " Tanggal itu sudah lewat; bila belum, segera sampaikan."
+            teks_chat += " Tanggal itu sudah lewat; bila belum, segera kirim."
+            ringkas += " Sudah lewat: bila belum, segera kirim."
         catatan.append(teks)
+        catatan_chat.append((teks_chat, ringkas))
     return {
         "versi": VERSI,
         "jenis_wp": jenis,
@@ -584,6 +691,7 @@ def hitung(data, jenis, tahun, omzet_sebelumnya=Decimal(0), hari_ini=None, proye
             "bulan_batas_setor_sudah_lewat": [r["nama_bulan"] for r in lewat],
         },
         "catatan": catatan,
+        "_catatan_chat": catatan_chat,  # hanya untuk teks_chat(); dibuang dari keluaran JSON
     }
 
 
@@ -599,11 +707,34 @@ CATATAN_TETAP = [
 ]
 
 
+# Pasangan (teks biasa, teks ringkas untuk blok chat yang terlalu panjang); keduanya selalu tampil.
+CATATAN_TETAP_CHAT = [
+    ("Tarif 0,5% dari omzet (peredaran bruto), bukan laba. Tidak berlaku untuk jasa pekerjaan bebas (mis. dokter, "
+     "notaris, konsultan, influencer) dan penghasilan lain yang dikecualikan PP 55/2022 jo. PP 20/2026.",
+     "Tarif dari omzet, bukan laba; tidak untuk jasa pekerjaan bebas & penghasilan lain yang dikecualikan "
+     "PP 55/2022 jo. PP 20/2026."),
+    ("Batas setor tgl 15 bulan berikutnya; bila libur (termasuk cuti bersama), hari kerja berikutnya (PMK 81/2024 "
+     "Pasal 94 & 100). Data libur dari SKB 3 menteri 2026-2027 dan bisa berubah; cek kalender pajak DJP.",
+     "Batas setor tgl 15 bulan berikutnya, hari libur digeser ke hari kerja (PMK 81/2024 Pasal 94 & 100; data libur "
+     "SKB 3 menteri, bisa berubah)."),
+    ("Pembulatan: PPh dan selisihnya dengan PPh 22 dibulatkan ke bawah ke rupiah penuh; belum dicocokkan dengan "
+     "Coretax - bila berbeda, ikuti Coretax.",) * 2,
+]
+
+
 def catatan_jenis(jenis):
     if jenis == "op":
         return ["Orang pribadi: omzet s.d. Rp500 juta setahun tidak dikenai PPh final. Batas ini untuk total "
                 "omzet SEMUA usaha Anda dalam setahun (toko online dan offline digabung)."]
     return ["Badan: 0,5% x seluruh omzet, tanpa pembebasan Rp500 juta."]
+
+
+def catatan_jenis_chat(jenis):
+    """Pasangan (teks biasa, teks ringkas/None); untuk badan selalu tampil."""
+    if jenis == "op":
+        return [("Rp500 juta bebas pajak berlaku untuk total omzet SEMUA usaha Anda setahun (online + offline "
+                 "digabung).", None)]
+    return [(catatan_jenis(jenis)[0],) * 2]
 
 
 # ---------------------------------------------------------------- mode data belum lengkap
@@ -819,6 +950,247 @@ def teks_kemungkinan(h):
     return "\n".join(out)
 
 
+# ---------------------------------------------------------------- tampilan chat (Telegram/WhatsApp)
+# Tanpa tabel & tanpa blok kode: OpenClaw mengubah tabel Markdown menjadi blok kode monospace di Telegram, yang
+# harus digeser ke samping di ponsel. Baris data (judul, per bulan, ringkasan) pendek (<= 60 karakter tampil untuk
+# omzet bulanan di bawah Rp1 miliar tanpa sen; +-67 bila miliar & bersen); keterangan & catatan berupa kalimat biasa
+# yang dilipat otomatis oleh aplikasi chat. Angka sama persis dengan tampilan tabel. Hanya karakter cp1252 (Windows).
+BATAS_CHAT = 3800  # karakter; satu pesan Telegram maks. 4.096, sisakan ruang untuk kalimat pembuka & pertanyaan
+PENANDA_PESAN = "<<< PESAN BERIKUTNYA >>>"
+# Tingkat ringkas (dipakai berurutan sampai blok <= BATAS_CHAT):
+#   0 = normal; 1 = bulan berurutan yang lunas lewat PPh 22 ikut digabung (jumlah per bulan tetap disebut);
+#   2 = keterangan bulan & catatan versi ringkas (isi, angka, tanggal, pasal sama);
+#   3 = baris bulan tanpa omzet, "paling lambat" -> "s.d.", kaki dasar aturan dipersingkat.
+# Bila tingkat 3 pun > BATAS_CHAT: blok dibagi dua dengan baris PENANDA_PESAN sebelum **Ringkasan**.
+TINGKAT_RINGKAS_MAKS = 3
+
+
+def _kaki_chat(out, tingkat=0):
+    tgl = datetime.date.fromisoformat(TANGGAL_ATURAN)
+    out.append("")
+    if tingkat >= 3:
+        out.append("_Dasar: PP 55/2022 jo. PP 20/2026; PMK 37/2025; PMK 81/2024. Berlaku per {} {}. Bukan nasihat "
+                   "pajak; kepastian: Kring Pajak 1500200 atau konsultan pajak._".format(format_tgl_pendek(tgl), tgl.year))
+        return
+    out.append("_Dasar: {}. Berlaku per {} {}. Alat bantu hitung, bukan nasihat pajak; kepastian: Kring Pajak "
+               "1500200 atau konsultan pajak._".format(DASAR_ATURAN_CHAT, format_tgl_pendek(tgl), tgl.year))
+
+
+def _baris_bulan_chat(nama, omzet, pph, tingkat=0):
+    """Satu baris pendek per bulan, maks. 3 kolom: bulan · omzet · PPh final (tingkat 3: tanpa omzet)."""
+    if tingkat >= 3:
+        return "**{}** · PPh {}".format(nama, format_rp(pph))
+    return "**{}** · omzet {} · PPh {}".format(nama, format_rp(omzet, True), format_rp(pph))
+
+
+def _istimewa(b, jenis):
+    sebelum = b["omzet_kumulatif"] - b["omzet"]
+    return ((jenis == "op" and sebelum <= BATAS_BEBAS_OP < b["omzet_kumulatif"])
+            or sebelum <= BATAS_OMZET_UMKM < b["omzet_kumulatif"])
+
+
+def _jenis_kelompok(b, jenis, tingkat):
+    """'bebas' (OP masih dalam Rp500 juta) / 'lunas' (tertutup PPh 22, mulai tingkat 1) / None."""
+    if b["proyeksi"] or _istimewa(b, jenis):
+        return None
+    if jenis == "op" and b["omzet_kumulatif"] <= BATAS_BEBAS_OP and b["pph_final"] == 0:
+        return "bebas"
+    if tingkat >= 1 and b["pph22_dipungut"] > 0 and b["setor_sendiri"] == 0 and b["lebih_dipungut"] == 0:
+        return "lunas"
+    return None
+
+
+def _kelompok_chat(rows, jenis, tingkat=0):
+    """Gabungkan bulan berurutan sejenis (bukan proyeksi); bulan lain tetap satu per satu."""
+    kelompok = []
+    for b in rows:
+        jk = _jenis_kelompok(b, jenis, tingkat)
+        akhir = kelompok[-1] if kelompok else None
+        if jk and akhir and akhir[0] == jk and akhir[1][-1]["bulan"] == b["bulan"] - 1:
+            akhir[1].append(b)
+        else:
+            kelompok.append((jk, [b]))
+    return kelompok
+
+
+def _batas_chat(b, tingkat):
+    tk = datetime.date.fromisoformat(b["setor_hari_kerja"])
+    tanda = [x for x in ("tgl 15 libur" if b["batas_setor_hari_libur"] else "", b["status_batas"].upper()) if x]
+    return "{} {}{}".format("s.d." if tingkat >= 3 else "paling lambat", format_tgl_tabel(tk),
+                            " ({})".format("; ".join(tanda)) if tanda else "")
+
+
+def _teks_pph22_chat(p22, setor, lebih, batas, tingkat):
+    """'Dipungut marketplace X; kurang/lebih/lunas ...' (tingkat >= 2: lebih pendek). Hanya karakter yang ada di
+    cp1252 agar keluaran tidak gagal saat dibaca agent lewat pipa di Windows."""
+    if tingkat >= 2:
+        awal = "PPh 22 {}".format(format_rp(p22, True))
+        if setor > 0:
+            return "{}; kurang {}, setor {}.".format(awal, format_rp(setor), batas)
+        if lebih > 0:
+            return "{}; lebih {} (bisa diminta kembali).".format(awal, format_rp(lebih))
+        return "{}; lunas.".format(awal)
+    awal = "Dipungut marketplace {}".format(format_rp(p22, True))
+    if setor > 0:
+        return "{}; kurang {}, setor sendiri {}.".format(awal, format_rp(setor), batas)
+    if lebih > 0:
+        return "{}; lebih {} (bisa diminta kembali), tidak perlu setor.".format(awal, format_rp(lebih))
+    return "{}; lunas.".format(awal)
+
+
+def _keterangan_bulan_chat(b, jenis, tingkat=0):
+    """Kalimat keterangan tiap bulan: kena pajak, 4,8 miliar, PPh 22 (kurang/lebih), batas setor & status."""
+    bag = []
+    sebelum = b["omzet_kumulatif"] - b["omzet"]
+    if jenis == "op" and sebelum <= BATAS_BEBAS_OP < b["omzet_kumulatif"]:
+        bag.append("Melewati Rp500 juta; yang kena pajak hanya {}.".format(format_rp(b["omzet_kena_pajak"], True)))
+    elif jenis == "op" and b["omzet_kumulatif"] <= BATAS_BEBAS_OP:
+        bag.append("Masih dalam Rp500 juta bebas.")
+    if sebelum <= BATAS_OMZET_UMKM < b["omzet_kumulatif"]:
+        bag.append("Omzet setahun melewati Rp4,8 miliar.")
+    setor, lebih, p22 = b["setor_sendiri"], b["lebih_dipungut"], b["pph22_dipungut"]
+    batas = _batas_chat(b, tingkat) if setor > 0 else ""
+    if p22 > 0:
+        bag.append(_teks_pph22_chat(p22, setor, lebih, batas, tingkat))
+    elif setor > 0:
+        bag.append("Setor {}.".format(batas))
+    elif not bag:
+        bag.append("Tidak ada setoran.")
+    return " ".join(bag)
+
+
+def _baris_kelompok_chat(jk, grup, tingkat):
+    """Bulan yang digabung: jumlah per bulan (PPh 22 / lebih dipungut) tetap disebut untuk tiap masa."""
+    jumlah = lambda k: sum((b[k] for b in grup), Decimal(0))  # noqa: E731
+    kepala = _baris_bulan_chat(rentang_bulan(grup), jumlah("omzet"), jumlah("pph_final"), tingkat)
+    pendek = lambda b: NAMA_BULAN_PENDEK[b["bulan"] - 1]  # noqa: E731
+    if jk == "bebas":
+        ket = "Total {} bulan; masih dalam Rp500 juta bebas.".format(len(grup))
+        dgn = [b for b in grup if b["pph22_dipungut"] > 0]
+        if not dgn:
+            ket += " Tidak ada setoran."
+        elif any(b["lebih_dipungut"] > 0 for b in dgn):
+            ket += " PPh 22 dipungut marketplace = lebih dipungut (bisa diminta kembali): {}; total {}.".format(
+                ", ".join("{} {}".format(pendek(b), format_rp(b["lebih_dipungut"])) for b in dgn
+                          if b["lebih_dipungut"] > 0), format_rp(jumlah("lebih_dipungut")))
+        else:
+            ket += " PPh 22 dipungut {}; lunas.".format(format_rp(jumlah("pph22_dipungut"), True))
+    else:
+        ket = "Total {} bulan; lunas lewat PPh 22 marketplace: {}.".format(
+            len(grup), ", ".join("{} {}".format(pendek(b), format_rp(b["pph22_dipungut"], True)) for b in grup))
+    return [kepala, ket]
+
+
+def teks_chat(h, jenis_badan):
+    """Blok siap salin untuk chat: <= BATAS_CHAT karakter (makin panjang data, makin ringkas). Bila tingkat paling
+    ringkas pun masih terlalu panjang, blok dibagi dua dengan baris PENANDA_PESAN (tiap bagian <= BATAS_CHAT)."""
+    for tingkat in range(TINGKAT_RINGKAS_MAKS + 1):
+        teks = _teks_chat(h, jenis_badan, tingkat)
+        if len(teks) <= BATAS_CHAT:
+            return teks
+    for tingkat in range(TINGKAT_RINGKAS_MAKS + 1):
+        teks = _teks_chat(h, jenis_badan, tingkat, bagi=True)
+        if all(len(x.strip("\n")) <= BATAS_CHAT for x in teks.split(PENANDA_PESAN)):
+            return teks
+    return teks
+
+
+def _teks_chat(h, jenis_badan, tingkat, bagi=False):
+    r = h["ringkasan"]
+    jenis = h["jenis_wp"]
+    label = "Orang pribadi" if jenis == "op" else "Badan" + (
+        " - {}".format(LABEL_BADAN[jenis_badan]) if jenis_badan else "")
+    out = ["**PPh Final UMKM 0,5% · {} · {}**".format(h["tahun"], label)]
+    if h["hari_ini_teks"]:
+        out.append("Hari ini (tanggal acuan hitungan): {}".format(h["hari_ini_teks"]))
+    if h["omzet_sebelumnya"]:
+        out.append("Omzet {} sebelum {}: {}".format(h["tahun"], h["bulan"][0]["nama_bulan"],
+                                                   format_rp(h["omzet_sebelumnya"], True)))
+    out.append("")
+    out.append("**Per bulan**")
+    for jk, grup in _kelompok_chat(h["bulan"], jenis, tingkat):
+        if jk and len(grup) > 1:
+            out.extend(_baris_kelompok_chat(jk, grup, tingkat))
+            continue
+        b = grup[0]
+        out.append(_baris_bulan_chat(b["nama_bulan"] + (" (proyeksi)" if b["proyeksi"] else ""), b["omzet"],
+                                     b["pph_final"], tingkat))
+        out.append(_keterangan_bulan_chat(b, jenis, tingkat))
+    out.append("")
+    if bagi:
+        out.append(PENANDA_PESAN)
+        out.append("")
+    out.append("**Ringkasan**")
+    out.append("- Omzet kumulatif {}{}: {}".format(h["tahun"], " (termasuk proyeksi)" if r["ada_proyeksi"] else "",
+                                                  format_rp(r["omzet_kumulatif_tahun"], True)))
+    if r["ada_proyeksi"]:
+        if r["rentang_data_nyata"] != "-":
+            out.append("- PPh final data nyata ({}): {}".format(r["rentang_data_nyata"],
+                                                               format_rp(r["total_pph_final_data_nyata"])))
+        out.append("- PPh termasuk proyeksi ({}): {}".format(r["rentang_semua"], format_rp(r["total_pph_final"])))
+    else:
+        out.append("- Total PPh final {}: {}".format(r["rentang_semua"], format_rp(r["total_pph_final"])))
+    if h["mode_pph22"]:
+        out.append("- Dipungut marketplace: {}".format(format_rp(r["total_pph22_dipungut"], True)))
+        out.append("- Kurang setor (setor sendiri){}: {}".format(" data nyata" if r["ada_proyeksi"] else "",
+                                                                format_rp(r["total_setor_sendiri_data_nyata"])))
+        if r["total_lebih_dipungut"]:
+            out.append("- Lebih dipungut (bisa diminta kembali): {}".format(format_rp(r["total_lebih_dipungut"])))
+    t = r["batas_setor_terdekat"]
+    if t:
+        out.append("- Setor terdekat: {} (masa {})".format(format_rp(t["setor_sendiri"]), t["bulan"]))
+        out.append("- Paling lambat: {} ({})".format(format_tgl_tabel(datetime.date.fromisoformat(t["tanggal"])),
+                                                     t["jarak"]))
+    if jenis == "op":
+        if r["sisa_omzet_bebas_pajak"] > 0:
+            out.append("- Sisa omzet bebas pajak: {}".format(format_rp(r["sisa_omzet_bebas_pajak"], True)))
+        elif r["bulan_mulai_kena_pajak"]:
+            out.append("- Batas Rp500 juta bebas terlewati: {}".format(r["bulan_mulai_kena_pajak"]))
+        else:
+            out.append("- Tepat Rp500 juta: omzet berikutnya kena 0,5%")
+    out.append("- Sisa sebelum batas Rp4,8 miliar: {}".format(
+        format_rp(max(BATAS_OMZET_UMKM - r["omzet_kumulatif_tahun"], Decimal(0)), True)))
+    out.append("")
+    out.append("**Catatan penting**")
+    for biasa, ringkas in h["catatan_chat"]:
+        c = ringkas if tingkat >= 2 else biasa
+        if c:
+            out.append("- " + c)
+    _kaki_chat(out, tingkat)
+    return "\n".join(out)
+
+
+def teks_kemungkinan_chat(h):
+    nb, th = h["nama_bulan"], h["tahun"]
+    out = ["**Perkiraan PPh Final UMKM 0,5% · {} {}**".format(nb, th),
+           "Data belum lengkap, jadi ini kemungkinan hasilnya.",
+           "Hari ini (tanggal acuan hitungan): {}".format(h["hari_ini_teks"]),
+           "Omzet {} {}: {}".format(nb, th, format_rp(h["omzet"], True))]
+    m22 = h["pph22_dipungut"] > 0
+    if m22:
+        out.append("Dipungut marketplace {}: {}".format(nb, format_rp(h["pph22_dipungut"], True)))
+    out.append("")
+    out.append("**Kemungkinan PPh {}**".format(nb))
+    for k in h["kemungkinan"]:
+        if k["pph_min"] == k["pph_max"]:
+            nilai = "**{}**".format(format_rp(k["pph_min"]))
+        else:
+            nilai = "**{} s.d. {}** (0,5% x bagian omzet kumulatif di atas Rp500 juta)".format(
+                format_rp(k["pph_min"]), format_rp(k["pph_max"]))
+        out.append("- {}: {}{}".format(k["kondisi"], nilai,
+                                       "; setelah PPh 22: {}".format(k.get("kurang_lebih_teks", "-")) if m22 else ""))
+    out.append("")
+    out.append("**Batas setor masa {} {}**".format(nb, th))
+    out.append("{} ({})".format(format_tgl_tabel(datetime.date.fromisoformat(h["setor_hari_kerja"])),
+                                h["jarak_batas_setor"]))
+    out.append("")
+    out.append("**Catatan penting**")
+    for c in h["catatan"]:
+        out.append("- " + c)
+    _kaki_chat(out)
+    return "\n".join(out)
+
+
 class ParserID(argparse.ArgumentParser):
     def error(self, message):
         sys.stderr.write("ERROR: argumen tidak valid ({}).\nLihat bantuan: python3 pph_final.py --help\n"
@@ -850,6 +1222,9 @@ def main(argv=None):
                    help="Tahun NPWP terdaftar (dipakai untuk koperasi, CV, firma, PT; OP & PT perorangan tanpa batas)")
     p.add_argument("--hari-ini", help="Tanggal acuan (YYYY-MM-DD, default tanggal komputer)")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
+    p.add_argument("--tampilan", choices=["chat", "tabel"], default="chat",
+                   help="Untuk --format teks: 'chat' (bawaan) = blok siap salin untuk Telegram/WhatsApp tanpa tabel; "
+                        "'tabel' = tabel Markdown lebar untuk terminal/file")
     a = p.parse_args(argv)
 
     try:
@@ -902,16 +1277,26 @@ def main(argv=None):
                            "atau konsultan pajak.")
     if a.kemungkinan:
         hasil["catatan"] += CATATAN_TETAP[:2]
-        print(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2) if a.format == "json"
-              else teks_kemungkinan(hasil))
+        if a.format == "json":
+            print(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2))
+        else:
+            print(teks_kemungkinan_chat(hasil) if a.tampilan == "chat" else teks_kemungkinan(hasil))
         return 0
     hasil["catatan"] = (catatan_jenis(a.jenis)
                         + [catatan_jangka_waktu(a.jenis, a.jenis_badan, a.tahun, a.tahun_terdaftar)]
                         + hasil["catatan"] + CATATAN_TETAP)
+    # (teks biasa, teks ringkas): teks ringkas dipakai bila blok chat terlalu panjang (None = tidak ditampilkan).
+    hasil["catatan_chat"] = (catatan_jenis_chat(a.jenis)
+                             + [(catatan_jangka_waktu_chat(a.jenis, a.jenis_badan, a.tahun, a.tahun_terdaftar),
+                                 catatan_jangka_waktu_chat(a.jenis, a.jenis_badan, a.tahun, a.tahun_terdaftar, True))]
+                             + hasil.pop("_catatan_chat") + CATATAN_TETAP_CHAT)
     hasil["tahun_terdaftar"] = a.tahun_terdaftar
     if a.format == "json":
         hasil["jenis_badan"] = a.jenis_badan
+        del hasil["catatan_chat"]  # JSON tetap sama dengan versi sebelumnya
         print(json.dumps(hasil, default=ke_json, ensure_ascii=False, indent=2))
+    elif a.tampilan == "chat":
+        print(teks_chat(hasil, a.jenis_badan))
     else:
         print(teks_markdown(hasil, a.jenis_badan))
     return 0
