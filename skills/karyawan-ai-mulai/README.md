@@ -9,7 +9,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 8,3 dari 10 pada satu skenario (p
 ## Manfaat
 - ✅ Tidak perlu tahu istilah teknis atau nama-nama skill — cukup jawab 5 pertanyaan singkat.
 - ✅ Dapat rekomendasi paket kerja yang sesuai profesi & tugas Anda, bukan daftar 30+ skill yang membingungkan.
-- ✅ Langsung lihat **hasil nyata** di balasan pertama (bukan sekadar penjelasan).
+- ✅ Satu tugas nyata dikerjakan dalam percakapan yang sama (bukan sekadar penjelasan).
 - ✅ Rencana 7 hari sederhana supaya kebiasaan baru terbentuk, satu langkah per hari.
 - ✅ Diingatkan soal privasi sejak awal — cocok untuk yang khawatir data bocor. Skill juga menawarkan memasang "Aturan kerja Komunitech" ke `AGENTS.md` (berkas aturan kerja untuk AI di OpenClaw Anda), setelah Anda setujui, supaya aturan kerja itu ikut dibaca AI di setiap percakapan.
 
