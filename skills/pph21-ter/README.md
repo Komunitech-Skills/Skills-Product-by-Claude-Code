@@ -68,13 +68,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 5 Okt 2026. Pertanyaan yang sama dikirim tanpa dan dengan skill: karyawan konveksi bergaji Rp6.000.000, apakah dapat PPh 21 ditanggung pemerintah (DTP), berapa PPh bulan Oktober, dan berapa uang yang diterima.
-- Tanpa skill: skor 8 dari 10.
-- Dengan skill (versi 1.0.4): skor 6 dari 10.
+Uji terbaru: 17 Oktober 2026, versi 1.0.6, di bot OpenClaw asli (grup uji Komunitech), dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): pemilik bengkel motor minta dihitungkan PPh 21 setahun 2026 per bulan untuk karyawan berstatus K/1 (menikah, 1 tanggungan) bergaji tetap Rp8.500.000, ikut BPJS Ketenagakerjaan, dengan THR Rp8.500.000 cair di bulan Maret, dan bertanya kenapa Desember berbeda sendiri. Skor 1–10 dari penilai independen: tanpa skill **4,5** → dengan skill **9** (selisih +4,5), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
 
-Jadi di uji ini skill kalah. Jawaban dengan skill lebih rapi (tarif TER 0,75% = Rp45.000, meminta konfirmasi sektor usaha, menyebut syarat gaji Januari 2026), tetapi **salah di jawaban inti**: menulis uang diterima Rp6.045.000 dan PPh "dipotong Rp0". Menurut teks PMK 105/2025, PPh 21 tetap dipotong lalu nilai DTP dibayar tunai, sehingga pegawai menerima Rp6.000.000, sama dengan jawaban tanpa skill.
+Dengan skill, potongan bulanan benar: Rp85.000 per bulan (tarif 1%), Rp1.190.000 di bulan Maret saat THR cair (tarif 7%), dan Desember terlihat sebagai **kelebihan potong Rp94.250** yang wajib dikembalikan ke karyawan paling lambat akhir Januari 2027. Jawabannya ringkas dalam satu pesan, asumsinya ditulis, dan dasar aturan serta penafian ada. Tanpa skill, tarif bulanannya salah (1,25% dan 5%), sehingga potongan setiap bulan salah dan Desember malah disebut kurang potong Rp33.250. Total pajak setahun (Rp1.945.750) sama-sama benar di kedua sisi. Semua angka dengan skill sudah dihitung ulang terpisah dan benar.
 
-Kekurangan ini diperbaiki di versi 1.0.5 (rincian teknis ada di `CHANGELOG.md`). Setelah perbaikan, uji ulang di OpenClaw dengan konteks Telegram (5 Okt 2026, dua kali jalan) menghasilkan angka yang benar; perbaikan itu belum diulang di bot Telegram sungguhan.
+Catatan jujur: istilah "Masa Pajak Terakhir" dan "bruto" belum dijelaskan dengan bahasa sehari-hari, dan jawaban di bot tidak menyebut bahwa pembulatan belum dicocokkan dengan Coretax (lihat FAQ di bawah). Ini satu pesan uji per sisi, bukan uji berulang.
+
+Uji sebelumnya: 5 Oktober 2026, versi 1.0.4, dengan kasus lain: karyawan konveksi bergaji Rp6.000.000, apakah dapat PPh 21 ditanggung pemerintah (DTP), berapa PPh bulan Oktober, dan berapa uang yang diterima. Tanpa skill **8** → dengan skill **6**, jadi di uji itu skill kalah. Jawaban dengan skill lebih rapi (tarif TER 0,75% = Rp45.000, meminta konfirmasi sektor usaha, menyebut syarat gaji Januari 2026), tetapi **salah di jawaban inti**: menulis uang diterima Rp6.045.000 dan PPh "dipotong Rp0". Menurut teks PMK 105/2025, PPh 21 tetap dipotong lalu nilai DTP dibayar tunai, sehingga pegawai menerima Rp6.000.000, sama dengan jawaban tanpa skill. Kekurangan ini diperbaiki di versi 1.0.5 (rincian teknis ada di `CHANGELOG.md`) dan lulus uji ulang di OpenClaw dengan konteks Telegram (5 Okt 2026, dua kali jalan); kasus DTP itu belum diulang di bot Telegram sungguhan.
 
 ## FAQ
 **Kenapa potongan Desember berbeda dari bulan lain?**

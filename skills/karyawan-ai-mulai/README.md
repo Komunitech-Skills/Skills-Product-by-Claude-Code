@@ -1,6 +1,6 @@
-# Starter Kit Karyawan AI, Siap dalam Hitungan Menit
+# Starter Kit Karyawan AI, Dipandu sampai Tugas Pertama
 
-**Cukup ketik "mulai", AI langsung wawancara singkat lalu kerjakan tugas pertama Anda.**
+**Ketik "mulai karyawan AI", jawab beberapa pertanyaan singkat, lalu satu tugas pertama Anda dikerjakan dalam percakapan yang sama.**
 
 Diuji AI penguji independen di OpenClaw: 3 → 8,3 dari 10 pada satu skenario (pemilik laundry, uji ulang v1.1.8, 1 Okt 2026; uji pertama dua skenario 2,0 → 7,5 belum lulus). Dengan skill: ada wawancara singkat dan aturan kerja tertulis. Tanpa skill: AI meminta token bot ditempel di chat dan mengubah pengaturan inti OpenClaw; pada skenario toko skincare di uji pertama, AI bahkan memasang balasan otomatis WhatsApp untuk semua orang.
 

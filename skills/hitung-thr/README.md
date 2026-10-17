@@ -71,6 +71,14 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Pembulatan PPh 21 belum dicocokkan dengan Coretax (sistem pajak DJP). Bagian PPh 21 DTP (PPh 21 yang ditanggung pemerintah, PMK 105/2025) masih menunggu review konsultan pajak.
 - Untuk sengketa atau kasus khusus, hubungi Disnaker setempat, Posko THR (poskothr.kemnaker.go.id), Kring Pajak 1500200, atau konsultan.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, data fiktif) pada 17 Oktober 2026, versi 1.0.11, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): bengkel motor dengan 4 karyawan (karyawan tetap lama dengan tunjangan jabatan dan uang makan harian, kasir yang masuk April 2026, helper yang masuk Agustus 2026, dan karyawan kontrak sejak Januari 2026) minta dihitungkan THR untuk Lebaran 2027, kapan paling lambat dibayar, dan dibuatkan pengumuman untuk grup karyawan. Skor 1–10 dari penilai independen: tanpa skill **7** → dengan skill **8**, selisih **+1**: **belum lulus acuan kami**, karena selisihnya di bawah 1,5 (jawaban tanpa skill sudah kuat).
+
+Dengan skill, THR tiap orang benar (total Rp12.441.666; uang makan harian tidak ikut dihitung; karyawan kontrak 13 bulan mendapat THR penuh), tanggal Lebaran ditandai sebagai perkiraan, batas bayar disebut lengkap dengan harinya (Rabu, 3 Maret 2027), ada info denda 5% bila terlambat, draf pengumuman grup tanpa nominal per orang, dan tawaran menghitung potongan PPh 21 atas THR. Namun jawaban tanpa skill juga sudah menghitung THR tiap orang dengan benar dan menyebut batas 3 Maret 2027, jadi bedanya kecil. Semua angka sudah dihitung ulang terpisah.
+
+Catatan jujur: dengan skill, rekap per orang masih berupa tabel 5 kolom yang tampil sebagai teks bergaris di Telegram dan sulit dibaca di HP; bagian "khusus pemilik, jangan ditempel ke grup" yang memuat nominal per orang justru tampil di grup tempat pertanyaan dikirim; dan satu pertanyaan penutup mengulang soal status pajak (PTKP). Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Uang makan dan transport ikut dihitung THR?**
 Tidak, bila sifatnya tidak tetap (tergantung kehadiran). Dasar THR adalah gaji pokok ditambah tunjangan tetap. Kalau perusahaan ingin memberi lebih besar, skill akan memakai angka perusahaan.

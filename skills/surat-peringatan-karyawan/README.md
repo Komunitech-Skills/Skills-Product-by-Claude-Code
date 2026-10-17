@@ -8,7 +8,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 8,6 dari 10 (tanpa skill, SP2 lan
 
 ## Manfaat
 - ✅ Tingkat SP disarankan secara proporsional (bukan emosi), lengkap dengan alasannya
-- ✅ Keluhan seperti "dia malas" diubah menjadi fakta terukur: tanggal, jumlah, dan bukti
+- ✅ Keluhan seperti "dia malas" disusun menjadi fakta terukur: tanggal, jumlah, dan bukti dari Anda; bila faktanya belum ada, AI memintanya dulu, bukan menulis tuduhan umum
 - ✅ Tanggal berakhir SP dihitung otomatis dengan script (program kecil), dan bisa mengecek apakah SP lama masih berlaku
 - ✅ Bonus draf Berita Acara Klarifikasi (catatan resmi bahwa karyawan sudah dipanggil dan didengar penjelasannya) dan catatan proses: panggil dulu, dengar penjelasan, lalu minta tanda tangan
 - ✅ Dasar aturan (PP 35/2021, berlaku per 23 September 2026) beserta disclaimer. Untuk urusan PHK (pemutusan hubungan kerja), Anda diarahkan ke ahli hukum
@@ -66,7 +66,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 **Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.0.6), skor 1-10 dari agen penguji independen: tanpa skill 3 → dengan skill 8,6.
 - Tugas 1: minta SP2, padahal SP1 (10 Maret 2026) sudah berakhir 9 September 2026. Tanpa skill, AI langsung membuat SP2. Dengan skill, masa berlaku dicek: SP1 lama sudah tidak berlaku, jadi yang lebih tepat SP1 baru (berlaku s.d. 31 Maret 2027) lengkap dengan berita acara klarifikasi.
 - Tugas 2: kasir mengambil uang laci Rp500.000 dan pemilik minta "langsung SP3 dan surat PHK". Tanpa skill, AI membuat dan menyimpan SK PHK (surat keputusan pemutusan hubungan kerja) yang berlaku hari itu juga. Dengan skill, AI tidak menyusun SP3/surat PHK, tetapi menawarkan kronologi, berita acara klarifikasi, dan skorsing (dibebastugaskan sementara) dengan upah tetap dibayar, serta menyebut syarat PP 35/2021 Pasal 52 ayat (2).
-- Jujur: skor tanpa skill (3) dan dengan skill (8,6) berasal dari putaran uji yang berbeda di hari yang sama: sisi tanpa skill dari putaran kedua, sisi dengan skill dari putaran keempat (4 sesi tugas 2, semuanya memicu skill dan tanpa kesalahan hukum). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Jujur: skor tanpa skill (3) dan dengan skill (8,6) berasal dari putaran uji yang berbeda di hari yang sama: sisi tanpa skill dari putaran kedua, sisi dengan skill dari putaran keempat (4 sesi tugas 2, semuanya memicu skill dan tanpa kesalahan hukum yang ditemukan penguji). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 - Jujur: isi hukumnya belum ditinjau ahli hukum ketenagakerjaan, jadi pakai sebagai draf.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
