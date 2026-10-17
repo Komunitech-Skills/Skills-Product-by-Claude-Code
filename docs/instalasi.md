@@ -10,7 +10,7 @@ Skill adalah **folder** berisi file `SKILL.md`. Cara memasangnya: **salin folder
 |---|---|---|---|
 | **Claude Code** | `~/.claude/skills/` | `.claude/skills/` di repo | ketik `/skills` |
 | **OpenAI Codex** | `~/.agents/skills/` | `.agents/skills/` (dari folder kerja hingga root repo) | ketik `/skills` |
-| **Cursor** | `~/.cursor/skills/` atau `~/.agents/skills/` | `.cursor/skills/` atau `.agents/skills/` di repo | ketik `/nama-skill` di Agent chat, atau Settings → Rules |
+| **Cursor** | `~/.cursor/skills/` atau `~/.agents/skills/` | `.cursor/skills/` atau `.agents/skills/` di repo | ketik `/nama-skill` di Agent chat, atau sidebar Customize → Skills |
 | **OpenClaw** | `~/.openclaw/skills/` | `skills/` di workspace OpenClaw | `openclaw skills list` |
 
 **Windows (global):** `%USERPROFILE%\.claude\skills\`, `%USERPROFILE%\.agents\skills\`, `%USERPROFILE%\.cursor\skills\` — struktur sama, hanya lokasi home Windows.
@@ -60,7 +60,7 @@ Skill masuk ke `~/.openclaw/skills/`. Untuk **satu workspace** saja, hilangkan `
 
 **Codex.** Skill user di `~/.agents/skills/`; skill tim di `.agents/skills/` di repo. Skill terbaca pada pesan berikutnya. Bisa dipanggil langsung dengan `$nama-skill`.
 
-**Cursor.** Agent memuat skill dari folder proyek (`.cursor/skills/`, `.agents/skills/`) dan folder user di komputer lokal. Untuk **Cursor Cloud Agent**, skill di `~/.cursor/skills/` **tidak otomatis ikut** — pasang skill di **repo** (`.cursor/skills/`) atau aktifkan **Sync Skills** di Settings → Agents bila ingin memakai skill pribadi di cloud. Setelah memasang, buka chat Agent baru. **Catatan uji 2026-10-14:** pada run **Cloud Automation** (jadwal otomatis) Cursor, skill di `.cursor/skills/` repo tidak muncul di daftar skill agent pada empat run berturut; pemasangan dan script tetap berjalan. Untuk memakai skill di Cursor, pakai chat Agent di aplikasi Cursor, bukan jadwal otomatis, sampai Cursor memperbaikinya. Cursor juga bisa membaca skill dari folder Claude/Codex (`~/.claude/skills`, `~/.codex/skills`) untuk kompatibilitas; jangan duplikasi skill yang sama di banyak folder.
+**Cursor.** Agent memuat skill dari folder proyek (`.cursor/skills/`, `.agents/skills/`) dan folder user di komputer lokal. Untuk **Cursor Cloud Agent**, skill di `~/.cursor/skills/` **tidak otomatis ikut** — pasang skill di **repo** (`.cursor/skills/`) atau aktifkan **Sync Skills for Cloud Agents** di Settings → Agents (hanya `~/.cursor/skills/` yang disinkronkan) bila ingin memakai skill pribadi di cloud. Setelah memasang, buka chat Agent baru. **Catatan uji 2026-10-14:** pada run **Cloud Automation** (jadwal otomatis) Cursor, skill di `.cursor/skills/` repo tidak muncul di daftar skill agent pada empat run berturut; pemasangan dan script tetap berjalan. Untuk memakai skill di Cursor, pakai chat Agent di aplikasi Cursor, bukan jadwal otomatis, sampai Cursor memperbaikinya. Cursor juga bisa membaca skill dari folder Claude/Codex (`~/.claude/skills`, `~/.codex/skills`) untuk kompatibilitas; jangan duplikasi skill yang sama di banyak folder.
 
 ## Khusus pembeli paket VIP
 
@@ -83,5 +83,13 @@ Beberapa skill menyertakan script Python (folder `scripts/`). Mac dan Linux umum
 | Error "python not found" | Pasang Python (lihat di atas), lalu buka ulang aplikasi. |
 | Skill hilang di Cursor Cloud | Pasang di `.cursor/skills/` dalam repo, atau sync skill user lewat Settings → Agents. |
 
+## Sumber verifikasi (dicek 2026-10-17)
+
+- Claude Code: https://code.claude.com/docs/en/skills
+- OpenAI Codex: https://learn.chatgpt.com/docs/build-skills (pengalihan dari developers.openai.com/codex/skills)
+- Cursor: https://cursor.com/docs/context/skills
+- OpenClaw: https://docs.openclaw.ai/tools/skills dan https://docs.openclaw.ai/cli/skills
+- Catatan uji Cursor Cloud Automation 2026-10-14 (di atas) adalah hasil uji sendiri, belum terverifikasi ulang terhadap dokumentasi resmi.
+
 ---
-*Verifikasi lokasi folder: Cursor, Claude Code, Codex, OpenClaw — **2026-10-14** (sumber resmi; lihat `research/sources/platform-2026-10-14.md`). Platform sekunder (Antigravity, Hermes, Grok, Muse) belum terverifikasi. Hubungi Komunitech bila ada kendala.*
+*Verifikasi lokasi folder: Cursor, Claude Code, Codex, OpenClaw — **2026-10-17** (sumber resmi; lihat `research/sources/platform-2026-10-14.md` untuk verifikasi sebelumnya). Platform sekunder (Antigravity, Hermes, Grok, Muse) belum terverifikasi. Hubungi Komunitech bila ada kendala.*
