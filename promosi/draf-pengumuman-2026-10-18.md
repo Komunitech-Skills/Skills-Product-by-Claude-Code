@@ -37,7 +37,7 @@ Sebelum skill kami tawarkan, kami uji dulu: tugas yang sama diberikan ke asisten
 7. Tagihan dan Follow-up Tak Lagi Mudah Terlupa: 3,5 -> 9,25
 8. Surat Peringatan Karyawan yang Adil dan Rapi: 3 -> 8,6
 9. Buka Reseller & Agen, Harga Terhitung Rapi: 3 -> 8,5
-10. Rapikan Data Pelanggan dan Penjualan Berantakan: 3,5 -> 9
+10. Starter Kit Karyawan AI, Siap dalam Hitungan Menit: 3 -> 8,3
 
 Paket yang tersedia:
 - Paket Toko Online (16 skill): Rp449.000
@@ -95,8 +95,8 @@ Mengecek dulu status surat peringatan sebelumnya, baru menyarankan jenis surat y
 **9. Buka Reseller & Agen, Harga Terhitung Rapi** (nilai 3 -> 8,5)
 Membantu menyusun katalog dan harga reseller, dan menolak bagian yang melanggar aturan, misalnya skema bonus berjenjang. Pernah dicoba di bot OpenClaw asli.
 
-**10. Rapikan Data Pelanggan dan Penjualan Berantakan** (nilai 3,5 -> 9)
-File asli tetap utuh, duplikat hanya ditandai untuk Anda putuskan, dan nomor telepon rumah tidak ikut masuk daftar WA. Pernah dicoba di bot OpenClaw asli.
+**10. Starter Kit Karyawan AI, Siap dalam Hitungan Menit** (nilai 3 -> 8,3)
+Ceritakan kebutuhan usaha Anda (misalnya rekap omzet, balas chat pelanggan, bikin promo); skill ini memetakannya ke skill yang cocok, langsung mengerjakan tugas pertama dengan data contoh yang diberi label jelas, lalu memberi rencana 7 hari dan aturan kerja yang aman. Kadang asisten menawarkan skill pendamping yang belum terpasang. Pernah dicoba di bot OpenClaw asli.
 
 **Paket yang tersedia**
 
@@ -126,15 +126,15 @@ Pertanyaan atau pemesanan: [KONTAK]
 
 Bagian ini jangan ikut dikirim.
 
-**Sumber angka (diverifikasi dengan skrip):** 10 skill = baris `lolos_promosi: true` di `promosi/sebelum-sesudah.jsonl` (118 dari 141 baris) diurutkan menurut `selisih`. Skor sebelum -> sesudah persis dari berkas itu. Selisih: 7,5 / 7,0 / 7,0 / 6,0 / 6,0 / 5,9 / 5,75 / 5,6 / 5,5 / 5,5. Dua skill dengan selisih 6,0 (cek-privasi, pengingat-pasien) dan dua dengan 5,5 (katalog-reseller, rapikan-data) diurutkan sesuai urutan berkas; skill ke-11 selisihnya 5,3, jadi tidak ada tie yang memotong batas 10.
+**Sumber angka (diverifikasi dengan skrip, disinkronkan Akun B 17 Okt 2026 04.10 UTC setelah aturan kartu baru, keputusan 100):** 10 skill = kartu yang tampil di halaman promosi (lulus uji internal DAN uji terakhir di bot Telegram asli tidak BELUM; 90 dari 141 baris), diurutkan menurut `selisih`. Skor sebelum -> sesudah persis dari `promosi/sebelum-sesudah.jsonl`. Selisih: 7,5 / 7,0 / 7,0 / 6,0 / 6,0 / 5,9 / 5,75 / 5,6 / 5,5 / 5,3. `rapikan-data-berantakan` keluar dari 10 besar karena uji terakhirnya di bot Telegram asli BELUM (7 -> 7,5), diganti `karyawan-ai-mulai` (3 -> 8,3; di bot Telegram asli 6,5 -> 8,5 LOLOS). Dua skill dengan selisih 6,0 (cek-privasi, pengingat-pasien) diurutkan sesuai urutan berkas; skill ke-11 (riset-saham-berita) selisihnya 5,25, jadi tidak ada tie yang memotong batas 10.
 
 **Harga paket:** diambil dari `bundles/README.md` (jumlah skill cocok dengan isi `bundles/*.txt`). Hanya `paket-strategi-produk-marketing` dan `paket-kantor-manajemen` (Rp599.000) yang sudah ditetapkan final oleh pemilik. Harga lain masih berstatus usulan di berkas itu; mohon konfirmasi atau ganti. Status skill di dalam paket sebagian masih `beta`/`lulus`, belum `rilis`; cek apakah paket sudah bisa dijual pada 18 Okt.
 
-**Klaim "bot OpenClaw asli":** hanya dipakai bila kolom `platform_teruji` di `catalog.csv` memuat tag "openclaw bot Telegram asli". Terpenuhi untuk 9 dari 10 skill. **`odoo-usaha` tidak punya tag itu** (hanya uji otomatis dengan server tiruan), sehingga tidak diklaim. Kalimat "Pernah dicoba" tidak berarti semua uji di bot asli menghasilkan skor yang tertulis; skor tetap dari uji sebelum/sesudah.
+**Klaim "bot OpenClaw asli":** hanya dipakai bila kolom `platform_teruji` di `catalog.csv` memuat tag "openclaw bot Telegram asli". Terpenuhi untuk 9 dari 10 skill (termasuk `karyawan-ai-mulai`, gelombang 6). **`odoo-usaha` tidak punya tag itu** (hanya uji otomatis dengan server tiruan), sehingga tidak diklaim. Kalimat "Pernah dicoba" tidak berarti semua uji di bot asli menghasilkan skor yang tertulis; skor tetap dari uji sebelum/sesudah.
 
 **Skill medis:** `pengingat-pasien-klinik` diberi keterangan "belum direview tenaga medis"; Paket Klinik juga diberi keterangan yang sama karena paket itu memuat skill klinik.
 
-**Catatan kejujuran dari `catatan_jujur`** yang saya cantumkan secara ringkas: SiYuan dan Odoo diuji dengan server tiruan; SPT Tahunan dan Pengingat Pasien dinilai dari satu skenario; kontrak, surat peringatan, dan katalog reseller perlu tinjauan profesional/pemilik. Bila ingin lebih singkat, bagian ini bisa dipangkas, tetapi sebaiknya tetap ada.
+**Catatan kejujuran dari `catatan_jujur`** yang saya cantumkan secara ringkas: SiYuan dan Odoo diuji dengan server tiruan; SPT Tahunan dan Pengingat Pasien dinilai dari satu skenario; kontrak, surat peringatan, dan katalog reseller perlu tinjauan profesional/pemilik. Untuk `karyawan-ai-mulai`, skor sebelum (3) berasal dari uji awal dan skor sesudah (8,3) dari uji ulang setelah revisi, seperti tertulis di kartunya; bila ingin perbandingan satu kali uji, pakai angka bot Telegram asli 6,5 -> 8,5. Bila ingin lebih singkat, bagian ini bisa dipangkas, tetapi sebaiknya tetap ada.
 
 **Yang perlu diisi:** `[LINK HALAMAN SEBELUM-SESUDAH]` (belum ada URL publik di repo), `[KONTAK]` (nomor/tautan pemesanan). Juga cek apakah menyebut nama "Coretax", "SiYuan", dan "Odoo" sebagai nama produk pihak ketiga perlu keterangan "tidak berafiliasi" (keputusan 2026-09-26).
 
