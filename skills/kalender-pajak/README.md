@@ -58,6 +58,14 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 1 Okt 2026; muat CLI), Claude Code (simulasi agent), dan uji jadwal di grup uji Telegram Komunitech (satu pengingat sekali jalan terkirim sungguhan 13 Okt 2026 — lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Codex dan Cursor belum uji platform asli. PERLU REVIEW: beberapa pasal PMK belum dibaca penguji independen dari naskah resminya (lihat FAQ pertama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech) pada 17 Oktober 2026, versi 1.0.7, dengan dua pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): "kapan aja saya harus bayar sama lapor pajak bulan oktober ini? biar ga kena denda", lalu profilnya: freelancer konsultan orang pribadi, memakai tarif 0,5%, belum PKP, tanpa karyawan, omzet sekitar Rp600 juta setahun. Skor 1–10 dari penilai independen (dua pesan dinilai sebagai satu jawaban): tanpa skill **5,5** → dengan skill **8** (selisih +2,5), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5); pemeriksa kedua setuju.
+
+Dengan skill, setelah profil dijawab Anda mendapat kesimpulan yang jelas: bulan Oktober 2026 tidak ada setoran atau laporan yang jatuh tempo; dengan asumsi omzet rata per bulan, omzet tahun ini baru melewati Rp500 juta di November; dan setoran pertama paling lambat Selasa, 15 Desember 2026. Asumsinya ditulis dan ada penafian. Tanpa skill, bot memberi tanggal setor PPh 21/23 yang sudah tidak berlaku (tanggal 10, padahal sekarang tanggal 15), menyebut batas bayar 15 Oktober padahal tanggal uji sudah 17 Oktober, lalu berhenti dengan pertanyaan lagi tanpa kesimpulan. Tanggal dan nama hari sudah dicek ulang terpisah.
+
+Catatan jujur: pesan pertama dengan skill hanya berisi 4 pertanyaan tanpa hasil apa pun; batas SPT Tahunan (Rabu, 31 Maret 2027) tidak disebut, padahal jawaban tanpa skill menyebutnya; dan perkiraan setoran November (sekitar Rp250.000 bila omzet rata) belum dihitungkan. Ini satu percakapan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Seberapa bisa dipercaya tanggalnya?**
 Tanggal dihitung skrip dari aturan PMK 81/2024 (peraturan Menteri Keuangan tentang tata cara pajak) dan daftar libur resmi (SKB 3 Menteri, surat keputusan bersama tiga menteri) 2026 & 2027. Pembuat skill mencocokkan pasal tenggatnya dengan naskah resmi di pajak.go.id (26 September 2026); belum ada penguji independen yang membaca naskah aslinya, dan hasil skill menandai butir yang masih PERLU REVIEW. Jadi ini alat bantu yang diuji, bukan jaminan mutlak. Batas SPT Tahunan tidak bergeser walau jatuh di hari libur, jadi lapor lebih awal. DJP (Direktorat Jenderal Pajak) kadang mengumumkan perpanjangan khusus, jadi tetap pantau pengumuman DJP. Untuk kasus khusus, tanyakan ke konsultan pajak atau AR (petugas pajak pendamping di kantor pajak) Anda.

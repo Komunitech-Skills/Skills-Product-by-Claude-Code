@@ -66,6 +66,14 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 1 Okt 2026; uji pemasangan jadwal di OpenClaw lokal). Claude Code (simulasi agent). **Kiriman terjadwal ke Telegram:** dicoba di bot Telegram uji pada 13 Okt 2026 — satu pesan laporan terjadwal tiba di grup uji sekitar 5 menit setelah jadwal dibuat, omzet Rp51.000 cocok dengan data uji (detail `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Yang belum diuji: alur konfirmasi "Lanjut? (ya/tidak)" lewat chat bot. Codex dan Cursor memakai format SKILL.md yang sama; belum uji platform asli di kedua platform itu.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, data fiktif) pada 17 Oktober 2026, versi 1.1.4, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): "Gimana usaha hari ini? Rekap semua dong, penjualan sama calon pembeli, dibanding kemarin naik atau turun." Data kedai kopi (nota kasir kemarin dan hari ini, serta 3 calon pembeli) sudah tersimpan di alat kasir dan alat pencatat calon pembeli Komunitech di komputer bot. Skor 1–10 dari penilai independen: tanpa skill **3,5** → dengan skill **8** (selisih +4,5), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5); pemeriksa kedua setuju.
+
+Dengan skill, rekap diambil dari data toko sendiri dan semua angkanya benar: omzet hari ini Rp172.600 dari 4 nota, kemarin Rp179.000, jadi **turun 3,6%**; tunai Rp84.600 dan QRIS Rp88.000; terlaris Kopi Susu Gula Aren; 1 calon pembeli terlambat dihubungi lagi dan 1 kesepakatan Rp1.800.000. Bagian "perlu perhatian" mengingatkan bahwa kasir belum ditutup, dan nama serta nomor calon pembeli tidak dipajang di grup. Tanpa skill, bot tidak menemukan data kasir dan calon pembeli, lalu memakai berkas contoh yang tertinggal di folder, sehingga angkanya bukan angka toko dan tidak bisa dibandingkan dengan kemarin.
+
+Catatan jujur: di uji ini sisi tanpa skill juga tidak memakai alat kasir dan pencatat calon pembeli; bila kedua alat itu terpasang, AI tanpa skill ini pun bisa membaca angkanya (lihat hasil uji di atas). Baris "konversi calon pembeli baru 0,0%" di samping "kesepakatan 1" masih terbaca membingungkan (kesepakatan itu dari calon pembeli lama), baris pembanding "Sabtu lalu: Rp0" tampil walau belum ada datanya, dan nama alat lain serta singkatan "CRM" (pencatat data pelanggan) ikut tersebut. Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Apakah skill ini bisa mengubah atau merusak data kasir/stok/absen saya?**
 Tidak untuk skrip laporannya. Data dibuka dalam mode baca saja dan disalin sementara untuk dihitung. File asli tidak ditulis oleh skrip (pada uji, isi file data sama persis sebelum dan sesudah laporan dijalankan).

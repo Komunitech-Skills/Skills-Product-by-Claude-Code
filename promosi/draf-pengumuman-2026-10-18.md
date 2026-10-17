@@ -37,7 +37,7 @@ Sebelum skill kami tawarkan, kami uji dulu: tugas yang sama diberikan ke asisten
 7. Tagihan dan Follow-up Lebih Sulit Terlupa: 3,5 -> 9,25
 8. Surat Peringatan Karyawan yang Adil dan Rapi: 3 -> 8,6
 9. Buka Reseller & Agen, Harga Terhitung Rapi: 3 -> 8,5
-10. Starter Kit Karyawan AI, Siap dalam Hitungan Menit: 3 -> 8,3
+10. Starter Kit Karyawan AI, Dipandu sampai Tugas Pertama: 3 -> 8,3
 
 Paket yang tersedia:
 - Paket Toko Online (16 skill): Rp449.000
@@ -95,7 +95,7 @@ Mengecek dulu status surat peringatan sebelumnya, baru menyarankan jenis surat y
 **9. Buka Reseller & Agen, Harga Terhitung Rapi** (nilai 3 -> 8,5)
 Membantu menyusun katalog dan harga reseller, dan menolak bagian yang melanggar aturan, misalnya skema bonus berjenjang. Hitungan harga resellernya juga diuji di bot Telegram sungguhan (dengan versi sebelumnya).
 
-**10. Starter Kit Karyawan AI, Siap dalam Hitungan Menit** (nilai 3 -> 8,3)
+**10. Starter Kit Karyawan AI, Dipandu sampai Tugas Pertama** (nilai 3 -> 8,3)
 Ceritakan kebutuhan usaha Anda (misalnya rekap omzet, balas chat pelanggan, bikin promo); skill ini memetakannya ke skill yang cocok, langsung mengerjakan tugas pertama dengan data contoh yang diberi label jelas, lalu memberi rencana 7 hari dan aturan kerja yang aman. Kadang asisten menawarkan skill pendamping yang belum terpasang. Juga diuji di bot Telegram sungguhan (dengan versi sebelumnya).
 
 **Paket yang tersedia**

@@ -88,6 +88,14 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - Ringkasan terjadwal hanya berjalan saat komputer dan Gateway OpenClaw (program OpenClaw yang berjalan di latar belakang) menyala. Satu jadwal sekali jalan ke Telegram sudah diuji di grup uji Telegram Komunitech pada 13 Okt 2026, di mesin uji, bukan di komputer Anda.
 - Alat bantu pencatatan dan penagihan, bukan nasihat keuangan, pajak, atau hukum. Sengketa utang yang besar sebaiknya dibawa ke advokat.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, data fiktif) pada 17 Oktober 2026, versi 1.0.5, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): pemilik Toko Sembako Berkah minta dicatatkan tiga bon (Warung Bu Tini Rp1.250.000 tempo 2 minggu; Kafe Senja Rp2.400.000 tempo seminggu dan sudah transfer Rp1.000.000; Pak Joko Rp850.000 tempo 30 hari), menanyakan siapa yang belum bayar dan siapa yang sudah lewat jatuh tempo, dan minta dibuatkan pesan tagih untuk Kafe Senja. Skor 1–10 dari penilai independen: tanpa skill **7,5** → dengan skill **8,5**, selisih **+1**: **belum lulus acuan kami**, karena selisihnya di bawah 1,5 (jawaban tanpa skill sudah kuat).
+
+Dengan skill, balasan pertama langsung memuat daftar tunggakan yang benar (Kafe Senja sisa Rp1.400.000, lewat 35 hari; Bu Tini Rp1.250.000, lewat 32 hari; total lewat tempo Rp2.650.000; Pak Joko Rp850.000 belum jatuh tempo, jatuh tempo 25 Oktober), draf pesan tagih yang sopan, dan tautan WhatsApp siap klik yang Anda kirim sendiri. Saat dibalas "ya", bot bertanya dulu maksudnya, bukan menganggapnya izin mengirim. Tanpa skill, bot juga mencatat ketiga bon, menghitung sisa dan hari keterlambatan dengan benar, dan memberi draf tagih, tetapi tidak menyebut total lewat tempo, tidak memberi tautan siap klik, dan menawarkan mengirim pesan langsung ke nomor pelanggan. Semua angka sudah dihitung ulang terpisah.
+
+Catatan jujur: draf tagih masih memuat kalimat samar "pembayaran bisa melalui cara yang biasa" (sebaiknya diganti nomor rekening Anda), tautan WhatsApp-nya sangat panjang di chat, dan kata "skill" sempat muncul. Pada percobaan pertama di hari yang sama, saat buku piutang juga belum pernah dibuat, balasan pertama dengan skill hanya meminta izin membuat buku piutang ("balas ya") tanpa daftar tunggakan; percobaan itu belum menyertakan balasan "ya" sehingga tidak dipakai sebagai skor, dan sisi dengan skill diuji ulang. Jadi pada pemakaian pertama Anda mungkin perlu membalas "ya" dulu sebelum rekap muncul. Sisi tanpa skill diambil dari percobaan pertama. Ini satu percakapan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Kalau pelanggan membayar lebih dari utangnya, bagaimana?**
 Buku tidak langsung mencatatnya. Anda ditanya dulu: kelebihannya disimpan sebagai deposit (otomatis bisa dipakai untuk bon berikutnya), sudah Anda kembalikan, atau untuk nota lain. Jadi saldo tidak menjadi minus tanpa sepengetahuan Anda.

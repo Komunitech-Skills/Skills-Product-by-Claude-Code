@@ -85,11 +85,15 @@ menyusun laporan sekali jalan, tapi pengirimannya harus manual. Di Codex dan Cur
 
 ## Bukti uji di bot Telegram
 
-Uji banding terakhir di bot Telegram asli (grup uji internal Komunitech, data fiktif): 12 Okt 2026, versi 1.1.7. Pesan yang sama (minta laporan penjualan dari file ekspor kasir) dikirim ke bot tanpa skill dan bot dengan skill, lalu dinilai penilai independen. Skor 1–10: tanpa skill **8** → dengan skill **6**, selisih −2. Hasil: belum lulus acuan kami: bot dengan skill menolak membuat laporan karena tidak menemukan berkas ekspor kasir di folder kerjanya, sedangkan bot tanpa skill langsung menampilkan contoh laporan dengan angka utuh.
+Uji terbaru: 17 Oktober 2026, versi 1.1.9, di bot OpenClaw asli (grup uji Komunitech, data fiktif), dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): minta laporan penjualan otomatis tiap Senin jam 7 pagi dikirim ke Telegram, dengan file ekspor kasir kedai kopi selama seminggu (57 transaksi) sudah ditaruh di folder kerja. Skor 1–10 dari penilai independen: tanpa skill **5** → dengan skill **8** (selisih +3), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
 
-Penyebabnya penempatan berkas contoh di komputer uji (berkas ada di folder pribadi bot, bukan di folder kerjanya), bukan hitungan skill. Pencarian berkas diperbaiki di versi 1.1.8 (dicari berurutan: folder yang Anda sebut, folder kerja, lalu folder pribadi), tetapi uji banding tanpa-skill melawan dengan-skill di bot Telegram belum diulang, jadi kami belum memakai uji ini sebagai bukti keunggulan skill.
+Dengan skill, bot lebih dulu menunjukkan contoh laporan dari data Anda sendiri, dan semua angkanya benar: omzet seminggu Rp1.861.000, rata-rata Rp265.857 per hari, hari terbaik 6 Oktober (Rp311.000), hari terendah 7 Oktober (Rp209.000), dan produk terlaris Roti Bakar Keju. Bot menolak mengirim laporan ke grup dan meminta Anda menyapa bot lewat chat pribadi dulu, karena bot Telegram baru bisa mengirim ke chat pribadi setelah Anda mengirim pesan kepadanya. Tidak ada jadwal yang dipasang sebelum tujuan kirimnya jelas. Tanpa skill, bot langsung memasang jadwal mingguan sungguhan yang mengirim ke **grup** (padahal yang diminta "Telegram saya"), memindahkan berkas Anda tanpa izin, dan tidak menunjukkan satu angka pun. Jadwal itu sudah dihapus setelah uji.
 
-Catatan jujur: terpisah dari uji banding itu, uji jadwal Telegram sungguhan pada 13 Okt 2026 (versi 1.1.9) berhasil. Setelah dijawab "ya", laporan tiba di grup uji sekitar 6 menit kemudian, dan omzet Rp 2.114.000 cocok dengan hitungan independen.
+Catatan jujur: kalimat "jadwalnya saya catat" masih bisa terbaca seolah jadwal sudah aktif, padahal belum. Ringkasan rencana dengan uji kirim sekali dan pertanyaan "Lanjut? (ya/tidak)" juga belum muncul, dan label "57 baris penjualan" serta sebutan nama folder belum sepenuhnya bahasa sehari-hari. Ini satu pesan uji per sisi, bukan uji berulang.
+
+Uji sebelumnya: 12 Oktober 2026, versi 1.1.7, tanpa skill **8** → dengan skill **6** (selisih −2), belum lulus acuan kami: bot dengan skill tidak menemukan berkas ekspor kasir karena berkas contoh diletakkan di folder pribadi bot, bukan di folder kerjanya, sedangkan bot tanpa skill langsung menampilkan contoh laporan. Pencarian berkas diperbaiki di versi 1.1.8 (dicari berurutan: folder yang Anda sebut, folder kerja, lalu folder pribadi).
+
+Terpisah dari uji banding, uji jadwal Telegram sungguhan pada 13 Okt 2026 (versi 1.1.9) berhasil. Setelah dijawab "ya", laporan tiba di grup uji sekitar 6 menit kemudian, dan omzet Rp 2.114.000 cocok dengan hitungan independen.
 
 ## FAQ
 **Ke mana data usaha saya pergi?**
