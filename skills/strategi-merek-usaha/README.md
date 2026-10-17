@@ -1,4 +1,4 @@
-# Strategi Merek Usaha: Nama & Penawaran yang Siap Jual
+# Strategi Merek Usaha: Nama, Penawaran, dan Promo Jujur
 
 **Dari "bingung namanya" ke nama yang sudah dinilai dan penawaran yang jujur, lengkap dengan hitungan labanya.**
 

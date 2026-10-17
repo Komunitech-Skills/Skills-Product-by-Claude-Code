@@ -1,4 +1,4 @@
-# Siap Ajukan KUR Tanpa Bingung
+# Cek Cicilan dan Plafon KUR Sebelum Mengajukan
 
 **Hitung cicilan, cek sanggup bayar atau tidak, dan siapkan dokumen serta profil usaha — sebelum datang ke bank.**
 

@@ -1,4 +1,4 @@
-# Loker Rapi Siap Posting, Bebas Syarat Bermasalah
+# Loker Rapi Siap Posting, Syarat Bermasalah Dicoret
 
 **Sebut posisinya, dapat iklan lowongan lengkap untuk JobStreet, LinkedIn, Glints, Instagram, dan grup WA.**
 

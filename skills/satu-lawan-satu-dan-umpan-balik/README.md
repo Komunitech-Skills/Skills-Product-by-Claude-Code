@@ -1,4 +1,4 @@
-# Ngomong ke Tim Tanpa Tidak Enak Hati
+# Siapkan Obrolan Empat Mata dengan Karyawan
 
 **Naskah ucapan dan pesan WA siap pakai untuk obrolan 1-on-1 (empat mata), teguran halus, karyawan baru, dan pengumuman perubahan.**
 

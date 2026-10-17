@@ -1,6 +1,6 @@
-# Cek Harga Pesaing, Pasang Harga Tetap Untung
+# Cek Harga Pesaing, Hitung Harga Minimum
 
-**Tempel link atau screenshot produk pesaing, dapatkan harga pasaran dan harga jual yang disarankan tanpa merusak margin.**
+**Tempel link atau screenshot produk pesaing, dapatkan harga pasaran dan harga jual yang disarankan dengan margin yang sudah dihitung.**
 
 *Diuji AI penguji independen di OpenClaw (16 Oktober 2026, versi 1.0.5, satu skenario kopi gayo 250 gr, lokal dan dengan pengaturan seperti bot Telegram di komputer uji, bukan bot Telegram sungguhan): tanpa skill 5 → dengan skill 8,0 dari 10. Lulus tipis: skor tanpa skill dibatasi karena dua salah hitung persen untung dan jumlah harga coret; semua angka dengan skill cocok dengan hitungan independen (median Rp53.125, harga minimum tetap untung Rp46.297). Uji simulasi Claude Code sebelumnya: 8,5 dari 10.*
 
@@ -64,6 +64,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 - Uji lama: uji Claude Code simulasi agent, skor **8,5/10** (lulus; uji ulang independen terakhir pada v1.0.3). Hitungan dicocokkan ulang dengan hitungan independen: **117** angka pada uji awal dan **388** angka pada uji ulang v1.0.1, semuanya **0 selisih**. Contoh kopi Gayo di atas (median Rp54.375, rekomendasi Rp50.588–Rp57.188, harga cantik Rp53.900, laba Rp13.913) adalah hasil skrip pada data fiktif dari pembuat skill, bukan uji independen. Di OpenClaw: uji platform otomatis oleh agent, 6 dari 6 butir lulus (`examples/UJI-PLATFORM.md`); uji sebelum/sesudah OpenClaw dengan skor ada di butir pertama di atas. Sumber: `examples/HASIL-UJI.md`, `examples/06-uji-ulang-v1.0.1.md`, `examples/UJI-PLATFORM.md`.
 
 **Status uji (jujur):** versi 1.0.5 diuji sebelum/sesudah oleh penguji AI independen di OpenClaw 2026.10.2 pada 16 Oktober 2026 (lulus tipis, satu skenario; lihat Hasil uji); sebelumnya diuji Claude Code (simulasi agent) dan di OpenClaw (uji platform otomatis oleh agent + muat CLI). Codex dan Cursor belum uji platform asli. Skill tidak login atau mengambil data marketplace secara massal; link sering diblokir → tempel teks/screenshot. Pada uji pengambilan data dari web, hanya 1 dari 3 halaman publik yang terbaca (satu halaman Shopee kosong, satu situs error 503), jadi jangan mengandalkan pengambilan otomatis dari marketplace.
+
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "Tolong cek harga kopi gayo bubuk 250 gr saya dibanding pesaing. Ini teks produk pesaing yang saya salin: 1) Toko Kopi Sidikalang Jaya — Kopi Arabika Aceh Gayo 250gr, varian Medium Grind. Rp80.000. (website toko, belum ada…". Tanpa skill skor **5** → dengan skill skor **8** (selisih +3, lulus acuan kami). Hanya dengan skill, bot menyebut terang baris pesaing dobel yang dibuang, lalu menghitung harga tengah pasar Rp53.125, harga balik modal Rp35.715, harga minimum dengan untung 20% dari harga jual (Rp46.297), dan harga cantik Rp52.900 beserta untungnya (Rp15.038), semuanya cocok saat dihitung ulang. Tanpa skill, bot tidak menghitung harga tengah pasar maupun harga balik modal, dan salah menghitung persen untung di harga Rp52.000–54.000. Catatan jujur: Tanpa skill, persen untung di harga Rp52.000–54.000 ditulis sekitar 29–30% dari harga jual, padahal yang benar 27,4–29,6%. Istilah P25/P75 tidak dijelaskan, dan jawaban tidak menyebut bahwa target untung 20% dihitung dari harga jual. Saran memasang harga coret juga tidak disertai pengingat bahwa harga coret harus harga yang benar-benar pernah dipakai.
 
 ## FAQ
 **Apakah AI bisa otomatis mengambil harga dari Shopee/Tokopedia?**
