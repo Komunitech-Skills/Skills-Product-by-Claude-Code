@@ -58,6 +58,10 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **PERLU REVIEW:** aturan balasan untuk fasilitas kesehatan (klinik, praktik dokter atau dokter gigi, apotek, dan sejenisnya) belum direview tenaga medis/kepatuhan; tinjau dulu sebelum dipakai sebagai aturan final.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "ada ulasan bintang 1 di shopee: 'barang dtg telat 5 hari, warna beda sm foto, adminnya slow respon. kecewa bgt gk lg2 belanja disini!!' tolong balesin yg sopan dong tp jgn kesannya kami yg salah semua, telatnya kan krn…". Tanpa skill skor **5** → dengan skill skor **8,5** (selisih +3,5, lulus acuan kami). Dengan skill, bot memberi balasan publik siap tempel yang muat batas aman 500 karakter (460 karakter, plus versi singkat 287), dan panjangnya sudah dicek. Balasan itu juga mengajak pembeli lanjut lewat Chat Toko, dan ada pesan pribadi untuk meminta nomor pesanan dan foto barang. Tanpa skill, balasannya cuma satu versi sepanjang 671 karakter (lewat batas aman) dan mengarang klaim "warna asli tetap sesuai spesifikasi". Catatan jujur: Tanpa skill, balasan menulis "warna asli tetap sesuai spesifikasi" padahal pemilik sendiri mengakui warnanya beda sedikit. Balasan publik sengaja tidak menanggapi keluhan admin yang lambat dan memuat kalimat "kami tetap pantau terus" yang belum tentu dilakukan toko, jadi pemilik sebaiknya menyesuaikannya sebelum memposting. Uji di bot ini hanya memakai satu ulasan Shopee bintang 1.
+
 ## FAQ
 **Bolehkah menawarkan voucher supaya pembeli mengubah bintangnya?**
 Tidak. Marketplace dan Google melarang imbalan untuk mengubah ulasan. Skill tetap membantu Anda memberi solusi yang tulus lewat chat pribadi, tanpa syarat ulasan.

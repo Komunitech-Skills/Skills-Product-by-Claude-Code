@@ -1,6 +1,6 @@
-# Program Referral & Loyalitas yang Tetap Untung
+# Program Referral & Loyalitas dengan Hitungan Biaya
 
-**Satu kalimat dari Anda, satu program referral (pelanggan mengajak teman) atau program poin pelanggan setia, lengkap dengan angka hadiah yang masih menguntungkan.**
+**Satu kalimat dari Anda, satu program referral (pelanggan mengajak teman) atau program poin pelanggan setia, lengkap dengan hitungan biaya hadiah agar untung-ruginya bisa dicek.**
 
 Diuji AI penguji independen di OpenClaw: 5,25 → 9,0 dari 10 (hitungan hadiah sudah benar di kedua sisi; pembedanya: klinik gigi yang minta diskon rujukan dan kirim ke 2.000 kontak, AI tanpa skill menjawab "udah bagus", dengan skill ditolak sesuai aturan iklan layanan kesehatan dan dialihkan ke kartu info serta pengingat yang dikirim staf satu per satu).
 

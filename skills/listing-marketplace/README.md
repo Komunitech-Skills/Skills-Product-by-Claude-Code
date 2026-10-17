@@ -67,6 +67,10 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji di Claude Code (simulasi agent) dan OpenClaw (uji muat lewat CLI, ditambah uji sebelum/sesudah otomatis oleh agent AI pada 1 Oktober 2026: satu skenario, tiga putaran, terakhir versi 1.0.4). Versi terkini 1.0.5 mengganti rujukan ke skill yang sudah diarsipkan dengan `konten-mingguan` (lihat `CHANGELOG.md`); uji sebelum/sesudah yang tercatat di folder `examples/` memakai versi 1.0.4. Codex dan Cursor belum kami uji langsung.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "bikinin deskripsi produk buat hijab voal aku dong, mau upload di shopee 1. hijab voal motif nama tokonya Rumah Hijab Nia 2. 115x115 voal premium, tepi lasercut 3. motif bunga: dusty pink, sage, mocca, navy 4. adem, ga licin,…". Tanpa skill skor **5** → dengan skill skor **8,5** (selisih +3,5, lulus acuan kami). Tanpa skill, AI cuma menulis satu deskripsi Shopee dengan tujuh klaim yang tidak pernah disebut pemilik (mis. "Tebal pas", "ga perlu obras ulang", "enak dipakein pashmina") dan menaruh harga di deskripsi. Dengan skill, AI memberi judul siap tempel untuk Shopee, Tokopedia, dan TikTok Shop yang masuk batas karakter (85/100, 69/70, 68/100), ditambah dua deskripsi yang hanya memakai fakta dari pemilik. Catatan jujur: Deskripsi siap tempel masih berisi penanda "[isi: info pengiriman]" yang harus diisi atau dihapus sebelum tayang, dan kalimatnya agak berulang. Judul Tokopedia 69 dari batas 70 karakter sangat mepet, jadi cek ulang batas terbaru di Seller Center.
+
 ## FAQ
 **Apakah batas karakternya pasti sesuai aturan terbaru marketplace?**
 Skill memakai batas aman yang sama atau lebih ketat dari batas yang pernah berlaku, dan mengingatkan Anda untuk cek batas terbaru di Seller Center. Kalau Anda tahu angka terbarunya, sebutkan saja dan skill akan memakainya.

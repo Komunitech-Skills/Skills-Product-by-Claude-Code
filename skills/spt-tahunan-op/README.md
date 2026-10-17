@@ -1,4 +1,4 @@
-# SPT Tahunan Beres Sebelum Buka Coretax
+# Siapkan SPT Tahunan Sebelum Buka Coretax
 
 **Ceritakan penghasilan setahun dengan bahasa biasa — dapat hitungan kurang bayar, lebih bayar, atau nihil untuk SPT Tahunan (laporan pajak tahunan) orang pribadi, lengkap dengan daftar dokumen yang harus disiapkan.**
 

@@ -25,7 +25,10 @@ Contoh:
   python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007
   python3 buat_invoice.py --file invoice.json --nomor-terakhir INV/2026/09/0007 --counter-file nomor-invoice.json
   (--counter-file mencatat setiap nomor yang dibuat + nama pembeli agar invoice berikutnya tidak bernomor dobel)
-  (dengan --html, baris terakhir keluaran 'BERKAS: <path absolut>' = path yang dilampirkan ke chat; v1.0.7)
+  (dengan --html, baris 'BERKAS: <path absolut>' = path yang dilampirkan ke chat; v1.0.7)
+  python3 buat_invoice.py --file invoice.json --html invoice-{nomor}.html --txt invoice-{nomor}.txt
+  (v1.0.8: --txt menulis versi teks biasa .txt -> baris 'BERKAS TEKS: <path absolut>', cadangan bila kanal chat
+   menolak berkas HTML)
 """
 import argparse
 import datetime
@@ -43,7 +46,7 @@ from hitung_ppn import hitung_ppn_dari_dpp, parse_angka, format_rp, format_angka
 BATAS_METERAI = Decimal(5000000)
 TARIF_METERAI = Decimal(10000)
 TANGGAL_ATURAN = "2026-09-23"
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 TARIF_PPH23_JASA = Decimal(2)   # UU PPh Pasal 23 ayat (1) huruf c; tanpa NPWP 100% lebih tinggi (ayat 1a)
 NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
               "Oktober", "November", "Desember"]
@@ -263,17 +266,38 @@ def kalimat_meterai_sisa(total, dibayar, sisa, termin):
         format_rp(sisa), banding(sisa), akibat(sisa))
 
 
-def path_html(arg, jenis_dokumen, nomor):
+def path_html(arg, jenis_dokumen, nomor, ekstensi=".html"):
     """v1.0.6: nama berkas HTML SELALU diturunkan dari nomor dokumen yang dicetak di chat.
     - arg memuat '{nomor}'  -> diganti nomor aman ('invoice-{nomor}.html' -> 'invoice-001-INV-X-2026.html')
     - arg folder (sudah ada, atau berakhir '/' atau '\\') -> '<jenis>-<nomor aman>.html' di folder itu
-    - selain itu dipakai apa adanya (kompatibel dengan versi lama)."""
+    - selain itu dipakai apa adanya (kompatibel dengan versi lama).
+    v1.0.8: ekstensi='.txt' untuk --txt (aturan nama sama)."""
     aman = nama_berkas_dari_nomor(nomor)
     if "{nomor}" in arg:
         return arg.replace("{nomor}", aman)
     if arg.endswith(("/", "\\")) or os.path.isdir(arg):
-        return os.path.join(arg, "{}-{}.html".format(jenis_dokumen, aman))
+        return os.path.join(arg, "{}-{}{}".format(jenis_dokumen, aman, ekstensi))
     return arg
+
+
+def path_txt(arg, jenis_dokumen, nomor):
+    """v1.0.8: path berkas teks (.txt). Aturan nama sama dengan path_html; akhiran SELALU '.txt' (ditambahkan bila
+    belum ada) karena kanal chat (mis. OpenClaw) hanya menerima dokumen teks biasa berakhiran .txt."""
+    path = path_html(arg, jenis_dokumen, nomor, ".txt")
+    akar, ekstensi = os.path.splitext(path)
+    if ekstensi.lower() in (".html", ".htm"):
+        return akar + ".txt"   # 'invoice-{nomor}.html' diberikan ke --txt -> 'invoice-....txt', bukan '.html.txt'
+    return path if ekstensi.lower() == ".txt" else path + ".txt"
+
+
+def siapkan_folder(arg, path):
+    """v1.0.8: argumen folder berakhiran '/' atau '\\' yang belum ada -> folder dibuat. Folder induk lain yang tidak
+    ada -> ValueError SEBELUM ada berkas yang ditulis (tidak ada HTML yang tertulis setengah jalan)."""
+    if arg.endswith(("/", "\\")):
+        os.makedirs(arg, exist_ok=True)
+    induk = os.path.dirname(os.path.abspath(path))
+    if not os.path.isdir(induk):
+        raise ValueError("folder '{}' tidak ada; buat foldernya dulu atau pakai folder kerja yang sudah ada".format(induk))
 
 
 def cegah_dobel(data, nomor, pembeli, manual=False):
@@ -574,11 +598,11 @@ def teks_terbilang(h):
     return terbilang(h["sisa"]) if h["pembayaran"] else h["terbilang_total"]
 
 
-def teks_pph23(h):
+def teks_pph23(h, esc=None):
     q = h["pph23"]
     return ("_Info PPh 23 (dipotong & disetor oleh {}, tidak mengurangi total tagihan): {}% x {} = {}. "
             "Estimasi diterima bersih: {}. Mohon kirimkan bukti potong PPh 23._".format(
-                md(h["pembeli"]["nama"]), format_angka(q["tarif"]).replace(".", ","), format_rp(q["dasar"]),
+                (esc or md)(h["pembeli"]["nama"]), format_angka(q["tarif"]).replace(".", ","), format_rp(q["dasar"]),
                 format_rp(q["pph23"]), format_rp(q["estimasi_diterima_bersih"])))
 
 
@@ -658,6 +682,91 @@ def markdown(h, nomor):
     return "\n".join(out)
 
 
+# ---------------------------------------------------------------- output teks biasa (.txt)
+def polos(x):
+    """Teks pengguna untuk berkas .txt: satu baris, tanpa escape Markdown."""
+    return re.sub(r"\s*[\r\n]+\s*", " ", str(x if x is not None else "")).strip()
+
+
+def teks_polos(h, nomor):
+    """v1.0.8: versi teks biasa (tanpa Markdown/tabel) dari bagian dokumen untuk pembeli, untuk berkas .txt
+    cadangan yang bisa dilampirkan di kanal chat yang menolak HTML. Angka sama persis dengan markdown() (hanya
+    menampilkan hasil hitung(), tidak ada hitungan baru); 'Info untuk penjual' tidak ikut."""
+    kuitansi = h["jenis_dokumen"] == "kuitansi"
+    out = ["KUITANSI" if kuitansi else "INVOICE", "",
+           "No.: " + polos(nomor), "Tanggal: " + tanggal_id(h["tanggal"])]
+    if h["jatuh_tempo"]:
+        out.append("Jatuh tempo: " + tanggal_id(h["jatuh_tempo"]))
+    out += ["Status: " + h["status"], ""]
+    if kuitansi:
+        out.append("Telah terima dari: " + polos(h["pembeli"]["nama"]))
+        out.append("Uang sejumlah: " + format_rp(h["dibayar"]))
+        out.append("Terbilang: " + teks_terbilang(h))
+        out.append("Untuk pembayaran: " + ", ".join(polos(b["nama"]) for b in h["baris"]))
+        if h["sisa"] > 0:
+            out.append("Sisa yang belum dibayar: {} dari total {}".format(format_rp(h["sisa"]), format_rp(h["total"])))
+        out.append("")
+    for label, p in (("Dari", h["penjual"]), ("Kepada", h["pembeli"])):
+        out.append("{}: {}".format(label, polos(p.get("nama"))))
+        for k in ("alamat", "telepon", "email"):
+            if p.get(k):
+                out.append("   " + polos(p[k]))
+        if p.get("npwp"):
+            out.append("   NPWP: " + polos(p["npwp"]))
+    out += ["", "Rincian:"]
+    for b in h["baris"]:
+        qty = format_angka(b["qty"]) + (" " + polos(b["satuan"]) if b["satuan"] else "")
+        s = "{}. {}: {} x {}".format(b["no"], polos(b["nama"]), qty, format_rp(b["harga"], True))
+        if b["diskon"]:
+            s += " = {}, diskon {}, jumlah {}".format(format_rp(b["bruto"]),
+                                                      label_diskon(b["diskon"], b["diskon_persen"]),
+                                                      format_rp(b["jumlah"]))
+        else:
+            s += " = " + format_rp(b["jumlah"])
+        out.append(s)
+    out += ["", "Subtotal: " + format_rp(h["subtotal"])]
+    if h["diskon"]:
+        out.append("Diskon: -" + label_diskon(h["diskon"], h["diskon_persen"]))
+    if h["ongkir"]:
+        out.append("Ongkos kirim: " + format_rp(h["ongkir"]))
+    if h["ppn"]:
+        p = h["ppn"]
+        out.append("DPP: " + format_rp(p["dpp"]))
+        if p["jenis"] == "umum":
+            out.append("DPP nilai lain (11/12): " + format_rp(p["dpp_nilai_lain"], True))
+        out.append("PPN 12%: " + format_rp(p["ppn"]))
+    out.append("TOTAL: " + format_rp(h["total"]))
+    if tampil_sisa(h):
+        for p in h["pembayaran"]:
+            out.append("{}: -{}".format(polos(label_bayar(h, p)), format_rp(p["jumlah"])))
+        out.append("{}: {}".format(label_sisa(h), format_rp(h["sisa"])))
+    if not kuitansi:
+        out += ["", "Terbilang: " + teks_terbilang(h)]
+    if h.get("pph23"):
+        out += ["", teks_pph23(h, polos).strip("_")]
+    if h["termin"]:
+        out += ["", "Jadwal pembayaran:"]
+        for t in h["termin"]:
+            out.append("- {}{}: {}{}".format(
+                polos(t["nama"]), " ({}%)".format(format_angka(t["persen"])) if t["persen"] is not None else "",
+                format_rp(t["jumlah"]), ", jatuh tempo " + tanggal_id(t["jatuh_tempo"]) if t["jatuh_tempo"] else ""))
+    if h["rekening"] and h["sisa"] > 0:
+        out += ["", "Pembayaran ke:"]
+        for r in h["rekening"]:
+            out.append("- " + teks_rekening(r, polos))
+    if h["catatan"]:
+        out += ["", "Catatan: " + polos(h["catatan"])]
+    tt = h["tanda_tangan"]
+    out += ["", "{}, {}".format(polos(tt.get("kota")) if tt.get("kota") else ISI_KOTA, tanggal_id(h["tanggal"]))]
+    if h["meterai"]["wajib"]:
+        out.append("[ Meterai Rp10.000 ]")
+    out += ["", "", polos(tt["nama"]) if tt.get("nama") else ISI_NAMA]
+    if tt.get("jabatan"):
+        out.append(polos(tt["jabatan"]))
+    out.append(polos(h["penjual"]["nama"]))
+    return "\n".join(out) + "\n"
+
+
 # ---------------------------------------------------------------- output HTML
 CSS = """
 *{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;color:#222;margin:0;background:#f4f4f4}
@@ -731,7 +840,8 @@ def html_dok(h, nomor):
             e(", ".join(b["nama"] for b in h["baris"])), sisa)
     tb = "<p class='terbilang'>Terbilang: {}</p>".format(e(teks_terbilang(h))) if h["jenis_dokumen"] == "invoice" else ""
     if h.get("pph23"):
-        tb += "<p class='kecil'><em>{}</em></p>".format(e(teks_pph23(h).strip("_")))
+        # v1.0.8: nama pembeli tanpa escape Markdown (e() sudah meng-escape HTML); sebelumnya 'PT A_B' -> 'PT A\_B'
+        tb += "<p class='kecil'><em>{}</em></p>".format(e(teks_pph23(h, polos).strip("_")))
     termin = ""
     if h["termin"]:
         termin = "<p class='label'>Jadwal pembayaran</p><table class='item'><tr><th>Termin</th><th class='kanan'>Persen</th>" \
@@ -779,6 +889,8 @@ def main(argv=None):
     p.add_argument("--html", help="Simpan juga versi HTML siap cetak ke path ini. Boleh memuat {nomor} "
                    "(diganti nomor invoice, '/' jadi '-'), mis. invoice-{nomor}.html; atau berupa folder "
                    "(nama berkas otomatis dari nomor)")
+    p.add_argument("--txt", help="v1.0.8: simpan juga versi teks biasa (.txt, tanpa Markdown) ke path ini; aturan "
+                   "{nomor}/folder sama dengan --html. Cadangan lampiran bila kanal chat menolak berkas HTML")
     p.add_argument("--nomor-terakhir", help="Nomor invoice terakhir, mis. INV/2026/09/0007 -> dibuat 0008")
     p.add_argument("--urut-lanjut", action="store_true",
                    help="Dengan --nomor-terakhir: saat bulan/tahun berganti, urut dilanjutkan (bukan mulai 0001)")
@@ -818,8 +930,9 @@ def main(argv=None):
             nomor, dobel = cegah_dobel(data_counter, nomor, str(h["pembeli"]["nama"]), manual=bool(d.get("nomor")))
             if dobel:
                 h["peringatan"].append(dobel[0].upper() + dobel[1:])
-            keterangan_nomor = "{}{}{}Nomor tercatat di file counter {} (pakai file yang sama untuk dokumen " \
-                "berikutnya).".format(keterangan_nomor or "", " " if keterangan_nomor else "",
+            keterangan_nomor = "{}{}{}Nomor tercatat di file pencatat nomor (pakai file yang sama untuk dokumen " \
+                "berikutnya; di chat cukup sebut 'nomor terakhir sudah dicatat', lokasi berikut hanya untuk " \
+                "terminal/IDE: {}).".format(keterangan_nomor or "", " " if keterangan_nomor else "",
                                       "Nomor yang dipakai: {} ({} sudah terpakai). ".format(nomor, calon)
                                       if nomor != calon else "", os.path.abspath(a.counter_file))
     except ValueError as ex:
@@ -832,10 +945,25 @@ def main(argv=None):
         h["peringatan"].append("Nomor {} sama dengan nomor terakhir yang Anda sebut. Nomor dokumen baru harus "
                                "nomor terakhir + 1; pakai ini hanya bila memang revisi.".format(nomor))
     path_berkas = path_html(a.html, h["jenis_dokumen"], nomor) if a.html else None
+    path_teks = path_txt(a.txt, h["jenis_dokumen"], nomor) if a.txt else None
+    try:
+        if path_berkas and path_teks and os.path.normcase(os.path.abspath(path_berkas)) == \
+                os.path.normcase(os.path.abspath(path_teks)):
+            raise ValueError("--html dan --txt menunjuk berkas yang sama ({}); pakai nama berbeda, mis. "
+                             "--html invoice-{{nomor}}.html --txt invoice-{{nomor}}.txt".format(path_berkas))
+        for arg, path in ((a.html, path_berkas), (a.txt, path_teks)):
+            if path:
+                siapkan_folder(arg, path)
+    except (ValueError, OSError) as ex:
+        sys.stderr.write("ERROR: {}\n".format(ex.strerror if isinstance(ex, OSError) and ex.strerror else ex))
+        return 2
     try:
         if path_berkas:
             with open(path_berkas, "w", encoding="utf-8") as f:
                 f.write(html_dok(h, nomor))
+        if path_teks:
+            with open(path_teks, "w", encoding="utf-8", newline="\n") as f:
+                f.write(teks_polos(h, nomor))
         if data_counter is not None:
             sementara = a.counter_file + ".tmp"   # tulis dulu ke file sementara agar counter tidak rusak setengah jalan
             with open(sementara, "w", encoding="utf-8") as f:
@@ -851,6 +979,7 @@ def main(argv=None):
         h2["keterangan_nomor"] = keterangan_nomor
         h2["perlu_diisi"] = kolom_kosong(h)
         h2["html_disimpan_ke"] = os.path.abspath(path_berkas) if path_berkas else None
+        h2["txt_disimpan_ke"] = os.path.abspath(path_teks) if path_teks else None
         print(json.dumps(h2, default=lambda x: x.isoformat() if isinstance(x, datetime.date) else ke_json(x),
                          ensure_ascii=False, indent=2))
     else:
@@ -886,12 +1015,29 @@ def main(argv=None):
         if kosong:
             print("- PERLU DIISI: {} belum diberikan, ditulis \"{}\" di dokumen. Tanyakan ke pengguna atau "
                   "biarkan ia mengisi sendiri; jangan dikarang.".format(", ".join(kosong), ISI))
+        if path_berkas or path_teks:
+            urutan = []
+            if path_berkas:
+                urutan.append("lampirkan berkas di baris BERKAS (siap cetak) SEKALI")
+            if path_teks:
+                urutan.append(("bila gagal, " if path_berkas else "") + "lampirkan berkas di baris BERKAS TEKS "
+                              "(versi teks) SEKALI")
+            media = (" Bila satu-satunya cara melampirkan adalah baris lampiran di dalam balasan terakhir (mis. "
+                     "MEDIA:<path>), lampirkan HANYA berkas di baris BERKAS TEKS, satu baris untuk dokumen ini, dan "
+                     "pakai kalimat status netral (berhasil-tidaknya tidak diketahui)." if path_teks else "")
+            print("- Berkas dibuat (nama berkas dari nomor {}), untuk invoice maupun kuitansi. Urutan: {}; pakai alat "
+                  "kirim/lampir yang melaporkan berhasil/gagal, path PERSIS seperti di baris di bawah (jangan menyusun "
+                  "atau menebak path) dan jangan mengulang dengan opsi lain.{} SESUDAH itu tulis balasan terakhir "
+                  "berisi dokumen LENGKAP (bagian di atas garis ---): teks yang ditulis sebelum pemanggilan alat bisa "
+                  "tidak sampai ke pengguna di Telegram/WhatsApp, jadi jangan menulis \"sudah di atas\". Tawarkan "
+                  "\"balas 'kirim file'\" hanya bila percobaan melampirkan gagal atau hasilnya tidak diketahui, dengan "
+                  "kalimat awam (tanpa kata HTML, path, sistem, error). Bila pengguna membalas 'kirim file': pakai "
+                  "lagi path di bawah, JANGAN jalankan script lagi (nomor akan naik).".format(
+                      nomor, "; ".join(urutan), media))
         if path_berkas:
-            print("- Versi HTML siap cetak sudah dibuat (nama berkas dari nomor {}). Lampirkan berkas ini ke chat "
-                  "untuk setiap dokumen (invoice maupun kuitansi) dengan path PERSIS seperti di baris BERKAS di "
-                  "bawah; jangan menyusun atau menebak path. Tawarkan \"balas 'kirim file'\" hanya bila "
-                  "percobaan melampirkan gagal.".format(nomor))
             print("BERKAS: " + os.path.abspath(path_berkas))
+        if path_teks:
+            print("BERKAS TEKS: " + os.path.abspath(path_teks))
     return 0
 
 

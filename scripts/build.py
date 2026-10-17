@@ -6,8 +6,8 @@ Contoh:
   python3 scripts/build.py --pembeli "Budi <budi@contoh.com>" --bundle paket-toko-online
   python3 scripts/build.py --pembeli "Member VIP #0123" --vip
 
-Hanya skill berstatus 'rilis' yang dipaketkan. --beta mengikutkan status 'beta' (untuk beta tester);
---izinkan-draft untuk uji coba internal.
+Hanya skill berstatus 'rilis' yang dipaketkan. --beta mengikutkan status 'beta' (untuk beta tester)
+dan menaruh panduan tester (PANDUAN-BETA-TESTER.html/.md) di akar ZIP; --izinkan-draft untuk uji coba internal.
 """
 import argparse
 import csv
@@ -95,7 +95,7 @@ def main():
     target.add_argument("--bundle", help="Nama bundle di bundles/<nama>.txt")
     target.add_argument("--vip", action="store_true", help="Semua skill (paket VIP)")
     p.add_argument("--beta", action="store_true",
-                   help="Ikutkan skill berstatus 'beta' (paket untuk beta tester)")
+                   help="Ikutkan skill berstatus 'beta' + panduan tester (paket untuk beta tester)")
     p.add_argument("--izinkan-draft", action="store_true",
                    help="Ikutkan skill yang belum 'rilis' / belum ada tier_final (HANYA untuk uji coba)")
     a = p.parse_args()
@@ -146,6 +146,12 @@ def main():
                     z.write(f, arc)
         if instalasi.is_file():
             z.write(instalasi, "CARA-INSTAL.md")
+        if a.beta:
+            # Panduan beta tester ikut paket beta (akar ZIP, di samping CARA-INSTAL.md)
+            for ext in ("html", "md"):
+                panduan_beta = ROOT / "docs" / f"panduan-beta-tester.{ext}"
+                if panduan_beta.is_file():
+                    z.write(panduan_beta, f"PANDUAN-BETA-TESTER.{ext}")
         for n in sorted(panduan):
             z.write(ROOT / "docs" / n, f"docs/{n}")
         if a.vip:

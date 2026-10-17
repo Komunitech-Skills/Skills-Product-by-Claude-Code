@@ -1,4 +1,4 @@
-# Presentasi Rapi, Tanpa PowerPoint, Tanpa Ribet
+# Presentasi Rapi dari Chat, Tak Perlu PowerPoint
 
 **Cukup ceritakan usaha Anda, langsung jadi presentasi siap kirim — buka di HP pun bisa.**
 

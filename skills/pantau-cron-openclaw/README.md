@@ -1,6 +1,6 @@
-# Laporan Terjadwal Gagal? Langsung Ketahuan
+# Laporan Terjadwal Gagal? Kabar Masuk ke Telegram
 
-**Pantau Cron OpenClaw** -- tagline: *jadwal otomatis Anda diam-diam mati? Anda dikabari lewat Telegram, tidak perlu menunggu sadar sendiri.*
+**Pantau Cron OpenClaw** -- *jadwal otomatis Anda diam-diam mati? Anda bisa dikabari lewat Telegram, tidak perlu menunggu sadar sendiri.*
 
 Diuji AI penguji independen di OpenClaw: 4,63 → 8,19 dari 10 (tanpa skill asisten hanya menjawab "sudah terpasang dan aktif" tanpa bukti; dengan skill jadwal yang terlambat atau hilang ketahuan dari hitungan jam).
 
@@ -67,6 +67,8 @@ Bedanya yang terasa: setelah dibalas "ya", bot memasang dua pengawas jadwal tanp
 Catatan jujur: skor tanpa skill 4 berasal dari uji 12 Okt dengan pesan yang sedikit berbeda (ikut memantau backup data mingguan); sisi tanpa skill tidak diulang pada 16 Okt. Pada uji jalan-sekali, pesan jadwal tagih piutang yang sampai ke grup hanya berisi kalimat penutup, bukan daftar tagihannya; rencana awal juga belum menyebut bahwa kedua jadwal akan dijalankan sekali untuk uji. Versi 1.0.5 memperbaiki kedua hal ini (pesan jadwal kini wajib berisi laporan utuh, dan rencana kini menyebut bahwa tiap jadwal dijalankan sekali untuk uji); perbaikan ini belum diuji ulang di bot.
 
 Uji sebelumnya: 12 Okt 2026, tanpa skill **4** → dengan skill **8** (daftar 3 jadwal, langkah lapor selesai, dua pengawas siap salin, dan konfirmasi "Lanjut? (ya/tidak)" sebelum apa pun dipasang); uji alur pasang awal pada 16 Okt (versi 1.0.3) hanya mendapat 5 karena pengawas tidak terpasang setelah "ya", lalu diperbaiki di versi 1.0.4.
+
+Uji ulang di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026, versi 1.0.5, hanya sisi dengan skill, pesan sama dengan uji 16 Okt): skor dengan skill **7,5** (tanpa skill 4 dari uji 12 Okt dengan pesan yang sedikit berbeda) — **belum lulus acuan kami**. Perbaikan versi 1.0.5 terbukti di bot asli: rencana menyebut uji jalan-sekali sebelum memasang, kedua laporan jalan sekali dan isinya sampai utuh ke grup (tanpa kalimat penutup yang menggantikan isi), laporan penutup sampai utuh, dan jawaban "job mana yang terlambat hari ini" benar. Yang belum: pengawas lama yang dipasang dari obrolan lain tidak ditawarkan untuk diganti, sehingga ada dua pengawas tiap jam dan dua ringkasan pagi; peringatan bisa masuk ke obrolan lama. Diperbaiki di versi berikutnya lalu diuji ulang.
 
 ## FAQ
 **1. Apakah ini memata-matai komputer saya atau karyawan?**

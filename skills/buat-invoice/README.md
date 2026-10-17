@@ -11,7 +11,7 @@
 - ✅ Diskon, ongkir, DP, termin, dan sisa tagihan dihitung otomatis, lengkap dengan terbilang (nominal ditulis dengan huruf)
 - ✅ PPN 12% (pajak yang ditambahkan ke harga) sesuai aturan per 23 September 2026, hanya untuk penjual PKP (Pengusaha Kena Pajak, yaitu usaha yang sudah dikukuhkan untuk memungut PPN)
 - ✅ Mengingatkan kapan wajib meterai Rp10.000
-- ✅ Versi siap kirim (teks) dan siap cetak/PDF (berkas HTML yang dibuka di browser) tanpa aplikasi tambahan
+- ✅ Invoice lengkap langsung di chat, plus berkas siap cetak/PDF (dibuka di browser). Bila aplikasi chat menolak berkas siap cetak, AI mengirim versi teksnya
 
 ## Cocok untuk siapa
 - Freelancer dan penyedia jasa yang menagih klien
@@ -39,7 +39,7 @@
 | **SISA TAGIHAN** | **Rp 13.530.000** |
 Terbilang: _Tiga Belas Juta Lima Ratus Tiga Puluh Ribu Rupiah_
 ```
-Hasil lengkapnya juga berupa file HTML yang siap dicetak.
+Hasil lengkapnya juga berupa file HTML yang siap dicetak dan versi teks (.txt).
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
@@ -64,11 +64,17 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 - **Uji OpenClaw, 14 Oktober 2026, versi 1.0.5** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): 5 skenario (3 normal, 1 info kurang, 1 permintaan yang harus ditolak), rata-rata **6,0 tanpa skill → 8,8 dengan skill**. Angkanya dicocokkan dengan hitungan independen. Pembedanya: tanpa skill, invoice PKP memungut PPN 12% dari harga penuh (lebih Rp309.662), memakai ulang nomor invoice terakhir, dan kuitansi DP Rp7,5 juta tanpa peringatan meterai; dengan skill semua angka cocok (PPN 12% dari DPP nilai lain 11/12 = Rp3.406.282, termin Rp10.311.745 dan Rp24.060.737), nomor dicatat agar tidak dobel, dan setiap dokumen dilengkapi terbilang, penanda meterai, serta berkas HTML siap cetak. Catatan jujur: satu sampel per sisi per skenario; lampiran berkas dinilai dari keluaran kanal Telegram tiruan, bukan dari aplikasi Telegram sungguhan. Uji sebelumnya (1 Oktober 2026, invoice jasa PKP dengan potongan PPh 23 Rp270.000 dan estimasi diterima bersih Rp14.715.000): 7 → 9.
 - **Uji simulasi agent, 23 September 2026** (`examples/00-pembanding-tanpa-skill.md`, invoice konveksi seragam, DP Rp6.000.000, sisa tagihan Rp13.530.000): agent tanpa skill menulis angka yang benar tetapi tanpa terbilang, tanpa penanda bea meterai, dan tanpa file siap cetak. Dengan skill semuanya ada, dan permintaan PPN dari penjual non-PKP ditolak.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk invoice non-PKP, termin, dan kuitansi) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Versi 1.0.7 lulus uji ulang skenario kuitansi 16 Oktober 2026 (berkas terlampir 2 dari 2, termasuk sampel dengan pengaturan seperti bot Telegram, bukan bot sungguhan). Bot Telegram asli belum diuji. PPh 23 tanpa NPWP belum diuji di OpenClaw. **Uji ulang versi 1.0.6 (14 Oktober 2026, penguji AI independen di OpenClaw): rata-rata 8,7 dari 10 dan tidak ada angka yang salah; dua kekurangan versi 1.0.5 (penanda tangan ditebak dari nama pemilik rekening, nama berkas tidak sama dengan nomor invoice) sudah hilang. Berkas kuitansi belum selalu terlampir dengan benar (path berkas salah ketik, atau hanya ditawarkan "balas 'kirim file'"), dan satu catatan meterai keliru menyebut sisa Rp5.075.000 "di bawah Rp5 juta". Versi 1.0.7 memperbaiki keduanya (path berkas dicetak lengkap oleh script, catatan meterai dihitung dari angka); perbaikan lampiran sudah terbukti pada uji ulang skenario kuitansi 16 Oktober 2026 (butir pertama di atas), sedangkan kasus sisa tagihan di sekitar Rp5.000.000 belum diuji ulang.**
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk invoice non-PKP, termin, dan kuitansi) dan Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Versi 1.0.7 lulus uji ulang skenario kuitansi 16 Oktober 2026 (berkas terlampir 2 dari 2, termasuk sampel dengan pengaturan seperti bot Telegram, bukan bot sungguhan). Di bot Telegram asli (17 Oktober 2026, versi 1.0.7) belum lulus: angka benar, tetapi invoice lengkap tidak sampai ke chat dan berkas gagal terlampir (lihat bagian di bawah); diperbaiki di versi 1.0.8 (invoice lengkap selalu di balasan terakhir, versi teks dikirim bila berkas siap cetak ditolak) dan belum diuji ulang di bot. PPh 23 tanpa NPWP belum diuji di OpenClaw. **Uji ulang versi 1.0.6 (14 Oktober 2026, penguji AI independen di OpenClaw): rata-rata 8,7 dari 10 dan tidak ada angka yang salah; dua kekurangan versi 1.0.5 (penanda tangan ditebak dari nama pemilik rekening, nama berkas tidak sama dengan nomor invoice) sudah hilang. Berkas kuitansi belum selalu terlampir dengan benar (path berkas salah ketik, atau hanya ditawarkan "balas 'kirim file'"), dan satu catatan meterai keliru menyebut sisa Rp5.075.000 "di bawah Rp5 juta". Versi 1.0.7 memperbaiki keduanya (path berkas dicetak lengkap oleh script, catatan meterai dihitung dari angka); perbaikan lampiran sudah terbukti pada uji ulang skenario kuitansi 16 Oktober 2026 (butir pertama di atas), sedangkan kasus sisa tagihan di sekitar Rp5.000.000 belum diuji ulang.**
+
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "tolong buatin invoice dong. dari Dapur Bu Rini Catering ke PT Kencana Fiktif Mandiri. nasi box ayam bakar 150 box @32.500, snack box 150 @15rb diskon 10%, air mineral botol 300 @3.500, ongkir 125rb. udah DP 3jt tgl 10 okt…". Tanpa skill skor **7,5** → dengan skill skor **3,5** (selisih -4, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot menghitung angka yang sama persis dan menambah catatan meterai untuk kuitansi pelunasan, tetapi invoice lengkapnya tidak sampai ke chat dan file invoice gagal terkirim, sehingga pengguna hanya menerima ringkasan; tanpa skill, bot langsung memberi invoice lengkap siap kirim. Catatan jujur: Di bot Telegram, invoice lengkap tidak tampil di chat (hanya ringkasan angka) dan file invoice gagal terlampir, padahal balasannya menyebut invoice "sudah ditulis di atas", sehingga pengguna perlu meminta ulang. Nomor, total, sisa tagihan, dan catatan meterai tetap benar.
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "tolong buatin invoice dong. dari Dapur Bu Rini Catering ke PT Kencana Fiktif Mandiri. nasi box ayam bakar 150 box @32.500, snack box 150 @15rb diskon 10%, air mineral botol 300 @3.500, ongkir 125rb. udah DP 3jt tgl 10 okt…". Tanpa skill skor **7** → dengan skill skor **8,5** (selisih +1,5, tepat di batas lulus acuan kami). Dengan skill, bot mengirim invoice lengkap yang siap diteruskan ke klien, berisi rincian subtotal Rp7.950.000, ongkir, total Rp8.075.000, DP, sisa Rp5.075.000, terbilang, dan kolom tanda tangan, ditambah berkas versi teks, serta mengingatkan bahwa kuitansi pelunasan Rp5.075.000 wajib bermeterai Rp10.000; tanpa skill, invoice tidak punya terbilang, tanda tangan, maupun catatan meterai, dan subtotalnya membingungkan (Rp8.300.000, lalu diskon dipotong lagi). Catatan jujur: Di Telegram, berkas yang dikirim baru versi teks, belum file siap cetak, jadi untuk mencetak invoice teksnya perlu disalin dulu ke Word atau Google Docs. Kalimat penutup bot juga menyebut file siap cetak "sudah dicoba kirim" padahal tidak dicoba, walaupun isi dan angka invoice sudah benar.
 
 ## FAQ
 **Bagaimana cara membuat PDF-nya?**
-Buka file HTML yang dibuat di browser, tekan Cetak (Ctrl+P / Cmd+P), lalu pilih "Simpan sebagai PDF".
+Buka file HTML yang dibuat di browser, tekan Cetak (Ctrl+P / Cmd+P), lalu pilih "Simpan sebagai PDF". Di Telegram/WhatsApp berkas siap cetak kadang tidak bisa dikirim; AI lalu mengirim versi teks. Salin teks invoice dari chat ke Word/Google Docs, lalu simpan sebagai PDF.
 
 **Saya belum PKP, bisa tambah PPN?**
 Tidak. Hanya PKP yang boleh menagih PPN, jadi skill akan menolak menambahkan PPN dan menjelaskan alasannya.
@@ -80,4 +86,4 @@ Bila dokumen menyatakan uang yang diterima lebih dari Rp5.000.000, misalnya kuit
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
