@@ -98,8 +98,8 @@ Bila belum ada data, tanyakan **sekali**: (1) kanal apa saja & bagaimana mengamb
 Bila pengguna minta cepat: tampilkan Ringkasan, Isu teratas, Backlog, dan sebut asumsinya.
 
 ## Contoh singkat
-Masukan: 12 pesan WA + 26 ulasan Shopee + 5 komentar IG + 8 jawaban survei (katering harian).
-Ringkasan: "Pengiriman telat = isu #1: 9 dari 51 masukan (17,6%), muncul di 4 kanal. Ada 3 laporan rambut/ulat di makanan (dampak 5) -> Segera. Kemasan bocor naik 6,4 poin bulan ini." Backlog: "Ganti kurir area kantor + jadwal kirim 30 menit lebih awal (Ibu Rini, 7 Okt; ukuran: keluhan telat < 10%)." Contoh lengkap: `examples/`.
+Masukan: 13 pesan WA + 26 ulasan Shopee + 5 komentar IG + 8 jawaban survei = 52 masukan (katering harian; data di `examples/data/`).
+Ringkasan: "Pengiriman telat = isu #1: 10 dari 52 masukan (19,2%), muncul di 4 kanal. Ada 3 laporan rambut/ulat di makanan (dampak 5) -> Segera. Kemasan bocor 6 keluhan (11,5%), naik 6,0 poin dibanding bulan sebelumnya." Backlog: "Kurir kedua untuk area kantor + jadwal berangkat 30 menit lebih awal (Pak Andi, 7 Okt; ukuran: keluhan telat < 10% masukan)." Angka di atas sama dengan `examples/01-rekap-multi-kanal.md` dan `examples/02-backlog-balasan-kabar.md` (lengkap dengan draf balasan dan kabar perbaikan); tren bulan kedua: `examples/03-bulan-kedua-tren.md`.
 
 ## Batasan & penanganan error
 - Tema dari kata kunci **belum** memahami sarkasme atau konteks panjang; itu sebabnya verifikasi kutipan wajib. Teks campur bahasa daerah/emoji: baca manual dan tambahkan kata ke `tema.json`.

@@ -34,7 +34,7 @@ Dua hal yang bisa mengubah kesimpulan. Jawab kalau tahu:
 _Dasar PPN: UU HPP & PMK 131/2024, per 23 September 2026. Alat bantu cek, bukan nasihat pajak; untuk kepastian hubungi DJP (Kring Pajak 1500200) atau konsultan pajak._
 
 ## Versi kanal chat (Telegram/WhatsApp) — ditambahkan 2026-10-16 (v1.0.5)
-Tanpa tabel Markdown:
+Tanpa tabel Markdown; isi sama dengan di atas. *Disusun ulang dari keluaran di atas mengikuti aturan kanal chat v1.0.5; bukan hasil uji baru.*
 
 > **Hasil cek (dari angka yang Anda ketik)**
 > I1 · tanggal & penjual belum disebut · Invoice · Rp 16.800.000 · ⚠️ Perlu dicek

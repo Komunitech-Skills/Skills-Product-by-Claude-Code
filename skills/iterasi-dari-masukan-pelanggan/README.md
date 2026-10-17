@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 5,9 → 8,5 dari 10 pada uji ulang v1.0
 
 **Sesudah (cukup ketik):** "kak saya punya toko kue online Kue Nara. ini chat WA pelanggan (chat-wa-september.txt) sama ulasan shopee bulan september (ulasan-shopee-september.csv). tolong dibaca semua ya, apa yg harus saya benahi duluan? yg chat dari 'Admin Kue Nara' itu admin saya"
 
-Cuplikan balasan skill (dipotong; data fiktif; uji OpenClaw 2 Okt 2026, v1.0.10, dari `examples/00-openclaw-sebelum-sesudah.md`):
+Cuplikan balasan skill (dipotong; data fiktif toko kue "Kue Nara", 31 masukan; uji OpenClaw 2 Okt 2026, v1.0.10, dari `examples/00-openclaw-sebelum-sesudah.md`). Data uji ini berbeda dari data contoh katering di `examples/01`-`03` (52 masukan), jadi angkanya tidak sama:
 ```
 Rencana Perbaikan — Kue Nara (September 2026, 31 masukan)
 2. 88,9% keluhan di WhatsApp sama sekali tidak dibalas admin (8 dari 9), dan cuma 2 dari 13 chat dibalas ≤24 jam. …
@@ -92,4 +92,4 @@ Rincian: `ATTRIBUTION.md`, `NOTICE`, dan file lisensi asli. Tidak berafiliasi de
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.13**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.14**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
