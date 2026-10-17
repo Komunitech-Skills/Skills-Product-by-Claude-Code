@@ -555,6 +555,43 @@ def deteksi_kolom(header, override):
     return hasil, peringatan
 
 
+# v1.0.12: sebutan awam tiap peran kolom (dipakai kalimat "Saya membaca kolom ... sebagai ...").
+SEBUTAN_PERAN_AWAM = {"biaya": "biaya iklan", "tayangan": "jumlah tayangan", "klik": "jumlah klik",
+                      "hasil": "hasil iklan", "nilai_hasil": "nilai penjualan dari iklan"}
+
+
+def kolom_meragukan(header, kolom, override):
+    """v1.0.12: daftar (peran, kolom_dipilih, [kolom_lain_yang_mirip]) HANYA untuk peran yang punya
+    kolom pesaing (mis. 'Link clicks' vs 'Clicks (all)'). Peran yang diisi pengguna lewat opsi
+    --kolom-* tidak dicek. Dipakai untuk satu kalimat awam di Catatan; pemetaan lengkap sengaja
+    TIDAK dicetak ke laporan (hanya lewat --tampilkan-kolom, untuk teknisi)."""
+    norm = {h: _norm(h) for h in header}
+    terpakai = {v for v in kolom.values() if v}
+    hasil = []
+    for peran, (wajib_ada, dilarang) in PERAN_UTAMA:
+        if peran not in SEBUTAN_PERAN_AWAM or override.get(peran) or not kolom.get(peran):
+            continue
+        lain = []
+        for h in header:
+            if not h or h in terpakai or h in lain:
+                continue
+            if any(_cocok(norm[h], k, dilarang, False) for k in wajib_ada):
+                lain.append(h)
+        if lain:
+            hasil.append((peran, kolom[peran], lain))
+    return hasil
+
+
+def kalimat_kolom_meragukan(daftar):
+    """Satu kalimat per peran, bahasa sehari-hari, tanpa istilah teknis."""
+    out = []
+    for peran, dipilih, lain in daftar:
+        mirip = ", ".join(f"'{x}'" for x in lain[:3]) + (f", dan {len(lain) - 3} lainnya" if len(lain) > 3 else "")
+        out.append(f"Saya membaca kolom '{dipilih}' sebagai {SEBUTAN_PERAN_AWAM[peran]}. Ada kolom lain "
+                   f"yang mirip ({mirip}); kalau yang Anda maksud kolom itu, kabari saya.")
+    return out
+
+
 def deteksi_platform(header):
     norm = " | ".join(_norm(h) for h in header)
     cocok = []
@@ -850,6 +887,8 @@ def analisis_file(path, override, args):
 
     platform_terdeteksi = args.platform or deteksi_platform(header) or "Tidak diketahui"
     catatan = []
+    meragukan = kolom_meragukan(header, kolom, override)
+    catatan.extend(kalimat_kolom_meragukan(meragukan))
     peringatan = list(peringatan_kolom)
 
     # --- N1: ekspor bertingkat -> rinci ke level paling rinci (iklan > grup iklan > kampanye) ---
@@ -860,11 +899,10 @@ def analisis_file(path, override, args):
         if lv:
             level_rincian, kolom["nama"], kolom_induk = lv
             catatan.append(
-                f"File memuat beberapa level nama ({', '.join([kolom['nama']] + kolom_induk)}). Laporan "
-                f"dirinci per {level_rincian} (kolom '{kolom['nama']}', paling rinci) agar {level_rincian} "
-                f"yang boros tidak tersembunyi di dalam total induknya. Untuk rincian per "
-                f"{'kampanye' if level_rincian != 'kampanye' else level_rincian}, jalankan ulang dengan "
-                f"--kolom-nama \"{kolom_induk[-1]}\".")
+                f"File memuat beberapa tingkat nama ({', '.join([kolom['nama']] + kolom_induk)}). Laporan "
+                f"dirinci per {level_rincian} (dari kolom '{kolom['nama']}', yang paling rinci) agar {level_rincian} "
+                f"yang boros tidak tersembunyi di dalam total kampanyenya. Kalau Anda hanya ingin "
+                f"rincian per kampanye, bilang saja \"rinci per kampanye\".")
     # v1.0.5 (P-3): kolom grup aset (Google Performance Max) sebagai nama cadangan bila kolom nama kosong
     kolom_aset = next((h for h in header if h and h != kolom.get("nama") and _tanpa_label_uang(_norm(h)) in
                        {"asset group", "asset group name", "grup aset", "nama grup aset"}), None)
@@ -1037,7 +1075,7 @@ def analisis_file(path, override, args):
         if args.mata_uang == "IDR":
             catatan_mata_uang.append(
                 f"File tampak ber-mata uang {kode} ({'; '.join(sumber)}), tetapi dianggap IDR "
-                "sesuai perintah eksplisit --mata-uang IDR.")
+                "sesuai konfirmasi Anda bahwa angkanya sudah Rupiah.")
         elif args.kurs is not None:
             kurs = args.kurs
             sumber_kurs = f", sumber: {args.kurs_sumber}" if args.kurs_sumber else ""
@@ -1124,14 +1162,14 @@ def analisis_file(path, override, args):
                     f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) tampaknya subtotal "
                     f"buatan lembar kerja: biayanya {alasan}. Baris ini tidak dihitung supaya biayanya "
                     "tidak terjumlah dua kali. Bila itu kampanye sungguhan, mohon ganti namanya di file "
-                    "lalu jalankan ulang.")
+                    "lalu kirim ulang ke saya.")
             else:
                 alt_total.append((len(peringatan), x["biaya"], False))
                 peringatan.append(
                     f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) diawali kata "
                     "'Subtotal'/'Jumlah sementara', jadi dianggap subtotal dan tidak dihitung, walaupun "
                     "angkanya tidak cocok dengan jumlah baris di sekitarnya. Mohon cek file; bila itu "
-                    "kampanye sungguhan, ganti namanya lalu jalankan ulang.")
+                    "kampanye sungguhan, ganti namanya lalu kirim ulang ke saya.")
             continue
         if not run:
             continue
@@ -1143,14 +1181,14 @@ def analisis_file(path, override, args):
                     f"Baris '{x['nama_asli']}' (baris {x['no_baris']}, biaya {b_x}) tampaknya subtotal "
                     f"buatan lembar kerja: biayanya sama dengan jumlah {len(run)} baris '{induk}' tepat "
                     f"di atasnya ({b_run}). Baris ini tidak dihitung supaya biayanya tidak terjumlah dua "
-                    "kali. Bila itu kampanye sungguhan, mohon ganti namanya di file lalu jalankan ulang.")
+                    "kali. Bila itu kampanye sungguhan, mohon ganti namanya di file lalu kirim ulang ke saya.")
             else:
                 alt_total.append((len(peringatan), x["biaya"], True))
                 peringatan.append(
                     f"Nama baris '{x['nama_asli']}' (biaya {b_x}) mirip subtotal dari '{induk}', tetapi "
                     f"angkanya tidak sama dengan jumlah baris '{induk}' di atasnya ({b_run}), jadi TETAP "
                     "dihitung sebagai kampanye. Bila itu sebenarnya subtotal, mohon hapus baris itu dari "
-                    "file lalu jalankan ulang.")
+                    "file lalu kirim ulang ke saya.")
         elif (_norm_nama(x["nama_asli"]) == _norm_nama(induk) and len(run) >= 2
               and (not kolom_tgl_semua or (not x["tgl_ok"] and not x["tgl_rusak"]
                                            and all(g["tgl_ok"] or g["tgl_rusak"] for g in run)))
@@ -1195,7 +1233,7 @@ def analisis_file(path, override, args):
                     f"Baris kampanye '{kamp}' tanpa {level_rincian} (baris {x['no_baris']}, biaya {b_x}) "
                     f"tetap dihitung, tetapi kampanye itu juga punya {len(saudara)} baris {level_rincian} "
                     f"bernama (jumlah {b_s}). Mohon cek: bila baris ini sebenarnya total kampanye, hapus "
-                    "dari file lalu jalankan ulang agar tidak terjumlah dua kali.")
+                    "dari file lalu kirim ulang ke saya agar tidak terjumlah dua kali.")
         for x in [y for y in rekaman if y["n3"] and not y["nama_asli"]]:
             baris_total.append(f"total {x['induk'][-1] or x['induk'][0]}")
             rekaman.remove(x)
@@ -1232,7 +1270,7 @@ def analisis_file(path, override, args):
                 f"Baris {x['no_baris']} (kolom {level_rincian or 'kampanye'} kosong, berlabel "
                 f"'{x['kandidat_subtotal']}', biaya {fmt_rp(x['biaya'] * kurs)}) sama dengan jumlah {n} baris "
                 f"tepat {kata_arah} (biaya {fmt_rp(b_grup * kurs)}), jadi dianggap SUBTOTAL dan tidak "
-                "dihitung. Bila itu iklan sungguhan, beri nama di file lalu jalankan ulang.")
+                "dihitung. Bila itu iklan sungguhan, beri nama di file lalu kirim ulang ke saya.")
         else:
             alt_total.append((len(peringatan), x["biaya"], True))
             peringatan.append(
@@ -1240,7 +1278,7 @@ def analisis_file(path, override, args):
                 f"berbunyi '{x['kandidat_subtotal']}' (mirip label total/ringkasan). Angkanya tidak cocok "
                 "dengan jumlah baris di sekitarnya, jadi baris ini TETAP dihitung sebagai kampanye biasa "
                 f"(biaya {fmt_rp(x['biaya'] * kurs)}) - kalau ini sebenarnya baris subtotal, hapus baris itu "
-                "dari file lalu jalankan ulang, atau beri nama yang jelas.")
+                "dari file lalu kirim ulang ke saya, atau beri nama yang jelas.")
     for x in subtotal_dibuang:
         rekaman.remove(x)
 
@@ -1275,7 +1313,7 @@ def analisis_file(path, override, args):
                     f"({b_lain}). Baris ini tetap dihitung. Mohon dicek sebentar: kalau ternyata itu baris "
                     "total/ringkasan, biayanya mungkin terjumlah dua kali, dan total belanja minggu ini "
                     f"seharusnya {b_lain}, bukan {fmt_rp((x['biaya'] + lain['biaya']) * kurs)}. Bila benar, "
-                    "hapus baris itu dari file lalu jalankan ulang. Bila itu kampanye sungguhan, abaikan "
+                    "hapus baris itu dari file lalu kirim ulang ke saya. Bila itu kampanye sungguhan, abaikan "
                     "catatan ini.")
 
     # v1.0.3 (M1): SETIAP baris berlabel total "kuat"/"sedang" yang dibuang selalu dapat ⚠️
@@ -1295,7 +1333,7 @@ def analisis_file(path, override, args):
                 peringatan.append(
                     f"Baris '{lbl}' dianggap baris total/ringkasan dan tidak dihitung, tetapi biayanya "
                     f"({fmt_rp(b * kurs)}) tidak sama dengan jumlah baris lain ({fmt_rp(jml_biaya * kurs)}). "
-                    "Bila itu kampanye sungguhan, ganti namanya di file lalu jalankan ulang.")
+                    "Bila itu kampanye sungguhan, ganti namanya di file lalu kirim ulang ke saya.")
             else:
                 peringatan.append(
                     f"Baris '{lbl}' dianggap baris total/ringkasan (biaya {fmt_rp(b * kurs)}) dan tidak "
@@ -1397,7 +1435,7 @@ def analisis_file(path, override, args):
         peringatan.append(
             f"{len(biaya_rusak)} baris TIDAK dihitung karena biayanya tidak terbaca: "
             + "; ".join(f"{n} ('{i}')" for n, i in biaya_rusak[:4])
-            + ". Total belanja di laporan ini bisa LEBIH KECIL dari sebenarnya. Perbaiki sel itu lalu jalankan ulang.")
+            + ". Total belanja di laporan ini bisa LEBIH KECIL dari sebenarnya. Perbaiki sel itu lalu kirim ulang ke saya.")
     if rusak_metrik:
         peringatan.append(
             "Isi sel berikut bukan angka dan dihitung 0: "
@@ -1459,6 +1497,7 @@ def analisis_file(path, override, args):
         "baris_dilewati_lainnya": {"biaya_tidak_terbaca": len(biaya_rusak),
                                    "tanpa_angka": baris_tanpa_angka},
         "kolom_dipakai": kolom_dipakai,
+        "kolom_meragukan": [{"peran": p, "dipilih": d, "mirip": l} for p, d, l in meragukan],
         "ada_nilai_hasil": ada_nilai,
         "nama_hasil": nama_hasil,
         "total": t,
@@ -1526,8 +1565,8 @@ def susun_saran(daftar, t, nama_hasil, terbaik):
                                f"rata-rata {fmt_rp(rata)}); nilai juga dari CPC {fmt_rp(k['cpc'])} & CTR "
                                f"{fmt_persen(k['ctr_persen'])} sebelum memutuskan.")
                 if k["hasil"] < AMBANG_SAMPEL_KECIL:
-                    kalimat += (f" Baru {fmt_angka(k['hasil'])} {nama_hasil}, sampel kecil: pantau 1 minggu "
-                                "lagi sebelum memutuskan.")
+                    kalimat += (f" Baru {fmt_angka(k['hasil'])} {nama_hasil}, datanya masih sedikit: pantau 1 "
+                                "minggu lagi sebelum memutuskan.")
                 saran.append(kalimat)
         if len(ada_hasil) > 1:
             k = min(ada_hasil, key=lambda x: x["biaya_per_hasil"])
@@ -1535,7 +1574,7 @@ def susun_saran(daftar, t, nama_hasil, terbaik):
                 kalimat = (f"Pertimbangkan naikkan anggaran iklan '{k['nama']}': biaya per {nama_hasil} "
                            f"{fmt_rp(k['biaya_per_hasil'])}, jauh di bawah rata-rata semua iklan ({fmt_rp(rata)}).")
                 if k["hasil"] < AMBANG_SAMPEL_KECIL:
-                    kalimat += f" Baru {fmt_angka(k['hasil'])} {nama_hasil}, sampel kecil: naikkan bertahap."
+                    kalimat += f" Baru {fmt_angka(k['hasil'])} {nama_hasil}, datanya masih sedikit: naikkan bertahap."
                 saran.append(kalimat)
     if t["roas"] is not None and t["roas"] < 1:
         saran.append(f"ROAS keseluruhan {fmt_x(t['roas'])} (di bawah 1x): biaya iklan minggu ini "
@@ -1594,15 +1633,30 @@ def _blok_peringatan(L, peringatan):
             L.append(f"- {p}")
 
 
-def susun_teks(h, pembanding=None, omzet=None):
-    L = [f"LAPORAN IKLAN MINGGUAN — {h['platform_terdeteksi']}", f"Periode: {h['periode']['label']}"]
-    kd = h["kolom_dipakai"]
-    # v1.0.10: "Kolom dibaca" di bagian atas (bukan ekor Catatan) supaya selalu ikut terkirim.
-    L.append("Kolom dibaca: " + ", ".join(
+ISTILAH_IKLAN = "CPC = biaya per klik; CPM = biaya per 1.000 tayangan; CTR = persen tayangan yang diklik"
+ISTILAH_ROAS = "ROAS = nilai penjualan dari iklan dibagi belanja iklan (2x = tiap Rp 1 belanja kembali Rp 2)"
+
+
+def baris_istilah(dengan_roas):
+    """v1.0.12: penjelasan singkat istilah di ujung Catatan (pembeli awam)."""
+    return "Arti istilah: " + ISTILAH_IKLAN + ("; " + ISTILAH_ROAS if dengan_roas else "") + "."
+
+
+def baris_kolom_teknis(kd):
+    """Pemetaan kolom untuk teknisi/debug. JANGAN diteruskan ke pengguna (hanya lewat --tampilkan-kolom)."""
+    return "Kolom dibaca (teknis, jangan diteruskan ke pengguna): " + ", ".join(
         f"{lbl}='{kd[p]}'" for p, lbl in (("nama", "nama"), ("biaya", "biaya"), ("tayangan", "tayangan"),
                                            ("klik", "klik"), ("hasil", "hasil"), ("nilai_hasil", "nilai"),
                                            ("tujuan", "tujuan"))
-        if kd.get(p)) + ".")
+        if kd.get(p)) + "."
+
+
+def susun_teks(h, pembanding=None, omzet=None, tampilkan_kolom=False):
+    L = [f"LAPORAN IKLAN MINGGUAN — {h['platform_terdeteksi']}", f"Periode: {h['periode']['label']}"]
+    # v1.0.12: baris pemetaan kolom TIDAK lagi ikut laporan (uji bot asli: terbaca sebagai teks teknis).
+    # Kolom yang meragukan disebut satu kalimat awam di Catatan; pemetaan lengkap hanya bila diminta.
+    if tampilkan_kolom:
+        L.append(baris_kolom_teknis(h["kolom_dipakai"]))
     _blok_peringatan(L, h.get("peringatan", []))
     L.append("")
     t = h["total"]
@@ -1668,6 +1722,7 @@ def susun_teks(h, pembanding=None, omzet=None):
                        "tidak dihitung dua kali.")
     if omzet:
         catatan.append(omzet["catatan"])
+    catatan.append(baris_istilah(t.get("roas") is not None))
     L.append("")
     L.append("Catatan:")
     for c in catatan:
@@ -1703,6 +1758,7 @@ def gabung(daftar_json, omzet=None):
     total = {"biaya": NOL, "tayangan": NOL, "klik": NOL}
     per_platform = []
     catatan_mu = []
+    catatan_kolom = []
     for h in daftar_json:
         t = h["total"]
         for k in total:
@@ -1716,6 +1772,9 @@ def gabung(daftar_json, omzet=None):
             if not c.startswith("Tidak ada label"):
                 catatan_mu.append(f"[{h['platform_terdeteksi']}] {c}")
         peringatan.extend(f"[{h['platform_terdeteksi']}] {p}" for p in h.get("peringatan", []))
+        for m in h.get("kolom_meragukan", []):     # v1.0.12: kalimat awam per platform
+            catatan_kolom.extend(f"[{h['platform_terdeteksi']}] {k}" for k in
+                                 kalimat_kolom_meragukan([(m["peran"], m["dipilih"], m["mirip"])]))
 
     biaya_total = total["biaya"]
     for p in per_platform:
@@ -1776,6 +1835,7 @@ def gabung(daftar_json, omzet=None):
         "nama_hasil": nama_hasil if hasil_total is not None else None,
         "saran": saran or ["Belum ada kampanye yang menonjol biaya-per-hasilnya minggu ini."],
         "catatan_mata_uang": catatan_mu,
+        "catatan_kolom": catatan_kolom,
         "peringatan": list(dict.fromkeys(peringatan)),
     }
 
@@ -1811,14 +1871,14 @@ def susun_teks_gabung(g, omzet=None):
     for i, s in enumerate(g["saran"], 1):
         L.append(f"{i}. {s}")
     L.append("(Saran berdasarkan angka minggu ini, bukan jaminan hasil. Keputusan tetap di tangan Anda.)")
-    catatan = list(g.get("catatan_mata_uang", []))
+    catatan = list(g.get("catatan_mata_uang", [])) + list(g.get("catatan_kolom", []))
     if omzet:
         catatan.append(omzet["catatan"])
-    if catatan:
-        L.append("")
-        L.append("Catatan:")
-        for c in catatan:
-            L.append(f"- {c}")
+    catatan.append(baris_istilah(t.get("roas") is not None))
+    L.append("")
+    L.append("Catatan:")
+    for c in catatan:
+        L.append(f"- {c}")
     return "\n".join(L)
 
 
@@ -1915,6 +1975,8 @@ def buat_parser():
     a.add_argument("--omzet", help="Omzet periode ini: 20000000, 'Rp20.000.000', '20 juta', '20jt'")
     a.add_argument("--top", type=int, default=3)
     a.add_argument("--json", action="store_true")
+    a.add_argument("--tampilkan-kolom", action="store_true",
+                   help="Khusus teknisi/debug: cetak baris pemetaan kolom. JANGAN diteruskan ke pengguna.")
     a.add_argument("--csv-keluaran", help="Simpan rincian per kampanye sebagai file CSV (aman dibuka di Excel)")
 
     g = sub.add_parser("gabung", help="Gabungkan beberapa hasil --json 'analisis' (lintas platform)")
@@ -2005,7 +2067,7 @@ def jalankan_analisis(args):
 
     hasil["pembanding_minggu_lalu"] = pembanding
     hasil["omzet"] = omzet
-    hasil["teks"] = susun_teks(hasil, pembanding, omzet)
+    hasil["teks"] = susun_teks(hasil, pembanding, omzet, args.tampilkan_kolom)
 
     if args.csv_keluaran:
         try:

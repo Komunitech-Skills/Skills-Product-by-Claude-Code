@@ -691,7 +691,9 @@ class UjiN1LevelRincian(_Dasar):
         self.assertEqual(len(cat), 1)
         self.assertIn("Rp 1.080.735", cat[0])                   # biaya BARIS, bukan kampanye
         self.assertNotIn("Rp 4.423.002", cat[0])
-        self.assertTrue(any("dirinci per iklan" in c and "--kolom-nama" in c for c in d["catatan"]))
+        # v1.0.12: catatan untuk pembeli awam tanpa nama opsi teknis
+        self.assertTrue(any("dirinci per iklan" in c and "rinci per kampanye" in c and "--kolom" not in c
+                            for c in d["catatan"]), d["catatan"])
 
     def test_nama_iklan_kembar_dibedakan_dengan_ad_set(self):
         teks = ("Campaign name,Ad set name,Ad name,Amount spent (IDR),Impressions,Link clicks,Results\n"
@@ -1216,7 +1218,8 @@ class UjiV105NamaPMaxDanTotalAlternatif(_Dasar):
 
 class UjiV1010TujuanKampanye(_Dasar):
     """v1.0.10 (uji OpenClaw 2026-10-01): kampanye Traffic/Awareness tanpa pesan WA tidak disarankan
-    dimatikan; dinilai dari klik/tayangan. "Kolom dibaca" ada di bagian atas teks."""
+    dimatikan; dinilai dari klik/tayangan. (v1.0.12: baris "Kolom dibaca" tidak lagi ikut teks laporan;
+    hanya muncul bila --tampilkan-kolom dipakai, lihat UjiV1012BotTelegram.)"""
 
     META = ("Reporting starts,Reporting ends,Ad name,Results,Result indicator,Impressions,Amount spent (IDR),Link clicks\n"
             "2026-09-21,2026-09-27,WA - Promo Gamis,64,actions:onsite_conversion.messaging_conversation_started_7d,150000,1250000,2100\n"
@@ -1238,9 +1241,8 @@ class UjiV1010TujuanKampanye(_Dasar):
         teks = d["teks"]
         self.assertIn("TUJUAN BERBEDA", teks)
         self.assertIn("CPC Rp 425", teks)                                               # 850.000 / 2.000
-        baris = teks.splitlines()
-        self.assertTrue(baris[2].startswith("Kolom dibaca: "), baris[:4])
-        self.assertIn("tujuan='Result indicator'", baris[2])
+        self.assertNotIn("Kolom dibaca", teks)      # v1.0.12: tidak ikut laporan untuk pembeli
+        self.assertEqual(d["kolom_dipakai"]["tujuan"], "Result indicator")   # tetap ada di JSON
 
     def test_nama_kampanye_tanpa_kolom_tujuan(self):
         data = ("WA Promo,500000,40000,600,20\nTraffic - Katalog,300000,50000,900,0\n"
@@ -1265,6 +1267,157 @@ class UjiV1010TujuanKampanye(_Dasar):
         d = self.json_ok("analisis", str(self.tulis("h.csv", KOLOM_SEDERHANA + data)))
         self.assertEqual(d["tujuan_berbeda"], [])
         self.assertTrue(any("bertujuan Traffic" in x and "CPC" in x for x in d["saran"]), d["saran"])
+
+
+class UjiV1012BotTelegram(_Dasar):
+    """v1.0.12 (pra-cek bot asli, konteks Telegram, skor 7,0): (1) baris teknis "Kolom dibaca: ..." sempat
+    dibacakan ke pembeli, jadi tidak lagi ikut teks laporan (hanya lewat --tampilkan-kolom); kolom yang
+    meragukan disebut satu kalimat awam di Catatan; (2) pesan peringatan/catatan tanpa nama opsi atau
+    kata proses ("jalankan ulang", "--kolom-nama", "--mata-uang"); (3) istilah CPC/CPM/CTR/ROAS dijelaskan;
+    (4) "sampel kecil" diganti bahasa awam. Skenario = uji OpenClaw 2026-10-01 (hasil = chat WA masuk)."""
+
+    KOP = ("Reporting starts,Reporting ends,Campaign name,Result indicator,Amount spent (IDR),"
+           "Impressions,Link clicks,Results\n")
+    WA = "actions:onsite_conversion.messaging_conversation_started_7d"
+    INI = (KOP +
+           f"2026-09-21,2026-09-27,WA - Promo Gamis Oktober,{WA},1250000,150000,1900,64\n"
+           f"2026-09-21,2026-09-27,WA - Retarget Pengunjung,{WA},600000,60000,900,38\n"
+           "2026-09-21,2026-09-27,Traffic - Katalog IG,actions:link_click,850000,200000,2950,\n"
+           f"2026-09-21,2026-09-27,WA - Hijab Instan Baru,{WA},1100000,75500,650,12\n"
+           "2026-09-21,2026-09-27,Awareness - Video Reels,reach,400000,50000,0,\n")
+    LALU = (KOP +
+            f"2026-09-14,2026-09-20,WA - Promo Gamis Oktober,{WA},1300000,150000,1900,52\n"
+            f"2026-09-14,2026-09-20,WA - Retarget Pengunjung,{WA},550000,60000,900,41\n"
+            "2026-09-14,2026-09-20,Traffic - Katalog IG,actions:link_click,700000,200000,2410,\n"
+            "2026-09-14,2026-09-20,Awareness - Video Reels,reach,450000,50000,0,\n")
+    KATA_TERLARANG = ["kolom dibaca", "nama='", "gateway", "pairing", "script", "skrip", "python",
+                      "jalankan ulang", ".py", ".json", "--", "kode keluar", "traceback"]
+
+    def laporan(self, *tambahan):
+        ini = self.tulis("ini.csv", self.INI)
+        lalu = self.tulis("lalu.csv", self.LALU)
+        code, out, err = jalankan("analisis", str(ini), "--sebelumnya", str(lalu), "--omzet", "18500000",
+                                  "--nama-hasil", "chat WA masuk", *tambahan, cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        return out
+
+    def test_angka_skenario_wa_benar_dan_teks_bersih_dari_kata_teknis(self):
+        out = self.laporan()
+        for angka in ("Rp 4.200.000", "Chat WA masuk: 114", "CPC: Rp 656", "CPM: Rp 7.843", "CTR: 1,2%",
+                      "Biaya per chat WA masuk: Rp 36.842", "22,7% dari omzet Rp 18.500.000",
+                      "naik 40,0% dari minggu lalu Rp 3.000.000", "naik 22,6% dari minggu lalu 93",
+                      "naik 14,2% dari minggu lalu Rp 32.258", "Rp 91.667/chat WA masuk"):
+            self.assertIn(angka, out)
+        bawah = out.lower()
+        for kata in self.KATA_TERLARANG:
+            self.assertNotIn(kata, bawah, kata)
+        # istilah "chat WA masuk" hanya nama hasil; laporan tidak menawarkan menyambungkan WhatsApp
+        self.assertNotIn("sambung", bawah)
+        self.assertNotIn("hubungkan", bawah)
+
+    def test_baris_kolom_dibaca_hanya_bila_diminta_teknisi(self):
+        self.assertNotIn("Kolom dibaca", self.laporan())
+        out = self.laporan("--tampilkan-kolom")
+        baris = out.splitlines()
+        self.assertTrue(baris[2].startswith("Kolom dibaca (teknis, jangan diteruskan ke pengguna): "), baris[:4])
+        self.assertIn("tujuan='Result indicator'", baris[2])
+        # JSON: teks mengikuti flag yang sama, pemetaan tetap tersedia sebagai data
+        d = self.json_ok("analisis", str(self.tulis("ini.csv", self.INI)))
+        self.assertNotIn("Kolom dibaca", d["teks"])
+        self.assertEqual(d["kolom_dipakai"]["klik"], "Link clicks")
+        self.assertEqual(d["kolom_meragukan"], [])
+
+    def test_kolom_meragukan_satu_kalimat_awam_di_catatan(self):
+        teks = ("Campaign name,Amount spent (IDR),Impressions,Link clicks,Clicks (all),Results\n"
+                "WA A,500000,40000,600,800,20\nWA B,300000,30000,400,500,10\n")
+        d = self.json_ok("analisis", str(self.tulis("m.csv", teks)), "--nama-hasil", "chat WA masuk")
+        kalimat = [c for c in d["catatan"] if c.startswith("Saya membaca kolom")]
+        self.assertEqual(len(kalimat), 1, d["catatan"])
+        self.assertIn("'Link clicks' sebagai jumlah klik", kalimat[0])
+        self.assertIn("'Clicks (all)'", kalimat[0])
+        self.assertIn("kabari saya", kalimat[0])
+        self.assertEqual([m["peran"] for m in d["kolom_meragukan"]], ["klik"])
+        self.assertNotIn("Kolom dibaca", d["teks"])
+        self.assertIn("- Saya membaca kolom 'Link clicks' sebagai jumlah klik", d["teks"])
+        # angka tidak berubah oleh catatan ini: klik tetap dari 'Link clicks' (600 + 400)
+        self.assertEqual(Decimal(str(d["total"]["klik"])), Decimal(1000))
+        # pengguna sudah menentukan kolomnya sendiri -> tidak ditanya lagi
+        d2 = self.json_ok("analisis", str(self.tulis("m.csv", teks)), "--kolom-klik", "Link clicks")
+        self.assertFalse(any(c.startswith("Saya membaca kolom") for c in d2["catatan"]), d2["catatan"])
+
+    def test_tanpa_kolom_bersaing_tidak_ada_kalimat_kolom(self):
+        d = self.json_ok("analisis", str(self.tulis("ini.csv", self.INI)))
+        self.assertFalse(any(c.startswith("Saya membaca kolom") for c in d["catatan"]), d["catatan"])
+
+    def test_istilah_dijelaskan_roas_hanya_bila_ada(self):
+        out = self.laporan()
+        akhir = out.splitlines()[-1]
+        self.assertTrue(akhir.startswith("- Arti istilah: CPC = biaya per klik; CPM = biaya per 1.000 tayangan; "
+                                         "CTR = persen tayangan yang diklik"), akhir)
+        self.assertNotIn("ROAS", akhir)
+        teks = ("Campaign name,Amount spent (IDR),Impressions,Link clicks,Results,Purchase conversion value\n"
+                "Kaos A,1000000,50000,500,25,3000000\n")
+        code, out2, err = jalankan("analisis", str(self.tulis("r.csv", teks)), cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        self.assertIn("ROAS = nilai penjualan dari iklan dibagi belanja iklan", out2.splitlines()[-1])
+
+    def test_gabung_juga_menjelaskan_istilah(self):
+        meta = self.tulis("meta.csv", "Campaign name,Amount spent (IDR),Impressions,Link clicks,Results\n"
+                                      "A,1000000,50000,500,25\n")
+        tiktok = self.tulis("tt.csv", "Campaign name,Cost,Impressions,Clicks (destination),Conversion\n"
+                                      "B,500000,30000,300,10\n")
+        berkas = []
+        for src, nama in ((meta, "j1.json"), (tiktok, "j2.json")):
+            code, out, err = jalankan("analisis", str(src), "--json", cwd=self.dir)
+            self.assertEqual(code, 0, err)
+            (self.dir / nama).write_text(out, encoding="utf-8")
+            berkas.append(str(self.dir / nama))
+        code, out, err = jalankan("gabung", *berkas, cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        self.assertIn("Arti istilah: CPC = biaya per klik", out)
+
+    def test_gabung_meneruskan_kalimat_kolom_meragukan_per_platform(self):
+        meta = self.tulis("meta.csv", "Campaign name,Amount spent (IDR),Impressions,Link clicks,Clicks (all),Results\n"
+                                      "A,1000000,50000,500,700,25\n")
+        tiktok = self.tulis("tt.csv", "Campaign name,Cost,Impressions,Clicks (destination),Conversion\n"
+                                      "B,500000,30000,300,10\n")
+        berkas = []
+        for src, nama in ((meta, "j1.json"), (tiktok, "j2.json")):
+            code, out, err = jalankan("analisis", str(src), "--json", cwd=self.dir)
+            self.assertEqual(code, 0, err)
+            (self.dir / nama).write_text(out, encoding="utf-8")
+            berkas.append(str(self.dir / nama))
+        code, out, err = jalankan("gabung", *berkas, cwd=self.dir)
+        self.assertEqual(code, 0, err)
+        self.assertIn("- [Meta Ads (Facebook/Instagram)] Saya membaca kolom 'Link clicks' sebagai jumlah klik.", out)
+        self.assertNotIn("Kolom dibaca", out)
+
+    def test_peringatan_dan_catatan_pembeli_tanpa_opsi_teknis(self):
+        # subtotal buatan admin -> peringatan; arahan "kirim ulang", bukan "jalankan ulang"
+        data = "Promo A,60000,5000,70,2\nPromo B,50000,4000,50,1\nSubtotal: Promo Lama,12345,900,10,0\n"
+        d = self.json_ok("analisis", str(self.tulis("s.csv", KOLOM_SEDERHANA + data)))
+        w = next(x for x in d["peringatan"] if "'Subtotal: Promo Lama'" in x)
+        self.assertIn("kirim ulang ke saya", w)
+        self.assertNotIn("jalankan", w.lower())
+        # biaya tak terbaca -> peringatan juga bebas kata proses
+        d2 = self.json_ok("analisis", str(self.tulis("b.csv", KOLOM_SEDERHANA + "A,abc,100,10,1\nB,1000,100,10,1\n")))
+        for t in d["peringatan"] + d["catatan"] + d2["peringatan"] + d2["catatan"]:
+            self.assertNotIn("jalankan", t.lower(), t)
+            self.assertNotIn("--", t, t)
+
+    def test_catatan_mata_uang_ditegaskan_rupiah_tanpa_opsi_teknis(self):
+        teks = "Campaign name,Amount spent (USD),Impressions,Link clicks,Results\nA,500000,40000,600,20\n"
+        d = self.json_ok("analisis", str(self.tulis("u.csv", teks)), "--mata-uang", "IDR")
+        self.assertTrue(any("sesuai konfirmasi Anda bahwa angkanya sudah Rupiah" in c
+                            for c in d["catatan_mata_uang"]), d["catatan_mata_uang"])
+        self.assertFalse(any("--" in c for c in d["catatan_mata_uang"]), d["catatan_mata_uang"])
+
+    def test_saran_data_sedikit_bahasa_awam(self):
+        data = "WA A,100000,10000,200,20\nWA B,100000,10000,200,20\nWA C,300000,50000,900,2\n"
+        d = self.json_ok("analisis", str(self.tulis("k.csv", KOLOM_SEDERHANA + data)))
+        saran = " ".join(d["saran"])
+        self.assertIn("datanya masih sedikit", saran)
+        self.assertNotIn("sampel kecil", saran)
 
 
 if __name__ == "__main__":
