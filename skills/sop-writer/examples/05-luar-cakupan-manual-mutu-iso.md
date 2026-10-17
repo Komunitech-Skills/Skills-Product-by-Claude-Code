@@ -29,3 +29,6 @@ Mau mulai dari SOP yang mana? Ceritakan cara kerja sekarang dan masalah yang ser
 - **Bagus:** sesuai *Kapan TIDAK digunakan* ("Dokumen ISO atau manual mutu lengkap → di luar cakupan. Skill ini hanya membuat SOP operasional praktis"). Tidak memaksakan, tidak mengarang klausul ISO atau "daftar dokumen wajib" yang berisiko keliru, dan tetap menawarkan pekerjaan yang benar-benar bisa dibantu, relevan dengan tujuan pengguna.
 - **Bagus:** README FAQ ("Apakah SOP ini cukup untuk sertifikasi? Belum") konsisten dengan jawaban ini.
 - **Catatan:** tidak ada kekurangan berarti. Kalimat "bulan depan" dari pengguna tidak dikomentari. Agent bisa menambahkan bahwa waktu satu bulan biasanya ketat untuk sertifikasi, tapi itu klaim yang sebaiknya tidak dibuat tanpa sumber.
+
+## Penyegaran v1.0.6 (2026-10-17)
+> Output dan catatan di atas **tidak diubah**. Sejak v1.0.6 bahasa ke pengguna tidak memakai nama skill/alat internal, jadi kalimat "berada di luar cakupan skill ini" kini ditulis berdasarkan kebutuhannya, misalnya: "**manual mutu dan paket dokumen ISO 9001 untuk sertifikasi belum bisa saya buatkan di sini**, karena …". Alasan penolakan dan tawaran SOP operasional tetap sama.
