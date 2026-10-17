@@ -4,6 +4,7 @@ Routine membuat sesi Claude Code melanjutkan kerja sendiri tiap beberapa jam, ta
 Routine hanya bisa dibuat **oleh sesi itu sendiri** (akun lain tidak bisa membuatkannya).
 
 ## Status saat ini
+- **2026-10-17 04:25 UTC:** Akun A diminta pemilik bekerja lebih cepat dengan banyak sub-agent — lihat bagian "TAMBAHAN WAJIB Akun A — versi 2026-10-17 CEPAT" (menang atas versi 2026-10-16/16b).
 - **2026-10-16:** Akun B **AKTIF** (routine tiap jam `7 * * * *`, sesi `session_017WmvK7PF8wwU1cBtMGyfry`) dan memegang semua pekerjaan bot Telegram/router/gelombang/promosi/helikopter/katalog (keputusan otomatis 90). Akun C (Cursor) berhenti 16 Okt (limit habis). Akun A dihidupkan lagi **hanya untuk pekerjaan tanpa bot/router** (A1–A4 di `koordinasi/papan-tugas.md` bagian "Pembagian 2026-10-16") **+ sejak 16 Okt 17:40 UTC uji Telegram A5 di bot pertama @KTclaude1_bot (bekas Cursor; 161 update menumpuk = tidak ada pemakai lain)**; prompt routine Akun A **versi 2026-10-16** di bawah menggantikan versi 2026-10-09 (yang menganggap Akun B dijeda — jangan dipakai lagi).
 - **2026-10-09:** pemilik mendelegasikan semua pekerjaan belum selesai ke Akun A (lihat `koordinasi/papan-tugas.md` bagian SERAH TERIMA Akun B → Akun A). Routine Akun B dijeda; routine Akun A perlu diaktifkan kembali oleh pemilik/Akun A.
 | Akun | Routine | Jadwal | Status |
@@ -43,6 +44,21 @@ HEMAT CONTEXT: serahkan pekerjaan berat ke agent; minta laporan balik ringkas (�
 
 Jangan simpan data pribadi member/pembeli, API key, atau token di repo; jangan commit dist/. Perbarui laporan sesi di reports/ (file bertanggal hari itu, YYYY-MM-DD-akun-b.md) setiap selesai satu batch. Berhenti hanya jika pemilik menulis "stop".
 ```
+
+## TAMBAHAN WAJIB Akun A — versi 2026-10-17 "CEPAT" (menang atas isi 2026-10-16/16b bila bertentangan)
+
+Pemilik, 17 Okt 2026 04:25 UTC: "akun A masih banyak limitnya, delegasi dan perintahkan dia agar kerja lebih cepat dan gunakan banyak sub agent". Router Komunitech HIDUP lagi sejak 04:22 UTC. Tenggat promosi Minggu 18 Okt 13:00 UTC (20:00 WIB).
+
+1. **Kecepatan:** batas "maks 4 agent paralel" DICABUT untuk Akun A sampai Senin 20 Okt. Pakai Workflow/sub-agent paralel sebanyak yang berguna (penilai per skill paralel, penilai + pemeriksa kedua Opus; pembuat dokumen Sonnet). Kerjakan beberapa jalur sekaligus: selagi menunggu balasan bot satu gelombang, siapkan pesan & pra-cek gelombang berikutnya, dan jalankan tugas tanpa bot (C1–C6) lewat sub-agent. Jangan berhenti di akhir giliran bila masih ada antrean: lanjutkan sampai antrean habis atau limit. Bila alat jadwal tersedia di sesimu, majukan giliran berikutnya (mis. send_later 60 menit) agar tidak menunggu 3 jam.
+2. **Antrean uji Telegram bot pertama (urut, tiap gelombang ≤ 10 pesan, KEDUA sisi kecuali disebut lain, topik baru, pra-cek `uji-tg.sh` wajib):**
+   - **A2 kirim ulang** sekarang: tender-checklist 1.0.9, cek-risiko-dan-asuransi-usaha 1.0.3 (topik 1924–1927 boleh dipakai ulang hanya bila bot belum membalas apa pun di sana; bila ragu, topik baru).
+   - **A3:** pantau-cron-openclaw **1.0.5** (sisi DENGAN saja — sisi TANPA berisiko memasang jadwal/ubah setelan bot; pembanding tanpa skill = 4 dari uji 12 Okt; kunci LOLOS: rencana menyebut tiap jadwal dijalankan sekali untuk uji, dan pesan jadwal yang masuk grup = isi laporan utuh, bukan kalimat penutup), audit-akun-iklan **1.0.7** (msgs-g19b.json idx 9), laporan-otomatis-terjadwal **1.1.9**, checklist-keamanan-pangan-usaha **1.0.3** — pesan uji: skenario normal pertama di `skills/<nama>/examples/00-openclaw-sebelum-sesudah.md` (sama persis dengan uji internal), data contoh dari `examples/` disalin ke workspace bot.
+   - **A4:** gaji-umkm **1.0.13** (tunggu baris katalog 1.0.13; pesan = entri gaji-umkm di msgs-g21b.json, "ya" dikirim sebagai balasan + mention) dan pph21-ter **1.0.6**.
+   - **A5–A6 (baru, keputusan otomatis 104):** skill lulus uji internal yang BELUM PERNAH diuji di bot Telegram asli — bagian Akun A: hitung-thr, pph-final-umkm, laporan-harian-usaha, buku-stok, kasir-lokal (A5); absensi-lokal, buku-piutang, laporan-iklan-mingguan, kalender-pajak, rekap-penjualan-csv (A6). Pesan uji & data seperti A3. Akun B menguji bagian lain di bot kedua (G24–G26) — jangan ambil skill di luar daftar ini.
+3. **Laporan** tetap: `koordinasi/telegram-gelombang-A<N>-2026-10-17.md` (skor tanpa → dengan, verdik, pembeda awam, kutipan, bukti kirim di log gateway) + satu pesan HTML ke topik 242 + baris "Akun A → Akun B" di papan. Akun B yang memperbarui README/jsonl/katalog/helikopter (Akun B memproses tiap jam).
+4. **Tanpa bot (paralel lewat sub-agent):** cadangan C1–C6 di papan; C6 (cek silang draf pengumuman) wajib selesai sebelum 18 Okt 10:00 UTC.
+
+Pesan siap tempel untuk pemilik (bila ingin Akun A mulai sekarang tanpa menunggu routine): "Akun A, baca koordinasi/rutin.md bagian 'TAMBAHAN WAJIB Akun A — versi 2026-10-17 CEPAT' dan kerjakan sekarang. Router sudah hidup. Pakai banyak sub-agent/workflow paralel."
 
 ## Prompt routine Akun A (versi 2026-10-16 — pakai ini; versi 2026-10-09 usang)
 
