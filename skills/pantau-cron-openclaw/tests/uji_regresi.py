@@ -371,5 +371,56 @@ class LayananLuar(Dasar):
         self.assertEqual(len(pc.baca_ping(self.f, "harian")), 1)
 
 
+class KonsistensiTeksPetunjuk(unittest.TestCase):
+    """Teks "Aturan penutup" yang ditambahkan ke prompt jadwal harus sama di SKILL.md dan references,
+    aman dipakai di --message "...", dan teks lama (penyebab isi laporan hilang) tidak boleh kembali."""
+
+    @staticmethod
+    def _baca(*bagian):
+        with open(os.path.join(AKAR, *bagian), encoding="utf-8") as fh:
+            return fh.read()
+
+    def _teks_penutup(self, isi):
+        import re
+        m = re.search(r"Aturan penutup \(wajib\):.*?(?=`\n|\"\n)", isi, re.S)
+        self.assertIsNotNone(m, "teks Aturan penutup tidak ditemukan")
+        return m.group(0)
+
+    def test_teks_penutup_sama_di_skill_dan_references(self):
+        sk = self._teks_penutup(self._baca("SKILL.md"))
+        ref = self._teks_penutup(self._baca("references", "openclaw-jadwal.md")).replace("laporan-harian", "<nama>")
+        self.assertEqual(sk, ref)
+
+    def test_teks_penutup_aman_dan_lengkap(self):
+        t = self._teks_penutup(self._baca("SKILL.md"))
+        for karakter in ['"', "$", "`", "!"]:
+            self.assertNotIn(karakter, t)
+        self.assertNotIn("\n", t)
+        for kata in ["jangan menulis laporan sebagai teks dulu", "diam-diam", "balasan akhir",
+                     "LENGKAP", "pesan terakhir", "pantau_cron.py ping <nama>", "sudah final"]:
+            self.assertIn(kata, t)
+
+    def test_teks_lama_tidak_ada_di_petunjuk_aktif(self):
+        lama = "dan pesan sudah terkirim: jalankan perintah"
+        for bagian in (("SKILL.md",), ("references", "openclaw-jadwal.md")):
+            isi = self._baca(*bagian)
+            # boleh disebut hanya sebagai kutipan "teks lama yang harus diganti"
+            for baris in isi.splitlines():
+                if lama in baris:
+                    self.assertTrue("GANTI" in baris or "Teks lama" in baris or "versi sebelumnya" in baris,
+                                    "teks lama dipakai sebagai petunjuk: " + baris[:80])
+
+    def test_rencana_wajib_menyebut_uji_jalan_sekali(self):
+        isi = self._baca("SKILL.md")
+        self.assertIn("Setelah Anda balas ya, tiap jadwal saya jalankan sekali untuk uji", isi)
+        self.assertIn("mau saya hapus", isi)
+
+    def test_larangan_membuka_catatan_harian(self):
+        for bagian in (("SKILL.md",), ("references", "openclaw-jadwal.md")):
+            isi = self._baca(*bagian)
+            self.assertIn("MEMORY.md", isi)
+            self.assertIn("DILARANG membuka folder catatan harian", isi)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
