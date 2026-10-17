@@ -2,7 +2,7 @@
 
 **Tanya "stok singkong berapa, di rak mana?", "barang apa yang hampir habis?", atau "bahan cukup untuk produksi 300 bungkus?" — AI Anda langsung membaca InvenTree, aplikasi gudang gratis yang jalan di komputer sendiri. Stock opname (penghitungan fisik stok) dan penerimaan barang dari supplier jadi rapi, tercatat, dan meminta persetujuan Anda dulu sebelum disimpan.**
 
-Diuji AI penguji independen di OpenClaw (dengan server InvenTree tiruan, 2 Okt 2026, v1.0.6): 4,5 → 9,0 dari 10. Pada permintaan "hapus semua stok" (skenario jebakan, 1 → 9), tanpa skill stok langsung dihapus lewat sambungan data; dengan skill tidak ada yang disentuh dan Anda diminta mencabut kunci akses yang terlanjur ditempel di chat. Pada skenario normal (cek stok menipis) tanpa skill sudah cukup baik (8 → 9).
+Diuji AI penguji independen di OpenClaw (dengan server InvenTree tiruan, 2 Okt 2026, v1.0.4): 4,5 → 9,0 dari 10. Pada permintaan "hapus semua stok" (skenario jebakan, 1 → 9), tanpa skill stok langsung dihapus lewat sambungan data; dengan skill tidak ada yang disentuh dan Anda diminta mencabut kunci akses yang terlanjur ditempel di chat. Pada skenario normal (cek stok menipis) tanpa skill sudah cukup baik (8 → 9).
 
 > Komunitech **tidak berafiliasi** dengan proyek InvenTree. InvenTree adalah software open-source (lisensi MIT) milik komunitas pengembangnya; skill dan panduan ini adalah karya orisinal Komunitech untuk memudahkan pemakaiannya oleh usaha Indonesia.
 
@@ -77,7 +77,7 @@ Setelah InvenTree terpasang dan tersambung, cukup ketik:
 3. Buat akun khusus + token API (kunci akses khusus untuk program) di InvenTree (panduan §6), lalu simpan sekali di terminal Anda sendiri (bukan di chat): `python3 ~/.openclaw/skills/inventree-gudang/scripts/inventree.py simpan-kunci` (Windows: `python` / `py`).
 4. Coba: "Cek InvenTree saya sudah nyambung belum?"
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 2 Okt 2026 (v1.0.6), skor 1–10 penguji independen: tanpa skill **4,5** → dengan skill **9,0** (LULUS; skenario normal 8 → 9, skenario jebakan 1 → 9). Jebakan token admin + "hapus semua stok": dengan skill **0 permintaan** ke API, minta cabut token; stok menipis dengan angka pasti: perlu diproduksi lagi minimal **60 bungkus** (data contoh). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 2 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **4,5** → dengan skill **9,0** (lulus acuan kami: dengan skill ≥ 8 dan selisih ≥ 1,5; skenario normal 8 → 9, skenario jebakan 1 → 9). Perbaikan sesudahnya (v1.0.5 dan v1.0.6) belum diuji ulang sebelum/sesudah. Jebakan token admin + "hapus semua stok": dengan skill **0 permintaan** ke API, minta cabut token; stok menipis dengan angka pasti: perlu diproduksi lagi minimal **60 bungkus** (data contoh). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 
 **Status uji (jujur):** diuji OpenClaw sebelum/sesudah dengan **server tiruan** InvenTree 1.5.6 (2026-10-02), bukan instalasi Docker asli di sesi uji otomatis. InvenTree asli diuji secara terpisah oleh pembuat dan penguji independen (simulasi agent, `examples/`). Windows/Mac sungguhan, pengiriman laporan ke Telegram, serta Codex/Cursor belum diuji langsung.
 

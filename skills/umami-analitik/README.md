@@ -11,7 +11,7 @@ Diuji AI penguji independen di OpenClaw (dengan server Umami tiruan dan data con
 - ✅ **Cukup ngobrol, tanpa belajar dashboard.** "Halaman apa yang paling dilihat?", "pengunjung pakai HP atau laptop?", "dari kota mana?" — jawaban rapi dengan angka gaya Indonesia (1.200 / 27,3%). Diuji dengan Umami 3.4.0 asli (penguji independen) dan dengan server tiruan di OpenClaw, belum di Umami milik pembeli sungguhan.
 - ✅ **Tahu promo mana yang berhasil.** Laporan kampanye UTM (tag di tautan untuk melacak asal pengunjung) Instagram/TikTok/WhatsApp, sumber trafik, klik link di bio IG/QR kemasan, dan **klik tombol WA/Beli** (tingkat konversi, yaitu berapa persen pengunjung yang mengklik) — dihitung script, bukan dikira.
 - ✅ **Perbandingan yang adil.** "Minggu ini vs minggu lalu" dibandingkan sampai jam yang sama, jadi Selasa sore tidak dibandingkan dengan satu minggu penuh.
-- ✅ **Laporan tiap Senin di Telegram** (opsional, lewat OpenClaw; diuji di bot Telegram uji 2026-10-13, one-shot command-argv) + ekspor CSV (file tabel) siap Excel.
+- ✅ **Laporan tiap Senin di Telegram** (opsional, lewat OpenClaw; satu kiriman terjadwal sekali jalan sudah diuji di bot Telegram uji pada 13 Okt 2026 dengan data contoh, jadwal berulang tiap Senin belum diuji) + ekspor CSV (file tabel) siap Excel.
 
 ## Cocok untuk siapa
 - **UMKM dengan website, landing page, atau toko online sendiri** (WordPress, HTML, pembuat landing page yang bisa ditempel kode) yang jualan lewat Instagram, TikTok, dan WhatsApp.
@@ -56,7 +56,7 @@ Setelah Umami terpasang dan tersambung, cukup ketik:
 - "Link di bio IG diklik berapa kali?"
 - "Buatkan tautan UTM untuk promo Oktober di IG, TikTok, dan status WA"
 - "Ekspor laporan web bulan lalu ke Excel"
-- "Kirim laporan web ke Telegram saya tiap Senin jam 7 pagi" (OpenClaw; jadwal otomatis diuji di bot Telegram uji 2026-10-13)
+- "Kirim laporan web ke Telegram saya tiap Senin jam 7 pagi" (OpenClaw; satu kiriman terjadwal sekali jalan sudah diuji pada 13 Okt 2026, jadwal berulang tiap Senin belum)
 
 ## Instalasi singkat
 1. **Umami** sudah terpasang dan menyala. Belum? Ikuti `references/panduan-umami.md` di paket (isinya sama dengan `docs/panduan-umami.md`; memakai Docker, yaitu cara resmi memasang server dengan sekali perintah, ±20–40 menit, termasuk pengamanan, HTTPS, kode lacak, tombol WA terlacak, dan tautan UTM) — atau pakai **jasa setup Komunitech**.
@@ -77,11 +77,11 @@ Setelah Umami terpasang dan tersambung, cukup ketik:
 Komunitech tidak berafiliasi dengan Umami Software, Inc. Umami (lisensi MIT) tidak ikut didistribusikan di paket ini; skill dan panduannya karya Komunitech. Rincian: `ATTRIBUTION.md`.
 
 **Hasil uji (angka nyata):** dua sumber yang terpisah.
-- **Uji OpenClaw, uji otomatis agent, v1.0.6** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,3 tanpa skill menjadi 8,7 dengan skill (skala 10). Tanpa skill, AI tidak menemukan konfigurasi Umami dan hanya meminta alamat, ID website, dan kunci API tanpa hasil apa pun; dengan skill langsung menjawab dengan angka seperti di atas. Pada pertanyaan privasi (melacak individu), AI tanpa skill pun sudah menolak dengan baik (8 vs 9). Catatan jujur: uji OpenClaw memakai data contoh dan server tiruan yang memutar rekaman respons Umami 3.4.0 asli, bukan Umami hidup di server Anda; Windows/macOS belum diuji langsung.
-- **Uji jadwal Telegram sungguhan (2026-10-13):** one-shot `laporan-mingguan` via command-argv ke topik uji; 11 pengunjung unik / 12 kunjungan cocok mock + script independen — `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`.
+- **Uji OpenClaw, uji otomatis agent, 2 Okt 2026 (v1.0.4)** (angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 5,3 tanpa skill menjadi 8,7 dengan skill (skala 10; lulus acuan kami: dengan skill ≥ 8 dan selisih ≥ 1,5). Perbaikan sesudahnya (v1.0.5 dan v1.0.6) belum diuji ulang sebelum/sesudah. Tanpa skill, AI tidak menemukan konfigurasi Umami dan hanya meminta alamat, ID website, dan kunci API tanpa hasil apa pun; dengan skill langsung menjawab dengan angka seperti di atas. Pada pertanyaan privasi (melacak individu), AI tanpa skill pun sudah menolak dengan baik (8 vs 9). Catatan jujur: uji OpenClaw memakai data contoh dan server tiruan yang memutar rekaman respons Umami 3.4.0 asli, bukan Umami hidup di server Anda; Windows/macOS belum diuji langsung.
+- **Uji kiriman terjadwal ke Telegram (13 Okt 2026):** satu laporan mingguan terjadwal sekali jalan tiba tepat waktu (±5 menit setelah dibuat) di grup uji Telegram internal; angkanya (11 pengunjung unik, 12 kunjungan, 23 tayangan) cocok dengan hitungan ulang dari data contoh. Datanya dari Umami tiruan, bukan Umami hidup, dan jadwal berulang tiap Senin belum diuji. Ini uji pengiriman terjadwal, bukan uji tanya-jawab sebelum/sesudah di bot Telegram — `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`.
 - **Uji penguji independen pada Umami 3.4.0 asli (Docker), skill v1.0.0:** skor 8/10; angka cocok dengan data mentah Umami (`examples/HASIL-UJI.md`).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, server tiruan) dan pada Umami asli oleh penguji independen; **kiriman terjadwal ke Telegram** diuji di bot Telegram uji 2026-10-13 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama). Windows/macOS belum diuji langsung.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, server tiruan) dan pada Umami asli oleh penguji independen; **kiriman terjadwal ke Telegram** diuji satu kali (sekali jalan, data contoh) di bot Telegram uji pada 13 Okt 2026 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama). Windows/macOS belum diuji langsung.
 
 ## FAQ
 **Kenapa "rata-rata lama" bisa beberapa detik lebih kecil dari perkiraan saya?**

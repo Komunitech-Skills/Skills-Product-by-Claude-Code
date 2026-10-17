@@ -73,7 +73,7 @@ Salin folder `kpi-tim` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.1.6), skor 1–10: tanpa skill **7,25** → dengan skill **8,25** (LULUS, selisih tipis). Contoh September dari rekap WA pada uji itu: **Andi 99,8 · Sari 107,2 · Budi 75,6 · Joko 74,6** (skrip tertimbang; batas 120%); datanya berbeda dari contoh distributor di atas. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 1 Okt 2026 (skill v1.1.4, dua skenario), skor 1–10: tanpa skill **7,25** → dengan skill **8,25**. Selisih 1,0 poin, di bawah acuan kami 1,5 poin, jadi pembedanya tipis. Uji ulang pada v1.1.5 (hanya sisi dengan skill, skenario rekap grup WA) tetap bernilai 8,5 dan masalah cap waktu WA yang terbaca sebagai angka sudah hilang; giliran itu berhenti di konfirmasi draf, jadi belum sampai ke skor akhir. Versi sesudahnya (1.1.6 dan 1.1.7) belum diuji ulang sebelum/sesudah. Contoh September dari rekap WA pada uji itu: **Andi 99,8 · Sari 107,2 · Budi 75,6 · Joko 74,6** (skrip tertimbang; batas 120%); datanya berbeda dari contoh distributor di atas. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`.
 
 **Status uji (jujur):** sudah diuji OpenClaw sebelum/sesudah otomatis (2026-10-01) + muat CLI. Claude Code (simulasi agent). Dasbor Datasette diuji oleh penguji terpisah (bukan lewat OpenClaw); Grist hanya sampai file CSV. Jadwal Telegram belum diuji langsung. Codex/Cursor belum uji platform asli.
 

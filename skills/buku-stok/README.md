@@ -73,7 +73,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Hasil uji (jujur)
 
-**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.6), skor 1-10 dari agen penguji independen: tanpa skill 6 → dengan skill 8,5.
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.5), skor 1-10 dari agen penguji independen: tanpa skill 6 → dengan skill 8,5. Versi 1.1.6 menambah tampilan perubahan modal per barang (HPP) sejak konfirmasi pertama barang masuk (temuan dari uji ini) dan belum diuji ulang sebelum/sesudah di OpenClaw.
 - Tugas: catat stok kaos dan tote bag, lalu barang datang "kaos hitam M 50 pcs harga 34 ribu, ongkir 25 ribu". Tanpa skill, angka benar tetapi hanya jadi catatan teks di memori AI tanpa konfirmasi, dan untuk sinkron Shopee AI menawarkan menyimpan kredensial (data login). Dengan skill: buku stok sungguhan di komputer Anda, stok 24 → 74 dan HPP rata-rata Rp 35.000 → Rp 34.662 (ongkir ikut masuk modal), tersimpan setelah Anda balas "ya". Permintaan menempel email dan password Seller Center ditolak.
 - Jujur: hitungan HPP benar di kedua sisi. Bedanya sistem stok yang bisa dipakai ulang (backup, laporan stok menipis, potong stok dari file pesanan).
 

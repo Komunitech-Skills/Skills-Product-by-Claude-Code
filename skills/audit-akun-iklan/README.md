@@ -23,7 +23,7 @@ Tanpa memberi password, tanpa login, tanpa sambungan teknis (API): cukup screens
 - Tidak cocok bila Anda butuh laporan angka mingguan → pakai **Laporan Iklan Mingguan** (skill Komunitech lain yang merangkum angka iklan tiap minggu).
 
 ## Contoh sebelum & sesudah
-**Sebelum (AI tanpa skill):** "Coba optimalkan target audiens, perbaiki materi iklan, dan pantau ROAS secara berkala."
+**Sebelum (gambaran saran AI tanpa skill; ilustrasi, bukan kutipan hasil uji):** "Coba optimalkan target audiens, perbaiki materi iklan, dan pantau ROAS secara berkala."
 Saran umum, tidak ada angka, tidak tahu harus mulai dari mana.
 
 **Sesudah (cukup ketik):** "Tolong audit iklan Shopee toko gamis saya. Anggaran 50rb/hari tapi ROAS jelek, kayaknya boros."
@@ -63,13 +63,17 @@ Salin folder `audit-akun-iklan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Script memakai Python bawaan, tanpa instal paket tambahan.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 1 Okt 2026 (uji ulang pada v1.0.4; putaran kedua pada v1.0.5 juga rata-rata 8,5), skor 1–10: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Uji pertama sebelum perbaikan hanya 7,5 → 7,75 (belum lulus), jadi angka di sini adalah hasil uji ulang. Data uji OpenClaw berbeda dari contoh di atas (gamis harga Rp189.000, modal Rp95.000): ROAS impas **2,66** — target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854. Menolak login/password klinik dan menghindari testimoni pasien (mengikuti aturan iklan fasilitas kesehatan, Permenkes 1787/2010). Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`; contoh "Sesudah" di atas berasal dari simulasi pembuat skill, bukan dari uji OpenClaw.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 1 Okt 2026 (uji ulang pada v1.0.4; putaran kedua pada v1.0.5 juga rata-rata 8,5), skor 1–10: tanpa skill **6,0** → dengan skill **8,5** (lulus acuan kami). Uji pertama sebelum perbaikan hanya 7,5 → 7,75 (belum lulus), jadi angka di sini adalah hasil uji ulang. Data uji OpenClaw berbeda dari contoh di atas (gamis harga Rp189.000, modal Rp95.000): ROAS impas **2,66** — target 2 rugi ±Rp23.180/pesanan; ROAS 2,3 rugi ±Rp10.854. Menolak login/password klinik dan menghindari testimoni pasien (mengikuti aturan iklan fasilitas kesehatan, Permenkes 1787/2010). Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`; contoh "Sesudah" di atas berasal dari simulasi pembuat skill, bukan dari uji OpenClaw.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (AgriciDaniel/claude-ads) — lihat `ATTRIBUTION.md`. Skor bukan jaminan penjualan naik; patokan frekuensi (berapa kali orang yang sama melihat iklan) dan ROAS adalah patokan awal berdasarkan kebiasaan umum.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Tolong audit iklan skincare saya. Saya pakai TikTok Ads ke website (Shopify) Rp4,5 jt/bulan dan iklan TikTok Shop (GMV Max) Rp6 jt/bulan. Serum 20 ml harga Rp89rb, modal Rp32rb. Potongan TikTok Shop kira-kira 14,5% + komisi…". Tanpa skill skor **7,5** → dengan skill skor **6** (selisih -1,5, belum lulus acuan kami: skor dengan skill di bawah 8). Hanya sisi DENGAN yang mulai memeriksa kesehatan pengaturan akun (pemasangan pixel, tujuan kampanye, keamanan 2 langkah, jumlah video iklan) lewat 8 pertanyaan, tetapi belum memberi skor, urutan perbaikan, atau rencana, sehingga untuk satu kalimat curhat "rasanya boncos" jawaban tanpa skill justru lebih berguna. Catatan jujur: Kalau pengguna hanya menulis satu kalimat tanpa data pengaturan akun, skill berhenti di titik impas lalu meminta 8 jawaban sebelum skor keluar, jadi pembeli awam bisa merasa belum dibantu. Skor kesehatan, prioritas, dan rencana 7 hari baru muncul setelah pemilik iklan menjawab atau menempelkan bukti.
+Uji terakhir: 16 Okt 2026, versi 1.0.6, di bot OpenClaw asli (grup uji internal Komunitech). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: pemilik toko skincare menyebut iklan TikTok Ads ke website Rp4,5 juta per bulan dan iklan TikTok Shop (GMV Max) Rp6 juta per bulan, serum 20 ml harga Rp89.000 dengan modal Rp32.000, lalu minta iklannya diaudit karena "rasanya boncos". Skor 1-10 dari penilai independen: tanpa skill **7,5** → dengan skill **6**, selisih **-1,5**: **belum lulus acuan kami** (skor dengan skill di bawah 8, dan di uji ini skill justru kalah).
+
+Bedanya yang terasa: versi dengan skill menghitung titik impas kedua jalur iklan (ROAS impas website 1,61 dan GMV Max 2,65), lalu mengajukan 8 pertanyaan soal pengaturan akun (pemasangan pixel, tujuan kampanye, keamanan 2 langkah, jumlah video iklan) tanpa memberi skor, urutan perbaikan, atau rencana. Versi tanpa skill langsung menghitung untung per botol dan titik impas, memberi 3 saran, dan bertanya satu hal, jadi untuk satu kalimat curhat jawabannya justru lebih berguna.
+
+Catatan jujur: bila Anda hanya menulis satu kalimat tanpa data pengaturan akun, versi 1.0.6 berhenti di titik impas lalu meminta 8 jawaban sebelum skor keluar, sehingga pembeli awam bisa merasa belum dibantu. Skor kesehatan, prioritas, dan rencana 7 hari baru muncul setelah Anda menjawab atau menempelkan bukti. Versi 1.0.7 (16 Okt 2026) mengubah urutannya, yaitu audit pendahuluan lebih dulu baru pertanyaan lanjutan maksimal 5, tetapi perubahan ini belum punya hasil uji ulang di bot Telegram.
 
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**

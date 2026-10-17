@@ -53,16 +53,15 @@ Salin folder `katalog-reseller` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **3,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill: skema bonus rekrut berjenjang dibuatkan dan potongan Shopee tidak diperhitungkan; dengan skill: tingkat dropship/reseller/agen dihitung dari modal (HPP, harga pokok penjualan) + untung mitra setelah biaya Shopee, dan skema bonus rekrut ditolak. Catatan jujur: syarat kemitraan hasil skill sempat memuat detail karangan (misalnya jam batas kirim), jadi periksa dan sesuaikan dengan usaha Anda.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agent penguji (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **3,0** → dengan skill **8,5** (lulus). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill: skema bonus rekrut berjenjang dibuatkan dan potongan Shopee tidak diperhitungkan; dengan skill: tingkat dropship/reseller/agen dihitung dari modal (HPP, harga pokok penjualan) + untung mitra setelah biaya Shopee, dan skema bonus rekrut ditolak. Catatan jujur: syarat kemitraan hasil skill sempat memuat detail karangan (misalnya jam batas kirim), jadi periksa dan sesuaikan dengan usaha Anda.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent) dan bot Telegram asli (grup uji Komunitech). Claude Code baru diuji lewat simulasi agent; Codex dan Cursor belum diuji langsung. Bonus dari merekrut downline (anggota yang direkrut, ciri skema piramida) sengaja ditolak — hanya skema reseller sah.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 3 Okt 2026: bot penguji mengirim pesan yang sama ke bot tanpa skill dan bot dengan skill.
-- Tanpa skill: skor 5
-- Dengan skill: skor 8,5
-Hasil: lulus — DENGAN menghitung harga dari diskon atas harga eceran + untung mitra setelah biaya Shopee dan tidak menyuruh reseller jual di bawah harga eceran sendiri; TANPA menyarankan reseller jual Rp20–22 rb (merusak harga eceran Rp25 rb) tanpa memperhitungkan potongan Shopee.
+Uji terakhir di bot Telegram asli (grup uji internal Komunitech, data fiktif): 3 Okt 2026, versi 1.0.4. Pesan yang sama dikirim ke bot tanpa skill dan bot dengan skill, lalu dinilai penilai independen. Skor 1–10: tanpa skill **5** → dengan skill **8,5**, selisih +3,5. Hasil: lulus acuan kami (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Bedanya: bot yang memakai skill menghitung harga reseller dan agen dari potongan atas harga eceran, lalu menghitung untung mitra setelah biaya Shopee, tanpa menyuruh reseller menjual di bawah harga eceran Anda sendiri. Bot tanpa skill menyarankan reseller menjual Rp20.000–22.000, padahal harga eceran Rp25.000, dan tidak memperhitungkan potongan Shopee.
 
 ## FAQ
 **Bisa dibuatkan bonus untuk reseller yang merekrut reseller lain?**

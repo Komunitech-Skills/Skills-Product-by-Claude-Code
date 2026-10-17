@@ -66,10 +66,13 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python (
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 12 Okt 2026, satu skenario dengan topik lain, pesan yang sama tanpa skill lalu dengan skill:
-- Tanpa skill: skor 7,5
-- Dengan skill: skor 8,5
-Selisihnya tipis (+1,0). Tanpa skill AI sudah menolak aksi berisiko (cek mutasi bank, kirim WA otomatis, bagikan alamat) dengan angka nota yang benar. Dengan skill ditambah nomor pesanan, nota, label, rekap tanpa nomor HP/alamat yang aman untuk grup reseller, dan CSV. Jadi di bot Telegram keunggulan skill ini lebih kecil daripada angka uji OpenClaw di atas.
+Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026 (versi skill yang diuji tidak tercatat), dengan pesanan contoh yang berbeda dari uji di atas: pesan yang sama, sekali tanpa skill, sekali dengan skill. Skor 1–10: tanpa skill **7,5** → dengan skill **8,5** (selisih +1,0). Vonis: **belum lulus acuan kami**, karena selisihnya terlalu kecil (acuan kami: dengan skill minimal 8 dan selisih minimal 1,5).
+
+Tanpa skill pun AI sudah menolak cek mutasi bank, kirim WhatsApp otomatis, dan membagikan alamat pelanggan, dengan angka nota yang benar. Dengan skill ditambah nomor pesanan, nota dan label per pelanggan, rekap tanpa nomor HP dan alamat yang aman dibagikan ke grup reseller, serta berkas CSV. Jadi di bot Telegram keunggulan skill ini lebih kecil daripada angka uji OpenClaw di atas.
+
+Catatan jujur: jawaban dengan skill panjang (sekitar 8.400 karakter, melewati batas 4.096 karakter per pesan Telegram), sehingga kemungkinan tampil terpecah menjadi beberapa pesan.
+
+Uji sebelumnya (OpenClaw, uji otomatis agent, 6 Oktober 2026, v1.0.0): 5,5 → 8,4.
 
 ## FAQ
 **Bisakah langsung mengirim konfirmasi ke semua pelanggan dari WhatsApp saya?**

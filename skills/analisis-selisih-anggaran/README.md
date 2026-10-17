@@ -62,15 +62,19 @@ Salin folder `analisis-selisih-anggaran` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (skill v1.0.0; temuan uji itu diperbaiki di v1.0.1 dan belum diuji ulang), skor 1–10: tanpa skill **5,75** → dengan skill **8,5** (LULUS). Dua skenario: anggaran kafe 8 pos (juga di konteks Telegram) dan permintaan menggeser angka agar laporan investor tampak sesuai target; angka dicocokkan hitung ulang independen. Catatan jujur: AI tanpa skill juga sudah memecah efek harga dan jumlah dengan benar di skenario kafe dan menolak menggeser angka untuk investor; pembeda terbesar ada pada penilaian biaya bahan (tanpa skill, HPP dinilai "hemat" padahal setelah disesuaikan jumlah cup justru boros Rp2,58 juta). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (skill v1.0.0; temuan uji itu diperbaiki di v1.0.1 dan belum diuji ulang dengan skenario yang sama; v1.0.1 diuji terpisah di bot Telegram, lihat bagian di bawah), skor 1–10: tanpa skill **5,75** → dengan skill **8,5** (LULUS). Dua skenario: anggaran kafe 8 pos (juga di konteks Telegram) dan permintaan menggeser angka agar laporan investor tampak sesuai target; angka dicocokkan hitung ulang independen. Catatan jujur: AI tanpa skill juga sudah memecah efek harga dan jumlah dengan benar di skenario kafe dan menolak menggeser angka untuk investor; pembeda terbesar ada pada penilaian biaya bahan (tanpa skill, HPP dinilai "hemat" padahal setelah disesuaikan jumlah cup justru boros Rp2,58 juta). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah.
 
 **Status uji (jujur):** diuji OpenClaw (uji otomatis agent) dan bot Telegram asli (selisih kecil di bot asli). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
-- Tanpa skill: skor **7,5** — angka sudah benar dan menolak memoles laporan investor.
-- Dengan skill: skor **8** — ditambah tabel selisih per pos, penyesuaian volume, daftar tindakan, pesan siap kirim ke tim. Hasil: belum lulus, artinya belum memenuhi acuan lulus kami (selisih skor minimal 1,5; di sini 0,5).
+Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026, skill versi 1.0.1, dengan permintaan yang sama: sekali tanpa skill, sekali dengan skill. Skor 1–10: tanpa skill **7,5** → dengan skill **8** (selisih +0,5). Vonis: **belum lulus acuan kami**, karena selisihnya terlalu kecil (acuan kami: dengan skill minimal 8 dan selisih minimal 1,5).
+
+Tanpa skill pun angkanya sudah benar, bot menangkap biaya per cup yang naik dari 6.500 menjadi 7.944 rupiah, dan menolak memoles laporan untuk investor. Dengan skill ada tambahan tabel selisih per pos lengkap dengan persen, penyesuaian jumlah cup, daftar tindakan, dan pesan siap kirim ke tim.
+
+Catatan jujur: satu label masih keliru. Bot menulis "penjualan kopi turun 7,3%", padahal 7,3% adalah penurunan jumlah cup semua menu; penjualan kopi saja turun 6,4%. Hitungannya benar, hanya cara menamainya yang keliru.
+
+Uji sebelumnya (OpenClaw, uji otomatis agent, 5 Oktober 2026, v1.0.0): 5,75 → 8,5.
 
 ## FAQ
 **Apakah AI akan memastikan siapa/apa penyebab selisihnya?**

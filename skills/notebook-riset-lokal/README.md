@@ -62,9 +62,17 @@ Setelah Open Notebook terpasang dan tersambung, cukup ketik permintaan biasa:
 4. Bila mengaktifkan kata sandi API: simpan sekali (di terminal Anda sendiri, bukan di chat): `python3 ~/.openclaw/skills/notebook-riset-lokal/scripts/notebook.py simpan-kunci` (Windows: `python`/`py`).
 5. Coba: "Cek Open Notebook saya sudah nyambung belum?"
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **4,5** → dengan skill **8,25** (LULUS). Tarif PPh final UMKM dijawab dari dokumen notebook ("0,5% omzet, PP 55/2022"); permintaan membuka akses ke jaringan cabang (alamat `192.168.1.20`) ditolak setelah dicek bahwa kata sandi API belum aktif — tanpa Docker/SSH. Sumber skor OpenClaw: `examples/00-openclaw-sebelum-sesudah.md` (dengan server Open Notebook **tiruan**, jadi yang diukur perilaku AI, bukan mutu jawaban model). Uji terpisah pada server Open Notebook **1.14.0 asli** oleh penguji lain: skor 9/10 di `examples/HASIL-UJI.md`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.7), skor 1–10: tanpa skill **4,5** → dengan skill **8,25** (lulus acuan kami). Tarif PPh final UMKM dijawab dari dokumen notebook ("0,5% omzet, PP 55/2022"); permintaan membuka akses ke jaringan cabang (alamat `192.168.1.20`) ditolak setelah dicek bahwa kata sandi API belum aktif — tanpa Docker/SSH. Sumber skor OpenClaw: `examples/00-openclaw-sebelum-sesudah.md` (dengan server Open Notebook **tiruan**, jadi yang diukur perilaku AI, bukan mutu jawaban model). Uji terpisah pada server Open Notebook **1.14.0 asli** oleh penguji lain: skor 9/10 di `examples/HASIL-UJI.md`.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Tanya-jawab dengan model AI sungguhan di Open Notebook, podcast, dan jadwal ringkasan otomatis belum diuji langsung. Butuh Docker/panduan Open Notebook — lihat `docs/panduan-open-notebook.md`. Jawaban AI dari dokumen Anda wajib dicek ulang (regulasi/angka).
+
+## Bukti uji di bot Telegram
+
+Uji terakhir: 12 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech); versi yang diuji tidak tercatat. Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: menanyakan tarif PPh final UMKM ke notebook regulasi pajak. Skor 1-10 dari penilai independen: tanpa skill **6,5** → dengan skill **7**, selisih **+0,5**: **belum lulus acuan kami** (selisihnya kurang dari 1,5 dan skor dengan skill di bawah 8).
+
+Bedanya kecil: kedua sisi sama-sama menjawab tarif 0,5% dari pengetahuan umum, bukan dari dokumen di notebook. Dengan skill, bot hanya menambah pengecekan daftar notebook.
+
+Catatan jujur: server Open Notebook yang dipakai saat uji ini hanya tiruan dengan fungsi terbatas (tanya-jawab dan pencarian tidak lengkap), jadi uji ini belum mengukur mutu jawaban dari dokumen sungguhan. Uji OpenClaw lokal sebelumnya (1 Okt 2026, v1.0.7, juga dengan server tiruan) memberi 4,5 → 8,25.
 
 ## FAQ
 **Apakah dokumen saya dikirim ke server Komunitech atau Google?**

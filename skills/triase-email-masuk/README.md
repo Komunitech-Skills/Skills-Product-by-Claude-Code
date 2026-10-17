@@ -22,13 +22,12 @@ Diuji AI penguji independen di OpenClaw: 5,5 → 8,0 dari 10 (pembedanya: draf b
 ## Contoh sebelum & sesudah
 **Sebelum:** 10 email pagi hari. Tagihan Rp7.450.000 jatuh tempo dua hari lagi terbenam di bawah promosi, dan email "rekening kami berganti, mohon transfer ke rekening baru" nyaris dibalas.
 
-**Sesudah (cukup tempel emailnya):** tagihan di urutan teratas, permintaan penawaran Rp18.000.000 berikutnya, dua email dicurigai penipuan dengan alasannya, promosi diarsipkan, draf balasan untuk semua yang perlu dijawab. Cuplikan keluarannya (contoh rancangan pembuat dengan email fiktif, bukan hasil uji platform; dari `examples/01-pemilik-usaha-10-email.md`):
+**Sesudah (cukup tempel emailnya):** tagihan di urutan teratas, disusul komplain pelanggan dan permintaan penawaran Rp18.000.000, dua email dicurigai penipuan dengan alasannya, promosi diarsipkan, draf balasan untuk semua yang perlu dijawab. Cuplikan keluarannya (contoh rancangan pembuat dengan email fiktif, bukan hasil uji platform; dari `examples/01-pemilik-usaha-10-email.md`):
 
 ```
 **Waspada dulu (2 email dicurigai phishing, jangan dibalas atau diklik)**
 - **E7 "Mas Agus", rekening baru**: isinya meminta transfer ke rekening baru dan menyebut rekening lama ditutup, dengan tekanan "segera". Ini modus umum penipuan tagihan. Domainnya sama dengan vendor Anda di E3, tetapi akun bisa saja diretas atau dipalsukan. Jangan transfer; telepon Mas Agus ke nomor yang sudah Anda simpan dan tanyakan dulu.
 …
-**Ringkasan:** 10 email: 2 dicurigai phishing, 3 perlu tindakan hari ini atau besok (P1), 2 perlu balasan (P2-P3), 3 cukup diarsipkan.
 | Urut. | Email | Prioritas dan alasan | Ringkasan dan tindakan |
 |---|---|---|---|
 | 1 | E3 Pak Hendra, tagihan | P1: jatuh tempo 8 Okt (2 hari), Rp7.450.000 | Menagih INV-0417. Cocokkan dengan catatan, konfirmasi atau bayar sebelum 8 Okt (tenggat dari email) |
@@ -63,10 +62,13 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python t
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
-- Tanpa skill: skor 7,5
-- Dengan skill: skor 8
-Hasil: belum lulus — Tanpa skill sudah menandai email penipuan dan memberi 5 draf (namun menjanjikan ganti rugi tanpa tanya pemilik); dengan skill memakai isian untuk keputusan pemilik dan 3 pertanyaan di akhir, tetapi selisih skornya kecil (+0,5), belum mencapai target internal kami (+1,5).
+Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026 (versi skill yang diuji tidak tercatat), dengan email yang sama: sekali tanpa skill, sekali dengan skill. Skor 1–10: tanpa skill **7,5** → dengan skill **8** (selisih +0,5). Vonis: **belum lulus acuan kami**, karena selisihnya terlalu kecil (acuan kami: dengan skill minimal 8 dan selisih minimal 1,5).
+
+Tanpa skill pun email penipuan sudah ditandai dan ada 5 draf balasan, tetapi drafnya menjanjikan ganti rugi gratis tanpa bertanya ke pemilik. Dengan skill, keputusan seperti itu dikosongkan untuk Anda isi dan ada 3 pertanyaan di akhir.
+
+Catatan jujur: jumlah email per prioritas di ringkasan sempat tidak cocok dengan daftarnya, dan baru 4 dari 8 email non-penipuan yang dibuatkan draf.
+
+Uji sebelumnya (OpenClaw, uji otomatis agent, 6 Oktober 2026, v1.0.0): 5,5 → 8,0.
 
 ## FAQ
 **Apakah skill ini membaca atau membalas email saya sendiri?**

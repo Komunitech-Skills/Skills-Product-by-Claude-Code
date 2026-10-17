@@ -67,9 +67,17 @@ Salin folder `tulisan-tanpa-kesan-ai` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.3), skor 1–10: tanpa skill **5,0** → dengan skill **8,7** (LULUS). Caption kopi Gayo Rp85.000/250 g: DENGAN harga & ukuran persis, skrip pemeriksa pola **100/100**, daftar "Yang diubah" enam pola; TANPA skill, AI mengarang stok terbatas/petani langsung/kirim hari ini. Bot Telegram asli (2026-10-05): tanpa skill **5** → dengan skill **7,5** (hasilnya masih terasa generik, jadi unggulnya lebih tipis daripada di OpenClaw). Sumber skor OpenClaw: `examples/00-openclaw-sebelum-sesudah.md`; skor Telegram dari uji terpisah di bot asli.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 2 Okt 2026 (v1.0.3), skor 1–10: tanpa skill **5,0** → dengan skill **8,7** (lulus acuan kami). Caption kopi Gayo Rp85.000/250 g: dengan skill harga & ukuran persis, skrip pemeriksa pola **100/100**, daftar "Yang diubah" enam pola; tanpa skill, AI mengarang stok terbatas/petani langsung/kirim hari ini. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram asli (lebih tipis) ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill kurasi MIT (petergyang/no-ai-slop) — lihat `ATTRIBUTION.md`. Bukan detektor "% AI" seperti GPTZero.
+
+## Bukti uji di bot Telegram
+
+Uji terakhir: 5 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech); versi yang diuji tidak tercatat (lebih lama dari versi terkini 1.0.5). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: minta caption jualan kopi (harga Rp85.000 per 250 gram) diperbaiki agar tidak terkesan ditulis AI. Skor 1-10 dari penilai independen: tanpa skill **5** → dengan skill **7,5**, selisih **+2,5**: **belum lulus acuan kami** karena skor dengan skill 7,5 masih di bawah 8 (selisihnya sendiri sudah cukup).
+
+Bedanya yang terasa: dengan skill, klaim berlebihan dan kalimat klise dibuang tanpa mengarang fakta baru, sementara harga, ukuran, dan tagar tetap utuh. Tanpa skill, tulisannya terdengar paling alami tetapi mengarang lima fakta produk, misalnya roasting sendiri, digiling saat dikirim, dan stok terbatas.
+
+Catatan jujur: hasil dengan skill masih terasa generik (masih ada kalimat serba bisa seperti "cocok menemani momen santai Anda"), tagar klise ikut dipertahankan, balasan membuka dengan menyebut nama skill, dan bot tidak menawarkan Anda menambahkan fakta asli (asal kebun, proses, rasa). Karena itu unggulnya di Telegram lebih tipis daripada di uji OpenClaw lokal (2 Okt 2026, v1.0.3: 5,0 → 8,7).
 
 ## FAQ
 **Apakah ini bisa membuktikan tulisan saya "lolos" pendeteksi AI seperti GPTZero/Turnitin?**

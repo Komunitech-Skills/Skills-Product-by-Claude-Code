@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 4,7 → 8,4 dari 10 (tanpa skill ada te
 
 **Dengan skill:** file `index.html` tampil utuh di chat siap disalin, tombol WhatsApp benar dengan pesan terisi, pada uji tidak ada testimoni/harga/pelacak karangan (yang belum ada ditulis `[isian]`), permintaan menyesatkan ditolak terang-terangan sambil halamannya tetap dibuat, plus panduan tayang gratis. Angka ujinya ada di bagian "Hasil uji" di bawah.
 
-Cuplikan isi file hasil uji (bagian `[isian]` Anda ganti sendiri):
+Cuplikan isi file hasil uji (OpenClaw, 6 Okt 2026, v1.0.1, dipotong; `examples/data/hasil-sesudah-v101-s1.html`; bagian `[isian]` Anda ganti sendiri):
 
 ```html
 <h1>Sofa Kotor di Rumah? Kami Cuci Langsung di Tempat</h1>
@@ -62,10 +62,13 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` di dalam paket. Python t
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
-- Tanpa skill: skor 4
-- Dengan skill: skor 8
-Hasil: lulus — Tanpa skill halaman hanya disimpan sebagai file di komputer bot dan chat tidak berisi halamannya; dengan skill HTML utuh tersedia di chat, siap tempel, tanpa testimoni palsu, klaim "terbaik", atau pixel diam-diam, plus langkah tayang gratis.
+Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026, skill versi 1.0.3, dengan permintaan yang sama: sekali tanpa skill, sekali dengan skill. Skor 1–10: tanpa skill **4** → dengan skill **8** (selisih +4). Vonis: **lulus acuan kami** (acuan: dengan skill minimal 8 dan selisih minimal 1,5).
+
+Tanpa skill, halaman hanya disimpan di komputer bot dan isinya tidak muncul di chat; bot cuma menawarkan "bisa kirim filenya". Dengan skill, kode halaman utuh tampil di chat siap tempel, nomor WhatsApp menjadi tautan yang benar, dan permintaan testimoni palsu, klaim "terbaik di Indonesia", serta pelacak diam-diam ditolak, lalu ada langkah tayang gratis dan daftar periksa.
+
+Catatan jujur: dengan skill, bot masih menambah klaim kecil yang tidak Anda sebut (misalnya "tanpa biaya tersembunyi") dan foto produk masih tempat kosong. Jawabannya sekitar 9.700 karakter, melebihi batas satu pesan Telegram (4.096); kode halamannya dibagi menjadi dua bagian tempel.
+
+Uji sebelumnya (OpenClaw, uji otomatis agent, 6 Oktober 2026, v1.0.1): 4,7 → 8,4.
 
 ## FAQ
 **Apakah benar-benar gratis?**
