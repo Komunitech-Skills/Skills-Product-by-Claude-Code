@@ -65,9 +65,11 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05, skill v1.0.9.
-- Tanpa skill: skor **4,5**
-- Dengan skill: skor **8,5** (LULUS). Dengan skill menolak auto-balas WA (WhatsApp Web tidak resmi), menawarkan mode Copilot, template balasan + aturan nada; tanpa skill hanya bertanya dan menawarkan memandu menyambungkan WhatsApp untuk balas-otomatis.
+Uji terakhir di bot OpenClaw asli (grup uji internal Komunitech): 5 Oktober 2026, skill versi 1.0.9. Tanpa skill **4,5** → dengan skill **8,5** dari 10, selisih +4: **lulus acuan kami** (skor dengan skill minimal 8 dan selisih minimal 1,5).
+
+Dengan skill, bot menolak membalas otomatis semua chat WhatsApp dengan alasan yang benar (WhatsApp Web bukan jalur resmi dan nomor bisa diblokir), langsung menawarkan mode Copilot (bot menyiapkan draf, Anda yang mengirim), dan menyerahkan 7 template balasan lengkap dengan aturan nada dan alur kerja admin. Tanpa skill, bot hanya bertanya balik tanpa satu template pun dan malah menawarkan memandu menyambungkan WhatsApp.
+
+Catatan jujur: pada uji ini template cara bayar belum diberi catatan "khusus chat WhatsApp; di Shopee jangan arahkan pembayaran ke luar platform". Catatan itu baru ditambahkan di versi 1.0.10. Versi terkini (1.0.11) baru diuji dengan meniru percakapan Telegram (lihat Hasil uji di atas), belum diulang di bot asli.
 
 ## FAQ
 **Apakah bot ini otomatis membalas pelanggan di WhatsApp?**

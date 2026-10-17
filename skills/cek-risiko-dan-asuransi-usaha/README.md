@@ -23,7 +23,7 @@ Ketik satu kalimat, mis. "Kafe saya di ruko dekat sungai, 3 karyawan, apa risiko
 Contoh: toko kelontong di Semarang Utara yang sering kena banjir rob (air laut pasang); satu pesan yang sama, jawaban AI tanpa dan dengan skill. Angka ujinya ada di bagian "Hasil uji" di bawah.
 
 - **Tanpa skill:** daftar risiko umum, perkiraan premi (biaya asuransi) dan tarif iuran BPJS dari ingatan, arisan ikut dihitung sebagai biaya tetap tanpa catatan, dana darurat hanya berupa rentang ("11,5 sampai 23 juta"), tanpa skor dan tanpa keputusan "perlu asuransi atau tidak" per risiko.
-- **Dengan skill:** 9 risiko diberi skor dan tingkat, tiap risiko ada keputusan asuransinya (utang pelanggan macet ditulis "tidak ada asuransi umum, pakai langkah lain"), dana darurat dihitung dengan rumus tetap, hasilnya "kurang Rp4.050.000, sisihkan Rp675.000 per bulan selama 6 bulan", tanpa merek dan tanpa premi karangan.
+- **Dengan skill:** 9 risiko diberi skor dan tingkat, tiap risiko ada keputusan asuransinya (utang pelanggan macet ditulis "tidak ada asuransi umum; pakai mitigasi lain"), dana darurat dihitung dengan rumus tetap, hasilnya "kurang Rp4.050.000, sisihkan Rp675.000 per bulan selama 6 bulan", tanpa merek dan tanpa premi karangan.
 
 Cuplikan keluaran dengan skill, tampilan tabel untuk layar komputer (uji isi oleh agent, bukan uji OpenClaw; dipotong; `examples/06-kelontong-semarang-uji-ulang.md`):
 
@@ -44,7 +44,7 @@ Cuplikan keluaran dengan skill, tampilan tabel untuk layar komputer (uji isi ole
 Lihat `docs/instalasi.md` untuk OpenClaw, Codex, Claude Code, dan Cursor. Script opsional memakai Python standar (`python3`; Windows `python`/`py`).
 
 **Hasil uji (angka nyata):** skor 1–10 penguji independen.
-- Uji OpenClaw (uji otomatis agent, 10 Okt 2026, v1.0.2, 4 skenario): tanpa skill **6,6** → dengan skill **9,0** (LULUS). Rincian: `examples/00-openclaw-v1.0.2-sebelum-sesudah.md`.
+- Uji OpenClaw (uji otomatis agent, 10 Okt 2026, v1.0.2, 4 skenario): tanpa skill **6,6** → dengan skill **9,0** (lulus acuan kami). Rincian: `examples/00-openclaw-v1.0.2-sebelum-sesudah.md`.
 - Uji isi oleh agent pada contoh toko kelontong di atas (simulasi, bukan uji OpenClaw, 9 Okt 2026, v1.0.1): tanpa skill **6** → dengan skill **8,5**. Bahan: `examples/00-pembanding-tanpa-skill.md`.
 - Hasil di bot Telegram asli ada di bagian berikutnya.
 
@@ -52,9 +52,11 @@ Lihat `docs/instalasi.md` untuk OpenClaw, Codex, Claude Code, dan Cursor. Script
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
-- Tanpa skill: skor **6,5** — dana darurat hanya rentang kasar tanpa hitung kekurangan.
-- Dengan skill: skor **8,5** (LULUS) — peta risiko berskor, target dana darurat dihitung, tanda perlu asuransi, jalur aduan ke OJK (Otoritas Jasa Keuangan, kontak pengaduan 157) bila klaim ditolak. Hasil di bot ini diuji pada skill v1.0.2.
+Uji terakhir: 12 Okt 2026, versi 1.0.2, di bot OpenClaw asli (grup uji internal Komunitech). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: kafe "Kopi Teras" di ruko 2 lantai dekat kali di Bekasi, 3 karyawan belum didaftarkan BPJS Ketenagakerjaan, biaya tetap sekitar Rp15.800.000 per bulan, kas cadangan Rp8.000.000, pernah kebanjiran; ditanya risiko apa yang harus disiapkan, perlu asuransi apa, dan berapa dana darurat, plus diminta merekomendasikan merek asuransi terbaik dan memastikan klaim pasti cair. Skor 1-10 dari penilai independen: tanpa skill **6,5** → dengan skill **8,5**, selisih **+2**: **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Bedanya yang terasa: tanpa skill dana darurat hanya disebut sebagai angka kasar (Rp94,8 juta) tanpa menghitung kekurangannya, dan keliru menyebut kas Rp8 juta kurang dari separuh biaya sebulan (padahal sedikit di atas separuh). Dengan skill ada peta risiko berskor, target dana darurat Rp47,4 juta dengan kekurangan Rp39,4 juta beserta cicilan tabungan per bulan, tanda mana risiko yang perlu asuransi dan mana yang cukup prosedur, serta jalur aduan ke OJK (Otoritas Jasa Keuangan, kontak pengaduan 157) bila klaim ditolak.
+
+Catatan jujur: tabel risiko 7 kolom di jawaban ini tampil sebagai teks bergaris yang sulit dibaca di Telegram. Versi 1.0.3 (17 Okt 2026) menambah tampilan chat tanpa tabel lebar, tetapi tampilan itu belum diuji ulang di bot Telegram.
 
 ## FAQ
 1. **Apakah ini nasihat asuransi?** Bukan. Ini alat bantu awam; polis (surat perjanjian asuransi) dibeli lewat perusahaan asuransi berizin OJK dan agen yang terdaftar.

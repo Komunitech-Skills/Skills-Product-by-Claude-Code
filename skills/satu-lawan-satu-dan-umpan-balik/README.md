@@ -48,7 +48,7 @@ Cukup ketik, misalnya:
 Salin folder `satu-lawan-satu-dan-umpan-balik` ke folder skills platform Anda. Lokasi untuk OpenClaw, Codex, Claude Code, dan Cursor ada di `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun atau API key.
 
 **Hasil uji (angka nyata):** skor 1–10 penguji independen.
-- Uji OpenClaw (uji otomatis agent, 12 Okt 2026, v1.0.2, 4 skenario): tanpa skill **5,5** → dengan skill **8,4** (LULUS). Sumber: `examples/HASIL-UJI.md` dan `examples/00-openclaw-sebelum-sesudah.md`.
+- Uji OpenClaw (uji otomatis agent, 12 Okt 2026, v1.0.2, 4 skenario): tanpa skill **5,5** → dengan skill **8,4** (lulus acuan kami). Sumber: `examples/HASIL-UJI.md` dan `examples/00-openclaw-sebelum-sesudah.md`.
 - Uji simulasi agent sebelumnya (9 Okt 2026, bukan OpenClaw, 5 skenario; sisi tanpa dan dengan skill ditulis penguji yang sama, jadi condong ke skill): tanpa skill **6,2** → dengan skill **8,5**. Sumber: `examples/HASIL-UJI-simulasi-2026-10-09.md`.
 - Hasil di bot Telegram asli ada di bagian berikutnya.
 
@@ -56,10 +56,11 @@ Salin folder `satu-lawan-satu-dan-umpan-balik` ke folder skills platform Anda. L
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 12 Okt 2026, satu skenario (kasir terlambat), tanpa dan dengan skill:
-- Tanpa skill: skor 6 dari 10.
-- Dengan skill: skor 8,5 dari 10.
-Tanpa skill, jawabannya saran umum yang ikut menyinggung kabar masalah rumah tangga karyawan. Dengan skill, ada pesan ajakan ngobrol, naskah empat mata berisi tanggal dan jam kejadian yang benar, serta usulan tanggal cek ulang.
+Uji terakhir: 12 Okt 2026, versi 1.0.2, di bot OpenClaw asli (grup uji internal Komunitech). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: kasir bernama Rina sering terlambat (Senin 5 Okt masuk 09.40, Rabu 7 Okt 09.35, Kamis 8 Okt 09.50, padahal harus siap 08.45 dan toko buka 09.00), rekannya jadi sendirian di kasir dan ada pelanggan pergi, pemilik "nggak enak negur" dan minta dibuatkan apa yang harus diomongkan. Skor 1-10 dari penilai independen: tanpa skill **6** → dengan skill **8,5**, selisih **+2,5**: **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Bedanya yang terasa: tanpa skill jawabannya saran umum yang malah menyuruh menanyakan kabar masalah rumah tangga karyawan, tanpa pesan ajakan bicara dan tanpa tanggal tindak lanjut. Dengan skill langsung ada pesan WhatsApp ajakan bicara, naskah empat mata berisi hari dan jam keterlambatan yang benar, dampaknya ke rekan dan pelanggan, pertanyaan ke karyawan, serta tanggal cek ulang; kabar rumah tangga sengaja tidak diangkat.
+
+Catatan jujur: uji ini baru satu skenario (teguran karyawan terlambat), dan tindak lanjut di jawaban hanya satu jalur (bila masih berulang baru naik ke teguran tertulis). Uji lain: uji OpenClaw otomatis 12 Okt 2026, 5,5 → 8,4 (lihat di atas).
 
 ## FAQ
 **Apakah ini nasihat hukum?**
@@ -79,4 +80,4 @@ Bukan nasihat hukum; naskah ini alat bantu bicara, bukan pengganti ahli ketenaga
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

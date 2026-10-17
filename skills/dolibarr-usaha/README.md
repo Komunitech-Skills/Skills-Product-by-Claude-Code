@@ -27,19 +27,28 @@ Diuji AI penguji independen di OpenClaw (dengan data contoh): 5,25 → 9,0 dari 
 ```
 PRATINJAU DRAF INVOICE
 Pelanggan: Toko Sinar Abadi (ID 2)
+…
 1. Kopi Bubuk Arabika 250g - 3 x Rp 85.000 = Rp 255.000
 2. Gula Aren 1kg - 2 x Rp 32.500 = Rp 65.000
 3. Ongkos kirim - 1 x Rp 12.345 = Rp 12.345
-DPP: Rp 332.345 | PPN: Rp 36.557 | TOTAL: Rp 368.902
-Simpan sebagai draf? (ya/tidak)
+
+Hitungan Komunitech (PPN 12% x DPP nilai lain 11/12 (efektif 11%)):
+DPP (jumlah harga sebelum pajak): Rp 332.345
+DPP nilai lain 11/12 (informasi faktur): Rp 304.649,58
+PPN: Rp 36.557 (dari Rp 36.557,95 dibulatkan ke bawah)
+TOTAL: Rp 368.902
+
+Belum dikirim ke Dolibarr. Jika sudah benar, ulangi perintah yang sama dengan --ya.
 ```
-Setelah "ya":
+AI lalu bertanya "Simpan sebagai draf? (ya/tidak)". Setelah Anda menjawab "ya":
 ```
-TERSIMPAN SEBAGAI DRAF: (PROV7)
+…
+TERSIMPAN SEBAGAI DRAF: (PROV101) (ID 101), status Dolibarr: draf
 Angka di Dolibarr: DPP Rp 332.345 | PPN Rp 36.557,95 | total Rp 368.902,95
-BEDA dengan hitungan Komunitech: PPN +Rp 0,95 (Dolibarr membulatkan per baris). Draf tidak diubah otomatis.
+BEDA dengan hitungan Komunitech: PPN +Rp 0,95; TOTAL +Rp 0,95
+Sebab umum selisih PPN: Dolibarr menghitung PPN per baris lalu membulatkan ke terdekat … Draf TIDAK diubah otomatis; pemilik memutuskan. …
 ```
-(Contoh nyata dari uji dengan Dolibarr 24.0.1; data pelanggan dan barang fiktif.)
+(Keluaran asli skrip, dipotong di baris yang ditandai "…". Dijalankan pada server tiruan yang meniru jawaban Dolibarr 24.0.1 (`tests/uji_regresi.py`); nomor draf di Dolibarr Anda akan berbeda. Hitungan yang sama, DPP Rp332.345 dan PPN Rp36.557 dibanding Rp36.557,95 di Dolibarr, dicocokkan dengan Dolibarr 24.0.1 asli pada uji pembuat skill: `examples/UJI-PEMBUAT.md`. Data pelanggan dan barang fiktif.)
 
 ## Cara pakai
 Setelah terpasang dan terhubung, cukup ketik permintaan biasa:
@@ -67,7 +76,7 @@ Panduan pemasangan skill lengkap: `docs/instalasi.md` (di dalam paket bernama `C
 
 **Fitur baru sejak versi 1.0.10:** perintah `piutang-csv` membaca file tabel (CSV) hasil ekspor Dolibarr, tanpa perlu koneksi atau kunci, dan menghitung umur piutang lewat skrip; agent tidak mengirim tagihan ke pelanggan, hanya menyiapkan draf yang Anda kirim sendiri.
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah, data contoh; aplikasi Dolibarr sendiri tidak dijalankan), 2 Okt 2026 (diuji pada v1.0.11; versi terkini 1.0.12), skor 1–10 penguji independen: tanpa skill **5,25** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill pernah menerima kunci API (kunci akses) di chat dan siap eksekusi hapus massal; dengan skill menolak hapus massal dan kunci di chat (skenario ini memakai hasil uji sebelumnya, v1.0.10), menjalankan `piutang-csv` untuk umur piutang, dan menampilkan pratinjau draf invoice. Sambungan ke Dolibarr 24.0.1 asli diuji terpisah oleh penguji independen (simulasi agent; lihat `examples/HASIL-UJI.md`).
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah, data contoh; aplikasi Dolibarr sendiri tidak dijalankan), 2 Okt 2026 (diuji pada v1.0.11; versi terkini 1.0.12), skor 1–10 penguji independen: tanpa skill **5,25** → dengan skill **9,0** (lulus acuan kami: nilai dengan skill 8 ke atas dan selisih minimal 1,5 poin). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill pernah menerima kunci API (kunci akses) di chat dan siap eksekusi hapus massal; dengan skill menolak hapus massal dan kunci di chat (skenario ini memakai hasil uji sebelumnya, v1.0.10, skor 3 → 9), dan menjalankan `piutang-csv` untuk umur piutang (skor 7,5 → 9 pada skenario yang diulang di v1.0.11). Jujur: untuk menghitung piutang dari file CSV, AI tanpa skill pun angkanya sudah benar dan sama-sama hanya membuat draf pesan tanpa mengirim; pembedanya umur piutang yang rapi dan sumber data yang disebut jelas. Sambungan ke Dolibarr 24.0.1 asli diuji terpisah oleh penguji independen (simulasi agent; lihat `examples/HASIL-UJI.md`).
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent dengan data contoh, 2026-10-02). Uji manusia di Dolibarr asli (Windows/DoliWamp) belum dilakukan; hasilnya menunggu tim Komunitech. Pengiriman laporan ke Telegram dan pemakaian di Codex serta Cursor juga belum diuji langsung.
 

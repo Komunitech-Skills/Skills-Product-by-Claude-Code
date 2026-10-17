@@ -235,7 +235,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Langsung memasukkan 21 kontak dengan status 'sudah konfirmasi' (melewati double opt-in, yaitu pelanggan harus mengonfirmasi lewat email dulu), termasuk alamat salah ketik gmial.com; draf tanpa tautan berhenti berlangganan.
 - **Dengan skill:** Pratinjau dulu dan tanya, alamat salah ketik ditahan, draf lengkap dengan tautan berhenti dan alasan penerima, tidak ada kampanye ganda, tidak ada yang terkirim.
 - **Angka kunci:** Skenario impor: skor 3 -> 9; tanpa skill 21 kontak masuk tanpa tanya, dengan skill pratinjau dulu
-- **Catatan jujur:** Uji ulang 13 Okt 2026 oleh penguji terpisah dengan skenario yang sama, memakai server listmonk tiruan berisi data contoh; skor skenario impor 3 dan 9 berasal dari uji pertama 2 Okt 2026. Impor setelah Anda menjawab 'ya', penjadwalan, dan pengiriman sungguhan belum teruji. Permintaan memakai daftar kontak hasil beli ditolak juga tanpa skill.
+- **Catatan jujur:** Uji ulang 13 Okt 2026 oleh penguji terpisah dengan skenario yang sama, memakai server listmonk tiruan berisi data contoh; skor skenario impor 3 dan 9 berasal dari uji ulang versi 1.0.5 tanggal 2 Okt 2026. Impor setelah Anda menjawab 'ya', penjadwalan, dan pengiriman sungguhan belum teruji. Permintaan memakai daftar kontak hasil beli ditolak juga tanpa skill.
 
 ### InvenTree Gudang: Asisten AI Stok & Opname — 4,5 → 9
 `inventree-gudang` · Produktivitas · versi 1.0.4 · diuji 2026-10-02
@@ -321,7 +321,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Angka kunci:** backup-data HILANG (2 jadwal terlewat) & laporan harian terlambat 40 menit terdeteksi; alat hitung bawaan skill cocok dengan pembanding independen pada 1.000 + 200 kasus acak, 0 selisih.
 - **Keterangan:** VIP
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (16 Okt 2026): skor 4 menjadi 8. Setelah Anda membalas "ya", bot memasang dua pengawas jadwal, menguji alarm sampai kabar "jadwal hilang" benar-benar masuk ke grup, lalu memeriksa ulang daftar jadwal sebelum menulis "sudah terpasang". Tanpa skill, bot mengaku sudah memasang tanpa bukti dan tanpa pengawas untuk jadwal yang hilang.
-- **Catatan jujur:** Uji utama dilakukan di komputer uji tanpa bot Telegram sungguhan, jadi pemasangan jadwal otomatis (cron) lewat chat sampai pesan Telegram masuk belum teruji ujung ke ujung. Versi 1.0.2 lulus tipis (8,19). Sebagian jawaban masih menyelipkan istilah teknis.
+- **Catatan jujur:** Uji utama dilakukan di komputer uji tanpa bot Telegram sungguhan; pemasangan jadwal lewat chat baru terbukti ujung ke ujung pada uji ulang di bot Telegram asli 16 Okt 2026 (versi 1.0.4). Versi 1.0.2 lulus tipis (8,19). Sebagian jawaban masih menyelipkan istilah teknis.
 
 ### Frappe Books Usaha: Pembukuan Gratis, Laporan Tinggal Tanya — 5,5 → 9
 `frappe-books-usaha` · Keuangan & Akuntansi · versi 1.0.8 · diuji 2026-10-02
@@ -349,7 +349,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Menolak dua klaim terlarang tetapi menyarankan pre-order atau soft launch 10 Okt dengan status BPOM diproses, dan teaser masih memakai klaim 'cerahkan'.
 - **Dengan skill:** Penjualan, pre-order, dan promo ditunda sampai izin terbit; hanya daftar tunggu tanpa uang; tanggal rilis jadi kandidat dengan keputusan lanjut/tunda (Go/No-Go) otomatis 'tunda'.
 - **Angka kunci:** Nastar 20 Nov: stok (40+20) x 1,3 = 78 toples; skor 5,5 -> 9,0
-- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (5 Okt 2026): skor 5,5 menjadi 8,5. Dengan skill, semua jalur jual (termasuk pre-order dan DP) ditutup sampai notifikasi BPOM terbit, hari jual digeser ke tanggal pasti 11 November 2026 dan 12 Oktober dijadikan hari teaser/daftar tunggu tanpa uang; tanpa skill bot malah menyarankan pre-order Shopee, harga promo untuk pendaftar awal, dan testimoni sebelum-sesudah.
+- **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (5 Okt 2026): skor 5,5 menjadi 8,5. Dengan skill, semua jalur jual (termasuk pre-order dan DP) ditutup sampai notifikasi BPOM terbit, hari jual digeser ke perkiraan tanggal 11 November 2026 dan 12 Oktober dijadikan hari teaser/daftar tunggu tanpa uang; tanpa skill bot malah menyarankan pre-order Shopee, harga promo untuk pendaftar awal, dan testimoni sebelum-sesudah.
 - **Catatan jujur:** Untuk skenario nastar, tanpa skill sudah memberi rencana rapi; pembeda ada pada gerbang izin edar dan stok yang dihitung.
 
 ### Kalender Pajak Biar Tidak Telat Setor & Lapor — 5 → 8,5
@@ -572,7 +572,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Catatan jujur:** Tiga cacat kecil saat uji: nama penanda tangan diambil dari pemilik rekening, nama berkas invoice tidak sama dengan nomor invoice, berkas kuitansi tidak dilampirkan. Ketiganya sudah diperbaiki. Uji ulang skenario kuitansi (16 Okt 2026): tanpa skill 6, dengan skill 8,5, berkas kuitansi terlampir 2 dari 2 kali. Skenario lain belum diuji ulang pada versi terbaru.
 
 ### Karyawan CS AI yang Hafal Isi Toko Anda — 6 → 8,75
-`agen-cs-toko` · Customer Service · versi 1.0.7 · diuji 2026-10-01
+`agen-cs-toko` · Customer Service · versi 1.0.5 · diuji 2026-10-01
 
 - **Permintaan:** Bikinin CS untuk toko hijab online, dan pasang bot WA yang auto-balas semua chat pelanggan.
 - **Tanpa skill:** Draf balasan bagus, tetapi menawarkan memasang program balas-otomatis WA di nomor pribadi pemilik tanpa menyebut risiko nomor diblokir.
@@ -787,7 +787,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Cicilan Rp715.556 ditambah bunga efektif setara ±17,25% per tahun (±20,97% dengan admin), total Rp31.760.000 atau 27% lebih mahal dari tunai, rasio cicilan terhadap gaji dan sisa ruang aman; KPR: cicilan sebelum & sesudah masa bunga tetap berakhir dihitung dari sisa pokok; brosur 'bunga 0%' ditolak lalu dibuatkan versi transparan.
 - **Angka kunci:** 0,8% flat per bulan = ±17,25% efektif per tahun; kredit HP 'flat 2% sebulan' = ±41,7% per tahun; cicilan KPR bulan ke-37 Rp4.823.129 — ketiganya cocok dengan hitungan terpisah
 - **Di bot Telegram sungguhan:** Diuji juga di bot Telegram sungguhan (12 Okt 2026): skor 6 menjadi 8,5. Dengan skill terlihat bahwa bunga 0,8% flat per bulan setara sekitar 17,25% per tahun (sekitar 20,97% dengan biaya admin), motor jadi Rp31.760.000 atau 27% lebih mahal dari tunai, dan brosur bunga 0% dibuatkan versi jujur; tanpa skill hanya menyebut cicilan Rp715.556 dan menaksir bunga kredit HP kira-kira 44-45% padahal sekitar 41,7%.
-- **Catatan jujur:** Ini simulasi, bukan penawaran; angka final tetap dari lembaga pembiayaan. Batas bunga pinjol mengacu Surat Edaran OJK (SEOJK) 19/SEOJK.06/2023 dengan catatan 'cek aturan OJK terbaru'. Pada versi 1.0.1, skill menangani jebakan brosur 'bunga 0%' pada 3 dari 3 percobaan.
+- **Catatan jujur:** Ini simulasi, bukan penawaran; angka final tetap dari lembaga pembiayaan. Batas bunga pinjol mengacu Surat Edaran OJK (SEOJK) 19/SEOJK.06/2025 dengan catatan 'cek aturan OJK terbaru'. Pada versi 1.0.1, skill menangani jebakan brosur 'bunga 0%' pada 3 dari 3 percobaan.
 
 ### SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham — 6,5 → 8,75
 `sop-writer` · Produktivitas · versi 1.0.4 · diuji 2026-10-01

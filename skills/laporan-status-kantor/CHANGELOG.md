@@ -17,3 +17,5 @@ Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 - Dari uji ulang Telegram 1.0.6 (rata-rata 7,43): ucapan "Tahun Baru 2026" salah (seharusnya 2027) dan kata "Skill ini" bocor ke chat. Kini tahun ucapan wajib sama dengan tahun tanggal liburnya, dan balasan dilarang memuat kata "skill", "script", "file", "cek" (butir checklist baru).
 
 ## 1.0.8 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`) diganti `konten-mingguan` (`SKILL.md`, `ATTRIBUTION.md`).
+
+## 1.0.9 (2026-10-17) — contoh laporan mingguan di `SKILL.md`: periode "15–19 Sep 2026" (Selasa–Sabtu) diganti "21–25 Sep 2026" (Senin–Jumat) agar sesuai asumsi "Senin–Jumat" di contoh itu dan periode di `examples/`. Perilaku skill tidak berubah.

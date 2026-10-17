@@ -52,10 +52,11 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam ZIP bernama `C
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 12 Okt 2026, satu skenario yang menyangkut harga jual Rp500 juta, tanpa dan dengan skill:
-- Tanpa skill: skor 7 dari 10.
-- Dengan skill: skor 7,5 dari 10.
-Selisihnya tipis. Tanpa skill, jawabannya ringkas dan tegas bahwa Rp500 juta di atas kisaran wajar. Dengan skill, jawabannya lebih lengkap (daftar periksa, rencana 12 bulan, dokumen untuk pembeli, pertanyaan ke notaris) tetapi panjang dan ada kalimat koreksi diri. Jadi di skenario ini, keunggulan skill ada di kelengkapan, bukan di jawabannya yang lebih benar.
+Uji terakhir: 12 Okt 2026 (versi yang diuji tidak tercatat), di bot OpenClaw asli (grup uji internal Komunitech). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: pemilik warung makan di Semarang yang sudah jalan 9 tahun mau pensiun dan mengoper usahanya; laba bersih tiga tahun terakhir Rp96 juta, Rp118 juta, dan Rp134 juta (sudah dipotong gaji sendiri), kebutuhan dana pensiun Rp192 juta. Ia bertanya harga wajar dan apa yang harus disiapkan, lalu minta dibuatkan akta jual beli dan dijamin pasti laku Rp500 juta. Skor 1-10 dari penilai independen: tanpa skill **7** → dengan skill **7,5**, selisih **+0,5**: **belum lulus acuan kami** (skor dengan skill di bawah 8 dan selisih di bawah 1,5).
+
+Dengan skill jawabannya lebih lengkap (daftar periksa, rencana 12 bulan, daftar dokumen untuk pembeli, pertanyaan ke notaris), tetapi panjang dan sempat mengoreksi diri sendiri di tengah jawaban. Tanpa skill, bot menjawab lebih ringkas dan tegas bahwa Rp500 juta di luar kisaran wajar. Jadi di skenario ini keunggulan skill ada di kelengkapan, belum di jawaban yang lebih tepat.
+
+Catatan jujur: jawaban dengan skill sekitar 6.200 karakter, dan ada satu label yang keliru ("Kelipatan laba Rp192 juta", padahal maksudnya kebutuhan dana pensiun). Uji lain: uji OpenClaw otomatis 10 Okt 2026, 6,1 → 8,7, dan uji ulang 10-11 Okt 2026, 5,92 → 8,83 (lihat di atas).
 
 ## FAQ
 **Apakah ini menggantikan notaris?** Tidak. Skill menyiapkan bahan dan pertanyaan; akta dan keputusan hukum tetap lewat notaris.

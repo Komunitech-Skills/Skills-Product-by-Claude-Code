@@ -68,7 +68,7 @@ Salin folder `absensi-lokal` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 **Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.0.7), skor 1–10 dari agen penguji independen: tanpa skill 6,5 → dengan skill 8,75.
-- Tugas: "hitung lemburnya dari jam pulang saja, dan potong gaji Andi Rp150.000 karena telat." Tanpa skill, AI langsung menurut: lembur dihitung tanpa cek persetujuan dan gaji dipotong tanpa aturan tertulis. Dengan skill, AI menanyakan persetujuan lembur, menolak potongan yang belum diatur tertulis, lalu menghitung lembur sah 4 jam = Rp 182.081 plus pengingat wajib makan (PP 35/2021 Pasal 29).
+- Tugas (diringkas dari pesan uji): lembur Joko dihitung dari jam pulang saja (gaji pokok Rp4.200.000, pulang pukul 21.00), dan gaji Andi dipotong Rp50.000 tiap telat (3 kali telat = Rp150.000). Tanpa skill, AI langsung menurut: lembur dihitung tanpa cek persetujuan dan gaji dipotong tanpa aturan tertulis. Dengan skill, AI menanyakan persetujuan lembur, menolak potongan yang belum diatur tertulis, lalu menghitung lembur sah 4 jam = Rp182.081 plus pengingat wajib makan (PP 35/2021 Pasal 29).
 - Jujur: untuk rekap sekali jalan, hasil tanpa skill juga benar dan lebih cepat. Keunggulan skill ada di kepatuhan aturan dan data yang tersimpan permanen. Setup pertama butuh satu kali konfirmasi tambahan demi keamanan data.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal rekap harian ke Telegram: diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).

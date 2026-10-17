@@ -2,7 +2,7 @@
 
 **Tanya "penjualan hari ini berapa?", "siapa yang belum bayar?", atau "stok apa yang mau habis?" — AI Anda langsung membaca Odoo milik usaha Anda dan menjawab dengan angka yang dihitung, bukan dikira. Laporan harian bisa dikirim otomatis ke Telegram pemilik (jadwal otomatis belum diuji langsung), dan penawaran (quotation) bisa disiapkan sebagai draf tanpa membuka menu Odoo.**
 
-Diuji AI penguji independen di OpenClaw (dengan server Odoo tiruan): 3,0 → 8,9 dari 10 (pada jebakan kunci admin ditempel di chat + "hapus penawaran", AI tanpa skill langsung menghapus dan membatalkan lewat kunci itu; dengan skill tidak ada satu pun permintaan ke Odoo, dan angka penjualan tepat).
+Diuji AI penguji independen di OpenClaw (dengan server Odoo tiruan): rata-rata dua tugas 3,0 → 8,9 dari 10. Pada tugas jebakan (kunci admin ditempel di chat + "hapus penawaran"), AI tanpa skill langsung menghapus dan membatalkan lewat kunci itu; dengan skill tidak ada satu pun permintaan ke Odoo. Pada tugas penjualan & piutang, dengan skill angka penjualan tepat.
 
 > Komunitech **tidak berafiliasi** dengan Odoo S.A. Odoo adalah software milik Odoo S.A. (edisi Community berlisensi LGPL-3.0). Skill dan panduan ini adalah karya orisinal Komunitech yang memakai **API eksternal resmi** (pintu sambungan data bawaan) Odoo milik Anda sendiri. Odoo tidak disertakan dalam paket.
 
@@ -42,7 +42,7 @@ STOK
 - [SRP-VNL] Sirup Vanila 750ml: -2 (MINUS)
 - [GA-1KG] Gula Aren Cair 1kg: 8 (MENIPIS)
 ```
-Ketik *"Buatkan penawaran untuk CV Maju Jaya: kopi robusta 3, gula aren 2 harga 32.500"* → AI menampilkan pratinjau (DPP Rp 332.345, perkiraan PPN Rp 36.557), menunggu "ya", lalu:
+Ketik *"Buatkan penawaran untuk CV Maju Jaya: kopi robusta 250g 3, gula aren 2 harga 32.500, kopi gayo 1kg 1 harga 132.345"* → AI menampilkan pratinjau (DPP Rp 332.345, perkiraan PPN Rp 36.557), menunggu "ya", lalu:
 ```
 TERSIMPAN: S00108 (ID 108), status DRAF/Penawaran
 Menurut Odoo: sebelum pajak Rp 332.345 | pajak Rp 36.557,95 | total Rp 368.902,95
@@ -78,9 +78,14 @@ Setelah tersambung, cukup ketik:
    `python3 ~/.openclaw/skills/odoo-usaha/scripts/odoo.py simpan-kunci` (Windows: `python` / `py`).
 4. Coba: "Cek Odoo saya sudah nyambung belum?"
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **3,0** → dengan skill **8,9** (LULUS). Jebakan kunci admin + hapus penawaran/faktur: dengan skill **0 permintaan** ke Odoo; draf penawaran pratinjau DPP/PPN cocok server tiruan. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent dengan server Odoo tiruan, 2 Okt 2026, skor 1–10, rata-rata dua tugas: tanpa skill **3,0** → dengan skill **8,9** (selisih 5,9; lulus acuan kami).
+- Tugas jebakan kunci admin + hapus penawaran/faktur (diuji ulang pada v1.0.5): tanpa skill **1** → dengan skill **8,8**; dengan skill **0 permintaan** ke Odoo.
+- Tugas penjualan & piutang (diuji pada v1.0.4, tidak diulang): tanpa skill **5** → dengan skill **9**.
+- Pembuatan draf penawaran tidak ikut diuji di OpenClaw. Contoh pratinjau DPP/PPN yang cocok dengan Odoo berasal dari uji pembuat pada server tiruan (`examples/04-draf-quotation.md`) dan uji penguji pada Odoo asli (`examples/08-uji-stok-dan-draf-quotation-odoo-asli.md`).
 
-**Status uji (jujur):** dua sumber. (1) **Odoo Community 18 dan 19 asli** (dijalankan lokal, data uji fiktif): diuji penguji independen 30 Sep 2026 pada v1.0.0–1.0.1, plus 51 uji otomatis pada versi itu; perbaikan dari hasilnya sudah ada di versi sekarang. (2) **OpenClaw sebelum/sesudah** (2 Okt 2026, v1.0.5): memakai **server Odoo tiruan** + data contoh. **Belum** diuji: Odoo Online (*.odoo.com), Enterprise, Odoo 16/17/20, data usaha sungguhan, jadwal laporan ke Telegram, Windows/Mac sungguhan, dan Codex/Cursor. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda; bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
+Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+
+**Status uji (jujur):** dua sumber. (1) **Odoo Community 18 dan 19 asli** (dijalankan lokal, data uji fiktif): diuji penguji independen 30 Sep 2026 pada v1.0.0–1.0.1, plus 51 uji otomatis pada versi itu; perbaikan dari hasilnya sudah ada di versi sekarang. (2) **OpenClaw sebelum/sesudah** (2 Okt 2026, v1.0.4 dan v1.0.5): memakai **server Odoo tiruan** + data contoh. **Belum** diuji: Odoo Online (*.odoo.com), Enterprise, Odoo 16/17/20, data usaha sungguhan, jadwal laporan ke Telegram, Windows/Mac sungguhan, dan Codex/Cursor. Pada pemakaian pertama, cocokkan angka dengan layar Odoo Anda; bila ada yang berbeda, kirim pesannya (tanpa kunci API) ke dukungan Komunitech.
 
 ## FAQ
 **Apakah data usaha saya dikirim ke Komunitech?**

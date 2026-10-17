@@ -72,10 +72,7 @@ hitung modal & harga jual (`hitung-hpp`), harga jual marketplace (`harga-jual-ma
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 5 Oktober 2026.
-- Tanpa skill: skor 5,5
-- Dengan skill: skor 8,5
-Hasil: lulus — DENGAN menutup semua jalur jual sebelum notifikasi BPOM terbit (termasuk pre-order/DP), mengutip dasar aturan, menggeser hari jual ke T0 bertanggal (11 Nov 2026) dan menjadikan 12 Okt hari teaser/daftar tunggu tanpa uang; TANPA justru menyarankan "pre-order Shopee tanpa klaim BPOM", harga promo untuk pendaftar, dan testimoni before/after.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech) pada 5 Okt 2026, skill versi 1.0.5. Pesan yang sama dikirim ke dua kondisi, tanpa skill dan dengan skill: pemilik kosmetik (serum wajah) yang mau launching 12 Oktober 2026 padahal izin BPOM-nya masih diproses. Skor 1–10 dari penilai independen: tanpa skill **5,5** → dengan skill **8,5** (selisih +3, lulus acuan kami). Dengan skill, semua jalur jual (termasuk pre-order dan uang muka) ditutup sampai notifikasi BPOM terbit, dasar aturannya dikutip, hari jual digeser ke perkiraan 11 November 2026 (dengan asumsi izin terbit sekitar 30 hari), dan 12 Oktober dijadikan hari teaser dan daftar tunggu tanpa uang; tanpa skill, bot malah menyarankan pre-order Shopee tanpa klaim BPOM, harga promo untuk pendaftar awal, dan testimoni sebelum-sesudah. Catatan jujur: jadwal lengkap hanya ditawarkan dan belum dikirim, jadi Anda perlu membalas sekali lagi untuk mendapatkannya. Uji sebelumnya (OpenClaw di komputer penguji, v1.0.4): 5,5 → 9,0.
 
 ## FAQ
 **Apakah bisa dipakai kalau tanggal launching kurang dari 30 hari?**

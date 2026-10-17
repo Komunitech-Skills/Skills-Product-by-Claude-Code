@@ -2,6 +2,8 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## 1.0.7 (2026-10-17) — kalimat positioning di bagian Contoh `SKILL.md` disamakan dengan `examples/contoh-fiktif-toko-hijab.md` (sebelumnya memuat detail "sering keringetan" yang tidak ada di contoh). Alur kerja tidak berubah.
+
 ## 1.0.6 (2026-10-13) — rujukan ke skill arsip (`caption-sosmed-umkm`) diganti `konten-mingguan` (`SKILL.md`).
 
 ## Catatan revisi 1.0.5 (2026-10-01)

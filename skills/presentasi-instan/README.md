@@ -2,7 +2,7 @@
 
 **Cukup ceritakan usaha Anda, langsung jadi presentasi siap kirim — buka di HP pun bisa.**
 
-*Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 pada uji ulang v1.1.5 (13 Okt 2026; uji pertama 6,0 → 8,25) (tanpa skill, slide ke bank memuat angka cicilan dan klaim rasio 65% "wajar" tanpa peringatan; dengan skill, angka yang belum pasti ditandai `[isi]` dan peringatan cicilan terlalu berat disampaikan ke Anda secara pribadi, bukan ditaruh di slide).*
+*Diuji AI penguji independen di OpenClaw: 6,0 → 8,5 dari 10 pada uji ulang v1.1.5 (13 Okt 2026; uji pertama 1 Okt 2026: 6,0 → 8,25). Pada uji ulang (pitch investor), tanpa skill rincian dana Rp250 juta dan klaim "profitable/terbukti" dikarang seolah fakta; dengan skill, angka yang belum pasti ditandai `[isi]`. Pada uji pertama (pengajuan KUR), tanpa skill slide ke bank menyebut rasio cicilan 65% "wajar" tanpa peringatan; dengan skill, peringatan cicilan terlalu berat disampaikan ke Anda secara pribadi, bukan ditaruh di slide.*
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 

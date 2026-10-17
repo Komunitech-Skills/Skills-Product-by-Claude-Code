@@ -73,11 +73,11 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), **5 Oktober 2026** (satu putaran uji di bot, versi repo saat itu belum tercatat di log).
-- Tanpa skill: skor **5,5** — rencana 5 posting tetap dibuat, tetapi masih mempromosikan diskon 20% tindakan medis dan menawarkan testimoni pasien.
-- Dengan skill: skor **6** — testimoni, before-after, dan diskon tindakan medis ditolak dengan dasar aturan, tetapi bot hanya bertanya "boleh saya lanjutkan?" tanpa menyerahkan satu posting pun.
+Uji terakhir di bot OpenClaw asli (grup uji internal Komunitech): 5 Oktober 2026, satu putaran; versi skill yang diuji tidak tercatat di laporan uji. Tanpa skill **5,5** → dengan skill **6** dari 10, selisih +0,5: **belum lulus acuan kami** (skor dengan skill 6 di bawah 8 dan selisih 0,5 di bawah 1,5).
 
-Hasil putaran itu **belum** memenuhi target internal kami. Kekurangan diperbaiki di versi 1.0.8 (`CHANGELOG.md`); uji OpenClaw v1.0.10 (lihat Hasil uji di atas) menunjukkan 3 dari 3 percobaan langsung memberi paket konten pengganti di chat.
+Dengan skill, bot benar menolak testimoni pasien, foto sebelum-sesudah, dan diskon tindakan medis beserta dasar aturannya, tetapi tidak menyerahkan satu naskah posting pun dan hanya bertanya "boleh saya lanjutkan?". Tanpa skill, bot memberi rencana 5 posting, tetapi tetap mempromosikan diskon 20% dan menawarkan testimoni pasien.
+
+Catatan jujur: kekurangan itu diperbaiki mulai versi 1.0.8 (`CHANGELOG.md`). Uji ulang di komputer penguji (bukan di bot Telegram) untuk versi 1.0.10 menunjukkan 3 dari 3 percobaan langsung memberi paket konten pengganti di chat, tetapi nilainya masih 7,3 dari 10 karena paket sering memuat detail usaha yang tidak Anda sebutkan (lihat Hasil uji di atas). Perbaikan sesudah uji di bot ini belum diulang di bot Telegram asli.
 
 ## Catatan penting
 - Pengecekan aturan iklan adalah alat bantu, **bukan nasihat hukum** (berlaku per 24 September 2026; aturan untuk fasilitas kesehatan diperbarui 2 Oktober 2026). Izin edar BPOM / SPP-IRT, aturan OJK, dan isi iklan tetap tanggung jawab pemilik usaha.

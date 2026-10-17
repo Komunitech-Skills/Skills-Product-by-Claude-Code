@@ -106,9 +106,13 @@ Butuh Python 3 untuk perhitungan (sudah ada di kebanyakan komputer; Windows: `py
 Tanpa Python, agent menghitung manual dengan rumus di `references/` dan memberi tanda
 "verifikasi ulang".
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.6), skor 1–10: tanpa skill **6,1** → dengan skill **9,0** (hasil uji: lulus). Contoh bidan TD 128/86: **MAP 100,0**, 5 faktor sedang Buku KIA 2025, **HPL 19 Maret 2027**, tanpa dosis obat. Bot Telegram (2026-10-05): tanpa **6** → dengan **8,5**. Sumber: skor OpenClaw dari `examples/00-openclaw-sebelum-sesudah.md`; skor Telegram dari uji bot asli 5 Okt 2026.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.5), skor 1–10: tanpa skill **6,1** → dengan skill **9,0** (hasil uji: lulus). Contoh bidan TD 128/86: **MAP 100,0**, 5 faktor sedang Buku KIA 2025, **HPL 19 Maret 2027**, tanpa dosis obat. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Hasil uji di bot Telegram asli ada di bagian berikutnya.
 
 **Status uji (jujur):** sudah uji OpenClaw otomatis + bot Telegram asli (5 Okt 2026). MoCA/MMSE hanya tafsir skor total (lisensi formulir milik pengguna). Codex/Cursor belum uji platform asli.
+
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech) pada 5 Okt 2026, skill versi 1.0.6. Pesan yang sama dikirim ke dua kondisi, tanpa skill dan dengan skill: seorang bidan meminta skrining preeklampsia dan HPL untuk satu pasien fiktif (tekanan darah 128/86, kehamilan kedua). Skor 1–10 dari penilai independen: tanpa skill **6** → dengan skill **8,5** (selisih +2,5, lulus acuan kami). Dengan skill, bot menghitung tekanan arteri rata-rata (MAP) 100,0 dan mengenali pasien berisiko preeklampsia (usia 35 tahun ke atas plus MAP 90 ke atas, dua faktor sedang) sehingga perlu rujukan terencana sesuai Buku KIA; tanpa skill, MAP tidak dihitung, hanya satu faktor yang ditemukan, dan kesimpulannya cuma "pantau". Catatan jujur: skill ini belum direview tenaga medis, dan hasil uji kami bukan review medis. Pada balasan dengan skill, daftar "belum ditanyakan" masih menyebut "nullipara" padahal pasiennya sudah pernah melahirkan. Uji sebelumnya (OpenClaw di komputer penguji, v1.0.5): 6,1 → 9,0.
 
 ## FAQ
 **Apakah hasilnya bisa langsung jadi dasar rujukan?**

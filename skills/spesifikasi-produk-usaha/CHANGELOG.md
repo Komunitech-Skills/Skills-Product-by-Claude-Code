@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.5 (2026-10-17)
+- Bagian Contoh di `SKILL.md` disamakan dengan `examples/01-minuman-teh-serai-spesifikasi.md` dan `examples/02-prioritas-rice.md`: ada 4 ide yang diurutkan (termasuk botol mini 100 ml), bukan 3. Tidak ada perubahan perilaku atau skrip.
+
 ## Catatan revisi 1.0.4 (2026-10-02)
 - Revisi dari temuan uji OpenClaw: skill tidak lagi menulis anjuran takaran konsumsi/dosis (mis. "diminum 2x sehari") untuk minuman atau pangan fungsional kecuali disebut pengguna sendiri, dan itu pun ditandai sebagai kutipan serta diarahkan cek ke BPOM/ahli gizi.
 - Daya simpan tidak boleh diusulkan tanpa dasar; ditulis "[perlu uji umur simpan]" sampai ada hasil uji.

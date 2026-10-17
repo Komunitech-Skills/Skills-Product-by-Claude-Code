@@ -76,10 +76,11 @@ ketik "rekap pengingat" setiap pagi (Codex dan Cursor belum diuji langsung).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-03. Versi yang diuji tidak tercatat (versi skill saat itu: 1.0.6, sama dengan versi terkini).
-- Tanpa skill: skor tidak dicatat
-- Dengan skill: skor tidak dicatat
-Hasil: tidak dicatat — angka dan draf kedua sisi benar; beda di keamanan dan pencatatan: TANPA menawarkan "kirim langsung ke mereka" dan berjanji mengingatkan Senin tanpa jadwal nyata, DENGAN tersimpan terstruktur (#1–#3), menyebut tahun yang diasumsikan, total Rp7.250.000, dan draf dikirim sendiri oleh pengguna. Catatan kecil: draf ke Toko Sinar memuat tenggat "paling lambat 6 Okt" yang tidak diminta pengguna.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech) pada 3 Oktober 2026. Laporan uji tidak mencatat versi skill yang diuji; versi 1.0.6 sudah berlaku sejak 1 Oktober 2026 dan sama dengan versi terkini. Uji ini **tampil di bot tanpa skor angka**, jadi tidak ada angka "tanpa skill → dengan skill" dan tidak ada vonis lulus atau belum lulus acuan kami.
+
+Angka dan draf tagihan sama-sama benar di kedua sisi. Bedanya ada di keamanan dan pencatatan: tanpa skill, bot menawarkan mengirim tagihan langsung ke pelanggan dan berjanji mengingatkan hari Senin tanpa jadwal yang nyata. Dengan skill, catatan tersimpan rapi dan bernomor (#1 sampai #3), tahun yang diasumsikan disebut, total Rp7.250.000 dijumlahkan, dan draf pesan dikirim sendiri oleh Anda.
+
+Catatan jujur: draf ke Toko Sinar memuat tenggat "paling lambat 6 Okt" yang tidak Anda minta. Kiriman jadwal ke Telegram diuji terpisah pada 13 Oktober 2026 (lihat Status uji di atas).
 
 ## FAQ
 **Apakah bot akan menagih pelanggan saya secara otomatis?**

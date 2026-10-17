@@ -156,7 +156,7 @@ mulai kerjain fitur notifikasi WA'. Nama tim: Produk."
 
 **Output (WA, sopan-formal, default):**
 ```
-🧩 *Tim Produk* — 15–19 Sep 2026
+🧩 *Tim Produk* — 21–25 Sep 2026
 *Progres:* Redesign landing page selesai. Sempat ada gangguan server ±2 jam pada Selasa
 akibat disk penuh, sudah diperbaiki.
 *Rencana:* Mulai mengerjakan fitur notifikasi WA minggu depan.

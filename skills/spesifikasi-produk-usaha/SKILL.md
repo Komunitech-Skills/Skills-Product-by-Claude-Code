@@ -71,9 +71,9 @@ Asumsi: ...
 Untuk prioritas: tampilkan tabel keluaran script apa adanya (termasuk baris PERINGATAN/Catatan), lalu 2-3 kalimat penjelasan awam ("skor tinggi = banyak pembeli tersentuh, dampak besar, kecil usaha"). Untuk brief: satu halaman, siap kirim lewat WhatsApp/email.
 
 ## Contoh
-**Masukan:** "Mau bikin teh serai jahe botol 250 ml, jual Rp15.000, target margin 50%. Ide lain: varian tanpa gula, paket 6 botol, langganan mingguan."
+**Masukan:** "Mau bikin teh serai jahe botol 250 ml, jual Rp15.000, target margin 50%. Ide lain: varian tanpa gula, paket 6 botol, langganan mingguan, botol mini 100 ml."
 
-**Ringkasan hasil:** spesifikasi lengkap (resep v0.1 dengan bahan [belum ditentukan] bila belum ada resep, HPP maksimal Rp7.500 dihitung dari 15.000 x (1 - 0,5), kemasan botol PET 250 ml + label, pengingat izin: karena disimpan dingin -> **BPOM MD, bukan PIRT**, tenggat halal 17-10-2026, merek, label), tabel skor RICE untuk 3 ide, roadmap, dan catatan versi. Contoh lengkap: `examples/01-minuman-teh-serai-spesifikasi.md`.
+**Ringkasan hasil:** spesifikasi lengkap (resep v0.1 dengan bahan [belum ditentukan] bila belum ada resep, HPP maksimal Rp7.500 dihitung dari 15.000 x (1 - 0,5), kemasan botol PET 250 ml + label, pengingat izin: karena disimpan dingin -> **BPOM MD, bukan PIRT**, tenggat halal 17-10-2026, merek, label), tabel skor RICE untuk 4 ide, roadmap, dan catatan versi. Contoh lengkap: `examples/01-minuman-teh-serai-spesifikasi.md`.
 
 ## Batasan & penanganan error
 - **Bukan nasihat hukum/perizinan/keamanan pangan.** Persyaratan izin (PIRT, BPOM, halal, merek, label) hanyalah pengingat berdasar pengetahuan umum; aturan, tarif, dan kategori produk bisa berubah. Arahkan pengguna memeriksa tautan resmi dan bertanya ke Dinas Kesehatan setempat/pendamping halal/konsultan. Cantumkan "dicek terakhir: <tanggal>"; bila tidak yakin, tulis "belum diverifikasi".
