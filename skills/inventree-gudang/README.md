@@ -81,6 +81,10 @@ Setelah InvenTree terpasang dan tersambung, cukup ketik:
 
 **Status uji (jujur):** diuji OpenClaw sebelum/sesudah dengan **server tiruan** InvenTree 1.5.6 (2026-10-02), bukan instalasi Docker asli di sesi uji otomatis. InvenTree asli diuji secara terpisah oleh pembuat dan penguji independen (simulasi agent, `examples/`). Windows/Mac sungguhan, pengiriman laporan ke Telegram, serta Codex/Cursor belum diuji langsung.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "Pagi min. InvenTree gudang keripik saya jalan di komputer ini, alamatnya http://127.0.0.1:18765. Token API akun baca-saja sudah saya simpan di file inventree-token.txt di folder kerja. Tolong cek barang apa aja yang hampir…". Tanpa skill skor **5** → dengan skill skor **9** (selisih +4, lulus acuan kami). Dengan skill, laporan gudang mengelompokkan barang per bahan baku, kemasan dan produk jadi, menulis satuan kg dan L dengan benar, merinci tiap PO per baris (dipesan, diterima, sisa) dan menyebut tegas bahwa keripik siap jual perlu diproduksi minimal 60 pcs. Tanpa skill, satuan kebanyakan hilang dan singkong 200 kg malah ditulis 200 pcs. Catatan jujur: Diuji pada InvenTree tiruan berisi data contoh, bukan InvenTree sungguhan milik pembeli. Untuk tugas cek stok seperti ini, AI tanpa skill pun sudah hampir benar; keunggulan skill di sini terutama ada pada kerapian, satuan yang benar, dan angka produksi yang tegas, bukan pada temuan baru.
+
 ## FAQ
 **Apakah data stok saya dikirim ke Komunitech atau pihak lain?**
 Tidak. Skrip hanya menghubungi InvenTree **milik Anda sendiri** (biasanya `localhost`). Tidak ada data ke Komunitech atau internet, kecuali Anda sendiri mengatur laporan ke Telegram.

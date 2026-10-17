@@ -61,6 +61,10 @@ Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent); satu kali pengiriman jadwal otomatis ke Telegram (perintah `lama`, daftar SOP yang lama tidak diperbarui) diuji di bot Telegram percobaan pada 13 Oktober 2026 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`, memakai SiYuan tiruan di komputer uji); jadwal mingguan yang berulang belum diuji. **Belum** diuji di aplikasi desktop SiYuan sungguhan di Windows/macOS, belum diuji penguji independen terhadap SiYuan asli di komputer pembeli, dan Claude Code, Codex, serta Cursor belum diuji langsung (format skill-nya sama).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "Kak, SOP Packing Pesanan di SiYuan saya (buku Toko Hijab Cantik) udah jadul. Tolong timpa aja pakai yang baru ini: 1. Cek nama & varian warna sesuai pesanan. 2. Lipat hijab, masukkan plastik zip. 3. Bungkus bubble wrap 2…". Tanpa skill skor **5** → dengan skill skor **9** (selisih +4, lulus acuan kami). Tanpa skill, bot langsung menghapus dan menimpa SOP Anda tanpa menunjukkan isi lama dan tanpa bertanya dulu. Dengan skill, bot hanya membaca, menampilkan isi lama dan isi baru berdampingan, lalu baru menimpa setelah Anda mengetik TIMPA. Catatan jujur: Di pratinjau, lokasi lengkap file cadangan belum disebut, begitu juga bahwa tautan ke dokumen itu akan berubah setelah ditimpa. Uji memakai SiYuan tiruan, bukan aplikasi SiYuan sungguhan. Catatan uji: pada uji ini AI tanpa skill sempat membaca berkas skill yang tersimpan di komputer yang sama, jadi beda sebenarnya kemungkinan lebih besar.
+
 ## FAQ
 **Apakah data SOP/FAQ saya dikirim ke internet?**
 Tidak oleh skill ini. Skrip hanya berbicara dengan SiYuan di komputer Anda sendiri (alamat `127.0.0.1`) dan menolak alamat lain kecuali Anda menegaskannya secara eksplisit. SiYuan sendiri tidak mengirim data ke cloud kecuali Anda mengaktifkan fitur sinkronisasinya sendiri (defaultnya mati). Isi percakapan Anda dengan AI tetap diproses layanan AI yang Anda pakai, seperti biasa.

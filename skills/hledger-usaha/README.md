@@ -75,6 +75,10 @@ Panduan pemasangan skill lengkap: lihat `docs/instalasi.md` (di dalam ZIP bernam
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent); Claude Code hanya lewat simulasi agent pada versi 1.0.1–1.0.2, dan Codex serta Cursor belum diuji langsung (format skill-nya sama). **Belum** diuji di Windows/Mac, jadwal laporan OpenClaw belum dicoba di Gateway sungguhan (program OpenClaw yang berjalan di latar belakang), dan ekspor CSV asli BRI, BNI, serta bank digital belum diuji (hasil impor selalu dipratinjau dulu sebelum disimpan).
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "halo kak, ini pembukuan hledger kedai kopi saya, filenya usaha.journal di folder ini. tolong bikinin laporan laba rugi sama neraca bulan september 2026 ya. oh iya stok bahan akhir september udah saya hitung, totalnya 2,4 juta". Tanpa skill skor **6** → dengan skill skor **8,5** (selisih +2,5, lulus acuan kami). Tanpa skill, AI langsung menulis koreksi stok ke file pembukuan tanpa bertanya dan tanpa cadangan. Dengan skill, file tidak disentuh: AI menunjukkan dulu koreksinya (stok Rp2.000.000 → Rp2.400.000, selisih +Rp400.000 yang mengurangi HPP), lalu menunggu jawaban "ya" sebelum menyimpan. Catatan jujur: Laporan laba rugi dan neraca baru muncul setelah Anda membalas "ya" untuk menyimpan koreksi stok, jadi perlu dua kali balas. Pesan pertamanya juga masih memuat beberapa istilah teknis, misalnya "pemeriksaan LULUS, cocok dengan pembaca cadangan".
+
 ## FAQ
 **Apakah saya harus paham akuntansi?**
 Tidak. Anda cukup bercerita; AI memilih akun yang tepat dan menjelaskan artinya dalam bahasa sehari-hari ("Artinya: penjualan Rp 750.000 kepada Kantor Maju, belum dibayar"). Setiap catatan harus Anda setujui sebelum disimpan.
