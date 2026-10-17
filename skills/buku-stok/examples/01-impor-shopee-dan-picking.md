@@ -1,5 +1,7 @@
 # 01 — Potong stok dari file pesanan Shopee + daftar ambil barang
 
+> **Teks balasan disesuaikan ke v1.1.7.** Angka berasal dari rekaman uji asli (v1.0.0/v1.1.0); kata dan format balasan ke pemilik toko mengikuti aturan "Bahasa ke pengguna" v1.1.7 (tanpa letak file/folder, istilah SKU dijelaskan, tanpa nama berkas yang tidak diminta). Versi lama menampilkan "Backup sebelum perubahan: <letak folder cadangan>" di balasan; itu tidak boleh lagi.
+
 **Skenario:** S1 (normal). Seller kaos & aksesori sudah memakai buku-stok (5 produk dari `templates/daftar-produk.csv`, stok awal 1 Sep 2026). Hari ini ia mengirim file ekspor pesanan Shopee (CSV, 35 kolom bergaya ekspor Seller Center; nama/telepon/alamat pembeli fiktif). Isi file: 7 pesanan dengan status campuran (Perlu Dikirim, Batal, Belum Bayar, Selesai, Pengembalian, Dikirim), 1 baris kembar persis, dan 1 baris yang nomor pesanannya rusak (`2.60923E+17`) karena file sempat dibuka di Excel.
 
 **Input pengguna (persis):**
@@ -20,7 +22,7 @@ Saya akan mencatat (belum disimpan):
 
 Kolom yang saya pakai dari file Shopee (mohon dicek):
 - No. pesanan  <- No. Pesanan
-- SKU          <- Nomor Referensi SKU
+- Kode barang (SKU) <- Nomor Referensi SKU
 - Jumlah       <- Jumlah
 - Status       <- Status Pesanan
 - No. resi     <- No. Resi   | Kurir <- Opsi Pengiriman
@@ -39,7 +41,7 @@ Stok yang akan berkurang (total 9 barang):
 - MUG-KRM Mug Putih: -1 (stok 12 -> 11)
 
 Catatan:
-- 1 baris kembar (pesanan + SKU + jumlah sama) hanya dihitung sekali.
+- 1 baris kembar (pesanan + kode barang + jumlah sama) hanya dihitung sekali.
 - 1 baris nomor pesanannya rusak (tampil seperti 2,6E+17 karena file dibuka di Excel) dan
   TIDAK diproses. Mohon ekspor ulang dari Seller Center tanpa membuka/menyimpan di Excel,
   lalu kirim lagi — pesanan yang sudah tercatat tidak akan terpotong dua kali.
@@ -51,8 +53,7 @@ Simpan? Balas "ya" untuk menyimpan.
 
 **Balasan agent 2 (tersimpan + picking):**
 ```
-Sudah tersimpan. Backup sebelum perubahan:
-~/KomunitechData/backup-stok/stok-20260923-180744-sebelum-impor-pesanan.db
+Sudah tersimpan. Cadangan otomatis sudah dibuat.
 
 DAFTAR AMBIL BARANG — 2 pesanan, 6 barang
 
@@ -66,7 +67,7 @@ B. Urutan kemas / tempel resi (urut kurir)
   2. [ ] 2609230001AB | SPX Standard | resi SPXID0000000011 | KAOS-HT-M x2; TOTE-NAT x1
 
 Pesanan "Selesai" dan "Dikirim" tetap memotong stok tetapi tidak masuk daftar ambil
-(barangnya sudah keluar). Mau saya buatkan file Excel-nya (ambil.csv & urutan.csv)?
+(barangnya sudah keluar). Mau saya kirimkan file Excel-nya ke chat ini?
 Setelah semua dikemas, bilang "sudah dikemas semua" supaya daftar ini dikosongkan.
 ```
 

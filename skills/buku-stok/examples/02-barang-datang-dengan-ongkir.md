@@ -18,13 +18,14 @@ python3 scripts/stok.py masuk --sku KAOS-HT-M --qty 50 --harga 34000 --biaya-tam
 **Balasan agent 1:**
 ```
 Saya akan mencatat (belum disimpan):
-- KAOS-HT-M Kaos Polos Cotton 30s Hitam M: +50 @ Rp 34.000 + ongkir Rp 500/pcs
+- Kaos Polos Cotton 30s Hitam M, kode barang (SKU) KAOS-HT-M: barang datang +50 @ Rp 34.000
+  (+ ongkir Rp 25.000, jadi Rp 34.500 per pcs)
   Stok 24 -> 74
-  HPP rata-rata Rp 35.000 -> Rp 34.662
-- Total nilai masuk: Rp 1.725.000 (ongkir Rp 25.000 dibagi ke 50 pcs)
+  Modal rata-rata per barang (HPP) Rp 35.000 -> Rp 34.662
+- Total nilai masuk: Rp 1.725.000 (sudah termasuk ongkir)
 - No. nota: Nota-Supplier-0923
 
-"Kaos item M" saya cocokkan ke SKU KAOS-HT-M (Kaos Polos Cotton 30s - Hitam M).
+"Kaos item M" saya cocokkan ke Kaos Polos Cotton 30s Hitam M (kode KAOS-HT-M).
 Simpan? Balas "ya" untuk menyimpan.
 ```
 
@@ -32,7 +33,7 @@ Simpan? Balas "ya" untuk menyimpan.
 
 **Balasan agent 2:**
 ```
-Sudah tersimpan. Stok Kaos Hitam M sekarang 74 pcs, HPP rata-rata Rp 34.662.
+Sudah tersimpan. Stok Kaos Hitam M sekarang 74 pcs, modal rata-rata Rp 34.662.
 Harga beli terakhir juga diperbarui menjadi Rp 34.000.
 ```
 
@@ -42,3 +43,4 @@ Harga beli terakhir juga diperbarui menjadi Rp 34.000.
 - Bagus: agent mencocokkan "item" = hitam lewat `produk cari`, dan tetap menyebut SKU yang dipakai sebelum menyimpan.
 - Koreksi penguji: "Total nilai masuk Rp 1.725.000" **sudah termasuk** ongkir (50 × Rp 34.500 = 50 × Rp 34.000 + Rp 25.000). Catatan di laporan uji v1.0.0 yang menyebut sebaliknya keliru.
 - Uji ulang v1.1.0: output identik (stok 24 → 74, HPP Rp 34.662).
+- Teks balasan disesuaikan ke v1.1.7 (HPP dan SKU dijelaskan saat pertama muncul). Barang masuk biasa **tidak** membuat cadangan, jadi balasan 2 sengaja tidak menyebut cadangan (di rekaman tidak ada kunci `backup` pada hasil `--ya`).

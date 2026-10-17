@@ -73,11 +73,11 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Hasil uji (jujur)
 
-**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.5), skor 1-10 dari agen penguji independen: tanpa skill 6 → dengan skill 8,5. Versi 1.1.6 menambah tampilan perubahan modal per barang (HPP) sejak konfirmasi pertama barang masuk (temuan dari uji ini) dan belum diuji ulang sebelum/sesudah di OpenClaw.
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.5), skor 1-10 dari agen penguji independen: tanpa skill 6 → dengan skill 8,5. Versi 1.1.6 menambah tampilan perubahan modal per barang (HPP) sejak konfirmasi pertama barang masuk (temuan dari uji ini). Versi 1.1.7 merapikan bahasa balasan ke pemilik toko (temuan pra-cek di bot Telegram): balasan tidak lagi menyebut letak file atau folder, istilah HPP dan kode barang (SKU) dijelaskan saat pertama muncul, pertanyaan tidak dipecah-pecah, kalimat "cadangan otomatis sudah dibuat" hanya dipakai bila cadangan memang dibuat (impor barang atau pesanan, hitung fisik, pulihkan), dan file Excel/CSV yang diminta dikirim ke chat (bukan disebut letaknya). Versi 1.1.6 dan 1.1.7 belum diuji ulang sebelum/sesudah di OpenClaw.
 - Tugas: catat stok kaos dan tote bag, lalu barang datang "kaos hitam M 50 pcs harga 34 ribu, ongkir 25 ribu". Tanpa skill, angka benar tetapi hanya jadi catatan teks di memori AI tanpa konfirmasi, dan untuk sinkron Shopee AI menawarkan menyimpan kredensial (data login). Dengan skill: buku stok sungguhan di komputer Anda, stok 24 → 74 dan HPP rata-rata Rp 35.000 → Rp 34.662 (ongkir ikut masuk modal), tersimpan setelah Anda balas "ya". Permintaan menempel email dan password Seller Center ditolak.
 - Jujur: hitungan HPP benar di kedua sisi. Bedanya sistem stok yang bisa dipakai ulang (backup, laporan stok menipis, potong stok dari file pesanan).
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. File pesanan marketplace yang dipakai uji adalah tiruan yang meniru format ekspor Seller Center; nama kolom TikTok Shop versi Indonesia belum dicocokkan dengan file ekspor asli (AI selalu menampilkan kolom yang dipakai supaya Anda cek dulu). Jadwal laporan harian ke Telegram: diuji di bot Telegram uji pada 13 Okt 2026 (jadwal sekali jalan 5 menit ke depan; pesan tiba tepat waktu dan angka omzet, HPP, serta nilai persediaan cocok dengan hitungan terpisah; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. File pesanan marketplace yang dipakai uji adalah tiruan yang meniru format ekspor Seller Center; nama kolom TikTok Shop versi Indonesia belum dicocokkan dengan file ekspor asli (AI selalu menampilkan kolom yang dipakai supaya Anda cek dulu). Jadwal laporan harian ke Telegram: diuji di bot Telegram uji pada 13 Okt 2026 (jadwal sekali jalan 5 menit ke depan; pesan tiba tepat waktu dan angka omzet, HPP, serta nilai persediaan cocok dengan hitungan terpisah; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`; uji itu dilakukan pada versi 1.1.6, sedangkan 1.1.7 hanya menambah kalimat "bila gagal" pada pesan jadwal).
 
 ## FAQ
 **Apakah stok di Shopee/TikTok ikut berubah otomatis?**
@@ -91,4 +91,4 @@ Tidak. Buku Stok fokus pada stok, HPP, dan nilai persediaan. Laba di laporan har
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

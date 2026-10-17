@@ -2,17 +2,19 @@
 
 Semua perintah menerima `--db PATH` dan `--json`. Perintah bertanda **(tulis)** hanya menyimpan jika diberi `--ya`; tanpa `--ya` hasilnya pratinjau (`"mode": "pratinjau"`, `"perlu_konfirmasi": true`) dan database tidak berubah sama sekali (transaksi di-rollback).
 
+> **Untuk agent, bukan bahan balasan.** Hasil `--json` yang memuat lokasi file (`backup`, `folder`, `berkas_cadangan` pada `restore`, `csv`, `csv_pesanan`, `folder_backup`, `backup_terakhir`, dan `db` pada `info`) diberi `catatan_agen`: jangan dikutip ke pengguna. Pesan `error` sudah berbahasa awam; petunjuk teknis (opsi/perintah) ada di `langkah_agen` dan tidak dikutip ke pengguna. `backup --daftar` memuat `dibuat` dan `keterangan` per cadangan agar bisa ditawarkan berdasarkan tanggal, bukan nama berkas. **Cadangan otomatis hanya dibuat oleh** `produk impor`, `impor-pesanan`, `opname`, `restore` (dan perintah `backup`); hasil `--ya` perintah itu memuat `backup`. `masuk`, `keluar`, `produk tambah/ubah`, `init`, dan `picking --tandai-dikemas` tidak membuat cadangan: jangan bilang ke pengguna bahwa cadangan dibuat bila hasil tidak memuat `backup`. Teks tanpa `--json` hanya dipakai untuk laporan (siap kirim): teksnya tanpa lokasi file, dan bila gagal hanya tercetak satu kalimat awam (`GAGAL: …`) tanpa `langkah_agen`; ulangi dengan `--json` bila butuh petunjuk teknis. Galat SQLite/berkas ditulis awam di `error`, pesan mentahnya di `detail_teknis` (hanya JSON; jangan dikutip).
+
 Angka boleh ditulis gaya Indonesia: `34000`, `34.000`, `Rp 34.000`, `Rp 15.000,-`, `12,5`. Format meragukan (`15.000.00`, `1.5E+06`) ditolak, tidak ditebak.
 Tanggal: `2026-09-23`, `23/09/2026`, `23 Sep 2026` (hari dulu, gaya Indonesia).
 
 | Perintah | Fungsi | Opsi penting |
 |---|---|---|
-| `init` (tulis) | Buat database baru. Jika sudah ada, tidak mengubah apa pun | — |
-| `info` | Lokasi DB, jumlah produk/mutasi/pesanan, backup terakhir | — |
+| `init` (tulis) | Siapkan buku stok baru. Jika sudah ada, tidak mengubah apa pun | — |
+| `info` | Lokasi DB (hanya di JSON), jumlah produk/mutasi/pesanan, jumlah dan waktu backup terakhir | — |
 | `produk tambah` (tulis) | Tambah produk (1 SKU = 1 varian) | `--sku --nama` wajib; `--varian --satuan --harga-beli --harga-jual --stok-min --lokasi --stok-awal --tanggal` |
 | `produk ubah` (tulis) | Ubah data produk | `--sku` + field yang diubah; `--sku-baru`, `--nonaktif`, `--aktif`, `--koreksi-hpp` (hanya bila HPP salah input) |
 | `produk cari [kata]` | Cari SKU/nama/varian/lokasi; kosong = semua | `--semua` (termasuk nonaktif) |
-| `produk impor FILE` (tulis, backup) | Impor daftar produk CSV/XLSX. SKU yang sudah ada dilewati | kolom dikenali: SKU, Nama, Varian, Satuan, Harga Beli/Modal, Harga Jual, Stok, Stok Minimum, Lokasi/Rak |
+| `produk impor FILE` (tulis, backup) | Impor daftar produk CSV/XLSX. SKU yang sudah ada dilewati. Pratinjau tetap jalan bila buku stok belum ada (hasil: `buku_belum_ada: true`, tidak ada berkas dibuat); menyimpan butuh `init --ya` dulu | kolom dikenali: SKU, Nama, Varian, Satuan, Harga Beli/Modal, Harga Jual, Stok, Stok Minimum, Lokasi/Rak |
 | `masuk` (tulis) | Barang masuk; HPP rata-rata tertimbang diperbarui | `--sku --qty --harga` atau `--file` (SKU, Qty, Harga); `--jenis beli\|retur-pembeli\|saldo-awal\|lainnya`; `--biaya-tambahan` (total, dibagi sesuai nilai item); `--ref --catatan --tanggal` |
 | `keluar` (tulis) | Barang keluar; stok tidak cukup = ditolak | `--jenis jual\|retur-supplier\|rusak\|hilang\|pakai-sendiri\|lainnya`; `--harga` (harga jual, default harga jual produk); `--catatan` wajib untuk rusak/hilang/lainnya; `--izinkan-minus` |
 | `opname` (tulis, backup) | Hitung fisik → selisih → penyesuaian | `--hitung SKU=n` (berulang) atau `--file` (SKU, Fisik, Alasan); `--alasan` default; `--tanggal --ref` |

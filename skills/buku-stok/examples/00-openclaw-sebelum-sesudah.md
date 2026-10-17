@@ -2,6 +2,7 @@
 
 **Tanggal uji:** 2026-10-01
 **Penguji:** agent penguji independen (bukan pembuat skill)
+**Catatan versi:** rekaman uji v1.1.5, sebelum revisi 1.1.7. Balasan SESUDAH di bawah masih menyebut letak berkas catatan dan menanyakan lokasi simpan; itu temuan yang sudah diperbaiki di 1.1.7 (balasan ke pemilik toko tidak lagi menyebut letak file/folder atau menanyakan lokasi).
 
 **Cara uji:** OpenClaw 2026.9.6 lokal (`openclaw agent --local`, tanpa gateway/Telegram), model router Komunitech `komunitech` → `claude-sonnet-5` (sama dengan bot member). Dua home terpisah, dibuat ulang bersih per skenario: **SEBELUM** = tanpa skill ini (0 skill Komunitech), **SESUDAH** = hanya skill ini terpasang di `~/.openclaw/skills`. AGENTS.md/SOUL.md bawaan workspace sama di kedua sisi (tanpa blok aturan Komunitech). Pesan identik dikirim ke kedua sisi; bila agent bertanya balik, dijawab sekali dengan pesan identik sebagai pengguna awam. Isolasi mount+PID namespace (repo & scratchpad disembunyikan). Angka diverifikasi ulang secara independen dengan Python.
 
