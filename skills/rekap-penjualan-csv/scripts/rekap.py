@@ -13,6 +13,8 @@ from collections import defaultdict
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 
+VERSI = "1.2.6"
+
 BULAN = {
     "jan": 1, "januari": 1, "january": 1,
     "feb": 2, "februari": 2, "february": 2, "peb": 2, "pebruari": 2,
@@ -172,6 +174,10 @@ def angka_qty(q):
     return str(int(q)) if float(q).is_integer() else ("%s" % round(q, 2)).replace(".", ",")
 
 
+def persen_id(x):
+    return ("%.1f" % x).replace(".", ",") + "%"
+
+
 def gabung_daftar(item):
     item = list(item)
     if len(item) <= 1:
@@ -208,10 +214,21 @@ def susun_ringkasan(h, ada_status, satuan_pesanan):
             kal.append("Pesanan yang tidak dihitung menurut tanggal pesanan: " + "; ".join(bagian) + ".")
         else:
             kal.append("Tidak ada pesanan batal/retur pada periode ini.")
+    mode_pcs = h["satuan_jumlah_produk"] == "pcs"
+    kunci_j, satuan_j = ("qty", "pcs") if mode_pcs else ("jumlah_baris", SATUAN_BARIS)
     top = h["produk_terlaris"][:3]
     if top:
         kal.append("Produk terlaris menurut omzet: " + gabung_daftar(
-            "{} ({} pcs, {})".format(x["produk"], angka_qty(x["qty"]), rupiah(x["omzet"])) for x in top) + ".")
+            "{} ({} {}, {})".format(x["produk"], angka_qty(x[kunci_j]), satuan_j, rupiah(x["omzet"])) for x in top) + ".")
+    s = h["sorotan_produk"]
+    tj = s["terlaris_qty"] if mode_pcs else s["terlaris_baris"]
+    if tj:
+        kal.append("{}: {} ({} {}{}).".format(
+            "Paling banyak terjual menurut jumlah" if mode_pcs else "Paling sering tercatat",
+            gabung_daftar(x["produk"] for x in tj), angka_qty(tj[0][kunci_j]), satuan_j,
+            " masing-masing" if len(tj) > 1 else ""))
+    if not mode_pcs:
+        kal.append("Catatan: file tanpa kolom jumlah, jadi jumlah pcs yang terjual tidak diketahui.")
     kal.append("Omzet tertinggi pada {} ({}) dan terendah pada {} ({}).".format(
         tgl_id(h["hari_terbaik"]["tanggal"]), rupiah(h["hari_terbaik"]["omzet"]),
         tgl_id(h["hari_terendah"]["tanggal"]), rupiah(h["hari_terendah"]["omzet"])))
@@ -221,6 +238,192 @@ def susun_ringkasan(h, ada_status, satuan_pesanan):
     if h["baris_dilewati"]:
         kal.append("Catatan: {} baris tidak terbaca dan tidak dihitung.".format(h["baris_dilewati"]))
     return "RINGKASAN SIAP TEMPEL\n" + "\n".join(kal)
+
+
+def teks_harga(x):
+    """'Rp 35.000' atau 'rata-rata Rp 34.500' bila harga per pcs produk itu berbeda-beda antar baris."""
+    if x["harga_per_pcs"] is None:
+        return "-"
+    return ("rata-rata " if x["harga_per_pcs_bervariasi"] else "") + rupiah(x["harga_per_pcs"])
+
+
+SATUAN_BARIS = "baris transaksi"
+CATATAN_TANPA_QTY = ("Tanpa kolom jumlah: jumlah pcs dan harga jual per pcs TIDAK diketahui; yang dihitung per "
+                     "produk adalah jumlah baris transaksi (jumlah_baris), bukan pcs. Jangan menyebut pcs, harga per "
+                     "pcs, atau terlaris menurut jumlah. Bila pengguna memastikan 1 baris = 1 pcs, jalankan ulang "
+                     "dengan --satu-baris-satu-pcs.")
+CATATAN_SATU_BARIS = "Tiap baris dihitung 1 pcs (dikonfirmasi pengguna lewat --satu-baris-satu-pcs)."
+
+
+def susun_sorotan(produk, total, mode_pcs=True):
+    """Sorotan produk untuk insight: SEMUA perbandingan dihitung di sini, bukan disimpulkan agent.
+
+    `produk`: daftar dict per produk (semua produk, bukan hanya top). Seri (nilai sama) selalu ikut disebut.
+    `mode_pcs` False = file tanpa kolom jumlah: yang dibandingkan jumlah BARIS transaksi, bukan pcs, dan tidak ada
+    perbandingan harga per pcs.
+    """
+    def tanpa_detail(x, *kunci):
+        return {k: x[k] for k in ("produk",) + kunci}
+
+    kunci_j = "qty" if mode_pcs else "jumlah_baris"
+    satuan = "pcs" if mode_pcs else SATUAN_BARIS
+    sorotan = {"dari_jumlah_produk": len(produk), "satuan_jumlah": satuan, "terlaris_omzet": [], "terlaris_qty": [],
+               "terlaris_omzet_dan_qty_sama": False if mode_pcs else None,
+               "harga_per_pcs_termurah": [], "harga_per_pcs_termahal": []}
+    if not mode_pcs:
+        sorotan.update({"terlaris_baris": [], "terlaris_omzet_dan_baris_sama": False})
+    fakta = []
+    if not produk:
+        return sorotan, fakta
+    maks_omzet = max(x["omzet"] for x in produk)
+    maks_j = max(x[kunci_j] for x in produk)
+    top_o = [x for x in produk if x["omzet"] == maks_omzet]
+    top_j = [x for x in produk if x[kunci_j] == maks_j]
+    sama = {x["produk"] for x in top_o} == {x["produk"] for x in top_j}
+    if mode_pcs:
+        sorotan["terlaris_omzet"] = [tanpa_detail(x, "omzet", "persen_omzet", "qty", "peringkat_qty") for x in top_o]
+        sorotan["terlaris_qty"] = [tanpa_detail(x, "qty", "omzet", "peringkat_omzet") for x in top_j]
+        sorotan["terlaris_omzet_dan_qty_sama"] = sama
+    else:
+        sorotan["terlaris_omzet"] = [tanpa_detail(x, "omzet", "persen_omzet", "jumlah_baris") for x in top_o]
+        sorotan["terlaris_baris"] = [tanpa_detail(x, "jumlah_baris", "omzet", "peringkat_omzet") for x in top_j]
+        sorotan["terlaris_omzet_dan_baris_sama"] = sama
+
+    nama = lambda daftar: gabung_daftar(x["produk"] for x in daftar)
+    if len(top_o) == 1:
+        fakta.append("Terlaris menurut omzet: {}, {} ({} dari omzet), {} {}.".format(
+            top_o[0]["produk"], rupiah(maks_omzet), persen_id(top_o[0]["persen_omzet"]),
+            angka_qty(top_o[0][kunci_j]), satuan))
+    else:
+        fakta.append("Terlaris menurut omzet (seri): {}, masing-masing {} ({} dari omzet).".format(
+            gabung_daftar("{} ({} {})".format(x["produk"], angka_qty(x[kunci_j]), satuan) for x in top_o),
+            rupiah(maks_omzet), persen_id(top_o[0]["persen_omzet"])))
+    label = "Terlaris menurut jumlah" if mode_pcs else "Paling sering tercatat"
+    ket = [] if mode_pcs else ["jumlah baris transaksi, bukan pcs"]
+    if sama:
+        fakta.append("{}{} juga {} ({} {}{}).".format(
+            label, " (" + ket[0] + ")" if ket else "", nama(top_j), angka_qty(maks_j), satuan,
+            " masing-masing" if len(top_j) > 1 else ""))
+    else:
+        if len(top_j) > 1:
+            ket.append("seri")
+        if len(top_j) == 1:
+            rinci = "{}; peringkat {} menurut omzet dari {} produk".format(
+                rupiah(top_j[0]["omzet"]), top_j[0]["peringkat_omzet"], len(produk))
+        else:  # seri: tiap produk disebut lengkap, tanpa "1/3" yang bisa terbaca sebagai pecahan
+            rinci = "; ".join("{} {}, peringkat {} menurut omzet".format(x["produk"], rupiah(x["omzet"]),
+                                                                          x["peringkat_omzet"]) for x in top_j)
+            rinci += "; dari {} produk".format(len(produk))
+        fakta.append("{}{}: {}, {} {}{} ({}).".format(
+            label, " (" + "; ".join(ket) + ")" if ket else "", nama(top_j), angka_qty(maks_j), satuan,
+            " masing-masing" if len(top_j) > 1 else "", rinci))
+    if not mode_pcs:
+        fakta.append("File tanpa kolom jumlah: jumlah pcs dan harga jual per pcs tidak diketahui, jadi tidak ada "
+                     "perbandingan harga per pcs.")
+        return sorotan, fakta
+    top_q = top_j
+    if not sama:
+        # Sah secara hitungan: qty A >= qty B dan omzet A < omzet B  =>  harga per pcs A < harga per pcs B.
+        a, b = top_q[0], top_o[0]
+        if len(top_q) == 1 and len(top_o) == 1 and a["harga_per_pcs"] is not None and b["harga_per_pcs"] is not None:
+            fakta.append("{} paling banyak terjual ({} pcs) tetapi omzetnya di bawah {} ({} vs {}) karena harga jual "
+                         "per pcs-nya lebih rendah ({} vs {}).".format(
+                             a["produk"], angka_qty(a["qty"]), b["produk"], rupiah(a["omzet"]), rupiah(b["omzet"]),
+                             teks_harga(a), teks_harga(b)))
+
+    berharga = [x for x in produk if x["harga_per_pcs"] is not None]
+    if len(berharga) >= 2:
+        h_min = min(x["harga_per_pcs"] for x in berharga)
+        h_maks = max(x["harga_per_pcs"] for x in berharga)
+        if rupiah(h_min) != rupiah(h_maks):
+            murah = [x for x in berharga if rupiah(x["harga_per_pcs"]) == rupiah(h_min)]
+            mahal = [x for x in berharga if rupiah(x["harga_per_pcs"]) == rupiah(h_maks)]
+            sorotan["harga_per_pcs_termurah"] = [tanpa_detail(x, "harga_per_pcs", "harga_per_pcs_bervariasi", "qty")
+                                                 for x in murah]
+            sorotan["harga_per_pcs_termahal"] = [tanpa_detail(x, "harga_per_pcs", "harga_per_pcs_bervariasi", "qty")
+                                                 for x in mahal]
+            fakta.append("Harga jual per pcs dari {} produk: termurah {}; termahal {}.".format(
+                len(berharga), gabung_daftar("{} ({})".format(x["produk"], teks_harga(x)) for x in murah),
+                gabung_daftar("{} ({})".format(x["produk"], teks_harga(x)) for x in mahal)))
+    return sorotan, fakta
+
+
+def susun_rekap_chat(h, ada_status, satuan_pesanan, top):
+    """Rekap siap kirim di chat (Telegram/WA): teks polos tanpa judul Markdown/tabel, SATU rata-rata."""
+    p = h["periode"]
+    bar = ["Rekap penjualan {} – {}".format(tgl_id(p["awal"]), tgl_id(p["akhir"])), ""]
+    dihitung = [(st, v) for st, v in h["per_status"].items() if v["golongan"] == "dihitung"]
+    dibuang = [(st, v) for st, v in h["per_status"].items() if v["golongan"] == "dibuang"]
+    if ada_status and len(dihitung) == 1:
+        bar.append("Omzet: {} dari {} {} {}{}".format(
+            rupiah(h["total_omzet"]), h["jumlah_pesanan_dihitung"], satuan_pesanan, dihitung[0][0],
+            "" if dihitung[0][1]["final"] else " (belum final, bisa berubah bila batal/retur)"))
+    else:
+        bar.append("Omzet: {} dari {} {}".format(rupiah(h["total_omzet"]), h["jumlah_pesanan_dihitung"],
+                                                 satuan_pesanan))
+        if ada_status and dihitung:
+            bar.append("Terdiri dari: " + "; ".join(
+                "{} {} {} {}{}".format(st, v["jumlah_pesanan"], satuan_pesanan, rupiah(v["omzet"]),
+                                       "" if v["final"] else " (belum final, bisa berubah bila batal/retur)")
+                for st, v in dihitung))
+    r = h["rata_rata_harian"]
+    if r["jumlah_hari"] > 1:
+        bar.append("Rata-rata per hari: {} (omzet dibagi {} hari kalender; {} hari ada penjualan)".format(
+            rupiah(r["nilai"]), r["jumlah_hari"], p["jumlah_hari_ada_penjualan"]))
+    if dibuang:
+        bar.append("Tidak dihitung (batal/retur): " + "; ".join(
+            "{} {} {} {}".format(st, v["jumlah_pesanan"], satuan_pesanan, rupiah(v["omzet"])) for st, v in dibuang))
+
+    mode_pcs = h["satuan_jumlah_produk"] == "pcs"
+    bar += ["", "Produk terlaris menurut omzet:"]
+    for i, x in enumerate(h["produk_terlaris"][:top], 1):
+        if not mode_pcs:   # tanpa kolom jumlah: jumlah baris, BUKAN pcs; harga per pcs tidak diketahui
+            rinci = "{} {}".format(x["jumlah_baris"], SATUAN_BARIS)
+        elif x["harga_per_pcs"] is None:
+            rinci = "{} pcs".format(angka_qty(x["qty"]))
+        elif x["harga_per_pcs_bervariasi"]:
+            rinci = "{} pcs, rata-rata {}/pcs".format(angka_qty(x["qty"]), rupiah(x["harga_per_pcs"]))
+        else:
+            rinci = "{} pcs × {}".format(angka_qty(x["qty"]), rupiah(x["harga_per_pcs"]))
+        bar.append("{}. {}: {} ({}), {}".format(i, x["produk"], rupiah(x["omzet"]), persen_id(x["persen_omzet"]), rinci))
+    if h["jumlah_produk_unik"] > top:
+        bar.append("(ditampilkan {} dari {} produk)".format(top, h["jumlah_produk_unik"]))
+    s = h["sorotan_produk"]
+    if mode_pcs:
+        tj, kunci_j, label, sama = s["terlaris_qty"], "qty", "Terlaris menurut jumlah", s["terlaris_omzet_dan_qty_sama"]
+    else:
+        tj, kunci_j, label, sama = s["terlaris_baris"], "jumlah_baris", "Paling sering tercatat", \
+            s["terlaris_omzet_dan_baris_sama"]
+    if tj:
+        jml = "{} {}{}".format(angka_qty(tj[0][kunci_j]), s["satuan_jumlah"], " masing-masing" if len(tj) > 1 else "")
+        nama = gabung_daftar(x["produk"] for x in tj)
+        bar.append("{} juga {} ({})".format(label, nama, jml) if sama else "{}: {}, {}".format(label, nama, jml))
+
+    t = h["hari_transaksi_terbanyak"]
+    bar += ["", "Hari paling ramai:",
+            "Omzet tertinggi {} ({}); terendah {} ({})".format(
+                tgl_id(h["hari_terbaik"]["tanggal"]), rupiah(h["hari_terbaik"]["omzet"]),
+                tgl_id(h["hari_terendah"]["tanggal"]), rupiah(h["hari_terendah"]["omzet"])),
+            "{} terbanyak: {} ({} {} per hari{})".format(
+                "Pesanan" if satuan_pesanan == "pesanan" else "Transaksi",
+                gabung_daftar(tgl_id(x) for x in t["semua_tanggal_seri"]), t["jumlah"], satuan_pesanan,
+                ", seri" if len(t["semua_tanggal_seri"]) > 1 else "")]
+
+    catatan = []
+    if not mode_pcs:
+        catatan.append("file tanpa kolom jumlah, jadi jumlah pcs dan harga jual per pcs tidak diketahui "
+                       "(yang dihitung jumlah baris transaksi per produk)")
+    elif h["sorotan_produk"].get("catatan") == CATATAN_SATU_BARIS:
+        catatan.append("tiap baris dihitung 1 pcs (sesuai konfirmasi Anda)")
+    if h["baris_dilewati"]:
+        catatan.append("{} baris tidak terbaca dan tidak dihitung ({})".format(
+            h["baris_dilewati"], "; ".join("{}: {}".format(k, v) for k, v in h["alasan_dilewati"].items())))
+    for utama, varian in h["nama_produk_digabung"].items():
+        catatan.append("nama produk {} digabung menjadi \"{}\"".format(
+            gabung_daftar('"{}"'.format(v) for v in varian), utama))
+    if catatan:
+        bar += ["", "Catatan data: " + "; ".join(catatan)]
+    return "\n".join(bar)
 
 
 def baca_csv(path):
@@ -246,10 +449,14 @@ def keluar_error(data):
 
 def main():
     p = argparse.ArgumentParser(description="Rekap penjualan dari CSV")
+    p.add_argument("--versi", "--version", action="version", version="rekap.py " + VERSI)
     p.add_argument("file")
     p.add_argument("--kolom-tanggal", required=True)
     p.add_argument("--kolom-produk", required=True)
     p.add_argument("--kolom-qty")
+    p.add_argument("--satu-baris-satu-pcs", action="store_true",
+                   help="Tanpa kolom jumlah: anggap tiap baris = 1 pcs. Pakai HANYA bila pengguna sudah memastikannya; "
+                        "tanpa opsi ini, file tanpa kolom jumlah dihitung per baris transaksi (bukan pcs).")
     grup = p.add_mutually_exclusive_group(required=True)
     grup.add_argument("--kolom-total", help="Total harga per baris")
     grup.add_argument("--kolom-harga", help="Harga satuan (dikali qty)")
@@ -289,7 +496,7 @@ def main():
     else:
         urutan, ambigu = a.urutan_tanggal, False
 
-    per_produk = defaultdict(lambda: {"qty": 0.0, "omzet": 0.0})
+    per_produk = defaultdict(lambda: {"qty": 0.0, "baris": 0, "omzet": 0.0, "harga_min": None, "harga_maks": None})
     nama_tampil = {}                 # kunci ternormalisasi -> nama pertama yang ditemui
     varian_nama = defaultdict(set)   # kunci -> semua ejaan asli
     status_dihitung = defaultdict(int)
@@ -354,8 +561,14 @@ def main():
         nama_tampil.setdefault(kunci, asli)
         varian_nama[kunci].add(asli)
         produk = nama_tampil[kunci]
-        per_produk[produk]["qty"] += qty
-        per_produk[produk]["omzet"] += nilai
+        pp = per_produk[produk]
+        pp["qty"] += qty
+        pp["baris"] += 1
+        pp["omzet"] += nilai
+        if qty > 0:
+            hs = nilai / qty
+            pp["harga_min"] = hs if pp["harga_min"] is None else min(pp["harga_min"], hs)
+            pp["harga_maks"] = hs if pp["harga_maks"] is None else max(pp["harga_maks"], hs)
         per_hari[tgl.isoformat()] += nilai
         baris_per_hari[tgl.isoformat()] += 1
         pesanan_per_hari[tgl.isoformat()].add(no)
@@ -366,7 +579,24 @@ def main():
         keluar_error({"error": "Tidak ada baris valid", "alasan": dict(dilewati),
                       "dibuang_karena_status": dict(dibuang_status)})
 
+    # mode_pcs False = tanpa kolom jumlah dan tanpa konfirmasi 1 baris = 1 pcs: "qty" per produk hanya jumlah baris,
+    # jadi harga per pcs, peringkat jumlah, dan terlaris menurut jumlah TIDAK dibuat (bisa salah bila 1 baris > 1 pcs).
+    mode_pcs = bool(a.kolom_qty) or a.satu_baris_satu_pcs
     urut = sorted(per_produk.items(), key=lambda x: x[1]["omzet"], reverse=True)
+    semua_produk = []
+    for k, v in urut:
+        semua_produk.append({
+            "produk": k, "qty": round(v["qty"], 2), "jumlah_baris": v["baris"], "omzet": round(v["omzet"], 2),
+            "persen_omzet": round(v["omzet"] / total * 100, 1) if total else 0,
+            # Harga jual per pcs = omzet produk / jumlah terjual (BUKAN margin: data tidak memuat modal/HPP)
+            "harga_per_pcs": (round(v["omzet"] / v["qty"], 2) if mode_pcs and v["qty"] > 0 and v["omzet"] > 0
+                              else None),
+            "harga_per_pcs_bervariasi": (mode_pcs and v["harga_min"] is not None
+                                         and v["harga_maks"] - v["harga_min"] >= 1),
+            "peringkat_omzet": 1 + sum(1 for _, w in urut if w["omzet"] > v["omzet"]),
+            "peringkat_qty": 1 + sum(1 for _, w in urut if w["qty"] > v["qty"]) if mode_pcs else None,
+        })
+    urut_qty = sorted(semua_produk, key=lambda x: (-x["qty"], -x["omzet"])) if mode_pcs else []
     hari = sorted(per_hari.items())
     terbaik = max(hari, key=lambda x: x[1])
     terendah = min(hari, key=lambda x: x[1])
@@ -395,11 +625,11 @@ def main():
         "jumlah_baris_valid": n,
         "rata_rata_omzet_per_hari_kalender": round(total / hari_kalender, 2),
         "rata_rata_omzet_per_hari_berjualan": round(total / len(hari), 2),
-        "produk_terlaris": [
-            {"produk": k, "qty": round(v["qty"], 2), "omzet": round(v["omzet"], 2),
-             "persen_omzet": round(v["omzet"] / total * 100, 1) if total else 0}
-            for k, v in urut[: a.top]
-        ],
+        "rata_rata_harian": {"nilai": round(total / hari_kalender, 2), "dasar": "hari kalender",
+                             "jumlah_hari": hari_kalender},
+        "produk_terlaris": semua_produk[: a.top],
+        "produk_terlaris_qty": [{k: x[k] for k in ("produk", "qty", "omzet", "harga_per_pcs", "peringkat_omzet")}
+                                for x in urut_qty[: a.top]],
         "jumlah_produk_unik": len(per_produk),
         "hari_terbaik": {"tanggal": terbaik[0], "omzet": round(terbaik[1], 2)},
         "hari_terendah": {"tanggal": terendah[0], "omzet": round(terendah[1], 2)},
@@ -431,10 +661,16 @@ def main():
          "nilai": round(v["nilai"], 2)}
         for (t, st), v in sorted(dibuang_tgl.items())
     ]
+    hasil["satuan_jumlah_produk"] = "pcs" if mode_pcs else SATUAN_BARIS
+    hasil["sorotan_produk"], hasil["fakta_produk"] = susun_sorotan(semua_produk, total, mode_pcs)
+    if not a.kolom_qty:
+        hasil["sorotan_produk"]["catatan"] = CATATAN_SATU_BARIS if mode_pcs else CATATAN_TANPA_QTY
     hasil["catatan_tanggal"] = ("Tanggal di dibuang_per_tanggal = isi kolom {} (biasanya tanggal pesanan dibuat), "
                                 "bukan tanggal pembatalan.".format(a.kolom_tanggal))
-    hasil["ringkasan_siap_tempel"] = susun_ringkasan(hasil, bool(a.kolom_status),
-                                                     "pesanan" if a.kolom_pesanan else "baris transaksi")
+    satuan = "pesanan" if a.kolom_pesanan else "baris transaksi"
+    hasil["ringkasan_siap_tempel"] = susun_ringkasan(hasil, bool(a.kolom_status), satuan)
+    hasil["rekap_chat"] = susun_rekap_chat(hasil, bool(a.kolom_status), satuan, a.top)
+    hasil["versi_script"] = VERSI
     print(json.dumps(hasil, ensure_ascii=False, indent=2))
 
 
