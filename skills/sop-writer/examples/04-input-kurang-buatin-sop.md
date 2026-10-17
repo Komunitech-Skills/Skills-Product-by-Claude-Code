@@ -24,3 +24,6 @@ Kalau mau cepat, cukup jawab **nomor 1 dan 2**. Aku buatkan dari praktik umum, d
 - **Bagus:** sesuai tabel Input (pekerjaan dan jenis usaha wajib) dan batas 5 pertanyaan. Contoh jawaban mengikuti daftar di description dan `references/contoh-sop.md`, sehingga pengguna awam tidak bingung. Pertanyaan 4 memancing masalah nyata yang nanti menjadi langkah ⚠️.
 - **Bagus:** jalur cepat jelas (cukup jawab nomor 1 dan 2).
 - **Catatan:** tidak ada kekurangan berarti pada skenario ini.
+
+## Penyegaran v1.0.6 (2026-10-17)
+Output dan catatan di atas **tidak diubah** dan tetap sesuai SKILL.md v1.0.6: tanya sekali, maks. 5 pertanyaan, jalur cepat "jawab nomor 1 dan 2". Tidak ada nama skill, istilah internal, atau jalur berkas di jawaban ini.

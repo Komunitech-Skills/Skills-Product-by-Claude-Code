@@ -32,3 +32,6 @@ terjadi pada data uji manapun.
 ## Kesimpulan skenario 04
 Tidak ada crash, tidak ada angka salah hitung, dan setiap baris bermasalah dilaporkan dengan alasan
 + nomor baris yang bisa ditelusuri pengguna — sesuai klaim "Batasan & penanganan error" di SKILL.md.
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Hasil dan skor uji asli di atas **tidak diubah**. File input (`in_rusak.csv`) tidak disimpan di repo, jadi skrip tidak dijalankan ulang. Sejak v1.0.5 baris yang dilewati juga dilaporkan per nomor pesanan lewat `dilewati_rinci` (nomor pesanan, alasan, nomor baris), dan pesanan dengan nomor rusak karena Excel (mis. `4E+17`) disebut sebagai "datanya bermasalah, cek di Seller Center". Perilaku setara dengan data yang ada di repo ditunjukkan di `01-picking-dasar/` (dibuat ulang 2026-10-17: baris jumlah 0, jumlah tidak terbaca, baris dobel, dan baris Total). File tanpa kolom Jumlah ditunjukkan di `02-input-tidak-lengkap/output-error.json` (dibuat ulang 2026-10-17; pesan error kini menyebut kolom yang sudah terdeteksi, semua kolom di file, dan opsi `--kolom-qty`).

@@ -66,3 +66,10 @@ Pencegahan: Cek ulang isi sebelum broadcast — PJ: Admin, tenggat [isi]
 - Angka dampak nominal ("kerugian") ditulis apa adanya ("tidak ada transaksi yang terlanjur") karena memang tidak ada kerugian uang yang disebutkan pengguna — bukan dikarang jadi nol secara sembarangan, tapi disimpulkan wajar dari fakta "belum ada yang terlanjur transaksi pakai harga lama".
 - Tidak menyalahkan admin sebagai pribadi; akar masalah diarahkan ke proses verifikasi sebelum broadcast.
 - **Lulus.**
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Output simulasi dan kesimpulan penguji (Lulus) **tidak diubah**. Menurut SKILL.md v1.0.5 bagian-bagian berikut kini ditulis berbeda:
+- **Tindakan Cepat:** Sudah dilakukan (sesuai keterangan Anda): mengirim broadcast susulan jam 08.30 untuk klarifikasi harga yang benar. Butir "Membalas 6 pelanggan yang bertanya" **tidak** disebut pengguna, jadi pindah ke Disarankan (belum dilakukan): "Balas 6 pelanggan yang bertanya satu per satu: [isi: sudah/belum dibalas]".
+- **5 Kenapa:** langkah 1 = admin mengirim broadcast harga lama (sesuai keterangan Anda). "Template/daftar harga belum diperbarui" dan "belum ada checklist cek ulang isi" tidak disebut pengguna, jadi ditandai `(dugaan, perlu dikonfirmasi)`. Akar masalah ditulis sebagai dugaan + pertanyaan konfirmasi (mis. "Daftar harga untuk broadcast disimpan di mana, dan sudah diganti saat harga naik kemarin?").
+- **Dampak:** 200 kontak menerima harga lama; 6 sempat bertanya; 194 lainnya belum bertanya (200 − 6, dihitung ulang dengan Decimal 2026-10-17). Penerima broadcast susulan ditulis sesuai pesan; bila jumlahnya tidak disebut, tulis `[isi: jumlah penerima susulan]`.
+- Broadcast susulan di sini memang tindakan pengguna (pesan awalnya juga broadcast ke kontak yang sama), jadi tidak bertentangan dengan aturan kanal; draf baru tetap ditujukan per orang untuk yang bertanya.

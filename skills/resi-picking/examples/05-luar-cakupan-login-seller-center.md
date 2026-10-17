@@ -29,3 +29,6 @@ Tidak ditemukan celah kode yang memungkinkan scraping/login otomatis. Batasan in
 lewat instruksi di SKILL.md (agent yang patuh instruksi akan menolak & mengarahkan ke ekspor
 manual) — bukan lewat pembatasan teknis di kode (skrip memang tidak punya kemampuan jaringan sama
 sekali, jadi secara teknis mustahil dipakai untuk scraping walau instruksinya diabaikan).
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Hasil uji asli di atas **tidak diubah** dan tetap sesuai v1.0.5: tidak ada login/scraping Seller Center; pengguna mengekspor file sendiri. File yang bukan ekspor pesanan (laporan omzet) ditunjukkan di `03-di-luar-cakupan/output-error.json` (dibuat ulang 2026-10-17; pesan error kini menyebut kolom yang ada di file, yaitu `Tanggal, Total Omzet`, dan semua opsi `--kolom-...`).

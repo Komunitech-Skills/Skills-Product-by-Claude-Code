@@ -1,6 +1,6 @@
 {
   "ok": false,
-  "error": "Kolom wajib tidak ketemu: Jumlah. Sebutkan manual, mis. --kolom-no-pesanan \"Nama Kolom\".",
+  "error": "Kolom wajib tidak ketemu: Jumlah. Kolom yang SUDAH terdeteksi otomatis: No. pesanan=No. Pesanan, SKU=SKU, Nama produk=Nama Produk. Kolom yang ada di file ini: No. Pesanan, SKU, Nama Produk. Jalankan ulang sambil menambahkan, mis.: --kolom-qty \"Nama Kolom Anda\" (isi dengan nama kolom PERSIS seperti di file).",
   "kolom_ada": [
     "No. Pesanan",
     "SKU",

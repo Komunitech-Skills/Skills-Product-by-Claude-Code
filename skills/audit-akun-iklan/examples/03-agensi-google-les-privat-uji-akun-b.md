@@ -42,3 +42,6 @@ Juga: lokasi "Kehadiran atau minat" → "Kehadiran" (les tatap muka), matikan Ja
   **dengan batas**" agak kabur untuk awam (batas CPC hanya ada di Maksimalkan klik).
 - Skill cocok untuk agensi (format rapi, tanpa akses akun). Belum ada versi "laporan ke klien"
   ber-kop, tapi itu di luar janji README.
+
+## Penyegaran v1.0.7 (2026-10-17)
+> Hasil, angka, dan skor di atas **tidak diubah**. `roas-impas --harga "Rp 1,2 jt" --modal 400.000 --biaya-lain 50rb` dijalankan ulang dengan skrip v1.0.7: laba kotor Rp750.000, ROAS impas 1,60 (cocok; Decimal: 1.200.000 − 400.000 − 50.000 = 750.000; 1.200.000 ÷ 750.000 = 1,60). Bukti 100% → Format output audit lengkap, tidak berubah di v1.0.7. Bila ada pertanyaan lanjutan, letaknya di akhir balasan, maks. 5. Laporan untuk klien ditulis tanpa nama skrip/berkas internal dan tanpa istilah proses.

@@ -13,7 +13,7 @@ Kami menguji skill AI satu per satu: hasil asisten tanpa skill vs dengan skill, 
 
 Contoh: Kontrak Karyawan Kontrak: Pasal Dicek, Hak Dihitung 2,25 -> 9,25 | Siapkan SPT Tahunan Sebelum Buka Coretax 2 -> 9 | Surat Peringatan Karyawan yang Adil dan Rapi 3 -> 8,6.
 
-Skill dijual per paket: Toko Online, Admin Keuangan, Gaji & HR, Kafe & Warung, Klinik, Kantor, dan lainnya. Member VIP dapat semuanya.
+Skill dijual per paket: Toko Online, Admin Keuangan, Gaji & HR, Kafe & Warung, Klinik (belum direview tenaga medis), Kantor, dan lainnya. Member VIP dapat semuanya.
 
 Hasil uji lengkap: [LINK HALAMAN SEBELUM-SESUDAH]
 Tanya paket: [KONTAK]
@@ -44,7 +44,7 @@ Paket yang tersedia:
 - Paket Admin Keuangan (15 skill): Rp449.000
 - Paket Gaji & HR (8 skill): Rp349.000
 - Paket Kafe & Warung (10 skill): Rp349.000
-- Paket Klinik (7 skill): Rp249.000
+- Paket Klinik (7 skill, belum direview tenaga medis): Rp249.000
 - Paket Kantor (8 skill): Rp199.000
 - Paket Konsultan & Freelancer (10 skill): Rp349.000
 - Paket Karyawan AI OpenClaw (5 skill): Rp199.000
