@@ -1,0 +1,12 @@
+{
+ "siyuan-sop|sebelum": 2135,
+ "siyuan-sop|sesudah": 2136,
+ "odoo-usaha|sebelum": 2137,
+ "odoo-usaha|sesudah": 2138,
+ "kanboard-papan-kerja|sebelum": 2139,
+ "kanboard-papan-kerja|sesudah": 2140,
+ "inventree-gudang|sebelum": 2141,
+ "inventree-gudang|sesudah": 2142,
+ "hledger-usaha|sebelum": 2143,
+ "hledger-usaha|sesudah": 2144
+}
