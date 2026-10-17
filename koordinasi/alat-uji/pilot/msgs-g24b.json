@@ -1,0 +1,82 @@
+[
+ {
+  "skill": "buat-invoice",
+  "sisi": "sebelum",
+  "topic": 1955,
+  "text": "@KTclaude2bot tolong buatin invoice dong. dari Dapur Bu Rini Catering ke PT Kencana Fiktif Mandiri. nasi box ayam bakar 150 box @32.500, snack box 150 @15rb diskon 10%, air mineral botol 300 @3.500, ongkir 125rb. udah DP 3jt tgl 10 okt kemarin. jatuh tempo 7 hari. no invoice terakhir INV/2026/10/0007. rek Mandiri 1230009876543 a.n. Rini Kusumawati. saya blm pkp ya",
+  "gel": "24b",
+  "catatan": "pesan skenario 01 (catering non-PKP) di skills/buat-invoice/examples/00-openclaw-sebelum-sesudah.md (identik uji 1.0.5–1.0.7); data fiktif di pesan, tanpa berkas. Acuan: total Rp8.075.000, sisa Rp5.075.000, INV/2026/10/0008, tanpa PPN. Pra-cek uji-tg 17 Okt: LOLOS (85 dtk, HTML terlampir)"
+ },
+ {
+  "skill": "buat-invoice",
+  "sisi": "sesudah",
+  "topic": 1956,
+  "text": "@KTclaude2bot tolong buatin invoice dong. dari Dapur Bu Rini Catering ke PT Kencana Fiktif Mandiri. nasi box ayam bakar 150 box @32.500, snack box 150 @15rb diskon 10%, air mineral botol 300 @3.500, ongkir 125rb. udah DP 3jt tgl 10 okt kemarin. jatuh tempo 7 hari. no invoice terakhir INV/2026/10/0007. rek Mandiri 1230009876543 a.n. Rini Kusumawati. saya blm pkp ya",
+  "gel": "24b",
+  "catatan": "pesan skenario 01 (catering non-PKP) di skills/buat-invoice/examples/00-openclaw-sebelum-sesudah.md (identik uji 1.0.5–1.0.7); data fiktif di pesan, tanpa berkas. Acuan: total Rp8.075.000, sisa Rp5.075.000, INV/2026/10/0008, tanpa PPN. Pra-cek uji-tg 17 Okt: LOLOS (85 dtk, HTML terlampir)"
+ },
+ {
+  "skill": "arus-kas-13minggu",
+  "sisi": "sebelum",
+  "topic": 1957,
+  "text": "@KTclaude2bot Halo kak, saya punya usaha kue online. Uang di rekening + kas sekarang sekitar 15 juta. Jualan rata-rata 9 juta seminggu. Belanja bahan sekitar 4,5 juta per minggu. Gaji 3 karyawan total 9 juta tiap tanggal 28, sewa dapur 4 juta tiap tanggal 1, cicilan oven 2,1 juta tiap tanggal 12, listrik+gas 1,2 juta tiap tanggal 20. Ada pesanan hampers PT Cahaya Fiktif 22 juta: DP 11 juta dibayar tanggal 20 November, sisanya 11 juta tanggal 15 Januari. Tanggal 3 November saya mau beli mixer baru 15 juta, terus tanggal 23 Desember bayar bonus akhir tahun karyawan 9 juta. Hitung mulai Senin depan ya. Kas saya aman nggak 3 bulan ke depan?",
+  "gel": "24b",
+  "catatan": "pesan skenario 01 (usaha kue) uji per skill di skills/arus-kas-13minggu/examples/00-openclaw-sebelum-sesudah.md (teks utuh sama dengan pesan uji internal 1.0.4/1.0.5); data fiktif di pesan. 'Senin depan' = 19 Okt 2026 HANYA bila dikirim sebelum Senin 19 Okt (WIB); acuan minggu 3 −Rp700.000, bersih +Rp7.600.000. Pra-cek uji-tg 17 Okt: LOLOS (296 dtk)"
+ },
+ {
+  "skill": "arus-kas-13minggu",
+  "sisi": "sesudah",
+  "topic": 1958,
+  "text": "@KTclaude2bot Halo kak, saya punya usaha kue online. Uang di rekening + kas sekarang sekitar 15 juta. Jualan rata-rata 9 juta seminggu. Belanja bahan sekitar 4,5 juta per minggu. Gaji 3 karyawan total 9 juta tiap tanggal 28, sewa dapur 4 juta tiap tanggal 1, cicilan oven 2,1 juta tiap tanggal 12, listrik+gas 1,2 juta tiap tanggal 20. Ada pesanan hampers PT Cahaya Fiktif 22 juta: DP 11 juta dibayar tanggal 20 November, sisanya 11 juta tanggal 15 Januari. Tanggal 3 November saya mau beli mixer baru 15 juta, terus tanggal 23 Desember bayar bonus akhir tahun karyawan 9 juta. Hitung mulai Senin depan ya. Kas saya aman nggak 3 bulan ke depan?",
+  "gel": "24b",
+  "catatan": "pesan skenario 01 (usaha kue) uji per skill di skills/arus-kas-13minggu/examples/00-openclaw-sebelum-sesudah.md (teks utuh sama dengan pesan uji internal 1.0.4/1.0.5); data fiktif di pesan. 'Senin depan' = 19 Okt 2026 HANYA bila dikirim sebelum Senin 19 Okt (WIB); acuan minggu 3 −Rp700.000, bersih +Rp7.600.000. Pra-cek uji-tg 17 Okt: LOLOS (296 dtk)"
+ },
+ {
+  "skill": "harga-jual-marketplace",
+  "sisi": "sebelum",
+  "topic": 1959,
+  "text": "@KTclaude2bot kak aku jual tumbler stainless modal 38rb udh sm packing, mau jual di shopee. admin 8% , ikut gratis ongkir xtra 4% maks 10rb, biaya proses 1250 per pesanan. mau untung 25% brp harga jualnya ya",
+  "gel": "24b",
+  "catatan": "pesan 'Tugas (pesan pengguna)' di skills/harga-jual-marketplace/examples/00-openclaw-sebelum-sesudah.md; data fiktif di pesan. Acuan: minimal Rp44.858, rekomendasi Rp63.000, laba Rp15.875 (margin 25,2%, PPh 22 Rp315). Pra-cek uji-tg 17 Okt: LOLOS (44 dtk)"
+ },
+ {
+  "skill": "harga-jual-marketplace",
+  "sisi": "sesudah",
+  "topic": 1960,
+  "text": "@KTclaude2bot kak aku jual tumbler stainless modal 38rb udh sm packing, mau jual di shopee. admin 8% , ikut gratis ongkir xtra 4% maks 10rb, biaya proses 1250 per pesanan. mau untung 25% brp harga jualnya ya",
+  "gel": "24b",
+  "catatan": "pesan 'Tugas (pesan pengguna)' di skills/harga-jual-marketplace/examples/00-openclaw-sebelum-sesudah.md; data fiktif di pesan. Acuan: minimal Rp44.858, rekomendasi Rp63.000, laba Rp15.875 (margin 25,2%, PPh 22 Rp315). Pra-cek uji-tg 17 Okt: LOLOS (44 dtk)"
+ },
+ {
+  "skill": "listing-marketplace",
+  "sisi": "sebelum",
+  "topic": 1961,
+  "text": "@KTclaude2bot bikinin deskripsi produk buat hijab voal aku dong, mau upload di shopee\n1. hijab voal motif nama tokonya Rumah Hijab Nia  2. 115x115 voal premium, tepi lasercut  3. motif bunga: dusty pink, sage, mocca, navy  4. adem, ga licin, gampang dibentuk, ga nerawang  5. isi 1 pcs, cuci tangan aja jgn dipemutih. ga ada sertifikat. harga 59rb",
+  "gel": "24b",
+  "catatan": "giliran 1 + giliran 2 skenario di skills/listing-marketplace/examples/00-openclaw-sebelum-sesudah.md DIGABUNG jadi satu pesan (dipisah baris baru) agar gelombang tetap 10 pesan; teks & data identik. Pra-cek uji-tg 17 Okt: LOLOS (90 dtk, panjang 85/68/63 & 471/282 cocok hitung ulang)"
+ },
+ {
+  "skill": "listing-marketplace",
+  "sisi": "sesudah",
+  "topic": 1962,
+  "text": "@KTclaude2bot bikinin deskripsi produk buat hijab voal aku dong, mau upload di shopee\n1. hijab voal motif nama tokonya Rumah Hijab Nia  2. 115x115 voal premium, tepi lasercut  3. motif bunga: dusty pink, sage, mocca, navy  4. adem, ga licin, gampang dibentuk, ga nerawang  5. isi 1 pcs, cuci tangan aja jgn dipemutih. ga ada sertifikat. harga 59rb",
+  "gel": "24b",
+  "catatan": "giliran 1 + giliran 2 skenario di skills/listing-marketplace/examples/00-openclaw-sebelum-sesudah.md DIGABUNG jadi satu pesan (dipisah baris baru) agar gelombang tetap 10 pesan; teks & data identik. Pra-cek uji-tg 17 Okt: LOLOS (90 dtk, panjang 85/68/63 & 471/282 cocok hitung ulang)"
+ },
+ {
+  "skill": "balas-ulasan-pelanggan",
+  "sisi": "sebelum",
+  "topic": 1963,
+  "text": "@KTclaude2bot ada ulasan bintang 1 di shopee: 'barang dtg telat 5 hari, warna beda sm foto, adminnya slow respon. kecewa bgt gk lg2 belanja disini!!' tolong balesin yg sopan dong tp jgn kesannya kami yg salah semua, telatnya kan krn ekspedisi. warnanya emg beda dikit krn cahaya foto",
+  "gel": "24b",
+  "catatan": "pesan skenario A (Shopee bintang 1) di skills/balas-ulasan-pelanggan/examples/00-openclaw-sebelum-sesudah.md; teks utuh dari solusi-vip/toko-online/uji-openclaw/03-balas-ulasan-bintang-1.md. Pra-cek uji-tg 17 Okt: LOLOS (61 dtk, 477/257 karakter ≤ 500)"
+ },
+ {
+  "skill": "balas-ulasan-pelanggan",
+  "sisi": "sesudah",
+  "topic": 1964,
+  "text": "@KTclaude2bot ada ulasan bintang 1 di shopee: 'barang dtg telat 5 hari, warna beda sm foto, adminnya slow respon. kecewa bgt gk lg2 belanja disini!!' tolong balesin yg sopan dong tp jgn kesannya kami yg salah semua, telatnya kan krn ekspedisi. warnanya emg beda dikit krn cahaya foto",
+  "gel": "24b",
+  "catatan": "pesan skenario A (Shopee bintang 1) di skills/balas-ulasan-pelanggan/examples/00-openclaw-sebelum-sesudah.md; teks utuh dari solusi-vip/toko-online/uji-openclaw/03-balas-ulasan-bintang-1.md. Pra-cek uji-tg 17 Okt: LOLOS (61 dtk, 477/257 karakter ≤ 500)"
+ }
+]

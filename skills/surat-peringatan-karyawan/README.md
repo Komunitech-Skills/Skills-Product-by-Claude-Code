@@ -66,17 +66,16 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 **Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.0.6), skor 1-10 dari agen penguji independen: tanpa skill 3 → dengan skill 8,6.
 - Tugas 1: minta SP2, padahal SP1 (10 Maret 2026) sudah berakhir 9 September 2026. Tanpa skill, AI langsung membuat SP2. Dengan skill, masa berlaku dicek: SP1 lama sudah tidak berlaku, jadi yang lebih tepat SP1 baru (berlaku s.d. 31 Maret 2027) lengkap dengan berita acara klarifikasi.
 - Tugas 2: kasir mengambil uang laci Rp500.000 dan pemilik minta "langsung SP3 dan surat PHK". Tanpa skill, AI membuat dan menyimpan SK PHK (surat keputusan pemutusan hubungan kerja) yang berlaku hari itu juga. Dengan skill, AI tidak menyusun SP3/surat PHK, tetapi menawarkan kronologi, berita acara klarifikasi, dan skorsing (dibebastugaskan sementara) dengan upah tetap dibayar, serta menyebut syarat PP 35/2021 Pasal 52 ayat (2).
-- Jujur: skor tanpa skill (3) dan dengan skill (8,6) berasal dari putaran uji yang berbeda di hari yang sama: sisi tanpa skill dari putaran ketiga, sisi dengan skill dari putaran keempat (4 sesi tugas 2, semuanya memicu skill dan tanpa kesalahan hukum). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Jujur: skor tanpa skill (3) dan dengan skill (8,6) berasal dari putaran uji yang berbeda di hari yang sama: sisi tanpa skill dari putaran kedua, sisi dengan skill dari putaran keempat (4 sesi tugas 2, semuanya memicu skill dan tanpa kesalahan hukum). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 - Jujur: isi hukumnya belum ditinjau ahli hukum ketenagakerjaan, jadi pakai sebagai draf.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-03.
-- Tanpa skill: tidak ada skor angka
-- Dengan skill: tidak ada skor angka
-(Uji ini tidak memberi skor angka.) Hasil: TANPA langsung membuat SP2; DENGAN menahan karena SP1 sudah berakhir masa berlakunya dan menyarankan SP1 baru kecuali peraturan perusahaan mengatur lain (beda paling jelas).
+Diuji di bot Telegram OpenClaw yang asli (grup uji internal Komunitech) pada 3 Oktober 2026, versi 1.0.6. Uji ini tampil di bot tanpa skor angka, jadi kami tidak menyatakannya lulus atau belum lulus acuan kami; yang dicatat hanya perbedaan yang terlihat. Skor angka ada di bagian "Hasil uji" di atas (uji OpenClaw, 1 Oktober 2026).
+
+Permintaannya: membuatkan SP2 untuk karyawan yang SP1-nya (10 Maret 2026) sudah berakhir masa berlakunya pada 9 September 2026. Tanpa skill, bot langsung membuat SP2 lengkap. Dengan skill, bot menahan dulu karena SP1 lama sudah habis masa berlakunya, lalu menyarankan SP1 baru kecuali peraturan perusahaan mengatur lain. Setelah dijawab "ikut 6 bulan, bikinin SP1 baru", bot membuat SP1 baru yang lengkap: berita acara klarifikasi, masa berlaku 3 Oktober 2026 sampai 2 April 2027 (dihitung skrip), catatan mengapa yang dipakai SP1 dan bukan SP2, serta disclaimer.
 
 ## Catatan penting
 - Draf ini bantuan administrasi, **bukan nasihat hukum**. Masa berlaku SP 6 bulan mengikuti PP 35/2021 Pasal 52 (per 23 September 2026), kecuali perjanjian kerja / peraturan perusahaan / PKB mengatur lain.
@@ -94,4 +93,4 @@ Skill memberi langkahnya: catat penolakan, minta saksi tanda tangan, dan simpan 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

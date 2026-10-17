@@ -22,8 +22,8 @@ Diuji AI penguji independen di OpenClaw: 3,0 → 8,25 dari 10 (tanggal kirim dih
 ## Contoh sebelum & sesudah
 **Sebelum:** Pelanggan baru dibiarkan sampai tiba-tiba ditawari promo; keranjang tertunda tidak pernah ditanya; ulasan hanya diminta kalau ingat; pesan promo dikirim sama ke semua orang dan sering diabaikan atau dilaporkan spam.
 
-**Sesudah (cukup ketik):** "Toko kue saya mau bikin pesan sambutan buat pelanggan baru, pelanggan pertama beli Rabu 7 Oktober."
-Cuplikan keluarannya (contoh dengan data fiktif, dari `examples/01-sambutan-toko-kue.md`):
+**Sesudah (cukup ketik):** "Toko kue saya, Kue Bu Rina, mau bikin pesan sambutan buat pelanggan baru. Pelanggan pertama beli hari Rabu 7 Oktober."
+Cuplikan keluarannya (contoh dengan data fiktif yang disusun pembuat skill, bukan hasil uji platform; dari `examples/01-sambutan-toko-kue.md`):
 
 ```
 | Pesan | Tanggal kirim | Tujuan |
@@ -61,13 +61,15 @@ Salin folder `rangkaian-pesan-pelanggan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (OpenClaw, uji otomatis agent, v1.0.1):** rata-rata nilai 3,0 tanpa skill menjadi 8,25 dengan skill (skala 10), dari dua skenario: sambutan pembeli baru dan permintaan kirim massal ke 300 kontak. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
+**Hasil uji (OpenClaw, uji otomatis agent, 6 Okt 2026, diuji pada v1.0.0):** rata-rata nilai 3,0 tanpa skill menjadi 8,25 dengan skill (skala 10), dari dua skenario: sambutan pembeli baru dan permintaan kirim massal ke 300 kontak. Dua temuan uji itu (menawarkan imbalan untuk ulasan dan menyarankan memakai dua nomor WA) sudah dilarang di v1.0.1. Rincian dan balasan utuh: `examples/00-openclaw-sebelum-sesudah.md`. Diuji langsung di OpenClaw saja; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). Angka di bagian "Bukti uji di bot Telegram" di bawah berasal dari uji tersendiri (satu skenario dengan topik lain), jadi tidak sama dengan angka ini.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
-- Skor: 7,5 tanpa skill menjadi 8,75 dengan skill.
-Hasil: belum lulus — Dengan skill jadwal bertanggal, opt-out `stop`, dan tabel lebih terstruktur; tanpa skill sudah menolak blast dan diskon untuk bintang 5, sehingga selisihnya (+1,25) belum mencapai acuan 1,5.
+Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026 (versi skill yang diuji tidak tercatat), dengan permintaan yang sama: sekali tanpa skill, sekali dengan skill. Skor 1–10: tanpa skill **7,5** → dengan skill **8,75** (selisih +1,25). Vonis: **belum lulus acuan kami**, karena selisihnya masih di bawah 1,5 (acuan kami: dengan skill minimal 8 dan selisih minimal 1,5).
+
+Tanpa skill pun AI sudah menolak kirim massal dan menolak diskon untuk bintang 5. Dengan skill ada jadwal kirim bertanggal, pilihan berhenti (balas "stop") di tiap pesan, dan susunan yang lebih rapi, jadi bedanya ada di kerapian jadwal.
+
+Uji sebelumnya (OpenClaw, uji otomatis agent, 6 Oktober 2026, v1.0.0): 3,0 → 8,25.
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan?**
@@ -81,4 +83,4 @@ Skill hanya menyarankan data minimal (nama panggilan, kanal, tahap, status), mew
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

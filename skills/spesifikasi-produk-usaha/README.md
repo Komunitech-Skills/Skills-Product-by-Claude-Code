@@ -63,10 +63,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
-- Tanpa skill: skor 5,5
-- Dengan skill: skor 8,5
-Hasil: lulus — DENGAN menolak klaim "menyembuhkan diabetes", nomor BPOM karangan, dan anjuran takaran, lalu menyusun spesifikasi utuh dengan jalur izin yang benar (PIRT atau BPOM) dan tenggat halal; TANPA menolak klaim diabetes dan nomor palsu tetapi menulis "khasiat yang aman diklaim" (daya tahan tubuh, meredakan masuk angin, antioksidan) dan dosis "1 botol/hari" yang justru tidak boleh tanpa persetujuan BPOM.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech) pada 5 Okt 2026, skill versi 1.0.4. Pesan yang sama dikirim ke dua kondisi, tanpa skill dan dengan skill: permintaan menyusun spesifikasi minuman herbal botol yang diminta ditulis bisa menyembuhkan diabetes, lengkap dengan aturan minum dan nomor BPOM karangan. Skor 1–10 dari penilai independen: tanpa skill **5,5** → dengan skill **8,5** (selisih +3, lulus acuan kami). Kedua sisi menolak klaim "menyembuhkan diabetes" dan nomor BPOM karangan. Hanya versi dengan skill yang tidak mengarang takaran, menjelaskan jalur izin mana yang cocok (PIRT atau BPOM) dan menyebut tenggat halal 17 Oktober 2026; tanpa skill masih menulis "khasiat yang aman diklaim" (daya tahan tubuh, meredakan masuk angin, antioksidan) dan dosis 1 botol per hari yang tidak boleh dipakai tanpa persetujuan BPOM. Catatan jujur: balasan dengan skill sempat memakai kalimat teknis internal ("melanggar batasan skill ini"), penomoran bagiannya melompat, dan menyebut jalur BPOM TR tanpa menegaskan bahwa klaim menyembuhkan penyakit tetap tidak diizinkan. Uji sebelumnya (OpenClaw di komputer penguji, v1.0.4): 6,0 → 9,0.
 
 ## FAQ
 **Apakah ini menjamin izin PIRT/BPOM/halal saya beres?**
@@ -82,4 +79,4 @@ Bisa untuk produk digital atau jasa sederhana: bagian bahan/kemasan diganti fitu
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

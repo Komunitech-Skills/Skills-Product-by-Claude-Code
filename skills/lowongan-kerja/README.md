@@ -61,18 +61,19 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Hasil uji (jujur)
 
-**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.0.3), skor 1-10 dari agen penguji independen: tanpa skill 4,5 → dengan skill 8,5.
-- Tugas: loker admin online shop dengan syarat "wanita, maks 25 tahun, belum menikah, berpenampilan menarik", gaji Rp2,5-3 juta di Sidoarjo. Tanpa skill, syarat gender, usia, dan status pernikahan dipasang apa adanya. Dengan skill, syarat itu diganti syarat kemampuan kerja (dasar SE Menaker M/6/HK.04/V/2025, surat edaran Menteri Ketenagakerjaan), keluar paket JobStreet + Instagram + WhatsApp dengan 6 pertanyaan screening, dan gaji diingatkan untuk dicek terhadap UMK, yaitu upah minimum kabupaten/kota (hasil periksa penguji: UMK Sidoarjo 2026 Rp5.191.541, jauh di atas gaji yang ditulis).
+**Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (uji pertama, lalu uji ulang v1.0.3 untuk sisi dengan skill), skor 1-10 dari agen penguji independen: tanpa skill 4,5 → dengan skill 8,5.
+- Tugas: loker admin online shop dengan syarat "wanita, maks 25 tahun, belum menikah, berpenampilan menarik", gaji Rp2,5-3 juta di Sidoarjo. Tanpa skill, syarat gender, usia, dan status pernikahan dipasang apa adanya. Dengan skill, syarat itu diganti syarat kemampuan kerja (dasar SE Menaker M/6/HK.04/V/2025, surat edaran Menteri Ketenagakerjaan), keluar paket JobStreet + Instagram + WhatsApp dengan 6 pertanyaan screening. Pengingat agar gaji dicek terhadap UMK, yaitu upah minimum kabupaten/kota, baru muncul pada uji ulang v1.0.3 di hari yang sama (hasil periksa penguji: UMK Sidoarjo 2026 Rp5.191.541, jauh di atas gaji yang ditulis).
 - Jujur: tanpa skill, AI sudah mengenali loker penipuan berbayar dan gaji di bawah UMK. Pembeda utamanya ada di syarat diskriminatif dan paket loker yang lengkap.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 3 Oktober 2026.
-- Tanpa skill: skor 5
-- Dengan skill: skor 9
-Hasil: lulus — DENGAN menghapus keempat syarat diskriminatif (wanita, maks 25 th, belum menikah, berpenampilan menarik) dengan dasar SE Menaker M/6/HK.04/V/2025 + 3 versi (portal/IG/WA) + pertanyaan seleksi + cek UMK; TANPA masih memuat "wanita, usia maks 25" dan menawarkan menambah kembali syarat yang dihapus.
+Diuji di bot Telegram OpenClaw yang asli (grup uji internal Komunitech) pada 3 Oktober 2026, versi 1.0.3. Skor kami (skala 10), tanpa skill → dengan skill: **5** → **9**, selisih +4, **lulus acuan kami** (artinya skor dengan skill minimal 8 dan selisih minimal 1,5 poin).
+
+Permintaannya memuat empat syarat yang dilarang: wanita, maksimal 25 tahun, belum menikah, dan berpenampilan menarik. Dengan skill, keempatnya dihapus dengan dasar SE Menaker M/6/HK.04/V/2025, lalu Anda menerima tiga versi iklan (portal kerja, Instagram, grup WhatsApp), pertanyaan seleksi, dan pengingat mencocokkan gaji dengan UMK. Tanpa skill, bot masih menulis "wanita, usia maks 25" dan malah menawarkan memasang kembali syarat yang sudah dihapus.
+
+Catatan jujur: dengan skill, bot menambahkan batas lamaran 17 Oktober 2026 (14 hari dari hari uji) yang tidak Anda minta; itu bawaan skill, jadi ganti sesuai kebutuhan. Setelah uji ini, versi 1.0.4 dan 1.0.5 memperbarui rujukan aturan dan memperjelas saran menyimpan serta menghapus data pelamar; keduanya belum diuji ulang di bot Telegram.
 
 ## Catatan penting
 - **Bukan nasihat hukum.** Dasar aturan: SE Menaker No. M/6/HK.04/V/2025 (28 Mei 2025) tentang larangan diskriminasi dalam rekrutmen; UU 13/2003 Pasal 88E s.t.d.d. UU 6/2023 dan PP 36/2021 untuk upah minimum; UU 27/2022 tentang Pelindungan Data Pribadi untuk data pelamar; berlaku per 23 September 2026, pasal dicocokkan ulang ke naskah resmi 14–15 Oktober 2026. UMK berbeda per kota dan berubah tiap tahun, jadi cek angka terbaru ke Disnaker/Pemda.

@@ -62,11 +62,18 @@ Salin folder `pesan-prospek-wa` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** tiga sumber, skor 1–10 penguji independen.
-- **Uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026** (versi sebelum 1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,0** → dengan skill **9,0** (LULUS). Dengan skill ada 3 draf pesan WhatsApp, asal kontak wajib disebut, zona jam benar, panjang pesan dicek skrip, dan tanpa tawaran kirim massal.
+- **Uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026** (versi sebelum 1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,0** → dengan skill **9,0** (lulus). Dengan skill ada 3 draf pesan WhatsApp, asal kontak wajib disebut, zona jam benar, panjang pesan dicek skrip, dan tanpa tawaran kirim massal.
 - **Uji ulang v1.0.7 dengan pengaturan seperti bot Telegram (bukan bot sungguhan), 5 Okt 2026** (tanpa kirim sungguhan; berkas sama): **8,7** (rata-rata tiga percobaan, ketiganya lulus).
-- **Uji di bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 5 Okt 2026:** satu pesan tanpa dan dengan skill, skor 6 → 8,5 dari 10. Dengan skill, AI langsung memberi 3 draf, mengoreksi jam kirim, dan menutup dengan daftar periksa anti-blokir.
+- **Uji di bot Telegram asli, 5 Okt 2026:** satu pesan tanpa dan dengan skill, skor **6** → **8,5** dari 10, lulus acuan kami. Rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum diuji langsung (format skill-nya sama).
+
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli milik Komunitech (grup uji internal) pada 5 Okt 2026; versi skill saat uji tidak tercatat. Satu pesan yang sama dikirim ke bot tanpa skill dan bot dengan skill: minta pesan perkenalan ke calon pelanggan yang nomornya didapat dari Google Maps, dengan rencana kirim pukul 19.30 WIB ke penerima di zona WITA. Tanpa skill **6** → dengan skill **8,5** dari 10 (selisih +2,5): lulus acuan kami.
+- Dengan skill: bot langsung memberi 3 draf pesan pertama yang menyebut asal kontak dan memberi opsi berhenti, mengoreksi jam kirim (19.30 WIB sama dengan 20.30 WITA, digeser ke 18.00 WIB), memakai sapaan netral, dan menutup dengan daftar periksa anti-blokir. Panjang tiga draf (268, 366, dan 427 karakter) dihitung ulang dan sesuai batas skill.
+- Tanpa skill: bot memberi 2 draf "Selamat malam" tanpa kalimat opsi berhenti yang jelas dan tetap menyarankan kirim pukul 20.30 WITA.
+- Catatan jujur: jawaban dengan skill cukup panjang (sekitar 45 baris) untuk satu pesan, sapaannya bercampur "kamu" dan "Bapak", dan draf ketiga memuat klaim "asli … kualitas konsisten dan harga stabil" yang tidak Anda berikan, jadi hapus kalimat itu bila tidak benar.
 
 ## FAQ
 **Bisa dipakai untuk kirim ke banyak kontak sekaligus?**

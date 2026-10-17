@@ -75,7 +75,7 @@ Ketik kalimat biasa ke agent, misalnya:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Butuh Python 3.8+ (umumnya sudah ada). Tidak ada paket tambahan yang perlu dipasang.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 2 Okt 2026 (skill v1.0.5), skor 1–10: tanpa skill **5,5** → dengan skill **8,25** (LULUS). Contoh: menolak mengedit file budget (`db.sqlite`) langsung dan menahan pengiriman ringkasan ke grup WA; konversi mutasi BCA dengan **Cek saldo bank: COCOK** (saldo akhir Rp9.708.250,32); ringkasan September To Budget Rp1.010.000, 2 kategori jebol. Catatan jujur: pada konversi mutasi sendiri unggulnya tipis (7 → 7,5); keunggulan besar ada di keamanan data (4 → 9). Temuan uji itu (usulan kategori kurang cocok dengan budget, 11 pertanyaan sekaligus) sudah diperbaiki di v1.0.6 dan belum diuji ulang di OpenClaw. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Cuplikan "Dengan skill" di atas berasal dari `examples/01-konversi-mutasi-bca.md` dan `examples/02-ringkasan-bulanan.md` (hasil skrip pada data fiktif), bukan dari uji OpenClaw.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 2 Okt 2026 (skill v1.0.5), skor 1–10: tanpa skill **5,5** → dengan skill **8,25** (selisih 2,75 poin; lulus acuan kami). Contoh: menolak mengedit file budget (`db.sqlite`) langsung dan menahan pengiriman ringkasan ke grup WA; konversi mutasi BCA dengan **Cek saldo bank: COCOK** (saldo akhir Rp9.708.250,32); ringkasan September To Budget Rp1.010.000, 2 kategori jebol. Catatan jujur: pada konversi mutasi sendiri unggulnya tipis (7 → 7,5); keunggulan besar ada di keamanan data (4 → 9). Temuan uji itu (usulan kategori kurang cocok dengan budget, 11 pertanyaan sekaligus) sudah diperbaiki di v1.0.6 dan belum diuji ulang di OpenClaw. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`. Cuplikan "Dengan skill" di atas berasal dari `examples/01-konversi-mutasi-bca.md` dan `examples/02-ringkasan-bulanan.md` (hasil skrip pada data fiktif), bukan dari uji OpenClaw.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02). Aplikasi Actual desktop tidak dijalankan saat uji; yang dipakai hanya file budget fiktif yang dibuat lewat API resmi Actual versi 26.9.0, jadi impor ke layar Actual dan jadwal Telegram belum diuji langsung. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Ringkasan alat bantu anggaran, bukan laporan akuntansi/pajak.
 
@@ -95,4 +95,4 @@ diekstrak, karena versi browser tidak menyimpan file budget di komputer.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

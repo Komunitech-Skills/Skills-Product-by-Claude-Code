@@ -113,7 +113,7 @@ Selalu tutup dengan: ceklis klaim (Batasan), asumsi, dan "apa yang perlu kamu ce
 Input: "Toko hijab lokal, Bandung, harga Rp 89-189 ribu, jual lewat Shopee dan WA, pesaing banyak."
 Keluaran ringkas:
 - Segmen utama: **Karyawati muda kantoran** (skor 82/100). Persona: "Sinta, 27, admin di Bandung, ..." 
-- Positioning: "Untuk perempuan berhijab yang bekerja dan sering keringetan, [Nama] adalah hijab yang adem dan tidak nerawang, karena bahannya diuji dipakai seharian; berbeda dengan hijab fashion yang cantik di foto tapi gerah."
+- Positioning: "Untuk perempuan berhijab yang bekerja seharian, Nayara Hijab adalah hijab kerja yang adem dan tidak nerawang, karena bahannya dipilih dan diuji pakai lama. Berbeda dengan hijab fashion yang bagus di foto tapi gerah, kami mengutamakan nyaman dipakai." (merek fiktif dari contoh)
 - Tagline pilihan: "Adem dipakai seharian." Contoh lengkap (fiktif): `examples/contoh-fiktif-toko-hijab.md`.
 
 ## Batasan & penanganan error

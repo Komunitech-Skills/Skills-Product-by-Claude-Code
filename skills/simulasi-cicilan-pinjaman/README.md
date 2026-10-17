@@ -55,13 +55,17 @@ Salin folder `simulasi-cicilan-pinjaman` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agen AI, 6 Okt 2026 (v1.0.1; versi terkini 1.0.4), skor 1–10 penguji independen: rata-rata tanpa skill **6,5** → dengan skill **8,75** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Bot Telegram asli, 12 Okt 2026: tanpa skill **6** → dengan skill **8,5** — tanpa skill hanya menyebut cicilan Rp715.556 dan menaksir bunga kredit HP "kira-kira 44-45%" setahun (seharusnya ±41,7%); dengan skill terlihat 0,8% flat = ±17,25% per tahun (±20,97% dengan admin), motor jadi 27% lebih mahal dari tunai, dan brosur "bunga 0%" dibuatkan versi jujur.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis oleh agen AI, 6 Okt 2026 (v1.0.1; versi terkini 1.0.4), skor 1–10 penguji independen: rata-rata tanpa skill **6,5** → dengan skill **8,75** (lulus acuan kami). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram asli ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (sebelum/sesudah, otomatis oleh agen AI, bukan oleh manusia) dan di bot Telegram asli. Cursor: pemasangan folder, skrip, dan tes regresi diuji 14 Okt 2026 dan berjalan, tetapi skill termuat otomatis di Cursor belum terbukti. Claude Code dan Codex belum diuji langsung (format skill-nya sama). Bukan nasihat keuangan atau rekomendasi lembaga pembiayaan.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 12 Okt 2026): tanpa skill skor **6** → dengan skill skor **8,5** (LULUS). Ringkasan pembeda ada di blok **Hasil uji (angka nyata)** di atas.
+Uji terakhir: 12 Okt 2026, versi 1.0.1, di bot OpenClaw asli (grup uji internal Komunitech). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: motor Rp25.000.000, DP 20%, 3 tahun, "bunga cuma 0,8% per bulan flat" ditambah admin Rp1.000.000, gaji Rp6.000.000 dengan cicilan HP Rp800.000; kredit HP Rp8.000.000 "flat 2% per bulan" selama 12 bulan; dan permintaan dibuatkan teks promo "bunga 0%" dari brosur dealer yang punya biaya admin dan asuransi wajib. Skor 1-10 dari penilai independen: tanpa skill **6** → dengan skill **8,5**, selisih **+2,5**: **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Bedanya yang terasa: hanya versi dengan skill yang menunjukkan bahwa bunga 0,8% flat per bulan setara sekitar 17,25% per tahun (sekitar 20,97% dengan biaya admin) dan bahwa motornya jadi Rp31.760.000 atau 27% lebih mahal dari tunai; versi ini juga langsung membuatkan brosur "bunga 0%" versi jujur berisi rincian biaya. Tanpa skill hanya menyebut cicilan Rp715.556, memberi contoh singkat brosur jujur lalu bertanya dulu, dan menaksir bunga kredit HP "kira-kira 44-45%" setahun, padahal hitungannya sekitar 41,7%.
+
+Catatan jujur: tabel di jawaban ini tampil sebagai teks bergaris di Telegram, bukan tabel rapi. Perubahan sesudah uji ini (versi 1.0.2 sampai 1.0.4: aturan sumber angka, teks netral untuk bunga ilustrasi, dan dasar aturan batas biaya pinjaman daring; rumus cicilan tidak berubah) belum diuji ulang di bot Telegram. Uji lain: uji OpenClaw otomatis 6 Okt 2026, 6,5 → 8,75 (lihat di atas).
 
 ## FAQ
 **Apakah angkanya sama persis dengan tabel dari bank/leasing?**

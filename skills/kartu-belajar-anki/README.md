@@ -51,13 +51,13 @@ Salin folder `kartu-belajar-anki` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 12 Okt 2026, v1.0.1 (`examples/00-openclaw-sebelum-sesudah.md`), skor 1–10 penguji independen: tanpa skill **5,75** → dengan skill **8,5** (LULUS; uji pertama v1.0.0 pada hari yang sama 6,1 → 7,75, belum lulus), empat skenario (SOP kasir 21 kartu di konteks Telegram, kosakata Inggris, input kurang, jebakan bocoran UTBK). Tanpa skill kartu cenderung hanya disimpan sebagai berkas; dengan skill isi kartu, jadwal belajar, dan cara impor tampil utuh di chat. Catatan jujur: model biasa pun sudah membuat kartu yang akurat; pembeda skill ini adalah kartu yang sampai ke chat, rencana belajar berangka, dan format konsisten. Format impor Anki hanya diperiksa skrip, belum dicoba di aplikasi Anki sungguhan.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 12 Okt 2026, v1.0.1 (`examples/00-openclaw-sebelum-sesudah.md`), skor 1–10 penguji independen: tanpa skill **5,75** → dengan skill **8,5** (lulus acuan kami; uji pertama v1.0.0 pada hari yang sama 6,1 → 7,75, belum lulus), empat skenario (SOP kasir 21 kartu di konteks Telegram, kosakata Inggris, input kurang, jebakan bocoran UTBK). Tanpa skill kartu cenderung hanya disimpan sebagai berkas; dengan skill isi kartu, jadwal belajar, dan cara impor tampil utuh di chat. Catatan jujur: model biasa pun sudah membuat kartu yang akurat; pembeda skill ini adalah kartu yang sampai ke chat, rencana belajar berangka, dan format konsisten. Format impor Anki hanya diperiksa skrip, belum dicoba di aplikasi Anki sungguhan.
 
 **Status uji (jujur):** sudah diuji OpenClaw (uji otomatis agent) dan bot Telegram uji (13 Okt 2026). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 13 Okt 2026): tanpa skill skor **7,5** → dengan skill skor **8** (selisih kecil: belum memenuhi syarat kurator, yaitu selisih minimal 1,5 poin). Dengan skill: 16 kartu utuh di chat, pratinjau, rencana belajar 5 hari dari skrip, cara impor; tanpa skill bot juga sudah membuat 10 kartu plus file CSV. Catatan jujur: tab pemisah kartu hilang saat teks lewat Telegram, jadi salin-tempel langsung tidak bisa diimpor — minta bot mengirim berkas TSV/CSV.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 13 Okt 2026, versi 1.0.1): tanpa skill skor **7,5** → dengan skill skor **8**, selisih +0,5. Belum lulus acuan kami: skor dengan skill sudah 8, tetapi selisihnya masih di bawah 1,5 poin karena tanpa skill pun bot sudah membuat 10 kartu plus berkas CSV. Dengan skill, 16 kartu tampil utuh di chat beserta pratinjau, rencana belajar 5 hari, dan cara impor. Catatan jujur: tab pemisah kartu hilang saat teks lewat Telegram, jadi salin-tempel langsung tidak bisa diimpor; minta bot mengirim berkas TSV/CSV. Uji sebelumnya, di OpenClaw biasa (12 Okt 2026), 5,75 → 8,5 dan lulus acuan kami.
 
 ## FAQ
 
@@ -72,4 +72,4 @@ Tidak. Anda impor manual lewat menu File → Import.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.1**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.2** (hanya merapikan satu contoh di panduan agent; cara kerja sama dengan 1.0.1 yang diuji). Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

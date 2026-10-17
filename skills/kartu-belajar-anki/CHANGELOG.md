@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.2 (2026-10-17)
+- Contoh singkat di SKILL.md disamakan dengan berkas contoh uji (12 kartu, 12 kartu baru per hari, selesai hari ke-1); cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.1 (2026-10-12)
 - Revisi dari uji pertama (skor 6,1 naik ke 7,75) dan uji ulang (5,75 naik ke 8,5): kartu Basic dan Cloze tidak boleh dicampur dalam satu blok TSV; bila keduanya diminta, ditulis dua blok berurutan masing-masing dengan baris `#separator:tab` dan `#notetype:`, lalu diimpor dua kali di Anki (dijelaskan di `references/format-impor-anki.md`).
 - Kartu Cloze hanya dari frasa atau kalimat yang ditempel pengguna, tidak mengarang kalimat tambahan. Bila materi belum ditempel, agent memberi contoh isian siap balas dan deck contoh fiktif 8-12 kartu, lalu bertanya maksimal 3 hal.

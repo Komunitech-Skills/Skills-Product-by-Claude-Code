@@ -18,6 +18,9 @@ dari uji ulang OpenClaw v1.0.5 (3 cacat minor): (1) balasan chat wajib memuat is
 ## Catatan revisi 1.0.7 (2026-10-05)
 dari uji ulang Telegram v1.0.6 (bot hanya mengirim ringkasan + "isi lengkap ada di file .md di workspace" dan bertanya dulu soal .docx): (1) aturan paling atas SKILL.md: isi utuh wajib di chat, dipecah "Bagian 1/n" bila panjang, dilarang "isi ada di file"; (2) bila guru menyebut cetak/supervisi/Word/file, .docx langsung dibuat tanpa bertanya dan dikirim sebagai lampiran kanal chat bila bisa, atau jalurnya disebut (tanpa klaim terkirim); (3) di kanal chat tidak menulis .md di workspace kecuali diminta. Contoh alur: `examples/08-alur-telegram-supervisi.md`.
 
+## Catatan revisi 1.0.12 (2026-10-17)
+Keterangan pada SKILL.md bagian Contoh diperjelas: cuplikan memakai default sekarang 2 JP (80 menit) per pertemuan, sedangkan contoh lengkap `examples/01-modul-ajar-ipa-kelas7-ekosistem.md` dibuat dengan versi awal yang menebak 3 JP (120 menit). Aturan dan perilaku skill tidak berubah.
+
 ## Catatan revisi 1.0.11 (2026-10-05)
 dari cek konteks Telegram v1.0.10 (percobaan A menulis "File Word terlampir." padahal tidak ada lampiran terkirim; aturan "coba lampirkan otomatis" memancing klaim palsu): di kanal chat tidak ada pelampiran otomatis dan tidak pernah ada kata "terlampir/di bawah/sudah dikirim" untuk file. Balasan selalu ditutup "Isi lengkap sudah ada di atas. Kalau perlu file Word, balas 'kirim file' — saya coba lampirkan." File .docx dibuat hanya setelah guru membalas "kirim file"; "File Word terlampir." hanya bila alat kirim file sukses, bila gagal dikatakan jujur. Jalur file tidak disebut di chat.
 

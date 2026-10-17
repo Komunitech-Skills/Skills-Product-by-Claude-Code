@@ -56,13 +56,17 @@ Salin folder `studio-video-pendek-ai` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket. Script hitung durasi opsional: `python3 scripts/durasi_naskah.py naskah.txt --target 30` (Windows: `python` atau `py`). Uji: `python3 tests/uji_regresi.py`.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.3), skor 1–10: tanpa skill **6,5** → dengan skill **8,5** (LULUS). Keripik pisang coklat 30 dtk: durasi sulih suara **28,5 dtk** dari target 30; TANPA klaim stok terbatas/coklat melimpah yang tidak disebut pengguna. Catatan jujur: pada uji penolakan meniru wajah/suara orang lain, hasilnya sama bagusnya dengan AI tanpa skill (8 dari 10 di kedua sisi), jadi itu bukan pembeda. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, Okt 2026 (v1.0.3), skor 1–10: tanpa skill **6,5** → dengan skill **8,5** (lulus acuan kami). Keripik pisang coklat 30 dtk: durasi sulih suara **28,5 dtk** dari target 30; tanpa klaim stok terbatas/coklat melimpah yang tidak disebut pengguna. Catatan jujur: pada uji penolakan meniru wajah/suara orang lain, hasilnya sama bagusnya dengan AI tanpa skill (8 dari 10 di kedua sisi), jadi itu bukan pembeda. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-02; muat CLI). Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill tidak membuat file video — hanya rencana/naskah/prompt; alat video AI pihak ketiga belum diuji.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026, versi 1.0.5) dengan pesan yang sama: "Bikinin video 15 detik promo laundry kiloan Laundry Bersih Jaya Fiktif, Rp6.500/kg, pesan lewat WA. Rekam pakai HP aja buat TikTok sama Reels". Tanpa skill skor **5,5** → dengan skill skor **8** (selisih +2,5, lulus acuan kami). Dengan skill, Anda mendapat naskah suara yang pas 15 detik, daftar adegan rekam HP, dan tempat kosong untuk nomor WA, tanpa janji yang tidak pernah Anda sebutkan. Tanpa skill, bot mengarang "kita jemput/anter" dan "wangi". Catatan jujur: naskah dan daftar adegan ditulis sebagai tabel yang di Telegram tampil sebagai garis-garis sehingga agak sulit dibaca di HP, ada satu tagar salah ketik (#laundirmurah) dan satu tagar yang tidak relevan (#ongoing), dan istilah "sulih suara" kurang akrab. Uji sebelumnya: 16 Okt 2026 (versi 1.0.4) tanpa skill 5 → dengan skill 7; saat itu daftar adegan rekam HP belum langsung diberikan.
+Uji terakhir: 17 Okt 2026, versi 1.0.5, di bot OpenClaw asli (grup uji internal Komunitech). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: minta video promo 15 detik untuk laundry kiloan Rp6.500 per kg, pesan lewat WA, direkam pakai HP untuk TikTok dan Reels. Skor 1-10 dari penilai independen: tanpa skill **5,5** → dengan skill **8**, selisih **+2,5**: **lulus acuan kami** (skor dengan skill tepat di batas 8).
+
+Bedanya yang terasa: dengan skill, Anda mendapat naskah suara yang pas 15 detik, daftar adegan rekam HP, dan tempat kosong untuk nomor WA, tanpa janji yang tidak pernah Anda sebutkan. Tanpa skill, bot mengarang "kita jemput/anter" dan "wangi".
+
+Catatan jujur: naskah dan daftar adegan ditulis sebagai tabel yang di Telegram tampil sebagai garis-garis sehingga agak sulit dibaca di HP, ada satu tagar salah ketik (#laundirmurah) dan satu tagar yang tidak relevan (#ongoing), dan istilah "sulih suara" kurang akrab. Uji sebelumnya: 16 Okt 2026 (versi 1.0.4) tanpa skill 5 → dengan skill 7; saat itu daftar adegan rekam HP belum langsung diberikan.
 
 ## FAQ
 **Apakah skill ini membuat file videonya?** Tidak. Skill menulis rencana, naskah, dan prompt; video dibuat dengan HP Anda atau alat video AI yang Anda pilih.

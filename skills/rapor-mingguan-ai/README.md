@@ -65,16 +65,17 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam paket bernama 
 - Skenario jebakan (diminta mengubah pengaturan bot, membolehkan bot bilang "pasti cocok", dan membaca database): tanpa skill **4,5** → dengan skill **8,5**.
 - Rata-rata: **4,75** → **8,25** (LULUS). Persen lolos per kriteria dan nilai A–D cocok dengan hitungan independen (5 dari 12 percakapan bersih). Tanpa skill, nama dan nomor HP pelanggan lain diulang utuh di rapor.
 - Catatan jujur: pada v1.0.0 urutan "3 kesalahan teratas" belum selalu konsisten (di satu uji, masalah yang tidak kritis mendahului data bocor atau janji berlebihan). Ini diperbaiki di v1.0.1. Skrip hitung tidak dipakai pada 12 percakapan.
-- Catatan jujur v1.0.1 (pra-cek dengan pengaturan seperti bot Telegram (bukan bot sungguhan), 16 Okt 2026, 10 percakapan fiktif): persen per kriteria benar, tetapi jumlah percakapan bersih dikira (ditulis 5, seharusnya 4), rapor ±4.000 karakter (hampir melewati batas satu pesan Telegram), dan nama skill lain tertulis apa adanya. Diperbaiki di v1.0.2 (versi terkini): angka selalu dihitung dari penilaian per percakapan (lewat skrip bila ada Python) lalu dicek silang, rapor pertama paling banyak 3.000 karakter dengan "balas 'rinci'", dan rujukan ke skill lain ditulis dengan bahasa awam. v1.0.2 belum diuji ulang di bot.
+- Catatan jujur v1.0.1 (pra-cek dengan pengaturan seperti bot Telegram, bukan bot sungguhan; 16 Okt 2026; 10 percakapan fiktif): persen per kriteria benar, tetapi jumlah percakapan bersih dikira (ditulis 5, seharusnya 4), rapor ±4.000 karakter (hampir melewati batas satu pesan Telegram), dan nama skill lain tertulis apa adanya. Perbaikan di v1.0.2 (versi terkini): angka selalu dihitung dari penilaian per percakapan (lewat skrip bila ada Python) lalu dicek silang, rapor pertama paling banyak 3.000 karakter dengan "balas 'rinci'", dan rujukan ke skill lain ditulis dengan bahasa awam. Pra-cek ulang v1.0.2 (dengan pengaturan yang sama, 16 Okt 2026, bukan di bot sungguhan) masih meleset: percakapan bersih ditulis 3 dari 10 (seharusnya 4) dan tiga persen kriteria keliru (misalnya "fakta benar" ditulis 80%, seharusnya 90%), jadi angka rapor tetap perlu Anda cek ulang. v1.0.2 belum diuji ulang di bot.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent, v1.0.0) dan di bot Telegram asli (2026-10-12; versi yang diuji tidak tercatat). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
-- Tanpa skill: skor 6,5
-- Dengan skill: skor 8,5
-Hasil: lulus — Tanpa skill hanya daftar masalah dan saran umum (filter kata terlarang); dengan skill nilai per kriteria (fakta benar 9/12, tanpa janji berlebihan 9/12), 3 kesalahan teratas, dan teks perbaikan siap tempel ke catatan bot beserta cara mengecek minggu depan.
+Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026 (versi skill yang diuji tidak tercatat), dengan contoh percakapan yang sama: sekali tanpa skill, sekali dengan skill. Skor 1–10: tanpa skill **6,5** → dengan skill **8,5** (selisih +2,0). Vonis: **lulus acuan kami** (acuan: dengan skill minimal 8 dan selisih minimal 1,5).
+
+Tanpa skill, bot hanya memberi daftar masalah dan saran umum seperti memasang filter kata terlarang. Dengan skill ada nilai per kriteria (misalnya fakta benar 9 dari 12 percakapan, tanpa janji berlebihan 9 dari 12), tiga kesalahan teratas, teks perbaikan siap tempel ke catatan bot, dan cara mengecek hasilnya minggu depan.
+
+Uji sebelumnya (OpenClaw, uji otomatis agent, 6 Oktober 2026, v1.0.0): 4,75 → 8,25. Versi 1.0.2 yang sekarang belum diuji ulang di bot Telegram; pra-cek simulasinya masih menemukan angka yang meleset (lihat catatan jujur di bagian Hasil uji di atas).
 
 ## FAQ
 **Apakah skill ini membaca semua chat bot saya otomatis?**

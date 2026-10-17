@@ -10,7 +10,7 @@
 - ✅ **"Cari SOP retur" langsung ketemu.** AI mencari lewat isi seluruh SOP/FAQ/notulen di SiYuan, bukan menebak-nebak dari ingatan model. Diuji dengan data contoh dan server SiYuan tiruan (bukan aplikasi SiYuan sungguhan); lihat Hasil uji.
 - ✅ **Simpan hasil skill pembuat SOP (`sop-writer`) atau skill notulen rapat (`notulen-rapat`) sekali perintah.** Tidak perlu buka aplikasi, cari folder, klik-klik - tinggal minta "simpan ini ke SiYuan".
 - ✅ **Basis pengetahuan CS (layanan pelanggan) yang benar-benar dipakai.** Ekspor satu perintah menggabungkan semua FAQ jadi satu file yang bisa langsung dipakai skill agen CS toko (`agen-cs-toko`) atau skill balas chat CS (`balas-chat-cs`), jadi balasan AI berdasar data toko Anda, bukan karangan (info yang belum ada di sana ditandai untuk Anda lengkapi).
-- ✅ **Audit SOP basi.** "SOP mana yang belum diupdate 3 bulan?" dijawab dalam sekejap; bisa dijadwalkan mingguan ke Telegram (diuji di bot Telegram uji 2026-10-13, one-shot `lama --hari 90`).
+- ✅ **Audit SOP basi.** "SOP mana yang belum diupdate 3 bulan?" dijawab dalam sekejap; bisa dijadwalkan mingguan ke Telegram (satu kali pengiriman terjadwal sudah diuji di bot Telegram percobaan pada 13 Oktober 2026; jadwal mingguan yang berulang belum diuji).
 - ✅ **Dirancang hati-hati untuk data usaha.** Menambah dokumen baru/isi baru lewat pratinjau + persetujuan; menimpa dokumen lama hanya dengan konfirmasi eksplisit dan cadangan isi lama; kunci akses (token) disimpan di komputer Anda dan tidak ditampilkan.
 
 ## Cocok untuk siapa
@@ -29,7 +29,7 @@ HASIL PENCARIAN 'jam buka' (1 dokumen)
 - Jam Buka 🕐  [/FAQ/Jam Buka 🕐]
     ...Toko buka jam 09.00-21.00 setiap hari, termasuk Minggu...
 ```
-(Contoh nyata dari uji dengan mesin inti (kernel) SiYuan resmi v3.8.5 versi Linux, bukan aplikasi desktopnya.)
+(Contoh nyata dari uji dengan mesin inti (kernel) SiYuan resmi v3.8.5 versi Linux, bukan aplikasi desktopnya; kode id dokumen dan catatan di akhir hasil dipotong agar ringkas.)
 
 ## Cara pakai
 Setelah SiYuan terpasang & tersambung, cukup ketik permintaan biasa:
@@ -59,7 +59,7 @@ Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+
 - **Uji OpenClaw, v1.0.8, 2 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`): rata-rata nilai 4,3 tanpa skill menjadi 9,0 dengan skill (skala 10), pada tiga skenario (belum punya SiYuan dan minta SOP buka-tutup kafe; kunci akses ditempel di chat; menimpa dokumen lama). Tanpa skill, agent memakai kunci akses yang ditempel di chat dan menimpa dokumen tanpa pratinjau atau cadangan; dengan skill, ada pratinjau, cadangan isi lama, dan kunci itu tidak dipakai. Uji ulang v1.0.10 (menimpa SOP): 2 menjadi 9,5. Uji ini memakai data contoh dan server SiYuan tiruan di komputer uji, bukan aplikasi SiYuan sungguhan.
 - **Uji oleh pembuat (v1.0.0):** semua perintah dicoba dengan mesin inti (kernel) SiYuan resmi v3.8.5 versi Linux, dijalankan tanpa tampilan layar (headless), termasuk judul/isi berisi emoji dan Unicode, plus 42 uji otomatis dengan server tiruan (kini 52 tes).
 
-**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent); jadwal otomatis Telegram (command-argv `lama`) diuji di bot Telegram uji 2026-10-13 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`, mock SiYuan lokal). **Belum** diuji di aplikasi desktop SiYuan sungguhan di Windows/macOS, belum diuji penguji independen terhadap SiYuan asli di komputer pembeli, dan Claude Code, Codex, serta Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw (uji otomatis agent); satu kali pengiriman jadwal otomatis ke Telegram (perintah `lama`, daftar SOP yang lama tidak diperbarui) diuji di bot Telegram percobaan pada 13 Oktober 2026 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`, memakai SiYuan tiruan di komputer uji); jadwal mingguan yang berulang belum diuji. **Belum** diuji di aplikasi desktop SiYuan sungguhan di Windows/macOS, belum diuji penguji independen terhadap SiYuan asli di komputer pembeli, dan Claude Code, Codex, serta Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah data SOP/FAQ saya dikirim ke internet?**

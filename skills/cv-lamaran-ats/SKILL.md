@@ -134,26 +134,31 @@ Subjek: Lamaran Posisi <Nama Posisi> – <Nama Pelamar>
 
 ## Contoh
 
-**Input pengguna:** "Sesuaikan CV saya dengan lowongan Digital Marketing Specialist ini [tempel lowongan]. Pengalaman saya: Marketing Executive di PT Kopi Nusantara 2022–2024, urus Instagram Ads dan laporan performa campaign."
+**Input pengguna:** "Bikinkan surat lamaran dan sesuaikan CV saya dengan lowongan ini ya: Digital Marketing Specialist - PT Kreasi Digital Nusantara (Jakarta Selatan) [tempel lowongan lengkap]. Data saya: Budi Santoso, Jakarta, 0813-0000-2222, budi.santoso@email.com. Pengalaman: Marketing Executive di PT Kopi Nusantara 2022-2024, ngurus iklan Instagram dan Facebook buat promosi produk kopi, bikin laporan performa campaign bulanan buat manajemen, atur anggaran iklan bulanan dan analisis hasil penjualan. Pendidikan S1 Ilmu Komunikasi, Universitas Indonesia, lulus 2021."
 
-**Output (ringkas):**
+**Output (cuplikan dari `examples/02-digital-marketing-bilingual.md`; data fiktif):**
 ```
 ## Skor Kecocokan Kata Kunci
-48% kata kunci lowongan ditemukan di draf CV (12/25)
-Belum terlihat: google ads, google analytics, seo, budget, brand f&b
-→ Ditanyakan ke pengguna: apakah pernah pakai Google Ads/Analytics? (jawaban menentukan apakah ditambahkan)
+20% kata kunci lowongan ditemukan di draf CV awal (5/25)
 
-## CV Versi ATS
+Sudah ada: digital, marketing, ads, campaign, copywriting
+Belum terlihat (dicek satu per satu ke Ibu/Bapak Budi sebelum ditambahkan):
+- google, analytics → Sudahkah pernah pakai Google Ads / Google Analytics secara
+  langsung, atau selama ini hanya Instagram & Facebook Ads?
+...
+
+## CV Versi ATS (Bahasa Indonesia)
 Budi Santoso
-Jakarta · 0812xxxxxxx · budi@email.com
+Jakarta · 0813-0000-2222 · budi.santoso@email.com
 
 RINGKASAN PROFIL
-Digital Marketing dengan 2 tahun pengalaman mengelola Instagram Ads dan
-pelaporan performa campaign untuk brand F&B...
+Digital Marketing dengan 2 tahun pengalaman mengelola Meta Ads (Facebook &
+Instagram) dan pelaporan performa campaign untuk brand F&B, termasuk pengelolaan
+budget iklan bulanan.
 
 PENGALAMAN KERJA
 Marketing Executive — PT Kopi Nusantara (2022–2024)
-- Mengelola Instagram Ads untuk promosi produk kopi, meningkatkan interaksi akun
+- Mengelola Meta Ads (Facebook & Instagram Ads) untuk promosi produk kopi
 - Menyusun laporan performa campaign bulanan untuk manajemen
 ...
 ```

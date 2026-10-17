@@ -2,7 +2,7 @@
 
 **Satu kalimat dari Anda: pilar konten (tema besar konten) yang tepat sasaran plus pembagian anggaran iklan per kanal per minggu, lengkap dengan batas impas yang dihitung, bukan dikira.**
 
-Diuji AI penguji independen di OpenClaw: 6,75 → 8,5 dari 10 (tanpa skill AI sudah menolak janji hasil iklan; pembedanya angka lengkap yang konsisten: biaya iklan maksimal per pesanan, jumlah pesanan impas, dan batas iklan aktif).
+Diuji AI penguji independen di OpenClaw: 6,5 → 9 dari 10 pada kasus teh herbal pelangsing (versi 1.0.4, 1 Okt 2026; tanpa skill AI sudah menolak janji hasil iklan; pembedanya angka lengkap yang konsisten: biaya iklan maksimal per pesanan, jumlah pesanan impas, dan batas iklan aktif).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -48,12 +48,20 @@ Salin folder `strategi-konten-iklan` ke lokasi skill di platform Anda (OpenClaw,
 
 Bagian hitung juga bisa dijalankan sendiri bila Anda terbiasa dengan terminal (Windows: `python` atau `py`): `python3 scripts/alokasi_anggaran.py --anggaran 5jt --aov 150rb --margin 40% --kanal meta,shopee --kanal-utama shopee`
 
-**Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01–05 (v1.0.6), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
-- Rata-rata uji lokal (2 skenario awal): tanpa skill **6,75** → dengan skill **8,25**; uji ulang v1.0.5+: tanpa **6,75** → dengan **8,5** (LULUS).
-- Pra-cek dengan pengaturan seperti bot Telegram (bukan bot sungguhan), 3 percobaan, tanpa kirim: rata **8,0** — menolak klaim "turun 5kg seminggu", ROAS impas 2,50x, target aman 3,58x.
-- Bot Telegram asli (2026-10-05): tanpa skill **6** → dengan skill **8,5**.
+**Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01–05 (versi 1.0.2 sampai 1.0.6), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+- Uji ulang ketiga (versi 1.0.4, 1 Okt 2026), kasus teh herbal pelangsing: tanpa skill **6,5** (nilai uji ulang kedua; sisi tanpa skill tidak diulang) → dengan skill **9** (dua sesi, keduanya 9); kasus sepatu (hanya dengan skill): **8,5**. Lulus. Dua uji sebelumnya (rata-rata 2 skenario: **6,75** → **8,25**, lalu versi 1.0.3: **6,75** → **8,5**) belum lulus karena kesalahan fakta kecil yang sudah diperbaiki.
+- Pra-cek dengan pengaturan seperti bot Telegram (bukan bot sungguhan) di komputer uji, 3 percobaan, versi 1.0.5, tanpa kirim ke bot asli: rata-rata **8,0** — menolak klaim "turun 5kg seminggu", ROAS impas 2,50x, target aman 3,58x.
+- Bot Telegram asli (5 Okt 2026): tanpa skill **6** → dengan skill **8,5**; rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent + bot Telegram). Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Tidak ada jaminan ROAS/penjualan — hanya batas impas dan pembagian anggaran.
+
+## Bukti uji di bot Telegram
+
+Uji terakhir: 5 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), skill versi 1.0.6, dengan pesan yang sama di kedua sisi: teh herbal pelangsing, iklan TikTok Rp1.500.000 per bulan, margin 40%, tagline "turun 5kg seminggu", dan permintaan ROAS yang "pasti". Tanpa skill skor **6** → dengan skill skor **8,5** (selisih +2,5): lulus acuan kami.
+
+Pembedanya: dengan skill, bot menolak klaim "turun 5kg seminggu" dengan dasar aturan yang tepat, memberi ROAS impas 2,50x dan target aman 3,58x, serta membagi anggaran per minggu Rp300 ribu / Rp600 ribu / Rp300 ribu / Rp300 ribu (naik di minggu 10.10). Tanpa skill, bot salah menjelaskan ROAS ("Rp1 iklan harus balik jadi Rp2.500"), memberi patokan 3–5x tanpa sumber, dan menyarankan video testimoni untuk produk pelangsing.
+
+Catatan jujur: bot dengan skill memakai contoh harga rata-rata Rp100.000 (jadi minimal 38 pesanan agar iklan balik modal) karena harga Anda belum disebut; ganti dengan harga Anda. Kebijakan iklan TikTok untuk produk berat badan (hanya untuk usia 18+) belum disebut di balasan bot.
 
 ## FAQ
 1. **Apakah skill ini menjalankan iklan saya?** Tidak. Skill merencanakan dan menghitung; Anda yang membuat dan menayangkan iklan. Jangan pernah membagikan password atau kode OTP akun iklan.

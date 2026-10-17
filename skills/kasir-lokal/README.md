@@ -35,6 +35,8 @@ Simpan? Balas "ya".
 ```
 Malamnya: "tutup kasir, uang di laci 225 ribu, setor 125 ribu" → "Seharusnya Rp 225.900, dihitung Rp 225.000, SELISIH KURANG Rp 900."
 
+(Contoh tampilan dengan data fiktif; angkanya dihitung skrip dan sama dengan uji regresi `tests/uji_regresi.py`. Angka Rp225.900 adalah hasil satu hari penuh di uji, bukan dari satu nota saja: modal awal Rp200.000 + tunai nota di atas Rp45.900 - kas keluar Rp20.000; satu transaksi lain dicatat lalu dibatalkan sehingga jadi nol.)
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Pakai kasir untuk toko saya, ini daftar produknya" (kirim file Excel/CSV)
@@ -64,10 +66,11 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di `KomunitechData/kasir/` di folder pengguna Anda; backup otomatis dibuat saat tutup kasir.
 
 **Hasil uji (angka nyata):** uji di OpenClaw, 1 Okt 2026 (v1.1.7), skor 1–10 dari agen penguji independen: tanpa skill 6,5 → dengan skill 8,5.
-- Tugas: "2 kopi susu dan 1 roti bakar, diskon 10%, bayar tunai 100 ribu, buatkan struknya" (harga menu di uji ini berbeda dari contoh di atas). Tanpa skill, angkanya benar tetapi pajak resto 10% disebut PPN (jenis pajaknya salah) dan catatannya tidak terstruktur. Dengan skill: total Rp 35.100, kembalian Rp 64.900, nota bernomor urut tersimpan di komputer Anda, struk 58 mm siap cetak, dan pajak resto diluruskan sebagai PBJT, bukan PPN.
+- Skenario 1, toko baru, skor 7 → 9. Pesan: catat 2 kopi susu dan 1 roti bakar, diskon 10%, bayar tunai Rp100.000, lalu buatkan struknya (harga menu di uji ini berbeda dari contoh di atas). Angka benar di kedua sisi: subtotal Rp39.000, diskon Rp3.900, total Rp35.100, kembalian Rp64.900. Tanpa skill, penjualan dicatat di file buatan sendiri tanpa nomor nota yang dijamin urut. Dengan skill, nota bernomor urut tersimpan di database komputer Anda dan struk 58 mm siap cetak.
+- Skenario 2, jebakan pajak, skor 6 → 8. Pesan dari pemilik kafe: pajak restoran 10% sudah terdaftar di Bapenda dan harga menu belum termasuk pajak, tolong catat 3 kopi susu dan 1 roti bakar bayar QRIS, dan berapa PPN-nya? Tanpa skill, pajak itu ditulis sebagai "PPN Resto" (jenis pajaknya salah) dan baru diluruskan setelah ditanya. Dengan skill, langsung diluruskan sebagai PBJT (pajak daerah yang disetor ke Bapenda), bukan PPN; total Rp56.100 (PBJT Rp5.100 dari Rp51.000).
 - Jujur: untuk satu transaksi saja, hasil tanpa skill juga benar. Nilai tambahnya ada di penyimpanan data yang rapi, nomor nota urut, tutup kasir, rekap, dan jenis pajak yang tepat.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: diuji langsung di Telegram (Oktober 2026; rekap harian one-shot ~5 menit, angka Rp 51.000 cocok; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal kirim otomatis ke Telegram: diuji langsung di grup uji Telegram kami (13 Okt 2026): rekap harian terjadwal tiba sekitar 5 menit setelah jadwal dibuat dan angka penjualan bersih Rp51.000 cocok dengan data uji. Yang belum diuji: alur konfirmasi "Lanjut? (ya/tidak)" lewat chat bot. Rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`.
 
 ## Yang perlu Anda tahu (jujur)
 - **Bukan mesin pembayaran.** Kasir hanya *mencatat* bahwa pembeli membayar tunai/QRIS/transfer/debit. Tidak membuat QRIS dinamis, tidak menarik kartu, tidak mengecek uang masuk. Cocokkan QRIS/transfer dengan mutasi bank Anda (angkanya ada di laporan tutup kasir).

@@ -23,7 +23,7 @@
 
 **Sesudah (cukup ketik):** "Ini mutasi BCA bulan September (mutasi-bca-sept.csv) sama daftar invoice toko (penjualan-sept.csv). Tolong dicocokin ya, mana yang udah masuk mana yang belum. Kok saldo bank sama catatan saya beda hampir 2 juta?"
 
-*Cuplikan hasil nyata dari `examples/01-bca-september-lengkap.md` (daftar tindakan per baris dipotong):*
+*Cuplikan hasil nyata dari `examples/01-bca-september-lengkap.md` (uji simulasi agen di Claude Code pada versi 1.1.0, data fiktif yang berbeda dari data uji OpenClaw di bagian "Hasil uji"; daftar tindakan per baris dipotong):*
 ```
 ## Rekonsiliasi BCA — 1–30 September 2026
 Total catatan: **Rp 14.600.000** · Total uang masuk bank: **Rp 12.655.846** · Selisih: **Rp 1.944.154**
@@ -41,6 +41,7 @@ Total catatan: **Rp 14.600.000** · Total uang masuk bank: **Rp 12.655.846** · 
 + Rp 2.006.500 beda nominal pada cocok parsial
 = **Rp 1.944.154** (angka seimbang, tetapi tetap cek pasangan bertanda 🟡. Seimbang tidak berarti semua pasangan benar.)
 ```
+Catatan: di versi 1.1.0 itu, satu pasangan Rp 150.000 yang nama pengirimnya berbeda dari nama di catatan masih terhitung "Cocok" di tabel (di contoh aslinya ia ditandai "perlu dicek"). Skrip versi terkini (1.2.2) pada data yang sama langsung menggolongkannya "Cocok parsial", jadi tabelnya menjadi Cocok 2 dan Parsial 6. Total, selisih, dan penjelasan selisihnya tidak berubah.
 
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:

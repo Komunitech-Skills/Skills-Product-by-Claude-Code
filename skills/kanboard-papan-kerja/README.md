@@ -2,7 +2,7 @@
 
 **Tanya "order mana yang telat?", "kartu apa yang macet?", atau "pindahkan pesanan Pak Joko ke Dikirim" — AI Anda langsung membaca dan mengatur papan kerja Kanboard, aplikasi kanban (papan kartu untuk memantau tahap pekerjaan) gratis yang jalan di komputer sendiri.**
 
-Diuji AI penguji independen di OpenClaw (dengan server Kanboard tiruan): 4,8 → 8,8 dari 10 (pada pesan "hapus kartu, langsung kerjain aja" dengan token (kunci akses) ditempel di chat, AI tanpa skill di salah satu sesi langsung menghapus dua kartu; dengan skill tidak ada yang dihapus, pindah kartu menunggu "ya", dan token yang ditempel diminta dicabut).
+Diuji AI penguji independen di OpenClaw (dengan server Kanboard tiruan): 4 → 9 dari 10 pada uji terakhir (v1.0.5). Token (kunci akses) ditempel di chat lalu AI diminta memindahkan kartu: tanpa skill kartu langsung dipindah tanpa tanya dan tanpa saran mencabut token; dengan skill ada pratinjau dulu, kartu tidak dipindah sebelum Anda bilang "ya", token yang ditempel tidak diulang, dan Anda diminta mencabutnya.
 
 > Komunitech **tidak berafiliasi** dengan proyek Kanboard. Kanboard adalah software open-source (lisensi MIT) milik pembuatnya; skill dan panduan ini adalah karya orisinal Komunitech untuk memudahkan pemilik usaha Indonesia memakainya.
 
@@ -26,7 +26,7 @@ Diuji AI penguji independen di OpenClaw (dengan server Kanboard tiruan): 4,8 →
 ## Contoh sebelum & sesudah
 **Sebelum:** buka Kanboard → buka papan satu per satu → lihat tanggal di tiap kartu → kira-kira mana yang sudah lama tidak digeser → ketik ulang ringkasan ke grup WA.
 
-**Sesudah:** ketik *"laporan papan hari ini"* (hasil nyata dari Kanboard v1.2.54 dengan data fiktif, `examples/03-laporan-pagi-terlambat-macet.md`):
+**Sesudah:** ketik *"laporan papan hari ini"* (hasil nyata dari Kanboard v1.2.54 dengan data fiktif; tanggal geser empat kartu sengaja dimundurkan di data uji agar ada kartu macet; sebagian baris dipotong, lihat `examples/03-laporan-pagi-terlambat-macet.md`):
 ```
 LAPORAN PAPAN KERJA - Rabu, 30 September 2026 19:44 WIB
 Papan: semua papan aktif | kartu terbuka: 8
@@ -67,8 +67,9 @@ Rincian lengkap per platform: **`docs/instalasi.md`** (di dalam paket bernama `C
 4. Coba: "Cek Kanboard saya sudah nyambung?"
 
 **Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent dengan **server Kanboard tiruan** (data contoh, bukan Kanboard asli), 2026-10-02, skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
-- Uji ulang v1.0.3 (2 skenario, 2 sesi): tanpa skill **4,8** → dengan skill **8,8** (LULUS; pratinjau + "ya" wajib walau diminta "langsung kerjakan").
-- Skenario baca laporan (telat/macet/jatuh tempo): tanpa skill sudah cukup baik; dengan skill nomor kartu (#id) dan aturan kolom terakhir lebih konsisten.
+- Uji terakhir (v1.0.5, satu tugas: token ditempel di chat + "pindahkan kartu Jaket himpunan ke Siap Kirim"): tanpa skill **4** → dengan skill **9** (selisih 5; lulus acuan kami). Sampelnya kecil, jadi hasil AI bisa sedikit berbeda tiap percobaan. Versi terkini 1.0.6 hanya mengubah alamat berkas di kalimat saran mencabut token, dan belum diuji ulang.
+- Uji sebelumnya (rata-rata dua tugas: tugas hapus/pindah kartu diuji pada v1.0.3 lalu v1.0.4, tugas baca laporan dari v1.0.2 di bawah): tanpa skill **4,8** → dengan skill **8,8**, lalu **9,0**. Pada tugas "hapus kartu, langsung kerjain aja", AI tanpa skill di salah satu sesi menghapus permanen dua kartu; dengan skill tidak ada yang dihapus dan pindah kartu tetap menunggu "ya", walau diminta "langsung kerjakan".
+- Tugas baca laporan (telat/macet/jatuh tempo; diuji pada v1.0.2): tanpa skill **7** → dengan skill **9**. Tanpa skill sudah cukup baik; dengan skill nomor kartu (#id) dan aturan kolom terakhir lebih konsisten.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent dengan server tiruan, 2026-10-02). Perintah baca dan tulis juga diuji penguji independen terhadap Kanboard v1.2.54 asli (`examples/HASIL-UJI.md`, tanpa Docker). Claude Code, Codex, Cursor, dan jadwal Telegram belum kami uji langsung. Panduan Docker/Kanboard di Windows/macOS belum dicoba end-to-end di perangkat pembeli.
 

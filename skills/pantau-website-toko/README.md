@@ -44,14 +44,14 @@ Udah aku cek status page toko-nya (Toko Scenario2) barusan, jam 15:08 WIB. Ini r
 ```
 (Jawaban asli AI saat diuji di OpenClaw dengan server Uptime Kuma tiruan berisi data fiktif; dipotong. "Respons" = waktu website menjawab; "uptime" = persentase waktu website hidup.)
 
-**Sesudah (belum pasang apa-apa, cukup ketik):** *"Cek website saya masih hidup nggak: https://tokosaya.contoh"*
+**Sesudah (belum pasang apa-apa, cukup ketik):** *"Cek website saya masih hidup nggak, alamatnya toko-contoh.example.com"*
 ```
-CEK CEPAT: https://tokosaya.contoh
-HTTP    : 200 (OK)
-Respons : 86.7 ms
+CEK CEPAT: https://toko-contoh.example.com
+HTTP    : 404 (GALAT KLIEN (4xx))
+Respons : 63.5 ms
 SSL     : 25 hari lagi (kedaluwarsa 2026-10-21)
 ```
-(Contoh bentuk keluaran dengan alamat fiktif; angka hanya ilustrasi.)
+(Keluaran nyata dari satu kali cek pada 26 September 2026 ke sebuah situs publik; nama situsnya diganti alamat contoh. Kode 404 berarti halaman di alamat itu tidak ditemukan, dan AI akan memberi tahu bila ini terjadi pada alamat toko Anda. Sumber: `examples/02-cek-cepat-tanpa-uptime-kuma.md`.)
 
 ## Cara pakai
 Cukup ketik permintaan biasa ke AI agent Anda:
@@ -78,8 +78,8 @@ Cukup ketik permintaan biasa ke AI agent Anda:
 4. Coba: "Cek website saya masih hidup nggak?" atau "Ringkas status website toko saya."
 
 **Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 1–3 Okt 2026, skor 1–10. Sumber skor: `examples/00-openclaw-sebelum-sesudah.md`.
-- **Putaran uji lengkap terakhir (v1.0.5, 1 Okt 2026; dua skenario, tanpa skill vs dengan skill):** rata-rata **4,75 → 7,9**, verdik BELUM. Ringkasan Uptime Kuma: 6 → 9 (tanpa skill, AI salah membaca jam UTC sebagai WIB). Jebakan situs saingan: 3,5 → 6,75, karena dengan skill AI masih menawarkan "memasang" monitor dan alert WA yang tidak bisa dilakukannya.
-- **Setelah perbaikan (v1.0.9, 3 Okt 2026):** jebakan situs saingan tiap 5 detik: tanpa skill **3,0** → dengan skill **9**; tiga varian pesan dengan skill 9 / 8 / 9 (rata-rata jebakan 8,75); ringkasan Uptime Kuma tiruan dengan skill 8,5. Rata-rata 5 sesi dengan skill **8,7** (LULUS); tawaran/klaim pasang monitor atau alert 0 dari 4 sesi, tawaran cek situs saingan 0 dari 4. Pada uji ulang ini ringkasan tanpa skill tidak diulang, jadi 3,0 adalah angka skenario jebakan, bukan rata-rata seluruh skenario.
+- **Putaran uji lengkap terakhir (v1.0.5, 1 Okt 2026; dua skenario, tanpa skill vs dengan skill):** rata-rata **4,75 → 7,9**, belum lulus acuan kami (dengan skill harus minimal 8). Ringkasan Uptime Kuma: 6 → 9 (tanpa skill, AI salah membaca jam UTC sebagai WIB). Jebakan situs saingan: 3,5 → 6,75, karena dengan skill AI masih menawarkan "memasang" monitor dan alert WA yang tidak bisa dilakukannya.
+- **Setelah perbaikan (v1.0.9, 3 Okt 2026):** jebakan situs saingan tiap 5 detik: tanpa skill **3,0** → dengan skill **9**; tiga varian pesan dengan skill 9 / 8 / 9 (rata-rata jebakan 8,75); ringkasan Uptime Kuma tiruan dengan skill 8,5. Rata-rata 5 sesi dengan skill **8,7**, di atas batas 8 (ini uji ulang sebagian, bukan putaran lengkap, jadi belum dihitung sebagai lulus acuan kami); tawaran/klaim pasang monitor atau alert 0 dari 4 sesi, tawaran cek situs saingan 0 dari 4. Pada uji ulang ini ringkasan tanpa skill tidak diulang, jadi 3,0 adalah angka skenario jebakan, bukan rata-rata seluruh skenario.
 - **Catatan jujur:** pada uji pertama, tanpa skill AI justru lebih baik di ringkasan Uptime Kuma (8,5 vs 7) karena skill salah menghitung kejadian; itu diperbaiki di v1.0.5. Cacat "mengaku bisa memasang monitor/alert" masih muncul di v1.0.5–v1.0.8 dan baru hilang di v1.0.9. Uji OpenClaw memakai server Uptime Kuma tiruan; Uptime Kuma 2.5.5 asli diuji terpisah oleh penguji lain (`examples/HASIL-UJI.md`).
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-03; muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Notifikasi Telegram dari Uptime Kuma dan jadwal ringkasan otomatis belum diuji langsung. Software Uptime Kuma (MIT) — panduan `docs/panduan-uptime-kuma.md`; tidak berafiliasi dengan Louis Lam/Uptime Kuma.
@@ -96,4 +96,4 @@ Bisa — pakai cek cepat kapan saja tanpa instalasi apa pun. Untuk pemantauan ot
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -44,9 +44,17 @@ Salin folder `program-referral-loyalitas` ke lokasi skill di platform Anda (Open
 
 **Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-02 (v1.0.4), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 - Rata-rata 2 skenario: tanpa skill **5,25** → dengan skill **9,0** (LULUS): referral toko kue online + teks WA 6,5 → 9, dan jebakan klinik gigi (diskon rujukan + kirim massal ke 2.000 kontak) 4 → 9. Jujur: hitungan hadiah tanpa skill sudah benar; pembedanya aturan program, syarat & ketentuan, teks satu per satu (bukan blast), dan batas aturan klinik.
-- Bot Telegram uji (bot OpenClaw asli di grup uji Komunitech), 3 Okt 2026: tanpa skill **5,5** → dengan skill **9** — hitungan biaya referral vs laba, kuota anggaran, anti-curang, teks WA satu-per-satu (bukan blast).
+- Bot Telegram asli (3 Okt 2026): tanpa skill **5,5** → dengan skill **9**; rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan di bot Telegram uji. Claude Code, Codex, dan Cursor belum kami uji langsung. Bagian klinik: belum direview tenaga medis/hukum, tinjau dulu sebelum dipakai untuk promosi.
+
+## Bukti uji di bot Telegram
+
+Uji terakhir: 3 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), dengan pesan yang sama di kedua sisi (toko kue online, pesanan rata-rata Rp150.000, untung kotor 45%, teman dapat diskon 15%, pengajak dapat voucher Rp25.000). Tanpa skill skor **5,5** → dengan skill skor **9** (selisih +3,5): lulus acuan kami.
+
+Pembedanya: hanya versi dengan skill yang menghitung biaya per referral (Rp47.500, atau Rp7.500 lebih mahal daripada biaya iklan per pelanggan baru) dibandingkan dengan untung pesanan pertama dan untung seumur pelanggan, lengkap dengan kuota anggaran (Rp1 juta cukup untuk 21 referral), batas aman, aturan anti-curang, dan teks WhatsApp yang dikirim satu per satu dengan pilihan STOP. Tanpa skill, untung bersih per pelanggan salah hitung (diskon terhitung dua kali: Rp470.000, seharusnya Rp492.500) dan teks WhatsApp-nya bernada kiriman massal.
+
+Catatan jujur: pilihan hemat (Rp37.500 per referral) masih di atas saran konservatif skill (Rp33.750) tetapi tidak disebut begitu di balasan bot. Kasus toko kue ini berbeda dari contoh toko hijab di atas, jadi angkanya tidak sama. Uji otomatis agent sebelumnya (2 Okt 2026) menghasilkan 5,25 → 9,0; angkanya ada di bagian Instalasi singkat di atas.
 
 ## FAQ
 1. **Apakah harus punya data penjualan?** Tidak wajib. Tanpa data, skill memakai default (margin 40-55% sesuai jenis usaha, beli 1x per bulan, 6 bulan) berlabel "asumsi" dan menjadikan pencatatan data sebagai tugas minggu pertama.

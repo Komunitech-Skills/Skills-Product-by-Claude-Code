@@ -22,9 +22,9 @@ Diuji AI penguji independen di OpenClaw: 6,25 → 8,5 dari 10 (angka, tanggal, d
 ## Contoh sebelum & sesudah
 **Sebelum (72 kata dalam satu kalimat, dari contoh email ke klien; PO = nomor pesanan pembelian):** "Sehubungan dengan adanya pesanan kemasan kardus Bapak sebanyak 5.000 pcs ..., dengan ini kami ingin menyampaikan bahwa pada dasarnya proses produksi yang sedianya dijadwalkan selesai pada tanggal 10 Oktober 2026 dikarenakan adanya keterlambatan pengiriman bahan kertas dari pihak supplier kami maka pengerjaannya akan mengalami penyesuaian jadwal ..."
 
-**Sesudah (cukup ketik: "Tolong rapikan email ini ke klien, kepanjangan" + tempel):** "Pengiriman kemasan kardus Bapak (PO-0412, 5.000 pcs) mundur dari 10 Oktober menjadi 17 Oktober 2026. Pemasok kertas kami terlambat mengirim bahan, sehingga produksi ikut tertunda. Kami mohon pengertian Bapak."
+**Sesudah (cukup ketik: "Tolong rapikan email ini ke klien, kepanjangan" + tempel; yang ditampilkan di sini hanya potongan dari paragraf pertama hasil suntingan):** "Pengiriman kemasan kardus Bapak (PO-0412, 5.000 pcs) mundur dari 10 Oktober menjadi 17 Oktober 2026. Pemasok kertas kami terlambat mengirim bahan, sehingga produksi ikut tertunda. Kami mohon pengertian Bapak."
 
-Ukuran pada contoh itu: **165 kata menjadi 97**, kalimat lebih dari 25 kata **3 menjadi 0**, kata pengisi/jargon **11 menjadi 0**, semua angka dan tanggal utuh. Lima contoh lengkap ada di folder `examples/`.
+Ukuran untuk seluruh email dalam contoh itu (dari `examples/01-email-klien-bertele-tele.md`): **165 kata menjadi 97**, kalimat lebih dari 25 kata **3 menjadi 0**, kata pengisi/jargon **11 menjadi 0**, semua angka dan tanggal utuh. Lima contoh lengkap ada di folder `examples/`.
 
 ## Cara pakai
 Setelah terpasang, ketik permintaan biasa lalu tempel tulisannya:
@@ -53,10 +53,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12.
-- Tanpa skill: skor 7
-- Dengan skill: skor 7,5
-Hasil: belum lulus — Kedua sisi sama-sama merapikan dan menolak klaim BPOM/10.000 pelanggan/garansi tanpa bukti; dengan skill email lebih ringkas dan dibuka dengan permintaan maaf, tetapi satu angka keterbacaan (12,5 kata per kalimat, seharusnya 15,0) tidak cocok dengan teks yang diberikan.
+Uji terakhir: 12 Oktober 2026, di bot Telegram sungguhan (OpenClaw) di grup uji internal Komunitech; versi skill yang dipakai tidak tercatat. Pesan yang sama (deskripsi produk dengan permintaan menambah klaim, dan satu email ke klien) dikirim sekali tanpa skill dan sekali dengan skill, lalu dinilai 1–10 oleh penilai AI.
+- Skor: tanpa skill **7** → dengan skill **7,5** (selisih +0,5).
+- Hasil: **belum lulus acuan kami** (acuan: skor dengan skill minimal 8 dan selisih minimal 1,5). Selisihnya hanya +0,5.
+
+Keduanya sama-sama merapikan tulisan dan sama-sama menolak menambah klaim BPOM, 10.000 pelanggan, dan garansi 2 tahun tanpa bukti. Dengan skill, email lebih ringkas, dibuka dengan permintaan maaf, dan diberi ukuran keterbacaan.
+
+Catatan jujur: satu angka keterbacaan dari skill salah, yaitu rata-rata 12,5 kata per kalimat untuk deskripsi produk, padahal hitungan yang benar 15,0.
 
 ## FAQ
 **Apakah isi tulisan saya akan berubah?**

@@ -19,7 +19,7 @@
 - Admin CS (layanan pelanggan) yang ingin balasan konsisten tapi tidak terasa template
 
 ## Contoh sebelum & sesudah
-**Sebelum:** "Kak, seharusnya baca deskripsi dulu. Pengiriman itu salah kurir, bukan salah kami." (pembeli lain ikut ilfeel)
+**Sebelum** (ilustrasi balasan yang sering terjadi, bukan hasil uji): "Kak, seharusnya baca deskripsi dulu. Pengiriman itu salah kurir, bukan salah kami." (pembeli lain ikut ilfeel)
 
 **Sesudah (cukup ketik):** "Tolong balasin ulasan Shopee bintang 1 ini buat toko aku Rumah Alya: "Pesen gamis ukuran L yang dateng M!! Udah gitu chat seller slow respon 2 hari. Nyesel belanja di sini." Kami mau tukar ke L, ongkir retur kami yang tanggung. Admin yang pegang chat namanya Nisa."
 → Balasan publik, versi lebih singkat, pesan chat pribadi, dan hasil pengecekan. Cuplikan nyata dari uji (data fiktif):

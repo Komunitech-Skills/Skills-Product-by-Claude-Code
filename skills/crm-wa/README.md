@@ -66,9 +66,9 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tidak butuh internet, akun, atau API key. Data tersimpan di folder `KomunitechData/crm/` di komputer Anda, dengan cadangan otomatis di `KomunitechData/crm/backup-crm/`. Tanpa Python pun skill tetap membantu dengan tabel CRM manual di Excel.
 
 **Hasil uji (angka nyata):** uji OpenClaw (uji otomatis agent, folder kerja bersih terpisah untuk tiap skenario), skor 1–10 penguji independen. Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`.
-- 1 Okt 2026, uji pertama (dua skenario; versi skill saat itu tidak tercatat): tanpa skill **4,5** → dengan skill **9,0** (LULUS).
-- 2 Okt 2026, uji ulang v1.0.7 (dua skenario): **5,0** → **8,5** (LULUS).
-- 2 Okt 2026, uji ulang v1.0.8 (satu skenario): **7** → **8** (LULUS).
+- 1 Okt 2026, uji pertama (dua skenario; versi skill saat itu tidak tercatat): tanpa skill **4,5** → dengan skill **9,0** (lulus).
+- 2 Okt 2026, uji ulang v1.0.7 (dua skenario): **5,0** → **8,5** (lulus).
+- 2 Okt 2026, uji ulang v1.0.8 (satu skenario): **7** → **8** (lulus uji internal, tetapi selisihnya hanya 1 poin sehingga belum lulus acuan kami: dengan skill 8 ke atas dan selisih minimal 1,5).
 
 Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, total nilai prospek dihitung; tanpa skill: menyarankan broadcast otomatis yang berisiko. Di bot Telegram OpenClaw asli (2 Okt 2026): dua dari tiga giliran percakapan dengan skill lebih baik, satu giliran salah dan sudah diperbaiki (lihat bagian Bukti uji di bawah).
 
@@ -85,12 +85,12 @@ Dengan skill: draf WA + tautan WhatsApp (wa.me), kontak batal dikecualikan, tota
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 2 Okt 2026, tiga giliran percakapan: bot penguji mengirim pesan yang sama ke bot tanpa skill dan bot dengan skill. Versi skill saat uji: 1.0.6 (versi terkini saat dibaca: lihat baris Versi terkini di bawah). Skor angka tidak dicatat pada uji ini; penilaiannya berupa verdik.
-- Tanpa skill: mencatat ke file CSV buatan sendiri.
-- Dengan skill: giliran 1–2 mendeteksi nama ganda dan mencatat status Deal + DP.
-- Catatan jujur: giliran 3 dengan skill salah karena tercampur data uji lama usaha lain, sehingga draf bertanda tangan orang lain dan prospek usaha lain ikut direkap.
+Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal) pada 2 Okt 2026, versi skill 1.0.6, tiga giliran percakapan. Pesan yang sama dikirim ke bot tanpa skill dan ke bot dengan skill. Uji ini tampil di bot **tanpa skor angka**, jadi tidak ada nilai "tanpa skill → dengan skill" dan tidak ada vonis "lulus acuan kami" untuk uji Telegram ini; penilaiannya berupa catatan.
+- Tanpa skill: bot hanya mencatat ke tabel CSV buatan sendiri; draf WhatsApp di giliran 3 tetap wajar.
+- Dengan skill: pada giliran 1 dan 2 bot mengenali nama pelanggan yang dicatat dua kali, lalu mencatat status deal beserta uang mukanya.
+- Catatan jujur: pada giliran 3 bot dengan skill salah. Drafnya tercampur data uji usaha lain, sehingga bertanda tangan orang lain dan prospek usaha lain ikut direkap.
 
-Diperbaiki di versi 1.0.7 (cek identitas usaha sebelum mencatat; versi terkini 1.0.11). Perbaikan ini sudah diuji ulang di OpenClaw lokal (uji ulang v1.0.7 di atas), tetapi belum diuji ulang di bot Telegram.
+Kesalahan itu diperbaiki di versi 1.0.7 (skill mengecek identitas usaha sebelum mencatat). Perbaikan ini sudah diuji ulang di OpenClaw yang dijalankan di komputer uji (5,0 → 8,5, lihat uji ulang v1.0.7 di atas), tetapi belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah data pelanggan saya dikirim ke internet?**

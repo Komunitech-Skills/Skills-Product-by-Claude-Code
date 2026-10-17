@@ -172,7 +172,7 @@ untuk LKPD, tetap sertakan "Kunci Jawaban (untuk guru)" sebagai bagian terpisah 
 
 **Input pengguna:** "buatkan modul ajar IPA kelas 7 tentang ekosistem 2 pertemuan"
 
-**Output (ringkas — contoh versi lengkap di `examples/01-modul-ajar-ipa-kelas7-ekosistem.md`; contoh format default ringkas di `examples/09-format-ringkas-telegram.md`):**
+**Output (ringkas — cuplikan memakai default sekarang 2 JP per pertemuan; contoh versi lengkap di `examples/01-modul-ajar-ipa-kelas7-ekosistem.md` dibuat dengan versi awal skill yang menebak 3 JP (120 menit) per pertemuan; contoh format default ringkas di `examples/09-format-ringkas-telegram.md`):**
 ```
 MODUL AJAR — IPA
 A. Informasi Umum: Fase D, SMP kelas VII, 2 pertemuan × 2 JP (80 menit/pertemuan)...

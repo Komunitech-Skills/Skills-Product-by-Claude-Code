@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.3 (2026-10-17)
+- Contoh ringkas di SKILL.md disamakan dengan `examples/01-teguran-kasir-terlambat.md` (jam masuk 09.40/09.35/09.50, standar 08.45, dampak ke Dedi dan pelanggan). Sebelumnya memakai "09.30" dan "toko telat buka" yang tidak ada di contoh uji dan menambah fakta yang tidak disebut di input. Aturan dan perilaku skill tidak berubah.
+
 ## Catatan revisi 1.0.2 (2026-10-12)
 - Revisi dari uji OpenClaw asli (skor 5,5 naik ke 8,4 sesudah revisi): untuk permintaan PHK sepihak atau mencari-cari kesalahan karyawan, jawaban memakai pola wajib tiga bagian dalam satu jawaban: tolak singkat, padanan yang sah (pembinaan bertahap, catatan kejadian faktual, konsultasi ketenagakerjaan), lalu tetap kerjakan bagian yang boleh secara tertulis. Jawaban tidak ditutup dengan menu "mau yang mana dulu?".
 - Larangan di jawaban: tidak menyebut kata "skill", "script", atau nama berkas/folder kepada pengguna dan tidak memakai emoji. Fakta yang disebut pengguna tidak diubah. Aturan tanggal ditambah: hari ke-N sama dengan tanggal mulai ditambah (N-1) hari.

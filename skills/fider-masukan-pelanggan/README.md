@@ -61,6 +61,14 @@ Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, ada 
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-02) dan Claude Code (simulasi agent). Jadwal ringkasan ke Telegram (automations one-shot) diuji bot uji 2026-10-13. Codex dan Cursor belum kami uji langsung. Windows/macOS Fider dan HTTPS VPS sungguhan belum diverifikasi end-to-end.
 
+## Bukti uji di bot Telegram
+
+Uji terakhir: 12 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), dengan server Fider tiruan berisi data contoh di komputer uji dan pesan yang sama di kedua sisi. Tanpa skill skor **8** → dengan skill skor **5** (selisih −3): belum lulus acuan kami, dan hasil ini belum bisa dipakai sebagai ukuran nilai tambah skill.
+
+Yang terjadi: bot dengan skill hanya membalas petunjuk menyimpan kunci akses, padahal kunci uji sudah tersimpan di komputer uji. Kunci itu tidak terbaca saat skill aktif, jadi pratinjau impor dan ringkasan usulan tidak keluar. Bot tanpa skill justru sempat memberi pratinjau impor dan ringkasan usulan QRIS (14 suara).
+
+Catatan jujur: sesudah uji itu skill diperbaiki agar mencari dan membaca kunci sendiri (versi 1.0.8, 12 Okt 2026). Pemeriksaan internal sesudahnya lolos, tetapi uji ulang sebelum/sesudah di bot Telegram belum dilakukan, jadi skill ini belum terbukti unggul di Telegram. Uji otomatis agent sebelumnya (2 Okt 2026) dan uji jadwal ringkasan mingguan ke Telegram (13 Okt 2026) ada di bagian Instalasi singkat di atas.
+
 ## FAQ
 **Apakah Fider dan biayanya gratis?** Fider gratis (AGPL-3.0) bila dipasang sendiri. Anda hanya membayar listrik/VPS dan email pengirim (banyak penyedia punya paket gratis kecil). Paket ini berisi skill, script, dan panduan Komunitech; Fider diunduh dari sumber resminya.
 

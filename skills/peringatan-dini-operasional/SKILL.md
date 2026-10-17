@@ -149,10 +149,8 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
 **Hasil (ringkas, lengkap di `examples/01-pabrik-roti-30-hari.md`):**
 ```
 🔴 Reject (pcs): 63 hari ini (kemarin 46)
-   6,8σ di atas rata-rata 27 hari sebelumnya (31,15) -- lewat batas bahaya 3σ; 112% di atas
-   rata-rata hari Selasa 4 minggu terakhir (29,75); melewati target maks 50 (+26%).
-🟠 Stok tepung (kg): sisa 169 = ±3,2 hari pemakaian (rata-rata 52,29/hari) -> perkiraan habis
-   Jum, 2 Okt; pemasok butuh 2 hari -- siapkan pesanan
+   6,8σ di atas rata-rata 27 hari sebelumnya (31,15) -- lewat batas bahaya 3σ (2 dari 3 hari terakhir); melewati target maks 50 (+26%); naik 3 hari berturut-turut.
+🟠 Stok tepung (kg): sisa 169 = ±3,2 hari pemakaian (rata-rata 52,29/hari) -> cukup sampai Jum, 2 Okt, mulai kurang Sab, 3 Okt; pemasok butuh 2 hari -- siapkan pesanan
 ```
 
 ## Batasan & penanganan error
@@ -201,6 +199,7 @@ Aturan warna & ambang lengkap: `references/cara-kerja-aturan.md`.
   catatan ditulis tanpa nama orang.
 
 ## Riwayat versi
+- **1.0.8** (2026-10-17): kutipan keluaran di bagian Contoh disamakan persis dengan keluaran skrip untuk `examples/01-pabrik-roti-30-hari.md`; perilaku skill tidak berubah.
 - **1.0.5** (2026-10-02): hasil uji OpenClaw — larangan memeriksa/menyetel kanal, plugin, sesi
   & menawarkan kiriman ke grup/pihak ketiga; tidak menyalahkan orang (fakta + pertanyaan
   klarifikasi); `laporan_teks` wajib ditempel utuh dalam blok kode; pencilan di 7 hari terakhir

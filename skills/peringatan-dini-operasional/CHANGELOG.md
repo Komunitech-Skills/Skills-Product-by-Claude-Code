@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.8 (2026-10-17)
+- Kutipan keluaran di bagian Contoh pada `SKILL.md` disamakan persis dengan keluaran skrip untuk `examples/01-pabrik-roti-30-hari.md` (sebelumnya memuat kalimat "112% di atas rata-rata hari Selasa" dan "perkiraan habis" yang tidak ada di keluaran). Tidak ada perubahan perilaku atau skrip selain konstanta versi.
+
 ## Catatan revisi 1.0.7 (2026-10-02)
 - Jadwal harian (Langkah 4) hanya dibahas bila pengguna memintanya; agent tidak lagi menawarkannya sendiri.
 

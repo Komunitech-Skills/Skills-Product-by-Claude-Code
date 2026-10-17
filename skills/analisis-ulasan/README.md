@@ -27,7 +27,7 @@ Cuplikan laporan (data fiktif: 160 ulasan; hasil uji simulasi agent di Claude Co
 > ## Ringkasan cepat
 > - Rata-rata **3,88★**. 67,5% ulasan positif (4–5★) dan **18,8% negatif (1–2★)**. Rata-rata turun tiap bulan: Juli 4,07 → Agustus 3,84 → September 3,71.
 > - Keluhan paling merusak bintang adalah **pengiriman atau proses kirim lambat**: 15 ulasan (9,4%), rata-rata 2,07★. Dari 15 itu, 7 menyebut "pesanan diproses lama, 5 hari baru dikirim", jadi penyebabnya ada di **proses toko**, bukan hanya kurir.
-> - Pujian terbanyak: **ukuran pas** (33 ulasan), **sesuai foto** (31) dan **pengiriman cepat** (29). Ini bahan konten testimoni.
+> - Pujian terbanyak: **ukuran pas** (33 ulasan), **sesuai foto** (31) dan **pengiriman cepat** (30). Ini bahan konten testimoni.
 > - **Tindakan paling penting minggu ini:** tetapkan jam potong kirim (pesanan yang masuk sebelum 15.00 dikirim hari itu juga) dan tulis estimasi proses di deskripsi produk dan balasan chat otomatis.
 >
 > …

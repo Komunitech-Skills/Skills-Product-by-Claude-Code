@@ -74,12 +74,13 @@ Selalu berikan dalam urutan ini:
 Permintaan: "Buatkan landing page untuk keripik pedas saya, harga 25 ribu." Pengguna hanya menyebut nama usaha (Keripik Setan Mak Iyem), WA, area kirim, cara bayar, dan belum punya testimoni. Hanya itu yang boleh jadi fakta di halaman; sisanya `[isian: ...]`. Cuplikan hasil (data fiktif):
 ```
 ### Keripik Setan Mak Iyem — Rp25.000 [isian: per bungkus/ukuran]. Kirim ke Jabodetabek dan luar kota, bayar transfer atau QRIS.
-- Rasa dan tingkat pedas: [isian: varian rasa/level pedas yang tersedia sesuai produkmu].
+- Rasa dan tingkat pedas: [isian: varian rasa/level pedas yang tersedia dan deskripsi rasa sesuai produkmu].
 ## Kata Mereka yang Sudah Coba
 [ISI TESTIMONI ASLI — nama & kota pembeli. Hapus bagian ini sampai ada testimoni asli.]
 ## Garansi
-[isi: garansi/retur, hanya yang benar-benar kamu berlakukan.]
-**Tahan berapa lama?** [isian: masa simpan sesuai label kemasan]
+[isi: garansi/retur Keripik Setan Mak Iyem, hanya yang benar-benar kamu berlakukan. Hapus bagian ini bila belum ada kebijakan.]
+**Tahan berapa lama?**
+[isian: masa simpan sesuai yang tertulis di label kemasan]
 ```
 Contoh lengkap (tanya sekali, tautan WA, meta, ceklis kepatuhan): [examples/01-keripik-pedas-normal.md](examples/01-keripik-pedas-normal.md).
 

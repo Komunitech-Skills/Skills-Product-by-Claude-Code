@@ -108,9 +108,9 @@ Daftar kirim per hari / pengingat / alat email; batas harian & jam kirim
 Di balasan ke pengguna **jangan menyebut** script, file, path folder, "dihitung dengan", "lulus", atau istilah proses internal. Sampaikan hasil seolah Anda yang menghitungnya. Tanggal tetap harus benar.
 
 ## Contoh
-**Pengguna:** "Toko kue saya mau bikin pesan sambutan buat pelanggan baru. Pelanggan pertama beli hari Rabu 7 Oktober."
+**Pengguna:** "Toko kue saya, Kue Bu Rina, mau bikin pesan sambutan buat pelanggan baru. Pelanggan pertama beli hari Rabu 7 Oktober."
 
-**Balasan (ringkas):** tabel 4 pesan (Rabu 7 Okt, Sabtu 10 Okt, Sabtu 17 Okt, Rabu 28 Okt), keempat pesan utuh dengan `Kalau tidak ingin dapat pesan seperti ini lagi, balas "stop" ya.`, kondisi berhenti, "dikirim satu per satu dari WA Anda", dan pertanyaan: 1) ada produk lain yang ingin dikenalkan di pesan ke-4? 2) nama pengirim? Contoh lengkap: `examples/01-*.md`.
+**Balasan (ringkas):** tabel 4 pesan (Rabu 7 Okt, Sabtu 10 Okt, Sabtu 17 Okt, Rabu 28 Okt), keempat pesan utuh dengan `Kalau tidak ingin dapat pesan seperti ini lagi, balas "stop" ya.`, kondisi berhenti, "dikirim satu per satu dari WA Anda", dan 3 pertanyaan: 1) cara simpan kue yang benar (untuk pesan 2)? 2) ada menu lain yang ingin dikenalkan di pesan 4? 3) nama pengirim? Contoh lengkap: `examples/01-*.md`.
 
 ## Checklist sebelum mengirim hasil
 - [ ] Tidak ada auto-kirim/blast; WA = Copilot; OpenClaw hanya mengingatkan pemilik

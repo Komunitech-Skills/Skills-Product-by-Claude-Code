@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.12 (2026-10-17)
+- Contoh singkat di SKILL.md (titip jual keripik) tidak lagi mencetak komitmen yang tidak diberikan pengguna (stok awal 30 bungkus/cabang, isi ulang mingguan, tarik-ganti barang, display, uji coba 3 bulan di 2 cabang); semuanya kini `[isi: ...]`, sesuai aturan "larangan janji tak diberikan". Cara kerja dan script tidak berubah.
+
 ## Catatan revisi 1.0.11 (2026-10-15)
 - Tindak lanjut verifikasi rujukan aturan (dicek 15 Oktober 2026): rujukan Pasal 1320 KUHPerdata dan bea meterai UU 10/2020 dinyatakan **COCOK** dengan sumber resmi. File baru `references/regulasi.md` mencatat status COCOK, pasal, tanggal cek, dan sumbernya (Wikisource KUHPerdata, UU 10/2020 di pajak.go.id, halaman Bea Meterai DJP).
 - SKILL.md (Batasan) dan FAQ README: pengingat "proposal bukan kontrak" kini menyebut syarat sah Pasal 1320 KUHPerdata (sepakat, cakap, objek jelas, tujuan tidak dilarang), bea meterai Rp10.000 untuk surat perjanjian (Pasal 3 ayat (2) huruf a; e-meterai atau meterai tempel; terutang saat ditandatangani) beserta tautan resmi pajak.go.id/id/bea-meterai, dan arahan ke advokat/notaris. Meterai tidak disarankan pada proposal.

@@ -58,11 +58,19 @@ Skrip hitung (opsional; tanpa Python skill tetap berjalan dengan rumus manual): 
 
 **Hasil uji (angka nyata):** uji OpenClaw sebelum/sesudah otomatis agent, 2026-10-01 (uji ulang v1.0.3), skor 1–10 penguji independen. Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 - Rata-rata 2 skenario: tanpa skill **6** → dengan skill **8,75** (LULUS).
-- Bot Telegram asli (2026-10-05): tanpa skill **6** → dengan skill **8** — DENGAN menolak "STOK TINGGAL 5" palsu dan menghitung margin promo; TANPA menaruh urgency palsu di teks siap tempel.
+- Bot Telegram asli (5 Okt 2026): tanpa skill **6** → dengan skill **8**; rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent) dan Claude Code (simulasi agent); bot Telegram asli. Codex dan Cursor belum kami uji langsung. Cek domain/handle/PDKI tetap manual — bukan nasihat hukum merek.
 
 Diadaptasi dari skill open-source (MIT); rincian di `ATTRIBUTION.md`. Tidak berafiliasi dengan pembuat sumber.
+
+## Bukti uji di bot Telegram
+
+Uji terakhir: 5 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), dengan pesan yang sama di kedua sisi: promo diskon 20% yang ingin diberi tulisan "stok tinggal 5" dan harga coret. Tanpa skill skor **6** → dengan skill skor **8** (selisih +2): lulus acuan kami, tepat di batas nilai 8.
+
+Pembedanya: dengan skill, bot membuang tulisan "stok tinggal 5" dari teks promosi siap tempel (dipakai hanya bila stoknya memang nyata), memberi 3 pilihan caption, dan menghitung bahwa margin turun dari 48,6% ke 35,7% setelah diskon (untung per unit turun Rp7.000, sekitar 41%). Tanpa skill, bot menaruh "stok tinggal 5, buruan" di teks siap tempel lalu baru bertanya apakah stoknya benar.
+
+Catatan jujur: lulusnya mepet. Bot dengan skill masih menambahkan kata yang tidak Anda sebutkan ("pedas gurih") di caption, tidak menyebut bahwa harga coret hanya sah bila harga itu memang pernah berlaku, dan tidak memberi angka perkiraan biaya stiker. Sebelumnya, uji otomatis agent (1 Okt 2026) menghasilkan 6 → 8,75 untuk skill ini; angkanya ada di bagian Hasil uji di atas.
 
 ## FAQ
 **Apakah nama pilihan skill ini dijamin tidak dipakai orang lain?**

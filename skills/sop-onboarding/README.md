@@ -58,11 +58,18 @@ Salin folder `sop-onboarding` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** dua sumber, skor 1–10.
-- **Uji OpenClaw otomatis oleh AI penguji, 1 Oktober 2026** (pada versi skill yang lebih lama; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS).
-- **Uji bot Telegram asli, 5 Oktober 2026** (versi 1.0.5): **6,5** → **8,0**. Dengan skill, tanggal masa percobaan dan evaluasi tepat, sama persis dengan hasil skrip jadwal (evaluasi keputusan 6 Januari 2027, sebelum batas masa percobaan 11 Januari 2027); tanpa skill, tanggal evaluasi (12 Januari 2027) melewati batas masa percobaan. Pengingat BPJS sudah benar di kedua sisi, jadi bukan pembeda di uji ini.
+**Hasil uji (angka nyata):** skor 1–10. Uji di bot Telegram asli ada di bagian "Bukti uji di bot Telegram" di bawah.
+- **Uji OpenClaw otomatis oleh AI penguji, 1 Oktober 2026** (pada versi skill yang lebih lama; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (selisih +2,5, lulus acuan kami).
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli (5 Oktober 2026). Claude Code baru diuji lewat simulasi AI. Codex dan Cursor belum diuji di platform aslinya. Dasar aturan utama (masa percobaan, larangan percobaan PKWT, tenggat 30 hari BPJS Ketenagakerjaan) sudah dicocokkan dengan naskah resmi di JDIH Kemnaker, dicek ulang 15 Oktober 2026; rincian sanksi BPJS dan cara menghitung tanggal batas 3 bulan masih PERLU REVIEW (tafsir, bukan pasal eksplisit).
+
+## Bukti uji di bot Telegram
+
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 5 Oktober 2026, versi 1.0.5, dengan pesan yang sama untuk dua sisi (tanpa skill dan dengan skill): paket onboarding kasir minimarket, karyawan tetap, masa percobaan 3 bulan, mulai Senin 12 Oktober 2026. Skor 1–10 dari penilai independen: tanpa skill **6,5** → dengan skill **8** (selisih +1,5), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5; hasil ini tepat di batas keduanya).
+
+Dengan skill, paket tampil utuh dengan jadwal yang tepat (titik cek 10 November, 10 Desember, dan 9 Januari; batas masa percobaan 11 Januari 2027; evaluasi keputusan Rabu 6 Januari 2027, sebelum batas itu), SOP kasir 7 langkah, daftar BPJS, dan pengingat cek UMK. Tanpa skill, bot menulis evaluasi "paling lambat 12 Januari 2027" yang melewati batas masa percobaan dan salah menghitung jumlah hari kerja di bulan pertama.
+
+Catatan jujur: tabel jadwal 6 kolom kurang nyaman dibaca di ponsel, urutan baris evaluasi keputusan terhadap batas masa percobaan sempat membingungkan, dan pesan sambutan WA baru dibuat bila diminta. Pengingat BPJS sudah benar di kedua sisi, jadi bukan pembeda di uji ini. Setelah uji ini skill diperbaiki (jadwal di chat kini berupa daftar bernomor urut tanggal) dan belum diuji ulang di bot Telegram. Uji sebelumnya: uji OpenClaw otomatis 1 Oktober 2026, 6,5 → 9,0 (lihat di atas).
 
 ## FAQ
 **Skill ini bikin kontrak kerja juga?**

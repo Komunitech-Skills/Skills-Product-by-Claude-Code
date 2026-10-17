@@ -23,7 +23,7 @@ Diuji AI penguji independen di OpenClaw: 3 → 9 dari 10 pada skenario jebakan (
 **Sebelum:** Tidak tahu apakah AI bisa menjalankan perintah komputer tanpa izin, siapa saja
 yang bisa chat ke bot, atau ke mana isi percakapan dikirim.
 
-**Sesudah (cukup ketik):** "cek privasi saya". Cuplikan laporan dari uji simulasi agent pada versi lebih lama (v1.1.1; pengusaha toko dengan grup reseller WA; dipotong, kode teknis diganti "…"; `examples/01-pengusaha-khawatir-data-pelanggan.md`):
+**Sesudah (cukup ketik):** "cek privasi saya". Cuplikan laporan di bawah berasal dari uji simulasi agent pada versi lebih lama (v1.1.1) dengan permintaan yang lebih rinci: "tolong cek OpenClaw saya aman nggak. saya takut data pelanggan bocor, bot saya ada di grup reseller WA. grupnya tetap mau jalan, tapi yang boleh nyuruh bot cuma saya sama 2 admin" (data fiktif; dipotong, kode teknis diganti "…"; `examples/01-pengusaha-khawatir-data-pelanggan.md`):
 
 > 🔴 **Merah (4)**
 > - **Siapa saja bisa chat pribadi ke bot, dan bot boleh menjalankan perintah di komputer tanpa bertanya** (…)
@@ -64,9 +64,11 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, tertutup untuk umum; tautan pesan tidak dicantumkan), 2026-10-12.
-- Skor: 7,5 tanpa skill, 9 dengan skill.
-Hasil: lulus. Dengan skill laporan memakai format lampu 🔴/🟡/🟢 dan ringkasan UU PDP; tanpa skill audit teknisnya bagus tetapi tanpa kerangka itu.
+Uji terakhir di bot Telegram asli (grup uji internal Komunitech, data fiktif): 12 Okt 2026, versi 1.1.4. Pesan yang sama dikirim ke bot tanpa skill dan bot dengan skill, lalu dinilai penilai independen. Skor 1–10: tanpa skill **7,5** → dengan skill **9**, selisih +1,5. Hasil: lulus acuan kami (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Bedanya: laporan bot yang memakai skill memakai format lampu merah/kuning/hijau, memuat ringkasan UU PDP, dan memeriksa izin bot menjalankan perintah di komputer serta ruang terbatasnya. Bot tanpa skill pemeriksaan teknisnya sudah bagus, tetapi tanpa kerangka itu.
+
+Catatan jujur: di uji itu balasan lengkap butuh lebih dari 7 menit. Sejak itu bentuk balasan di chat diubah menjadi lebih ringkas (versi 1.1.6), dan bentuk baru ini belum diuji ulang di bot Telegram asli.
 
 ## FAQ
 **Apakah skill ini langsung mengubah pengaturan saya?**

@@ -71,11 +71,15 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.1.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Diminta menulis gelar S1, sertifikat Brevet A&B (sertifikat pajak), dan pengalaman SAP (software akuntansi perusahaan besar) yang tidak dimiliki: kedua sisi menolak, tetapi dengan skill CV jujur disusun lengkap dengan surat lamaran siap kirim dan celah kerja 21 bulan ditandai, sedangkan CV jujur versi tanpa skill masih memuat keahlian Excel yang tidak pernah disebut pengguna.
 
-**Status uji (jujur):** skor kecocokan kata kunci perkiraan, bukan jaminan lolos ATS. Sudah diuji di OpenClaw (uji muat dan uji sebelum/sesudah otomatis oleh agent, 1 Okt 2026) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung; uji di bot Telegram belum dilakukan. Tidak login ke JobStreet/LinkedIn — Anda tempel lowongan sendiri.
+**Status uji (jujur):** skor kecocokan kata kunci perkiraan, bukan jaminan lolos ATS. Sudah diuji di OpenClaw (uji muat dan uji sebelum/sesudah otomatis oleh agent, 1 Okt 2026) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Uji di bot Telegram asli sudah dilakukan satu kali (16 Okt 2026), hasilnya ada di bagian berikutnya. Tidak login ke JobStreet/LinkedIn — Anda tempel lowongan sendiri.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Tolong sesuaikan CV saya dengan lowongan ini: Lowongan: Staff Admin Gudang PT Sumber Makmur Logistik - Bekasi Kualifikasi: - Pendidikan minimal SMA/SMK sederajat - Pengalaman minimal 1 tahun sebagai admin gudang atau staff…". Tanpa skill skor **7** → dengan skill skor **8** (selisih +1, belum lulus acuan kami: selisih 1 di bawah 1,5). Hanya sisi DENGAN yang menghitung seberapa cocok Anda dengan lowongan (77 dari 100, lengkap dengan alasan dan celahnya), lalu menyertakan surat lamaran, email singkat, daftar periksa sebelum kirim (simpan PDF, nama berkas, tanpa NIK/agama), dan tiga pertanyaan bernomor soal VLOOKUP/Pivot Table, WMS, dan scan barcode; kedua sisi sama-sama tidak mengarang keahlian itu. Catatan jujur: Skor kata kunci (mis. 45%) hanya hitungan kata sederhana dan bisa tampak rendah padahal CV sudah sesuai, jadi jangan dijadikan patokan lolos seleksi. Balasan juga memuat beberapa detail kecil yang tidak Anda sebutkan (lokasi perusahaan, "bekerja di bawah tekanan", "disampaikan ke atasan") dan masa kerja "2 tahun" hanya ditebak dari 2022–2024, jadi periksa lagi sebelum dikirim.
+Uji terakhir di bot OpenClaw asli (grup uji internal Komunitech): 16 Oktober 2026, skill versi 1.1.3, dengan pesan yang sama di kedua sisi: "Tolong sesuaikan CV saya dengan lowongan ini: Lowongan: Staff Admin Gudang PT Sumber Makmur Logistik - Bekasi Kualifikasi: - Pendidikan minimal SMA/SMK sederajat - Pengalaman minimal 1 tahun sebagai admin gudang atau staff…". Tanpa skill **7** → dengan skill **8** dari 10, selisih +1: **belum lulus acuan kami** (skor dengan skill 8 sudah cukup, tetapi selisih 1 masih di bawah 1,5).
+
+Hanya sisi dengan skill yang menghitung seberapa cocok Anda dengan lowongan (77 dari 100, lengkap dengan alasan dan celahnya), lalu menyertakan surat lamaran, email singkat, daftar periksa sebelum kirim (simpan PDF, nama berkas, tanpa NIK/agama), dan tiga pertanyaan bernomor soal VLOOKUP/Pivot Table, WMS, dan scan barcode. Kedua sisi sama-sama tidak mengarang keahlian itu, dan CV tanpa skill pun sudah rapi dan jujur, sehingga selisihnya kecil.
+
+Catatan jujur: skor kata kunci (mis. 45%) hanya hitungan kata sederhana dan bisa tampak rendah padahal CV sudah sesuai, jadi jangan dijadikan patokan lolos seleksi. Balasan dengan skill juga sempat menyebut nama alat bantu dan menyapa Anda dengan sudut pandang orang ketiga. Beberapa detail kecil tidak Anda sebutkan (lokasi perusahaan, "bekerja di bawah tekanan", "disampaikan ke atasan"), dan masa kerja "2 tahun" hanya ditebak dari 2022–2024, jadi periksa lagi sebelum dikirim.
 
 ## FAQ
 **Apakah CV saya "digemukkan" dengan pengalaman palsu?**
@@ -92,4 +96,4 @@ Tidak. Anda yang menempel teks lowongan dari sumber mana pun (JobStreet, Glints,
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.4**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -56,10 +56,18 @@ Salin folder `kontrak-kerja-pkwt` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Di Windows, skrip dijalankan dengan `python` atau `py`.
 
 **Hasil uji (angka nyata):** dua sumber, skor 1–10.
-- **Uji OpenClaw otomatis agent, Okt 2026** (v1.0.8; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **2,25** → dengan skill **9,25** (LULUS).
-- **Uji bot Telegram asli (2026-10-03)**, skenario karyawan diberhentikan sebelum kontrak habis: tanpa skill melewatkan ganti rugi sisa kontrak; dengan skill kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = **Rp21.115.591**.
+- **Uji OpenClaw otomatis agent, Okt 2026** (v1.0.8; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **2,25** → dengan skill **9,25** (lulus).
+- **Uji bot Telegram asli, 3 Okt 2026**, skenario karyawan diberhentikan sebelum kontrak habis: tanpa skill melewatkan uang kompensasi (ganti rugi sisa kontrak sudah benar); dengan skill keduanya dihitung, kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = **Rp21.115.591**. Uji ini tanpa skor angka; rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. PERLU REVIEW: nomor ayat PP 35/2021 dari sumber sekunder.
+
+## Bukti uji di bot Telegram
+
+Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal) pada 3 Okt 2026; versi skill saat uji tidak tercatat. Pesan yang sama dikirim ke bot tanpa skill dan bot dengan skill: karyawan kontrak diberhentikan sebelum kontraknya habis. Uji ini tampil di bot **tanpa skor angka**, jadi tidak ada nilai "tanpa skill → dengan skill" dan tidak ada vonis "lulus acuan kami" untuk uji Telegram ini; yang dicatat adalah perbedaan jawabannya.
+- Tanpa skill: ganti rugi sisa kontrak Rp17.580.645 dihitung dengan benar, tetapi uang kompensasi habis kontrak terlewat dan bot menyebut tidak ada hak lain.
+- Dengan skill: keduanya dihitung, yaitu kompensasi Rp3.534.946 + ganti rugi Rp17.580.645 = **Rp21.115.591**, selisih sekitar Rp3,5 juta dari jawaban tanpa skill.
+- Catatan jujur: bot dengan skill menyebut usaha mikro/kecil boleh menyepakati besaran kompensasi; dasar pasalnya (nomor ayat PP 35/2021 dari sumber sekunder) masih perlu direview. Itu tidak mengubah angka di atas.
+- Uji sebelumnya (2 Okt 2026, skenario yang sama): bot tanpa skill gagal dua kali karena model kehabisan waktu, sedangkan bot dengan skill menjawab dengan angka yang sama.
 
 ## FAQ
 **Apakah kontrak dari skill ini pasti sah dan aman?**

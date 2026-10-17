@@ -67,10 +67,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal), 5 Okt 2026: bot penguji mengirim pesan yang sama ke bot tanpa skill dan bot dengan skill.
-- Tanpa skill: skor 6,5
-- Dengan skill: skor 8,5
-Hasil: lulus — DENGAN memetakan 3 kebutuhan ke 3 skill nyata (rekap-penjualan-csv = rekap omzet dari file kasir, balas-chat-cs mode draf = draf balasan chat pelanggan yang Anda kirim sendiri, promo-kalender = rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh berlabel jelas (angka benar), rencana 7 hari, aturan kerja aman, dan tawaran cek privasi; TANPA ramah dan praktis tetapi hanya saran umum tanpa hasil jadi maupun pagar keamanan. Catatan jujur: jawaban dengan skill cukup panjang (±60 baris) untuk pengguna awam.
+Uji terakhir di bot Telegram asli (grup uji internal Komunitech, data fiktif): 5 Okt 2026, versi 1.1.8. Pesan yang sama (pemilik laundry 2 outlet yang butuh rekap omzet, balasan chat pelanggan, dan promo) dikirim ke bot tanpa skill dan bot dengan skill, lalu dinilai penilai independen. Skor 1–10: tanpa skill **6,5** → dengan skill **8,5**, selisih +2. Hasil: lulus acuan kami (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Bedanya: bot yang memakai skill memetakan tiga kebutuhan pemilik ke tiga skill pendamping yang sudah ada (rekap omzet dari file kasir, draf balasan chat yang Anda kirim sendiri, dan rencana promo bertanggal), langsung mengerjakan tugas pertama dengan data contoh yang diberi label jelas dan angkanya benar, lalu memberi rencana 7 hari, aturan kerja yang aman, dan tawaran cek privasi. Bot tanpa skill ramah dan praktis, tetapi hanya memberi saran umum tanpa hasil jadi dan tanpa pagar keamanan.
+
+Catatan jujur: jawaban bot dengan skill cukup panjang (sekitar 60 baris) untuk pengguna awam. Bot juga sempat meminta foto atau file laporan kasir, padahal skill rekap omzet membutuhkan file ekspor kasir (CSV), bukan foto.
+
+Uji sebelumnya di komputer uji (1 Okt 2026, versi 1.1.8): 3 → 8,3.
 
 ## FAQ
 **Apakah AI langsung memasang skill lain tanpa izin saya?**

@@ -65,16 +65,13 @@ Salin folder `naskah-live-jualan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (skill v1.0.5), skor 1–10 penguji independen: tanpa skill **6,17** → dengan skill **8,83** (LULUS). Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ulang dengan pengaturan seperti bot Telegram (bukan bot sungguhan) pada v1.0.7 (5 Okt 2026, 3 percobaan, tanpa kirim ke grup): rata-rata dengan skill **8,17**, lulus 3 dari 3 (tanpa pembanding tanpa-skill). Dengan skill: rundown per menit dengan tanda kapan menyebut stok dan harga, fakta dicek silang, dan tidak ada istilah internal yang ikut terucap; tanpa skill: naskah generik tanpa pembagian waktu live.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (skill v1.0.5), skor 1–10 penguji independen: tanpa skill **6,17** → dengan skill **8,83** (lulus acuan kami). Sumber semua angka: `examples/00-openclaw-sebelum-sesudah.md`. Uji ulang dengan pengaturan seperti bot Telegram (bukan bot sungguhan) pada v1.0.7 (5 Okt 2026, 3 percobaan, tanpa kirim ke grup): rata-rata dengan skill **8,17**, lulus 3 dari 3 (tanpa pembanding tanpa-skill). Dengan skill: rundown per menit dengan tanda kapan menyebut stok dan harga, fakta dicek silang, dan tidak ada istilah internal yang ikut terucap; tanpa skill: naskah generik tanpa pembagian waktu live.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
-- Tanpa skill: skor 5,5
-- Dengan skill: skor 8
-Hasil: lulus — DENGAN memberi rundown 30 menit bertanggal jam, tabel promo yang benar (hemat Rp7.000/20%, paket Rp26.000/pcs, hemat Rp18.000/25%), stok sebagai `[stok nyata]`, dan bank jawaban tanpa klaim karangan; TANPA mengarang klaim produk ("tanpa pengawet", "tahan lama", "paling nagih") dan menyarankan "stok terbatas" serta "tersisa X botol … buat efek urgensi".
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 5 Okt 2026, skill versi 1.0.7; versi 1.0.8 hanya mengganti rujukan ke skill lain) dengan pesan yang sama: naskah TikTok Live 30 menit jam 8 malam untuk sambal botol, harga normal Rp35.000, harga live Rp28.000, paket isi 2 Rp52.000. Tanpa skill skor **5,5** → dengan skill skor **8** (selisih +2,5, lulus acuan kami, tetapi tepat di batas skor 8). Dengan skill, naskah dibagi per menit lengkap dengan jam tayangnya (20.00–20.30), tabel promonya dihitung benar (hemat Rp7.000 atau 20%; paket isi 2 jadi Rp26.000 per botol, hemat Rp18.000 atau 25%), stok ditulis sebagai isian `[stok nyata]`, dan ada daftar jawaban untuk pertanyaan penonton tanpa klaim karangan. Tanpa skill, bot mengarang klaim produk seperti "tanpa pengawet", "tahan lama", dan "paling nagih", serta menyarankan menyebut "stok terbatas" dan "tersisa sekian botol" demi efek terburu-buru padahal tidak ada data stok. Catatan jujur: banyak bagian masih berupa isian `[isi: ...]` (bahan, tingkat pedas, ukuran, COD, masa simpan) yang harus Anda lengkapi sendiri, sehingga bagian demo produk masih tipis. Jawaban untuk "Halal/BPOM?" hanya menyuruh melihat deskripsi produk, sebaiknya Anda ganti dengan nomor izin atau sertifikat halal Anda, dan belum ada pengingat bahwa harga normal Rp35.000 harus benar-benar pernah berlaku. Uji sebelumnya di komputer uji OpenClaw (1 Okt 2026) memberi 6,17 → 8,83.
 
 ## FAQ
 **Kenapa tidak boleh bilang "stok tinggal sedikit" untuk memancing pembeli?**

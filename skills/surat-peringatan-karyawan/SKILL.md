@@ -107,10 +107,10 @@ SURAT PERINGATAN PERTAMA (SP-1)
 Nomor: 001/SP-1/TB-MAJU/IX/2026
 ...
 A. Pelanggaran
-Berdasarkan rekap absensi mesin sidik jari periode 1–22 September 2026, Saudari tercatat
+Berdasarkan [isi: sumber bukti, mis. rekap absensi] periode September 2026, Saudari tercatat
 terlambat masuk kerja sebanyak 6 (enam) kali dengan keterlambatan lebih dari 30 menit,
-yaitu pada tanggal 2, 5, 9, 12, 16, dan 19 September 2026. Saudari telah ditegur secara
-lisan pada 9 dan 16 September 2026.
+yaitu pada tanggal [isi: tanggal-tanggal keterlambatan]. Saudari telah ditegur secara
+lisan sebanyak 2 (dua) kali pada [isi: tanggal teguran].
 
 B. Dasar
 Perbuatan tersebut melanggar [Pasal .. Peraturan Perusahaan tentang jam kerja]...

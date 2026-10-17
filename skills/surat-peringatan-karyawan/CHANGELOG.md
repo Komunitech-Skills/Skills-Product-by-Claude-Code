@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.7 (2026-10-17)
+- Contoh singkat di SKILL.md tidak lagi memuat tanggal keterlambatan, tanggal teguran lisan, dan sumber bukti yang tidak diberikan pengguna; semuanya kini `[isi: ...]`. Cara kerja dan script tidak berubah.
+
 ## Catatan revisi 1.0.6 (2026-10-01)
 
 - Description kini juga memicu skill saat pengguna ingin langsung PHK karena pelanggaran (sebelumnya "Bukan untuk surat PHK" membuat agent tidak membaca skill dan menulis SK PHK yang keliru). Temuan uji ulang OpenClaw putaran 3.

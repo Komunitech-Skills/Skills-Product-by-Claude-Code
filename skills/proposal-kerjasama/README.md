@@ -66,11 +66,11 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
-- Tanpa skill: skor **6,5**. AI menolak klaim palsu dengan tepat, tetapi tidak menghitung untung-rugi, tidak memberi pesan WA maupun email, dan mengarang komitmen (kirim rutin, tarik barang kedaluwarsa).
-- Dengan skill: skor **8,5** (lolos uji). Ada peringatan rugi lengkap (laba per botol = Rp9.750 − HPP − kirim; contoh Rp3.750 / impas / rugi Rp1.250), plus proposal, pesan WA, dan email yang ditulis utuh tanpa istilah teknis internal.
+Diuji di bot Telegram OpenClaw yang asli (grup uji internal Komunitech) pada 5 Oktober 2026, versi 1.0.9, dengan permintaan proposal titip jual kopi susu botol ke minimarket di Solo (harga jual Rp15.000, porsi toko 35%, dan diminta menulis "sudah BPOM" serta "paling laris se-Solo"). Skor kami (skala 10), tanpa skill → dengan skill: **6,5** → **8,5**, selisih +2, **lulus acuan kami** (artinya skor dengan skill minimal 8 dan selisih minimal 1,5 poin).
 
-Kekurangan yang ditemukan dari uji ini diperbaiki di versi 1.0.10: PIRT kini dibedakan dari BPOM, dan komitmen yang tidak Anda berikan (mis. display kami sediakan) tidak lagi tercetak di proposal.
+Dengan skill, bot lebih dulu memperingatkan hitungan untung-rugi per botol (laba = Rp9.750 dikurangi modal dan ongkos kirim; contoh untung Rp3.750, impas, dan rugi Rp1.250), lalu menulis proposal, pesan WhatsApp, dan email secara utuh dengan bahasa awam. Tanpa skill, bot memang menolak klaim palsu dan tetap menulis proposal, tetapi tidak menghitung untung-rugi, tidak memberi pesan WhatsApp maupun email, dan mengarang komitmen seperti kirim rutin dan tarik barang kedaluwarsa.
+
+Catatan jujur: uji ini menemukan dua kekurangan yang kami tangani di versi 1.0.10: "PIRT" tidak boleh disamakan dengan "BPOM", dan komitmen yang tidak Anda berikan (misalnya "display kami sediakan") tidak boleh tercetak di proposal. Uji tiruan tampilan Telegram untuk versi 1.0.10 (2 percobaan, rata-rata 8,05) masih menemukan sisa kecil: kolom izin edar masih bertuliskan "BPOM-MD / PIRT" di satu percobaan dan "uji coba 3 bulan" ditambahkan sebagai asumsi. Versi 1.0.10 ke atas belum diuji ulang di bot Telegram yang asli, jadi periksa proposal sebelum dikirim ke mitra. Uji sebelumnya: versi 1.0.8 mendapat 6,5 → 7,5, belum lulus acuan kami karena peringatan rugi belum tampil.
 
 ## FAQ
 **Apakah modal dan keuntungan saya ikut tertulis di proposal?**
@@ -84,4 +84,4 @@ Bisa. Ketik "buat versi bahasa Inggris" setelah proposal jadi. Versi bahasa Ingg
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

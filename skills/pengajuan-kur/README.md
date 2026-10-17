@@ -56,16 +56,13 @@ Salin folder `pengajuan-kur` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.2.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh bengkel laba Rp6,5 jt/bulan, KUR Rp75 jt: cicilan anuitas **Rp2.281.645** (=35,1% laba, BERAT), plafon aman ±Rp64 jt; "flat 6%" dijelaskan setara ±11% efektif vs KUR resmi 6% efektif.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.2.3), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **9,0** (lulus acuan kami). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Contoh bengkel laba Rp6,5 jt/bulan, KUR Rp75 jt: cicilan anuitas **Rp2.281.645** (=35,1% laba, BERAT), plafon aman ±Rp64 jt; "flat 6%" dijelaskan setara ±11% efektif vs KUR resmi 6% efektif.
 
 **Status uji (jujur):** tidak menjamin persetujuan bank; angka acuan Permenko 1/2026 — konfirmasi ke bank penyalur. Sudah diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-05.
-- Tanpa skill: skor 6
-- Dengan skill: skor 8,5
-Hasil: lulus — dengan skill AI menghitung cicilan anuitas 6% efektif (Rp2.281.645, 35,1% dari laba), plafon aman 30% (±Rp64,1 jt), memperingatkan bahwa "flat 6%" setara ±11% efektif, dan menyebut hak tanpa agunan tambahan (Pasal 20); sedangkan tanpa skill AI keliru menganggap KUR berbunga "flat 6%" sehingga cicilan terhitung Rp176.688 per bulan lebih besar (Rp2,46 jt, 38% dari laba).
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 5 Okt 2026, skill versi 1.2.3) dengan pesan yang sama: pemilik bengkel dengan laba bersih Rp6,5 juta per bulan yang ingin mengajukan KUR Rp75 juta selama 3 tahun (data yang sama dengan contoh di komputer uji). Tanpa skill skor **6** → dengan skill skor **8,5** (selisih +2,5, lulus acuan kami). Dengan skill, bot menghitung cicilan KUR dengan bunga 6% efektif yang benar (Rp2.281.645 per bulan, 35,1% dari laba), memberi batas pinjaman aman sekitar Rp64,1 juta (cicilan maksimal 30% dari laba), memperingatkan bahwa tawaran "bunga flat 6%" setara sekitar 11% efektif, dan menyebut hak tanpa agunan tambahan untuk pinjaman sampai Rp100 juta. Tanpa skill, bot keliru menganggap KUR berbunga flat 6% sehingga cicilannya terhitung Rp176.688 lebih besar per bulan (Rp2,46 juta, 38% dari laba). Catatan jujur: untuk cicilan 36 bulan yang masih berat, bot dengan skill hanya menyuruh Anda menanyakan tenor 60 bulan ke petugas bank dan belum menghitungnya (hitungan kami: Rp1.449.960 per bulan, 22,3% dari laba). Kewajiban NPWP dan batas tenor juga ditulis kurang tepat, dan kartu keluarga tidak diberi tanda "cek ke bank penyalur". Bunga 6% tetap acuan, jadi konfirmasikan ke bank penyalur. Uji sebelumnya di komputer uji OpenClaw (1 Okt 2026) memberi 6,0 → 9,0.
 
 ## FAQ
 **Apakah skill ini menjamin KUR saya disetujui?**

@@ -61,18 +61,15 @@ Salin folder `perjanjian-sederhana` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1–3 Okt 2026 (v1.0.6), skor 1–10 penguji independen: tanpa skill **4,25** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill menuliskan klausul jaminan BPKB yang batal demi hukum; dengan skill menjelaskan Pasal 33 UU Fidusia dan menyiapkan draf sewa/utang lengkap dengan meterai.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1–3 Okt 2026 (v1.0.6), skor 1–10 penguji independen: tanpa skill **4,25** → dengan skill **9,0** (lulus acuan kami). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill menuliskan klausul jaminan BPKB yang batal demi hukum; dengan skill menjelaskan Pasal 33 UU Fidusia dan menyiapkan draf sewa/utang lengkap dengan meterai.
 
-**Status uji (jujur):** draf bukan nasihat hukum. Sudah diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji; Codex dan Cursor belum diuji langsung (format skill-nya sama). Untuk kasus bernilai besar, PERLU REVIEW notaris/pengacara sebelum dipakai.
+**Status uji (jujur):** draf bukan nasihat hukum. Sudah diuji di OpenClaw (uji otomatis agent) dan sekali di bot Telegram (hasilnya belum lulus acuan kami, lihat bagian di bawah); Codex dan Cursor belum diuji langsung (format skill-nya sama). Untuk kasus bernilai besar, PERLU REVIEW notaris/pengacara sebelum dipakai.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-03.
-- Tanpa skill: skor 6
-- Dengan skill: skor 6,5
-Hasil: belum lulus — DENGAN lebih benar isinya (jadwal 4 cicilan, total Rp36 jt, peringatan status hak pakai kios pasar, meterai), tetapi **file perjanjian lengkap gagal terkirim** sehingga pengguna hanya menerima ringkasan; TANPA memberi naskah utuh siap cetak meski lebih tipis.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 3 Okt 2026) dengan pesan yang sama: perjanjian sewa kios pasar Rp18 juta per tahun selama 2 tahun, dibayar bertahap. Versi skill yang diuji tidak tercatat; temuan di bawah baru diperbaiki di versi 1.0.5 dan 1.0.6, jadi uji ini memakai versi yang lebih lama. Tanpa skill skor **6** → dengan skill skor **6,5** (selisih +0,5, belum lulus acuan kami: nilai dengan skill di bawah 8 dan selisih di bawah 1,5). Dengan skill isinya lebih benar (jadwal 4 cicilan, total Rp36 juta, peringatan soal status hak pakai kios pasar, dan meterai), tetapi naskah perjanjian lengkapnya gagal sampai ke chat sehingga pengguna hanya menerima ringkasan. Tanpa skill, pengguna mendapat naskah utuh siap cetak walaupun lebih tipis. Catatan jujur: pada uji itu ada juga pertentangan antarpasal (iuran pengelola pasar tertulis ditanggung penyewa di satu pasal, tetapi ditanggung pemilik di daftar asumsi) dan klausul pengosongan tanpa proses hukum yang sebaiknya tidak dijadikan bawaan.
 
-Kekurangan ini diperbaiki di versi 1.0.5–1.0.6 (naskah utuh tampil di chat, biaya dicek konsisten, tanpa pengosongan sepihak sebagai bawaan); sudah diuji ulang di OpenClaw lokal, belum diuji ulang di bot Telegram.
+Kekurangan itu diperbaiki di versi 1.0.5 dan 1.0.6 (naskah utuh tampil di chat, biaya dicek konsisten, tanpa pengosongan sepihak sebagai bawaan). Sesudah perbaikan, skill diuji ulang di OpenClaw lokal (3 Okt 2026, versi 1.0.6) dengan hasil 4,25 → 9,0, tetapi belum diuji ulang di bot Telegram.
 
 ## FAQ
 **Apakah perjanjian ini sah secara hukum?**

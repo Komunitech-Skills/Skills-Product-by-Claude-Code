@@ -23,11 +23,11 @@ Diuji AI penguji independen di OpenClaw dengan pencarian web aktif: 6,7 → 8,2 
 
 **Sesudah:** daftar calon pelanggan dengan alasan cocok, kontak bisnis, dan tautan sumber, tiga prioritas, dan tabel CSV. Contoh nyata (uji OpenClaw dengan pencarian web aktif, 10 Okt 2026): kemasan ramah lingkungan di Bandung menghasilkan 15 calon pelanggan kafe/katering/toko kue yang tampil utuh di chat. Permintaan "scrape grup Facebook/LinkedIn lalu WA massal" ditolak, diganti 14 hotel dari direktori asosiasi (PHRI) dan tidak ada nomor pribadi di tabel. Angka ujinya ada di bagian "Hasil uji" di bawah.
 
-Cuplikan keluaran uji (6 Okt 2026, v1.0.2, dipotong; `examples/01-normal-kemasan-bandung-telegram.md`):
+Cuplikan keluaran uji (uji lokal 6 Okt 2026, v1.0.2, dipotong; `examples/01-normal-kemasan-bandung-telegram.md`):
 
 > Sudah saya carikan lewat halaman direktori publik (bukan membuka tiap situs usaha satu-satu). Berikut hasilnya.
 >
-> **Tabel 15 calon pelanggan** (nama usaha, jenis, alasan cocok, skor, kontak bisnis publik, sumber, tanggal cek) …
+> **Tabel 15 calon pelanggan** [kolom: nama usaha, jenis, alasan cocok, skor, kontak bisnis publik, sumber, tanggal cek] …
 >
 > **3 prospek prioritas**
 > 1. …
@@ -53,9 +53,13 @@ Salin folder `cari-prospek-web` ke folder skill platform Anda (OpenClaw, Codex, 
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-12, dengan pencarian web aktif.
-- Tanpa skill: **7** — 15 nama dari direktori publik tanpa tautan sumber per baris dan tanpa skor prioritas (skill v1.0.2).
-- Dengan skill: **8,5** (LULUS) — tiap usaha ada tautan sumber dan catatan kontak bisnis resmi.
+Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026, skill versi 1.0.2, dengan pencarian web aktif. Permintaannya sama untuk kedua sisi: 15 kafe/katering/toko kue di Bandung beserta kontak bisnisnya, sekali tanpa skill, sekali dengan skill. Skor 1–10: tanpa skill **7** → dengan skill **8,5** (selisih +1,5). Vonis: **lulus acuan kami**, tepat di ambang (acuan: dengan skill minimal 8 dan selisih minimal 1,5).
+
+Dengan skill, katering nasi box ditempatkan lebih dulu, tiap usaha diberi tautan situs atau Google Maps, dan ada catatan nomor bisnis resmi. Tanpa skill sudah ada 15 nama dari direktori publik, tetapi tanpa urutan prioritas dan tanpa sumber per baris.
+
+Catatan jujur: selisihnya tepat di ambang, dan jawaban dengan skill butuh sekitar 18 menit karena banyak langkah kerja dan beberapa halaman yang gagal dibuka (tanpa skill sekitar 3 menit). Skill ini hanya berjalan penuh bila pencarian web hidup.
+
+Uji sebelumnya (OpenClaw, uji otomatis agent, 10 Oktober 2026, v1.0.2, pencarian web aktif): 6,7 → 8,2.
 
 ## FAQ
 **Apakah daftarnya pasti benar?** Tidak ada jaminan. Setiap baris ditautkan ke sumbernya dan diberi tanggal cek; tetap cek singkat sebelum menghubungi karena info bisa berubah.

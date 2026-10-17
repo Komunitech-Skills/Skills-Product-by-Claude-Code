@@ -164,19 +164,19 @@ dan **Asumsi** singkat (3–5 butir). Bagian ini juga yang tampil di chat bila p
 **Ringkasan:** Kriuk Mbok Darmi, keripik singkong pedas dari Bantul, ingin menitipkan produk di 5 cabang Kopi Senja. Kopi Senja mendapat 20% dari setiap bungkus terjual tanpa modal stok, dan pelanggan punya camilan pendamping kopi.
 
 **Skema kerja sama:**
-- Kami antar stok awal 30 bungkus/cabang dan mengisi ulang tiap minggu.
+- Stok awal [isi: jumlah] bungkus/cabang, diisi ulang [isi: jadwal].
 - Harga jual Rp 25.000/bungkus; Kopi Senja mendapat Rp 5.000 (20%) per bungkus terjual.
-- Rekap & pembayaran setiap akhir bulan; produk mendekati kedaluwarsa/rusak kami tarik dan ganti tanpa biaya.
-- Display toples kecil kami sediakan.
+- Rekap & pembayaran [isi: periode]; produk mendekati kedaluwarsa/rusak [isi: syarat retur].
+- Display: [isi: disediakan oleh siapa].
 
 | Penjualan per cabang/bulan | 50 | 100 | 200 |
 |---|---|---|---|
 | Pendapatan Kopi Senja per cabang | Rp 250.000 | Rp 500.000 | Rp 1.000.000 |
 
-**Langkah berikutnya:** uji coba 3 bulan di 2 cabang mulai [tanggal], lalu evaluasi bersama.
+**Langkah berikutnya:** uji coba [isi: durasi dan jumlah cabang] mulai [tanggal], lalu evaluasi bersama.
 ```
 (Tabel modal/laba Rp 6.000 per bungkus hanya ditunjukkan ke pengguna, tidak masuk proposal.)
-Asumsi yang disebut di akhir: stok awal 30 bungkus/cabang, isi ulang mingguan, display disediakan, uji coba 3 bulan di 2 cabang — konfirmasi ke pengguna.
+Hal yang belum disebut pengguna dan ditulis `[isi: ...]` — stok awal, jadwal isi ulang, periode rekap & pembayaran, syarat retur, display, durasi uji coba, jumlah cabang — disebut di akhir untuk dikonfirmasi ke pengguna.
 
 ## Cek-silang fakta (wajib, sebelum mengirim)
 Telusuri setiap kalimat proposal, pesan WA, email, dan Asumsi terhadap daftar "Fakta dari pengguna":

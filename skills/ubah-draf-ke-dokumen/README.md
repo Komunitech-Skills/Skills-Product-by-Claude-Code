@@ -21,7 +21,7 @@ Diuji AI penguji independen di OpenClaw: 5,63 → 8,28 dari 10 (isi dokumen tamp
 **Bukan untuk:** menulis surat resmi dari nol tanpa draf (skill Surat Resmi, `surat-resmi`), proposal kerja sama antarusaha dengan hitungan skema (skill Proposal Kerja Sama, `proposal-kerjasama`), atau mengolah PDF (skill PDF Lokal, `pdf-lokal`).
 
 ## Contoh sebelum & sesudah
-**Sebelum:** 20 baris poin-poin acak dari ChatGPT tanpa kop dan tanpa penutup.
+**Sebelum:** draf berantakan dari chat WA dan ChatGPT: hampir semua huruf kecil, harga ditulis "68000" atau "45rb", ada emoji dan basa-basi AI ("Tentu! Berikut ini draf suratnya ya kak"), tanpa kop dan tanpa tanggal.
 
 **Sesudah:** satu dokumen dengan kop, judul, paragraf rapi, tabel, dan penutup siap tanda tangan. Cuplikan keluarannya dari draf WA/ChatGPT tentang kenaikan harga (hasil uji OpenClaw dengan data fiktif, dipotong; dari `examples/01-surat-kenaikan-harga.md`):
 
@@ -62,7 +62,11 @@ Python opsional (hanya untuk file Word otomatis).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 13 Okt 2026): tanpa skill skor **7** → dengan skill skor **8** (selisih kecil, BELUM lolos acuan 1,5). Angka dan isi surat benar di kedua sisi; dengan skill ada tabel harga lama/baru dan ringkasan isi di chat, tetapi surat utuh tetap hanya di file Word dan nomor surat dibuat sendiri — periksa sebelum dikirim. Di bot ini permintaan yang berawal dari draf WA cenderung ditangani skill surat-resmi; sebut nama skill ini bila Anda ingin alur "rapikan draf".
+Uji terakhir: 13 Okt 2026, versi 1.0.1, di bot OpenClaw asli (grup uji internal Komunitech). Pesan yang sama dikirim dua kali, sekali tanpa skill dan sekali dengan skill: draf WhatsApp kenaikan harga biji kopi (arabika Rp85.000 jadi Rp92.000 per 250 gram, robusta tetap Rp60.000, harga lama masih berlaku sekali untuk pelanggan tetap yang memesan sebelum 31 Okt, maksimal 5 bungkus) diminta dirapikan jadi surat resmi dengan kop usaha, lengkap dengan file Word. Skor 1-10 dari penilai independen: tanpa skill **7** → dengan skill **8**, selisih **+1**: **belum lulus acuan kami** (skor dengan skill sudah 8, tetapi selisihnya di bawah 1,5).
+
+Angka dan isi surat benar di kedua sisi. Dengan skill ada tabel harga lama dan baru, baris lampiran, dan ringkasan isi di chat, tetapi surat utuhnya tetap hanya ada di berkas Word, nomor surat dan jabatan dibuat sendiri oleh bot, dan permintaan yang berawal dari draf WhatsApp justru ditangani skill surat resmi lain, sehingga bedanya hanya satu poin.
+
+Catatan jujur: periksa nomor surat dan jabatan sebelum surat dikirim. Bila Anda ingin alur "rapikan draf", menyebut nama skill ini mungkin membantu, tetapi cara itu belum diuji.
 
 ## FAQ
 **Apakah wajib memasang Pandoc (program konversi dokumen)?** Tidak. File Word dibuat dengan program kecil bawaan skill.

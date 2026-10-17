@@ -45,8 +45,8 @@ September naik berapa dari Agustus?"
 ...
 Jumlah Nominal: naik 73,5% (Rp 7.555.000 → Rp 13.110.000).
 Naik paling besar: Transport — naik 310,7% (Rp 1.595.000 → Rp 6.550.000).
-⚠️ 1 sel berisi rumus tanpa nilai tersimpan (E16) sehingga dianggap kosong ...
-⚠️ 1 baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris 18: TOTAL | … ).
+⚠️ 1 sel berisi rumus tanpa nilai tersimpan (mis. E16) sehingga dianggap kosong ...
+⚠️ 1 baris Total/Jumlah dilewati agar tidak terhitung dua kali (baris 18).
 ```
 (Cuplikan diringkas dari contoh yang dijalankan pembuat skill pada data fiktif, bukan dari uji independen; contoh lengkap: `examples/uji-pembuat-01-biaya-operasional-xlsx.md`.)
 
@@ -89,7 +89,11 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Kak, tolong bantu baca file Penjualan 2026.xlsx, filenya ada di folder kerja. Saya mau tahu: 1) kategori apa yang paling laku, 2) tren penjualan per bulannya gimana, 3) penjualan Q2 dibanding Q3 naik atau turun? Kasih angkanya…". Tanpa skill skor **7,3** → dengan skill skor **8,5** (selisih +1,2, belum lulus acuan kami: selisih 1,2 di bawah 1,5). Hanya versi dengan skill yang memberi omzet tiap bulan sampai rupiah beserta persen naik-turun per bulan (puncak April Rp34.340.000, terendah Juli Rp17.476.000 = -45,6 %) dan menunjuk persis sel Total yang kosong (Q2 baris 68, Q3 baris 79 & 98) beserta cara memperbaikinya. Tanpa skill, angka bulanan hanya dibulatkan ke juta dan trennya keliru disebut "naik terus dari Jan sampai April", padahal Februari turun 25 %. Penurunan Q2→Q3 -28,8 % didapat oleh kedua sisi. Catatan jujur: Transaksi yang totalnya masih berupa rumus belum tersimpan tidak ikut dihitung (di uji ini 3 transaksi, ±Rp409.000), jadi file perlu dibuka dan disimpan sekali di Excel agar angkanya lengkap. Jawaban juga belum menjelaskan kenapa baris TOTAL bawaan file berbeda dari hasil hitungan, dan tidak menyebut adanya retur.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 16 Oktober 2026, versi 1.0.18, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): minta membaca file penjualan Excel yang cukup sulit (3 sheet, ada sheet tersembunyi, angka berupa teks, dan rumus tanpa nilai tersimpan), lalu tanya kategori paling laku, tren penjualan per bulan, dan apakah penjualan kuartal 2 ke kuartal 3 naik atau turun. Skor 1–10 dari penilai independen: tanpa skill **7,3** → dengan skill **8,5** (selisih +1,2), **belum lulus acuan kami**: selisihnya masih di bawah 1,5.
+
+Hanya versi dengan skill yang memberi omzet tiap bulan sampai rupiah beserta persen naik-turunnya (puncak April Rp34.340.000, terendah Juli Rp17.476.000, turun 45,6% dari Juni) dan menunjuk persis sel Total yang kosong (sheet Q2 baris 68, sheet Q3 baris 79 dan 98) beserta cara memperbaikinya. Tanpa skill, angka bulanan hanya dibulatkan ke juta dan trennya keliru disebut "naik terus dari Januari sampai April", padahal Februari turun 25%. Penurunan kuartal 2 ke kuartal 3 sebesar 28,8% didapat oleh kedua sisi, sehingga bedanya belum cukup besar.
+
+Catatan jujur: transaksi yang totalnya masih berupa rumus belum tersimpan tidak ikut dihitung (di uji ini 3 transaksi, sekitar Rp409.000), jadi file perlu dibuka dan disimpan sekali di Excel agar angkanya lengkap. Jawaban juga belum menjelaskan kenapa baris TOTAL bawaan file berbeda dari hasil hitungan, dan tidak menyebut adanya retur. Uji sebelumnya: uji OpenClaw otomatis 1 Oktober 2026, 7,25 → 8,75 (lihat di atas).
 
 ## FAQ
 **Apakah data saya dikirim ke internet?**
