@@ -1,4 +1,4 @@
-# Tagihan dan Follow-up Tak Lagi Mudah Terlupa
+# Tagihan dan Follow-up Lebih Sulit Terlupa
 
 **Setiap pagi (lewat OpenClaw), asisten AI Anda dapat mengirim daftar siapa yang harus ditagih dan di-follow-up hari ini, lengkap dengan pesan siap kirim.**
 

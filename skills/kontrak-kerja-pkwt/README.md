@@ -1,4 +1,4 @@
-# Kontrak Karyawan Kontrak, Minim Salah Pasal
+# Kontrak Karyawan Kontrak: Pasal Dicek, Hak Dihitung
 
 **Buat kontrak PKWT (Perjanjian Kerja Waktu Tertentu, yaitu kontrak karyawan kontrak) siap cetak, periksa kontrak lama dari pasal berisiko, dan hitung kompensasi habis kontrak sampai ke rupiahnya. Hasilnya draf bantu, bukan nasihat hukum.**
 

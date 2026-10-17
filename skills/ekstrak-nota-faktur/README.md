@@ -1,4 +1,4 @@
-# Foto Nota Jadi Tabel Excel, Sudah Dicek
+# Foto Nota Jadi Tabel untuk Excel, Hitungan Dicek
 
 **Kirim foto nota, struk, atau faktur pajak. Dapat tabel rapi, hitungan yang sudah dicek, dan rekap pengeluaran.**
 

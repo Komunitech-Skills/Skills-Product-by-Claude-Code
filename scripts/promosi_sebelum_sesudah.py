@@ -4,14 +4,21 @@
 Skill tampil di daftar promosi bila: verdik terakhir LULUS, skor sesudah >= 8,
 selisih >= 1,5 (keputusan pemilik 2026-10-03), DAN — bila skill sudah pernah diuji sebelum/sesudah
 di bot Telegram asli — hasil terakhirnya (`telegram_terakhir`, keputusan otomatis 100, 2026-10-16)
-bukan BELUM. Kolom `label` (mis. "Belum direview tenaga medis") ditampilkan di kartu.
+bukan BELUM (TIDAK-DINILAI = uji bot lama tanpa skor tetap tampil, kalimat kartu menyebut "tanpa skor angka";
+bila versi yang diuji di bot lebih lama dari versi catalog.csv atau tidak tercatat, kalimat kartu menyebutnya),
+DAN baris tidak punya kolom `tahan` ({"alasan": "...", "sejak": "YYYY-MM-DD"}: kartu ditahan sementara,
+mis. versi yang dijual perlu diuji ulang; alasannya tampil di tabel internal "Tidak ditampilkan").
+Kolom `label` (mis. "Belum direview tenaga medis") ditampilkan di kartu.
 Skrip juga menyelaraskan kolom turunan di jsonl: `selisih` dan `lolos_promosi` (= tampil).
 Pakai: python3 scripts/promosi_sebelum_sesudah.py
 """
+import csv
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+CAT = ROOT / "catalog.csv"
 SRC = ROOT / "promosi" / "sebelum-sesudah.jsonl"
 OUT = ROOT / "promosi" / "SEBELUM-SESUDAH.md"
 TPL = ROOT / "promosi" / "template-halaman.html"
@@ -46,12 +53,23 @@ def lulus_internal(r):
             and r["skor_sesudah"] - r["skor_sebelum"] >= MIN_SELISIH)
 
 
+def ditahan(r):
+    """Kolom opsional `tahan` = {"alasan": ..., "sejak": ...}: kartu ditahan sementara (transparan)."""
+    return bool(r.get("tahan"))
+
+
 def tampil(r):
+    if ditahan(r):
+        return False
     t = tg_terakhir(r)
     return lulus_internal(r) and not (t and t.get("verdik_aturan") == "BELUM")
 
 
 def alasan_sembunyi(r):
+    if ditahan(r):
+        th = r["tahan"]
+        alasan = th.get("alasan", "") if isinstance(th, dict) else str(th)
+        return f"ditahan: {alasan}".strip()
     if not str(r.get("verdik_terakhir", "")).upper().startswith("LULUS"):
         return "belum lulus"
     if r["skor_sesudah"] < MIN_SESUDAH:
@@ -64,22 +82,48 @@ def alasan_sembunyi(r):
     return "-"
 
 
-def kalimat_telegram(t):
+def versi_katalog():
+    """{nama: versi} dari catalog.csv (hanya dibaca) — untuk menandai uji bot dengan versi lama."""
+    try:
+        with CAT.open(encoding="utf-8", newline="") as f:
+            return {r["nama"]: (r.get("versi") or "").strip() for r in csv.DictReader(f)}
+    except Exception:
+        return {}
+
+
+def _versi(s):
+    m = re.fullmatch(r"\s*(\d+)\.(\d+)\.(\d+)\s*", str(s or ""))
+    return tuple(int(x) for x in m.groups()) if m else None
+
+
+def ket_versi(t, versi_jual):
+    """Keterangan awam bila bot diuji dengan versi lebih lama dari yang dijual / versinya tidak tercatat."""
+    vd, vj = _versi(t.get("versi_diuji")), _versi(versi_jual)
+    if vd is None:
+        return "versi yang diuji tidak tercatat"
+    if vj and vd < vj:
+        return "versi lebih lama dari yang dijual"
+    return ""
+
+
+def kalimat_telegram(t, versi_jual=""):
     """Satu–dua kalimat awam tentang uji terakhir di bot Telegram asli."""
     if not t:
         return ""
     tgl = tanggal_id(t.get("tanggal", ""))
+    kv = ket_versi(t, versi_jual)
+    waktu = f"{tgl} ({kv})" if kv else tgl
     pemb = (t.get("pembeda_awam") or "").strip()
     if pemb and not pemb.endswith((".", "!", "?")):
         pemb += "."
     v = t.get("verdik_aturan")
     if v == "LOLOS":
-        k = f"Diuji juga di bot Telegram sungguhan ({tgl}): skor {angka(t['skor_tanpa'])} menjadi {angka(t['skor_dengan'])}."
+        k = f"Uji {waktu}: skor {angka(t['skor_tanpa'])} menjadi {angka(t['skor_dengan'])}."
     elif v == "BELUM":
-        k = (f"Pada uji di bot Telegram sungguhan ({tgl}) hasilnya {angka(t['skor_tanpa'])} menjadi "
+        k = (f"Uji {waktu}: skor {angka(t['skor_tanpa'])} menjadi "
              f"{angka(t['skor_dengan'])}, belum memenuhi acuan kami.")
     else:
-        k = f"Diuji juga di bot Telegram sungguhan ({tgl}), tanpa skor angka."
+        k = f"Uji {waktu}: uji ini hanya mencatat perbedaannya, tanpa skor angka."
     return (k + " " + pemb).strip()
 
 
@@ -95,13 +139,15 @@ def main():
     if berubah:  # kolom turunan diselaraskan di SSOT (urutan baris tetap)
         SRC.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
     rows.sort(key=lambda r: (-r["selisih"], -r["skor_sesudah"], r["nama"]))
+    vk = versi_katalog()
     ok = [r for r in rows if tampil(r)]
     lain = [r for r in rows if not tampil(r)]
     L = ["# Sebelum vs sesudah pakai skill Komunitech", "",
          "Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh "
          "`scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.", "",
          f"Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ {angka(MIN_SESUDAH)}, "
-         f"selisih ≥ {angka(MIN_SELISIH)}, dan bila sudah diuji di bot Telegram asli, hasil terakhirnya memenuhi acuan yang sama. "
+         f"selisih ≥ {angka(MIN_SELISIH)}, uji terakhirnya di bot Telegram asli (bila ada) tidak gagal, dan kartu tidak sedang ditahan "
+         f"(uji bot lama tanpa skor angka tetap tampil dan disebut \"tanpa skor angka\"). "
          f"Jumlah: **{len(ok)} skill** dari {len(rows)} yang diuji; "
          f"{sum(1 for r in ok if tg_terakhir(r))} di antaranya juga teruji di bot Telegram asli.", "",
          "## Ringkasan (urut selisih terbesar)", "",
@@ -121,7 +167,7 @@ def main():
         if r.get("label"):
             L.append(f"- **Keterangan:** {r['label']}")
         if tg_terakhir(r):
-            L.append(f"- **Di bot Telegram sungguhan:** {kalimat_telegram(tg_terakhir(r))}")
+            L.append(f"- **Di bot Telegram sungguhan:** {kalimat_telegram(tg_terakhir(r), vk.get(r['nama'], ''))}")
         if r.get("catatan_jujur"):
             L.append(f"- **Catatan jujur:** {r['catatan_jujur']}")
         L.append("")
@@ -134,7 +180,7 @@ def main():
     data = [{"judul": r["judul_jualan"] or r["nama"], "kat": r["kategori"], "b": r["skor_sebelum"],
              "a": r["skor_sesudah"], "tugas": r["tugas"], "tanpa": r["tanpa_skill"], "dengan": r["dengan_skill"],
              "angka": r.get("angka_kunci", ""), "catatan": r.get("catatan_jujur", ""), "label": r.get("label", ""),
-             "tg": kalimat_telegram(tg_terakhir(r))} for r in ok]
+             "tg": kalimat_telegram(tg_terakhir(r), vk.get(r["nama"], ""))} for r in ok]
     tanggal = max([r["tanggal_uji"] for r in ok] + [tg_terakhir(r)["tanggal"] for r in ok if tg_terakhir(r)])
     html = TPL.read_text(encoding="utf-8").replace("__DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
     HTML.write_text(html.replace("__TANGGAL__", tanggal_id(tanggal)), encoding="utf-8")

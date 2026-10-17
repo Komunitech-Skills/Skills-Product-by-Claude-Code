@@ -123,7 +123,7 @@ Bila Terminal terasa sulit, tulis "Perlu bantuan" di formulir dan tanyakan di to
 
 Tempel kalimat di bawah apa adanya ke chat bot Anda, lalu ganti angka dan nama sesuai keadaan usaha Anda. Catatan: `pantau-cron-openclaw` dan `cek-privasi-openclaw` **hanya untuk OpenClaw**; delapan skill lain berformat sama sehingga bisa dipasang di Claude Code, Codex, atau Cursor, tetapi baru diuji di OpenClaw; laporan Anda dari platform lain sangat berharga.
 
-**1. `pantau-cron-openclaw` — Laporan Terjadwal Gagal? Langsung Ketahuan.** Jadwal/laporan otomatis OpenClaw yang terlambat atau hilang ketahuan dan Anda dikabari lewat Telegram. Tugas 7 hari: periksa jadwal otomatis bot Anda, pasang pengawas (bot menampilkan rencana dan meminta "ya" sebelum mengubah jadwal). Perlu: hanya OpenClaw, Telegram terhubung, Python 3 (wajib). Catatan jujur: kabar HILANG sudah terbukti tiba di Telegram pada uji kami 13 Okt 2026, tetapi alur pemasangan lewat chat (bot menampilkan rencana → Anda balas "ya") belum kami buktikan ujung ke ujung; bot akan menjalankan satu uji peringatan dulu — laporkan apakah pesan uji itu sampai ke Telegram Anda (ini masukan paling berharga untuk skill ini).
+**1. `pantau-cron-openclaw` — Laporan Terjadwal Gagal? Kabar Masuk ke Telegram.** Jadwal/laporan otomatis OpenClaw yang terlambat atau hilang ketahuan dan Anda dikabari lewat Telegram. Tugas 7 hari: periksa jadwal otomatis bot Anda, pasang pengawas (bot menampilkan rencana dan meminta "ya" sebelum mengubah jadwal). Perlu: hanya OpenClaw, Telegram terhubung, Python 3 (wajib). Catatan jujur: kabar HILANG sudah terbukti tiba di Telegram pada uji kami 13 Okt 2026, dan alur pemasangan lewat chat (bot menampilkan rencana → Anda balas "ya") berhasil di bot uji kami pada 16 Okt 2026 dengan versi sebelumnya; versi yang Anda terima belum tuntas kami uji di bot. Bot akan menjalankan satu uji peringatan dulu — laporkan apakah pesan uji itu sampai ke Telegram Anda (ini masukan paling berharga untuk skill ini).
 - `Pantau laporan harian 21.00 dan piutang 07.45 Senin-Jumat saya. Kabari ke Telegram kalau gagal.`
 - `Job mana yang terlambat hari ini?` (job = jadwal otomatis bot Anda)
 
@@ -151,7 +151,7 @@ Tempel kalimat di bawah apa adanya ke chat bot Anda, lalu ganti angka dan nama s
 - `Ini 12 CV untuk admin toko online. Pilih 5 terbaik dan siapkan pertanyaan wawancaranya.` (tempel CV-nya)
 - `Bikinin pesan untuk yang lolos dan yang belum cocok.`
 
-**8. `satu-lawan-satu-dan-umpan-balik` — Ngomong ke Tim Tanpa Tidak Enak Hati.** Naskah ucapan dan pesan WA untuk obrolan empat mata, teguran halus, rencana 30 hari karyawan baru, dan pengumuman ke tim. Tugas 7 hari: siapkan 1 sesi empat mata dengan karyawan. Perlu: tidak ada (tanpa Python, akun, atau program tambahan).
+**8. `satu-lawan-satu-dan-umpan-balik` — Siapkan Obrolan Empat Mata dengan Karyawan.** Naskah ucapan dan pesan WA untuk obrolan empat mata, teguran halus, rencana 30 hari karyawan baru, dan pengumuman ke tim. Tugas 7 hari: siapkan 1 sesi empat mata dengan karyawan. Perlu: tidak ada (tanpa Python, akun, atau program tambahan).
 - `Saya nggak enak negur kasir yang sering telat.`
 - `Buatkan agenda obrolan empat mata 30 menit dengan staf gudang saya.`
 

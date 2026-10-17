@@ -1,6 +1,6 @@
-# Promo 11.11 Sampai Lebaran, Tetap Untung
+# Promo 11.11 Sampai Lebaran, Labanya Dihitung Dulu
 
-**Rencana promo lengkap untuk momen belanja besar, dengan hitungan margin (persentase untung) yang langsung memberi tahu kalau diskon Anda bikin rugi.**
+**Rencana promo lengkap untuk momen belanja besar, dengan hitungan margin (persentase untung) yang memberi tahu bila diskon Anda berisiko rugi.**
 
 Diuji AI penguji independen: di OpenClaw 6,5 → 8 dari 10 (8,5 setelah perbaikan dan uji ulang; satu skenario, versi 1.0.3). Di uji terpisah (simulasi Claude Code, skor 8 dari 10), tanpa skill tidak ada batas diskon aman dan linimasanya tanpa tanggal.
 

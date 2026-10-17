@@ -1,4 +1,4 @@
-# SOP Usaha Jadi dalam Menit, Karyawan Langsung Paham
+# SOP Usaha Jadi Cepat, Lengkap dengan Checklist Berparaf
 
 **Ceritakan cara kerja Anda, dapat SOP (Standar Operasional Prosedur: panduan langkah kerja tertulis) lengkap dan checklist harian yang siap dicetak dan ditempel.**
 

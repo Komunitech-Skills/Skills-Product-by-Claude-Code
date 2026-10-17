@@ -1,6 +1,6 @@
-# Cek Harga Pesaing, Pasang Harga Tetap Untung
+# Cek Harga Pesaing, Hitung Harga Minimum
 
-**Tempel link atau screenshot produk pesaing, dapatkan harga pasaran dan harga jual yang disarankan tanpa merusak margin.**
+**Tempel link atau screenshot produk pesaing, dapatkan harga pasaran dan harga jual yang disarankan dengan margin yang sudah dihitung.**
 
 *Diuji AI penguji independen di OpenClaw (16 Oktober 2026, versi 1.0.5, satu skenario kopi gayo 250 gr, lokal dan dengan pengaturan seperti bot Telegram di komputer uji, bukan bot Telegram sungguhan): tanpa skill 5 → dengan skill 8,0 dari 10. Lulus tipis: skor tanpa skill dibatasi karena dua salah hitung persen untung dan jumlah harga coret; semua angka dengan skill cocok dengan hitungan independen (median Rp53.125, harga minimum tetap untung Rp46.297). Uji simulasi Claude Code sebelumnya: 8,5 dari 10.*
 

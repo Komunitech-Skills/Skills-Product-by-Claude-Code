@@ -1,6 +1,6 @@
-# Laporan Terjadwal Gagal? Langsung Ketahuan
+# Laporan Terjadwal Gagal? Kabar Masuk ke Telegram
 
-**Pantau Cron OpenClaw** -- tagline: *jadwal otomatis Anda diam-diam mati? Anda dikabari lewat Telegram, tidak perlu menunggu sadar sendiri.*
+**Pantau Cron OpenClaw** -- *jadwal otomatis Anda diam-diam mati? Anda bisa dikabari lewat Telegram, tidak perlu menunggu sadar sendiri.*
 
 Diuji AI penguji independen di OpenClaw: 4,63 → 8,19 dari 10 (tanpa skill asisten hanya menjawab "sudah terpasang dan aktif" tanpa bukti; dengan skill jadwal yang terlambat atau hilang ketahuan dari hitungan jam).
 

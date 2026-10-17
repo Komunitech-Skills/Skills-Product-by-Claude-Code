@@ -1,4 +1,4 @@
-# Harga Jual Marketplace Anti Boncos
+# Harga Jual Marketplace, Potongan Dihitung Satu per Satu
 
 **Tahu harga tayang yang pas di Shopee, Tokopedia, dan TikTok Shop supaya masih untung setelah potongan yang Anda masukkan.**
 

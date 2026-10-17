@@ -1,4 +1,4 @@
-# Strategi Konten & Anggaran Iklan - konten jelas, uang iklan tidak bocor
+# Strategi Konten dan Anggaran Iklan yang Terhitung
 
 **Satu kalimat dari Anda: pilar konten (tema besar konten) yang tepat sasaran plus pembagian anggaran iklan per kanal per minggu, lengkap dengan batas impas yang dihitung, bukan dikira.**
 

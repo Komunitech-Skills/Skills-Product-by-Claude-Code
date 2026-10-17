@@ -1,4 +1,4 @@
-# Pantau Kripto Tanpa Ikut Deg-Degan Pantau Layar
+# Jurnal, Pajak, dan Berita Kripto dalam Satu Asisten
 
 **Harga, berita, riset, dan jurnal trading kripto Anda -- rapi & terjadwal. Bukan sinyal beli/jual dan tanpa janji profit.**
 
