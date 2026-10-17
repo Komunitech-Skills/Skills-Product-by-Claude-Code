@@ -153,3 +153,60 @@ Kutipan DENGAN:
 3. Jangan pakai istilah "margin" bila data tidak memuat modal/HPP; pakai "harga jual".
 4. Ringkas untuk chat: satu rata-rata saja, tanpa judul `##`.
 5. Tambahkan kunci di uji internal yang memeriksa setiap kalimat insight terhadap angka (mis. "produk dengan pcs terbanyak = Tote Bag").
+
+## Pemeriksa kedua (2026-10-17)
+
+Pemeriksa kedua independen (bukan pembuat skill, bukan penilai 1). Bahan yang dibaca: kedelapan transkrip `scratchpad/openclaw-real/hasil/a5/2072–2079-*.md`, `pilot/kandidat-a-cepat.json`, `pilot/seed-laporan-harian.sh`, `pilot/data-a-cepat/rekap-penjualan-csv/penjualan-september.csv`, dan SKILL.md keempat skill. Angka dihitung ulang sendiri dengan Decimal dan kalender Python.
+
+**Angka kunci yang dicek ulang (semua cocok dengan penilai 1):**
+- Kasir: kemarin Rp179.000; hari ini Rp172.600 (rata-rata Rp43.150), −3,6%; tunai Rp84.600, QRIS Rp88.000.
+- Piutang per 17/10: Bu Tini jatuh tempo 15/9, lewat 32 hari; Kafe Senja jatuh tempo 12/9, sisa Rp1.400.000, lewat 35 hari; Pak Joko jatuh tempo 25/10 (8 hari lagi); total lewat tempo Rp2.650.000.
+- Pajak: 15 Des 2026 = Selasa; 31 Mar 2027 = Rabu; PPh masa November 0,5% × Rp50.000.000 = Rp250.000 (kumulatif Oktober tepat Rp500 juta, jadi seluruh omzet November di atas batas).
+- CSV: 72 baris; Selesai 66 / Rp5.519.000, Batal 4 / Rp238.000, Pengembalian Dana 2 / Rp272.000. Per produk (pcs, harga satuan): Oversize Abu 21 @79.000, Polos Putih 18 @59.000, Polos Hitam 17 @59.000, Topi 22 @45.000, **Tote Bag 23 @35.000**. Ada 29 hari berjualan; tertinggi 5/9 Rp549.000; terendah 18/9 Rp35.000; pesanan terbanyak 1/9 dan 5/9 (5 pesanan). Senin Rp1.155.000 dan Selasa 12 pesanan, keduanya benar. Catatan kecil: September 2026 punya 5 hari Selasa dan 4 hari Senin, jadi "Selasa paling banyak transaksi" sebagian karena jumlah harinya.
+
+### Per skill
+
+| Skill | Penilai 1 | Pemeriksa kedua | Skor koreksi | Verdik akhir |
+|---|---|---|---|---|
+| laporan-harian-usaha 1.1.4 | 3,5 → 8,0, LULUS | **Setuju** | tetap | **LULUS** |
+| buku-piutang 1.0.5 | 7,5 → 4,0, BELUM | **Tidak setuju** dengan status final | skor DENGAN 4,0 **dibatalkan** | **TIDAK SAH — perlu kirim ulang dengan lanjutan "ya"** |
+| kalender-pajak 1.0.7 | 5,5 → 8,0, LULUS | **Setuju** | tetap | **LULUS** |
+| rekap-penjualan-csv 1.2.5 | 8,0 → 6,5, BELUM | **Setuju** | tetap | **BELUM** |
+
+**(1) buku-piutang: TIDAK SAH.** Balasan DENGAN (2075) mengikuti SKILL.md persis.
+- Aturan wajib 5 menggolongkan `init` sebagai perubahan besar: jalankan pratinjau dulu, lalu `--ya` hanya setelah pengguna setuju.
+- Langkah A.1–A.2 meminta `info`, lalu `init` dengan pratinjau dan persetujuan, bila database belum ada.
+- Aturan 2 melarang menghitung sisa atau umur piutang tanpa script, jadi rekap memang tidak bisa diberikan sebelum buku dibuat.
+
+Bot di sini menjalankan skill dengan benar. Masalahnya ada pada desain uji: pra-cek memakai buku yang sudah ada, dan kandidat tidak memuat `lanjutan`, padahal uji `buku-stok` dan `absensi-lokal` di berkas yang sama memakai `"lanjutan": "ya"`. Skor 4,0 mengukur giliran yang belum selesai, bukan hasil skill, jadi tidak dipakai untuk verdik.
+
+Kritik penilai 1 tetap berlaku sebagai **usulan desain**, bukan cacat eksekusi: buku kosong untuk pemakaian pertama cukup dibuat dengan nama usaha dan pengirim dari pesan, tanpa giliran tambahan. Bila pemilik ingin satu giliran saja, Aturan 5 dan Langkah A perlu diubah di versi berikutnya. Sisi TANPA 7,5: setuju. Nilai minusnya yang terberat adalah tawaran "Mau saya kirimkan langsung ke nomor itu?", karena bertentangan dengan aturan bahwa manusia yang mengirim.
+
+**(2) laporan-harian-usaha: perbandingan tetap sah.** Sisa berkas `laporan/masuk/penjualan/contoh-penjualan-17okt.csv` hanya memengaruhi sisi TANPA. Tanpa berkas itu, TANPA paling-paling menjawab jujur "belum ada data kasir/calon pembeli" (perkiraan 3–4,5), karena data kasir dan CRM tersimpan di database alat yang hanya dikenali lewat skill. Berkas sisa tidak menguntungkan sisi DENGAN, yang membaca kasir dan CRM hasil seed.
+- Selisih terburuk: 8,0 − 4,5 = 3,5, masih ≥ 1,5.
+- Semua angka DENGAN cocok dengan seed.
+- Baris "vs Sabtu lalu: Rp 0 → naik dari Rp 0" memang aturan SKILL.md (Perubahan %, pembanding Rp 0). Itu cacat desain, bukan salah eksekusi, dan pengurangan nilainya wajar.
+
+Hanya saja, sebelum uji berikutnya `laporan/` perlu dibersihkan dan sisi TANPA dijalankan di home bersih, sesuai `tester-umum.md` ("buat ulang bersih per skenario").
+
+**(3) rekap-penjualan-csv: klaim penilai 1 benar.** Dari CSV, jumlah terjual terbanyak adalah Tote Bag Natural (23 pcs, bukan Topi 22 pcs) dan yang termurah juga Tote Bag (Rp35.000, bukan Topi Rp45.000). Insight 2 bertentangan dengan daftar peringkat di atasnya dan memberi saran harga yang keliru. Ini juga melanggar SKILL.md ("Insight harus berdasarkan data"). Istilah "margin per unit" juga salah, karena data tidak memuat modal.
+
+Angka utama (omzet, terlaris per omzet, hari ramai) benar, jadi batas "salah angka kunci = maks 5" tidak dipakai. Skor 6,5 wajar. BELUM.
+
+**(4) kalender-pajak: SPT Tahunan tidak disebut, bobotnya ringan.** Pertanyaannya "bulan Oktober ini", dan tenggat 31 Mar 2027 masih ±5 bulan lagi, jadi tidak ada risiko denda dalam jendela yang ditanyakan. Kesimpulan inti (Oktober tidak ada setoran; setoran pertama paling lambat Selasa 15 Des 2026) benar dan tidak menyesatkan.
+
+Untuk freelancer orang pribadi dengan tarif 0,5%, SPT Tahunan tetap wajib dan tahun 2026 adalah tahun pertama ia melewati Rp500 juta, jadi pengingat itu bernilai. Pengurangan sekitar −0,5 sudah tercermin dalam 8,0 penilai 1. Bukan salah fakta kunci. Usulan untuk versi berikutnya: satu baris "Jangan lupa: SPT Tahunan 2026 paling lambat Rabu, 31 Mar 2027" dan perkiraan setoran November Rp250.000.
+
+Untuk sisi TANPA 5,5: tanggal 10 Oktober untuk PPh 21/23 memang usang, tetapi tidak berlaku untuk profil ini (tanpa karyawan), jadi batas maks 5 tidak dipakai. Setuju.
+
+### Uji yang perlu dikirim ulang
+
+1. **buku-piutang 1.0.5, sisi DENGAN saja**, di topik baru dengan bot pertama. Sisi TANPA (2074, 7,5) tetap dipakai dan **jangan dikirimi "ya"**, karena giliran terakhirnya bertanya "Mau saya kirimkan langsung ke nomor itu?" dan "ya" bisa dibaca sebagai izin mengirim WA ke pelanggan (di luar grup uji).
+   - Prasyarat: `~/KomunitechData/piutang/piutang.db` di HOME bot **belum ada**, agar jalur pemakaian pertama yang diuji. Hapus juga `laporan/masuk/piutang/piutang-toko-sembako-berkah-sep2026.csv` sisa sisi TANPA dari workspace bersama. Restart gateway bila `channels.*` diubah.
+   - Pesan 1 (persis): `@KTclaude1_bot tolong catet bon ya: Warung Bu Tini ambil beras 1.250.000 tgl 1/9/2026 nota B-0901 tempo 2 minggu. Kafe Senja ambil gula & minyak 2,4jt tgl 5/9/2026 nota B-0905 tempo seminggu, tgl 15/9 kafe senja transfer 1jt. Pak Joko 850rb tgl 25/9/2026 nota B-0925 tempo 30 hari. siapa aja yg belum bayar & yg udah lewat jatuh tempo? bikinin pesan tagih buat kafe senja ya, wa nya 0812-3456-7890. toko saya Toko Sembako Berkah, nama saya Sari`
+   - Lanjutan (persis, hanya bila balasan 1 berupa pratinjau pembuatan buku): `@KTclaude1_bot ya`
+   - Kunci tidak berubah: Kafe Senja sisa Rp1.400.000, lewat 35 hari; Bu Tini Rp1.250.000, lewat 32 hari; total lewat tempo Rp2.650.000; Pak Joko Rp850.000, jatuh tempo 25 Okt; draf tagih + tautan wa.me, dikirim Sari sendiri. Nilai dua giliran sebagai satu jawaban (seperti kalender-pajak).
+   - Tambahkan `"lanjutan": "ya"` ke entri buku-piutang di `pilot/kandidat-a-cepat.json` dan skenario "buku belum ada" ke pra-cek.
+2. laporan-harian-usaha, kalender-pajak, rekap-penjualan-csv: **tidak perlu kirim ulang.**
+
+Verdik akhir gelombang A5: LULUS 2 (laporan-harian-usaha, kalender-pajak), BELUM 1 (rekap-penjualan-csv), TIDAK SAH 1 (buku-piutang, menunggu kirim ulang).
