@@ -65,16 +65,19 @@ Salin folder `rapikan-data-berantakan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw 5 Okt 2026 (uji otomatis agent, diuji pada v1.0.1, 2 skenario), skor 1–10 penguji independen: tanpa skill **3,5** → dengan skill **9,0** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`. Di bot Telegram asli selisihnya jauh lebih kecil (7 → 7,5, verdik BELUM; lihat bagian berikutnya): di sana AI tanpa skill sudah memberi tabel pelanggan bersih langsung di chat.
+**Hasil uji (angka nyata):** uji OpenClaw 5 Okt 2026 (uji otomatis agent, diuji pada v1.0.1, 2 skenario), skor 1–10 penguji independen: tanpa skill **3,5** → dengan skill **9,0** (lulus acuan kami). Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`. Di bot Telegram asli selisihnya jauh lebih kecil (7 → 7,5, belum lulus acuan kami; lihat bagian berikutnya): di sana AI tanpa skill sudah memberi tabel pelanggan bersih langsung di chat.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent) dan bot Telegram uji. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06.
-- Tanpa skill: skor 7
-- Dengan skill: skor 7,5 (kirim ulang: 8)
-Hasil: belum lulus — Dengan skill tidak ada data yang digabung diam-diam dan ada pengingat opt-in, tetapi tanpa skill bot sudah memberi CSV 18 pelanggan bersih dengan angka benar langsung di chat, sedangkan dengan skill data bersih baru dikirim setelah "kirim file" dan contoh percobaan 1 salah satu digit.
+Uji terakhir: 6 Oktober 2026, di bot Telegram sungguhan (OpenClaw) di grup uji internal Komunitech; versi skill yang dipakai tidak tercatat. Pesan yang sama dikirim sekali tanpa skill dan sekali dengan skill, lalu dinilai 1–10 oleh penilai AI. Jawaban pertama tidak sampai ke grup karena gangguan di bot uji (dinilai dari catatan bot), jadi pesan dikirim ulang.
+- Skor: tanpa skill **7** → dengan skill **7,5** (selisih +0,5). Pada jawaban kirim ulang, skor dengan skill **8**.
+- Hasil: **belum lulus acuan kami** (acuan: skor dengan skill minimal 8 dan selisih minimal 1,5). Selisihnya masih di bawah 1,5.
+
+Dengan skill, tidak ada data yang digabung diam-diam dan ada pengingat meminta izin pelanggan sebelum promo. Tetapi tanpa skill bot sudah memberi tabel 18 pelanggan bersih dengan angka benar langsung di chat, sedangkan dengan skill data bersih baru dikirim setelah diminta "kirim file". Jadi bedanya di Telegram masih tipis.
+
+Catatan jujur: pada jawaban pertama dengan skill, satu contoh nomor HP salah satu digit (di jawaban kirim ulang sudah benar). Di sisi lain, tanpa skill bot menggabung 5 pasang nomor yang sama tanpa bertanya dan menutup dengan saran langsung menyalin kolom nomor untuk broadcast.
 
 ## FAQ
 **Apakah data pelanggan saya dikirim ke internet?**

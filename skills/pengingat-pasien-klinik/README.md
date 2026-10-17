@@ -75,12 +75,11 @@ baru simulasi agent); Codex dan Cursor belum diuji.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 2 Okt 2026, tiga giliran percakapan. Skor tidak dicatat pada uji ini, dan versi skill yang diuji tidak tercatat (kira-kira 1.0.6).
-- Tanpa skill: skor tidak dicatat
-- Dengan skill: skor tidak dicatat
-Hasilnya: tanpa skill, AI langsung memasang pengingat otomatis ke grup, melanggar aturan bahwa draf dikirim oleh staf. Dengan skill, tanggal dihitung benar ("3 hari lagi" menjadi Senin 5 Okt), izin pasien dicatat, pasien tanpa izin disaring, dan draf disiapkan untuk disalin staf.
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 2 Oktober 2026, dalam tiga giliran percakapan dengan pesan yang sama untuk dua sisi (tanpa skill dan dengan skill). Uji ini tampil di bot tanpa skor angka, dan versi skill yang diuji tidak tercatat, jadi tidak ada angka "tanpa skill → dengan skill" maupun vonis terhadap acuan kami untuk uji ini.
 
-Setelah uji ini skill diperbaiki di versi 1.0.7–1.0.8 (teks untuk grup staf tanpa nomor dan keterangan medis, izin pengingat tidak dianggap izin promosi, rujukan laporan dipertegas; versi terkini 1.0.9, sedangkan versi yang tampil di bot saat uji itu bukan 1.0.9). Perbaikan itu belum diuji ulang di bot Telegram.
+Tanpa skill, bot langsung memasang pengingat otomatis ke grup, padahal aturannya pengingat hanya berupa draf yang dikirim staf. Dengan skill, tanggal dihitung benar ("3 hari lagi" menjadi Senin 5 Oktober), izin pasien dicatat, pasien tanpa izin disaring, dan draf disiapkan untuk disalin staf.
+
+Catatan jujur: sejak uji ini skill diperbaiki (versi 1.0.7 dan 1.0.8: teks untuk grup staf tanpa nomor dan keterangan medis, izin pengingat tidak dianggap izin promosi, rujukan laporan dipertegas), dan perbaikan itu belum diuji ulang di bot Telegram. Uji dengan skor ada di bagian "Hasil uji" di atas (uji OpenClaw otomatis, 1 Oktober 2026: 3 → 8,5, lalu 9 setelah perbaikan).
 
 ## FAQ
 **Apakah skill ini menyimpan rekam medis atau diagnosis pasien?**
@@ -98,4 +97,4 @@ sesuai hak pasien menurut UU PDP 27/2022. Salinan cadangan atau berkas yang Anda
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

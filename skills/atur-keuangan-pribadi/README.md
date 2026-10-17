@@ -23,21 +23,15 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 9,0 dari 10 (hitungan benar di 
 ## Contoh sebelum & sesudah
 **Sebelum (tanpa skill):** "Coba terapkan 50/30/20 dan lunasi utang berbunga tertinggi dulu." — saran umum, tanpa angka, tanpa memperhitungkan kiriman ortu dan THR, tidak tahu kapan lunas.
 
-**Sesudah:** Keluarga Dimas & Rina (pemasukan Rp10,29 juta termasuk THR ÷ 12, empat utang) mendapat hasil seperti ini.
+**Sesudah:** Keluarga Dimas & Rina (empat utang, tambahan pelunasan Rp1 juta per bulan) mendapat hasil seperti ini.
 
-Cuplikan (dipotong; contoh buatan pembuat skill dengan data fiktif dari `examples/uji-pembuat-01-keluarga-muda-cicilan.md`; tabel terakhir = target dana darurat, baris "9 bulan" = 9 bulan pengeluaran pokok):
+Cuplikan bagian rencana pelunasan utang (dipotong; contoh buatan pembuat skill dengan data fiktif dari `examples/uji-pembuat-01-keluarga-muda-cicilan.md`):
 ```
-| **Total dialokasikan** | | **Rp10.291.666** | 100,0% |
-| **Sisa** | | **Rp0** | zero-based tercapai |
-…
 | Metode | Urutan | Semua lunas | Total bunga | Utang pertama lunas |
 | **Avalanche** | Paylater → Kartu kredit → KTA → Pinjam kakak | bulan ke-15 | **Rp3.345.301** | bulan ke-3 |
 | Snowball | Pinjam kakak → Paylater → Kartu kredit → KTA | bulan ke-15 | Rp3.501.409 | bulan ke-2 |
 
 Avalanche lebih hemat **Rp156.108**.
-…
-| Target | Jumlah | Setoran Rp561.666 saja | Setelah utang lunas (setoran naik jadi Rp3.311.666) |
-| 9 bulan | Rp72.450.000 | 126 bulan | 19 bulan lagi (setelah bulan ke-15) |
 ```
 Hasil lengkapnya juga memuat anggaran per pos yang dibandingkan dengan pola 60/20/20 dan 5 langkah konkret minggu ini.
 
@@ -62,11 +56,18 @@ Salin folder `atur-keuangan-pribadi` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** dua sumber, skor 1–10.
-- **Uji OpenClaw otomatis agent, 1–2 Oktober 2026** (v1.0.11; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (LULUS). Contoh gaji bersih Rp6,5 juta vs pengeluaran Rp8 juta: dengan skill pos fleksibel dipangkas tanpa menyentuh kiriman ibu dan sekolah anak; tanpa skill disarankan mengurangi kiriman ibu.
-- **Uji bot Telegram asli (2 Okt 2026, versi lebih lama):** dengan skill anggaran dihitung skrip secara zero-based (setiap rupiah punya tugas, sisa Rp0); tanpa skill, anggaran dan dana darurat 6–9× pengeluaran dibuat tanpa hitungan skrip. Ditemukan satu cacat (THR terhitung ganda) yang diperbaiki di v1.0.7 dan diuji ulang di OpenClaw.
+**Hasil uji (angka nyata):** skor 1–10. Uji di bot Telegram asli ada di bagian "Bukti uji di bot Telegram" di bawah.
+- **Uji OpenClaw otomatis agent, 1–2 Oktober 2026** (v1.0.11; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,5** → dengan skill **9,0** (selisih +2,5, lulus acuan kami). Contoh gaji bersih Rp6,5 juta vs pengeluaran Rp8 juta: dengan skill pos fleksibel dipangkas tanpa menyentuh kiriman ibu dan sekolah anak; tanpa skill disarankan mengurangi kiriman ibu.
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis 2026-10-01; muat CLI) dan bot Telegram asli. Claude Code (simulasi agent). Codex dan Cursor belum uji platform asli. Skill orisinal Komunitech (terinspirasi proyek open-source berlisensi MIT; atribusi di `ATTRIBUTION.md`). Bukan nasihat keuangan berlisensi.
+
+## Bukti uji di bot Telegram
+
+Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 2 Oktober 2026, dengan pesan yang sama untuk dua sisi (tanpa skill dan dengan skill). Uji ini tampil di bot tanpa skor angka, dan versi skill yang diuji tidak tercatat (lebih lama dari 1.0.7), jadi tidak ada angka "tanpa skill → dengan skill" maupun vonis lulus acuan kami untuk uji ini.
+
+Dengan skill, anggaran dihitung skrip sehingga setiap rupiah punya tugas dan sisanya nol rupiah. Tanpa skill, bot menyusun anggaran dan dana darurat 6–9 kali pengeluaran tanpa hitungan yang pasti.
+
+Catatan jujur: pada uji ini THR sempat terhitung dua kali (dimasukkan ke pemasukan bulanan, lalu masih disuruh disimpan lagi). Hal itu diperbaiki di versi 1.0.7 dan diuji ulang di OpenClaw, belum di bot Telegram. Uji lain: uji OpenClaw otomatis 1–2 Oktober 2026, 6,5 → 9,0 (lihat di atas).
 
 ## FAQ
 **Apakah skill ini menyarankan investasi tertentu?**

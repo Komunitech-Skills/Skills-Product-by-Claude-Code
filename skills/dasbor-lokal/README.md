@@ -28,8 +28,8 @@ Diuji AI penguji independen: 7 → 8,75 dari 10 di OpenClaw (tanpa skill, rata-r
 === buku-stok / stok-menipis: Stok menipis atau habis ===
 sku     | nama          | varian | stok | stok_min
 --------+---------------+--------+------+---------
-TEP-1KG | Tepung Terigu | 1kg    | 2.0  | 8.0
-KPI-250 | Kopi Bubuk    | 250g   | 5.0  | 10.0
+TEP-1KG | Tepung Terigu | 1kg    | 2    | 8
+KPI-250 | Kopi Bubuk    | 250g   | 5    | 10
 (2 baris)
 ```
 Atau *"siapa yang piutangnya sudah lewat jatuh tempo?"*:
@@ -40,7 +40,7 @@ Bu Tini     | PB-0001 | 2026-09-05  | Rp 1.200.000
 Warung Jaya | PB-0003 | 2026-09-15  | Rp 800.000
 (2 baris)
 ```
-(Contoh nyata dari uji dengan data fiktif — lihat `examples/`.)
+(Cuplikan diringkas dari keluaran perintah pada data fiktif; kolom satuan, lokasi, dan tanggal nota tidak ditampilkan di sini. Angka stok dan piutang sesuai catatan uji di `examples/uji-pembuat/UJI-PEMBUAT-v1.0.0.md`.)
 
 ## Cara pakai
 Cukup ketik permintaan biasa:
@@ -85,7 +85,11 @@ Panduan pemasangan skill lengkap: `CARA-INSTAL.md` di paket. Butuh **Python 3.8+
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 16 Okt 2026) dengan pesan yang sama: "Buka dasbor toko saya dong, sekalian tampilkan stok yang menipis dan saldo kas per akun. Datanya ada di folder KomunitechData di folder home (stok.db, kasir/kasir.db, kas/kas.db)". Tanpa skill skor **8,5** → dengan skill skor **7,5** (selisih -1, belum lulus acuan kami: skor dengan skill di bawah 8). Dengan skill, bot hanya menambahkan lokasi rak (A1, B1), daftar data yang ditemukan, dan keterangan bahwa data cuma dibaca tanpa diubah. Angka stok dan saldo sama persis dengan versi tanpa skill, padahal versi tanpa skill sudah memberi total kas Rp2.123.000 dan jumlah kekurangan stok. Catatan jujur: Untuk pertanyaan sederhana seperti stok menipis dan saldo kas, asisten tanpa skill pun sudah menjawab sama tepatnya. Balasan dengan skill masih memakai istilah teknis (nama database, "read-only", Datasette) dan belum menampilkan total kas maupun ringkasan penjualan dari kasir.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 16 Oktober 2026, versi 1.0.4, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): minta membuka dasbor toko, menampilkan stok yang menipis, dan saldo kas per akun, dari data toko contoh yang tersimpan di komputer bot. Skor 1–10 dari penilai independen: tanpa skill **8,5** → dengan skill **7,5** (selisih −1), **belum lulus acuan kami**: skor dengan skill di bawah 8, dan hasilnya tidak lebih baik daripada tanpa skill.
+
+Dengan skill, bot hanya menambahkan lokasi rak (A1, B1), daftar data yang ditemukan, dan keterangan bahwa data cuma dibaca tanpa diubah. Angka stok dan saldonya sama persis dengan versi tanpa skill, yang justru sudah memberi total kas Rp2.123.000 dan jumlah kekurangan stok; versi dengan skill belum menampilkan total kas maupun ringkasan penjualan dari kasir.
+
+Catatan jujur: untuk pertanyaan sederhana seperti stok menipis dan saldo kas, asisten tanpa skill pun sudah menjawab sama tepatnya. Balasan dengan skill masih memakai istilah teknis (nama database, "read-only", Datasette). Keunggulan skill ini terutama ada pada ketepatan angka untuk pertanyaan yang lebih rumit (uji OpenClaw di atas: 7 → 8,75).
 
 ## FAQ
 **Apakah skill ini bisa mengubah data toko saya secara tidak sengaja?**

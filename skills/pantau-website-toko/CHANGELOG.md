@@ -2,6 +2,10 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.11 (2026-10-17)
+
+- `SKILL.md`: contoh keluaran `ringkasan` di bagian Format Output disamakan dengan keluaran skrip pada data uji: nama status page "Toko Scenario2 (toko-scenario2)" dan "ping 240 ms" (sebelumnya tertulis "Toko Saya" dan 210 ms, padahal pengecekan terakhir 240 ms). Cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.10 (2026-10-13)
 
 - `SKILL.md`: rujukan ke catatan riset internal diganti kalimat yang berdiri sendiri; konstanta VERSI skrip dan penanda versi di SKILL.md disamakan; cara kerja tidak berubah.

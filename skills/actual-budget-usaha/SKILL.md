@@ -124,7 +124,7 @@ Jenis anggaran: amplop (envelope)
 
 KATEGORI JEBOL (2):
 - Iklan: minus Rp 1.100.000 (anggaran Rp 1.000.000, terpakai Rp 3.200.000, bawaan bulan lalu Rp 1.100.000)
-- Pajak: minus Rp 200.000 (anggaran Rp 1.000.000, terpakai Rp 600.000, bawaan bulan lalu -Rp 600.000)
+- Pajak: minus Rp 200.000 (anggaran Rp 1.000.000, terpakai Rp 600.000, bawaan bulan lalu minus Rp 600.000)
 
 PENGELUARAN TERBESAR:
 1. 13 Sep - Meta Ads - Rp 3.200.000 (Iklan)

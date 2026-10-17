@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.8 (2026-10-17)
+- Contoh keluaran ringkasan di SKILL.md (bagian Format output) disamakan dengan keluaran skrip: baris Pajak tertulis "bawaan bulan lalu minus Rp 600.000", bukan "-Rp 600.000". Cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.7 (2026-10-02)
 - Aturan baru di SKILL.md: bila pengguna menempel kunci/token/password di chat, agent tidak boleh menulis ulang satu karakter pun darinya dan cukup menyebut "kunci yang Anda tempel".
 

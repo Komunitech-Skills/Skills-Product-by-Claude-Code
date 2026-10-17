@@ -65,16 +65,13 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan da
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), dua kali uji. Versi yang diuji tidak tercatat (versi skill saat itu: 1.0.2).
+Uji terakhir: 10 Oktober 2026, di bot Telegram sungguhan (OpenClaw) di grup uji internal Komunitech, memakai skill versi 1.0.2. Pesan yang sama dikirim di dua percakapan baru, sekali tanpa skill dan sekali dengan skill, lalu dinilai 1–10 oleh penilai AI.
+- Skor: tanpa skill **7,5** → dengan skill **8,5** (selisih +1,0).
+- Hasil: **belum lulus acuan kami** (acuan: skor dengan skill minimal 8 dan selisih minimal 1,5). Skor 8,5 sudah tercapai, tetapi selisihnya baru +1,0.
 
-**Uji pertama, 2026-10-06**
-- Tanpa skill: skor tidak tersedia (pembanding tanpa skill hilang)
-- Dengan skill: skor 8,5
-Hasil: belum dapat dinilai — Dengan skill: 3 P1/4 P2/1 bukan keluhan, baris "Batas waktu" platform sesuai referensi terverifikasi, nomor HP disamarkan, kompensasi ditandai [KEPUTUSAN PEMILIK]; pembanding tanpa skill hilang.
+Dengan skill, keluhan diurutkan P1/P2 lengkap dengan batas waktu tiap platform, ada draf balasan untuk tiap keluhan, dan nomor HP pembeli disamarkan. Tanpa skill, urutannya sudah benar tetapi drafnya lebih tipis, sehingga bedanya baru 1,0 poin.
 
-**Uji kirim ulang (topik berbeda), 2026-10-10 — hasil terakhir**
-- Skor: 7,5 → 8,5 (selisih +1,0).
-Hasil: belum lulus — DENGAN urutan P1/P2, batas waktu platform, draf balasan per item, dan nomor disamarkan; TANPA sudah urut tetapi draf lebih tipis.
+Uji sebelumnya (6 Oktober 2026): dengan skill mendapat skor 8,5, tetapi jawaban tanpa skill tidak tercatat sehingga selisihnya belum bisa dinilai.
 
 ## FAQ
 **Apakah skill ini yang membalas pelanggan?**

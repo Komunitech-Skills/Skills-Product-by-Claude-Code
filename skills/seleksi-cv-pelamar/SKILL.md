@@ -65,9 +65,9 @@ Contoh baris ranking:
 | Kode | Skor dan status | Alasan |
 |---|---|---|
 | C1 Sari | 100, lanjut wawancara | 4 tahun admin Shopee/Tokopedia: "input pesanan 80-120 order per hari" |
-| C7 Larasati | 75, cadangan | Magang 4 bulan di toko Shopee; belum ada pengalaman kerja penuh |
+| C8 Larasati | 75, cadangan | Magang 4 bulan di toko Shopee; belum ada pengalaman kerja penuh |
 
-Contoh pertanyaan celah (C7): "Saat magang, bagian mana dari pesanan Shopee yang kamu kerjakan sendiri dari awal sampai resi? Ceritakan satu contoh."
+Contoh pertanyaan celah (C8): "Saat magang, bagian mana dari pesanan Shopee yang kamu kerjakan sendiri dari awal sampai resi? Ceritakan satu contoh."
 
 ## Larangan isi hasil
 - **Tidak ada penilaian pribadi:** tidak menulis "terlalu tua/muda", "ibu rumah tangga", "belum menikah jadi fokus", "cantik/rapi di foto", atau menyimpulkan dari nama, suku, daerah, agama.

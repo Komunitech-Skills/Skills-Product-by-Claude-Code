@@ -12,7 +12,7 @@
 - ✅ **Tanpa biaya per user.** Vikunja gratis dan berjalan di komputer/server Anda sendiri, jadi tidak ada tagihan bulanan per orang seperti pada layanan Trello, ClickUp, atau Asana berbayar (langganan AI Anda tetap ditanggung sendiri).
 - ✅ **Cukup ngobrol, bukan klik-klik menu.** "Tugas apa yang telat?", "tambahkan tugas ... jatuh tempo Jumat depan" — AI yang menerjemahkan ke Vikunja, termasuk tanggal gaya Indonesia ("besok", "lusa", "Jumat depan", "25/10"). Diuji di OpenClaw dengan data contoh (Vikunja tidak dijalankan); sambungan ke Vikunja asli diuji terpisah (lihat Hasil uji).
 - ✅ **Notulen WA jadi daftar tugas dalam sekali tempel.** Rangkuman rapat/grup WA diubah jadi draf daftar tugas terstruktur (siapa, apa, kapan) yang Anda periksa dulu sebelum benar-benar dibuat. Jujur: untuk sekadar menguraikan notulen, AI tanpa skill sudah sama baiknya; nilai skill ada di pratinjau dan penyimpanan langsung ke Vikunja.
-- ✅ **Tahu siapa pegang apa, tanpa buka aplikasi.** Ringkasan tugas terbuka dikelompokkan per anggota tim (termasuk yang belum ada penanggung jawabnya). Laporan pagi otomatis ke Telegram (lewat OpenClaw; jadwal terjadwal sudah diuji langsung di Telegram, Oktober 2026) memuat tugas hari ini dan yang terlambat.
+- ✅ **Tahu siapa pegang apa, tanpa buka aplikasi.** Ringkasan tugas terbuka dikelompokkan per anggota tim (termasuk yang belum ada penanggung jawabnya). Laporan ke Telegram (lewat OpenClaw) memuat tugas hari ini dan yang terlambat; satu kali pengiriman berisi daftar tugas terlambat sudah diuji langsung di Telegram (13 Oktober 2026), sedangkan jadwal pagi yang berulang tiap hari belum diuji.
 - ✅ **Dirancang hati-hati untuk data tim.** Default hanya membaca. Menambah tugas dan menandai selesai ditampilkan sebagai pratinjau dulu dan baru dijalankan setelah Anda menjawab "ya". Kunci akses (token) disimpan di komputer Anda dan tidak ditampilkan oleh skill ini.
 
 ## Cocok untuk siapa
@@ -30,7 +30,7 @@
 PRATINJAU TAMBAH TUGAS
 1.
    Judul : Cek stok cat tembok
-   Proyek: Toko Bangunan Sinar Jaya (id 2)
+   Proyek: Toko Bangunan Sinar Jaya (id 4)
    Tenggat: Jumat, 2 Oktober 2026
    Prioritas: 3 (tinggi)
    Ditugaskan ke: budi
@@ -41,9 +41,9 @@ Belum disimpan. Ulangi perintah yang sama + --ya untuk menyimpan ke Vikunja.
 Setelah "ya":
 ```
 TERSIMPAN 1 TUGAS DI VIKUNJA:
-- #8 Cek stok cat tembok (proyek id 2)
+- #3 Cek stok cat tembok (proyek id 4)
 ```
-(Contoh nyata dari uji dengan Vikunja 2.6.0 asli.)
+(Contoh nyata dari uji dengan Vikunja 2.6.0 asli, dari `examples/01-toko-bangunan-uji-akun-b.md`. Pada uji pertama itu penugasan ke Budi sempat gagal karena izin kunci akses belum lengkap, sehingga di layar ada catatan galat yang tidak ditampilkan di sini; ini sudah diperbaiki di versi berikutnya dan penugasan terbukti berhasil pada uji ulang, lihat `examples/HASIL-UJI.md`.)
 
 Atau minta AI mengubah catatan rapat jadi daftar tugas. Ini cuplikan jawaban asli dari uji di OpenClaw (tanggal dihitung dari Jumat, 2 Oktober 2026; PIC = penanggung jawab tugas; belum disimpan ke Vikunja sebelum Anda setuju):
 ```
@@ -92,7 +92,7 @@ Setelah Vikunja terpasang dan tersambung, cukup ketik permintaan biasa:
 - **Uji OpenClaw, 2 Oktober 2026** (penguji AI independen; angka dari `examples/00-openclaw-sebelum-sesudah.md`, dua skenario dengan data contoh): rata-rata nilai 6,0 tanpa skill menjadi 8,5 dengan skill (skala 10). Pembeda terbesar ada di keamanan: saat kunci akses (token) ditempel di chat dan diminta "hapus semua tugas lama", nilainya 4 tanpa skill menjadi 9 dengan skill. Untuk mengurai notulen biasa menjadi tugas, AI tanpa skill sudah setara (8 vs 8). Pada uji ini aplikasi Vikunja tidak dijalankan.
 - **Uji sambungan ke Vikunja asli (versi 2.6.0, di Linux):** dilakukan terpisah oleh pembuat dan penguji independen; rincian di `examples/HASIL-UJI.md`.
 
-**Status uji (jujur):** diuji di OpenClaw; jadwal laporan otomatis ke Telegram diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Pemasangan Vikunja di Windows/Mac serta Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
+**Status uji (jujur):** diuji di OpenClaw; satu kali pengiriman jadwal laporan ke Telegram (daftar tugas terlambat) diuji langsung di Telegram pada 13 Oktober 2026 memakai Vikunja tiruan (rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`); jadwal harian yang berulang belum diuji. Pemasangan Vikunja di Windows/Mac serta Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## FAQ
 **Apakah data tugas tim saya dikirim ke server Komunitech atau pihak lain?**

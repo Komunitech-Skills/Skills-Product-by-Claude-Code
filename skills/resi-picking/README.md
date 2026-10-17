@@ -79,13 +79,17 @@ Salin folder `resi-picking` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
-**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,5** (LULUS). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: skrip hitung bawaan skill, file siap cetak, peringatan nomor pesanan yang rusak karena Excel; tanpa skill di jebakan Excel: picking tetap terisi tapi kerusakan nomor pesanan diremehkan.
+**Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.4), skor 1–10 penguji independen: tanpa skill **6,5** → dengan skill **8,5** (selisih +2,0, lulus acuan kami). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Dengan skill: skrip hitung bawaan skill, file siap cetak, peringatan nomor pesanan yang rusak karena Excel; tanpa skill di jebakan Excel: picking tetap terisi tapi kerusakan nomor pesanan diremehkan.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis 2026-10-01) dan Claude Code (simulasi agent). Codex dan Cursor belum kami uji langsung. Semua uji memakai file pesanan contoh (data fiktif) dengan judul kolom yang meniru ekspor Shopee/Tokopedia/TikTok Shop, belum dengan ekspor toko asli.
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026, versi 1.0.5) dengan pesan yang sama: "Ini ekspor pesanan Shopee hari ini dari Toko Gadget Fiktif, filenya data/pesanan-shopee.csv (campur JNE/J&T/SiCepat, ada yang batal dan belum bayar). Lokasi rak ada di data/lokasi-rak.csv dan stok di data/stok.csv. Tolong…". Tanpa skill skor **7,5** → dengan skill skor **8,5** (selisih +1, belum lulus acuan kami: selisih di bawah 1,5). Dengan skill, Anda langsung melihat totalnya (4 pesanan aktif, 4 jenis barang, 12 pcs), nomor pesanan yang dilewati beserta alasannya, dan stok setelah dikemas. Namun kali ini versi tanpa skill juga menangkap semua baris bermasalah dengan benar, sehingga selisihnya kecil. Catatan jujur: data uji ini ternyata cukup mudah untuk asisten tanpa skill; jawaban dengan skill masih memuat bagian "Pemetaan kolom" yang agak teknis dan kalimat pembuka "Siap, sudah jalan." yang tidak perlu. Uji sebelumnya: 16 Okt 2026 (versi 1.0.4) tanpa skill 6,5 → dengan skill 7,5; saat itu nomor pesanan yang dilewati dan sisa stok belum ditampilkan.
+Diuji di bot OpenClaw asli (grup uji internal Komunitech), 17 Oktober 2026, versi 1.0.5, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): ekspor pesanan Shopee hari ini dari sebuah toko gadget (campur kurir JNE, J&T, dan SiCepat, ada yang batal dan belum bayar), lengkap dengan file lokasi rak dan file stok, lalu minta daftar ambil barang per SKU dan urutan kemas/tempel resi per kurir. Skor 1–10 dari penilai independen: tanpa skill **7,5** → dengan skill **8,5** (selisih +1,0), **belum lulus acuan kami**: selisihnya masih di bawah 1,5.
+
+Dengan skill, Anda langsung melihat totalnya (4 pesanan aktif, 4 jenis barang, 12 pcs), nomor pesanan yang dilewati beserta alasannya, dan stok setelah dikemas (kaos hitam M tinggal 0 dan ditandai habis). Namun kali ini versi tanpa skill juga menangkap semua baris bermasalah dengan benar, sehingga selisihnya kecil.
+
+Catatan jujur: data uji ini ternyata cukup mudah bagi asisten tanpa skill. Jawaban dengan skill masih memuat bagian "Pemetaan kolom" yang agak teknis dan kalimat pembuka yang tidak perlu. Uji sebelumnya: 16 Oktober 2026 (versi 1.0.4), tanpa skill 6,5 → dengan skill 7,5; saat itu nomor pesanan yang dilewati dan sisa stok belum ditampilkan.
 
 ## FAQ
 **Filenya harus format apa?**

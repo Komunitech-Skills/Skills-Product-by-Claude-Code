@@ -2,7 +2,7 @@
 
 **Pelanggan ragu atau menolak di chat? Dapatkan 2-3 balasan sopan siap kirim, satu pertanyaan lanjutan, dan patokan kapan berhenti, tanpa urgensi palsu dan tanpa bohong.**
 
-Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (tanpa skill satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" tanpa dasar; dengan skill perbandingan jujur dan 3 pilihan balasan).
+Diuji AI penguji independen di bot Telegram asli: 6,5 → 8,5 dari 10 (dengan skill: perbandingan yang setara dengan pesaing, pertanyaan lanjutan, dan patokan kapan berhenti; tanpa skill sudah ada 3 draf, tetapi tanpa kerangka yang terstruktur).
 
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
@@ -63,18 +63,19 @@ Salin folder `tangani-keberatan-pelanggan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (v1.0.0), skor 1–10 dari penguji independen, 2 tugas: tanpa skill **6,0** → dengan skill **8,75** (LULUS). Tugas "kemahalan, di toko sebelah 150 ribu" (hoodie Rp185.000 sudah termasuk ongkir): selisih Rp15.000 (8,1%), sekitar Rp253 per hari selama 2 tahun. Tanpa skill, AI menyebut barang toko sebelah "gampang rusak" tanpa bukti; dengan skill ada 3 balasan siap kirim berbeda arah, pertanyaan lanjutan, dan batas kapan berhenti. Tugas "stok tinggal 2" dan diskon coret palsu: kedua sisi menolak, tetapi tanpa skill AI mengarang janji "bisa tukar kok" yang tidak pernah Anda tawarkan; dengan skill ada dasar UU 8/1999 Pasal 9 dan 10 serta 3 pesan jujur. Jujur: hitungan selisih sudah benar juga tanpa skill, jadi pembedanya ada di cara membalas, bukan di angka. Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`. Hasil di bot Telegram asli ada di bagian berikut.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (v1.0.0), skor 1–10 dari penguji independen, 2 tugas: tanpa skill **6,0** → dengan skill **8,75** (lulus acuan kami). Tugas "kemahalan, di toko sebelah 150 ribu" (hoodie Rp185.000 sudah termasuk ongkir): selisih Rp15.000 (8,1%), sekitar Rp253 per hari selama 2 tahun. Tanpa skill, AI menyebut barang toko sebelah "gampang rusak" tanpa bukti; dengan skill ada 3 balasan siap kirim berbeda arah, pertanyaan lanjutan, dan batas kapan berhenti. Tugas "stok tinggal 2" dan diskon coret palsu: kedua sisi menolak, tetapi tanpa skill AI mengarang janji "bisa tukar kok" yang tidak pernah Anda tawarkan; dengan skill ada dasar UU 8/1999 Pasal 9 dan 10 serta 3 pesan jujur. Jujur: hitungan selisih sudah benar juga tanpa skill, jadi pembedanya ada di cara membalas, bukan di angka. Sumber: `examples/00-openclaw-sebelum-sesudah.md` dan `examples/HASIL-UJI.md`. Hasil di bot Telegram asli ada di bagian berikut.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, termasuk konteks kanal Telegram) dan di bot Telegram OpenClaw asli. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06.
-- Tanpa skill: skor 6,5
-- Dengan skill: skor 8,5
-Hasil: lulus — Tanpa skill satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" (tanpa dasar); dengan skill perbandingan jujur (pesaing tetap ±Rp15 rb lebih murah), 3 pilihan balasan termasuk opsi tanpa memaksa, kapan berhenti, dan ongkir pesaing ditandai perkiraan.
+Uji terakhir: 12 Oktober 2026, di bot Telegram sungguhan (OpenClaw) di grup uji internal Komunitech, memakai skill versi 1.0.1. Pesan yang sama dikirim di dua percakapan baru, sekali tanpa skill dan sekali dengan skill, lalu dinilai 1–10 oleh penilai AI.
+- Skor: tanpa skill **6,5** → dengan skill **8,5** (selisih +2,0).
+- Hasil: **lulus acuan kami** (acuan: skor dengan skill minimal 8 dan selisih minimal 1,5).
 
-- Uji ulang di bot Telegram (4 pesan di topik baru, 2026-10-12): skor 6,5 → 8,5, lulus, hasilnya sama dengan uji 6 Oktober.
+Tanpa skill sudah ada 3 draf balasan, tetapi tanpa kerangka menangani keberatan yang terstruktur. Dengan skill, balasan menekankan perbandingan yang setara dengan produk pesaing, menjelaskan kapan harus berhenti mengejar, dan memberi pertanyaan lanjutan.
+
+Dua uji sebelumnya (6 dan 10 Oktober 2026) memberi skor yang sama, 6,5 → 8,5. Pada uji 6 Oktober, tanpa skill hanya ada satu draf defensif yang menyiratkan barang pesaing "gampang melar/tipis" tanpa dasar; dengan skill perbandingannya jujur (pesaing tetap sekitar Rp15.000 lebih murah) dan ongkir pesaing ditandai sebagai perkiraan.
 
 ## FAQ
 **Apakah skill ini bisa membuat pelanggan "takut kehabisan" supaya cepat beli?**

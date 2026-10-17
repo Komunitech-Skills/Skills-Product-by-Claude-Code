@@ -188,18 +188,18 @@ job terjadwal karena hasilnya tersimpan di riwayat chat Telegram pemilik. Tunjuk
 perintah dan tanya "Lanjut? (ya/tidak)" sebelum membuat jadwal.
 
 ## Format output
-- Simpan/ubah: satu baris konfirmasi dari script, mis. `Tersimpan #1: Bu Sari | Kontrol | Sabtu,
-  10 Oktober 2026 | persetujuan: ya`, + `peringatan` bila ada (nomor tidak wajar, tahun ditebak, dll).
+- Simpan/ubah: satu baris konfirmasi dari script, mis. `Tersimpan #1: Bu Sari | Kontrol | 10 Okt 2026 |
+  persetujuan: ya`, + `peringatan` bila ada (nomor tidak wajar, tahun ditebak, dll).
 - `daftar`: teks berkelompok TERLAMBAT/HARI INI/BESOK/H-3 + DRAF PESAN, apa adanya dari script.
 - `ringkasan`: ringkasan angka + daftar nama (inisial opsional), tanpa nomor WA.
-- Tanggal ditulis `Sabtu, 10 Oktober 2026` atau `10 Okt 2026` (dari script, jangan dihitung sendiri).
+- Tanggal ditulis `10 Okt 2026` (dari script, jangan dihitung sendiri); nama hari lengkap (mis. `Sabtu, 10 Oktober 2026`) hanya muncul di judul `ringkasan`.
 
 ## Contoh
 **Input pengguna:** "Catat Bu Sari, kontrol gigi lagi 10 hari lagi, WA 0812-0000-1111. Dia bilang boleh diingatkan." (hari ini 26 Sep 2026)
 **Proses:** `tambah --nama "Bu Sari" --wa "0812-0000-1111" --jenis "kontrol gigi" --tanggal "10 hari lagi" --persetujuan ya`
 **Output:**
 ```
-Tersimpan #1: Bu Sari | Kontrol gigi | Selasa, 6 Oktober 2026 | persetujuan: ya
+Tersimpan #1: Bu Sari | Kontrol gigi | 6 Okt 2026 | persetujuan: ya
 ```
 H-3 (3 Okt), daftar menampilkan:
 ```

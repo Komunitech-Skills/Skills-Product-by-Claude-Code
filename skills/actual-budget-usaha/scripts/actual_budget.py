@@ -32,7 +32,7 @@ from collections import OrderedDict, defaultdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 ACTUAL_DIUJI = "26.9.0"
 NOL = Decimal(0)
 SERATUS = Decimal(100)

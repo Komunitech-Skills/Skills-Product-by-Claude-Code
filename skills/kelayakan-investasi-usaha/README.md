@@ -60,18 +60,19 @@ Salin folder `kelayakan-investasi-usaha` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`). Tidak perlu akun, API key, atau instalasi tambahan; hitungan memakai Python standar dan berjalan di komputer Anda.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (v1.0.1), skor 1–10 dari penguji independen, 2 skenario: tanpa skill **6,5** → dengan skill **9,0** (LULUS). Skor tanpa skill diambil dari uji sebelumnya (v1.0.0) karena tidak terpengaruh perubahan skill. Beli mesin kopi Rp45 juta (tambahan omzet Rp6 juta/bulan, biaya Rp2,5 juta/bulan): kedua sisi sama-sama menyimpulkan layak dengan balik modal sekitar 1 tahun 1 bulan, tetapi tanpa skill AI menulis titik impas harian ±Rp200.000 (yang benar ±Rp83.000), tanpa NPV/IRR, dan tanpa catatan "bukan nasihat keuangan". Dengan skill ada NPV Rp109.237.735 (patokan 12%), IRR 89,96% per tahun, uji omzet turun 10–20%, dan batas aman, semuanya cocok dengan hitungan Python terpisah. Pertanyaan "pasti untung di kripto?": kedua sisi menolak janji untung, tetapi tanpa skill AI malah menawarkan proyeksi kripto dan perbandingan deposito/reksa dana tanpa disclaimer; dengan skill ada disclaimer dan arahan ke penasihat berizin OJK. Jujur: pada skenario tambahan mobil box Rp180 juta (8/10, di luar rata-rata) angkanya benar, tetapi satu kalimat penjelasnya keliru (4 tahun 3 bulan ditulis "lebih lama dari 5 tahun"). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (v1.0.1), skor 1–10 dari penguji independen, 2 skenario: tanpa skill **6,5** → dengan skill **9,0** (lulus acuan kami). Skor tanpa skill diambil dari uji sebelumnya (v1.0.0) karena tidak terpengaruh perubahan skill. Beli mesin kopi Rp45 juta (tambahan omzet Rp6 juta/bulan, biaya Rp2,5 juta/bulan): kedua sisi sama-sama menyimpulkan layak dengan balik modal sekitar 1 tahun 1 bulan, tetapi tanpa skill AI menulis titik impas harian ±Rp200.000 (yang benar ±Rp83.000), tanpa NPV/IRR, dan tanpa catatan "bukan nasihat keuangan". Dengan skill ada NPV Rp109.237.735 (patokan 12%), IRR 89,96% per tahun, uji omzet turun 10–20%, dan batas aman, semuanya cocok dengan hitungan Python terpisah. Pertanyaan "pasti untung di kripto?": kedua sisi menolak janji untung, tetapi tanpa skill AI malah menawarkan proyeksi kripto dan perbandingan deposito/reksa dana tanpa disclaimer; dengan skill ada disclaimer dan arahan ke penasihat berizin OJK. Jujur: pada skenario tambahan mobil box Rp180 juta (8/10, di luar rata-rata) angkanya benar, tetapi satu kalimat penjelasnya keliru (4 tahun 3 bulan ditulis "lebih lama dari 5 tahun"). Sumber: `examples/00-openclaw-sebelum-sesudah.md`.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, termasuk konteks kanal Telegram) dan di bot Telegram OpenClaw asli. Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot Telegram uji (bot OpenClaw asli di grup uji internal Komunitech), 6 Okt 2026, pesan yang sama dikirim tanpa skill lalu dengan skill:
-- Tanpa skill: skor 6,5
-- Dengan skill: skor 9
-Hasilnya lulus. Keduanya benar soal balik modal (±1 tahun 1 bulan), tetapi hanya dengan skill ada NPV, IRR, balik modal dengan nilai waktu uang, uji omzet turun 10%/20% dan biaya naik 10%, batas aman, asumsi patokan 12%, dan catatan bukan nasihat keuangan; semuanya cocok dengan hitungan ulang.
+Uji terakhir: 12 Oktober 2026, di bot Telegram sungguhan (OpenClaw) di grup uji internal Komunitech; versi skill yang dipakai tidak tercatat. Pesan yang sama dikirim di dua percakapan baru, sekali tanpa skill dan sekali dengan skill, lalu dinilai 1–10 oleh penilai AI.
+- Skor: tanpa skill **6,5** → dengan skill **9** (selisih +2,5).
+- Hasil: **lulus acuan kami** (acuan: skor dengan skill minimal 8 dan selisih minimal 1,5).
 
-Uji ulang di bot Telegram uji, 12 Okt 2026: skor 6,5 → 9, lulus, hasil sama dengan uji pertama.
+Keduanya benar soal balik modal (sekitar 1 tahun 1 bulan). Hanya dengan skill ada nilai untung dihitung ke uang hari ini (NPV), imbal hasil per tahun (IRR), uji kalau omzet turun 10–20% atau biaya naik 10%, batas aman, dan catatan bukan nasihat keuangan. Tanpa skill hanya ada balik modal kasar dan imbal hasil sederhana tanpa memperhitungkan nilai waktu uang.
+
+Uji pertama (6 Oktober 2026) memberi skor yang sama, 6,5 → 9; pada uji itu semua angka dengan skill sudah dicocokkan dengan hitungan ulang kami dan cocok. Sesudah uji 12 Oktober, skill diperbarui beberapa kali sampai versi 1.0.6 (terutama rujukan aturan dan teks); perubahan itu belum diuji ulang di bot.
 
 ## FAQ
 **Apakah hasilnya menjamin usaha saya untung?**

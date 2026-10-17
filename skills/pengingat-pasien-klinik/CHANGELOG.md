@@ -2,6 +2,9 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.0.10 (2026-10-17)
+- SKILL.md: contoh baris konfirmasi "Tersimpan" disamakan dengan keluaran script (tanggal ditulis `6 Okt 2026`, bukan `Selasa, 6 Oktober 2026`); nama hari lengkap hanya muncul di judul `ringkasan`. Script dan cara kerja tidak berubah.
+
 ## Catatan revisi 1.0.9 (2026-10-13)
 - `references/openclaw-jadwal.md`: rujukan ke panduan jadwal paket klinik diberi keterangan "hanya di paket VIP" agar pembeli ecer tidak mencari berkas yang tidak ada. Script dan cara kerja tidak berubah.
 

@@ -62,15 +62,19 @@ Salin folder `aktifkan-kembali-pelanggan` ke folder skills AI agent Anda:
 
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` yang disertakan dalam paket.
 
-**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (diuji v1.0.1; versi terkini **1.0.2**), skor 1–10: tanpa skill **4,0** → dengan skill **8,6** (LULUS). Skenario: data penjualan berantakan (format tanggal campur, nomor/total rusak) dan permintaan jebakan (kirim massal, "cuma hari ini"). Skenario normal tanpa skill memakai skor uji awal (5), tidak diuji ulang. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah (skor bisa berbeda).
+**Hasil uji (angka nyata):** uji OpenClaw otomatis agent, 5 Okt 2026 (diuji v1.0.1; versi terkini **1.0.2**), skor 1–10: tanpa skill **4,0** → dengan skill **8,6** (lulus acuan kami). Skenario: data penjualan berantakan (format tanggal campur, nomor/total rusak) dan permintaan jebakan (kirim massal, "cuma hari ini"). Skenario normal tanpa skill memakai skor uji awal (5), tidak diuji ulang. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Angka di bagian "Bukti uji di bot Telegram" di bawah dari uji bot asli terpisah (skor bisa berbeda).
 
 **Status uji (jujur):** diuji OpenClaw (uji otomatis agent); bot Telegram asli pernah diuji (skor tanpa skill sering sudah tinggi; selisih kecil). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji internal Komunitech), 2026-10-06 dan 2026-10-10 (versi skill saat uji: 1.0.2).
-- Percobaan pertama: tanpa skill skor **7**; jawaban lengkap dengan skill tidak terekam di transkrip.
-- Percobaan ulang (percakapan terpisah): **7 → 8** (selisih +1,0). Hasil: belum lulus, artinya belum memenuhi acuan lulus kami (skor dengan skill minimal 8 dan selisih minimal 1,5). Dengan skill ada segmen A/B/C dan template terstruktur; tanpa skill sudah cukup lengkap, tetapi tanpa pilihan berhenti ("balas STOP") dan tanpa izin menerima pesan dari pelanggan (opt-in).
+Uji terakhir: 10 Oktober 2026, di bot Telegram sungguhan (OpenClaw) di grup uji internal Komunitech, memakai skill versi 1.0.2. Pesan yang sama dikirim di dua percakapan terpisah, sekali tanpa skill dan sekali dengan skill, lalu dinilai 1–10 oleh penilai AI.
+- Skor: tanpa skill **7** → dengan skill **8** (selisih +1,0).
+- Hasil: **belum lulus acuan kami** (acuan: skor dengan skill minimal 8 dan selisih minimal 1,5). Skor 8 sudah tercapai, tetapi selisihnya baru +1,0.
+
+Dengan skill, pelanggan pasif dibagi ke segmen A/B/C lengkap dengan angka dan template WhatsApp yang terstruktur. Tanpa skill, jawabannya sudah cukup lengkap; kekurangannya hanya tidak ada pilihan berhenti ("balas STOP") dan tidak ada izin pelanggan untuk menerima pesan (opt-in), sehingga bedanya tipis.
+
+Uji sebelumnya (6 Oktober 2026): tanpa skill mendapat skor 7, tetapi jawaban lengkap dengan skill tidak tercatat utuh sehingga belum bisa dinilai.
 
 ## FAQ
 **Bisa dipakai untuk kirim otomatis ke semua pelanggan pasif?**
