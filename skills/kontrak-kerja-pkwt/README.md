@@ -8,7 +8,7 @@ Diuji AI penguji independen di OpenClaw: 2,25 → 9,25 dari 10 (tanpa skill gant
 
 ## Manfaat
 - ✅ **Draf kontrak PKWT 12 pasal siap cetak**: jabatan & alasan kontrak, jangka waktu, jam kerja & lembur, upah + terbilang (ditulis dengan huruf), BPJS, THR, cuti, kompensasi, pengakhiran, dan tanda tangan bermeterai. Bagian yang belum Anda isi ditandai `[isi: ...]`, tidak diisi dengan data karangan.
-- ✅ **Cek kontrak lama dalam sekali tempel**: menemukan pasal yang sering bikin usaha kalah di Disnaker (Dinas Tenaga Kerja), misalnya masa percobaan di kontrak, pekerjaan tetap dikontrak, lebih dari 5 tahun, gaji di bawah UMK (upah minimum kota/kabupaten), tanpa BPJS, atau denda berlebihan. Setiap temuan diberi tingkat risiko (🔴/🟠/🟢) dan kalimat pengganti yang siap tempel.
+- ✅ **Cek kontrak lama dalam sekali tempel**: menandai pasal yang sering dipersoalkan di Disnaker (Dinas Tenaga Kerja), misalnya masa percobaan di kontrak, pekerjaan tetap dikontrak, lebih dari 5 tahun, gaji di bawah UMK (upah minimum kota/kabupaten), tanpa BPJS, atau denda berlebihan. Setiap temuan diberi tingkat risiko (🔴/🟠/🟢) dan kalimat pengganti yang siap tempel.
 - ✅ **Kompensasi & ganti rugi dihitung script**, bukan dikira-kira: kompensasi per periode kontrak, cek batas 5 tahun termasuk perpanjangan, dan ganti rugi sisa kontrak kalau diputus lebih cepat.
 - ✅ **Paham input sehari-hari**: tanggal "1 Januari 2026" atau "01/01/2026", gaji "Rp5.000.000" atau "5jt". Kalau ada yang salah (tanggal terbalik, angka negatif), Anda diberi tahu dengan bahasa jelas.
 - ✅ **Paham usaha mikro/kecil**: untuk warung, kedai, dan usaha kecil, besaran kompensasi boleh sesuai kesepakatan (PP 35/2021 Pasal 16 ayat (6)); skill menampilkan hitungan rumus umum sebagai acuan dan menyiapkan klausul kesepakatannya.
@@ -74,7 +74,7 @@ Diuji di bot Telegram OpenClaw asli milik Komunitech (grup uji internal) pada 3 
 Draf disusun mengikuti UU 13/2003 sebagaimana diubah UU 6/2023, PP 35/2021, dan Putusan MK 168/PUU-XXI/2023 (dicek 26 September 2026). Hasilnya tetap draf, bukan nasihat hukum. Keabsahan juga bergantung pada fakta di lapangan, misalnya apakah pekerjaannya memang bersifat sementara. Untuk kasus penting, mintalah Disnaker atau konsultan hukum ketenagakerjaan meninjaunya.
 
 **Katanya ada UU Ketenagakerjaan baru. Skill ini masih berlaku?**
-Mahkamah Konstitusi memerintahkan UU Ketenagakerjaan baru paling lambat sekitar akhir Oktober 2026. Per 26 September 2026, RUU Pelindungan Ketenagakerjaan belum disahkan, jadi skill memakai aturan yang berlaku saat ini dan menyebut status ini. Setelah UU baru terbit, skill akan ditinjau ulang dan pembeli akan mendapat pembaruan.
+Mahkamah Konstitusi memerintahkan UU Ketenagakerjaan baru paling lambat sekitar akhir Oktober 2026. Per 26 September 2026, RUU Pelindungan Ketenagakerjaan belum disahkan, jadi skill memakai aturan yang berlaku saat ini dan menyebut status ini. Setelah UU baru terbit, skill akan ditinjau ulang oleh Komunitech dan pembaruannya diberitahukan kepada pembeli.
 
 **Bisa untuk karyawan tetap atau menghitung pesangon PHK?**
 Tidak. Skill ini khusus kontrak kerja waktu tertentu (PKWT), termasuk harian lepas. Untuk karyawan tetap, PHK, dan pesangon, skill akan menjelaskan bedanya lalu menyarankan Anda berkonsultasi ke Disnaker atau konsultan hukum. Untuk THR, slip gaji, dan surat peringatan, gunakan skill Komunitech `hitung-thr` (penghitung THR), `slip-gaji-bpjs` (slip gaji dan potongan BPJS), dan `surat-peringatan-karyawan` (surat peringatan untuk karyawan).
