@@ -34,7 +34,7 @@ from datetime import date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-VERSI = "1.1.6"
+VERSI = "1.1.7"
 SKEMA = 1
 APLIKASI = "buku-stok"
 EPS = 1e-9
@@ -51,6 +51,18 @@ class Gagal(Exception):
         super().__init__(pesan)
         self.pesan = pesan
         self.detail = detail
+
+
+# Kunci hasil --json yang berisi lokasi file/folder. Isinya hanya untuk menyusun perintah berikutnya,
+# bukan untuk disampaikan ke pengguna awam (lihat SKILL.md, "Bahasa ke pengguna").
+KUNCI_LOKASI = ("db", "folder_backup", "backup", "backup_terakhir", "folder", "berkas_cadangan", "csv", "csv_pesanan")
+CATATAN_AGEN_LOKASI = (
+    "Isian lokasi file/folder di hasil ini hanya untuk menyusun perintah berikutnya. Jangan menyebut path, "
+    "nama folder, atau nama berkas catatan/cadangan ke pengguna; cukup bilang 'tersimpan di komputer ini' "
+    "atau 'cadangan otomatis sudah dibuat'. Letak file hanya disebut bila pengguna menanyakannya; untuk "
+    "file CSV yang ia minta, lampirkan berkasnya ke chat bila kanal bisa (path hanya untuk melampirkan, jangan "
+    "ditulis di teks); bila tidak bisa, jangan sebut letaknya dan tawarkan 'balas kirim file'. Kalimat "
+    "'cadangan otomatis sudah dibuat' hanya benar bila hasil ini memuat kunci backup.")
 
 
 def sekarang():
@@ -296,7 +308,7 @@ def baca_tabel(path):
     """Kembalikan (daftar baris [list str], info). Mendukung CSV (, ; tab |) dan XLSX sederhana."""
     p = Path(path).expanduser()
     if not p.is_file():
-        raise Gagal("File '%s' tidak ditemukan." % path)
+        raise Gagal("File '%s' tidak ditemukan." % Path(path).name)
     if p.stat().st_size > BATAS_UKURAN:
         raise Gagal("File terlalu besar (> 200 MB).")
     if p.stat().st_size == 0:
@@ -475,8 +487,9 @@ def folder_backup(db):
 
 def buka(db, harus_ada=True):
     if harus_ada and not db.is_file():
-        raise Gagal("Database stok belum ada di %s. Jalankan dulu: stok.py init (lalu --ya)." % db,
-                    db=str(db))
+        raise Gagal("Buku stok belum disiapkan di komputer ini.",
+                    langkah_agen="Jalankan init (pratinjau), gabungkan dalam satu konfirmasi dengan daftar barang "
+                                 "dari pengguna, lalu init --ya setelah ia setuju. Jangan tanyakan lokasi simpan.")
     conn = sqlite3.connect(str(db), isolation_level=None)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
@@ -485,10 +498,12 @@ def buka(db, harus_ada=True):
             r = conn.execute("SELECT nilai FROM meta WHERE kunci='aplikasi'").fetchone()
         except sqlite3.DatabaseError:
             conn.close()
-            raise Gagal("File %s bukan database buku-stok (atau rusak)." % db)
+            raise Gagal("Berkas catatan stok tidak bisa dibaca (rusak atau bukan catatan buku stok). "
+                        "Jangan diedit manual; pulihkan dari cadangan.",
+                        langkah_agen="Tawarkan restore dari cadangan terbaru (backup --daftar).")
         if not r or r[0] != APLIKASI:
             conn.close()
-            raise Gagal("File %s bukan database buku-stok." % db)
+            raise Gagal("Berkas itu bukan catatan buku stok.")
         migrasi(conn)
     return conn
 
@@ -559,18 +574,18 @@ def jalankan_tulis(args, db, perintah, kerja, label_backup=None, conn=None):
             conn.close()
     data = dict(data)
     data["perintah"] = perintah
-    data["db"] = str(db)
     if args.ya:
         data["mode"] = "tersimpan"
         if backup:
             data["backup"] = str(backup)
-        kepala = "TERSIMPAN." + (" Backup sebelum perubahan: %s" % backup if backup else "")
+        kepala = "TERSIMPAN." + (" Cadangan otomatis sebelum perubahan sudah dibuat." if backup else "")
     else:
         data["mode"] = "pratinjau"
         data["perlu_konfirmasi"] = True
-        data["petunjuk"] = ("BELUM DISIMPAN. Tunjukkan ringkasan ini ke pengguna; jika pengguna setuju, "
+        data["petunjuk"] = ("BELUM DISIMPAN. Tunjukkan ringkasan ini ke pengguna dengan bahasa sehari-hari "
+                            "(tanpa menyebut perintah, opsi, atau lokasi file); jika pengguna setuju, "
                             "jalankan ulang perintah yang sama dengan tambahan --ya.")
-        kepala = "PRATINJAU (belum disimpan). Jika sudah benar, jalankan ulang perintah yang sama dengan --ya."
+        kepala = "PRATINJAU (belum disimpan). Tunjukkan ke pengguna dan minta persetujuannya sebelum menyimpan."
     return data, kepala + "\n\n" + teks
 
 
@@ -580,9 +595,9 @@ def ambil_produk(conn, sku, wajib=True):
         mirip = conn.execute("SELECT sku, nama, varian FROM produk WHERE sku LIKE ? OR nama LIKE ? LIMIT 5",
                              ("%" + sku.strip() + "%", "%" + sku.strip() + "%")).fetchall()
         saran = ", ".join("%s (%s %s)" % (m["sku"], m["nama"], m["varian"]) for m in mirip)
-        raise Gagal("SKU '%s' belum terdaftar.%s Tambahkan dulu dengan: produk tambah --sku %s --nama ..."
-                    % (sku, (" Mungkin maksudnya: " + saran + ".") if saran else "", sku),
-                    sku=sku, saran=[m["sku"] for m in mirip])
+        raise Gagal("Kode barang '%s' belum terdaftar.%s" % (sku, (" Mungkin maksudnya: " + saran + ".") if saran else ""),
+                    sku=sku, saran=[m["sku"] for m in mirip],
+                    langkah_agen="Tanyakan apakah barang ini mau didaftarkan; bila ya, pakai produk tambah.")
     return r
 
 
@@ -612,9 +627,12 @@ def catat_mutasi(conn, p, arah, jenis, qty, harga, tanggal, ref="", catatan="", 
     else:
         if stok_baru < -EPS and not izinkan_minus:
             raise Gagal("Stok %s (%s %s) tidak cukup: tersedia %s, diminta keluar %s. Transaksi ditolak. "
-                        "Cek stok fisik (opname) atau pakai --izinkan-minus bila memang sudah terjual."
+                        "Saran: hitung ulang stok fisik (stock opname), atau catat tetap dengan stok minus "
+                        "bila barang itu memang sudah terjual."
                         % (p["sku"], p["nama"], p["varian"], fq(stok_lama), fq(-qty)),
-                        sku=p["sku"], stok=angka_json(stok_lama), diminta=angka_json(-qty))
+                        sku=p["sku"], stok=angka_json(stok_lama), diminta=angka_json(-qty),
+                        langkah_agen="Opsi --izinkan-minus hanya bila pengguna yakin barang sudah keluar; "
+                                     "jelaskan ke pengguna tanpa menyebut opsi ini.")
         hpp_baru = hpp_lama
         hpp_catat = hpp_lama
         harga_catat = float(harga) if harga is not None else None
@@ -672,16 +690,15 @@ def cmd_init(args):
         conn = buka(db)
         n = conn.execute("SELECT COUNT(*) FROM produk").fetchone()[0]
         conn.close()
-        return ({"ok": True, "mode": "baca", "db": str(db), "sudah_ada": True, "jumlah_produk": n},
-                "Database stok sudah ada di %s (%d produk). Tidak ada yang diubah." % (db, n))
-    info = {"ok": True, "db": str(db), "folder_backup": str(folder_backup(db)),
-            "ringkasan": {"buat_database": str(db)}}
-    teks = ("Akan dibuat database stok baru:\n  %s\nBackup otomatis disimpan di:\n  %s"
-            % (db, folder_backup(db)))
+        return ({"ok": True, "mode": "baca", "sudah_ada": True, "jumlah_produk": n},
+                "Buku stok sudah ada di komputer ini (%d produk). Tidak ada yang diubah." % n)
+    info = {"ok": True, "ringkasan": {"buat_buku_stok": True}}
+    teks = "Akan disiapkan buku stok baru di komputer ini."
     if not args.ya:
         info.update(mode="pratinjau", perlu_konfirmasi=True, perintah="init",
-                    petunjuk="BELUM DIBUAT. Konfirmasi lokasi ke pengguna, lalu jalankan ulang dengan --ya.")
-        return info, "PRATINJAU. " + teks + "\nJalankan ulang dengan --ya untuk membuat."
+                    petunjuk="BELUM DIBUAT. Jangan tanyakan lokasi simpan ke pengguna. Gabungkan dalam satu "
+                            "konfirmasi dengan daftar barangnya, lalu jalankan ulang dengan --ya setelah ia setuju.")
+        return info, "PRATINJAU (belum dibuat). " + teks
     db.parent.mkdir(parents=True, exist_ok=True)
     conn = buka(db, harus_ada=False)
     conn.executescript(DDL)
@@ -690,7 +707,7 @@ def cmd_init(args):
     conn.execute("INSERT OR REPLACE INTO meta VALUES ('dibuat', ?)", (sekarang(),))
     conn.close()
     info.update(mode="tersimpan", perintah="init")
-    return info, "TERSIMPAN. Database stok dibuat di %s" % db
+    return info, "TERSIMPAN. Buku stok baru sudah disiapkan di komputer ini."
 
 
 def cmd_info(args):
@@ -704,10 +721,22 @@ def cmd_info(args):
             "mutasi": q("SELECT COUNT(*) FROM mutasi"), "pesanan": q("SELECT COUNT(*) FROM pesanan"),
             "mutasi_terakhir": q("SELECT MAX(waktu) FROM mutasi"),
             "jumlah_backup": len(backups), "backup_terakhir": str(backups[-1]) if backups else None,
+            "backup_terakhir_dibuat": _ciri_backup(backups[-1])["dibuat"] if backups else None,
             "folder_backup": str(fol)}
     conn.close()
-    teks = "\n".join("%s: %s" % (k, v) for k, v in data.items() if k not in ("ok", "mode"))
+    # Teks tidak memuat lokasi file/folder (hanya ada di JSON, untuk menyusun perintah).
+    teks = "\n".join("%s: %s" % (k, v) for k, v in data.items()
+                     if k not in ("ok", "mode") + KUNCI_LOKASI)
     return data, teks
+
+
+def _ciri_backup(f):
+    """Waktu & keterangan cadangan dari nama berkas stok-YYYYmmdd-HHMMSS-label.db (untuk bahasa awam)."""
+    m = re.match(r"stok-(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})\d{2}-(.*)\.db$", f.name)
+    if not m:
+        return {"dibuat": None, "keterangan": ""}
+    return {"dibuat": "%s-%s-%s %s:%s" % m.group(1, 2, 3, 4, 5),
+            "keterangan": re.sub(r"-\d+$", "", m.group(6)).replace("-", " ")}
 
 
 def cmd_backup(args):
@@ -717,13 +746,16 @@ def cmd_backup(args):
     if args.daftar:
         daftar = sorted(fol.glob("stok-*.db")) if fol.is_dir() else []
         data = {"ok": True, "mode": "baca", "folder": str(fol),
-                "backup": [{"file": str(f), "ukuran_kb": round(f.stat().st_size / 1024, 1)} for f in daftar]}
-        teks = "Backup di %s:\n" % fol + ("\n".join("  %s" % f.name for f in daftar) or "  (belum ada)")
+                "backup": [dict(file=str(f), nama=f.name, ukuran_kb=round(f.stat().st_size / 1024, 1), **_ciri_backup(f))
+                           for f in daftar]}
+        teks = "Cadangan yang tersedia:\n" + ("\n".join(
+            "  %s - %s (berkas %s)" % (b["dibuat"] or "?", b["keterangan"] or "-", b["nama"]) for b in data["backup"])
+            or "  (belum ada)")
         return data, teks
     # Membuat salinan tidak mengubah data, jadi tidak perlu --ya.
     tujuan = buat_backup(db, args.label or "manual")
     return ({"ok": True, "mode": "tersimpan", "perintah": "backup", "backup": str(tujuan)},
-            "Backup dibuat: %s" % tujuan)
+            "Cadangan dibuat (berkas %s)." % tujuan.name)
 
 
 def _ringkas_db(path):
@@ -733,12 +765,12 @@ def _ringkas_db(path):
         cek = c.execute("PRAGMA integrity_check").fetchone()[0]
         app = c.execute("SELECT nilai FROM meta WHERE kunci='aplikasi'").fetchone()
         if not app or app[0] != APLIKASI:
-            raise Gagal("File %s bukan backup buku-stok." % path)
+            raise Gagal("Berkas itu bukan cadangan buku stok.")
         return {"integritas": cek, "produk": c.execute("SELECT COUNT(*) FROM produk").fetchone()[0],
                 "mutasi": c.execute("SELECT COUNT(*) FROM mutasi").fetchone()[0],
                 "mutasi_terakhir": c.execute("SELECT MAX(waktu) FROM mutasi").fetchone()[0]}
     except sqlite3.DatabaseError:
-        raise Gagal("File %s rusak atau bukan database SQLite." % path)
+        raise Gagal("Berkas cadangan itu rusak atau bukan cadangan buku stok.")
     finally:
         c.close()
 
@@ -747,27 +779,30 @@ def cmd_restore(args):
     db = path_db(args)
     sumber = Path(args.dari).expanduser()
     if not sumber.is_file():
-        raise Gagal("File backup '%s' tidak ditemukan. Lihat daftar: backup --daftar" % args.dari)
+        raise Gagal("Cadangan yang dimaksud tidak ditemukan.",
+                    langkah_agen="Lihat daftar dengan backup --daftar, lalu tawarkan pilihan berdasarkan tanggal.")
     if sumber.resolve() == db.resolve():
-        raise Gagal("File backup sama dengan database aktif.")
+        raise Gagal("Cadangan itu adalah catatan stok yang sedang dipakai.")
     info_sumber = _ringkas_db(sumber)
     if info_sumber["integritas"] != "ok":
-        raise Gagal("File backup gagal cek integritas (%s). Pilih backup lain." % info_sumber["integritas"])
+        raise Gagal("Cadangan ini gagal diperiksa (kemungkinan rusak). Pilih cadangan lain.",
+                    detail_teknis=info_sumber["integritas"])
     info_skrg = _ringkas_db(db) if db.is_file() else None
-    data = {"ok": True, "perintah": "restore", "db": str(db), "dari": str(sumber),
+    data = {"ok": True, "perintah": "restore", "berkas_cadangan": str(sumber),
             "isi_backup": info_sumber, "isi_sekarang": info_skrg,
             "ringkasan": {"restore_dari": str(sumber)}}
-    teks = ("Database aktif akan DIGANTI dengan isi backup:\n  %s\n"
-            "Isi backup   : %s produk, %s mutasi (terakhir %s)\n"
-            "Isi sekarang : %s produk, %s mutasi (terakhir %s)\n"
-            "Transaksi setelah tanggal backup akan hilang dari database aktif "
-            "(tetap tersimpan di backup 'sebelum-restore')."
-            % (sumber, info_sumber["produk"], info_sumber["mutasi"], info_sumber["mutasi_terakhir"],
+    teks = ("Catatan stok yang sekarang akan DIGANTI dengan isi cadangan (berkas %s).\n"
+            "Isi cadangan : %s produk, %s catatan transaksi (terakhir %s)\n"
+            "Isi sekarang : %s produk, %s catatan transaksi (terakhir %s)\n"
+            "Transaksi setelah tanggal cadangan akan hilang dari catatan yang dipakai "
+            "(tetap tersimpan di cadangan 'sebelum-restore')."
+            % (sumber.name, info_sumber["produk"], info_sumber["mutasi"], info_sumber["mutasi_terakhir"],
                (info_skrg or {}).get("produk"), (info_skrg or {}).get("mutasi"),
                (info_skrg or {}).get("mutasi_terakhir")))
     if not args.ya:
         data.update(mode="pratinjau", perlu_konfirmasi=True,
-                    petunjuk="BELUM DIPULIHKAN. Minta persetujuan pengguna lalu jalankan ulang dengan --ya.")
+                    petunjuk="BELUM DIPULIHKAN. Jelaskan ke pengguna (tanggal cadangan, isi sekarang vs isi cadangan, "
+                            "tanpa lokasi file), minta persetujuan, lalu jalankan ulang dengan --ya.")
         return data, "PRATINJAU. " + teks
     cadangan = buat_backup(db, "sebelum-restore") if db.is_file() else None
     db.parent.mkdir(parents=True, exist_ok=True)
@@ -779,7 +814,9 @@ def cmd_restore(args):
         src.close()
         dst.close()
     data.update(mode="tersimpan", backup=str(cadangan) if cadangan else None)
-    return data, "TERSIMPAN. Database dipulihkan dari %s.\nBackup kondisi sebelum restore: %s" % (sumber, cadangan)
+    return data, ("TERSIMPAN. Catatan stok dipulihkan dari cadangan (berkas %s).\n"
+                  "Kondisi sebelum pemulihan disimpan sebagai cadangan (berkas %s)."
+                  % (sumber.name, cadangan.name if cadangan else "-"))
 
 
 # ---------------------------------------------------------------------------
@@ -795,7 +832,7 @@ def cmd_produk_tambah(args):
     db = path_db(args)
     sku = (args.sku or "").strip()
     if not sku or re.search(r"\s{2,}|[\t\n]", sku):
-        raise Gagal("SKU wajib diisi dan tidak boleh berisi tab/enter.")
+        raise Gagal("Kode barang (SKU) wajib diisi dan tidak boleh berisi tab/enter.")
     hb = _nilai_opsional(args.harga_beli, "harga beli") or 0
     hj = _nilai_opsional(args.harga_jual, "harga jual") or 0
     smin = _nilai_opsional(args.stok_min, "stok minimum") or 0
@@ -804,7 +841,8 @@ def cmd_produk_tambah(args):
 
     def kerja(conn):
         if conn.execute("SELECT 1 FROM produk WHERE sku=?", (sku,)).fetchone():
-            raise Gagal("SKU '%s' sudah ada. Pakai 'produk ubah' untuk mengubahnya." % sku)
+            raise Gagal("Kode barang '%s' sudah dipakai barang lain." % sku,
+                        langkah_agen="Kalau maksudnya mengubah data barang itu, pakai produk ubah.")
         w = sekarang()
         cur = conn.execute(
             "INSERT INTO produk(sku,nama,varian,satuan,harga_beli,harga_jual,hpp,stok,stok_min,lokasi,dibuat,diubah)"
@@ -852,14 +890,15 @@ def cmd_produk_ubah(args):
             ubah["hpp"] = angka_wajib(args.koreksi_hpp, "koreksi HPP")
         if args.sku_baru:
             if conn.execute("SELECT 1 FROM produk WHERE sku=? AND id<>?", (args.sku_baru.strip(), p["id"])).fetchone():
-                raise Gagal("SKU baru '%s' sudah dipakai produk lain." % args.sku_baru)
+                raise Gagal("Kode barang baru '%s' sudah dipakai barang lain." % args.sku_baru)
             ubah["sku"] = args.sku_baru.strip()
         if args.nonaktif:
             ubah["aktif"] = 0
         if args.aktif:
             ubah["aktif"] = 1
         if not ubah:
-            raise Gagal("Tidak ada yang diubah. Sebutkan field, mis. --harga-jual 65000.")
+            raise Gagal("Belum ada data yang diubah. Sebutkan apa yang mau diubah (mis. harga jual jadi Rp 65.000).",
+                        langkah_agen="Opsi yang tersedia: lihat references/perintah.md (produk ubah).")
         perubahan = {k: {"lama": p[k], "baru": v} for k, v in ubah.items() if p[k] != v}
         sets = ", ".join("%s=?" % k for k in ubah) + ", diubah=?"
         conn.execute("UPDATE produk SET %s WHERE id=?" % sets, list(ubah.values()) + [sekarang(), p["id"]])
@@ -867,7 +906,7 @@ def cmd_produk_ubah(args):
         teks = "Ubah produk %s (%s):\n" % (p["sku"], label_produk(p)) + "\n".join(
             "  %s: %s -> %s" % (k, v["lama"], v["baru"]) for k, v in perubahan.items())
         if "hpp" in ubah:
-            teks += "\nCatatan: koreksi HPP mengubah nilai persediaan dan tercatat di log."
+            teks += "\nCatatan: koreksi modal rata-rata (HPP) mengubah nilai persediaan dan tercatat di log."
         return {"ok": True, "produk": baris_produk_json(baru), "perubahan": perubahan,
                 "ringkasan": {"ubah_produk": p["sku"], "perubahan": perubahan}}, teks
 
@@ -891,11 +930,15 @@ def cmd_produk_cari(args):
     if not rows:
         return data, "Tidak ada produk yang cocok dengan '%s'." % kata
     teks = "%d produk:\n" % len(rows) + "\n".join(
-        "- %s | %s | stok %s %s | lokasi %s | HPP %s | jual %s"
+        "- %s | %s | stok %s %s | lokasi %s | modal rata-rata %s | jual %s"
         % (r["sku"], label_produk(r), fq(r["stok"]), r["satuan"], r["lokasi"] or "-", rp(r["hpp"]), rp(r["harga_jual"]))
         for r in rows)
     return data, teks
 
+
+LABEL_PRODUK = {"sku": "Kode barang (SKU)", "varian": "Varian", "nama": "Nama", "satuan": "Satuan",
+                "harga_beli": "Harga beli", "harga_jual": "Harga jual", "stok_min": "Stok minimum", "stok": "Stok",
+                "lokasi": "Lokasi"}
 
 SINONIM_PRODUK = {
     "sku": ["sku", "kode sku", "kode", "kode barang", "kode produk", "nomor referensi sku", "seller sku"],
@@ -915,12 +958,12 @@ def cmd_produk_impor(args):
     baris, jenis = baca_tabel(args.file)
     hi = cari_header(baris, SINONIM_PRODUK)
     if hi is None:
-        raise Gagal("Judul kolom tidak dikenali. Minimal perlu kolom SKU dan Nama.",
+        raise Gagal("Judul kolom tidak dikenali. Minimal perlu kolom kode barang (SKU) dan Nama.",
                     kolom_ada=baris[0] if baris else [])
     header = baris[hi]
     kol = deteksi_kolom(header, SINONIM_PRODUK)
     if "sku" not in kol or "nama" not in kol:
-        raise Gagal("Kolom SKU dan Nama wajib ada.", kolom_ada=header)
+        raise Gagal("Kolom kode barang (SKU) dan Nama wajib ada.", kolom_ada=header)
     tgl = tanggal_wajib(args.tanggal) if args.tanggal else hari_ini(args)
     pemetaan = {k: header[i] for k, i in kol.items()}
 
@@ -932,7 +975,7 @@ def cmd_produk_impor(args):
                 continue
             sku, nama = sel(r, kol["sku"]), sel(r, kol["nama"])
             if not sku or not nama:
-                rusak.append({"baris": no, "alasan": "SKU/nama kosong"})
+                rusak.append({"baris": no, "alasan": "kode barang (SKU) atau nama kosong"})
                 continue
             nilai = {}
             for f in ("harga_beli", "harga_jual", "stok_min", "stok"):
@@ -960,17 +1003,31 @@ def cmd_produk_impor(args):
                              catatan="impor produk")
                 nilai_awal += nilai["stok"] * nilai["harga_beli"]
             baru.append({"sku": sku, "nama": nama, "stok_awal": angka_json(nilai["stok"])})
-        data = {"ok": True, "file": str(args.file), "pemetaan_kolom": pemetaan, "produk_baru": len(baru),
+        data = {"ok": True, "file": Path(args.file).name, "pemetaan_kolom": pemetaan, "produk_baru": len(baru),
                 "contoh": baru[:10], "sku_sudah_ada_dilewati": lewat, "baris_rusak": rusak,
                 "nilai_stok_awal": bulat_rp(nilai_awal),
                 "ringkasan": {"produk_baru": len(baru), "dilewati": len(lewat), "rusak": len(rusak)}}
-        teks = ("Pemetaan kolom: %s\nProduk baru: %d (nilai stok awal %s)\nSKU sudah ada (dilewati): %d%s\n"
+        teks = ("Kolom yang dipakai (mohon dicek):\n%s\nProduk baru: %d (nilai stok awal %s)\nKode barang (SKU) sudah ada (dilewati): %d%s\n"
                 "Baris rusak (dilewati): %d%s"
-                % (", ".join("%s=%s" % kv for kv in pemetaan.items()), len(baru), rp(nilai_awal), len(lewat),
+                % ("\n".join("  %-17s <- %s" % (LABEL_PRODUK.get(k, k), v) for k, v in pemetaan.items()), len(baru), rp(nilai_awal), len(lewat),
                    (" -> " + ", ".join(lewat[:10])) if lewat else "", len(rusak),
                    "".join("\n  baris %s: %s" % (x["baris"], x["alasan"]) for x in rusak[:10])))
         return data, teks
 
+    if not db.is_file() and not args.ya:
+        # Pembeli baru: buku stok belum ada, tetapi pratinjau impor tetap harus bisa ditunjukkan dalam SATU
+        # konfirmasi bersama penyiapan buku. Dihitung di catatan sementara (memori); tidak ada berkas dibuat.
+        conn = sqlite3.connect(":memory:", isolation_level=None)
+        conn.row_factory = sqlite3.Row
+        try:
+            conn.executescript(DDL)
+            data, teks = jalankan_tulis(args, db, "produk impor", kerja, conn=conn)
+        finally:
+            conn.close()
+        data["buku_belum_ada"] = True
+        data["petunjuk"] += (" Buku stok belum ada: setelah pengguna setuju, jalankan init --ya lebih dulu, "
+                             "lalu ulangi perintah impor yang sama dengan --ya.")
+        return data, teks
     return jalankan_tulis(args, db, "produk impor", kerja, label_backup="sebelum-impor-produk")
 
 
@@ -990,10 +1047,10 @@ def _daftar_item(args):
         baris, _ = baca_tabel(args.file)
         hi = cari_header(baris, SINONIM_ITEM)
         if hi is None:
-            raise Gagal("File item perlu kolom SKU dan Qty.")
+            raise Gagal("File item perlu kolom kode barang (SKU) dan jumlah (Qty).")
         kol = deteksi_kolom(baris[hi], SINONIM_ITEM)
         if "sku" not in kol or "qty" not in kol:
-            raise Gagal("File item perlu kolom SKU dan Qty.", kolom_ada=baris[hi])
+            raise Gagal("File item perlu kolom kode barang (SKU) dan jumlah (Qty).", kolom_ada=baris[hi])
         items = []
         for no, r in enumerate(baris[hi + 1:], start=hi + 2):
             if not any((c or "").strip() for c in r):
@@ -1007,7 +1064,8 @@ def _daftar_item(args):
             raise Gagal("File item tidak berisi baris data.")
         return items
     if not args.sku or args.qty is None:
-        raise Gagal("Sebutkan --sku dan --qty (atau --file daftar.csv).")
+        raise Gagal("Sebutkan kode barang dan jumlahnya (atau kirim file daftar barang).",
+                    langkah_agen="Opsi: --sku dan --qty, atau --file daftar.csv.")
     q = angka_wajib(args.qty, "qty", boleh_nol=False)
     h = angka_wajib(args.harga, "harga") if args.harga is not None else None
     return [(args.sku, q, h)]
@@ -1026,7 +1084,8 @@ def cmd_masuk(args):
             if h is None:
                 if args.jenis == "beli":
                     if p["harga_beli"] <= 0:
-                        raise Gagal("Harga beli %s belum diketahui. Sebutkan --harga." % p["sku"])
+                        raise Gagal("Harga beli %s belum diketahui. Tanyakan harga belinya ke pengguna." % p["sku"],
+                                    langkah_agen="Isi lewat opsi --harga.")
                     h = float(p["harga_beli"])
                 else:
                     h = float(p["hpp"]) if p["hpp"] > 0 else float(p["harga_beli"])
@@ -1046,7 +1105,7 @@ def cmd_masuk(args):
         total = sum(m["qty"] * (m["harga_beli"] + m["biaya_tambahan_per_satuan"]) for m in hasil)
         teks = "Barang MASUK (%s) tanggal %s%s:\n" % (args.jenis, tgl.isoformat(), (" ref " + args.ref) if args.ref else "")
         for m in hasil:
-            teks += ("- %s %s: +%s @ %s%s | stok %s -> %s | HPP rata-rata %s -> %s\n"
+            teks += ("- %s %s: +%s @ %s%s | stok %s -> %s | modal rata-rata per barang (HPP) %s -> %s\n"
                      % (m["sku"], m["nama"] + (" " + m["varian"] if m["varian"] else ""), fq(m["qty"]),
                         rp(m["harga_beli"]),
                         (" + biaya %s" % rp(m["biaya_tambahan_per_satuan"])) if m["biaya_tambahan_per_satuan"] else "",
@@ -1064,7 +1123,8 @@ def cmd_keluar(args):
     items = _daftar_item(args)
     tgl = tanggal_wajib(args.tanggal) if args.tanggal else hari_ini(args)
     if args.jenis != "jual" and not (args.catatan or "").strip() and args.jenis in ("rusak", "hilang", "lainnya"):
-        raise Gagal("Untuk barang keluar karena %s, isi --catatan (alasan singkat)." % args.jenis)
+        raise Gagal("Untuk barang keluar karena %s, sebutkan alasan singkatnya." % args.jenis,
+                    langkah_agen="Isi lewat opsi --catatan.")
 
     def kerja(conn):
         hasil = []
@@ -1080,12 +1140,12 @@ def cmd_keluar(args):
         teks = "Barang KELUAR (%s) tanggal %s%s:\n" % (args.jenis, tgl.isoformat(), (" ref " + args.ref) if args.ref else "")
         peringatan = []
         for m in hasil:
-            teks += ("- %s %s: %s | stok %s -> %s | nilai HPP %s%s\n"
+            teks += ("- %s %s: %s | stok %s -> %s | nilai modal %s%s\n"
                      % (m["sku"], m["nama"] + (" " + m["varian"] if m["varian"] else ""), fq(m["qty"]),
                         fq(m["stok_sebelum"]), fq(m["stok_sesudah"]), rp(m["nilai_hpp"]),
                         (" | nilai jual %s" % rp(m["nilai_jual"])) if m["nilai_jual"] is not None else ""))
             if m["minus"]:
-                peringatan.append("Stok %s menjadi MINUS (%s). Segera cek fisik / opname." % (m["sku"], fq(m["stok_sesudah"])))
+                peringatan.append("Stok %s menjadi MINUS (%s). Segera hitung ulang stok fisiknya (stock opname)." % (m["sku"], fq(m["stok_sesudah"])))
         if peringatan:
             teks += "PERINGATAN:\n" + "\n".join("- " + x for x in peringatan)
         return {"ok": True, "tanggal": tgl.isoformat(), "jenis": args.jenis, "item": hasil, "peringatan": peringatan,
@@ -1114,7 +1174,7 @@ def cmd_opname(args):
         hi = cari_header(baris, SINONIM_OPNAME)
         kol = deteksi_kolom(baris[hi], SINONIM_OPNAME) if hi is not None else {}
         if "sku" not in kol or "fisik" not in kol:
-            raise Gagal("File hitungan perlu kolom SKU dan Fisik (hasil hitung).",
+            raise Gagal("File hitungan perlu kolom kode barang (SKU) dan Fisik (hasil hitung).",
                         kolom_ada=baris[hi] if hi is not None else (baris[0] if baris else []))
         for no, r in enumerate(baris[hi + 1:], start=hi + 2):
             if not any((c or "").strip() for c in r):
@@ -1126,15 +1186,17 @@ def cmd_opname(args):
             hitungan.append((sel(r, kol["sku"]), n, sel(r, kol.get("alasan"))))
     for h in args.hitung or []:
         if "=" not in h:
-            raise Gagal("Format --hitung harus SKU=jumlah, mis. --hitung KAOS-HT-M=18")
+            raise Gagal("Format hitungan fisik tidak dikenali. Tulis kode barang lalu jumlahnya, contoh: KAOS-HT-M=18.",
+                        langkah_agen="Dipakai lewat opsi --hitung SKU=jumlah.")
         sku, _, n = h.rpartition("=")
         hitungan.append((sku.strip(), angka_wajib(n, "hitungan %s" % sku), ""))
     if not hitungan:
-        raise Gagal("Belum ada hasil hitung. Pakai --hitung SKU=jumlah (boleh berulang) atau --file hitungan.csv")
+        raise Gagal("Belum ada hasil hitung fisik. Sebutkan jumlah fisik tiap barang, atau kirim file hasil hitung.",
+                    langkah_agen="Opsi: --hitung SKU=jumlah (boleh berulang) atau --file hitungan.csv.")
     skus = [s.lower() for s, _, _ in hitungan]
     ganda = sorted({s for s in skus if skus.count(s) > 1})
     if ganda:
-        raise Gagal("SKU dihitung lebih dari sekali: %s. Jumlahkan dulu hasil hitungnya." % ", ".join(ganda))
+        raise Gagal("Kode barang dihitung lebih dari sekali: %s. Jumlahkan dulu hasil hitungnya." % ", ".join(ganda))
 
     def kerja(conn):
         hasil, kurang_alasan = [], []
@@ -1165,16 +1227,18 @@ def cmd_opname(args):
                     tot_minus += baris["nilai_selisih"]
             hasil.append(baris)
         if kurang_alasan and args.ya:
-            raise Gagal("Ada selisih tanpa alasan: %s. Isi --alasan \"...\" atau kolom Alasan di file."
-                        % ", ".join(kurang_alasan), sku_tanpa_alasan=kurang_alasan)
+            raise Gagal("Ada selisih tanpa alasan: %s. Tanyakan alasannya ke pengguna "
+                        "(mis. rusak, hilang, salah catat, bonus supplier)." % ", ".join(kurang_alasan),
+                        sku_tanpa_alasan=kurang_alasan,
+                        langkah_agen="Isi lewat opsi --alasan \"...\" atau kolom Alasan di file.")
         tidak_dihitung = conn.execute(
             "SELECT COUNT(*) FROM produk WHERE aktif=1 AND sku NOT IN (%s)" % ",".join("?" * len(hasil)),
             [h["sku"] for h in hasil]).fetchone()[0]
         beda = [h for h in hasil if h["selisih"] != 0]
-        teks = "STOCK OPNAME tanggal %s - %d SKU dihitung, %d ada selisih\n" % (tgl.isoformat(), len(hasil), len(beda))
+        teks = "HITUNG FISIK STOK (stock opname) tanggal %s - %d barang dihitung, %d ada selisih\n" % (tgl.isoformat(), len(hasil), len(beda))
         for h in hasil:
             tanda = "cocok" if h["selisih"] == 0 else ("%+g" % h["selisih"]).replace(".", ",")
-            teks += "- %s %s: sistem %s%s, fisik %s -> %s%s%s\n" % (
+            teks += "- %s %s: tercatat %s%s, fisik %s -> %s%s%s\n" % (
                 h["sku"], h["nama"], fq(h["stok_sistem"]),
                 (" (termasuk %s milik pesanan belum dikemas)" % fq(h["termasuk_pesanan_belum_dikemas"]))
                 if h["termasuk_pesanan_belum_dikemas"] else "", fq(h["stok_fisik"]), tanda,
@@ -1232,6 +1296,9 @@ LABEL_FIELD = {
     "harga": "Harga satuan", "harga_total": "Subtotal baris", "tipe_retur": "Tipe batal/retur",
     "qty_retur": "Jumlah diretur",
 }
+
+# Label untuk teks ke pengguna (kunci JSON `pemetaan_kolom` tetap memakai LABEL_FIELD).
+LABEL_TEKS = dict(LABEL_FIELD, sku="Kode barang (SKU)")
 
 KATA_BATAL = ["batal", "dibatalkan", "cancel", "canceled", "cancelled", "gagal", "failed", "expired", "kedaluwarsa"]
 KATA_RETUR = ["retur", "return", "refund", "pengembalian", "dikembalikan"]
@@ -1329,7 +1396,7 @@ def cmd_impor_pesanan(args):
             kol.pop(field, None)
             continue
         if norm(nilai) not in header_norm:
-            raise Gagal("Kolom '%s' (untuk %s) tidak ada di file." % (nilai, LABEL_FIELD[field]), kolom_ada=header)
+            raise Gagal("Kolom '%s' (untuk %s) tidak ada di file." % (nilai, LABEL_TEKS[field]), kolom_ada=header)
         idx = header_norm.index(norm(nilai))
         for f2, i2 in list(kol.items()):
             if i2 == idx and f2 != field:
@@ -1338,10 +1405,11 @@ def cmd_impor_pesanan(args):
     pemetaan = {f: header[i] for f, i in sorted(kol.items(), key=lambda x: x[1])}
     hilang = [LABEL_FIELD[f] for f in ("no_pesanan", "qty") if f not in kol]
     if "sku" not in kol and "nama" not in kol:
-        hilang.append("SKU atau Nama produk")
+        hilang.append("Kode barang (SKU) atau Nama produk")
     if hilang:
-        raise Gagal("Kolom wajib tidak ketemu: %s. Sebutkan manual, mis. --kolom-no-pesanan \"Nama Kolom\"."
-                    % ", ".join(hilang), kolom_ada=header, pemetaan_terdeteksi=pemetaan)
+        raise Gagal("Kolom wajib tidak ketemu di file: %s. Tanyakan ke pengguna nama kolom yang benar."
+                    % ", ".join(hilang), kolom_ada=header, pemetaan_terdeteksi=pemetaan,
+                    langkah_agen="Ulangi dengan opsi --kolom-<nama> \"Nama Kolom\" (mis. --kolom-no-pesanan).")
     platform = args.platform or tebak_platform(header)
     abaikan = [norm(x) for x in args.abaikan_status.split(",") if x.strip()] if args.abaikan_status else None
     tgl_default = hari_ini(args)
@@ -1522,14 +1590,15 @@ def cmd_impor_pesanan(args):
                               it["qty"], it["harga"], mid))
         conn.execute("UPDATE impor SET pesanan_baru=? WHERE id=?", (hit["baru"], imp))
         if tak_dikenal and args.ya and not args.lewati_tak_dikenal:
-            raise Gagal("Ada %d SKU dari file yang belum terdaftar di buku stok: %s. Tambahkan produknya dulu "
-                        "(produk tambah) atau jalankan dengan --lewati-tak-dikenal (stok barang itu tidak dikurangi)."
-                        % (len(tak_dikenal), ", ".join(list(tak_dikenal)[:10])), sku_tak_dikenal=list(tak_dikenal.values()))
+            raise Gagal("Ada %d kode barang (SKU) dari file yang belum terdaftar di buku stok: %s. Daftarkan "
+                        "barangnya dulu, atau lewati barang itu (stoknya tidak dikurangi)."
+                        % (len(tak_dikenal), ", ".join(list(tak_dikenal)[:10])), sku_tak_dikenal=list(tak_dikenal.values()),
+                        langkah_agen="Daftarkan lewat produk tambah, atau ulangi dengan --lewati-tak-dikenal.")
         peringatan = []
         if hit["baru"] == 0 and not (aktif_lagi or item_lama_terpotong):
-            peringatan.append("Tidak ada pesanan baru di file ini (semua sudah pernah diimpor atau dilewati).")
+            peringatan.append("Tidak ada pesanan baru di file ini (semua sudah pernah dibaca atau dilewati).")
         if item_lama_terpotong:
-            peringatan.append("%d item pesanan lama yang dulu dilewati (SKU belum terdaftar) kini dicocokkan & "
+            peringatan.append("%d item pesanan lama yang dulu dilewati (kode barang belum terdaftar) kini dicocokkan & "
                               "stoknya dipotong: %s" % (len(item_lama_terpotong), ", ".join(item_lama_terpotong[:20])))
         if aktif_lagi:
             peringatan.append("Pesanan yang sebelumnya batal kini AKTIF lagi, stok dipotong ulang: %s"
@@ -1538,16 +1607,16 @@ def cmd_impor_pesanan(args):
             peringatan.append("Pembatalan DIAJUKAN (belum pasti batal; tidak masuk daftar ambil sampai statusnya "
                               "jelas). Pesanan yang sudah pernah diimpor: stok tidak diubah. Pesanan baru: stok "
                               "tetap dipotong karena pesanan masih sah; bila akhirnya batal, stok dikembalikan saat "
-                              "impor berikutnya: %s" % ", ".join(diajukan[:20]))
+                              "file pesanan berikutnya dibaca: %s" % ", ".join(diajukan[:20]))
         if tanda_retur:
             peringatan.append("Pesanan sah tetapi ada tanda retur/refund di kolom retur (stok TIDAK otomatis ditambah; "
                               "cek barangnya): %s" % ", ".join(tanda_retur[:20]))
         if minus:
-            peringatan.append("Stok menjadi MINUS setelah impor: %s. Kemungkinan stok belum dicatat/terlewat restock; "
-                              "lakukan opname untuk SKU ini." % ", ".join("%s (%s)" % (k, fq(v)) for k, v in minus.items()))
+            peringatan.append("Stok menjadi MINUS setelah pesanan dipotong: %s. Kemungkinan stok belum dicatat/terlewat restock; "
+                              "hitung ulang stok fisik barang ini (stock opname)." % ", ".join("%s (%s)" % (k, fq(v)) for k, v in minus.items()))
         if status_asing:
-            peringatan.append("Status tidak dikenal (tetap dihitung terjual): %s. Jika ini pesanan batal, jalankan "
-                              "ulang dengan --abaikan-status." % ", ".join("%s (%d)" % kv for kv in status_asing.items()))
+            peringatan.append("Status tidak dikenal (tetap dihitung terjual): %s. Jika ini berarti pesanan batal, "
+                              "beri tahu saya agar status itu diabaikan." % ", ".join("%s (%d)" % kv for kv in status_asing.items()))
         if "status" not in kol:
             peringatan.append("File tidak punya kolom status: semua pesanan dianggap sah & belum dikirim.")
         if lewat["nomor_rusak"]:
@@ -1557,10 +1626,10 @@ def cmd_impor_pesanan(args):
             peringatan.append("%d baris tanpa nomor pesanan dianggap lanjutan pesanan di atasnya." % isi_ikut)
         if cek_retur:
             peringatan.append("Pesanan yang kini berstatus retur/refund (stok TIDAK otomatis ditambah; cek fisik "
-                              "barangnya lalu catat 'masuk --jenis retur-pembeli' bila layak jual): %s" % ", ".join(cek_retur[:20]))
+                              "barangnya lalu catat sebagai barang masuk 'retur pembeli' bila layak jual): %s" % ", ".join(cek_retur[:20]))
         tq = sum(v["qty"] for v in per_sku.values())
         data = {
-            "ok": True, "file": str(args.file), "jenis_file": jenis_file, "platform": platform,
+            "ok": True, "file": Path(args.file).name, "jenis_file": jenis_file, "platform": platform,
             "baris_judul": hi + 1, "pemetaan_kolom": {LABEL_FIELD[k]: v for k, v in pemetaan.items()},
             "pesanan_baru": hit["baru"], "pesanan_sudah_pernah_diimpor": hit["sudah_ada"],
             "contoh_pesanan_ganda": contoh_ganda, "diabaikan_batal": hit["batal"], "diabaikan_retur": hit["retur"],
@@ -1574,10 +1643,10 @@ def cmd_impor_pesanan(args):
             "peringatan": peringatan,
             "ringkasan": {"file": Path(args.file).name, "pesanan_baru": hit["baru"], "qty_keluar": angka_json(tq)},
         }
-        t = ["IMPOR PESANAN %s (%s) - file %s" % (platform.upper(), jenis_file.upper(), Path(args.file).name),
+        t = ["FILE PESANAN %s (%s) - %s" % (platform.upper(), jenis_file.upper(), Path(args.file).name),
              "Pemetaan kolom (mohon dicek):"]
-        t += ["  %-16s <- %s" % (LABEL_FIELD[k], v) for k, v in pemetaan.items()]
-        t.append("Pesanan baru: %d | sudah pernah diimpor (dilewati): %d" % (hit["baru"], hit["sudah_ada"]))
+        t += ["  %-17s <- %s" % (LABEL_TEKS[k], v) for k, v in pemetaan.items()]
+        t.append("Pesanan baru: %d | sudah pernah dibaca (dilewati): %d" % (hit["baru"], hit["sudah_ada"]))
         t.append("Diabaikan: batal %d, retur/refund %d, belum bayar %d" % (hit["batal"], hit["retur"], hit["belum_bayar"]))
         if dibatalkan_ulang:
             t.append("Pesanan lama yang kini BATAL (stok dikembalikan): %s" % ", ".join(dibatalkan_ulang))
@@ -1586,9 +1655,9 @@ def cmd_impor_pesanan(args):
             for v in sorted(per_sku.values(), key=lambda x: -x["qty"]):
                 t.append("  - %s %s: -%s (stok %s -> %s)" % (v["sku"], v["nama"], fq(v["qty"]), fq(v["stok_sebelum"]), fq(v["stok_sesudah"])))
         if tak_dikenal:
-            t.append("SKU BELUM TERDAFTAR (stok tidak dikurangi):")
+            t.append("KODE BARANG (SKU) BELUM TERDAFTAR (stok tidak dikurangi):")
             for v in tak_dikenal.values():
-                t.append("  - %s %s %s: %s pcs di %d pesanan" % (v["sku_marketplace"] or "(tanpa SKU)", v["nama"], v["varian"], fq(v["qty"]), v["pesanan"]))
+                t.append("  - %s %s %s: %s pcs di %d pesanan" % (v["sku_marketplace"] or "(tanpa kode barang)", v["nama"], v["varian"], fq(v["qty"]), v["pesanan"]))
         dl = data["baris_dilewati"]
         if dl["qty_tidak_valid"] or dl["baris_kembar"]:
             t.append("Baris dilewati: %d (jumlah tidak valid/baris keterangan), %d baris kembar"
@@ -1661,9 +1730,9 @@ def cmd_picking(args):
                    for a in daftar_ambil if a["terdaftar"] and a["stok_sisa"] is not None and a["stok_sisa"] < 0]
     data = {"ok": True, "mode": "baca", "jumlah_pesanan": len(ps), "total_barang": angka_json(sum(a["qty"] for a in daftar_ambil)),
             "daftar_ambil": daftar_ambil, "urutan_pesanan": urutan, "urut_berdasarkan": args.urut, "peringatan": peringatan}
-    t = ["DAFTAR AMBIL BARANG (picking) - %d pesanan, %s barang" % (len(ps), fq(data["total_barang"]))]
+    t = ["DAFTAR AMBIL BARANG (picking list) - %d pesanan, %s barang" % (len(ps), fq(data["total_barang"]))]
     if not ps:
-        t = ["Tidak ada pesanan yang menunggu dikemas. Impor dulu file pesanan 'Perlu Dikirim' dari Seller Center."]
+        t = ["Tidak ada pesanan yang menunggu dikemas. Kirim dulu file pesanan 'Perlu Dikirim' dari Seller Center."]
     else:
         t.append("")
         t.append("A. AMBIL DI RAK (urut lokasi)")
@@ -1686,7 +1755,7 @@ def cmd_picking(args):
         data["csv"] = tulis_csv(args.csv, ["lokasi", "sku", "nama", "qty", "satuan", "jumlah_pesanan"],
                                 [[a["lokasi"], a["sku"], a["nama"], a["qty"], a["satuan"], a["jumlah_pesanan"]] for a in daftar_ambil],
                                 args.pemisah)
-        t.append("CSV daftar ambil: %s" % data["csv"])
+        t.append("File Excel (CSV) daftar ambil: %s" % Path(data["csv"]).name)
     if args.csv_pesanan:
         rows = []
         for u in urutan:
@@ -1694,7 +1763,7 @@ def cmd_picking(args):
                 rows.append([u["urut"], u["no_pesanan"], u["kurir"], u["resi"], u["batas_kirim"], i["sku"], i["nama"], i["qty"], i["lokasi"]])
         data["csv_pesanan"] = tulis_csv(args.csv_pesanan, ["urut", "no_pesanan", "kurir", "resi", "batas_kirim", "sku", "nama", "qty", "lokasi"],
                                         rows, args.pemisah)
-        t.append("CSV urutan pesanan: %s" % data["csv_pesanan"])
+        t.append("File Excel (CSV) urutan pesanan: %s" % Path(data["csv_pesanan"]).name)
     conn.close()
     if args.tandai_dikemas:
         if not ps:
@@ -1706,7 +1775,7 @@ def cmd_picking(args):
             d["mode"] = None
             d["ditandai_dikemas"] = len(ids)
             d["ringkasan"] = {"tandai_dikemas": len(ids)}
-            return d, "\n".join(t) + "\n\n%d pesanan akan ditandai SUDAH DIKEMAS (tidak muncul lagi di picking berikutnya)." % len(ids)
+            return d, "\n".join(t) + "\n\n%d pesanan akan ditandai SUDAH DIKEMAS (tidak muncul lagi di daftar ambil berikutnya)." % len(ids)
 
         return jalankan_tulis(args, db, "picking --tandai-dikemas", kerja)
     return data, "\n".join(t)
@@ -1751,10 +1820,10 @@ def lap_stok(conn, args):
     total = sum(d["nilai_persediaan"] for d in out)
     data = {"jumlah_produk": len(out), "total_qty": angka_json(sum(max(d["stok"], 0) for d in out)),
             "nilai_persediaan_total": total, "produk": out,
-            "catatan": "Nilai persediaan = stok x HPP rata-rata tertimbang, dibulatkan ke rupiah terdekat. Stok minus dihitung 0."}
+            "catatan": "Nilai persediaan = stok x modal rata-rata per barang (HPP, rata-rata tertimbang), dibulatkan ke rupiah terdekat. Stok minus dihitung 0."}
     t = ["STOK SAAT INI - %d produk, nilai persediaan %s" % (len(out), rp(total))]
     for d in out:
-        t.append("- %s | %s%s | %s %s | HPP %s | nilai %s%s" % (
+        t.append("- %s | %s%s | %s %s | modal rata-rata %s | nilai %s%s" % (
             d["lokasi"] or "-", d["sku"], (" " + d["nama"] + (" " + d["varian"] if d["varian"] else "")), fq(d["stok"]), d["satuan"],
             rp(d["hpp_rata2"]), rp(d["nilai_persediaan"]), "" if d["status"] == "aman" else "  <- " + d["status"]))
     head = ["lokasi", "sku", "nama", "varian", "satuan", "stok", "stok_min", "hpp_rata2", "nilai_persediaan", "harga_jual", "status"]
@@ -1783,9 +1852,9 @@ def lap_menipis(conn, args):
     if not out:
         t.append("Semua stok di atas batas minimum.")
     for d in out:
-        t.append("- %s %s: stok %s (min %s) %s%s" % (
+        t.append("- %s %s: stok %s (minimum %s) %s%s" % (
             d["sku"], d["nama"], fq(d["stok"]), fq(d["stok_min"]), d["status"],
-            (" | laku +-%s/hari, habis dalam +-%s hari" % (fq(d["rata2_terjual_per_hari_30h"]), d["perkiraan_habis_hari"]))
+            (" | laku sekitar %s/hari, habis dalam sekitar %s hari" % (fq(d["rata2_terjual_per_hari_30h"]), d["perkiraan_habis_hari"]))
             if d["perkiraan_habis_hari"] is not None else ""))
     head = ["sku", "nama", "lokasi", "stok", "stok_min", "status", "kurang_dari_minimum", "rata2_per_hari", "perkiraan_habis_hari"]
     rows_csv = [[d["sku"], d["nama"], d["lokasi"], d["stok"], d["stok_min"], d["status"], d["kurang_dari_minimum"],
@@ -1865,9 +1934,9 @@ def lap_mutasi(conn, args):
             "per_produk": list(ringkas.values()), "detail": detail if not args.ringkas_saja else [],
             "nilai_pembelian": bulat_rp(nilai_beli), "hpp_barang_terjual": bulat_rp(hpp_jual - hpp_batal),
             "nilai_penjualan_tercatat": bulat_rp(nilai_jual)}
-    t = ["MUTASI STOK %s s/d %s - %d transaksi" % (dari.isoformat(), sampai.isoformat(), len(detail)),
-         "Pembelian: %s | HPP barang terjual: %s | Penjualan tercatat (yang ada harganya): %s"
-         % (rp(nilai_beli), rp(hpp_jual - hpp_batal), rp(nilai_jual)), "", "Per produk (awal + masuk - keluar +/- opname = akhir):"]
+    t = ["REKAP BARANG MASUK DAN KELUAR %s s/d %s - %d transaksi" % (dari.isoformat(), sampai.isoformat(), len(detail)),
+         "Pembelian: %s | Modal barang terjual (HPP): %s | Penjualan tercatat (yang ada harganya): %s"
+         % (rp(nilai_beli), rp(hpp_jual - hpp_batal), rp(nilai_jual)), "", "Per barang (stok awal + masuk - keluar +/- selisih hitung fisik = stok akhir):"]
     for v in ringkas.values():
         t.append("- %s %s: %s + %s - %s %s = %s" % (v["sku"], v["nama"], fq(v["awal"]), fq(v["masuk"]), fq(v["keluar"]),
                                                   ("%+g" % v["opname"]).replace(".", ",") if v["opname"] else "+0", fq(v["akhir"])))
@@ -1877,7 +1946,7 @@ def lap_mutasi(conn, args):
         for d in detail[:200]:
             t.append("  %s %-12s %-14s %6s  stok %s  %s %s" % (d["tanggal"], d["sku"], d["jenis"], fq(d["qty"]), fq(d["stok_sesudah"]), d["ref"], d["catatan"]))
         if len(detail) > 200:
-            t.append("  ... %d baris lagi (pakai --csv untuk semua)" % (len(detail) - 200))
+            t.append("  ... %d baris lagi (lengkapnya bisa dibuatkan file Excel)" % (len(detail) - 200))
     head = ["tanggal", "sku", "arah", "jenis", "qty", "harga", "hpp", "stok_sesudah", "ref", "catatan"]
     rows_csv = [[d["tanggal"], d["sku"], d["arah"], d["jenis"], d["qty"], d["harga"] if d["harga"] is not None else "",
                  bulat_rp(d["hpp"]), d["stok_sesudah"], d["ref"], d["catatan"]] for d in detail]
@@ -1914,11 +1983,11 @@ def lap_ringkas(conn, args):
             "pesanan_belum_dikemas": len(belum), "restock_qty": angka_json(masuk[0]), "restock_nilai": bulat_rp(masuk[1]),
             "opname_selisih_hari_ini": opn, "stok_menipis": menipis["produk"], "nilai_persediaan": bulat_rp(nilai),
             "tidak_laku": {"hari": args.hari, "jumlah": tl["jumlah"], "nilai_tertahan": tl["nilai_tertahan_total"]},
-            "catatan": "Pesanan yang batal setelah diimpor tidak dihitung. Omzet hanya dari transaksi yang punya harga jual; laba kotor = omzet - HPP rata-rata (sebelum biaya admin marketplace, ongkir, iklan)."}
+            "catatan": "Pesanan yang batal setelah dibaca tidak dihitung. Omzet hanya dari transaksi yang punya harga jual; laba kotor = omzet - modal rata-rata per barang (HPP) (sebelum biaya admin marketplace, ongkir, iklan)."}
     t = ["Laporan Stok Harian - %s" % acuan.strftime("%d/%m/%Y"),
          "Terjual: %s barang (marketplace %s dari %d pesanan, toko/offline %s)"
          % (fq(qty), fq(qty_mp), n_pesanan, fq(qty_toko)),
-         "Omzet tercatat: %s | HPP: %s | Laba kotor (perkiraan): %s" % (rp(omzet), rp(hpp), rp(data["laba_kotor_perkiraan"]))]
+         "Omzet tercatat: %s | Modal barang terjual (HPP): %s | Laba kotor (perkiraan): %s" % (rp(omzet), rp(hpp), rp(data["laba_kotor_perkiraan"]))]
     if tanpa_harga:
         t.append("(%d transaksi jual tanpa harga, tidak masuk omzet)" % tanpa_harga)
     if top:
@@ -1928,8 +1997,8 @@ def lap_ringkas(conn, args):
         t.append("Restock hari ini: %s barang (%s, termasuk ongkir/biaya tambahan)" % (fq(masuk[0]), rp(masuk[1])))
     t.append("Stok menipis/habis: %d produk" % len(menipis["produk"]))
     for d in menipis["produk"][:10]:
-        t.append("  - %s %s: sisa %s (min %s)%s" % (d["sku"], d["nama"], fq(d["stok"]), fq(d["stok_min"]),
-                                                  (", habis +-%s hari lagi" % d["perkiraan_habis_hari"]) if d["perkiraan_habis_hari"] is not None else ""))
+        t.append("  - %s %s: sisa %s (minimum %s)%s" % (d["sku"], d["nama"], fq(d["stok"]), fq(d["stok_min"]),
+                                                  (", habis sekitar %s hari lagi" % d["perkiraan_habis_hari"]) if d["perkiraan_habis_hari"] is not None else ""))
     if len(menipis["produk"]) > 10:
         t.append("  ... dan %d lainnya" % (len(menipis["produk"]) - 10))
     t.append("Barang tidak laku >= %d hari: %d produk (modal tertahan %s)" % (args.hari, tl["jumlah"], rp(tl["nilai_tertahan_total"])))
@@ -1952,7 +2021,7 @@ def cmd_laporan(args):
     data = dict(ok=True, mode="baca", laporan=args.jenis_laporan, **data)
     if args.csv:
         data["csv"] = tulis_csv(args.csv, head, rows_csv, args.pemisah)
-        t.append("File CSV (buka di Excel): %s" % data["csv"])
+        t.append("File CSV (buka di Excel): %s" % Path(data["csv"]).name)
     return data, "\n".join(t)
 
 
@@ -2079,6 +2148,18 @@ def buat_parser():
     return p
 
 
+def _lapor_gagal(args, pesan, detail):
+    """Cetak galat. JSON memuat petunjuk teknis untuk agent; teks (yang bisa terkirim apa adanya ke chat,
+    mis. laporan terjadwal) hanya memuat kalimat awam tanpa langkah_agen/opsi/lokasi."""
+    out = {"ok": False, "error": pesan}
+    out.update(detail)
+    if args.json:
+        print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
+    else:
+        print("GAGAL: " + pesan, file=sys.stderr)
+    return 1
+
+
 def main(argv=None):
     try:
         sys.stdout.reconfigure(errors="replace")
@@ -2091,24 +2172,25 @@ def main(argv=None):
     try:
         data, teks = args.fungsi(args)
     except Gagal as e:
-        out = {"ok": False, "error": e.pesan}
-        out.update(e.detail)
-        if args.json:
-            print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
-        else:
-            print("GAGAL: " + e.pesan, file=sys.stderr)
-            for k, v in e.detail.items():
-                print("  %s: %s" % (k, v), file=sys.stderr)
-        return 1
-    except sqlite3.OperationalError as e:
-        pesan = "Database sedang dipakai proses lain atau terkunci (%s). Coba lagi sebentar." % e \
-            if "locked" in str(e) else "Kesalahan database: %s" % e
-        if args.json:
-            print(json.dumps({"ok": False, "error": pesan}, ensure_ascii=False))
-        else:
-            print("GAGAL: " + pesan, file=sys.stderr)
-        return 1
+        return _lapor_gagal(args, e.pesan, e.detail)
+    except sqlite3.Error as e:
+        # Pesan mentah SQLite hanya untuk agent (detail_teknis di JSON), tidak pernah ke teks yang bisa terkirim ke chat.
+        if "locked" in str(e) or "busy" in str(e):
+            return _lapor_gagal(args, "Catatan stok sedang dipakai proses lain. Coba lagi sebentar.",
+                                {"detail_teknis": str(e),
+                                 "langkah_agen": "Tunggu beberapa detik lalu ulangi sekali. Jangan kutip detail_teknis."})
+        return _lapor_gagal(args, "Catatan stok tidak bisa dibuka saat ini karena gangguan teknis. "
+                                  "Jangan diedit manual; coba lagi sebentar.",
+                            {"detail_teknis": "%s: %s" % (type(e).__name__, e),
+                             "langkah_agen": "Ulangi sekali. Bila tetap gagal, tawarkan restore dari cadangan terbaru "
+                                             "(backup --daftar). Jangan kutip detail_teknis."})
+    except OSError as e:
+        return _lapor_gagal(args, "Berkas tidak bisa dibaca atau ditulis (cek izin akses atau ruang penyimpanan).",
+                            {"detail_teknis": "%s: %s" % (type(e).__name__, e.strerror or ""),
+                             "langkah_agen": "Jangan kutip detail_teknis; minta pengguna memeriksa berkasnya."})
     if args.json:
+        if isinstance(data, dict) and any(k in data for k in KUNCI_LOKASI):
+            data = dict(data, catatan_agen=CATATAN_AGEN_LOKASI)
         print(json.dumps(data, ensure_ascii=False, indent=2, default=str))
     else:
         print(teks)

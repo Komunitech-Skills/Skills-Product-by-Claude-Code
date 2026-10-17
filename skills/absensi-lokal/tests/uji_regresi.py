@@ -515,8 +515,544 @@ class UjiPerbaikan101(Dasar):
         f = self.file("log.csv", "ID,Tanggal,Jam\n1,01/09/2026,08:00\n1,02/09/2026,08:00\n1,02/09/2026,17:00\n")
         self.ok("impor-absen", f, "--ya")
         out = self.ok("catat", "--karyawan", "A01", "--tanggal", "2026-09-01", "--pulang", "17.00")
-        self.assertTrue(any(c.startswith("Sudah ada 1 tap dari mesin") for c in out["catatan"]), out["catatan"])
+        self.assertTrue(any(c.startswith("Sudah ada 1 catatan scan dari mesin") for c in out["catatan"]), out["catatan"])
 
+
+
+class UjiRekapCepat(unittest.TestCase):
+    """rekap-cepat: file mesin + permintaan rekap -> hasil langsung di balasan pertama, tanpa menyimpan apa pun,
+    tanpa menyebut lokasi file/nama database/nama skrip. Data fiktif September 2026 (22 hari kerja Senin-Jumat).
+    Angka diverifikasi manual (bukan dari keluaran skrip):
+      Andi telat (toleransi 10 menit; batas 08.10): 02/09 08.23 (23), 15/09 08.12 (12), 22/09 08.31 (31) = 3x, 66 menit
+      Joko telat: 03/09 08.14 (14), 10/09 08.16 (16), 24/09 08.45 (45) = 3x, 75 menit; 17/09 08.08 tidak dihitung
+      Sari tidak pernah telat. 14/09 kosong untuk semua; Sari kosong 21-22/09; Andi 25/09 tanpa jam pulang.
+      Hari biasa masuk 07.55 pulang 17.05 = 9 jam 10 menit - istirahat 60 = 490 menit; Sari 19 hari x 490 = 9.310.
+    """
+    TELAT = {("Andi", "02/09"): "08:23", ("Andi", "15/09"): "08:12", ("Andi", "22/09"): "08:31",
+             ("Joko", "03/09"): "08:14", ("Joko", "10/09"): "08:16", ("Joko", "17/09"): "08:08",
+             ("Joko", "24/09"): "08:45"}
+    ORANG = [("1", "Andi"), ("2", "Sari"), ("3", "Joko")]
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.csv = self.buat_csv("absen-sept.csv", 1, 30)
+
+    def tearDown(self):
+        shutil.rmtree(self.dir, ignore_errors=True)
+
+    def buat_csv(self, nama, hari_awal, hari_akhir, sabtu=False):
+        import datetime as dt
+        baris = ["No.,AC-No.,Nama,Waktu,Status"]
+        n = 0
+        for tgl in range(hari_awal, hari_akhir + 1):
+            d = dt.date(2026, 9, tgl)
+            if d.weekday() >= (6 if sabtu else 5) or tgl == 14:
+                continue
+            kunci = d.strftime("%d/%m")
+            for idm, nm in self.ORANG:
+                if nm == "Sari" and tgl in (21, 22):
+                    continue
+                n += 1
+                baris.append("%d,%s,%s,%s %s:00,C/In" % (n, idm, nm, d.strftime("%d/%m/%Y"),
+                                                        self.TELAT.get((nm, kunci), "07:55")))
+                if not (nm == "Andi" and tgl == 25):
+                    n += 1
+                    baris.append("%d,%s,%s,%s 17:05:00,C/Out" % (n, idm, nm, d.strftime("%d/%m/%Y")))
+        p = os.path.join(self.dir, nama)
+        with open(p, "w", encoding="utf-8") as f:
+            f.write("\n".join(baris) + "\n")
+        return p
+
+    def jalan(self, *argv, kode_harapan=0):
+        buf = io.StringIO()
+        db = os.path.join(self.dir, "tidak-boleh-dibuat", "absensi.db")
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            kode = A.main(["rekap-cepat"] + list(argv) + ["--db", db, "--json", "--sekarang", "2026-10-01 09:00"])
+        self.assertEqual(kode, kode_harapan, buf.getvalue())
+        self.assertFalse(os.path.exists(os.path.dirname(db)), "rekap-cepat tidak boleh membuat folder/database")
+        return json.loads(buf.getvalue())
+
+    def per_nama(self, out):
+        return {k["nama"]: k for k in out["karyawan"]}
+
+    def masalah(self, out, jenis):
+        return [m for m in out["masalah"] if m["jenis"] == jenis]
+
+    def test_01_balasan_pertama_langsung_berisi_rekap(self):
+        out = self.jalan(self.csv, "--toleransi", "10")
+        self.assertTrue(out["ok"])
+        self.assertEqual((out["mode"], out["tersimpan"]), ("baca", False))
+        k = self.per_nama(out)
+        self.assertEqual((k["Andi"]["terlambat_kali"], k["Andi"]["terlambat_menit"]), (3, 66))
+        self.assertEqual((k["Joko"]["terlambat_kali"], k["Joko"]["terlambat_menit"]), (3, 75))
+        self.assertEqual((k["Sari"]["terlambat_kali"], k["Sari"]["terlambat_menit"]), (0, 0))
+        self.assertEqual((k["Andi"]["hari_terjadwal"], k["Andi"]["hadir"], k["Andi"]["tanpa_keterangan"]), (22, 21, 1))
+        self.assertEqual((k["Sari"]["hadir"], k["Sari"]["tanpa_keterangan"]), (19, 3))
+        self.assertEqual(k["Sari"]["tanggal_tanpa_keterangan"], ["2026-09-14", "2026-09-21", "2026-09-22"])
+        self.assertEqual(k["Sari"]["menit_kerja"], 19 * 490)
+        self.assertEqual(k["Andi"]["hari_tidak_lengkap"], 1)
+        tidak_lengkap = self.masalah(out, "tap_tidak_lengkap")
+        self.assertEqual([(m["nama"], m["tanggal"]) for m in tidak_lengkap], [("Andi", "2026-09-25")])
+        self.assertEqual(out["tanggal_kosong_semua"], ["2026-09-14"])
+        self.assertEqual(out["periode"]["label"], "September 2026")
+        self.assertEqual(out["dibaca"]["catatan"], 121)
+
+    def test_02_teks_siap_kirim_tanpa_jargon_dan_tanpa_lokasi(self):
+        out = self.jalan(self.csv, "--toleransi", "10")
+        teks = out["teks"]
+        self.assertTrue(teks.startswith("REKAP ABSENSI SEPTEMBER 2026"))
+        self.assertIn("Terlambat 3x (1 jam 6 menit)", teks)
+        self.assertIn("Terlambat 3x (1 jam 15 menit)", teks)
+        self.assertIn("Yang saya pakai untuk menghitung:", teks)
+        self.assertIn("Kelonggaran telat 10 menit", teks)
+        self.assertIn("(anggapan saya, bisa diubah)", teks)
+        self.assertIn("belum ada data yang disimpan", teks)
+        self.assertNotIn("(A01)", teks)                       # kode internal tidak ditampilkan
+        for terlarang in (".db", "KomunitechData", "absensi.py", "python", "database", "--", self.dir, "/tmp",
+                          "tap ", "json", "pratinjau"):
+            self.assertNotIn(terlarang, teks, terlarang)
+        for kalimat in out["pertanyaan"] + out["asumsi"] + out["catatan_file"]:
+            for terlarang in (".db", "KomunitechData", "absensi.py", "--", self.dir):
+                self.assertNotIn(terlarang, kalimat)
+
+    def test_03_pertanyaan_maksimal_tiga_dan_ringkas(self):
+        out = self.jalan(self.csv, "--toleransi", "10")
+        q = out["pertanyaan"]
+        self.assertEqual(len(q), 3)
+        self.assertIn("14/09", q[0])                          # libur bersama?
+        self.assertIn("Sari 21/09, 22/09", q[1])              # izin/sakit/cuti/alpa?
+        self.assertNotIn("14/09", q[1])                       # tanggal libur bersama tidak ditanyakan dua kali
+        self.assertIn("simpan", q[2])                         # tawaran simpan selalu terakhir
+        self.assertTrue(all(len(x) < 200 for x in q))
+
+    def test_04_daftar_dari_file_sama_dengan_daftar_eksplisit(self):
+        otomatis = self.jalan(self.csv, "--toleransi", "10")
+        self.assertTrue(otomatis["daftar_dari_file"])
+        self.assertEqual(otomatis["daftar_siap_pakai"], "Andi=1; Sari=2; Joko=3")
+        eksplisit = self.jalan(self.csv, "--toleransi", "10", "--daftar", "Andi=1; Sari=2; Joko=3")
+        self.assertFalse(eksplisit["daftar_dari_file"])
+        nama_saja = self.jalan(self.csv, "--toleransi", "10", "--daftar", "Andi, Sari, Joko")
+        for out in (eksplisit, nama_saja):
+            k = self.per_nama(out)
+            self.assertEqual(k["Andi"]["terlambat_menit"], 66)
+            self.assertEqual(k["Joko"]["terlambat_menit"], 75)
+        self.assertNotIn("Daftar karyawan dibaca dari isi file", eksplisit["teks"])
+        self.assertIn("Daftar karyawan dibaca dari isi file", otomatis["teks"])
+
+    def test_05_libur_dari_pengguna_mengubah_hitungan(self):
+        out = self.jalan(self.csv, "--toleransi", "10", "--libur", "2026-09-14")
+        k = self.per_nama(out)
+        self.assertEqual((k["Andi"]["hari_terjadwal"], k["Andi"]["hadir"], k["Andi"]["tanpa_keterangan"]), (21, 21, 0))
+        self.assertEqual((k["Sari"]["hari_terjadwal"], k["Sari"]["tanpa_keterangan"]), (21, 2))
+        self.assertEqual(out["tanggal_kosong_semua"], [])
+        self.assertIn("Libur/tutup: 14/09", out["teks"])
+        self.assertNotIn("Tidak ada tanggal merah", out["teks"])
+        self.assertFalse(any("tanggal merah" in x for x in out["asumsi"]))
+        q = out["pertanyaan"]
+        self.assertEqual(len(q), 3)                           # Sari, jam pulang Andi 25/09, tawaran simpan
+        self.assertIn("Sari 21/09, 22/09", q[0])
+        self.assertIn("Andi 25/09", q[1])
+        self.assertIn("simpan", q[2])
+
+    def test_06_default_tanpa_kelonggaran_dan_pola_6_hari(self):
+        nol = self.jalan(self.csv)                            # toleransi 0: 17/09 Joko 08.08 ikut dihitung telat
+        self.assertEqual(self.per_nama(nol)["Joko"]["terlambat_kali"], 4)
+        self.assertEqual(self.per_nama(nol)["Joko"]["terlambat_menit"], 83)
+        self.assertIn("Tanpa kelonggaran", nol["teks"])
+        enam = self.jalan(self.buat_csv("enam.csv", 1, 30, sabtu=True), "--daftar", "Andi=1", "--hari-kerja", "6")
+        a = self.per_nama(enam)["Andi"]
+        self.assertEqual(a["hari_terjadwal"], 26)             # 22 hari Senin-Jumat + 4 Sabtu (5/12/19/26 Sep)
+        self.assertEqual(a["hari_kerja_per_minggu"], 6)
+        self.assertFalse(any("hari kerja seminggu" in x for x in enam["asumsi"]))     # disebut pengguna
+        self.assertTrue(any("hari kerja seminggu" in x for x in nol["asumsi"]))       # anggapan bawaan
+        self.assertEqual(self.per_nama(self.jalan(self.csv, "--daftar", "Andi=1"))["Andi"]["hari_terjadwal"], 22)
+
+    def test_07_periode_dibaca_dari_isi_file(self):
+        sebagian = self.buat_csv("sebagian.csv", 8, 15)
+        out = self.jalan(sebagian, "--toleransi", "10")
+        self.assertEqual((out["periode"]["dari"], out["periode"]["sampai"]), ("2026-09-08", "2026-09-15"))
+        self.assertEqual(self.per_nama(out)["Sari"]["hari_terjadwal"], 6)   # 8-11 dan 14-15 Sep... (14/09 kosong)
+        eksplisit = self.jalan(self.csv, "--bulan", "2026-09", "--toleransi", "10")
+        self.assertEqual(eksplisit["periode"]["label"], "September 2026")
+
+    def test_08_gagal_dengan_pesan_biasa(self):
+        for argv, potongan in (([os.path.join(self.dir, "tidak-ada.csv")], "tidak ditemukan"),
+                               ([self.csv, "--daftar", "Zaki=99"], "tidak ada di daftar"),
+                               ([self.csv, "--daftar", "Andi=3201234567890001"], "NIK"),
+                               ([self.csv, "--toleransi", "500"], "0-120"),
+                               ([self.csv, "--libur", "bukan-tanggal"], "tanggal")):
+            out = self.jalan(*argv, kode_harapan=1)
+            self.assertFalse(out["ok"])
+            self.assertIn(potongan, out["error"], argv)
+            self.assertNotIn("Traceback", out["error"])
+        aneh = os.path.join(self.dir, "aneh.csv")
+        with open(aneh, "w", encoding="utf-8") as f:
+            f.write("x,y\n1,2\n")
+        self.assertIn("tidak dikenali", self.jalan(aneh, kode_harapan=1)["error"])
+
+    def test_09_buku_yang_sudah_ada_tidak_diubah(self):
+        """Buku absensi yang sudah ada dibaca (hanya baca) lalu dipakai; ukuran, waktu ubah, dan isi folder tetap."""
+        db = os.path.join(self.dir, "absensi.db")
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(A.main(["init", "--ya", "--db", db]), 0)
+            self.assertEqual(A.main(["karyawan", "tambah", "--kode", "Z01", "--nama", "Zulkifli", "--id-mesin", "1",
+                                     "--ya", "--db", db]), 0)
+        sebelum = os.path.getsize(db), os.path.getmtime(db)
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            self.assertEqual(A.main(["rekap-cepat", self.csv, "--db", db, "--json", "--sekarang", "2026-10-01 09:00"]), 0)
+        out = json.loads(buf.getvalue())
+        self.assertTrue(out["dari_buku"])
+        self.assertEqual([k["nama"] for k in out["karyawan"]], ["Zulkifli"])        # karyawan dari buku, bukan dari file
+        self.assertTrue(any("tidak ada di buku absensi" in c for c in out["catatan_file"]))
+        self.assertEqual((os.path.getsize(db), os.path.getmtime(db)), sebelum)
+        self.assertEqual(sorted(os.listdir(self.dir)), sorted(["absen-sept.csv", "absensi.db"]))
+
+    # ---------------------------------------------------------------- perbaikan putaran 2 (1.0.8)
+    def jalan_buku(self, db, *argv, kode_harapan=0, sekarang="2026-10-01 09:00"):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            kode = A.main(["rekap-cepat"] + list(argv) + ["--db", db, "--json", "--sekarang", sekarang])
+        self.assertEqual(kode, kode_harapan, buf.getvalue())
+        return json.loads(buf.getvalue())
+
+    def cli(self, db, *argv, sekarang="2026-10-01 09:00"):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            kode = A.main(list(argv) + ["--db", db, "--json", "--sekarang", sekarang])
+        self.assertEqual(kode, 0, buf.getvalue())
+        return json.loads(buf.getvalue())
+
+    def buat_toko6(self):
+        """Toko 4 orang, Agustus 2026, Senin-Sabtu: Senin-Jumat 08.00-16.00, Sabtu pulang 13.00; 17/08 libur.
+        Semua masuk 07.55; pulang 16.05 (Senin-Jumat) atau 13.02 (Sabtu)."""
+        import datetime as dt
+        baris = ["No.,AC-No.,Nama,Waktu,Status"]
+        n = 0
+        for tgl in range(1, 32):
+            d = dt.date(2026, 8, tgl)
+            if d.weekday() == 6 or tgl == 17:
+                continue
+            for idm, nm in (("1", "Andi"), ("2", "Sari"), ("3", "Budi"), ("4", "Dewi")):
+                n += 2
+                baris.append("%d,%s,%s,%s 07:55:00,C/In" % (n - 1, idm, nm, d.strftime("%d/%m/%Y")))
+                baris.append("%d,%s,%s,%s %s,C/Out" % (n, idm, nm, d.strftime("%d/%m/%Y"),
+                                                       "13:02:00" if d.weekday() == 5 else "16:05:00"))
+        p = os.path.join(self.dir, "toko6.csv")
+        with open(p, "w", encoding="utf-8") as f:
+            f.write("\n".join(baris) + "\n")
+        return p
+
+    def test_11_sabtu_pulang_awal_pola_6_hari(self):
+        """Verifikasi manual (Agustus 2026: 25 hari kerja = 20 Senin-Jumat + 5 Sabtu 1/8/15/22/29; 17/08 libur):
+        Senin-Jumat 07.55-16.05 = 490 menit - istirahat 60 = 430; Sabtu 07.55-13.02 = 307 menit.
+        Dengan jam pulang Sabtu 13.00 (tanpa potongan istirahat): 20 x 430 + 5 x 307 = 10.135 menit.
+        Tanpa itu, Sabtu dianggap pulang 16.00: tiap Sabtu 307 - 60 = 247 dan pulang cepat 178 menit
+        (13.02 -> 16.00): 20 x 430 + 5 x 247 = 9.835 menit; pulang cepat 5x = 890 menit."""
+        csv = self.buat_toko6()
+        dasar = [csv, "--hari-kerja", "6", "--masuk", "08.00", "--pulang", "16.00", "--istirahat", "60",
+                 "--libur", "2026-08-17"]
+        benar = self.jalan(*dasar, "--pulang-hari-pendek", "13.00")
+        a = self.per_nama(benar)["Andi"]
+        self.assertEqual((a["hari_terjadwal"], a["menit_kerja"], a["pulang_cepat_kali"]), (25, 10135, 0))
+        self.assertTrue(any("Sabtu pulang jam 13.00" in x for x in benar["pengaturan_dipakai"]))
+        self.assertFalse(any("Sabtu" in x for x in benar["asumsi"]))              # disebut pengguna
+        self.assertFalse(any("Sabtu" in x for x in benar["pertanyaan"]))
+        # sama dengan alur buku absensi tersimpan (jadwal kerja dengan jam pulang hari pendek)
+        db = os.path.join(self.dir, "buku6", "absensi.db")
+        self.cli(db, "init", "--ya")
+        self.cli(db, "shift", "tambah", "--kode", "REG", "--masuk", "08.00", "--pulang", "16.00", "--istirahat", "60",
+                 "--pulang-hari-pendek", "13.00", "--ya")
+        for kode, nama, idm in (("A01", "Andi", "1"), ("A02", "Sari", "2"), ("A03", "Budi", "3"), ("A04", "Dewi", "4")):
+            self.cli(db, "karyawan", "tambah", "--kode", kode, "--nama", nama, "--id-mesin", idm, "--hari-kerja", "6",
+                     "--mulai", "2026-08-01", "--ya")
+        self.cli(db, "libur", "tambah", "--tanggal", "2026-08-17", "--nama", "Libur", "--ya")
+        self.cli(db, "impor-absen", csv, "--ya")
+        rk = {k["nama"]: k for k in self.cli(db, "rekap", "--bulan", "2026-08")["karyawan"]}
+        for nama in ("Andi", "Sari", "Budi", "Dewi"):
+            self.assertEqual(rk[nama]["menit_kerja"], self.per_nama(benar)[nama]["menit_kerja"], nama)
+        # tanpa opsi Sabtu: angka bergeser, ditandai anggapan, dan Sabtu ditanyakan
+        salah = self.jalan(*dasar)
+        a = self.per_nama(salah)["Andi"]
+        self.assertEqual((a["menit_kerja"], a["pulang_cepat_kali"], a["pulang_cepat_menit"]), (9835, 5, 890))
+        self.assertTrue(any("Sabtu dihitung hari kerja biasa" in x for x in salah["asumsi"]))
+        self.assertIn("Sabtu", salah["pertanyaan"][0])
+        self.assertIn("Sabtu dihitung hari kerja biasa", salah["teks"])
+        self.assertEqual(len(salah["pertanyaan"]), 2)                             # Sabtu + tawaran simpan
+
+    def test_12_opsi_lengkap_dari_pengguna_hanya_tanggal_merah_jadi_anggapan(self):
+        out = self.jalan(self.csv, "--daftar", "Andi=1; Sari=2; Joko=3", "--hari-kerja", "5", "--masuk", "08.00",
+                         "--pulang", "17.00", "--istirahat", "60", "--toleransi", "10")
+        self.assertEqual(out["asumsi"], ["Tidak ada tanggal merah atau libur khusus"])
+        self.assertIn("Jam kerja 08.00-17.00, istirahat 60 menit\n", out["teks"])
+        self.assertIn("5 hari kerja seminggu, libur mingguan Sabtu dan Minggu\n", out["teks"])
+
+    def siapkan_buku(self, nama_folder="buku"):
+        """Alur simpan A0 langkah 4: kelonggaran 10, 14/09 tutup, Sari izin 21-22/09, file September dimasukkan."""
+        db = os.path.join(self.dir, nama_folder, "absensi.db")
+        self.cli(db, "init", "--ya")
+        self.cli(db, "atur", "--toleransi", "10", "--ya")
+        for kode, nama, idm in (("A01", "Andi", "1"), ("A02", "Sari", "2"), ("A03", "Joko", "3")):
+            self.cli(db, "karyawan", "tambah", "--kode", kode, "--nama", nama, "--id-mesin", idm,
+                     "--mulai", "2026-09-01", "--ya")
+        self.cli(db, "libur", "tambah", "--tanggal", "2026-09-14", "--nama", "Tutup", "--ya")
+        self.cli(db, "impor-absen", self.csv, "--ya")
+        self.cli(db, "keterangan", "--karyawan", "Sari", "--jenis", "izin", "--tanggal", "2026-09-21",
+                 "--sampai", "2026-09-22", "--ya")
+        return db
+
+    def test_13_pengguna_kembali_memakai_pengaturan_tersimpan(self):
+        """Buku sudah ada: kelonggaran telat, libur, izin yang tersimpan dipakai; bukan nilai bawaan."""
+        db = self.siapkan_buku()
+        dari_buku = {k["nama"]: k for k in self.cli(db, "rekap", "--bulan", "2026-09")["karyawan"]}
+        sebelum = os.path.getsize(db), os.path.getmtime(db)
+        out = self.jalan_buku(db, self.csv)                                        # tanpa opsi apa pun
+        self.assertTrue(out["dari_buku"])
+        k = self.per_nama(out)
+        for nama in ("Andi", "Sari", "Joko"):
+            for f in ("terlambat_kali", "terlambat_menit", "hadir", "hari_terjadwal", "izin", "tanpa_keterangan",
+                      "menit_kerja"):
+                self.assertEqual(k[nama][f], dari_buku[nama][f], (nama, f))
+        self.assertEqual((k["Joko"]["terlambat_kali"], k["Joko"]["terlambat_menit"]), (3, 75))
+        self.assertEqual((k["Sari"]["izin"], k["Sari"]["tanpa_keterangan"]), (2, 0))
+        self.assertNotIn("Tanpa kelonggaran", out["teks"])
+        self.assertIn("Kelonggaran telat 10 menit (dari buku absensi)", out["teks"])
+        self.assertIn("Libur/tutup: 14/09", out["teks"])
+        self.assertEqual(out["asumsi"], [])                                        # semuanya dari buku
+        self.assertNotIn("supaya bulan depan", " ".join(out["pertanyaan"]))        # tawaran simpan tidak muncul lagi
+        self.assertFalse(any("14/09" in x for x in out["pertanyaan"]))             # sudah dijawab, tidak ditanya lagi
+        self.assertTrue(any("sudah ada di buku absensi" in c for c in out["catatan_file"]))
+        for terlarang in (".db", "KomunitechData", "absensi.py", "--", self.dir, "database"):
+            self.assertNotIn(terlarang, out["balasan"], terlarang)
+        self.assertEqual((os.path.getsize(db), os.path.getmtime(db)), sebelum)     # buku tidak disentuh
+
+    def test_14_bulan_berikutnya_orang_baru_dan_tawaran_masukkan_file(self):
+        db = self.siapkan_buku()
+        okt = os.path.join(self.dir, "absen-okt.csv")
+        with open(self.csv, encoding="utf-8") as f:
+            isi = f.read().replace("/09/2026", "/10/2026")
+        with open(okt, "w", encoding="utf-8") as f:
+            f.write(isi + "999,9,Tamu,05/10/2026 08:00:00,C/In\n")
+        out = self.jalan_buku(db, okt, sekarang="2026-11-02 09:00", kode_harapan=0)
+        self.assertTrue(out["dari_buku"])
+        self.assertEqual(out["periode"]["label"], "Oktober 2026")
+        self.assertEqual({k["nama"] for k in out["karyawan"]}, {"Andi", "Sari", "Joko"})
+        q = " ".join(out["pertanyaan"])
+        self.assertIn("Tamu", q)                                                   # kemungkinan karyawan baru
+        self.assertEqual(out["pertanyaan"][-1], "Mau saya masukkan file ini ke buku absensi Anda, supaya tercatat "
+                                                "bersama bulan-bulan sebelumnya? Balas \"ya\" bila mau.")
+        self.assertLessEqual(len(out["pertanyaan"]), 3)
+        self.assertEqual(out["dibaca"]["sudah_ada"], 0)
+        self.assertIn("file ini belum dimasukkan ke buku absensi Anda", out["teks"])
+        # jadwal yang berbeda dari yang tersimpan tidak diam-diam dipakai
+        beda = self.jalan_buku(db, okt, "--masuk", "09.00", sekarang="2026-11-02 09:00")
+        self.assertTrue(any("berbeda dari jadwal yang tersimpan" in c for c in beda["catatan_file"]))
+        self.assertEqual(self.per_nama(beda)["Andi"]["terlambat_menit"], self.per_nama(out)["Andi"]["terlambat_menit"])
+
+    def test_15_pesan_panjang_dipecah_antar_karyawan(self):
+        import datetime as dt
+        orang = [(str(i), "Karyawan%02d" % i) for i in range(1, 31)]
+        baris = ["No.,AC-No.,Nama,Waktu,Status"]
+        n = 0
+        for tgl in (1, 2, 3, 4):
+            for idm, nm in orang:
+                d = dt.date(2026, 9, tgl)
+                n += 2
+                baris.append("%d,%s,%s,%s 07:55:00,C/In" % (n - 1, idm, nm, d.strftime("%d/%m/%Y")))
+                if not (idm == "7" and tgl == 3):
+                    baris.append("%d,%s,%s,%s 17:05:00,C/Out" % (n, idm, nm, d.strftime("%d/%m/%Y")))
+        besar = os.path.join(self.dir, "besar.csv")
+        with open(besar, "w", encoding="utf-8") as f:
+            f.write("\n".join(baris) + "\n")
+        out = self.jalan(besar)
+        self.assertGreater(len(out["balasan"]), A.BATAS_PESAN)
+        pesan = out["pesan"]
+        self.assertGreaterEqual(len(pesan), 2)
+        self.assertTrue(all(len(x) <= A.BATAS_PESAN for x in pesan), [len(x) for x in pesan])
+        self.assertEqual("\n\n".join(pesan), out["balasan"])                        # tidak ada yang hilang
+        self.assertTrue(pesan[0].startswith("Sudah saya rekap dari file Anda."))
+        self.assertIn("1) ", pesan[-1])                                            # pertanyaan di pesan terakhir
+        for i, (_, nm) in enumerate(orang, start=1):                               # satu karyawan tidak terbelah
+            kepala = "%d. %s\n" % (i, nm)
+            ada = [j for j, x in enumerate(pesan) if kepala in x]
+            self.assertEqual(len(ada), 1, kepala)
+            bagian = pesan[ada[0]].split(kepala)[1].split("\n\n")[0]
+            self.assertIn("Jam kerja", bagian)
+        # balasan kecil tetap satu pesan
+        self.assertEqual(len(self.jalan(self.csv, "--toleransi", "10")["pesan"]), 1)
+
+    def test_16_file_lebih_dari_satu_bulan_diberi_catatan(self):
+        import datetime as dt
+        baris = ["No.,AC-No.,Nama,Waktu,Status"]
+        n = 0
+        d = dt.date(2026, 7, 1)
+        while d <= dt.date(2026, 9, 30):
+            if d.weekday() < 5:
+                for idm, nm in (("1", "Andi"), ("2", "Sari")):
+                    n += 2
+                    baris.append("%d,%s,%s,%s 07:55:00,C/In" % (n - 1, idm, nm, d.strftime("%d/%m/%Y")))
+                    baris.append("%d,%s,%s,%s 17:05:00,C/Out" % (n, idm, nm, d.strftime("%d/%m/%Y")))
+            d += dt.timedelta(days=1)
+        tiga = os.path.join(self.dir, "tiga-bulan.csv")
+        with open(tiga, "w", encoding="utf-8") as f:
+            f.write("\n".join(baris) + "\n")
+        out = self.jalan(tiga)
+        self.assertEqual(out["periode"]["label"], "September 2026")
+        self.assertEqual((out["dibaca"]["dari"], out["dibaca"]["sampai"]), ("2026-07-01", "2026-09-30"))
+        catatan = " ".join(out["catatan_file"])
+        self.assertIn("File berisi catatan dari 01/07/2026 sampai 30/09/2026", catatan)
+        self.assertIn("yang saya hitung hanya 01/09/2026-30/09/2026", catatan)
+        self.assertIn("Catatan dari file:", out["teks"])
+        agustus = self.jalan(tiga, "--bulan", "2026-08")                           # bulan dipilih pengguna
+        self.assertEqual(agustus["periode"]["label"], "Agustus 2026")
+        self.assertIn("yang saya hitung hanya 01/08/2026-31/08/2026", " ".join(agustus["catatan_file"]))
+        # file yang pas satu bulan tidak diberi catatan itu
+        self.assertFalse(any("File berisi catatan" in c for c in self.jalan(self.csv)["catatan_file"]))
+
+    def test_17_pesan_dipecah_unit(self):
+        self.assertEqual(A.bagi_pesan("pendek"), ["pendek"])
+        par = ["Paragraf %d\n%s" % (i, "x" * 40) for i in range(10)]
+        hasil = A.bagi_pesan("\n\n".join(par), batas=200)
+        self.assertGreater(len(hasil), 1)
+        self.assertTrue(all(len(x) <= 200 for x in hasil))
+        self.assertEqual("\n\n".join(hasil), "\n\n".join(par))
+        panjang = "\n".join("baris %d %s" % (i, "y" * 30) for i in range(30))       # satu paragraf besar: dipotong per baris
+        pecah = A.bagi_pesan(panjang, batas=300)
+        self.assertTrue(all(len(x) <= 300 for x in pecah))
+        self.assertEqual("\n".join(pecah).replace("\n\n", "\n"), panjang)
+        satu_baris = A.bagi_pesan("z" * 700, batas=300)                             # satu baris melebihi batas
+        self.assertEqual([len(x) for x in satu_baris], [300, 300, 100])
+
+    def test_18_buku_kosong_diperlakukan_seperti_belum_ada(self):
+        db = os.path.join(self.dir, "kosong", "absensi.db")
+        self.cli(db, "init", "--ya")                                              # ada buku, belum ada karyawan
+        out = self.jalan_buku(db, self.csv, "--toleransi", "10")
+        self.assertFalse(out["dari_buku"])
+        self.assertTrue(out["daftar_dari_file"])
+        self.assertIn("supaya bulan depan", " ".join(out["pertanyaan"]))
+        self.assertEqual(out["asumsi"], ["Jam kerja 08.00-17.00, istirahat 60 menit",
+                                         "5 hari kerja seminggu, libur mingguan Sabtu dan Minggu",
+                                         "Tidak ada tanggal merah atau libur khusus",
+                                         "Daftar karyawan dibaca dari isi file"])
+
+    def test_19_libur_dan_kelonggaran_dari_pengguna_menimpa_buku_hanya_untuk_rekap_ini(self):
+        db = self.siapkan_buku()
+        sebelum = os.path.getsize(db), os.path.getmtime(db)
+        out = self.jalan_buku(db, self.csv, "--toleransi", "20", "--libur", "2026-09-15")
+        k = self.per_nama(out)
+        self.assertEqual(k["Andi"]["terlambat_kali"], 2)                           # 15/09 08.12 kini libur, 08.23/08.31 tetap
+        self.assertEqual(k["Andi"]["terlambat_menit"], 54)                         # 23 + 31
+        self.assertEqual(k["Joko"]["terlambat_menit"], 45)                         # hanya 24/09 08.45; 14 dan 16 di bawah 20
+        self.assertIn("Kelonggaran telat 20 menit\n", out["teks"])
+        self.assertNotIn("(dari buku absensi)", out["teks"].split("Kelonggaran telat 20 menit")[1].split("\n")[0])
+        self.assertIn("Libur/tutup: 14/09, 15/09", out["teks"])
+        self.assertEqual((os.path.getsize(db), os.path.getmtime(db)), sebelum)
+        asli = self.cli(db, "info")["pengaturan"]["toleransi_telat"]
+        self.assertEqual(asli, 10)                                                 # pengaturan tersimpan tidak berubah
+
+    def test_10_versi_dan_catatan_revisi_sinkron(self):
+        self.assertRegex(A.VERSI, r"^\d+\.\d+\.\d+$")
+        import upah_harian as U
+        self.assertEqual(U.VERSI, A.VERSI)
+        with open(os.path.join(AKAR, "CHANGELOG.md"), encoding="utf-8") as fh:
+            self.assertIn("## Catatan revisi %s (" % A.VERSI, fh.read())
+        with open(os.path.join(AKAR, "README.md"), encoding="utf-8") as fh:
+            self.assertIn("Versi terkini: **%s**" % A.VERSI, fh.read())
+
+
+class UjiBahasaChat(Dasar):
+    """Teks yang bisa sampai ke pemilik usaha tidak boleh memuat istilah teknis, nama opsi, atau nama perintah."""
+
+    def teks(self, *argv):
+        argv = list(argv) + ["--db", self.db, "--sekarang", KINI]
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            kode = A.main(argv)
+        return kode, out.getvalue(), err.getvalue()
+
+    def test_pesan_masalah_tanpa_jargon(self):
+        self.karyawan("A01", "Andi", "--shift", "REG")
+        self.ok("catat", "--karyawan", "A01", "--tanggal", "2026-09-03", "--masuk", "08.00", "--pulang", "20.00", "--ya")
+        self.ok("keterangan", "--karyawan", "A01", "--jenis", "sakit", "--tanggal", "2026-09-03", "--ya")
+        self.ok("catat", "--karyawan", "A01", "--tanggal", "2026-09-02", "--masuk", "08.00", "--pulang", "19.30", "--ya")
+        rk, out = self.rekap()
+        gabung = " ".join(m["pesan"] for m in out["masalah"])
+        self.assertIn("jam masuk/pulang dari absen", gabung)
+        self.assertIn("catat sebagai lembur disetujui", gabung)
+        self.assertNotIn("perintah lembur", gabung)
+        self.assertNotIn("tap absen", gabung)
+        self.assertNotIn("--", gabung)
+
+    def test_upah_belum_diisi_dan_catatan_lembur_tanpa_opsi(self):
+        self.karyawan("B01", "Budi")
+        pratinjau = self.ok("lembur", "--karyawan", "B01", "--tanggal", "2026-09-01", "--jam", "2")
+        self.assertTrue(any("Sebaiknya sebutkan siapa" in c for c in pratinjau["catatan"]), pratinjau["catatan"])
+        self.assertFalse(any("--" in c for c in pratinjau["catatan"]), pratinjau["catatan"])
+        self.ok("lembur", "--karyawan", "B01", "--tanggal", "2026-09-01", "--jam", "2", "--catatan", "x", "--ya")
+        _, out = self.rekap()
+        pesan = " ".join(m["pesan"] for m in self.masalah(out, "upah_belum_diisi"))
+        self.assertIn("gaji pokok + tunjangan tetap", pesan)
+        self.assertNotIn("--", pesan)
+
+    def test_teks_rekap_tanpa_data_tidak_menyebut_istilah_tap(self):
+        self.karyawan("A01", "Andi")
+        _, teks, _ = self.teks("rekap", "--bulan", "2026-09")
+        self.assertIn("Belum ada data absen", teks)
+        self.assertNotIn("(tap)", teks)
+        self.assertNotIn("impor", teks.lower())
+
+
+    def test_rekap_tanpa_kode_internal_dan_istilah_seragam(self):
+        self.karyawan("A01", "Andi")
+        self.karyawan("A02", "Sari")
+        self.ok("atur", "--toleransi", "10", "--ya")
+        self.ok("libur", "tambah", "--tanggal", "2026-09-14", "--nama", "Tutup", "--ya")
+        self.ok("libur", "tambah", "--tanggal", "2026-09-17", "--nama", "", "--ya")
+        self.ok("catat", "--karyawan", "A01", "--tanggal", "2026-09-02", "--masuk", "08.00", "--pulang", "17.00", "--ya")
+        _, out = self.rekap()
+        teks = out["teks"]
+        self.assertEqual(teks, "\n".join(teks.split("\n")))
+        self.assertIn("kelonggaran telat 10 menit", teks)
+        self.assertNotIn("toleransi", teks.lower())
+        self.assertIn("Libur/tutup: 14/09/2026 Tutup, 17/09/2026", teks)
+        self.assertNotIn("Libur resmi", teks)
+        self.assertIn("1. Andi\n", teks)
+        self.assertNotIn("(A01)", teks)
+        self.assertEqual("\n\n".join(out["pesan"]), teks)
+        # nama kembar: kode ditampilkan supaya bisa dibedakan
+        self.karyawan("A03", "Andi")
+        _, out = self.rekap()
+        self.assertIn("Andi (A01)", out["teks"])
+        self.assertIn("Andi (A03)", out["teks"])
+        self.assertNotIn("Sari (A02)", out["teks"])
+
+    def test_catatan_lebih_dari_40_tanpa_istilah_csv_json(self):
+        for i in range(1, 42):
+            self.karyawan("B%02d" % i, "Orang%02d" % i)
+            self.ok("catat", "--karyawan", "B%02d" % i, "--tanggal", "2026-09-01", "--masuk", "08.00", "--ya")
+        _, out = self.rekap()
+        self.assertIn("dan 1 catatan lainnya", out["teks"])
+        self.assertNotIn("CSV", out["teks"])
+        self.assertNotIn("JSON", out["teks"])
+
+    def test_teks_buku_baru_dan_info_tanpa_alamat_dan_istilah_teknis(self):
+        db2 = os.path.join(self.dir, "baru", "absensi.db")
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            self.assertEqual(A.main(["init", "--db", db2]), 0)
+        teks = buf.getvalue()
+        for terlarang in (".db", "field", "--", self.dir, "toleransi", "Toleransi", "folder"):
+            self.assertNotIn(terlarang, teks, terlarang)
+        self.assertIn("Kelonggaran telat", teks)
+        self.assertFalse(os.path.exists(db2))                                       # hanya rencana, belum dibuat
+        self.karyawan("A01", "Andi")
+        _, info, _ = self.teks("info")
+        for terlarang in (self.dir, ".db", "Database", "Tap ", "Shift", "Toleransi"):
+            self.assertNotIn(terlarang, info, terlarang)
+        self.assertIn("Kelonggaran telat", info)
+        _, atur, _ = self.teks("atur", "--toleransi", "5")
+        self.assertIn("Kelonggaran telat", atur)
+        self.assertNotIn("Tap ganda", atur)
 
 
 class UjiSingkatanFlag(unittest.TestCase):

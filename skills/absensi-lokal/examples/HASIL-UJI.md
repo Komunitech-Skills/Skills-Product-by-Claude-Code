@@ -1,5 +1,7 @@
 # HASIL UJI — absensi-lokal v1.0.0
 
+> **Catatan (17 Okt 2026):** rekaman uji versi 1.0.0, tidak diubah. Teks rekap dan alur awal yang dikutip di berkas ini mendahului perubahan 1.0.8 (kode karyawan tidak lagi tampil di rekap, "kelonggaran telat" menggantikan "toleransi terlambat", balasan pertama langsung berisi rekap); lihat `CHANGELOG.md` dan `06-rekap-cepat-balasan-pertama.md`.
+
 - **Tanggal:** 2026-09-23 (selesai 24/09 dini hari)
 - **Penguji:** agent penguji independen (simulasi, Claude Code) — bukan pembuat skill; hanya membaca folder `skills/absensi-lokal/`, `pedoman kurasi Komunitech`, dan brief uji.
 - **Lingkungan:** Linux, Python 3.11, semua database uji di `/tmp/uji-absensi-lokal/` (lewat `--db` / `KOMUNITECH_ABSENSI_DB`), tidak menyentuh `~/KomunitechData`.

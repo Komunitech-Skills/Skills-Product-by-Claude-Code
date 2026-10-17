@@ -23,7 +23,9 @@ kolom manual lewat `--kolom-biaya`, `--kolom-tayangan`, `--kolom-klik`, `--kolom
 Karena belum semua terverifikasi dari file asli, script v1.0.1 **tidak bergantung** pada satu
 bentuk saja: pencarian baris header dalam 15 baris pertama, baris total dikenali dari teks di
 kolom mana pun dan dari angka (= jumlah baris lain), sel kosong dihitung 0 dengan catatan, dan
-setiap laporan mencetak "Kolom dibaca: ..." agar kesalahan pemetaan langsung terlihat.
+kolom yang punya pesaing (mis. `Link clicks` vs `Clicks (all)`) disebut dalam satu kalimat awam di
+Catatan laporan. Pemetaan lengkap tersedia lewat opsi teknisi `--tampilkan-kolom`, tetapi sengaja tidak
+ikut laporan untuk pembeli.
 **Rekomendasi untuk pemilik:** sediakan satu ekspor asli per platform (angka boleh disamarkan)
 untuk dijadikan tes regresi sebelum status `rilis`.
 

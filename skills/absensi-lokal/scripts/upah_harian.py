@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from absensi import (PEMBAGI_UPAH_SEJAM, TANGGA_LIBUR, bulat_rp, dstr, fjam, jam_setara_hari_kerja,  # noqa: E402
                      jam_setara_libur, parse_angka, rp)
 
-VERSI = "1.0.7"
+VERSI = "1.0.8"
 KALI_POLA = {"6": 25, "5": 21}
 MAKS_LEMBUR_HARI = Decimal(4)     # PP 35/2021 Pasal 26 ayat (1)
 MAKS_LEMBUR_MINGGU = Decimal(18)  # PP 35/2021 Pasal 26 ayat (1)
@@ -219,7 +219,7 @@ def hitung_pekerja(d, pola_umum):
 def teks_hasil(hasil, periode):
     t = ["UPAH HARIAN%s" % (" - " + periode if periode else "")]
     for i, h in enumerate(hasil, 1):
-        t.append("%d. %s (%s/hari, pola %d hari)" % (i, h["nama"], rp(h["tarif"]), h["pola"]))
+        t.append("%d. %s (%s per hari, %d hari kerja seminggu)" % (i, h["nama"], rp(h["tarif"]), h["pola"]))
         t.append("   Hadir: %s = %s" % (h["rumus_upah_hadir"], rp(h["upah_hadir"])))
         if h["lembur_jam"]:
             t.append("   Lembur %s jam (%s): %s" % (fjam(h["lembur_jam"]), "; ".join(h["lembur_rincian"]),

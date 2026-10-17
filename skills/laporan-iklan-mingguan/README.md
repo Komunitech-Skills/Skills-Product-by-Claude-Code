@@ -66,8 +66,9 @@ demi keamanan akun Anda), lalu cukup ketik ke AI agent Anda, misalnya:
 ## Yang perlu Anda ketahui (jujur)
 - Nama kolom Meta Ads dan bentuk ekspor Google Ads/TikTok di skill ini disusun dari dokumentasi
   resmi dan sumber pihak ketiga, **belum dicocokkan dengan file ekspor asli dari setiap
-  platform**. Karena itu setiap laporan mencantumkan "Kolom dibaca: ..." di baris ke-3 laporan. Cek
-  sekali di minggu pertama; bila ada yang keliru, AI bisa diberi tahu kolom yang benar.
+  platform**. Karena itu, bila di file ada dua kolom yang sama-sama mungkin (mis. "Link clicks" dan
+  "Clicks (all)"), bagian Catatan laporan menyebutnya dalam satu kalimat ("Saya membaca kolom ... sebagai
+  jumlah klik ..."). Cek kalimat itu sekali di minggu pertama; bila keliru, kabari AI kolom yang benar.
 - Biaya di file ekspor biasanya belum termasuk PPN yang ditagihkan platform. Cek invoice platform
   untuk angka tagihan sebenarnya.
 
@@ -90,6 +91,7 @@ Salin folder `laporan-iklan-mingguan` ke folder skills AI agent Anda:
 Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket bernama `CARA-INSTAL.md`).
 
 **Hasil uji (angka nyata):** uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026 (v1.0.9), skor 1–10 penguji independen: tanpa skill **6,0** → dengan skill **8,75**, selisih 2,75 (lulus acuan kami). Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Tanpa skill angka iklan bisa meleset (kurs ditebak, biaya per hasil hanya dari sebagian kampanye); dengan skill angka pada skenario uji cocok dengan hitungan independen. Catatan jujur dari uji itu: saran "matikan" sempat mengabaikan tujuan kampanye (iklan kunjungan atau pengenalan merek yang memang tidak mengejar pesan WA) dan catatan kolom yang dibaca sempat terpotong; keduanya diperbaiki di v1.0.10 dan belum diuji ulang sebelum/sesudah.
+Catatan jujur berikutnya: uji awal di bot Telegram asli (v1.0.11) mendapat skor 7,0 dengan semua angka benar, tetapi bot sempat membuka jawaban dengan istilah teknis dan menawarkan menyambungkan WhatsApp karena kata "chat WA masuk" dikira perintah (padahal itu nama hasil iklan), serta menampilkan satu baris teknis soal kolom. Keduanya diperbaiki di v1.0.12 (laporan tidak lagi memuat baris teknis itu, istilah CPC/CPM/CTR dijelaskan di Catatan) dan belum diuji ulang di bot asli.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Satu laporan iklan terjadwal sekali jalan terkirim ke grup uji Telegram Komunitech pada 13 Okt 2026 (tiba tepat waktu, angka cocok dengan hitungan terpisah); jadwal berulang tiap Senin belum diuji. Codex dan Cursor belum kami uji langsung.
 
@@ -109,4 +111,4 @@ pengiriman sekali jalan ke Telegram sudah diuji di grup uji Telegram Komunitech 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

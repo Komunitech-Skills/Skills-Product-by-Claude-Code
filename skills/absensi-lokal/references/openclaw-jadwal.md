@@ -1,6 +1,6 @@
 # Rekap absensi otomatis ke Telegram (OpenClaw)
 
-> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+> **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas rencana yang kamu sebut dengan bahasa sederhana (laporan apa, hari dan jam berapa, ke Telegram siapa); perintah teknisnya tidak perlu ditampilkan di chat kecuali diminta. Kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 
 Semua perintah di bawah **diverifikasi 23–24 September 2026 dengan OpenClaw 2026.9.5** (CLI asli, `--help`, lalu dijalankan sungguhan pada Gateway lokal dengan HOME sementara). Yang diverifikasi: job diterima Gateway, jadwal & zona waktu tersimpan, `automations run` menjalankan script dan menangkap teks rekap (status `ok`, exit code 0). Pengiriman ke Telegram **tidak** diuji karena butuh bot token asli; tanpa token, run tetap `ok` tetapi `deliveryStatus: not-delivered`.
 
@@ -8,7 +8,7 @@ Syarat:
 - Gateway OpenClaw berjalan di komputer yang **menyala 24 jam** (laptop/mini PC selalu hidup, atau VPS milik pemilik) — komputer yang sama dengan database absensi.
 - Kanal **Telegram** sudah tersambung (bot resmi) dan chat id pemilik diketahui. Cara menyiapkannya ada di skill `laporan-otomatis-terjadwal` (`references/openclaw.md`, bagian Telegram & mencari chat id). WhatsApp hanya dengan nomor terpisah + persetujuan risiko tertulis pemilik; tidak dipakai sebagai default.
 - Jadwal **hanya menjalankan laporan (baca)**: `harian` dan `rekap`. Tidak pernah `--ya`, impor, catat, atau lembur.
-- Selalu minta persetujuan pemilik sebelum membuat jadwal, dan tunjukkan perintahnya.
+- Selalu minta persetujuan pemilik sebelum membuat jadwal. Sebut rencananya dengan bahasa sederhana (mis. "Setiap hari kerja jam 10.00 WIB saya kirim rekap hari itu ke Telegram Anda. Setuju?"); jangan menempelkan perintah, alamat folder, atau nama berkas teknis ke chat.
 
 ## Pilihan 1 (disarankan): payload perintah, tanpa model AI
 Script dijalankan langsung oleh Gateway, keluaran teksnya dikirim apa adanya. Tidak memakai kuota model, hasil selalu sama.
@@ -31,6 +31,7 @@ Script dijalankan langsung oleh Gateway, keluaran teksnya dikirim apa adanya. Ti
      --announce --channel telegram --to <chat-id-telegram-pemilik>
    ```
 - Database bukan di lokasi default? Tambahkan `"--db","/path/absensi.db"` ke dalam daftar argv.
+- Rekap bulanan usaha dengan banyak karyawan (±12 orang ke atas) bisa lebih panjang dari satu pesan Telegram (±4.000 karakter). Cara OpenClaw memecah pesan dari payload perintah **belum diuji**; untuk usaha sebesar itu jadwalkan `harian` (pendek) dan minta rekap bulanan lewat chat, tempat agent mengirim `pesan` bagian demi bagian.
 - Alternatif `--command 'python3 ~/.openclaw/skills/absensi-lokal/scripts/absensi.py harian'` juga diterima (dijalankan lewat `sh -lc`), tetapi pesan dari profil shell bisa ikut terkirim (saat uji, baris tambahan dari profil muncul di atas rekap). `--command-argv` lebih bersih.
 - Payload perintah adalah fitur admin Gateway (butuh hak `operator.admin`, yaitu pemilik Gateway). Contoh `sh`/`python3` di atas untuk Mac/Linux/VPS; di Windows **belum diuji** — pakai Pilihan 2.
 

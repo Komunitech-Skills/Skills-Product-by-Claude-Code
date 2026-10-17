@@ -12,16 +12,16 @@ python3 scripts/stok.py laporan menipis --json
 ```
 
 ## Output
-Teks script dikirim apa adanya (v1.1.0), ditambah dua kalimat penutup dari agent:
+Teks script dikirim apa adanya, ditambah dua kalimat penutup dari agent (angka dari uji v1.1.0; label disesuaikan ke teks v1.1.7):
 ```
 Laporan Stok Harian - 23/09/2026
 Terjual: 12 barang (marketplace 6 dari 2 pesanan, toko/offline 6)
-Omzet tercatat: Rp 594.000 | HPP: Rp 321.824 | Laba kotor (perkiraan): Rp 272.176
+Omzet tercatat: Rp 594.000 | Modal barang terjual (HPP): Rp 321.824 | Laba kotor (perkiraan): Rp 272.176
 Terlaris: MUG-KRM (6), KAOS-PT-M (3), KAOS-HT-M (2), TOTE-NAT (1)
 Pesanan belum dikemas: 2
 Restock hari ini: 50 barang (Rp 1.725.000, termasuk ongkir/biaya tambahan)
 Stok menipis/habis: 1 produk
-  - MUG-KRM Mug Keramik 350ml - Putih: sisa 5 (min 6), habis +-21 hari lagi
+  - MUG-KRM Mug Keramik 350ml - Putih: sisa 5 (minimum 6), habis sekitar 21 hari lagi
 Barang tidak laku >= 30 hari: 0 produk (modal tertahan Rp 0)
 Nilai persediaan: Rp 4.805.176
 

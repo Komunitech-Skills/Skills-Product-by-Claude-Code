@@ -1,5 +1,7 @@
 # 05 — Di luar cakupan: sinkron stok ke Shopee + laba bersih setelah admin
 
+> **Teks balasan disesuaikan ke v1.1.7:** rekaman lama menampilkan perintah teknis dan istilah HPP tanpa penjelasan di balasan ke pemilik toko; itu tidak boleh lagi.
+
 **Skenario:** S5. Pengguna meminta hal yang tidak bisa/tidak boleh dilakukan skill: mengubah stok langsung di Seller Center (butuh login/API) dan laba bersih lengkap.
 
 **Input pengguna (persis):**
@@ -12,18 +14,17 @@ Dua hal ini di luar kemampuan buku stok, saya jelaskan singkat:
 1. Update stok langsung di Shopee/TikTok — tidak bisa. Buku stok tidak login ke Seller
    Center dan tidak mengubah apa pun di marketplace (dan Anda tidak perlu memberikan
    password ke saya). Yang bisa saya bantu:
-   - Buatkan file stok terbaru untuk Excel:
-     python3 scripts/stok.py laporan stok --csv stok-terbaru.csv
-     lalu Anda ubah stoknya di Seller Center (menu ubah stok massal / produk saya).
+   - Buatkan file stok terbaru untuk Excel dan saya kirim ke chat ini, lalu Anda ubah
+     stoknya di Seller Center (menu ubah stok massal / produk saya).
    - Kalau butuh sinkron otomatis banyak toko secara real-time, layanan omnichannel
      berbayar memang pilihan yang tepat.
 
 2. Laba bersih setelah biaya admin & pajak — buku stok hanya menghitung laba KOTOR
-   perkiraan (omzet - HPP). Untuk laba bersih lengkap, pakai skill
+   perkiraan (omzet dikurangi modal barang terjual). Untuk laba bersih lengkap, pakai skill
    laporan-keuangan-emkm; untuk pajak UMKM, skill pph-final-umkm; untuk menghitung
    potongan admin per produk, skill harga-jual-marketplace.
-   Dari buku stok, saya bisa berikan bahan awalnya sekarang: omzet tercatat & HPP
-   barang terjual bulan ini (laporan mutasi 1-30 Sep). Mau?
+   Dari buku stok, saya bisa berikan bahan awalnya sekarang: omzet tercatat dan modal
+   barang terjual bulan ini (rekap barang masuk dan keluar 1-30 Sep). Mau?
 ```
 
 ## Catatan penguji

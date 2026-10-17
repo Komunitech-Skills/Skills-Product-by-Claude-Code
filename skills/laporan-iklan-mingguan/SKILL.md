@@ -7,6 +7,26 @@ description: Membuat SATU laporan mingguan bahasa awam dari ekspor CSV iklan Met
 
 > **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
 
+## Aturan bicara ke pengguna (wajib)
+Pembacanya pemilik usaha awam yang biasanya membaca lewat Telegram/WhatsApp-nya sendiri.
+- **"Chat WA masuk", "pesan WA", "klik ke WA", "lead WA" = HASIL (metrik) iklan Click-to-WhatsApp**, bukan
+  perintah mengirim atau menyambungkan WhatsApp. Pakai kata itu sebagai `--nama-hasil` (mis. `--nama-hasil
+  "chat WA masuk"`) dan langsung buat laporan. Skill ini tidak pernah menawarkan menyambungkan WhatsApp,
+  gateway, atau pairing, dan tidak mengirim pesan ke WhatsApp siapa pun.
+- **Buka balasan dengan isi laporan** (maks. 1-2 kalimat pembuka). Jangan menjelaskan cara kerja.
+- **Jangan menampilkan kata proses/teknis:** script/skrip, gateway, pairing, JSON, kode keluar, nama
+  file `.py`/`.json`, path folder, nama opsi (`--sebelumnya` dst.), "kolom dibaca". Bila perlu menyebut
+  proses, pakai kata biasa ("saya hitung dari file Anda").
+- **Pemetaan kolom tidak ikut laporan.** Jangan menyalin atau meringkas pemetaan kolom. Bila Catatan
+  memuat kalimat "Saya membaca kolom '...' sebagai ...", sampaikan apa adanya (itu bahasa awam dan hanya
+  muncul bila ada kolom yang mirip). Bila pengguna bertanya kolom mana yang dibaca, jalankan ulang dengan
+  `--tampilkan-kolom` (khusus teknisi) lalu jawab dengan kalimat biasa; jangan menempel barisnya.
+- **Pesan error script untuk Anda, bukan untuk pengguna.** Ubah ke kalimat biasa tanpa nama opsi
+  (mis. "Kolom mana di file ini yang berisi biaya iklan?").
+- **Pertanyaan balik: satu pesan, maks. 3 pertanyaan pendek**, hanya yang menghalangi (file belum ada,
+  kurs bila mata uang asing, kolom tak terdeteksi). Minggu lalu/omzet/nama hasil yang kurang → pakai
+  default, sebut asumsinya di akhir.
+
 ## Tujuan
 Pemilik usaha yang beriklan (Meta/Instagram, TikTok, Shopee, Tokopedia/TikTok Shop, Google)
 cukup mengekspor CSV dari Ads Manager masing-masing lalu dapat **satu laporan mingguan** bahasa
@@ -22,7 +42,7 @@ ROAS. Semua angka dihitung `scripts/laporan_iklan.py`, bukan diperkirakan.
 ## Kapan TIDAK digunakan
 - Data penjualan dari kasir/marketplace (bukan data iklan) → `rekap-penjualan-csv`.
 - Menentukan harga jual produk → `harga-jual-marketplace`.
-- Ingin laporan ini **terkirim otomatis tiap minggu** ke Telegram/WA → jalankan skill ini dulu
+- Ingin laporan ini **terkirim otomatis tiap minggu** ke Telegram → jalankan skill ini dulu
   sampai hasilnya benar, baru serahkan resepnya ke `laporan-otomatis-terjadwal` (lihat
   `references/openclaw-jadwal.md`). Skill ini sendiri **tidak** membuat jadwal.
 - Laporan gabungan semua alat usaha (bukan cuma iklan) → `laporan-harian-usaha`.
@@ -65,11 +85,11 @@ python3 <folder-skill-ini>/scripts/laporan_iklan.py analisis "<ekspor-minggu-ini
 - Tanpa `--sebelumnya` bila pengguna tidak punya data minggu lalu (laporan tetap dibuat, tanpa
   bagian "VS MINGGU LALU").
 - Tanpa `--json` untuk langsung dapat teks siap kirim (dipakai bila hanya 1 platform).
-- `--nama-hasil "pesan WA"` bila kolom hasil generik (mis. "Results" Meta yang sebenarnya berarti
-  pesan WhatsApp/Messenger) — pakai istilah yang pengguna sendiri sebutkan.
+- `--nama-hasil "chat WA masuk"` bila kolom hasil generik (mis. "Results" Meta yang sebenarnya berarti
+  pesan WhatsApp/Messenger) — pakai istilah yang pengguna sendiri sebutkan (lihat Aturan bicara).
 - **Kolom tidak terdeteksi?** Script keluar kode 2 dan menyebutkan kolom apa yang hilang serta
-  daftar kolom yang ada di file. Tanyakan ke pengguna kolom mana yang dimaksud, lalu jalankan
-  ulang dengan `--kolom-biaya`, `--kolom-tayangan`, `--kolom-klik`, `--kolom-hasil`,
+  daftar kolom yang ada di file (untuk Anda). Tanyakan ke pengguna dengan kata biasa kolom mana yang
+  dimaksud, lalu jalankan ulang dengan `--kolom-biaya`, `--kolom-tayangan`, `--kolom-klik`, `--kolom-hasil`,
   `--kolom-nilai-hasil`, `--kolom-nama` sesuai nama kolom **persis** di file (lihat pesan error).
 - **Mata uang bukan Rupiah?** Script berhenti (kode 2), tidak pernah menghitungnya sebagai Rupiah.
   Mata uang dikenali dari label kolom (`Amount spent (USD)`), kolom `Currency`/`Currency code`/
@@ -84,9 +104,11 @@ python3 <folder-skill-ini>/scripts/laporan_iklan.py analisis "<ekspor-minggu-ini
 - **Ekspor bertingkat** (mis. Meta `Campaign name` + `Ad set name` + `Ad name`, TikTok `Ad group
   name`, Google `Ad group`): script otomatis merinci per level **paling rinci** (iklan) agar iklan
   boros tidak tersembunyi di total kampanye, dan menulis levelnya di Catatan. Pakai
-  `--kolom-nama "Campaign name"` **hanya** bila pengguna minta rincian per kampanye.
+  `--kolom-nama "Campaign name"` **hanya** bila pengguna minta rincian per kampanye (nama kolom
+  kampanye = isi terakhir `kolom_induk` di JSON).
 - Simpan hasil `--json` ke file sementara bila akan dipakai Langkah 2 (gabung) atau dipakai lagi
-  minggu depan sebagai `--sebelumnya` (opsional).
+  minggu depan sebagai `--sebelumnya` (opsional). Ke pengguna sebut saja "file hitungan sementara" dan
+  foldernya, tanpa nama file teknis.
 
 ### 2. Lebih dari satu platform (gabungkan jadi satu laporan)
 Jalankan Langkah 1 (dengan `--json`) untuk **tiap** file platform, simpan tiap keluaran sebagai
@@ -114,18 +136,18 @@ Nama file keluaran tidak boleh sama dengan file ekspor asli (ditolak agar tidak 
 
 ### 4. Tulis laporan ke pengguna
 Kirim field `teks` (dari `--json`) atau keluaran teks langsung **apa adanya**: boleh menambah
-1-2 kalimat pembuka, tapi **jangan mengubah angka/persen**. Blok `⚠️ PERLU DICEK SEBELUM DIPAKAI`
-(di atas), baris `Kolom dibaca: ...` (baris ke-3), bagian `TUJUAN BERBEDA` (bila ada), dan blok
-`Catatan` (di bawah) wajib ikut terkirim **utuh, baris per baris — jangan diringkas atau dipotong**.
-Bila ada ⚠️, sebutkan di kalimat pembuka.
+1-2 kalimat pembuka (tanpa kata teknis), tapi **jangan mengubah angka/persen**. Blok `⚠️ PERLU DICEK
+SEBELUM DIPAKAI` (di atas), bagian `TUJUAN BERBEDA` (bila ada), dan blok `Catatan` (di bawah, termasuk
+kalimat "Saya membaca kolom ..." dan "Arti istilah") wajib ikut terkirim **utuh, baris per baris — jangan
+diringkas atau dipotong**. Bila ada ⚠️, sebutkan di kalimat pembuka.
 **Nilai kampanye terhadap tujuannya:** kampanye bertujuan Traffic/Awareness/Reach/Video views/
 Engagement (dari kolom Objective/Result indicator, atau dari namanya) yang 0 hasil **bukan**
 "iklan gagal". Jangan menyarankan mematikannya karena "0 pesan WA"; kutip CPC/CTR/CPM-nya dari
 bagian `TUJUAN BERBEDA` dan tanyakan apakah tujuan itu masih dibutuhkan.
 
 ### 5. (Lanjutan, opsional) Jadwalkan otomatis
-Setelah pengguna puas dengan hasil laporan manual di atas selama minimal 1 minggu, tawarkan
-menjadwalkannya lewat `laporan-otomatis-terjadwal` mengikuti pola di
+Jangan menawarkannya di laporan pertama. Setelah pengguna puas dengan hasil laporan manual di atas
+selama minimal 1 minggu, tawarkan menjadwalkannya lewat `laporan-otomatis-terjadwal` mengikuti pola di
 `references/openclaw-jadwal.md`. **Ekspor dari Ads Manager tetap manual** — OpenClaw tidak login/
 menarik data dari Meta/TikTok/Shopee/Google secara otomatis (keputusan pemilik Komunitech, lihat
 `references/openclaw-jadwal.md`).
@@ -154,7 +176,7 @@ Kampanye bertujuan lain yang tetap punya hasil dinilai biasa, tapi saran "matika
 catatan "wajar lebih mahal per hasil, nilai juga dari CPC & CTR".
 TERBAIK = biaya per hasil termurah; PERLU PERHATIAN = tanpa hasil (biaya terbesar dulu) lalu
 biaya per hasil termahal; keduanya **tidak pernah beririsan**. Saran "matikan" = biaya per hasil
-> 2× rata-rata; "naikkan" = ≤ ½ rata-rata; di bawah 5 hasil diberi catatan "sampel kecil".
+> 2× rata-rata; "naikkan" = ≤ ½ rata-rata; di bawah 5 hasil diberi catatan "datanya masih sedikit".
 **Pembulatan (standar yang sama untuk seluruh library Komunitech):** skill ini tidak menghitung PPN;
 nominal Rupiah dibulatkan ke rupiah terdekat, 0,5 menjauhi nol (mis. Rp100,5 → Rp101). Persen & ROAS dibulatkan 1 desimal,
 0,05 menjauhi nol (mis. 91,65% → 91,7%). Perbandingan minggu lalu memakai rumus yang sama seperti
@@ -166,7 +188,6 @@ Coretax (tidak relevan untuk laporan iklan, tapi mengikuti standar pembulatan li
 ```
 LAPORAN IKLAN MINGGUAN — <Platform>
 Periode: <awal> s.d. <akhir>             (dari kolom tanggal/Reporting starts-ends/baris judul)
-Kolom dibaca: nama='...', biaya='...', ... (wajib ikut dikirim)
 
 ⚠️ PERLU DICEK SEBELUM DIPAKAI:          (hanya bila ada)
 - ...
@@ -197,7 +218,8 @@ SARAN
 (Saran berdasarkan angka minggu ini, bukan jaminan hasil. Keputusan tetap di tangan Anda.)
 
 Catatan:
-- ... (mata uang/kurs, sel kosong = 0, baris total dilewati, kampanye bertujuan lain, PPN bila --omzet)
+- ... (kolom yang mirip, mata uang/kurs, sel kosong = 0, baris total dilewati, kampanye bertujuan lain, PPN bila --omzet)
+- Arti istilah: CPC = biaya per klik; CPM = biaya per 1.000 tayangan; CTR = persen tayangan yang diklik[; ROAS = ...]
 ```
 
 ## Contoh
@@ -210,14 +232,15 @@ Omzet toko minggu ini 20 juta."
 dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v1.0.2.md`.
 
 ## Batasan & penanganan error
-- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur lewat pairing/konfigurasi OpenClaw oleh pengguna sendiri. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
+- **Kredensial & jadwal (wajib):** JANGAN pernah mencari, membaca, atau menampilkan token/API key/kredensial dari environment (`env`, `printenv`), file konfigurasi (mis. `openclaw.json`, `.env`), atau riwayat; kanal Telegram diatur pengguna sendiri lewat pengaturan OpenClaw. Buat jadwal hanya setelah pengguna membalas "ya" atas perintah + jam yang ditunjukkan; kanal belum siap atau perintah ditolak → berhenti dan beri langkah persiapannya, jangan menyelidiki sendiri.
 - **Nama kolom bisa berbeda** menurut bahasa/versi UI Ads Manager. **Belum semua nama kolom
   terverifikasi dari ekspor asli**: nama kolom Meta Ads dan perilaku sel `Results` kosong,
   bentuk ekspor Google Ads (baris judul, `Total: Account`), dan beberapa kolom TikTok bersandar
   pada ringkasan/sumber pihak ketiga (status per platform di `references/sumber-kolom.md`).
-  Karena itu laporan selalu mencetak "Kolom dibaca: ..." di baris ke-3 laporan: cocokkan sekali dengan file
-  pengguna. Deteksi gagal → script memberi daftar kolom + cara mengisi manual (`--kolom-...`);
-  jangan menebak sendiri.
+  Karena itu bila ada dua kolom yang sama-sama mungkin (mis. "Link clicks" dan "Clicks (all)"), Catatan
+  menyebutnya dalam satu kalimat awam ("Saya membaca kolom ... sebagai ..."); pemetaan lengkap sengaja
+  tidak dicetak (lihat Aturan bicara). Deteksi gagal → script memberi daftar kolom + cara mengisi manual
+  (`--kolom-...`); jangan menebak sendiri.
 - **Baris total (v1.0.3)** dikenali dari kata kepala di awal sel ("Total", "Totals", "Jumlah",
   "Grand Total", "Subtotal", "Summary", "Ringkasan", "Overall"...) yang sisanya **hanya** tanda
   baca atau kata cakupan ("Total:", "Total (5 iklan)", "Total: Account", "Total 4 kampanye",
@@ -262,26 +285,11 @@ dan catatan revisi `examples/uji-pembuat/UJI-PEMBUAT-v1.0.1.md` & `UJI-PEMBUAT-v
 - **Saran bukan jaminan hasil.** Semua saran dihasilkan dari ambang angka sederhana (biaya tanpa
   hasil, biaya-per-hasil 2× rata-rata, ROAS < 1x) berdasarkan data minggu itu saja: bukan
   prediksi, bukan audit strategi iklan penuh, dan tidak menilai kualitas materi/target iklan.
-  Hasil < 5 diberi catatan "sampel kecil".
+  Hasil < 5 diberi catatan "datanya masih sedikit".
 - **Python tidak bisa dijalankan:** hitung manual dengan rumus di atas per kampanye, jumlahkan
   baris (kecuali baris Total), dan beri tahu pengguna hasil belum diverifikasi script.
 - **Privasi:** hanya angka performa iklan (biaya, tayangan, klik, hasil, nilai). Tidak ada data
   pelanggan/nomor kontak yang diproses atau dikirim ke layanan eksternal.
 
 ## Riwayat versi
-- **1.0.10** (2026-10-01): dari uji OpenClaw: kampanye Traffic/Awareness/Reach/Video views/Engagement tanpa pesan tidak lagi disarankan dimatikan — dinilai terhadap tujuannya (bagian `TUJUAN BERBEDA` berisi CPC/CTR/CPM; Catatan menyebut biaya per hasil khusus kampanye hasil). Baris "Kolom dibaca" dipindah ke atas (baris ke-3) agar tidak terpotong; Langkah 4 menegaskan blok dikirim utuh. Tes regresi 98.
-- **1.0.8** (2026-09-29): aturan kerja standar library: tidak menginstal paket, tidak membuka/mencari file di luar yang diberikan, lokasi file baru disebut, hasil di folder kerja yang disepakati (bukan /tmp).
-- **1.0.7** (2026-09-29): pada file bertingkat (kampanye > grup iklan), baris yang kolom grup iklannya kosong padahal kampanye itu punya baris grup iklan bernama diperiksa: bila biaya, tayangan & kliknya sama dengan jumlah baris grup iklan (total kampanye tanpa label) baris itu tidak dihitung dua kali dan diberi ⚠️; bila tidak sama tetap dihitung dengan ⚠️ "mohon cek". Baris Performance Max tanpa saudara tidak terkena. Tes regresi 94.
-- **1.0.5** (2026-09-29): baris Google Performance Max tanpa grup iklan tidak lagi tampil
-  "(tanpa nama, baris N)", melainkan memakai nama grup aset (bila ada kolom "Asset group") atau nama
-  kampanye + "(tanpa grup iklan)" (P-3); ⚠️ subtotal/total yang meragukan kini menyebut total belanja
-  sekarang dan total alternatif bila baris itu dihitung/tidak dihitung (P-4). Tes regresi 91.
-- **1.0.4** (2026-09-28): subtotal buatan admin di kolom nama ("Subtotal: Retarget Video",
-  "Retarget Video Total", "Jumlah sementara") tidak lagi terhitung dua kali dan selalu diberi ⚠️
-  nama + biaya (N3); kalimat ⚠️ "biaya hampir sama dengan jumlah baris lain" dilunakkan. Tes regresi
-  bertambah jadi 87.
-- **1.0.3** (2026-09-26): nama kampanye berawalan "Total"/"Jumlah" tidak lagi dibuang; setiap baris
-  total yang dikecualikan diberi ⚠️; ⚠️ ±5% (M2); subtotal dengan kolom nama kosong (M3).
-- **1.0.2** (2026-09-26): ekspor bertingkat dirinci per iklan (N1); label total umum + cek silang (N2).
-- **1.0.1** (2026-09-26): sel kosong, baris total varian, pemilihan kolom Google Ads, mata uang non-IDR.
-- **1.0.0**: rilis draf pertama.
+Versi **1.0.12** (2026-10-17). Rincian tiap versi (1.0.0 sampai 1.0.12) ada di `CHANGELOG.md`.

@@ -7,6 +7,7 @@ import contextlib
 import io
 import json
 import os
+import re
 import shutil
 import sqlite3
 import sys
@@ -168,7 +169,9 @@ class UjiKeamanan(Dasar):
         with contextlib.redirect_stdout(out):
             kode = stok.main(["laporan", "stok", "--db", str(self.tmp / "tidak-ada.db"), "--json"])
         self.assertEqual(kode, 1)
-        self.assertIn("init", json.loads(out.getvalue())["error"])
+        e = json.loads(out.getvalue())
+        self.assertIn("belum disiapkan", e["error"])          # bahasa awam, tanpa path/perintah (v1.1.7)
+        self.assertIn("init", e["langkah_agen"])                # petunjuk teknis hanya untuk agent
         palsu = self.tmp / "palsu.db"
         palsu.write_text("bukan sqlite")
         out = io.StringIO()
@@ -767,6 +770,407 @@ class UjiRevisi(Dasar):
         self.run_gagal("opname", "--hitung", "KAOS-HT-M=1", "--ya")          # tanpa alasan -> gagal
         self.assertEqual(len(list(folder.glob("*.db"))) if folder.is_dir() else 0, sebelum)
 
+
+
+SKILL_MD = Path(__file__).resolve().parent.parent / "SKILL.md"
+
+
+class UjiBahasaPengguna(Dasar):
+    """v1.1.7: keluaran yang disalin agent ke chat tidak boleh memuat path/folder/perintah,
+    dan istilah teknis (HPP, SKU) harus dijelaskan saat muncul (temuan pra-cek bot Telegram asli)."""
+
+    LARANGAN_TEKS = ("backup-stok", "stok.py", "KomunitechData", "sqlite", "SQLite", ".db")
+
+    def setUp(self):
+        super().setUp()
+        self.run_ok("produk", "impor", str(TEMPLATES / "daftar-produk.csv"), "--tanggal", "2026-09-01", "--ya")
+
+    def teks(self, *argv, kode_harap=0):
+        """Jalankan TANPA --json (teks siap kirim), kembalikan stdout+stderr."""
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            kode = stok.main(list(argv) + ["--db", str(self.db)])
+        self.assertEqual(kode, kode_harap, out.getvalue() + err.getvalue())
+        return out.getvalue() + err.getvalue()
+
+    def cek_teks_bersih(self, t, nama):
+        self.assertNotIn(str(self.tmp), t, "%s memuat path lengkap" % nama)
+        for kata in self.LARANGAN_TEKS:
+            if kata == ".db" and nama.startswith("backup"):
+                continue  # nama berkas cadangan (tanpa folder) boleh tampil di perintah cadangan/pulihkan
+            self.assertNotIn(kata, t, "%s memuat '%s'" % (nama, kata))
+        # HPP hanya boleh muncul bersama penjelasan: "... (HPP)"
+        self.assertEqual(len(re.findall(r"HPP", t)), len(re.findall(r"\(HPP\)", t)), "%s: HPP tanpa penjelasan\n%s" % (nama, t))
+        # SKU hanya boleh muncul sebagai "kode barang (SKU)"
+        tanpa_header = re.sub(r"<- [^\n]*", "<- ...", t)      # nama kolom di berkas pengguna (mis. "SKU") bukan istilah kita
+        for m in re.finditer(r"SKU", tanpa_header):
+            self.assertIn("barang (", tanpa_header[max(0, m.start() - 8):m.start()].lower(), "%s: SKU tanpa penjelasan\n%s" % (nama, t))
+
+    def test_versi_dan_dokumen_sinkron(self):
+        self.assertEqual(stok.VERSI, "1.1.7")
+        akar = Path(__file__).resolve().parent.parent
+        self.assertIn("1.1.7", (akar / "CHANGELOG.md").read_text(encoding="utf-8"))
+        self.assertIn("Versi terkini: **1.1.7**", (akar / "README.md").read_text(encoding="utf-8"))
+        self.assertEqual(self.run_ok("info")["versi_alat"], "1.1.7")
+
+    def test_hasil_json_perintah_tulis_tanpa_lokasi(self):
+        db2 = self.tmp / "toko2" / "stok.db"
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(stok.main(["init", "--db", str(db2), "--json"]), 0)
+            self.assertEqual(stok.main(["init", "--db", str(db2), "--ya", "--json"]), 0)
+        for potong in out.getvalue().replace("}\n{", "}\x00{").split("\x00"):
+            d = json.loads(potong)
+            self.assertNotIn(str(self.tmp), json.dumps(d), "init membocorkan path")
+            self.assertNotIn("db", d)
+            self.assertNotIn("folder_backup", d)
+        d = self.run_ok("masuk", "--sku", "KAOS-HT-M", "--qty", "5", "--harga", "30000")
+        self.assertNotIn(str(self.tmp), json.dumps(d))
+        self.assertNotIn("db", d)
+        self.assertNotIn("Konfirmasi lokasi", d["petunjuk"])
+        d = self.run_ok("masuk", "--sku", "KAOS-HT-M", "--qty", "5", "--harga", "30000", "--ya")
+        self.assertNotIn(str(self.tmp), json.dumps(d))
+        d = self.run_ok("init")      # database sudah ada
+        self.assertTrue(d["sudah_ada"])
+        self.assertNotIn(str(self.tmp), json.dumps(d))
+
+    def test_pratinjau_init_tidak_menyuruh_tanya_lokasi(self):
+        baru = self.tmp / "baru" / "stok.db"
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(stok.main(["init", "--db", str(baru), "--json"]), 0)
+        d = json.loads(out.getvalue())
+        self.assertEqual(d["mode"], "pratinjau")
+        self.assertIn("Jangan tanyakan lokasi", d["petunjuk"])
+        self.assertNotIn("konfirmasi lokasi", d["petunjuk"].lower())
+        self.assertFalse(baru.exists())
+
+    def test_catatan_agen_bila_hasil_memuat_lokasi(self):
+        b = self.run_ok("backup", "--label", "Sebelum Lebaran!")
+        self.assertIn("Jangan menyebut path", b["catatan_agen"])
+        daftar = self.run_ok("backup", "--daftar")
+        self.assertIn("catatan_agen", daftar)
+        item = [x for x in daftar["backup"] if x["nama"].endswith("-sebelum-lebaran.db")][0]
+        self.assertTrue(item["nama"].startswith("stok-") and item["nama"].endswith(".db"))
+        self.assertRegex(item["dibuat"], r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$")
+        self.assertEqual(item["keterangan"], "sebelum lebaran")
+        self.assertTrue(all(x["keterangan"] and x["dibuat"] for x in daftar["backup"]))
+        self.assertIn("catatan_agen", self.run_ok("info"))
+        d = self.run_ok("opname", "--hitung", "KAOS-HT-M=20", "--alasan", "salah catat", "--ya")
+        self.assertIn("backup", d)
+        self.assertIn("catatan_agen", d)
+        self.assertNotIn("db", d)
+        d = self.run_ok("restore", "--dari", b["backup"])
+        self.assertIn("catatan_agen", d)
+        self.assertNotIn("db", d)
+        # hasil tanpa lokasi tidak perlu catatan
+        self.assertNotIn("catatan_agen", self.run_ok("laporan", "stok"))
+
+    def test_teks_siap_kirim_tanpa_path_dan_jargon(self):
+        f1 = self.tulis("h1.csv", SHOPEE_H +
+                        "P1,Perlu Dikirim,R1,SPX,2026-09-23 08:00,KAOS-HT-M,Kaos,Hitam M,59.000,2\n"
+                        "P2,Perlu Dikirim,R2,J&T,2026-09-23 09:00,ABC-BARU,Topi,Merah,40.000,1\n")
+        semua = {
+            "laporan ringkas": self.teks("laporan", "ringkas", "--tanggal", "2026-09-23"),
+            "laporan stok": self.teks("laporan", "stok"),
+            "laporan menipis": self.teks("laporan", "menipis"),
+            "laporan tidak-laku": self.teks("laporan", "tidak-laku", "--hari", "1"),
+            "laporan mutasi": self.teks("laporan", "mutasi"),
+            "masuk": self.teks("masuk", "--sku", "KAOS-HT-M", "--qty", "5", "--harga", "30000"),
+            "keluar": self.teks("keluar", "--sku", "KAOS-HT-M", "--qty", "5"),
+            "opname": self.teks("opname", "--hitung", "KAOS-HT-M=20", "--alasan", "salah catat"),
+            "produk impor": self.teks("produk", "impor", str(TEMPLATES / "daftar-produk.csv")),
+            "pesanan (kode belum terdaftar)": self.teks("impor-pesanan", f1, "--lewati-tak-dikenal"),
+            "ubah produk": self.teks("produk", "ubah", "--sku", "KAOS-HT-M", "--koreksi-hpp", "34000"),
+        }
+        self.run_ok("impor-pesanan", f1, "--lewati-tak-dikenal", "--ya")
+        semua["picking"] = self.teks("picking", "--csv", str(self.tmp / "ambil.csv"))
+        semua["tulis ya (tersimpan)"] = self.teks("masuk", "--sku", "KAOS-HT-M", "--qty", "5", "--harga", "30000", "--ya")
+        for nama, t in semua.items():
+            self.cek_teks_bersih(t, nama)
+        self.assertIn("Modal barang terjual (HPP)", semua["laporan ringkas"])
+        self.assertIn("modal rata-rata per barang (HPP)", semua["masuk"])
+        self.assertIn("KODE BARANG (SKU) BELUM TERDAFTAR", semua["pesanan (kode belum terdaftar)"])
+        self.assertIn("ambil.csv", semua["picking"])
+        self.assertNotIn("Backup sebelum perubahan", semua["tulis ya (tersimpan)"])
+        self.assertIn("Cadangan otomatis", self.teks("opname", "--hitung", "KAOS-HT-M=21", "--alasan", "salah catat", "--ya"))
+
+    def test_peringatan_dan_galat_tanpa_opsi_perintah(self):
+        # peringatan impor pesanan: tanpa opsi/perintah
+        f = self.tulis("h.csv", SHOPEE_H +
+                       "P1,Status Aneh,R1,SPX,2026-09-23 08:00,KAOS-HT-M,Kaos,Hitam M,59.000,2\n"
+                       "P2,Perlu Dikirim,R2,J&T,2026-09-23 09:00,MUG-KRM,Mug,Putih,45.000,200\n")
+        d = self.run_ok("impor-pesanan", f)
+        isi = " ".join(d["peringatan"])
+        self.assertTrue(d["peringatan"])
+        self.assertNotIn("--", isi)
+        self.assertNotIn("opname untuk", isi)
+        # galat: kalimat awam di `error`, petunjuk teknis di `langkah_agen`
+        kasus = [
+            ("masuk", "--ya"),
+            ("keluar", "--sku", "KAOS-HT-M", "--qty", "1", "--jenis", "rusak", "--ya"),
+            ("keluar", "--sku", "KAOS-HT-M", "--qty", "9999", "--ya"),
+            ("keluar", "--sku", "ZZZ", "--qty", "1", "--ya"),
+            ("produk", "tambah", "--sku", "KAOS-HT-M", "--nama", "dobel", "--ya"),
+            ("produk", "ubah", "--sku", "KAOS-HT-M", "--ya"),
+            ("opname", "--hitung", "KAOS-HT-M=1", "--ya"),
+            ("opname", "--hitung", "KAOS-HT-M", "--ya"),
+            ("opname", "--ya"),
+            ("restore", "--dari", str(self.tmp / "tidak-ada.db")),
+        ]
+        for argv in kasus:
+            e = self.run_gagal(*argv)
+            self.assertNotIn("--", e["error"], "opsi bocor di error: %s" % e["error"])
+            self.assertNotIn(str(self.tmp), json.dumps(e), "path bocor di error: %s" % (argv,))
+            self.assertNotIn("stok.py", e["error"])
+        e = self.run_gagal("keluar", "--sku", "ZZZ", "--qty", "1", "--ya")
+        self.assertIn("Kode barang 'ZZZ' belum terdaftar", e["error"])
+        self.assertIn("produk tambah", e["langkah_agen"])
+        e = self.run_gagal("keluar", "--sku", "KAOS-HT-M", "--qty", "9999", "--ya")
+        self.assertIn("--izinkan-minus", e["langkah_agen"])
+        # pesanan dengan kode barang belum terdaftar
+        g = self.tulis("g.csv", SHOPEE_H + "P9,Perlu Dikirim,R9,SPX,2026-09-23,TIDAK-ADA,Topi,Merah,40.000,1\n")
+        e = self.run_gagal("impor-pesanan", g, "--ya")
+        self.assertNotIn("--", e["error"])
+        self.assertIn("--lewati-tak-dikenal", e["langkah_agen"])
+
+    def test_skill_md_bagian_pengguna_bersih_dari_lokasi_dan_perintah(self):
+        isi = SKILL_MD.read_text(encoding="utf-8")
+        self.assertLess(isi.count("\n"), 300)
+        self.assertIn("## Bahasa ke pengguna", isi)
+        self.assertNotIn("Backup: <path>", isi)
+        self.assertNotIn("boleh disimpan di", isi)           # tidak lagi menanyakan lokasi simpan
+        # teks balasan ke pengguna = isi bagian "Format output ke pengguna" + kutipan (">") di bagian "Contoh"
+        def bagian(judul):
+            a = isi.index(judul)
+            z = isi.find("\n## ", a + 5)
+            return isi[a:z if z != -1 else None]
+        contoh = bagian("## Contoh")
+        balasan = re.findall(r"```\n(.*?)```", bagian("## Format output ke pengguna"), re.S)   # hanya blok contoh balasan
+        balasan += [b[1:].strip() for b in contoh.splitlines() if b.startswith(">")]
+        teks = "\n".join(balasan)
+        self.assertIn("modal rata-rata per barang (HPP)", teks)
+        self.assertIn("kode barang (SKU)", teks)
+        for kata in ("KomunitechData", "backup-stok", ".db", "stok.py", "~/", "--ya", "--json", "database", "SQLite", "Backup:"):
+            self.assertNotIn(kata, teks, "'%s' ada di teks balasan contoh SKILL.md" % kata)
+        # setiap contoh balasan memuat paling banyak satu permintaan persetujuan
+        grup, cur = [], []
+        for b in contoh.splitlines():
+            if b.startswith(">"):
+                cur.append(b)
+            elif cur:
+                grup.append("\n".join(cur))
+                cur = []
+        if cur:
+            grup.append("\n".join(cur))
+        self.assertGreaterEqual(len(grup), 4)
+        for blok in grup:
+            self.assertLessEqual(blok.count("Simpan?"), 1)
+        self.assertGreaterEqual(contoh.count("Simpan?"), 2)
+
+
+class UjiBahasaPenggunaLanjutan(Dasar):
+    """v1.1.7 (putaran 2): cadangan tidak boleh diklaim bila tidak dibuat, galat teks tanpa petunjuk teknis,
+    lokasi tidak bocor di teks init/info, pratinjau impor sebelum buku stok ada, CSV dilampirkan (bukan disebut letaknya)."""
+
+    def teks(self, *argv, db=None, kode_harap=0):
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            kode = stok.main(list(argv) + ["--db", str(db or self.db)])
+        self.assertEqual(kode, kode_harap, out.getvalue() + err.getvalue())
+        return out.getvalue() + err.getvalue()
+
+    def json_di(self, db, *argv, kode_harap=0):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            kode = stok.main(list(argv) + ["--db", str(db), "--json"])
+        self.assertEqual(kode, kode_harap, out.getvalue())
+        return json.loads(out.getvalue())
+
+    # --- cadangan hanya disebut bila memang dibuat ---------------------------------------------------------
+    def test_perintah_biasa_tidak_membuat_cadangan_dan_tidak_menyebutnya(self):
+        self.run_ok("produk", "tambah", "--sku", "AA-1", "--nama", "Topi", "--harga-beli", "10000",
+                    "--harga-jual", "20000", "--stok-awal", "10", "--ya")
+        hasil = [
+            self.run_ok("produk", "ubah", "--sku", "AA-1", "--harga-jual", "21000", "--ya"),
+            self.run_ok("masuk", "--sku", "AA-1", "--qty", "50", "--harga", "9000", "--biaya-tambahan", "25000", "--ya"),
+            self.run_ok("keluar", "--sku", "AA-1", "--qty", "2", "--ya"),
+        ]
+        for d in hasil:
+            self.assertEqual(d["mode"], "tersimpan")
+            self.assertNotIn("backup", d, "perintah ini tidak membuat cadangan")
+            self.assertNotIn("catatan_agen", d)
+        self.assertEqual(self.run_ok("info")["jumlah_backup"], 0)
+        self.assertFalse((self.db.parent / "backup-stok").exists())
+        t = self.teks("masuk", "--sku", "AA-1", "--qty", "1", "--harga", "9000", "--ya")
+        self.assertNotIn("adangan", t)
+
+    def test_cadangan_otomatis_hanya_untuk_impor_opname_restore(self):
+        d = self.run_ok("produk", "impor", str(TEMPLATES / "daftar-produk.csv"), "--ya")
+        self.assertIn("backup", d)
+        d = self.run_ok("opname", "--hitung", "KAOS-HT-M=20", "--alasan", "salah catat", "--ya")
+        self.assertIn("backup", d)
+        self.assertEqual(self.run_ok("info")["jumlah_backup"], 2)
+
+    def test_skill_md_cadangan_bersyarat(self):
+        isi = SKILL_MD.read_text(encoding="utf-8")
+        self.assertIn("hanya bila hasil script memuat `backup`", isi)
+        self.assertIn("TIDAK", isi.split("## Bahasa ke pengguna")[0])        # aturan keamanan 3 menyebut yang tidak membuat cadangan
+        setelah = isi[isi.index("**Setelah tersimpan:**"):isi.index("**Laporan harian**")]
+        blok = re.search(r"```\n(.*?)```", setelah, re.S).group(1)
+        self.assertNotIn("adangan", blok, "templat 'Setelah tersimpan' tidak boleh selalu menyebut cadangan")
+        self.assertIn("hanya bila hasil script memuat `backup`", setelah)
+        contoh = isi[isi.index("## Contoh"):isi.index("## Checklist")]
+        grup, cur = [], []
+        for baris in contoh.splitlines():
+            if baris.startswith(">"):
+                cur.append(baris)
+            elif cur:
+                grup.append("\n".join(cur))
+                cur = []
+        if cur:
+            grup.append("\n".join(cur))
+        sebut = [g for g in grup if "adangan" in g]
+        self.assertEqual(len(sebut), 1, "hanya contoh hitung fisik (opname) yang boleh menyebut cadangan")
+        self.assertIn("sekarang 72", sebut[0])                  # balasan setelah hitung fisik (opname)
+        for g in grup:
+            if "Kaos Hitam M sekarang 74" in g:
+                self.assertNotIn("adangan", g)          # barang datang biasa
+        self.assertIn('- [ ] "Cadangan otomatis sudah dibuat" hanya bila', isi)
+
+    # --- kunci lokasi: "dari" di laporan mutasi bukan path -------------------------------------------------
+    def test_laporan_mutasi_tanpa_catatan_agen_restore_tetap(self):
+        self.run_ok("produk", "tambah", "--sku", "AA-1", "--nama", "Topi", "--harga-beli", "10000",
+                    "--harga-jual", "20000", "--stok-awal", "10", "--ya")
+        d = self.run_ok("laporan", "mutasi", "--dari", "2020-01-01", "--sampai", "2099-12-31")
+        self.assertIn("dari", d)
+        self.assertNotIn("catatan_agen", d)
+        b = self.run_ok("backup")
+        r = self.run_ok("restore", "--dari", b["backup"])
+        self.assertIn("catatan_agen", r)
+        self.assertNotIn("dari", r)
+        self.assertIn("berkas_cadangan", r)
+
+    # --- galat dalam mode teks (laporan terjadwal) ---------------------------------------------------------
+    def test_galat_teks_hanya_kalimat_awam(self):
+        hilang = self.tmp / "tidak-ada" / "stok.db"
+        t = self.teks("laporan", "ringkas", db=hilang, kode_harap=1)
+        self.assertEqual(t.strip(), "GAGAL: Buku stok belum disiapkan di komputer ini.")
+        for kata in ("langkah_agen", "init", "--ya", str(self.tmp)):
+            self.assertNotIn(kata, t)
+        e = self.json_di(hilang, "laporan", "ringkas", kode_harap=1)       # JSON tetap memuat petunjuk teknis
+        self.assertIn("init", e["langkah_agen"])
+        self.assertFalse(hilang.parent.exists())
+
+    def test_galat_sqlite_tidak_membocorkan_pesan_mentah(self):
+        from unittest import mock
+        kasus = [("database is locked", "sedang dipakai proses lain"),
+                 ("disk I/O error", "gangguan teknis"),
+                 ("unable to open database file", "gangguan teknis")]
+        for mentah, awam in kasus:
+            with mock.patch.object(stok, "buka", side_effect=sqlite3.OperationalError(mentah)):
+                t = self.teks("laporan", "ringkas", kode_harap=1)
+                self.assertIn(awam, t)
+                self.assertNotIn(mentah, t)
+                self.assertNotIn(str(self.tmp), t)
+                self.assertNotIn("Kesalahan database", t)
+                self.assertNotIn("langkah_agen", t)
+                e = self.json_di(self.db, "laporan", "ringkas", kode_harap=1)
+                self.assertIn(awam, e["error"])
+                self.assertIn(mentah, e["detail_teknis"])
+                self.assertNotIn(mentah, e["error"])
+                self.assertIn("Jangan kutip detail_teknis", e["langkah_agen"])
+
+    def test_galat_berkas_os_tanpa_path(self):
+        from unittest import mock
+        with mock.patch.object(stok, "buka", side_effect=PermissionError(13, "Permission denied", str(self.db))):
+            t = self.teks("laporan", "ringkas", kode_harap=1)
+            self.assertNotIn(str(self.tmp), t)
+            self.assertIn("izin akses", t)
+            self.assertNotIn("Traceback", t)
+
+    # --- teks init/info tanpa lokasi -----------------------------------------------------------------------
+    def test_teks_init_dan_info_tanpa_lokasi(self):
+        baru = self.tmp / "toko-baru" / "stok.db"
+        semua = [self.teks("init", db=baru)]
+        self.assertFalse(baru.exists())
+        semua.append(self.teks("init", "--ya", db=baru))
+        semua.append(self.teks("init", db=baru))                          # sudah ada
+        self.run_ok("produk", "impor", str(TEMPLATES / "daftar-produk.csv"), "--ya")
+        semua.append(self.teks("info"))
+        for t in semua:
+            self.assertNotIn(str(self.tmp), t)
+            for kata in ("backup-stok", ".db", "KomunitechData", "database", "Database"):
+                self.assertNotIn(kata, t, t)
+        self.assertIn("jumlah_backup: 1", semua[-1])
+        self.assertIn("backup_terakhir_dibuat", semua[-1])
+        self.assertIn("backup_terakhir", self.run_ok("info"))               # JSON tetap memuat lokasi untuk agent
+
+    def test_teks_pratinjau_tanpa_nama_opsi(self):
+        self.run_ok("produk", "tambah", "--sku", "AA-1", "--nama", "Topi", "--harga-beli", "10000",
+                    "--harga-jual", "20000", "--stok-awal", "10", "--ya")
+        for argv in (("masuk", "--sku", "AA-1", "--qty", "5", "--harga", "9000"),
+                     ("keluar", "--sku", "AA-1", "--qty", "1"),
+                     ("opname", "--hitung", "AA-1=9", "--alasan", "salah catat")):
+            t = self.teks(*argv)
+            self.assertTrue(t.startswith("PRATINJAU (belum disimpan)"), t)
+            self.assertNotIn("--", t.splitlines()[0])
+
+    # --- pratinjau impor sebelum buku stok ada -------------------------------------------------------------
+    def test_pratinjau_impor_produk_sebelum_buku_stok_ada(self):
+        baru = self.tmp / "belum" / "stok.db"
+        f = str(TEMPLATES / "daftar-produk.csv")
+        d = self.json_di(baru, "produk", "impor", f)
+        self.assertEqual(d["mode"], "pratinjau")
+        self.assertTrue(d["buku_belum_ada"])
+        self.assertEqual(d["produk_baru"], 5)
+        self.assertEqual(d["nilai_stok_awal"], 3494000)
+        self.assertIn("init --ya", d["petunjuk"])
+        self.assertNotIn(str(self.tmp), json.dumps(d))
+        self.assertFalse(baru.parent.exists(), "pratinjau tidak boleh membuat berkas atau folder")
+        # menyimpan tanpa menyiapkan buku tetap ditolak (tidak membuat buku diam-diam)
+        e = self.json_di(baru, "produk", "impor", f, "--ya", kode_harap=1)
+        self.assertIn("belum disiapkan", e["error"])
+        self.assertFalse(baru.parent.exists())
+        # alur sesungguhnya: init --ya, lalu impor --ya; angkanya sama dengan pratinjau
+        self.json_di(baru, "init", "--ya")
+        h = self.json_di(baru, "produk", "impor", f, "--ya")
+        self.assertEqual(h["produk_baru"], d["produk_baru"])
+        self.assertEqual(h["nilai_stok_awal"], d["nilai_stok_awal"])
+        self.assertIn("backup", h)
+        self.assertNotIn("buku_belum_ada", self.json_di(baru, "produk", "impor", f))
+
+    def test_baris_rusak_dan_kolom_wajib_pakai_kode_barang_sku(self):
+        f = self.tulis("rusak.csv", "SKU;Nama Produk;Harga Beli;Harga Jual;Stok\n;Topi;1000;2000;3\nB-1;Kaos;1000;2000;3\n")
+        d = self.run_ok("produk", "impor", f)
+        self.assertEqual(d["produk_baru"], 1)
+        self.assertEqual(d["baris_rusak"][0]["alasan"], "kode barang (SKU) atau nama kosong")
+        g = self.tulis("tanpa-sku.csv", "Harga Beli;Harga Jual;Stok\n1000;2000;3\n")
+        e = self.run_gagal("produk", "impor", g)
+        self.assertIn("kode barang (SKU)", e["error"])
+        h = self.tulis("pes.csv", "No. Pesanan;Jumlah;Status\nP1;1;Selesai\n")
+        e = self.run_gagal("impor-pesanan", h)
+        self.assertIn("Kode barang (SKU) atau Nama produk", e["error"])
+
+    # --- berkas yang diminta dilampirkan; pesan panjang -----------------------------------------------------
+    def test_skill_md_lampiran_dan_pesan_panjang(self):
+        isi = SKILL_MD.read_text(encoding="utf-8")
+        self.assertNotIn("tersimpan di folder kerja", isi)
+        bagian = isi[isi.index("## Bahasa ke pengguna"):isi.index("## Cara menjalankan script")]
+        self.assertIn("lampirkan berkasnya ke chat", bagian)
+        self.assertIn("balas 'kirim file'", bagian)
+        self.assertIn("jangan menyebut nama folder atau jalur", bagian)
+        self.assertIn("±3.500 karakter", bagian)
+        self.assertIn("--ringkas-saja", bagian)
+        self.assertIn("lalu lampirkan ke chat", isi)                          # D.2 picking
+        self.assertIn("Bila gagal, kirim satu kalimat", isi)                   # pesan jadwal laporan
+        self.assertIn("buku_belum_ada", isi)
+        self.assertLess(isi.count("\n"), 300)
+
+    def test_catatan_agen_menyebut_lampiran_dan_syarat_cadangan(self):
+        self.assertIn("lampirkan berkasnya ke chat", stok.CATATAN_AGEN_LOKASI)
+        self.assertIn("kunci backup", stok.CATATAN_AGEN_LOKASI)
+        self.assertNotIn("dari", stok.KUNCI_LOKASI)
 
 
 class UjiSingkatanFlag(unittest.TestCase):

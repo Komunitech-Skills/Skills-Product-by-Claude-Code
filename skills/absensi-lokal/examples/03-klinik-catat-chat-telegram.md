@@ -1,5 +1,7 @@
 # 03 — Klinik: catat absen lewat chat, laporan harian ke Telegram, ekspor untuk slip-gaji-bpjs
 
+> **Catatan revisi 1.0.8:** teks rekap di bawah disesuaikan dengan keluaran skrip terbaru (kode karyawan disembunyikan, "kelonggaran telat" menggantikan "toleransi terlambat"). Angkanya tidak berubah dari hasil uji aslinya.
+
 **Skenario:** normal, pencatatan manual (tanpa mesin). Klinik fiktif, 4 karyawan pola 6 hari (Senin–Jumat 08.00–16.00, Sabtu 08.00–13.00), toleransi 10 menit, mulai memakai alat pada 23/09/2026. Admin mengetik absen lewat chat. Pengujian memakai opsi tersembunyi `--sekarang` hanya untuk membekukan jam uji (23–24/09/2026); pembeli tidak memakainya.
 
 ## Input pengguna (persis, beberapa pesan)
@@ -22,15 +24,15 @@
 **"Andi masuk 08.12"** → `catat --karyawan Andi --masuk 08.12`:
 ```
 Saya akan mencatat (belum disimpan):
-- Andi (K01) - Kamis 24/09/2026: masuk 08.12
-Catatan: Terlambat 12 menit (jadwal 08.00, toleransi 10 menit).
+- Andi - Kamis 24/09/2026: masuk 08.12
+Catatan: Terlambat 12 menit (jadwal 08.00, kelonggaran telat 10 menit).
 Simpan? Balas "ya".
 ```
 
 **"Sari izin sakit"** → agent memilih jenis `sakit` (kata "sakit" disebut) dan menyebut asumsinya → `keterangan --karyawan Sari --jenis sakit --tanggal 2026-09-24 --catatan "izin via WA"`:
 ```
 Saya akan mencatat (belum disimpan):
-- Sari (K02): SAKIT pada 1 hari kerja (24/09/2026)
+- Sari: SAKIT pada 1 hari kerja (24/09/2026)
 Saya catat sebagai SAKIT (bukan izin biasa). Simpan? Balas "ya".
 ```
 
@@ -60,25 +62,25 @@ Boleh saya buat? Saya perlu chat id Telegram Anda.
 **Akhir bulan** — `rekap --bulan 2026-09 --csv-gaji gaji-september-lembur.csv --gabung gaji-september.csv` (lembur Andi 23/09 2 jam "dr. Maya (WA 23/09 15.30)" sudah dicatat sebelumnya):
 ```
 REKAP ABSENSI SEPTEMBER 2026 - Klinik Sehat Sentosa (fiktif)
-Periode 01/09/2026-24/09/2026 | toleransi terlambat 10 menit
+Periode 01/09/2026-24/09/2026 | kelonggaran telat 10 menit
 
-1. Andi (K01) - Perawat
+1. Andi - Perawat
    Hadir 2 dari 2 hari kerja
    Terlambat 1x (12 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 16 jam 8 menit
    Lembur disetujui: hari kerja 2 jam, hari libur 0 jam (setara 3,5 jam) -> Rp 84.971
 
-2. Sari (K02) - Admin
+2. Sari - Admin
    Hadir 1 dari 2 hari kerja | Sakit 1
    Terlambat 0x (0 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 7 jam 1 menit
 
-3. Rina (K03) - Apoteker
+3. Rina - Apoteker
    Hadir 2 dari 2 hari kerja
    Terlambat 0x (0 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 14 jam 4 menit
 
-4. Tono (K04) - Kebersihan
+4. Tono - Kebersihan
    Hadir 2 dari 2 hari kerja
    Terlambat 1x (31 menit) | Pulang cepat 1x (40 menit)
    Jam kerja 12 jam 59 menit
