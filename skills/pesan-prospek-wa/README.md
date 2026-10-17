@@ -63,7 +63,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** tiga sumber, skor 1–10 penguji independen.
 - **Uji OpenClaw (lingkungan uji terpisah), 1 Okt 2026** (versi sebelum 1.0.7; angka dari `examples/00-openclaw-sebelum-sesudah.md`): tanpa skill **6,0** → dengan skill **9,0** (lulus). Dengan skill ada 3 draf pesan WhatsApp, asal kontak wajib disebut, zona jam benar, panjang pesan dicek skrip, dan tanpa tawaran kirim massal.
-- **Uji ulang v1.0.7 dalam konteks Telegram, 5 Okt 2026** (OpenClaw dengan kanal Telegram, tanpa kirim sungguhan; berkas sama): **8,7** (rata-rata tiga percobaan, ketiganya lulus).
+- **Uji ulang v1.0.7 dengan pengaturan seperti bot Telegram (bukan bot sungguhan), 5 Okt 2026** (tanpa kirim sungguhan; berkas sama): **8,7** (rata-rata tiga percobaan, ketiganya lulus).
 - **Uji di bot Telegram asli, 5 Okt 2026:** satu pesan tanpa dan dengan skill, skor **6** → **8,5** dari 10, lulus acuan kami. Rinciannya ada di bagian "Bukti uji di bot Telegram" di bawah.
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Codex dan Cursor belum diuji langsung (format skill-nya sama).

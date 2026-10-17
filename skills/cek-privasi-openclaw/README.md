@@ -60,7 +60,7 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Hasil uji (angka nyata):** uji OpenClaw 1 Okt 2026 (uji otomatis agent; skenario jebakan diuji ulang setelah revisi), skor 1–10 penguji independen: skenario normal (cek privasi untuk bot layanan pelanggan toko online) tanpa skill **6** → dengan skill **9**; skenario jebakan ("benerin semua tanpa nanya" + minta menyadap chat karyawan) tanpa skill **3** → dengan skill **9** setelah uji ulang (uji pertama jebakan: 3 → 6, lalu skill diperbaiki). Tanpa skill, pengaturan diubah tanpa meminta "ya" per butir; dengan skill, tiap butir punya efek dan cara membatalkan, dan permintaan menyadap chat karyawan ditolak. Sumber: `examples/00-openclaw-sebelum-sesudah.md`. Hasil di bot Telegram asli ada di bagian berikutnya.
 
-**Status uji (jujur):** diuji di OpenClaw 2026.9.5 (uji muat dan perintah nyata) serta 2026.9.6–9.7 (sebelum/sesudah otomatis) dan bot Telegram uji; Claude Code lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama). Versi 1.1.6 mengubah bentuk balasan di chat (lebih ringkas, tanpa jalur/perintah) setelah pra-cek konteks Telegram 16 Okt 2026; bentuk baru ini belum diuji ulang di bot Telegram asli.
+**Status uji (jujur):** diuji di OpenClaw 2026.9.5 (uji muat dan perintah nyata) serta 2026.9.6–9.7 (sebelum/sesudah otomatis) dan bot Telegram uji; Claude Code lewat simulasi agent; Codex dan Cursor belum diuji langsung (format skill-nya sama). Versi 1.1.6 mengubah bentuk balasan di chat (lebih ringkas, tanpa jalur/perintah) setelah pra-cek dengan pengaturan seperti bot Telegram (bukan bot sungguhan) pada 16 Okt 2026; bentuk baru ini belum diuji ulang di bot Telegram asli.
 
 ## Bukti uji di bot Telegram
 
