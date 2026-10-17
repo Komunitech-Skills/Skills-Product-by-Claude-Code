@@ -44,6 +44,9 @@ Ringkasannya:
 - **Pra-cek `scratchpad/openclaw-real/uji-tg.sh`** (konteks kanal Telegram) wajib untuk skill berhasil panjang/berupa file dan untuk setiap calon gelombang Telegram. Kirim ke Telegram hanya setelah persetujuan pemilik.
 - Setelah uji baru/ulang: perbarui `promosi/sebelum-sesudah.jsonl` dan jalankan `python3 scripts/promosi_sebelum_sesudah.py` (lihat `promosi/README.md`).
 
+- Skrip bantu rilis (opsional): `scripts/pracek_rilis.py` (pra-cek kesiapan rilis) dan `scripts/rilis_batch.py`; lihat docstring masing-masing.
+- Status skill: `ide → draft → uji → lulus → beta → rilis` (atau `ditolak`/`arsip`).
+
 ## Pola wajib di SKILL.md
 
 - **Kerjakan dulu, tanya di akhir:** beri hasil memakai asumsi yang disebut; pertanyaan tambahan satu kali di penutup.

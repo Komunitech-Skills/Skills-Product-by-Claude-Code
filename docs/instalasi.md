@@ -62,6 +62,14 @@ Skill masuk ke `~/.openclaw/skills/`. Untuk **satu workspace** saja, hilangkan `
 
 **Cursor.** Agent memuat skill dari folder proyek (`.cursor/skills/`, `.agents/skills/`) dan folder user di komputer lokal. Untuk **Cursor Cloud Agent**, skill di `~/.cursor/skills/` **tidak otomatis ikut** — pasang skill di **repo** (`.cursor/skills/`) atau aktifkan **Sync Skills** di Settings → Agents bila ingin memakai skill pribadi di cloud. Setelah memasang, buka chat Agent baru. **Catatan uji 2026-10-14:** pada run **Cloud Automation** (jadwal otomatis) Cursor, skill di `.cursor/skills/` repo tidak muncul di daftar skill agent pada empat run berturut; pemasangan dan script tetap berjalan. Untuk memakai skill di Cursor, pakai chat Agent di aplikasi Cursor, bukan jadwal otomatis, sampai Cursor memperbaikinya. Cursor juga bisa membaca skill dari folder Claude/Codex (`~/.claude/skills`, `~/.codex/skills`) untuk kompatibilitas; jangan duplikasi skill yang sama di banyak folder.
 
+## Khusus pembeli paket VIP
+
+Selain folder-folder skill, ZIP VIP berisi dua tambahan:
+- **`solusi-vip/`** — panduan per profesi (toko online, klinik, konsultan, usaha offline, kantor & manajemen, kripto & keuangan pribadi). Mulai dari `solusi-vip/README.md`, lalu buka `PANDUAN.md` dan `CEKLIS.md` di folder profesimu. Isinya file panduan (`.md`), bukan skill; tidak perlu disalin ke folder skills.
+- **`templates/openclaw-AGENTS-komunitech.md`** — blok aturan kerja untuk OpenClaw. Panduan solusi-vip merujuknya: tempel isinya ke file `AGENTS.md` agent OpenClaw-mu (ikuti langkah di `PANDUAN.md`).
+
+Memasang semua skill VIP satu per satu (salin manual per folder) memakan waktu kira-kira 1–2 menit, jadi lebih cepat bila seluruh folder skill disalin sekaligus ke folder tujuan.
+
 ## Skill yang memakai script
 
 Beberapa skill menyertakan script Python (folder `scripts/`). Mac dan Linux umumnya sudah punya Python. Di Windows, pasang gratis dari [python.org](https://www.python.org/downloads/) dan centang **"Add Python to PATH"** saat instalasi. Tanpa Python, skill tetap berjalan tetapi perhitungan tidak diverifikasi script.
