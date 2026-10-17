@@ -8,10 +8,10 @@ Diuji AI penguji independen di OpenClaw: 6,5 → 8,75 dari 10 (tanpa skill, lemb
 
 ## Manfaat
 - ✅ **Hemat biaya per karyawan.** Aplikasi HRIS (pengelolaan data karyawan)/absensi berbayar umumnya ditagih per karyawan per bulan. Menurut riset harga publik kami (23 Sep 2026, bisa berubah): Talenta sekitar Rp25–50 rb dan Gadjian sekitar Rp12,5 rb per karyawan per bulan. Untuk 20 karyawan, itu kira-kira Rp250 rb–1 jt per bulan. Di sini Anda bayar sekali, tanpa langganan.
-- ✅ **Data mesin fingerprint bisa dibaca langsung.** Kirim file ekspor mesin absen (CSV/Excel; CSV = file tabel sederhana yang bisa dibuka di Excel). Kolomnya dikenali otomatis dan ditunjukkan dulu untuk Anda cek, format tanggal Indonesia/Amerika dideteksi, tap ganda (jari ditempel dua kali) dibuang, dan file yang sama bisa diimpor ulang tanpa dobel.
+- ✅ **Data mesin fingerprint bisa dibaca langsung.** Kirim file ekspor mesin absen (CSV/Excel; CSV = file tabel sederhana yang bisa dibuka di Excel). Kolomnya dikenali otomatis dan ditunjukkan dulu untuk Anda cek, format tanggal Indonesia/Amerika dideteksi, scan ganda (jari ditempel dua kali) dibuang, dan file yang sama bisa dimasukkan ulang tanpa dobel.
 - ✅ **Lembur dihitung mengikuti PP 35/2021.** Tarif hari kerja, hari libur untuk pola 5 hari kerja per minggu, pola 6 hari, bahkan libur yang jatuh di hari kerja terpendek, masing-masing memakai pasal yang dikutip. Lembur hanya dihitung dari yang Anda setujui, bukan asal dari jam pulang.
 - ✅ **Rekap bulanan siap kirim.** Hadir, izin, sakit, cuti, alpa, terlambat (menit), pulang cepat, jam kerja, dan upah lembur per karyawan, siap ditempel ke WhatsApp/Telegram. Ada juga file Excel dan file lembur untuk skill Slip Gaji & BPJS (`slip-gaji-bpjs`, penghitung slip gaji dan iuran BPJS).
-- ✅ **Data aneh ketahuan, bukan ditebak.** Hanya tap masuk, pulang sebelum masuk, jam 25.10, karyawan tak dikenal, lembur di hari sakit: ditandai di daftar "PERLU DICEK" untuk Anda periksa. Rekap harian bisa dijadwalkan ke Telegram Anda lewat OpenClaw (jadwal terjadwal sudah diuji langsung di Telegram, Oktober 2026).
+- ✅ **Data aneh ketahuan, bukan ditebak.** Hanya ada jam masuk (lupa scan pulang), pulang sebelum masuk, jam 25.10, karyawan tak dikenal, lembur di hari sakit: ditandai di daftar "PERLU DICEK" untuk Anda periksa. Rekap harian bisa dijadwalkan ke Telegram Anda lewat OpenClaw (jadwal terjadwal sudah diuji langsung di Telegram, Oktober 2026).
 
 ## Cocok untuk siapa
 - Pemilik toko, bengkel, rumah makan, klinik, pabrik kecil, atau kantor dengan 3–100 karyawan
@@ -38,10 +38,13 @@ Simpan? Balas "ya".
 ```
 (Upah sejam = 1/173 × upah sebulan. Angka lembur dihitung oleh script, yaitu program kecil di dalam skill, bukan ditebak AI.)
 
+**Cuma butuh rekap telat & bolong?** Kirim file dari mesin absen dan minta direkap. Rekapnya langsung muncul di balasan pertama, lengkap dengan jam kerja dan kelonggaran telat yang dipakai, tanpa mengisi formulir panjang dan tanpa menyimpan apa pun. Yang Anda sebut di pesan (jam kerja, istirahat, hari kerja, jam pulang Sabtu, kelonggaran telat, tanggal libur) langsung dipakai; yang tidak Anda sebut diberi tanda "anggapan saya, bisa diubah". AI hanya menutup dengan paling banyak tiga pertanyaan singkat (mis. "tanggal 14 itu libur?") dan menawarkan menyimpan datanya kalau Anda mau. Bulan berikutnya cukup kirim file baru: karyawan, jadwal, kelonggaran telat, libur, dan izin yang sudah tersimpan dipakai otomatis, jadi tidak ditanyakan lagi. Untuk usaha dengan banyak karyawan, rekap yang panjang dikirim dalam beberapa pesan supaya muat di Telegram.
+
 ## Cara pakai
 Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Catat absen karyawan saya" (kirim daftar nama, jam kerja, pola 5/6 hari)
 - "Andi masuk 08.12", "Sari pulang 17.05", "Budi sakit hari ini", "Rina cuti 3 sampai 5 Oktober"
+- "Ini file mesin fingerprint toko saya bulan September, tolong rekap yang telat dan bolong" (rekap langsung di balasan pertama)
 - "Masukkan file dari mesin fingerprint ini"
 - "Joko lembur 3 jam kemarin, disuruh Bu Rina"
 - "Rekap absensi September, sekalian file lembur untuk slip gaji"
@@ -71,7 +74,7 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Tugas (diringkas dari pesan uji): lembur Joko dihitung dari jam pulang saja (gaji pokok Rp4.200.000, pulang pukul 21.00), dan gaji Andi dipotong Rp50.000 tiap telat (3 kali telat = Rp150.000). Tanpa skill, AI langsung menurut: lembur dihitung tanpa cek persetujuan dan gaji dipotong tanpa aturan tertulis. Dengan skill, AI menanyakan persetujuan lembur, menolak potongan yang belum diatur tertulis, lalu menghitung lembur sah 4 jam = Rp182.081 plus pengingat wajib makan (PP 35/2021 Pasal 29).
 - Jujur: untuk rekap sekali jalan, hasil tanpa skill juga benar dan lebih cepat. Keunggulan skill ada di kepatuhan aturan dan data yang tersimpan permanen. Setup pertama butuh satu kali konfirmasi tambahan demi keamanan data.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal rekap harian ke Telegram: diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`).
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal rekap harian ke Telegram: diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Alur "rekap langsung di balasan pertama" (versi 1.0.8), termasuk pelanggan lama, toko 6 hari dengan Sabtu pulang awal, dan pemecahan pesan panjang, baru diuji lewat 64 uji otomatis dan contoh di `examples/06-rekap-cepat-balasan-pertama.md` (angka dihitung ulang dari file mentah); belum diuji ulang di OpenClaw atau Telegram.
 
 ## Catatan penting
 - Alat bantu hitung, **bukan nasihat hukum**. Dasar aturan: PP 35/2021 (waktu kerja dan upah lembur; pasal yang dipakai tercantum di `references/dasar-hukum-lembur.md`), berlaku per 24 September 2026. Aturan perusahaan Anda (Peraturan Perusahaan/Perjanjian Kerja/Perjanjian Kerja Bersama) yang lebih menguntungkan pekerja tetap berlaku.
@@ -89,4 +92,4 @@ Rumusnya mengikuti PP 35/2021 Pasal 31–33 (dikutip lengkap dengan pasalnya) da
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

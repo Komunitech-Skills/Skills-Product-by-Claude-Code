@@ -1,5 +1,7 @@
 # 02 — Pabrik kecil pola 5 hari: shift malam 22.00–06.00, lembur libur resmi, pekerja upah harian
 
+> **Catatan revisi 1.0.8:** teks rekap di bawah disesuaikan dengan keluaran skrip terbaru (kode karyawan disembunyikan, "kelonggaran telat" menggantikan "toleransi terlambat", "Libur/tutup" menggantikan "Libur resmi"). Angkanya tidak berubah dari hasil uji aslinya.
+
 **Skenario:** normal (kompleks). Pabrik fiktif, 3 karyawan pola 5 hari (istirahat Sabtu–Minggu). Hadi shift MALAM 22.00–06.00 (lewat tengah malam), Wati & Slamet shift PAGI 07.00–16.00. Slamet dibayar **harian** Rp 180.000. Laporan dari software mesin berformat **per hari** (Scan Masuk/Scan Pulang, pemisah `;`, tanggal `dd-mm-yyyy`). Termasuk: shift 31/08 yang pulang 01/09 08.04 (lewat pergantian bulan), lembur di 17 Agustus (Senin, libur resmi), lembur Sabtu 10 jam, lembur hari kerja 4,5 jam (> 4 jam/hari) dan 5 × 4 jam dalam satu minggu (20 jam > 18 jam/minggu), lembur pecahan `2:15`, dan satu hari lupa tap pulang.
 
 Cuplikan `laporan-agustus.csv` (63 baris data, fiktif):
@@ -55,22 +57,22 @@ Pratinjau lembur (dipotong): Hadi 17/08 8 jam "hari istirahat/libur, pola 5 hari
 Rekap (teks script):
 ```
 REKAP ABSENSI AGUSTUS 2026
-Periode 01/08/2026-31/08/2026 | toleransi terlambat 0 menit
-Libur resmi: 17/08/2026 Hari Kemerdekaan RI
+Periode 01/08/2026-31/08/2026 | kelonggaran telat 0 menit
+Libur/tutup: 17/08/2026 Hari Kemerdekaan RI
 
-1. Hadi (P01) - Operator
+1. Hadi - Operator
    Hadir 20 dari 20 hari kerja | masuk di hari libur 1
    Terlambat 0x (0 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 152 jam 46 menit
    Lembur disetujui: hari kerja 2 jam, hari libur 8 jam (setara 19,5 jam) -> Rp 552.312
 
-2. Wati (P02) - QC
+2. Wati - QC
    Hadir 20 dari 20 hari kerja
    Terlambat 8x (16 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 188 jam 27 menit
    Lembur disetujui: hari kerja 26,75 jam, hari libur 0 jam (setara 50 jam) -> Rp 1.213.873
 
-3. Slamet (P03) - Buruh harian
+3. Slamet - Buruh harian
    Hadir 20 dari 20 hari kerja | masuk di hari libur 2
    Terlambat 8x (24 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 165 jam 59 menit (+1 hari data tidak lengkap, belum dihitung)

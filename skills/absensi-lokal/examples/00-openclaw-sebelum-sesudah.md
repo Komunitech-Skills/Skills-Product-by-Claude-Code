@@ -1,5 +1,7 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — absensi-lokal
 
+> **Catatan (17 Okt 2026):** berkas ini adalah rekaman uji 1 Okt 2026 terhadap skill versi 1.0.7 dan tidak diubah. Sejak 1.0.8 balasan pertama untuk "file mesin + minta rekap" tidak lagi berupa daftar pertanyaan dan tidak menyebut lokasi penyimpanan; lihat `06-rekap-cepat-balasan-pertama.md`. Alur baru itu belum diuji ulang di OpenClaw.
+
 ## Cara uji
 - **Tanggal:** 2026-10-01. Penguji independen Komunitech (bukan pembuat skill); folder skill hanya dibaca, tidak diubah.
 - **Agent:** OpenClaw **2026.9.6** lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech **claude-sonnet-5** (sama dengan bot member), TZ Asia/Jakarta, terisolasi (mount + PID namespace).

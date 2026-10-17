@@ -78,6 +78,8 @@ class UjiUpahHarian(unittest.TestCase):
         self.assertEqual(out["total_dibayar"], 1650000)
         self.assertEqual(out["total_versi_minimum_pp35"], 1680694)
         self.assertTrue(any("DI BAWAH minimum" in p and "30.694" in p for p in out["peringatan"]))
+        self.assertIn("Agus (Rp 120.000 per hari, 6 hari kerja seminggu)", out["teks"])        # tanpa istilah "pola"
+        self.assertNotIn("pola 6 hari", out["teks"])
         self.assertIn("173", out["teks"])
 
     def test_acak_vs_pembanding(self):

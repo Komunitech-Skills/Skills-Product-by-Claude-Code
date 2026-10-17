@@ -1,5 +1,7 @@
 # 04 — Input tidak lengkap: "hitung lembur Budi bulan ini"
 
+> **Catatan revisi 1.0.8:** teks rekap di bawah disesuaikan dengan keluaran skrip terbaru (kode karyawan disembunyikan, "kelonggaran telat" menggantikan "toleransi terlambat"). Angkanya tidak berubah dari hasil uji aslinya.
+
 **Skenario:** input tidak lengkap. Database toko dari contoh 01 sudah ada (data Agustus). Hari ini 24/09/2026; file mesin September **belum** diimpor dan belum ada lembur disetujui untuk Budi di September.
 
 ## Input pengguna (persis)
@@ -11,7 +13,7 @@
 Agent menjalankan `rekap --karyawan Budi --json` (baca saja). Hasil script:
 ```
 REKAP ABSENSI SEPTEMBER 2026 (S.D. 24/09/2026) - Toko Maju Jaya (fiktif)
-1. Budi (T03) - Gudang
+1. Budi - Gudang
    Hadir 0 dari 21 hari kerja | Tanpa keterangan 20
    Terlambat 0x (0 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 0 menit

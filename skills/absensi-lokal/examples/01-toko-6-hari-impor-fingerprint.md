@@ -19,28 +19,25 @@ No.,AC-No.,Nama,Waktu,Status
 
 ## Output (mengikuti SKILL.md)
 
-**Langkah agent (ringkas):** `info` → database belum ada → karena pengguna sudah memberi data lengkap, agent cukup mengonfirmasi lokasi penyimpanan → `init` → `init --ya` → `shift tambah --kode TOKO --masuk 08.00 --pulang 16.00 --istirahat 60 --pulang-hari-pendek 13.00` → `karyawan impor karyawan.csv` (6 baris, pola 6, hari pendek Sabtu, id mesin 1–6, Rudi dengan tunjangan tidak tetap 1.500.000) → `atur --toleransi 5` → `libur tambah --tanggal 2026-08-17` → semuanya dipratinjau lalu disimpan setelah pengguna membalas "ya".
+> **Catatan revisi 1.0.8:** bagian "Langkah agent" dan "Pesan 1" ditulis ulang mengikuti SKILL.md terbaru (bahasa biasa, tanpa lokasi simpan, tanpa nama kolom/perintah). Teks rekap di bawah disesuaikan dengan keluaran skrip terbaru (kode karyawan disembunyikan, "kelonggaran telat" menggantikan "toleransi terlambat", "Libur/tutup" menggantikan "Libur resmi"); angkanya tidak berubah dari hasil uji aslinya.
 
-**Pesan 1 — pratinjau impor (sebelum disimpan):**
+**Langkah agent (ringkas):** `info` → buku absensi belum ada. Pengguna mengirim file mesin **bersama** permintaan lembur, gaji, dan Sabtu pendek, jadi ini bukan jalur rekap cepat (A0) melainkan **satu pratinjau gabungan** (karyawan + jadwal + lembur). Agent tidak menanyakan lokasi simpan (memakai bawaan), kelonggaran telat (sudah disebut: 5 menit), maupun nomor ID mesin (sudah disebut: 1–6 urut nama). Pratinjau memakai bahasa biasa; nama perintah dan nama kolom tidak ditampilkan. Setelah pengguna membalas "ya": `init` → `shift tambah --kode TOKO --masuk 08.00 --pulang 16.00 --istirahat 60 --pulang-hari-pendek 13.00` → `karyawan impor karyawan.csv` (6 baris, pola 6 hari, hari pendek Sabtu, id mesin 1–6, Rudi dengan tunjangan tidak tetap 1.500.000) → `atur --toleransi 5` → `libur tambah --tanggal 2026-08-17` → `lembur --file lembur-agustus.csv` → `impor-absen log-agustus.csv`. Tiap perintah dijalankan dulu tanpa `--ya` dan baru dengan `--ya` bila pratinjaunya sama dengan ringkasan yang sudah disetujui.
 
-```
-Saya akan memasukkan data mesin absen (belum disimpan):
-- File: log-agustus.csv (format log per tap)
-- Pemetaan kolom: id <- 'AC-No.', nama <- 'Nama', waktu <- 'Waktu', status <- 'Status'
-- Cara baca tanggal: Sabtu 1 Agustus 2026 jam 07.52 (masuk) | Sabtu 1 Agustus 2026 jam 07.55 (masuk) ...
-  (format HARI/BULAN/TAHUN, pasti karena ada tanggal di atas 12)
-- Tap baru: 301 | sudah ada: 0 | Rentang 01/08/2026 s.d. 31/08/2026
-- Per karyawan: Andi 51, Budi 50, Dewi 46, Joko 52, Rudi 53, Sari 49
-- Diabaikan: tap istirahat (keluar/kembali istirahat) 2
-Catatan: 1 baris dari ID 9 / nama "Teknisi" tidak terdaftar, tidak diimpor. Kalau itu karyawan,
-sebutkan namanya; nanti file yang sama bisa diimpor ulang tanpa dobel.
-Simpan? Balas "ya".
-```
-
-**Pesan 2 — pratinjau lembur disetujui (dari `lembur --file lembur-agustus.csv`):**
+**Pesan 1 — pratinjau gabungan (sebelum menyimpan apa pun):**
 
 ```
-Saya akan mencatat lembur yang DISETUJUI (belum disimpan):
+Ini yang akan saya simpan (belum disimpan):
+- Jadwal kerja: Senin–Jumat 08.00–16.00 (istirahat 1 jam), Sabtu 08.00–13.00. Libur Minggu dan 17/08.
+  Kelonggaran telat 5 menit.
+- 6 karyawan, semuanya 6 hari kerja seminggu: Andi, Sari, Budi, Dewi, Joko, Rudi (gaji dan
+  tunjangan sesuai pesan Bapak; nomor ID di mesin 1 sampai 6 urut nama).
+- File mesin log-agustus.csv: saya membaca kolom "AC-No." sebagai nomor ID, "Nama", "Waktu"
+  (tanggal dan jam), dan "Status" (masuk/pulang). Tanggal terbaca hari/bulan/tahun (pasti, karena
+  ada tanggal di atas 12), contoh: Sabtu 1 Agustus 2026 jam 07.52 terbaca masuk.
+  301 catatan scan baru; 2 scan istirahat dilewati.
+- 1 baris dari "Teknisi" (ID 9) tidak ada di daftar karyawan, jadi tidak dimasukkan. Kalau itu
+  karyawan, sebutkan namanya; file yang sama bisa dimasukkan ulang tanpa dobel.
+Lembur yang DISETUJUI (dihitung PP 35/2021):
 - Andi, Rabu 05/08: 2 jam, hari kerja (Pasal 31 ayat (1)) = 3,5 jam setara ≈ Rp 76.879
 - Joko, Minggu 09/08: 8 jam, hari istirahat pola 6 hari (Pasal 31 ayat (2) huruf a:
   7 jam x 2 + 1 jam x 3) = 17 jam setara ≈ Rp 343.931
@@ -49,45 +46,45 @@ Saya akan mencatat lembur yang DISETUJUI (belum disimpan):
   (dasar upah Rudi = 75% x seluruh upah Rp 4.800.000 = Rp 3.600.000, karena gaji pokok +
   tunjangan tetap < 75% — PP 35/2021 Pasal 32 ayat (4))
 Catatan: lembur 8 jam Joko ≥ 4 jam → perusahaan wajib memberi makan-minum min. 1.400 kkal (Pasal 29).
-Simpan? Balas "ya".
+Simpan semuanya? Balas "ya".
 ```
 
-**Pesan 3 — rekap (teks script apa adanya) + pertanyaan:**
+**Pesan 2 — rekap (teks script apa adanya) + pertanyaan:**
 
 ```
 REKAP ABSENSI AGUSTUS 2026 - Toko Maju Jaya (fiktif)
-Periode 01/08/2026-31/08/2026 | toleransi terlambat 5 menit
-Libur resmi: 17/08/2026 Hari Kemerdekaan RI
+Periode 01/08/2026-31/08/2026 | kelonggaran telat 5 menit
+Libur/tutup: 17/08/2026 Hari Kemerdekaan RI
 
-1. Andi (T01) - Kasir
+1. Andi - Kasir
    Hadir 25 dari 25 hari kerja
    Terlambat 2x (12 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 169 jam 17 menit
    Lembur disetujui: hari kerja 2 jam, hari libur 0 jam (setara 3,5 jam) -> Rp 76.879
 
-2. Sari (T02) - Kasir
+2. Sari - Kasir
    Hadir 25 dari 25 hari kerja
    Terlambat 0x (0 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 161 jam 55 menit (+1 hari data tidak lengkap, belum dihitung)
    Lembur disetujui: hari kerja 1,5 jam, hari libur 0 jam (setara 2,5 jam) -> Rp 53.468
 
-3. Budi (T03) - Gudang
+3. Budi - Gudang
    Hadir 25 dari 25 hari kerja
    Terlambat 5x (1 jam 29 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 165 jam 51 menit
 
-4. Dewi (T04) - Admin
+4. Dewi - Admin
    Hadir 23 dari 25 hari kerja | Tanpa keterangan 2
    Terlambat 1x (6 menit) | Pulang cepat 1x (30 menit)
    Jam kerja 152 jam 41 menit
 
-5. Joko (T05) - Gudang
+5. Joko - Gudang
    Hadir 25 dari 25 hari kerja | masuk di hari libur 1
    Terlambat 2x (12 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 178 jam 35 menit
    Lembur disetujui: hari kerja 0 jam, hari libur 8 jam (setara 17 jam) -> Rp 343.931
 
-6. Rudi (T06) - Sopir
+6. Rudi - Sopir
    Hadir 25 dari 25 hari kerja | masuk di hari libur 1
    Terlambat 2x (12 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 172 jam 22 menit
@@ -116,12 +113,12 @@ Pertanyaan agent (satu pesan):
 → `keterangan --karyawan Dewi --jenis sakit --tanggal 2026-08-20 --sampai 2026-08-21 --catatan "surat dokter"` dan `catat --karyawan Sari --tanggal 2026-08-12 --pulang 16.05` (pratinjau → "ya" → `--ya`) → rekap ulang + `--csv rekap-agustus.csv --csv-harian rincian-agustus.csv`:
 
 ```
-2. Sari (T02) - Kasir
+2. Sari - Kasir
    Hadir 25 dari 25 hari kerja
    Terlambat 0x (0 menit) | Pulang cepat 0x (0 menit)
    Jam kerja 169 jam 4 menit
    ...
-4. Dewi (T04) - Admin
+4. Dewi - Admin
    Hadir 23 dari 25 hari kerja | Sakit 2
    ...
 Total upah lembur: Rp 682.370
@@ -140,6 +137,6 @@ T06;Rudi;17/08/2026;Senin;libur-resmi;hadir di hari libur;08.00;16.00;08.00;14.0
 
 ## Catatan penguji
 - **Semua angka cocok** dengan hitungan independen penguji (`/tmp/uji-absensi-lokal/a/verif_a.py`, membaca CSV mentah tanpa mengimpor kode skill): hadir, hari terjadwal (25 = 31 − 5 Minggu − 17 Agustus), terlambat kali/menit, pulang cepat, menit kerja (termasuk Sabtu tanpa potongan istirahat), hari tidak lengkap, daftar tanpa keterangan, dan rupiah lembur per karyawan. Contoh: Rudi 10 × 3.600.000 ÷ 173 = 208.092,49 → Rp 208.092; total Rp 682.370.
-- Impor ulang file yang sama: `Tap baru: 0 | sudah ada sebelumnya: 301` — tidak dobel.
+- Impor ulang file yang sama: `Catatan baru: 0 | sudah ada sebelumnya (dilewati): 301` — tidak dobel.
 - Bagus: tap ganda & tap istirahat dibuang, ID asing dilaporkan (tidak ditebak), lembur tanpa perintah (Joko 25/08) tidak dihitung, aturan 75% Pasal 32 ayat (4) diterapkan otomatis.
 - Kurang: (1) teks rekap tidak menyebut dasar upah 75% Rudi — hanya ada di JSON (`dasar_upah_keterangan`), agent harus menambahkannya sendiri; (2) pengingat Pasal 29 (makan ≥ 1.400 kkal) di atas ditulis agent dari SKILL.md, script tidak mengeluarkannya; (3) Joko 25/08 pulang 3 jam lewat jadwal tanpa lembur disetujui tidak muncul sebagai info sama sekali — aplikasi absensi berbayar biasanya menandai "kelebihan jam tanpa SPL"; (4) label karyawan saat impor tidak menampilkan tunjangan tidak tetap Rudi.
