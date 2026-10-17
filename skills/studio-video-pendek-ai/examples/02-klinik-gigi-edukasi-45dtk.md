@@ -19,3 +19,10 @@ Perkiraan durasi sulih suara: 36,5 dtk (target 45 dtk, 150 kata/menit); sisa ~8 
 **Catatan penguji**: skill menandai "KEPENDEKAN" (status script) padahal wajar; agen menerangkan bahwa itu boleh.
 Caption: "Cek gigi rutin itu penting. Jadwalkan kunjungan via WA di profil. #kesehatangigi #dokter_gigi..." (diperiksa: tanpa janji hasil). Checklist AI: jalur A, tidak ada AI realistis; cantumkan nomor izin praktik hanya jika pemilik punya, tidak dikarang.
 Hasil: PASS. Kekhawatiran: naskah tips "pasta gigi berfluoride" adalah saran medis umum; ditandai agar ditinjau dokter (agen melakukannya).
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Keluaran dan hasil uji asli di atas (PASS, v1.0.0) **tidak diubah**. Dicocokkan dengan aturan v1.0.5, ada dua hal yang kini akan ditulis berbeda:
+- **Hook ≤ 3 dtk:** adegan 1 lama berisi 11 kata + jeda (0–5 dtk). Versi v1.0.5: "Kapan terakhir kamu cek ke dokter gigi?" (7 kata, 0–3 dtk).
+- **CTA:** teks layar adegan 8 memuat `Jadwal kunjungan via WA: [nomor WA]` dan sulih suara "…hubungi klinik kami lewat WhatsApp, nomornya ada di layar."
+
+Script dijalankan ulang (2026-10-17): naskah lama `--target 45` → 36,5 dtk KEPENDEKAN (cocok dengan angka lama); dengan dua perubahan di atas → 35,2 dtk (79 kata ÷ 150 × 60 = 31,6 + jeda 1,5 + 7 × 0,3 = 2,1; dicek Decimal), tetap KEPENDEKAN. Menurut langkah 5 v1.0.5 durasi harus dalam ±10% (40,5–49,5 dtk), jadi agent sekarang wajib menambah kalimat edukasi umum (tanpa klaim hasil) atau menawarkan target 30–40 dtk, lalu menghitung ulang. Contoh ini belum diuji ulang dengan tambahan itu.

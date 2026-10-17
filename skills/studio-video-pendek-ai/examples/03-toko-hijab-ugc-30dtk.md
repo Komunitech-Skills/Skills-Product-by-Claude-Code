@@ -81,3 +81,11 @@ Pertanyaan singkat bila mau naskah final tanpa isian (jawab sekali): (1) nama da
 - **Celah yang ditemukan:** `cek_fakta.py` tidak menangkap warna ("dusty pink") dan jenis bahan ("ultrafine"); pemeriksaan keduanya harus manual terhadap daftar fakta.
 - Penanda `[isi: ...]` ikut dihitung sebagai kata oleh `durasi_naskah.py`, jadi durasi setelah diisi bisa bergeser; hitung ulang.
 - Hasil: PASS.
+
+## Penyegaran v1.0.5 (2026-10-17)
+> Keluaran dan hasil uji (PASS, 2026-10-13) di atas **tidak diubah**. Dicocokkan dengan aturan v1.0.5, ada tiga hal yang kini akan ditulis berbeda di balasan ke pengguna:
+- Blok **"Fakta dari pengguna"** dan baris **"Cek fakta: … -> LULUS"** tidak ditampilkan lagi (cek fakta tetap dijalankan internal). Fakta yang dipakai cukup muncul di bagian 0 Asumsi & Brief.
+- **Hook ≤ 3 dtk:** adegan 1 lama berisi 8 kata + jeda (4,0 dtk). Versi v1.0.5: "Lagi cari hijab voal? Sini, aku tunjukin." (7 kata, 0–3 dtk).
+- **CTA:** teks layar adegan 6 memuat `Pesan via WA: [nomor WA]` (ganti `[akun/link]` bila pesan bukan lewat WA).
+
+Script dijalankan ulang (2026-10-17): naskah lama `--target 30` → 29,5 dtk PAS (cocok dengan angka lama); dengan hook baru → Hook 7 kata 3,1 dtk, total **28,6 dtk PAS** (64 kata ÷ 150 × 60 = 25,6 + jeda 1,5 + 5 × 0,3 = 1,5; dicek Decimal).
