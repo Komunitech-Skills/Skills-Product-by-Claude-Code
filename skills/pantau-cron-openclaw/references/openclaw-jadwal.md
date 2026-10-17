@@ -2,6 +2,7 @@
 
 > **Bahasa ke pengguna:** ikuti BAHASA KE PENGGUNA di SKILL.md (tanpa "skill", "script", "cron job", "kredensial", "token", "agen", path).
 > **Kredensial & aksi (wajib):** jangan membaca token/kunci dari environment, `openclaw.json`, `.env`, database atau log OpenClaw. Cek kanal hanya dengan `openclaw channels status --channel telegram`. Jangan membuat/mengubah jadwal atau mengirim pesan uji sebelum pengguna membalas "ya" atas ringkasan rencana.
+> **Berkas yang boleh dibaca:** hanya berkas skill ini dan data pantauan sendiri (lewat perintah script). DILARANG membuka folder catatan harian/memori (`memory/`, `MEMORY.md`) atau riwayat sesi.
 > **Aturan berhenti:** bila SATU perintah `openclaw automations ...`/`cron ...` gagal (ditolak, token/kredensial, Gateway tidak bisa dihubungi), berhenti memakai alat `openclaw`. DILARANG: membaca/mengubah `openclaw.json`, memeriksa/menulis token, menjalankan `openclaw doctor` (termasuk `--fix`), merestart Gateway, atau meminta alat lain mengubah konfigurasi Gateway. Lanjut ke bagian 0 (rencana siap salin).
 
 ## 0. Rencana siap salin saat terblokir
@@ -28,12 +29,13 @@ python3 scripts/pantau_cron.py daftar
 Zona: `WIB`, `WITA`, `WIT`, `UTC` (atau `Asia/Jakarta`, `Asia/Makassar`, `Asia/Jayapura`). Jadwal pantauan **harus sama** dengan jadwal `--cron` dan `--tz` job aslinya (lihat `openclaw automations list --all`). Toleransi 30 menit sudah menutupi penundaan acak (stagger) bawaan OpenClaw; job yang butuh tepat waktu bisa ditambah `--exact` saat dibuat.
 
 ## 2. Ping di akhir job
-**Job berupa pesan ke agent** -- ubah prompt (butuh "ya"; tampilkan prompt lama dan baru):
+**Job berupa pesan ke agent** -- ubah prompt (butuh "ya"; tampilkan prompt lama dan baru). Balasan akhir sebuah jadwal adalah pesan yang dikirim ke tujuannya, jadi teks yang ditambahkan WAJIB membuat balasan akhir tetap berisi laporan utuh dan lapor selesai berjalan diam-diam (tanpa tanda kutip di dalam teks, agar aman di `--message "..."`):
 ```bash
 openclaw automations list --all          # catat id job
-openclaw automations edit <id-job> --message "<prompt lama utuh> Langkah terakhir, hanya bila semua langkah di atas berhasil dan pesan sudah terkirim: jalankan perintah python3 [isian: folder pantauan Anda]/scripts/pantau_cron.py ping laporan-harian . Jangan dijalankan bila ada langkah yang gagal."
+openclaw automations edit <id-job> --message "<prompt lama utuh> Aturan penutup (wajib): selama mengerjakan langkah di atas, jangan menulis laporan sebagai teks dulu. Hanya bila semua langkah di atas berhasil, jalankan diam-diam (sebagai pemanggilan alat saja, tanpa teks apa pun di sekitarnya) perintah  python3 [isian: folder pantauan Anda]/scripts/pantau_cron.py ping laporan-harian  . Sesudah itu tulis laporan LENGKAP, dari baris pertama sampai terakhir, sebagai balasan akhir: balasan akhir itulah pesan yang dikirim ke tujuan, jadi harus berisi seluruh laporan dan menjadi pesan terakhir. Jangan menambah kalimat lain di balasan akhir: jangan menyebut perintah tadi, lapor selesai, ping, pesan di atas, sudah final, atau langkah ini. Bila ada langkah yang gagal, lewati perintah itu dan tulis balasan akhir seperti biasa."
 ```
-Job harus boleh menjalankan perintah (tool `exec`). Bila job dibuat dengan `--tools`, pastikan `exec` ada di daftarnya.
+Bila prompt lama sudah memuat kalimat versi sebelumnya ("Langkah terakhir, hanya bila semua langkah di atas berhasil dan pesan sudah terkirim: jalankan perintah ..."), GANTI kalimat itu dengan teks di atas (jangan ditumpuk). Teks lama itu membuat agen jadwal menutup dengan kalimat proses sehingga isi laporan tidak terkirim (uji bot Telegram 16 Okt 2026).
+Job harus boleh menjalankan perintah (tool `exec`). Bila job dibuat dengan `--tools`, pastikan `exec` ada di daftarnya. Lapor selesai dicatat tepat sebelum laporan ditulis sebagai balasan akhir, jadi ia tidak membuktikan pesan sampai ke tujuan; periksa isi yang terkirim lewat `openclaw automations runs <id-job>` bila ringkasannya terlihat.
 
 **Job berupa perintah** (`--command-argv`): tambahkan `python3 .../pantau_cron.py ping <nama>` sebagai perintah terakhir di script job itu.
 
@@ -61,7 +63,7 @@ Folder data lain dari bawaan: tambahkan `"--folder", "<alamat>"` di argv semua p
 1. `python3 scripts/pantau_cron.py cek` -> semua job OK atau "menunggu jadwal pertama".
 2. `openclaw automations run <id-pengawas> --wait`, lalu `openclaw automations runs <id-pengawas>` -> berhasil, tidak ada pesan saat tenang.
 3. Alarm palsu terkendali (setelah "ya"): `tambah uji-alarm --jam <HH.MM tiga menit dari sekarang> --toleransi 1`, tunggu ±5 menit (jadwal harus lewat SESUDAH job didaftarkan), jalankan pengawas sekali -> pesan HILANG masuk Telegram; lalu `hapus uji-alarm` (pengawas akan mengirim PULIH atau diam).
-4. Jalankan satu job asli (`automations run <id-job> --wait`) -> `riwayat <nama>` menampilkan ping baru.
+4. Jalankan satu job asli (`automations run <id-job> --wait`) -> `riwayat <nama>` menampilkan ping baru. Laporan akan masuk ke tujuan job itu satu kali; baca isinya (atau `automations runs <id-job>`) dan pastikan itu laporan utuh, bukan hanya kalimat penutup seperti "pesan di atas sudah final". Bila hanya kalimat penutup, teks lapor selesai di prompt belum sesuai: ganti dengan teks bagian 2.
 5. **Verifikasi akhir (wajib sebelum menyatakan terpasang):** `openclaw automations list --all` dibaca SESUDAH pasang dan dibandingkan dengan daftar sebelum pasang: dua pengawas baru muncul (nama, jadwal, tujuan) dan job yang diubah menunjukkan perubahan nyata. Tidak ada perubahan nyata -> jangan tulis "sudah dipasang"; tulis "BELUM TERPASANG" + sebabnya.
 
 ## 5. Opsi lanjutan: Healthchecks milik sendiri (tanpa wajib, tidak berafiliasi)
