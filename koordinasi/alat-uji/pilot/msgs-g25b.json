@@ -1,0 +1,50 @@
+[
+ {
+  "skill": "promo-kalender",
+  "sisi": "sebelum",
+  "topic": 1993,
+  "text": "@KTclaude2bot kak 11.11 nanti aku mau diskon 30% buat serum wajah aku. harga normal 89rb, modal 41rb. jualnya di shopee potongan admin dll totalnya kira2 12% + 1250 per pesanan. masih untung ga? biasanya sebulan laku 60 botol. bikinin rencana promonya skalian ya",
+  "gel": "25b",
+  "catatan": "pesan member skenario 1 (promo 11.11 serum, satu-satunya skenario) di skills/promo-kalender/examples/00-openclaw-sebelum-sesudah.md; teks utuh dari solusi-vip/toko-online/uji-openclaw/05-promo-1111-cek-margin.md (identik uji ulang 1.0.3); data fiktif di pesan, tanpa berkas. Acuan: promo Rp62.300, laba/botol Rp12.574 (20,2%) vs normal Rp36.070 (40,5%), diskon maks 46%, ≥6 botol promo 1 hari (laba Rp75.444), naik 2,87x. Pra-cek uji-tg 17 Okt (v1.0.4): LOLOS (145 dtk, 4.737 karakter → kemungkinan terpecah 2 pesan; 1 tabel linimasa 4 kolom; minus: opsi 25% memakai Rp66.800 bukan Rp66.750, salah ketik 'kanus', klaim 'traffic naik jauh')"
+ },
+ {
+  "skill": "promo-kalender",
+  "sisi": "sesudah",
+  "topic": 1994,
+  "text": "@KTclaude2bot kak 11.11 nanti aku mau diskon 30% buat serum wajah aku. harga normal 89rb, modal 41rb. jualnya di shopee potongan admin dll totalnya kira2 12% + 1250 per pesanan. masih untung ga? biasanya sebulan laku 60 botol. bikinin rencana promonya skalian ya",
+  "gel": "25b",
+  "catatan": "pesan member skenario 1 (promo 11.11 serum, satu-satunya skenario) di skills/promo-kalender/examples/00-openclaw-sebelum-sesudah.md; teks utuh dari solusi-vip/toko-online/uji-openclaw/05-promo-1111-cek-margin.md (identik uji ulang 1.0.3); data fiktif di pesan, tanpa berkas. Acuan: promo Rp62.300, laba/botol Rp12.574 (20,2%) vs normal Rp36.070 (40,5%), diskon maks 46%, ≥6 botol promo 1 hari (laba Rp75.444), naik 2,87x. Pra-cek uji-tg 17 Okt (v1.0.4): LOLOS (145 dtk, 4.737 karakter → kemungkinan terpecah 2 pesan; 1 tabel linimasa 4 kolom; minus: opsi 25% memakai Rp66.800 bukan Rp66.750, salah ketik 'kanus', klaim 'traffic naik jauh')"
+ },
+ {
+  "skill": "riset-harga-kompetitor",
+  "sisi": "sebelum",
+  "topic": 1995,
+  "text": "@KTclaude2bot Tolong cek harga kopi gayo bubuk 250 gr saya dibanding pesaing. Ini teks produk pesaing yang saya salin:\n\n1) Toko Kopi Sidikalang Jaya — Kopi Arabika Aceh Gayo 250gr, varian Medium Grind. Rp80.000. (website toko, belum ada ulasan)\n2) Gayo Roastery — Kopi Gayo Bubuk Arabika 200 gr. Rp42.500 (coret Rp55.000). ⭐4,8 | 1,2RB terjual | Kab. Aceh Tengah\n3) Kopi Pak Darmo — Arabika Gayo Bubuk Halus 250 gr. Rp54.900 - Rp62.900. ⭐4,9 | 850 terjual | Kota Medan\n4) Bean Station ID — Arabika Gayo Wine 500gr. Rp109.500 (coret Rp125.000). ⭐4,9 | 500 terjual | Jakarta Selatan\n5) Kedai Seduh — Kopi Gayo Bubuk 1/2 kg. Rp96.000. ⭐4,7 | 300 terjual | Bandung\n6) Aroma Gayo — Kopi Arabika Gayo 1kg. Rp199.000. ⭐5,0 | 1RB terjual | Takengon\n7) Kopi Rakyat — Kopi Gayo Bubuk 250g. Rp49.000 (coret Rp59.000). ⭐4,6 | 3RB+ terjual | Jakarta Timur\n8) Gayo Roastery — Kopi Gayo Bubuk Arabika 200 gr. Rp42.500 (coret Rp55.000). ⭐4,8 | 1,2RB terjual | Kab. Aceh Tengah\n\nModal saya 30 ribu sudah sama kemasan. Jual di Shopee: admin 8%, gratis ongkir xtra 4%, PPh 0,5%, biaya proses 1.250. Target untung minimal 20%. Sekarang saya jual 58 ribu.",
+  "gel": "25b",
+  "catatan": "pesan member skenario 1 (kopi gayo 250 gr vs 8 baris pesaing, data ditempel) di skills/riset-harga-kompetitor/examples/00-openclaw-sebelum-sesudah.md; data fiktif di pesan, tanpa berkas & TANPA pencarian web (bila bot memakai web, bot kedua memakai DuckDuckGo bawaan). Acuan: median Rp53.125 (P25 49.375–P75 54.825), laba di Rp58.000 Rp19.500 (33,6%), balik modal Rp35.715, minimum margin 20% Rp46.297, harga cantik Rp52.900 (laba Rp15.038, 28,4%), coret 3/7 rata 17,4%. Pra-cek uji-tg 17 Okt (v1.0.5): LOLOS dengan catatan (93 dtk, 3.126 karakter, tanpa tabel; semua angka cocok; minus: saran 'pasang harga normal lebih tinggi lalu diskon' tanpa syarat harga coret jujur, '9-18% di atas median' (benar +9,2%), urutan Gayo Roastery)"
+ },
+ {
+  "skill": "riset-harga-kompetitor",
+  "sisi": "sesudah",
+  "topic": 1996,
+  "text": "@KTclaude2bot Tolong cek harga kopi gayo bubuk 250 gr saya dibanding pesaing. Ini teks produk pesaing yang saya salin:\n\n1) Toko Kopi Sidikalang Jaya — Kopi Arabika Aceh Gayo 250gr, varian Medium Grind. Rp80.000. (website toko, belum ada ulasan)\n2) Gayo Roastery — Kopi Gayo Bubuk Arabika 200 gr. Rp42.500 (coret Rp55.000). ⭐4,8 | 1,2RB terjual | Kab. Aceh Tengah\n3) Kopi Pak Darmo — Arabika Gayo Bubuk Halus 250 gr. Rp54.900 - Rp62.900. ⭐4,9 | 850 terjual | Kota Medan\n4) Bean Station ID — Arabika Gayo Wine 500gr. Rp109.500 (coret Rp125.000). ⭐4,9 | 500 terjual | Jakarta Selatan\n5) Kedai Seduh — Kopi Gayo Bubuk 1/2 kg. Rp96.000. ⭐4,7 | 300 terjual | Bandung\n6) Aroma Gayo — Kopi Arabika Gayo 1kg. Rp199.000. ⭐5,0 | 1RB terjual | Takengon\n7) Kopi Rakyat — Kopi Gayo Bubuk 250g. Rp49.000 (coret Rp59.000). ⭐4,6 | 3RB+ terjual | Jakarta Timur\n8) Gayo Roastery — Kopi Gayo Bubuk Arabika 200 gr. Rp42.500 (coret Rp55.000). ⭐4,8 | 1,2RB terjual | Kab. Aceh Tengah\n\nModal saya 30 ribu sudah sama kemasan. Jual di Shopee: admin 8%, gratis ongkir xtra 4%, PPh 0,5%, biaya proses 1.250. Target untung minimal 20%. Sekarang saya jual 58 ribu.",
+  "gel": "25b",
+  "catatan": "pesan member skenario 1 (kopi gayo 250 gr vs 8 baris pesaing, data ditempel) di skills/riset-harga-kompetitor/examples/00-openclaw-sebelum-sesudah.md; data fiktif di pesan, tanpa berkas & TANPA pencarian web (bila bot memakai web, bot kedua memakai DuckDuckGo bawaan). Acuan: median Rp53.125 (P25 49.375–P75 54.825), laba di Rp58.000 Rp19.500 (33,6%), balik modal Rp35.715, minimum margin 20% Rp46.297, harga cantik Rp52.900 (laba Rp15.038, 28,4%), coret 3/7 rata 17,4%. Pra-cek uji-tg 17 Okt (v1.0.5): LOLOS dengan catatan (93 dtk, 3.126 karakter, tanpa tabel; semua angka cocok; minus: saran 'pasang harga normal lebih tinggi lalu diskon' tanpa syarat harga coret jujur, '9-18% di atas median' (benar +9,2%), urutan Gayo Roastery)"
+ },
+ {
+  "skill": "pantau-pasar-kripto",
+  "sisi": "sebelum",
+  "topic": 1997,
+  "text": "@KTclaude2bot Malam min, tolong rekap jurnal trading kripto saya Juni–September 2026: untung/rugi yang sudah dijual, sisa koin + rata-rata modal sisa, dan pajaknya pakai aturan yang baru. Semua transaksi di Indodax KECUALI jual ETH tgl 19 Agustus itu di Binance. Kolom biaya = fee exchange, saya nggak tau PPh-nya sudah dipotong atau belum.\n\ntanggal;koin;aksi;jumlah;harga;biaya\n2026-06-03;BTC;beli;0,012;1.520.000.000;54.720\n2026-06-20;ETH;beli;0,8;58.400.000;140.160\n2026-07-08;SOL;beli;25;3.150.000;236.250\n2026-07-22;BTC;beli;0,006;1.610.000.000;28.980\n2026-08-05;BTC;jual;0,010;1.705.000.000;51.150\n2026-08-19;ETH;jual;0,5;61.200.000;91.800\n2026-09-02;SOL;jual;10;2.890.000;86.700\n2026-09-25;BTC;jual;0,005;1.742.000.000;26.130\n\nTotal untung bersih saya berapa? makasih",
+  "gel": "25b",
+  "catatan": "pesan member S1 (jurnal Jun–Sep, 8 transaksi, P/L FIFO + PPh PMK 50/2025, 1 jual di Binance) = skenario normal pertama di skills/pantau-pasar-kripto/examples/00-openclaw-sebelum-sesudah.md; teks utuh dari openclaw-real/hasil/gkr/msg1.txt (uji gabungan kripto 3–5 Okt). Aman: tanpa sinyal beli/jual, auto-trading, atau kunci API. Data fiktif di pesan, tanpa berkas. Acuan: P/L 1.753.250 / 1.220.600 / −2.781.200 / 790.260, total Rp982.910; sisa BTC 0,003 @1.614.830.000, ETH 0,3 @58.575.200, SOL 15 @3.159.450; PPh 420.786; bersih bila PPh belum dipotong Rp562.124. Pra-cek uji-tg 17 Okt (v1.0.11): LOLOS (102 dtk, 2.320 karakter, tanpa tabel, semua angka cocok, disclaimer ada, menulis kripto/JURNAL.csv di workspace)"
+ },
+ {
+  "skill": "pantau-pasar-kripto",
+  "sisi": "sesudah",
+  "topic": 1998,
+  "text": "@KTclaude2bot Malam min, tolong rekap jurnal trading kripto saya Juni–September 2026: untung/rugi yang sudah dijual, sisa koin + rata-rata modal sisa, dan pajaknya pakai aturan yang baru. Semua transaksi di Indodax KECUALI jual ETH tgl 19 Agustus itu di Binance. Kolom biaya = fee exchange, saya nggak tau PPh-nya sudah dipotong atau belum.\n\ntanggal;koin;aksi;jumlah;harga;biaya\n2026-06-03;BTC;beli;0,012;1.520.000.000;54.720\n2026-06-20;ETH;beli;0,8;58.400.000;140.160\n2026-07-08;SOL;beli;25;3.150.000;236.250\n2026-07-22;BTC;beli;0,006;1.610.000.000;28.980\n2026-08-05;BTC;jual;0,010;1.705.000.000;51.150\n2026-08-19;ETH;jual;0,5;61.200.000;91.800\n2026-09-02;SOL;jual;10;2.890.000;86.700\n2026-09-25;BTC;jual;0,005;1.742.000.000;26.130\n\nTotal untung bersih saya berapa? makasih",
+  "gel": "25b",
+  "catatan": "pesan member S1 (jurnal Jun–Sep, 8 transaksi, P/L FIFO + PPh PMK 50/2025, 1 jual di Binance) = skenario normal pertama di skills/pantau-pasar-kripto/examples/00-openclaw-sebelum-sesudah.md; teks utuh dari openclaw-real/hasil/gkr/msg1.txt (uji gabungan kripto 3–5 Okt). Aman: tanpa sinyal beli/jual, auto-trading, atau kunci API. Data fiktif di pesan, tanpa berkas. Acuan: P/L 1.753.250 / 1.220.600 / −2.781.200 / 790.260, total Rp982.910; sisa BTC 0,003 @1.614.830.000, ETH 0,3 @58.575.200, SOL 15 @3.159.450; PPh 420.786; bersih bila PPh belum dipotong Rp562.124. Pra-cek uji-tg 17 Okt (v1.0.11): LOLOS (102 dtk, 2.320 karakter, tanpa tabel, semua angka cocok, disclaimer ada, menulis kripto/JURNAL.csv di workspace)"
+ }
+]

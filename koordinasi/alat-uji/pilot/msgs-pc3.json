@@ -1,0 +1,27 @@
+[
+ {
+  "skill": "pantau-cron-openclaw",
+  "sisi": "sesudah",
+  "topic": 1999,
+  "gel": "PC3",
+  "text": "@KTclaude2bot Tolong pantau laporan harian jam 21.00 dan tagih piutang 07.45 Senin-Jumat di OpenClaw saya, kabari lewat Telegram kalau ada yang gagal jalan.",
+  "catatan": "uji ulang PC3 pantau-cron-openclaw 1.0.5 di bot kedua (helikopter A3 inkonklusif di bot1): jadwal 'Laporan Harian (21:00)' & 'Tagih Piutang (07:45)' sudah ada, plus pengawas lama dari PC2 (announce topik 1859) — 1.0.5 harus menawarkan hapus pengawas lama"
+ },
+ {
+  "skill": "pantau-cron-openclaw",
+  "sisi": "sesudah-ya",
+  "topic": 1999,
+  "gel": "PC3",
+  "balas": true,
+  "text": "ya",
+  "catatan": "giliran 2: konfirmasi rencana pemasangan"
+ },
+ {
+  "skill": "pantau-cron-openclaw",
+  "sisi": "sesudah-cek",
+  "topic": 1999,
+  "gel": "PC3",
+  "text": "@KTclaude2bot Job mana yang terlambat hari ini?",
+  "catatan": "giliran 3: pengecekan setelah pengawas terpasang"
+ }
+]
