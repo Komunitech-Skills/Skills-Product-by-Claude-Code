@@ -25,3 +25,6 @@ Kalau mau cepat, cukup jawab nomor 1 saja — sisanya saya pakai pengaturan stan
 - Sesuai SKILL.md bagian Input: hanya tujuan yang wajib, pertanyaan digabung satu pesan bernomor (5 pertanyaan), tidak menanyakan satu per satu.
 - Kalimat penutup "cukup jawab nomor 1" adalah penerapan aturan "jika pengguna ingin cepat … pakai default" — tidak tertulis persis di SKILL.md tapi sejalan. Saran: tambahkan kalimat itu ke contoh pertanyaan di SKILL.md agar semua agent melakukannya (pengguna "buat besok pagi" jelas sedang terburu-buru).
 - Tidak ada file dibuat sebelum tujuan jelas — benar, karena tujuan menentukan template.
+
+## Penyegaran v1.1.6 (2026-10-17)
+> Isi output dan catatan penguji di atas **tidak diubah**. Dicocokkan dengan SKILL.md v1.1.6 bagian Input: tetap maksimal 5 pertanyaan bernomor dalam satu pesan, dan kalimat "Kalau mau cepat, cukup jawab nomor 1 saja" kini memang tertulis di SKILL.md (saran penguji di atas sudah diterapkan). Perubahan v1.1.6 (lampiran berkas di kanal chat, bahasa awam, tanpa nama skill/alat) tidak memengaruhi skenario ini karena belum ada berkas yang dibuat; output di atas tidak menyebut nama skill sehingga sudah sesuai.

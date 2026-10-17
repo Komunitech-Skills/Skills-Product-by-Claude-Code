@@ -48,3 +48,27 @@ Hasil cek otomatis: LULUS, tanpa peringatan.
 
 ## Pembaruan uji ulang v1.1.0 (2026-09-23)
 File HTML di folder ini sudah **dibuat ulang dengan kerangka v1.1.0** (komponen `kartu-kpi`/`tabel-data`/`timeline`/`isi`, `@page 1920×1080`, overlay "putar HP", tombol Edit). Isi & angka sama dengan catatan di atas; cacat teknis v1.0 yang disebut di atas (PDF terpotong, teks kecil di HP tegak) sudah tidak terjadi — lihat bagian "Uji ulang v1.1.0" di `HASIL-UJI.md`.
+
+## Penyegaran v1.1.6 (2026-10-17)
+> Bagian ini menyegarkan **format balasan** agar sesuai SKILL.md v1.1.6. Isi slide, angka, catatan penguji, dan skor di atas **tidak diubah** (itu hasil uji asli v1.0–v1.1.x). Berkas `pitch-bersih-kilat.html` dicek ulang dengan `scripts/validasi_html.py`: lolos tanpa peringatan.
+
+Perubahan format sejak uji asli: baris "Hasil cek otomatis: LULUS" diganti kalimat awam "Sudah dicek: ..."; cara cetak PDF mengikuti `@page 1920×1080` (margin "Tidak ada" + "Grafis latar", tanpa pilih orientasi); di kanal chat berkas `.html` dilampirkan sebagai dokumen dan jalur/folder komputer tidak disebut.
+
+Balasan ke pengguna (format v1.1.6, kanal chat):
+```
+Presentasi Pitch Deck Bersih Kilat Laundry sudah jadi (13 slide). Filenya saya lampirkan sebagai dokumen.
+
+Cara pakai:
+- Buka file-nya dua kali klik, atau tarik ke jendela browser (Chrome/Edge/Safari) — bisa dibuka di laptop maupun HP, tanpa internet.
+- Navigasi: tombol panah kiri/kanan atau geser jari (di HP), atau klik tombol ‹ › di bawah layar. Kalau HP dipegang tegak, akan muncul pesan untuk memutar ke posisi mendatar.
+- Mau edit teks langsung? Klik "✏️ Edit" di pojok kanan bawah (hanya di laptop/komputer); di HP, minta saya yang mengubah teksnya lalu saya kirim ulang filenya.
+- Cetak jadi PDF: buka file → Ctrl+P / Cmd+P → "Simpan sebagai PDF" → margin "Tidak ada" → centang "Grafis latar".
+
+Asumsi yang dipakai: palet "Biru Korporat" (belum ada warna brand); dana dibagi rata Rp 150.000.000 per outlet (Rp 450.000.000 ÷ 3); valuasi Rp 3.000.000.000 = Rp 450.000.000 ÷ 15% (sesudah pendanaan; sebelum pendanaan Rp 2.550.000.000).
+Bagian yang masih perlu Anda lengkapi: nama Anda & adik, data pasar, harga pesaing, ongkos antar-jemput, rincian penggunaan dana per pos, proyeksi omzet 5 outlet + asumsinya, email.
+Sudah dicek: file bisa dibuka tanpa internet dan siap dicetak jadi PDF.
+```
+
+Angka dihitung ulang (Decimal, 2026-10-17): 38.000.000 ÷ 8.000 = 4.750 kg; 450.000.000 ÷ 3 = 150.000.000; 450.000.000 ÷ 0,15 = 3.000.000.000; 3.000.000.000 − 450.000.000 = 2.550.000.000; 38.000.000 ÷ 2 = 19.000.000. Semua cocok dengan isi di atas.
+
+Rujukan bot Telegram asli (skenario yang sama, v1.1.6): `koordinasi/telegram-gelombang-A1-2026-10-17.md` — topik 1880/1881, TANPA 6,5 → DENGAN 8,0 (+1,5) **LULUS**; berkas `pitch-bersih-kilat.html` (13 slide) benar-benar terkirim sebagai dokumen. Sisa temuan di sana: satu pesan tambahan berisi kalimat proses, angka "2–3 jam/minggu" di slide Masalah tanpa label perkiraan, dan valuasi sebelum pendanaan tidak disebut (di balasan contoh di atas sudah ditambahkan sebagai saran format).

@@ -46,3 +46,25 @@ Hasil cek otomatis: LULUS, tanpa peringatan.
 ## Pembaruan uji ulang v1.1.0 (2026-09-23)
 File HTML di folder ini sudah **dibuat ulang dengan kerangka v1.1.0** (komponen `kartu-kpi`/`tabel-data`/`timeline`/`isi`, `@page 1920×1080`, overlay "putar HP", tombol Edit). Isi & angka sama dengan catatan di atas; cacat teknis v1.0 yang disebut di atas (PDF terpotong, teks kecil di HP tegak) sudah tidak terjadi — lihat bagian "Uji ulang v1.1.0" di `HASIL-UJI.md`.
 Khusus contoh ini di v1.1.0: angka per produk dari `rekap.py --kolom-produk Produk`, angka per kategori dari `rekap.py --kolom-produk Kategori` (rekap.py tidak punya rincian kategori, trik kolom ini dipakai), angka mingguan dijumlah eksplisit dengan Python dari `omzet_harian` hasil rekap.py (assert total = Rp 41.190.000). Hasil identik dengan v1.0 dan verifikasi independen.
+
+## Penyegaran v1.1.6 (2026-10-17)
+> Menyegarkan format balasan sesuai SKILL.md v1.1.6. Isi slide, angka, catatan penguji, dan skor di atas **tidak diubah**. `laporan-agustus-2026.html` dicek ulang dengan `scripts/validasi_html.py`: lolos tanpa peringatan.
+
+Perubahan format: "Sudah dicek: ..." menggantikan "Hasil cek otomatis: LULUS"; nama alat internal (`rekap-penjualan-csv`, `rekap.py`) tidak disebut ke pengguna, cukup "rekap penjualan"; cara cetak tanpa pilih orientasi; di kanal chat berkas dilampirkan, tanpa jalur folder.
+
+Balasan ke pengguna (format v1.1.6, kanal chat):
+```
+Presentasi Laporan Penjualan Agustus 2026 sudah jadi (8 slide). Filenya saya lampirkan sebagai dokumen.
+
+Cara pakai:
+- Buka file-nya dua kali klik — bisa di laptop maupun HP, tanpa internet.
+- Navigasi: panah kiri/kanan, geser jari, atau tombol ‹ ›.
+- Cetak jadi PDF: Ctrl+P / Cmd+P → Simpan sebagai PDF → margin Tidak ada → centang Grafis latar.
+
+Ringkasnya: omzet Agustus Rp 41.190.000 = 91,5% dari target Rp 45.000.000 (kurang Rp 3.810.000). Angka dihitung dari rekap penjualan file Anda (138 transaksi, 31 hari).
+Asumsi yang dipakai: palet "Putih Minimalis"; semua 138 baris terbaca, tidak ada status batal/retur di file; "minggu" = tanggal 1–7, 8–14, dst.
+Bagian yang masih perlu Anda lengkapi: nama usaha, penyebab kendala dari tim, 3 rencana September + penanggung jawab.
+Sudah dicek: file bisa dibuka tanpa internet dan siap dicetak jadi PDF.
+```
+
+Angka dijalankan ulang (2026-10-17): `skills/rekap-penjualan-csv/scripts/rekap.py penjualan-agustus-2026.csv --kolom-tanggal Tanggal --kolom-produk Produk --kolom-qty Qty --kolom-total Total --top 7` → total Rp 41.190.000, 138 baris valid, 7 produk, hari terbaik 14 Agustus Rp 3.135.000, terendah 4 Agustus Rp 204.000, rata-rata Rp 1.328.709,68/hari (dibulatkan Rp 1.328.710). Hitung ulang Decimal terpisah dari CSV: qty 1.175; tiap baris Qty × Harga = Total; Catering Rp 32.039.000 (77,8%), Frozen Rp 9.151.000 (22,2%); per minggu Rp 8.804.000 / 11.229.000 / 8.483.000 / 8.143.000 / 4.531.000 (jumlah Rp 41.190.000); 91,5% dan selisih Rp 3.810.000. Semua cocok dengan isi di atas.
