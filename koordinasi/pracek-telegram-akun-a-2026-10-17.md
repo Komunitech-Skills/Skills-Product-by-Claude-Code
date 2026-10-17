@@ -37,3 +37,11 @@ Berkas contoh yang tidak tersimpan (meta-minggu-ini/lalu.csv, penjualan-septembe
 ## Rangkuman pra-cek A-cepat (13 skill)
 
 SIAP KIRIM (9): laporan-otomatis-terjadwal, checklist-keamanan-pangan-usaha, pph21-ter, hitung-thr, laporan-harian-usaha, kasir-lokal, buku-piutang, kalender-pajak, rekap-penjualan-csv. TIDAK SIAP (4): pph-final-umkm (tabel 10 kolom), buku-stok (jalur file), absensi-lokal (5 pertanyaan + jalur), laporan-iklan-mingguan (salah paham WA + istilah proses). Daftar siap kirim: `scratchpad/openclaw-real/pilot/kandidat-a-cepat.json`.
+
+## gaji-umkm 1.0.13 (2026-10-17)
+
+Uji simulasi kanal Telegram (uji-tg.sh), sisi DENGAN, HOME baru berisi hanya gaji-umkm 1.0.13 (versi repo), dua giliran di sesi yang sama: pesan `koordinasi/alat-uji/pilot/msgs-g21b.json` idx 9 (mention dihapus) lalu idx 10 "ya". Data fiktif `koordinasi/alat-uji/pilot/data/g21/karyawan.csv` (jalur `pilot/data/karyawan.csv` di papan tugas tidak ada; isinya sama dengan examples/08) → `data/karyawan.csv` di workspace uji. Tidak ada yang dikirim.
+
+| Skill | Versi | Skor | Verdik | Catatan |
+|---|---|---:|---|---|
+| gaji-umkm | 1.0.13 | 8,5 | SIAP KIRIM | Giliran 1 (3.379 karakter, 1 bagian): 11 karyawan langsung dihitung, Lina **tertunda** dengan pilihan (a) data Jan–Agu / (b) angka SEMENTARA + tanya penuh/prorata (4.666.667 / 466.667). Setoran tanpa Lina: transfer Rp 65.412.866, BPJS Kes Rp 3.265.000, BPJS TK Rp 5.581.620, PPh 21 Rp 522.059, biaya Rp 75.031.545; Kiki prorata 5.400.000 × 16 ÷ 30 = 2.880.000 sebagai pilihan. Semua angka per karyawan & total dihitung ulang penguji (Decimal, TER A/B/C, BPJS, lembur Indah 9 × 5.400.000/173 = 280.925): **identik**. Tanpa nama perintah/opsi/jalur file. Giliran 2 "ya" (1.448 karakter): dianggap "simpan", data benar-benar tersimpan (database terbentuk di HOME uji), periode jujur belum dikunci, pertanyaan Lina & Kiki diulang, menawarkan slip draf 11 karyawan. Kurang: tabel Markdown 7 kolom tampil mentah di Telegram; prorata Kiki/Lina disebut "hari kerja" padahal hitungannya hari kalender (16/30, 14/30); label (a)/(b) hilang di giliran 2 |

@@ -11,7 +11,7 @@ Diuji AI penguji independen di OpenClaw (dengan server Odoo tiruan): rata-rata d
 ## Manfaat
 - ✅ **Tanpa buka banyak menu.** Penjualan hari ini vs kemarin, produk terlaris, faktur terbit, piutang (tagihan yang belum dibayar pelanggan) per umur, dan stok kritis — cukup satu kalimat biasa.
 - ✅ **Tahu siapa yang harus ditagih hari ini.** Piutang dikelompokkan (belum jatuh tempo, 1–30, 31–60, 61–90, >90 hari), faktur terlama di atas, nota kredit yang belum dipakai ikut diingatkan.
-- ✅ **Belanja stok tepat jumlah.** Memakai aturan stok minimum Odoo Anda sendiri: mana yang minus/habis/menipis dan berapa saran jumlah pesannya.
+- ✅ **Saran jumlah belanja stok.** Memakai aturan stok minimum Odoo Anda sendiri: mana yang minus/habis/menipis dan berapa saran jumlah pesannya.
 - ✅ **Laporan tiap malam di Telegram** (lewat OpenClaw; jadwal otomatis ke Telegram belum diuji langsung), dengan **nama pelanggan disamarkan** — lebih terjaga bila HP dipinjam orang.
 - ✅ **Penawaran cepat, tetap lewat persetujuan Anda.** AI menyiapkan **draf** quotation (penawaran harga), menunjukkan pratinjau dan hitungan PPN (standar 12% × DPP, yaitu harga sebelum PPN, 11/12), baru menyimpan setelah Anda jawab "ya". Mengirim/mengonfirmasi tetap Anda yang klik.
 

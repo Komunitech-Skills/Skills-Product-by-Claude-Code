@@ -11,7 +11,7 @@ Diuji AI penguji independen di OpenClaw: rata-rata 3,75 → 8,5 dari 10 pada uji
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ Tidak kaget di Coretax: dapat perkiraan sejak awal berapa pajak yang harus disetor (atau dikembalikan) dan alasannya
+- ✅ Lebih siap sebelum membuka Coretax: dapat perkiraan sejak awal berapa pajak yang harus disetor (atau dikembalikan) dan alasannya
 - ✅ Angka dihitung skrip dengan tarif Pasal 17 UU HPP (Harmonisasi Peraturan Perpajakan) & PTKP (penghasilan tidak kena pajak) resmi — PKP (penghasilan kena pajak) dibulatkan sesuai aturan, bukan dikira-kira
 - ✅ Menangani kasus yang sering bikin bingung: pindah kerja (2 bukti potong A1, yaitu bukti potong PPh 21 dari kantor), karyawan + usaha sampingan, freelancer NPPN (cara menghitung pajak dari persentase penghasilan, tanpa pembukuan), zakat, suami-istri digabung
 - ✅ Peta "angka ini masuk bagian mana" di SPT Tahunan OP Coretax (laporan pajak tahunan), yang menggantikan formulir 1770 seri lama sejak tahun pajak 2025 (PER-11/PJ/2025)

@@ -10,7 +10,7 @@
 - ✅ **Cukup ketik satu kalimat.** "Ingatkan saya tagih Bu Rina tgl 3, 4,5 jt" langsung tercatat. Tidak perlu mengisi tabel.
 - ✅ **Rekap pagi yang jelas:** yang terlambat (berapa hari), yang jatuh tempo hari ini, dan yang jatuh tempo besok. Total piutang (tagihan yang belum dibayar pelanggan) yang tertunggak dihitung otomatis oleh skrip.
 - ✅ **Draf pesan siap kirim.** Nadanya sopan dan naik bertahap sesuai lama keterlambatan. Anda tinggal cek, salin, dan kirim dari WA sendiri.
-- ✅ **Rekap jam kerja klien.** Jam dicatat lewat chat ("catat 1,5 jam untuk PT Kreatif"). Tiap Jumat Anda mendapat total jam, nilai rupiah, dan draf pesan ke klien.
+- ✅ **Rekap jam kerja klien.** Jam dicatat lewat chat ("catat 1,5 jam untuk PT Kreatif"). Tiap Jumat (bila jadwal diaktifkan) Anda mendapat total jam, nilai rupiah, dan draf pesan ke klien.
 - ✅ **Data tetap di komputer Anda.** Yang disimpan cukup nama panggilan. Skill dirancang tidak menyimpan nomor HP pelanggan.
 
 ## Cocok untuk siapa

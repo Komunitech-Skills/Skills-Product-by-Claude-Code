@@ -7,10 +7,10 @@
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
-- ✅ **"Cari SOP retur" langsung ketemu.** AI mencari lewat isi seluruh SOP/FAQ/notulen di SiYuan, bukan menebak-nebak dari ingatan model. Diuji dengan data contoh dan server SiYuan tiruan (bukan aplikasi SiYuan sungguhan); lihat Hasil uji.
+- ✅ **"Cari SOP retur" dicarikan dari isi SiYuan Anda.** AI mencari lewat isi seluruh SOP/FAQ/notulen di SiYuan, bukan menebak-nebak dari ingatan model. Diuji dengan data contoh dan server SiYuan tiruan (bukan aplikasi SiYuan sungguhan); lihat Hasil uji.
 - ✅ **Simpan hasil skill pembuat SOP (`sop-writer`) atau skill notulen rapat (`notulen-rapat`) sekali perintah.** Tidak perlu buka aplikasi, cari folder, klik-klik - tinggal minta "simpan ini ke SiYuan".
 - ✅ **Basis pengetahuan CS (layanan pelanggan) yang benar-benar dipakai.** Ekspor satu perintah menggabungkan semua FAQ jadi satu file yang bisa langsung dipakai skill agen CS toko (`agen-cs-toko`) atau skill balas chat CS (`balas-chat-cs`), jadi balasan AI berdasar data toko Anda, bukan karangan (info yang belum ada di sana ditandai untuk Anda lengkapi).
-- ✅ **Audit SOP basi.** "SOP mana yang belum diupdate 3 bulan?" dijawab dalam sekejap; bisa dijadwalkan mingguan ke Telegram (satu kali pengiriman terjadwal sudah diuji di bot Telegram percobaan pada 13 Oktober 2026; jadwal mingguan yang berulang belum diuji).
+- ✅ **Audit SOP basi.** "SOP mana yang belum diupdate 3 bulan?" dijawab dari tanggal ubah dokumen di SiYuan; bisa dijadwalkan mingguan ke Telegram (satu kali pengiriman terjadwal sudah diuji di bot Telegram percobaan pada 13 Oktober 2026; jadwal mingguan yang berulang belum diuji).
 - ✅ **Dirancang hati-hati untuk data usaha.** Menambah dokumen baru/isi baru lewat pratinjau + persetujuan; menimpa dokumen lama hanya dengan konfirmasi eksplisit dan cadangan isi lama; kunci akses (token) disimpan di komputer Anda dan tidak ditampilkan.
 
 ## Cocok untuk siapa
