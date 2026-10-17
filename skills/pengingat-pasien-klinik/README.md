@@ -89,7 +89,7 @@ menyerupai nama penyakit/diagnosis.
 
 **Apakah pesan pengingat dikirim otomatis ke pasien?**
 Tidak. Skill ini hanya menyiapkan draf. Staf klinik yang menyalin dan mengirimnya sendiri dari WA
-klinik. Karena tidak ada pesan otomatis, risiko nomor WA klinik diblokir lebih kecil; staf tetap perlu memeriksa penerima sebelum mengirim.
+klinik. Karena tidak ada pesan otomatis, skill ini tidak menambah risiko nomor WA klinik diblokir karena pengiriman massal otomatis; staf tetap perlu memeriksa penerima sebelum mengirim.
 
 **Bagaimana kalau pasien minta datanya dihapus?**
 Tinggal minta ke asisten "hapus data [nama/nomor]". Data dihapus dari file lokal,
