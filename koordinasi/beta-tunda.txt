@@ -1,1 +1,11 @@
 # Skill beta yang DITUNDA dari rilis batch 20 Okt (satu nama per baris, alasan setelah tanda #). Dihapus dari daftar bila sudah lulus uji ulang.
+kanboard-papan-kerja  # 2026-10-21: G27 BELUM 5→4,5; revisi 1.0.7 sedang diverifikasi
+pantau-cron-openclaw  # 2026-10-21: Telegram BELUM 4→7,5; revisi 1.0.6 sedang diverifikasi
+pantau-pasar-kripto  # 2026-10-21: Telegram BELUM 4→5; revisi 1.0.12 sedang dikerjakan
+rapor-mingguan-ai  # 2026-10-21: ditahan dari promosi; revisi 1.0.3 sedang diverifikasi
+rekap-penjualan-csv  # 2026-10-21: A5 BELUM 8→6,5; 1.2.6 menunggu uji ulang Telegram
+kasir-lokal  # 2026-10-21: A5 BELUM 7,5→6,5; 1.1.8 menunggu uji ulang Telegram
+absensi-lokal  # 2026-10-21: A8 BELUM 6,5→7,5; revisi kecil berikutnya
+fider-masukan-pelanggan  # 2026-10-21: uji Telegram terakhir dengan skill 5 (< 7)
+perjanjian-sederhana  # 2026-10-21: uji Telegram terakhir dengan skill 6,5 (< 7)
+audit-akun-iklan  # 2026-10-21: uji Telegram terakhir dengan skill 6 (< 7)
