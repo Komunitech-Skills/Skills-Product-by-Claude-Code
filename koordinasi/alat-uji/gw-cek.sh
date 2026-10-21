@@ -7,7 +7,20 @@ cd "$R" || { echo "GAGAL: folder $R tidak ada (kontainer baru?)"; exit 2; }
 # Gateway produksi memakai instalasi terpisah (lewat oc.sh/oc-tg.sh), bukan /tmp/uji-openclaw.
 P=$SP/openclaw-prod
 [ -x "$P/node_modules/.bin/openclaw" ] || { echo "GAGAL: instalasi produksi $P tidak ada"; exit 4; }
-if pgrep -f "^openclaw-gateway$" >/dev/null; then echo "GATEWAY: HIDUP"; exit 0; fi
+if pgrep -f "^openclaw-gateway$" >/dev/null; then
+  # Hidup tapi jaringannya putus (mis. setelah kontainer restart): 30 baris log terakhir penuh galat jaringan
+  # padahal Telegram & router bisa dijangkau dari shell -> matikan PID persis, lalu nyalakan ulang di bawah.
+  L0=$(ls -t gw-*.log 2>/dev/null | head -1)
+  N=$( [ -n "$L0" ] && tail -30 "$L0" | grep -cE "Network request for|Couldn't connect to the AI service|still owns running work" || true)
+  if [ "${N:-0}" -ge 3 ] && curl -s -o /dev/null -m 15 https://api.telegram.org && \
+     [ "$(curl -s -o /dev/null -m 15 -w '%{http_code}' -H "Authorization: Bearer $Ninerouter_key" https://r9wtenn.abc-tunnel.us/v1/models)" = "200" ]; then
+    for p in $(pgrep -f "^openclaw-gateway$"); do kill -TERM "$p"; done
+    for i in $(seq 1 70); do pgrep -f "^openclaw-gateway$" >/dev/null || break; sleep 5; done
+    for p in $(pgrep -f "^openclaw-gateway$"); do kill -KILL "$p"; done; sleep 3
+  else
+    echo "GATEWAY: HIDUP"; exit 0
+  fi
+fi
 [ -n "$bot_token" ] && [ -n "$Ninerouter_key" ] || { echo "GAGAL: env bot_token/Ninerouter_key kosong"; exit 3; }
 LOG=gw-$(date +%Y%m%d-%H%M).log
 nohup ./oc-tg.sh gateway run --ambient-channels --bind loopback > "$LOG" 2>&1 &

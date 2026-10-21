@@ -13,7 +13,7 @@ Acuan: **LULUS** bila DENGAN ≥ 8, selisih ≥ 1,5, dan tidak ada salah angka k
 | pph21-ter | 1.0.6 | 2035 / 2036 | 4,5 | 9,0 | +4,5 | **LULUS** | Dengan skill, potongan bulanan benar (Rp85.000, dan Maret Rp1.190.000). Desember terlihat sebagai kelebihan potong Rp94.250 yang wajib dikembalikan ke karyawan. Tanpa skill, tarif bulanannya salah, sehingga potongan setiap bulan dan angka Desember juga salah. |
 | hitung-thr | 1.0.11 | 2037 / 2038 | 7,0 | 8,0 | +1,0 | **BELUM** (selisih < 1,5) | Dengan skill, Anda juga mendapat hari batas bayar (Rabu, 3 Maret 2027), info denda 5% bila terlambat, dan draf pengumuman grup tanpa nominal per orang. Namun versi tanpa skill sudah menghitung THR tiap orang dengan benar, sehingga selisihnya kecil. |
 
-Pembanding uji internal lama (`examples/00-openclaw-sebelum-sesudah.md`): hitung-thr 1.0.10 rata-rata 5,0 → 7,7 / 8,0 (BELUM tipis). Untuk pph21-ter dan laporan-otomatis-terjadwal, rata-rata DENGAN di uji lama 8,0 dan 7,5. Pra-cek konteks Telegram 17 Okt memberi keempat skill status SIAP KIRIM (8,0 / 8,0 / 8,5 / 8,0).
+Pembanding uji internal lama (`examples/00-openclaw-sebelum-sesudah.md`): hitung-thr 1.0.10 rata-rata 5,0 → 7,7 / 8,0 (BELUM tipis). Untuk pph21-ter, uji lama `skills/pph21-ter/examples/00-openclaw-sebelum-sesudah.md` memuat dua putaran: awal TANPA 8,0 → DENGAN 7,5, lalu uji ulang TANPA 6,5 → DENGAN 9,25 (koreksi 17 Okt atas catatan Akun B; sebelumnya keliru ditulis "DENGAN 8,0"); laporan-otomatis-terjadwal lihat berkas uji lamanya. Pra-cek konteks Telegram 17 Okt memberi keempat skill status SIAP KIRIM (8,0 / 8,0 / 8,5 / 8,0).
 
 Catatan lintas skill:
 - **Istilah proses atau jalur berkas yang tampil:**
