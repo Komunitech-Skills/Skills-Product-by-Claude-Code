@@ -49,7 +49,9 @@ Setelah terpasang, cukup ketik permintaan biasa ke AI agent Anda, misalnya:
 - "Kirim rekap kasir ke Telegram saya tiap jam 9 malam" (OpenClaw; jadwal terjadwal sudah diuji langsung di Telegram)
 - "Ini nota hari ini (tempel daftar nota), rekap + cocokkan laci + bikinin laporan buat grup karyawan" — tanpa perlu menyimpan data dulu: nota batal tidak dihitung, porsi & jumlah nota dipisah, dan ringkasan untuk grup tidak memuat nama/nomor pelanggan atau bon per orang
 
-**Mencetak struk ke printer thermal:** agent membuat file struk (berformat HTML, bisa dibuka di browser). Buka file itu di browser (Chrome/Edge) → tekan **Ctrl+P** (Mac: Cmd+P) → pilih printer thermal → ukuran kertas 58 mm atau 80 mm → Margin: **None/Tidak ada** → Skala **100%** → matikan **Header dan footer** → Cetak. Pastikan driver printer thermal sudah terpasang di komputer. Pengaturan ini cukup sekali; browser biasanya mengingatnya.
+**Struk di chat:** begitu penjualan tersimpan, struk (selebar kertas 58 mm, atau 80 mm sesuai pengaturan) ikut dikirim sebagai teks dalam balasan yang sama, jadi bisa dibaca atau disalin langsung dari Telegram/WhatsApp.
+
+**Mencetak struk ke printer thermal:** bila Anda minta cetak, agent membuat file struk (berformat HTML, bisa dibuka di browser) di komputer tempat skill ini berjalan. Buka file itu di browser (Chrome/Edge) → tekan **Ctrl+P** (Mac: Cmd+P) → pilih printer thermal → ukuran kertas 58 mm atau 80 mm → Margin: **None/Tidak ada** → Skala **100%** → matikan **Header dan footer** → Cetak. Pastikan driver printer thermal sudah terpasang di komputer. Pengaturan ini cukup sekali; browser biasanya mengingatnya.
 
 ## Instalasi singkat
 Salin folder `kasir-lokal` ke folder skills AI agent Anda:
@@ -79,6 +81,14 @@ Butuh **Python 3.8+** (gratis di python.org; Mac/Linux biasanya sudah ada). Tida
 - Kecepatan: setiap transaksi dikonfirmasi dulu lewat chat, jadi cocok untuk toko dengan antrean santai, bukan kasir supermarket yang memindai barcode tiap detik.
 - **Dasar aturan & tanggal berlaku:** PBJT mengikuti UU 1/2022 (HKPD); PPN 12% dengan DPP nilai lain 11/12 mengikuti UU HPP dan PMK 131/2024; PPh final 0,5% mengikuti PP 55/2022 jo. PP 20/2026. Semuanya berlaku per 24 September 2026. Aturan pajak bisa berubah, jadi cek ke DJP (Kring Pajak 1500200), Bapenda, atau konsultan pajak untuk kasus khusus.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji Komunitech, data fiktif) pada 17 Oktober 2026, versi 1.1.7, dengan dua pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): "Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya", lalu jawaban lanjutan soal pajak dan ukuran kertas struk. Skor 1–10 dari penilai independen (dua pesan dinilai sebagai satu jawaban): tanpa skill **7,5** → dengan skill **6,5** (selisih −1): **belum lulus acuan kami** (dengan skill di bawah 8, dan di uji ini skill kalah).
+
+Angka kedua sisi sama-sama benar: subtotal Rp39.000, diskon Rp3.900, total Rp35.100, kembalian Rp64.900. Dengan skill, penjualan benar-benar tersimpan di buku kasir di komputer bot dengan nomor nota urut, ada cadangan otomatis sebelum daftar menu dimasukkan, "roti bakar" dibaca sebagai Roti Bakar Coklat dan hal itu disampaikan, dan Anda diingatkan bahwa kasir belum dibuka hari itu. Namun **struk yang diminta tidak dikirim ke chat**: struk hanya dibuat sebagai file di komputer bot (tidak bisa dibuka dari Telegram), dan teks struknya baru ditawarkan. Pesan pertama juga belum mencatat apa pun karena menunggu konfirmasi daftar menu, dan pengaturan toko (tanpa pajak, kertas 58 mm) ditulis seolah sudah Anda jawab. Tanpa skill, bot langsung memberi struk teks rapi selebar kertas 58 mm di pesan pertama, walau pencatatannya seadanya (file buatan sendiri, nomor nota tidak dijamin urut, tanpa buka/tutup kasir).
+
+Catatan jujur: istilah seperti "database", "dipetakan", dan "struk HTML" juga masih muncul. Perbaikan struk di chat (lihat Riwayat perubahan) belum diuji ulang di bot Telegram. Ini satu percakapan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Apakah data saya dikirim ke internet?**
 Tidak. Script (program kecil) kasir tidak memakai internet; data penjualan tersimpan di satu file di komputer Anda. Yang terkirim hanya teks rekap yang Anda minta dikirim ke Telegram (lewat OpenClaw). Percakapan dengan AI agent Anda tetap diproses oleh penyedia AI yang Anda pakai.
@@ -94,4 +104,6 @@ Kasir ini sengaja hanya mencatat penjualan yang sudah dibayar. Kalau ada pelangg
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.7**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+Yang berubah di 1.1.8 (17 Okt 2026): di Telegram/WhatsApp, struk sekarang langsung dikirim sebagai teks di chat yang sama begitu nota tersimpan (tidak perlu minta lagi). Pemakaian pertama (kirim daftar produk sekaligus minta catat penjualan) cukup satu pesan konfirmasi berisi daftar produk, pengaturan toko yang diasumsikan, dan struknya, lalu Anda membalas "ya" sekali. Kalimat seperti "Tolong catat penjualan: ..." dan ucapan penutup "kirim struknya ke sini ya" kini dipahami.

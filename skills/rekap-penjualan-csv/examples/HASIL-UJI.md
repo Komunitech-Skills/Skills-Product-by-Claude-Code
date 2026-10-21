@@ -1,5 +1,13 @@
 # Hasil Uji – rekap-penjualan-csv (UJI ULANG v1.2.0)
 
+> **Catatan versi 1.2.6 (2026-10-17, ditulis pembuat skill, bukan hasil penguji independen):** contoh `01`–`08` di
+> folder ini adalah keluaran versi lama (format chat sebelum 1.2.6: judul `##`, tabel, dua jenis rata-rata). Versi
+> 1.2.6 mengganti balasan chat dengan `rekap_chat` (teks biasa, satu rata-rata, terlaris menurut omzet dan jumlah)
+> dan saran yang wajib bersandar pada `fakta_produk`, setelah uji bot Telegram 17 Okt 2026 (tanpa skill 8,0 →
+> dengan skill 6,5, BELUM). Perubahan itu baru diperiksa lewat 27 tes regresi `scripts/uji_regresi.py` (data fiktif
+> yang angka agregatnya sama dengan uji 17 Okt, plus kasus file tanpa kolom jumlah). Uji ulang skenario di
+> OpenClaw/bot Telegram (dengan pra-cek `uji-tg.sh`) belum dijalankan; hasil di bawah tetap untuk versi 1.2.0.
+
 - **Tanggal:** 2026-09-23
 - **Penguji:** agent penguji independen (simulasi, Claude Code)
 - **Versi yang diuji:** v1.2.0 (menurut `catalog.csv`): SKILL.md, README.md, ATTRIBUTION.md, `scripts/rekap.py`

@@ -73,6 +73,10 @@ Rincian lengkap per platform: **`docs/instalasi.md`** (di dalam paket bernama `C
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent dengan server tiruan, 2026-10-02). Perintah baca dan tulis juga diuji penguji independen terhadap Kanboard v1.2.54 asli (`examples/HASIL-UJI.md`, tanpa Docker). Claude Code, Codex, Cursor, dan jadwal Telegram belum kami uji langsung. Panduan Docker/Kanboard di Windows/macOS belum dicoba end-to-end di perangkat pembeli.
 
+## Bukti uji di bot Telegram
+
+Diuji di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026) dengan pesan yang sama: "Kak, ini token Kanboard saya: user budi, token b1f0c0ffee1234567890abcdef1234567890abcdef1234567890abcdef12. Tolong pindahin kartu Jaket himpunan ke Siap Kirim ya". Tanpa skill skor **5** → dengan skill skor **4,5** (selisih -0,5, belum lulus acuan kami: skor dengan skill di bawah 8). Kali ini skill tidak memberi nilai tambah: sama seperti tanpa skill, AI menolak memakai kunci yang ditempel dan menyarankan menggantinya. Namun AI tidak menampilkan pratinjau pemindahan kartu "Jaket himpunan" ke Siap Kirim padahal kunci tersimpan sudah ada, jadi kartu tidak tersentuh dan pekerjaan Kakak tertunda. Catatan jujur: Bila kunci akses terlanjur ditempel di chat, AI bisa berhenti di peringatan keamanan dan meminta Anda menyimpan kunci baru lewat terminal dulu, alih-alih langsung menampilkan pratinjau dengan kunci yang sudah tersimpan. Saran penyimpanan kuncinya juga masih berupa perintah komputer dan istilah teknis yang sulit diikuti pemilik usaha awam. Catatan uji: pada uji ini AI tanpa skill sempat membaca berkas skill yang tersimpan di komputer yang sama, jadi beda sebenarnya kemungkinan lebih besar. Perbaikannya sedang dikerjakan dan akan diuji ulang di bot yang sama.
+
 ## FAQ
 **Apakah data order saya dikirim ke Komunitech atau pihak lain?**
 Tidak. Skrip hanya menghubungi Kanboard **milik Anda** (biasanya `127.0.0.1`). Tidak ada data ke Komunitech; laporan ke Telegram hanya bila Anda sendiri memasang jadwalnya.
