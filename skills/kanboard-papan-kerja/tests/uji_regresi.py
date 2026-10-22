@@ -7,6 +7,7 @@ Tidak butuh internet/Kanboard asli. HOME diarahkan ke folder sementara agar ~/.k
 import datetime as dt
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -71,7 +72,65 @@ def main():
     rc, out, err = jalan(["cek", "--pap", "1"], pengguna=None)
     cek("allow_abbrev mati", rc == 2 and "unrecognized" in err)
     rc, out, err = jalan(["cek"], pengguna=None, url="http://127.0.0.1:9")
-    cek("tanpa kunci -> 3", rc == 3 and "simpan-kunci" in err, err)
+    cek("tanpa kunci -> 3", rc == 3 and "simpan-kunci" in err and "UNTUK AGEN SAJA" in err, err)
+
+    # v1.0.7: status-kunci (hanya baca; tidak menampilkan token; tidak menghubungi Kanboard)
+    def potongan_token(teks, token):
+        return [token[i:i + 8] for i in range(len(token) - 7) if token[i:i + 8] in teks]
+
+    folder_kunci = os.path.join(RUMAH, ".komunitech")
+    file_kunci = os.path.join(folder_kunci, "kanboard-kunci.json")
+    rc, out, err = jalan(["status-kunci"], pengguna=None)
+    cek("status-kunci tanpa kunci -> 3 TIDAK", rc == 3 and "KUNCI TERSIMPAN: TIDAK" in out and "Traceback" not in err
+        and "YA" not in out.split("\n")[0], out + err)
+    cek("status-kunci TIDAK memberi arahan agen tanpa perintah", "templat B" in out and "UNTUK AGEN SAJA" in out, out)
+    os.makedirs(folder_kunci, exist_ok=True)
+    with open(file_kunci, "w", encoding="utf-8") as f:
+        json.dump({"pengguna": "budi", "token": st.TOKEN_BUDI}, f)
+    os.chmod(file_kunci, 0o600)
+    try:
+        # alamat yang tidak ada penghuninya: bukti Kanboard tidak dihubungi
+        rc, out, err = jalan(["status-kunci", "--url", "http://127.0.0.1:9"], pengguna=None)
+        cek("status-kunci ada -> 0 YA + pengguna", rc == 0 and out.startswith("KUNCI TERSIMPAN: YA")
+            and "Pengguna: budi" in out and "file kunci default" in out, out + err)
+        cek("status-kunci: tidak ada potongan token >= 8 karakter",
+            not potongan_token(out + err, st.TOKEN_BUDI), out + err)
+        cek("status-kunci: tidak menyebut jalur file kunci", file_kunci not in out and ".komunitech" not in out, out)
+        rc, out, err = jalan(["status-kunci", "--json"], pengguna=None)
+        try:
+            data = json.loads(out)
+        except ValueError:
+            data = {}
+        cek("status-kunci --json", rc == 0 and data.get("kunci_tersimpan") is True and data.get("pengguna") == "budi"
+            and "token" not in data and not potongan_token(out, st.TOKEN_BUDI), out + err)
+        # konfigurasi alamat dipakai, bukan default
+        with open(os.path.join(folder_kunci, "kanboard-konfig.json"), "w", encoding="utf-8") as f:
+            json.dump({"url": "http://127.0.0.1:18081", "host_izin": []}, f)
+        rc, out, err = jalan(["status-kunci"], pengguna=None)
+        cek("status-kunci memakai alamat dari pengaturan", rc == 0 and "Alamat Kanboard: http://127.0.0.1:18081" in out, out)
+        os.remove(os.path.join(folder_kunci, "kanboard-konfig.json"))
+        # file rusak / kosong -> TIDAK, tanpa traceback
+        for isi, nama in (("{rusak", "rusak"), ('{"pengguna": "budi"}', "tanpa token"), ('{"pengguna": "", "token": ""}', "kosong")):
+            with open(file_kunci, "w", encoding="utf-8") as f:
+                f.write(isi)
+            rc, out, err = jalan(["status-kunci"], pengguna=None)
+            cek(f"status-kunci file {nama} -> 3 TIDAK", rc == 3 and "KUNCI TERSIMPAN: TIDAK" in out
+                and "Traceback" not in err, out + err)
+    finally:
+        shutil.rmtree(folder_kunci, ignore_errors=True)
+    rc, out, err = jalan(["status-kunci"], pengguna="budi")
+    cek("status-kunci lewat ENV -> YA", rc == 0 and "KUNCI TERSIMPAN: YA" in out and "variabel lingkungan" in out
+        and not potongan_token(out + err, st.TOKEN_BUDI), out + err)
+    rc, out, err = jalan(["status-kunci"], pengguna=None, env_extra={"KANBOARD_USER": "budi"})
+    cek("status-kunci ENV tak berpasangan -> 3 TIDAK", rc == 3 and "berpasangan" in out, out + err)
+    kf_uji = os.path.join(RUMAH, "kunci-status.json")
+    with open(kf_uji, "w", encoding="utf-8") as f:
+        json.dump({"pengguna": "rina", "token": st.TOKEN_RINA}, f)
+    os.chmod(kf_uji, 0o600)
+    rc, out, err = jalan(["status-kunci", "--kunci-file", kf_uji], pengguna=None)
+    cek("status-kunci --kunci-file", rc == 0 and "Pengguna: rina" in out and not potongan_token(out + err, st.TOKEN_RINA), out + err)
+    rc, out, err = jalan(["status-kunci", "--pap", "x"], pengguna=None)
+    cek("status-kunci: singkatan opsi ditolak", rc == 2, err)
 
     # tanggal
     acuan = dt.date(2026, 9, 30)  # Rabu
@@ -333,11 +392,50 @@ def main():
         cek("pindah pratinjau", rc == 0 and "PRATINJAU" in out and "moveTaskPosition" not in ng.data["log"], err)
         n_log = len(ng.data["log"])
         rc, out, err = jalan(["pindah-kartu", "--id", "3", "--ke-kolom", "Selesai"], url=url)
-        cek("pindah tanpa --ya hanya pratinjau", rc == 0 and "PRATINJAU" in out and "--ya" in out
+        cek("pindah tanpa --ya hanya pratinjau", rc == 0 and "PRATINJAU" in out and "(ya/tidak)" in out and "--ya" not in out
             and ng.data["tugas"][3]["column_id"] != 5 and not any(x.startswith(("moveTask", "removeTask", "updateTask", "closeTask")) for x in ng.data["log"][n_log:]), out + err)
         sk = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "SKILL.md"), encoding="utf-8").read()
         atas = "\n".join(sk.split("\n---\n", 1)[1].splitlines()[:15])
         cek("SKILL.md: ATURAN WAJIB larang ulang kunci di 15 baris pertama", "## ATURAN WAJIB" in atas and "JANGAN menulis ulang satu karakter pun darinya" in atas and "kunci yang Anda tempel" in atas and "Balasan tidak memuat kunci/token dari chat" in sk)
+        # v1.0.7: urutan "kunci ditempel" tak mungkin salah baca, bahasa pemilik tanpa istilah teknis
+        pos = {k: sk.find(k) for k in ("status-kunci", "KERJAKAN permintaannya dengan kunci tersimpan",
+                                        "**Templat A", "**Templat B", "**Templat C", "## UNTUK AGENT SAJA")}
+        cek("SKILL.md: semua penanda urutan ada", all(v >= 0 for v in pos.values()), str(pos))
+        cek("SKILL.md: status-kunci & 'kerjakan dengan kunci tersimpan' SEBELUM templat B",
+            pos["status-kunci"] < pos["**Templat B"] and pos["KERJAKAN permintaannya dengan kunci tersimpan"] < pos["**Templat B"],
+            str(pos))
+        cek("SKILL.md: status-kunci ada di bagian ATURAN WAJIB (sebelum KALIMAT UNTUK PEMILIK)",
+            pos["status-kunci"] < sk.find("## KALIMAT UNTUK PEMILIK"))
+        cek("SKILL.md: saran ganti kunci = paragraf TERAKHIR", "PARAGRAF TERAKHIR" in sk
+            and "Templat B/C DILARANG bila `status-kunci` belum dijalankan atau menjawab YA" in sk)
+        cek("SKILL.md: bagian UNTUK AGENT SAJA setelah semua templat", pos["## UNTUK AGENT SAJA"] > pos["**Templat C"])
+        cek("SKILL.md < 300 baris", len(sk.splitlines()) < 300, str(len(sk.splitlines())))
+        awal = sk.split("\n---\n", 1)[0]
+        cek("SKILL.md: frontmatter hanya name + description",
+            [l.split(":", 1)[0] for l in awal.splitlines() if l and l != "---"] == ["name", "description"], awal[:80])
+        bagian_pemilik = sk[sk.find("## KALIMAT UNTUK PEMILIK"):pos["## UNTUK AGENT SAJA"]]
+        kalimat = [l for l in bagian_pemilik.splitlines() if l.startswith(">")]
+        cek("SKILL.md: ada 3 templat + pratinjau untuk pemilik", len(kalimat) >= 7, str(len(kalimat)))
+        terlarang = ["skill", "folder", "script", "skrip", "terminal", "python", "scripts/", "docs/", "~/", ".py",
+                     "--ya", "simpan-kunci", "kanboard.py", "path", "json", "$ "]
+        for l in kalimat:
+            salah = [k for k in terlarang if k in l.lower()]
+            cek("SKILL.md: kalimat pemilik tanpa istilah teknis", not salah, f"{salah} dalam: {l[:80]}")
+        cek("SKILL.md: templat memakai frasa 'kunci yang Anda tempel'", bagian_pemilik.lower().count("kunci yang anda tempel") >= 3)
+        cek("SKILL.md: tidak ada potongan token contoh di aturan",
+            not potongan_token(sk, st.TOKEN_BUDI) and not potongan_token(sk, st.TOKEN_RINA) and not potongan_token(sk, st.TOKEN_APP))
+        # versi sinkron
+        akar = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+        ch = open(os.path.join(akar, "CHANGELOG.md"), encoding="utf-8").read()
+        rd = open(os.path.join(akar, "README.md"), encoding="utf-8").read()
+        v_ch = re.search(r"^- \*\*(\d+\.\d+\.\d+)", ch, re.M)
+        v_rd = re.search(r"Versi terkini: \*\*(\d+\.\d+\.\d+)\*\*", rd)
+        cek("versi: VERSI_SKRIP = CHANGELOG teratas = README",
+            v_ch and v_rd and kbmod.VERSI_SKRIP == v_ch.group(1) == v_rd.group(1),
+            f"{kbmod.VERSI_SKRIP} {v_ch and v_ch.group(1)} {v_rd and v_rd.group(1)}")
+        contoh = open(os.path.join(akar, "examples", "11-u1-token-ditempel-kunci-tersimpan.md"), encoding="utf-8").read()
+        cek("contoh 11: jalur kunci tersimpan & tanpa kunci", "KUNCI TERSIMPAN: YA" in contoh and "KUNCI TERSIMPAN: TIDAK" in contoh
+            and "Pratinjau pindah kartu" in contoh and "paragraf TERAKHIR" in contoh)
         cek("SKILL.md melarang --ya sebelum ya", "Aturan konfirmasi perubahan" in sk and "DILARANG menambahkan `--ya`" in sk and "gak usah nanya" in sk)
         rc, out, err = jalan(["pindah-kartu", "--id", "3", "--ke-kolom", "cek kualitas", "--ya"], url=url)
         cek("pindah --ya", rc == 0 and ng.data["tugas"][3]["column_id"] == 4

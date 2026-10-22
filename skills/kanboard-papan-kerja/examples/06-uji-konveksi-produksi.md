@@ -20,7 +20,7 @@ Kolom:
   4. Cek Kualitas - QC sebelum dikemas
   5. Siap Kirim - Sudah dikemas, menunggu kurir/diambil
   6. Selesai - Sudah diterima pelanggan
-Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak)
 (kode keluar 0)
 $ ... --ya
 PAPAN DIBUAT: Produksi Konveksi Mekar Jaya (id 1)
@@ -54,7 +54,7 @@ Judul: Seragam SD Harapan 120 pcs
 Jatuh tempo: Jumat, 2 Oktober 2026 jam 10:00 WIB
 PIC: Rina Penjahit
 Catatan: DP 50% sudah masuk
-Belum disimpan. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum disimpan. Simpan ke Kanboard? (ya/tidak)
 (kode keluar 0)
 KARTU DIBUAT: #1
 Papan: Produksi Konveksi Mekar Jaya (id 1)
@@ -125,7 +125,7 @@ Papan: Produksi Konveksi Mekar Jaya (id 1)
 Kolom: Order Masuk
 Judul: Uji format jam titik
 Jatuh tempo: Jumat, 2 Oktober 2026 jam 17:00 WIB
-Belum disimpan. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum disimpan. Simpan ke Kanboard? (ya/tidak)
 (kode keluar 0)
 $ tambah-kartu --judul "Jaket himpunan 40 pcs" --kolom "Siapkan Bahan" --tenggat "28/09/2026 jam 12:00" --ya
 KARTU DIBUAT: #9

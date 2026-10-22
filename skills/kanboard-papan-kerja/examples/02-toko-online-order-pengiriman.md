@@ -39,7 +39,7 @@ $ python3 scripts/kanboard.py pindah-kartu --id 3 --ke-kolom dikirim
 PRATINJAU PINDAH KARTU #3: INV-0922 Pak Joko - kemeja L
 Dari: Dikemas
 Ke: Dikirim
-Belum dipindah. Lanjut? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum dipindah. Lanjut? (ya/tidak)
 (kode keluar 0)
 ```
 

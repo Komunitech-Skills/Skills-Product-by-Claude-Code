@@ -30,7 +30,7 @@ Kolom:
   4. Cek Kualitas - QC sebelum dikemas
   5. Siap Kirim - Sudah dikemas, menunggu kurir/diambil
   6. Selesai - Sudah diterima pelanggan
-Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak)
 (kode keluar 0)
 ```
 
@@ -62,7 +62,7 @@ Judul: Seragam SD Harapan 120 pcs
 Jatuh tempo: Jumat, 2 Oktober 2026 jam 10:00 WIB
 PIC: Ayu Lestari
 Catatan: DP 50% sudah masuk; ukuran S-M-L terlampir di WA
-Belum disimpan. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum disimpan. Simpan ke Kanboard? (ya/tidak)
 (kode keluar 0)
 ```
 
