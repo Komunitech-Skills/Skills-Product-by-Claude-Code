@@ -18,7 +18,7 @@ menyerahkan file mutasi bank atau bertanya "anggaran saya bulan ini gimana?". Ag
    "To Budget", pengeluaran terbesar.
 3. **Ringkasan terjadwal ke Telegram** pemilik lewat OpenClaw.
 
-Versi 1.0.6 (1.0.6: pencocokan kategori ke budget, riwayat penerima, pertanyaan dikelompokkan, nama penerima rapi), diuji dengan budget **Actual 26.9.0 asli** (dibuat lewat API resmi, data fiktif): angka ringkasan sama
+Versi 1.0.9 (1.0.9: usulan kategori per transaksi + satu konfirmasi; 1.0.6: pencocokan kategori ke budget, riwayat penerima, pertanyaan dikelompokkan, nama penerima rapi), diuji dengan budget **Actual 26.9.0 asli** (dibuat lewat API resmi, data fiktif): angka ringkasan sama
 persis dengan hitungan Actual sendiri. Belum diuji di layar aplikasi desktop, Windows/macOS, atau mutasi asli bank.
 Tidak berafiliasi dengan proyek Actual Budget.
 
@@ -70,24 +70,29 @@ saja → tanyakan sekali: "Mau dimasukkan ke Actual Budget, atau ke buku kas har
    Opsi: `--peta aturan.csv` (kata kunci sendiri, dicek lebih dulu), `--desimal koma|titik` (bila angka campur),
    `--keluaran nama.csv`, `--timpa`, `--json`. Script tidak mengubah file mutasi asli.
 3. Sampaikan dari keluaran script **apa adanya**: jumlah baris, total masuk/keluar, **cek saldo** (COCOK/TIDAK COCOK),
-   ringkasan per kategori, daftar **PERLU DICEK**, dan daftar **DILEWATI** beserta alasannya.
-   Script (v1.0.6) mencocokkan usulan ke kategori yang **ada** di budget (mis. "Iklan & Promosi" -> "Iklan"), memakai kategori
+   ringkasan per kategori, daftar **PERLU KONFIRMASI** (dengan usulan), dan daftar **DILEWATI** beserta alasannya.
+   Script (v1.0.9) mencocokkan usulan ke kategori yang **ada** di budget (mis. "Iklan & Promosi" -> "Iklan"), memakai kategori
    riwayat transaksi lama untuk penerima yang sama, dan merapikan nama penerima (tanpa kode/nomor referensi).
-4. Tanyakan baris "perlu dicek" dalam **satu pesan** memakai bagian **PERTANYAAN UNTUK PENGGUNA** dari keluaran script
-   (dikelompokkan, maks. 5 pertanyaan; jangan menanyakan baris satu per satu) dan sebut kategori yang ada. Aturan penting:
+4. Transaksi yang kategorinya belum pasti: **langsung beri USULAN terbaik per transaksi** (dari bagian **PERLU KONFIRMASI**
+   keluaran script, lengkap dengan alasan singkat), lalu minta **satu konfirmasi sekaligus**: "balas 'ya' untuk pakai
+   usulan, atau sebut yang mau diganti". Maksimal satu pertanyaan, satu kali. Sebut transaksi dengan **tanggal +
+   keterangan + nominal**, jangan nomor baris, nama berkas teknis (`-ragu.csv`), atau istilah mesin. Jangan menanyakan
+   kategori tanpa usulan bawaan. Aturan penting:
    - **Pindah dana milik sendiri** (tarik tunai, top up GoPay/OVO/DANA, bayar kartu kredit) = **transfer**
      di Actual (Payee = akun tujuan), jangan diberi kategori pengeluaran.
-   - **Setor tunai**: tanyakan asalnya. Hasil jualan tunai yang belum tercatat = pemasukan; uang laci/dompet yang
-     sudah tercatat di akun Actual lain = transfer. "SETORAN PENJUALAN", QRIS, settlement merchant/EDC langsung
+   - **Setor tunai**: tulis asumsinya di balasan yang sama ("saya anggap hasil jualan tunai yang belum tercatat =
+     pemasukan"); bila uang laci/dompet yang sudah tercatat di akun Actual lain = transfer. Cukup satu konfirmasi:
+     "ya" atau sebut yang diganti, tanpa pertanyaan terpisah. "SETORAN PENJUALAN", QRIS, settlement merchant/EDC langsung
      diusulkan pemasukan.
    - Nominal di bawah Rp 100 ditandai: pastikan format angkanya benar (`12,5` dibaca Rp 12,50).
    - Pencairan pinjaman dan refund **bukan** pendapatan.
-   - Uang masuk otomatis diusulkan "Pendapatan Usaha"; tanyakan bila ada yang sebenarnya uang pribadi/pinjaman.
+   - Uang masuk otomatis diusulkan "Pendapatan Usaha"; sebut usulan itu di balasan yang sama dan cukup satu
+     konfirmasi ("ya" atau sebut mana yang sebenarnya uang pribadi/pinjaman), tanpa pertanyaan terpisah.
 5. Jawaban pengguna yang berulang tiap bulan → tawarkan menyimpannya di file `--peta` (contoh di
    `references/kategori-standar.md`), lalu jalankan ulang `konversi ... --timpa`.
 6. Tuntun impor (pengguna yang mengklik): buka akun bank di Actual → **Import** → pilih file `*-actual.csv` → pastikan
-   Date/Payee/Notes/Category/Amount terpasang, format tanggal **YYYY MM DD**, pemisah koma, "Split amount" dan "Flip
-   amount" **mati** → periksa pratinjau → Import. Transaksi yang mirip dengan yang sudah ada akan **digabung** oleh
+   Date/Payee/Notes/Category/Amount terpasang, format tanggal **YYYY MM DD**, pemisah koma, "Split amount" (memecah kolom jumlah jadi masuk/keluar)
+   dan "Flip amount" (membalik tanda plus/minus) **mati** keduanya → periksa pratinjau → Import. Transaksi yang mirip dengan yang sudah ada akan **digabung** oleh
    Actual (anti-dobel), bukan ditambah.
 7. Setelah impor: cocokkan saldo akun di Actual dengan saldo akhir yang disebut script. Beda → cek baris dilewati.
 
@@ -176,7 +181,7 @@ Uji regresi (`tests/`) hanya ada di repo pengembang Komunitech.
 
 ## Checklist sebelum menjawab
 - [ ] Angka dari script, tidak diubah; "TIDAK COCOK"/"PERLU DICEK"/"JEBOL" disampaikan apa adanya
-- [ ] Baris ragu ditanyakan dalam satu pesan; pindah dana dijelaskan sebagai transfer, bukan pengeluaran
+- [ ] Transaksi ragu diberi usulan + satu konfirmasi ("ya"/sebut yang diganti), bukan daftar pertanyaan kosong; pindah dana dijelaskan sebagai transfer, bukan pengeluaran
 - [ ] Nama kategori dicocokkan ke budget (`--db`) atau pengguna diberi tahu harus sama persis
 - [ ] Tidak ada penulisan ke folder budget Actual; impor dilakukan pengguna lewat aplikasi
 - [ ] Jadwal Telegram hanya ke pemilik, setelah "ya"

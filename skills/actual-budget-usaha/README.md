@@ -16,9 +16,9 @@
    yang diunduh dari internet banking) diubah jadi file siap impor ke Actual. Angka format Indonesia
    (`1.500.000,00`) dan format Inggris (`1,500,000.00`) sama-sama terbaca sampai sen. Langkah impor di layar
    Actual sendiri belum diuji langsung.
-2. **Kategori diusulkan otomatis, yang ragu ditanyakan.** PLN, Telkomsel, Pertamina, Meta Ads, dan biaya admin
-   langsung dikelompokkan. Tarik tunai, top up GoPay, belanja Tokopedia, atau baris dobel **tidak ditebak**; semuanya
-   ditanyakan sekaligus dalam satu pesan. Pada uji, cukup banyak baris tetap perlu Anda pilih karena nama kategori
+2. **Kategori diusulkan otomatis, yang ragu diberi usulan.** PLN, Telkomsel, Pertamina, Meta Ads, dan biaya admin
+   langsung dikelompokkan. Tarik tunai, top up GoPay, belanja Tokopedia, atau baris dobel **tidak ditebak diam-diam**; tiap
+   transaksi diberi usulan dan alasan singkat, Anda cukup membalas "ya" sekali. Pada uji, cukup banyak baris tetap perlu Anda pilih karena nama kategori
    di budget Anda bisa berbeda dari usulan.
 3. **Tahu kategori yang jebol dengan satu pertanyaan.** Tanya "anggaran bulan ini gimana?" dan dapat sisa per kategori,
    kategori yang minus, uang yang siap dianggarkan (To Budget), dan 5 pengeluaran terbesar. Pada data contoh, angkanya
@@ -95,4 +95,4 @@ diekstrak, karena versi browser tidak menyimpan file budget di komputer.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.9**. Yang berubah di 1.0.9: transaksi yang kategorinya belum pasti kini langsung diberi usulan, jadi Anda cukup membalas "ya" atau menyebut yang mau diganti; baris yang dilewati disebut dengan tanggal, keterangan, dan nominal, bukan nomor baris. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

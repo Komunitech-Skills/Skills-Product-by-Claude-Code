@@ -246,6 +246,12 @@ class UjiKonversi(TmpMixin, unittest.TestCase):
         self.assertIn("dobel", grab[0]["alasan"])
         self.assertEqual(len(rows), 7)  # tetap ditulis; pengguna yang memutuskan
 
+    def test_19b_kembar_digabung_di_teks(self):
+        kode, teks, _ = jalan("konversi", MUT / "mandiri-sep-2026.csv", "--keluaran", self.tmp / "m.csv")
+        self.assertEqual(kode, 0)
+        self.assertEqual(teks.count("Pembayaran GRAB*RIDE"), 1)
+        self.assertIn("muncul 2x, identik", teks)
+
     def test_20_lintas_tahun_desember_januari(self):
         p = self.tmp / "bca-des.csv"
         p.write_text("Tanggal Transaksi,Keterangan,Cabang,Jumlah,,Saldo\n"
@@ -469,7 +475,7 @@ class UjiV101(TmpMixin, unittest.TestCase):
         readme = (SKILL / "README.md").read_text(encoding="utf-8")
         self.assertIn("kas-umkm", skill.split("---")[1])   # di description
         self.assertIn("Kas UMKM", readme)
-        self.assertEqual(ab.VERSI, "1.0.8")
+        self.assertEqual(ab.VERSI, "1.0.9")
         fmt = (SKILL / "references" / "format-bank.md").read_text(encoding="utf-8")
         self.assertIn("`12,5` = Rp 12,50", fmt)
 
@@ -534,6 +540,41 @@ class UjiPencocokanKategori(unittest.TestCase):
             self.assertTrue(all("kelompok" in x for x in d["ragu"]))
             with open(d["file_ragu"], encoding="utf-8") as f:
                 self.assertEqual(next(csv.reader(f)), ["Baris", "Tanggal", "Keterangan", "Jumlah", "Kategori", "Alasan"])
+
+    def test_f_usulan_per_transaksi_dan_satu_konfirmasi(self):
+        """v1.0.9: tiap transaksi ragu punya usulan + alasan; teks tanpa nomor baris/istilah mesin; satu konfirmasi."""
+        with tempfile.TemporaryDirectory() as t:
+            out = Path(t) / "h.csv"
+            kode, teks, _ = jalan("konversi", MUT / "bca-sep-2026.csv", "--tahun", "2026", "--db", RINA,
+                                  "--keluaran", out)
+            self.assertEqual(kode, 0)
+            bagian = teks.split("PERLU KONFIRMASI")[1].split("DILEWATI")[0]
+            self.assertIn("usulan:", bagian)
+            self.assertIn("balas 'ya'", bagian)
+            self.assertEqual(bagian.count("SATU PERTANYAAN"), 1)
+            self.assertNotIn("Baris ", bagian)
+            self.assertNotIn("Baris ", teks)
+            self.assertNotIn("kosong - perlu dipilih", teks)
+            self.assertIn("(menunggu konfirmasi usulan)", teks)
+            self.assertIn("PEND | TRSF E-BANKING DB 3009 SHOPEE | 150,000.00 -> transaksi PENDING", teks)
+            self.assertNotIn("PERTANYAAN UNTUK PENGGUNA (kelompok", teks)
+            self.assertEqual(bagian.count("-> usulan:"), 6)
+            self.assertIn("2 September 2026 | BIAYA ADM", bagian)       # tanggal + keterangan + nominal
+            self.assertIn("Rp 10.000", bagian)
+            self.assertIn("(memecah kolom jumlah jadi masuk/keluar)", teks)
+            kode, js, _ = jalan("konversi", MUT / "bca-sep-2026.csv", "--tahun", "2026", "--db", RINA,
+                                "--keluaran", out, "--timpa", "--json")
+            for x in json.loads(js)["ragu"]:
+                self.assertTrue(x["usulan"].strip() and x["alasan_usulan"].strip())
+
+    def test_g_usulan_kasus_khas(self):
+        u = ab.usulan_transaksi
+        self.assertIn("pindah dana", u("pindah", None, Decimal("-1000000"), "TARIK TUNAI", "", None)[0])
+        self.assertIn("Pendapatan Usaha", u("setor", None, Decimal("500000"), "SETOR TUNAI", "", None)[0])
+        self.assertIn("pinjaman", u("lain", None, Decimal("5000000"), "PENCAIRAN PINJAMAN", "", None)[0])
+        self.assertIn("asalnya", u("lain", None, Decimal("50000"), "REFUND TOKOPEDIA", "", None)[0])
+        self.assertTrue(u("lain", None, Decimal("-275000"), "QRIS TOKO XYZ", "", self.KAT)[0])
+        self.assertEqual(u("kategori", "Iklan", Decimal("-5000"), "X", "", self.KAT)[0], "Iklan")
 
 
 class UjiSingkatanFlag(unittest.TestCase):

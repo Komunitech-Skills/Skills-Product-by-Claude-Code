@@ -106,4 +106,4 @@ Skill ini sengaja **tidak punya** perintah hapus tugas/proyek atau ubah anggota 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.13**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.14**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -32,7 +32,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.13"
+VERSI = "1.0.14"
 VIKUNJA_TERUJI = ("2.6.0", "v2.6.0")
 SINI = os.path.dirname(os.path.abspath(__file__))
 FOLDER_SKILL = os.path.dirname(SINI)
@@ -122,6 +122,26 @@ def _ambil_jam(teks):
     return j, mi, (teks[:m.start()] + teks[m.end():]).strip()
 
 
+_RE_NAMA_HARI = r"(senin|selasa|rabu|kamis|jum'?at|jum at|sabtu|minggu)"
+
+
+def _tanggal_hari(nama, acuan, jenis):
+    """Nama hari -> date. Minggu kalender dimulai SENIN.
+    jenis 'depan': hari itu di MINGGU KALENDER BERIKUTNYA (Sabtu 17 Okt: 'Rabu depan' = Rabu 21 Okt;
+                   Senin 19 Okt: 'Rabu depan' = Rabu 28 Okt).
+    jenis 'ini'  : hari itu di minggu kalender yang SAMA (bisa sudah lewat).
+    jenis None   : kejadian berikutnya SETELAH hari ini (hari ini sendiri tidak dihitung)."""
+    nama = nama.replace("'", "").replace(" ", "")
+    target = HARI_KATA[nama]
+    awal_minggu = acuan - dt.timedelta(days=acuan.weekday())
+    if jenis == "depan":
+        return awal_minggu + dt.timedelta(days=7 + target)
+    if jenis == "ini":
+        return awal_minggu + dt.timedelta(days=target)
+    delta = (target - acuan.weekday()) % 7
+    return acuan + dt.timedelta(days=delta or 7)
+
+
 def cocok_tanggal_kata(teks, acuan):
     """Cari SATU frasa tanggal Indonesia di dalam teks bebas. -> date atau None (tidak melempar)."""
     t = teks.lower().strip()
@@ -134,22 +154,27 @@ def cocok_tanggal_kata(teks, acuan):
     m = re.search(r"\b(\d{1,2})\s+hari\s+lagi\b", t)
     if m:
         return acuan + dt.timedelta(days=int(m.group(1)))
+    # "Rabu minggu depan" / "Rabu pekan depan" = sama dengan "Rabu depan".
+    m = re.search(r"\b" + _RE_NAMA_HARI + r"\s+(?:di\s+)?(?:minggu|pekan)\s+depan\b", t)
+    if m:
+        return _tanggal_hari(m.group(1), acuan, "depan")
+    m = re.search(r"\b" + _RE_NAMA_HARI + r"\s+(?:di\s+)?(?:minggu|pekan)\s+ini\b", t)
+    if m:
+        return _tanggal_hari(m.group(1), acuan, "ini")
     if re.search(r"\bminggu depan\b|\bpekan depan\b", t):
         return acuan + dt.timedelta(days=7)
-    m = re.search(r"\b(senin|selasa|rabu|kamis|jum'?at|jum at|sabtu|minggu)\s+depan\b", t)
+    # "minggu ini"/"pekan ini" = batas akhir minggu kalender ini (Minggu), BUKAN hari Minggu terdekat.
+    if re.search(r"\bminggu ini\b|\bpekan ini\b", t):
+        return _tanggal_hari("minggu", acuan, "ini")
+    m = re.search(r"\b" + _RE_NAMA_HARI + r"\s+depan\b", t)
     if m:
-        nama = m.group(1).replace("'", "").replace(" ", "")
-        target = HARI_KATA[nama]
-        delta = (target - acuan.weekday()) % 7
-        if delta == 0:
-            delta = 7
-        return acuan + dt.timedelta(days=delta + 7)
-    m = re.search(r"\b(senin|selasa|rabu|kamis|jum'?at|jum at|sabtu|minggu)\b", t)
+        return _tanggal_hari(m.group(1), acuan, "depan")
+    m = re.search(r"\b" + _RE_NAMA_HARI + r"\s+ini\b", t)
     if m:
-        nama = m.group(1).replace("'", "").replace(" ", "")
-        target = HARI_KATA[nama]
-        delta = (target - acuan.weekday()) % 7
-        return acuan + dt.timedelta(days=delta)
+        return _tanggal_hari(m.group(1), acuan, "ini")
+    m = re.search(r"\b" + _RE_NAMA_HARI + r"\b", t)
+    if m:
+        return _tanggal_hari(m.group(1), acuan, None)
     m = re.search(r"\b(\d{4})-(\d{1,2})-(\d{1,2})\b", t)
     if m:
         y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
@@ -623,9 +648,15 @@ def _siapkan_item_tugas(args, token, item):
     ringkasan = [f"Judul : {judul}", f"Proyek: {proyek['title']} (id {proyek['id']})"]
     tenggat = item.get("tenggat")
     if tenggat:
-        iso, tgl = parse_tenggat(str(tenggat), sekarang(args.tz).date(), args.tz)
+        hari_ini = sekarang(args.tz).date()
+        iso, tgl = parse_tenggat(str(tenggat), hari_ini, args.tz)
         body["due_date"] = iso
         ringkasan.append(f"Tenggat: {format_tanggal_panjang(tgl)}")
+        if tgl < hari_ini:
+            ringkasan.append(
+                f"PERINGATAN: tanggal ini SUDAH LEWAT (hari ini {format_tanggal_panjang(hari_ini)}). "
+                "Pastikan ini yang dimaksud, atau tulis ulang tenggatnya."
+            )
     prioritas = item.get("prioritas")
     if prioritas not in (None, ""):
         p = int(prioritas)
@@ -817,7 +848,8 @@ def cmd_dari_teks(args, token):
     else:
         raise Gagal("Isi teks lewat --teks \"...\", --file <path>, atau --file - (dari stdin).", K_INPUT)
     anggota = [a.strip() for a in args.anggota.split(",")] if args.anggota else None
-    draf, diabaikan = urai_dari_teks(teks, sekarang(args.tz).date(), anggota)
+    hari_ini = sekarang(args.tz).date()
+    draf, diabaikan = urai_dari_teks(teks, hari_ini, anggota)
     if not draf:
         raise Gagal(
             "Tidak ada baris yang dikenali sebagai tugas. Tulis tiap tugas sebagai baris berawalan "
@@ -827,13 +859,15 @@ def cmd_dari_teks(args, token):
     keluaran = args.keluaran or f"draf-tugas-{sekarang(args.tz).strftime('%Y%m%d-%H%M%S')}.json"
     with open(keluaran, "w", encoding="utf-8") as f:
         json.dump(draf, f, ensure_ascii=False, indent=2)
-    teks_out = [f"DRAF {len(draf)} TUGAS (BELUM masuk Vikunja) -> disimpan di: {keluaran}"]
+    teks_out = [f"DRAF {len(draf)} TUGAS (BELUM masuk Vikunja) -> disimpan di: {keluaran}",
+                f"Tanggal dihitung dari hari ini: {format_tanggal_panjang(hari_ini)} "
+                "(minggu dimulai Senin; 'Rabu depan' = Rabu di minggu berikutnya)."]
     for i, d in enumerate(draf, 1):
         ket = []
         if d["ke"]:
             ket.append(f"PIC: {d['ke']}")
         if d["tenggat"]:
-            ket.append(f"tenggat: {d['tenggat']}")
+            ket.append(f"tenggat: {format_tanggal_panjang(dt.date.fromisoformat(d['tenggat']))}")
         if d["prioritas"]:
             ket.append("mendesak")
         teks_out.append(f"{i}. {d['judul']}" + (f" ({'; '.join(ket)})" if ket else ""))

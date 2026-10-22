@@ -2,6 +2,11 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.9 (2026-10-22)
+- Temuan pra-cek Telegram: transaksi yang kategorinya belum pasti dulu ditanyakan tanpa usulan ("Baris 7", "Split/Flip"). Kini script memberi USULAN kategori terbaik + alasan singkat untuk tiap transaksi (bagian "PERLU KONFIRMASI"), disebut dengan tanggal + keterangan + nominal, lalu satu konfirmasi saja ("ya" atau sebut yang diganti). JSON `ragu` bertambah `usulan` dan `alasan_usulan`.
+- Susulan: daftar DILEWATI memakai tanggal + keterangan + nominal (tanpa nomor baris; JSON `dilewati` kini `alasan` + `isi`); ringkasan kategori memakai "(menunggu konfirmasi usulan)"; baris identik digabung "(muncul Nx, identik)"; catatan kategori belum ada dipersingkat "(belum ada, buat dulu)".
+- Istilah "Split amount" dan "Flip amount" di langkah impor diberi arti sehari-hari. Ditambah uji regresi (test_f, test_g di UjiPencocokanKategori).
+
 ## Catatan revisi 1.0.8 (2026-10-17)
 - Contoh keluaran ringkasan di SKILL.md (bagian Format output) disamakan dengan keluaran skrip: baris Pajak tertulis "bawaan bulan lalu minus Rp 600.000", bukan "-Rp 600.000". Cara kerja tidak berubah.
 

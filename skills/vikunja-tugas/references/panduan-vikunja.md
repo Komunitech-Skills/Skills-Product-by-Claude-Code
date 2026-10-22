@@ -157,7 +157,7 @@ Jangan pernah memberi AI **sandi akun** Anda. Vikunja punya **token API** yang b
    **Disarankan (seperti skill Dolibarr kami): buat DUA token** — satu **hanya-baca** (dipakai jadwal laporan harian otomatis) dan satu **baca+tulis** (dipakai hanya saat Anda sendiri minta AI menambah/menyelesaikan/menugaskan tugas). Simpan di file berbeda (`simpan-kunci --kunci-file`).
 4. Isi **Expiration date** (tanggal kedaluwarsa) — jangan pilih "tanpa batas" bila tersedia; pilih 1 tahun dan perbarui nanti.
 5. Klik **Create**. Token **hanya ditampilkan SEKALI** (diawali `tk_`) — salin sekarang.
-6. Buka **Terminal** (Windows: tekan Win, ketik `cmd`), jalankan (sesuaikan folder skill):
+6. Buka **Terminal** (Windows: tekan Win, ketik `cmd`), jalankan (sesuaikan lokasi pemasangan):
    ```
    python3 ~/.openclaw/skills/vikunja-tugas/scripts/vikunja.py simpan-kunci
    ```
