@@ -48,7 +48,7 @@ $ kanboard.py pindah-kartu --id 2 --ke-kolom Selesai
 PRATINJAU PINDAH KARTU #2: Kaos panitia 17-an 50 pcs
 Dari: Produksi
 Ke: Selesai
-Belum dipindah. Lanjut? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum dipindah. Lanjut? (ya/tidak)
 (kode keluar 0)
 $ kanboard.py pindah-kartu --id 2 --ke-kolom Selesai --y
 usage: kanboard.py [-h]

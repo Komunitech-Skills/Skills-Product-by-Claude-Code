@@ -1,7 +1,7 @@
 # Bukti yang Bisa Diberikan Orang Awam, per Platform
 
 Skill ini **tidak** login ke akun iklan, tidak memakai API, dan tidak meminta password/token.
-Bukti selalu diberikan pemilik sendiri: screenshot, file ekspor CSV, atau jawaban pertanyaan.
+Bukti selalu diberikan pemilik sendiri: screenshot, ekspor CSV, atau jawaban pertanyaan.
 Nama menu di bawah dicek terhadap tampilan umum per September 2026 dan **bisa berubah** (platform
 sering mengganti nama/letak menu). Bila pengguna bilang menunya tidak ada, minta screenshot halaman
 yang ia lihat, jangan memaksa nama menu.

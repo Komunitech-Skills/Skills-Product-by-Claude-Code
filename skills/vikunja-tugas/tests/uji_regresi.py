@@ -63,12 +63,16 @@ class TesTanggal(unittest.TestCase):
         self.assertEqual(self.cocok("Jumat"), dt.date(2026, 10, 2))
 
     def test_nama_hari_hari_ini_sendiri(self):
-        # Sabtu disebut, acuan juga Sabtu -> hari ini juga (delta 0).
-        self.assertEqual(self.cocok("Sabtu"), HARI_ACUAN)
+        # v1.0.14: nama hari tanpa keterangan = kejadian berikutnya SETELAH hari ini. Sabtu disebut,
+        # acuan juga Sabtu -> Sabtu minggu depan (+7). Untuk hari ini sendiri pakai "hari ini"/"Sabtu ini".
+        self.assertEqual(self.cocok("Sabtu"), HARI_ACUAN + dt.timedelta(days=7))
+        self.assertEqual(self.cocok("Sabtu ini"), HARI_ACUAN)
 
     def test_nama_hari_depan(self):
-        # 'Jumat depan' melewati Jumat terdekat (2 Okt) -> Jumat pekan sesudahnya (9 Okt).
-        self.assertEqual(self.cocok("Jumat depan"), dt.date(2026, 10, 9))
+        # v1.0.14: '<hari> depan' = hari itu di MINGGU KALENDER BERIKUTNYA (minggu mulai Senin).
+        # Acuan Sabtu 26 Sep -> minggu berikutnya Senin 28 Sep..Minggu 4 Okt -> Jumat = 2 Okt
+        # (sebelum 1.0.14 salah: 9 Okt, kelebihan 7 hari).
+        self.assertEqual(self.cocok("Jumat depan"), dt.date(2026, 10, 2))
 
     def test_tanggal_slash_tanpa_tahun(self):
         self.assertEqual(self.cocok("25/10"), dt.date(2026, 10, 25))
@@ -110,6 +114,154 @@ class TesTanggal(unittest.TestCase):
     def test_tanggal_tidak_valid_dilewati(self):
         # 31 Februari tidak ada -> dianggap tidak cocok, bukan error/crash
         self.assertIsNone(self.cocok("31/2"))
+
+
+# ============================================================ 1b. "<hari> depan/ini" (regresi v1.0.14)
+
+NAMA_HARI_UJI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+
+
+def _harapan_mandiri(acuan, target, jenis):
+    """Hitung tanggal harapan dengan menyusuri kalender hari demi hari (TIDAK memakai rumus skrip)."""
+    awal = acuan
+    while awal.weekday() != 0:          # mundur sampai Senin minggu ini
+        awal -= dt.timedelta(days=1)
+    if jenis == "ini":
+        kandidat = [awal + dt.timedelta(days=i) for i in range(7)]
+    elif jenis == "depan":
+        kandidat = [awal + dt.timedelta(days=7 + i) for i in range(7)]
+    else:                               # kejadian berikutnya SETELAH hari ini
+        kandidat = [acuan + dt.timedelta(days=i) for i in range(1, 8)]
+    ketemu = [d for d in kandidat if d.weekday() == target]
+    assert len(ketemu) == 1
+    return ketemu[0]
+
+
+class TesHariDepanIni(unittest.TestCase):
+    """Bug 1.0.13: '<hari> depan' menambah 7 hari berlebih ('Rabu depan' diucapkan Sabtu 17 Okt 2026
+    jadi 28 Okt, seharusnya 21 Okt)."""
+
+    SABTU = dt.date(2026, 10, 17)
+
+    def test_kasus_laporan_penguji(self):
+        c = vikunja.cocok_tanggal_kata
+        self.assertEqual(self.SABTU.weekday(), 5)
+        self.assertEqual(c("Rabu depan", self.SABTU), dt.date(2026, 10, 21))
+        self.assertEqual(c("Jumat depan", self.SABTU), dt.date(2026, 10, 23))
+        self.assertEqual(c("sebelum hari Rabu", self.SABTU), dt.date(2026, 10, 21))
+
+    def test_senin_rabu_depan_loncat_ke_minggu_berikutnya(self):
+        # Senin 19 Okt: 'Rabu depan' = Rabu minggu kalender berikutnya (28 Okt); 'Rabu ini' = 21 Okt.
+        senin = dt.date(2026, 10, 19)
+        self.assertEqual(vikunja.cocok_tanggal_kata("Rabu depan", senin), dt.date(2026, 10, 28))
+        self.assertEqual(vikunja.cocok_tanggal_kata("Rabu ini", senin), dt.date(2026, 10, 21))
+        self.assertEqual(vikunja.cocok_tanggal_kata("Rabu", senin), dt.date(2026, 10, 21))
+
+    def test_semua_acuan_x_semua_hari_target(self):
+        # 14 hari acuan berurutan (2 minggu penuh, Sen 12 Okt .. Min 25 Okt 2026) x 7 hari target
+        # x 3 bentuk ('depan', 'ini', tanpa keterangan) = 294 pemeriksaan, harapan dihitung mandiri.
+        awal = dt.date(2026, 10, 12)
+        jumlah = 0
+        for k in range(14):
+            acuan = awal + dt.timedelta(days=k)
+            for target, nama in enumerate(NAMA_HARI_UJI):
+                for jenis, frasa in (("depan", nama + " depan"), ("ini", nama + " ini"), (None, nama)):
+                    if nama == "Minggu" and jenis == "depan":
+                        frasa = "Minggu di minggu depan"   # "Minggu depan" polos = "minggu depan" (+7 hari)
+                    if nama == "Minggu" and jenis is None:
+                        frasa = "hari Minggu"   # "Minggu" polos berarti hari Minggu
+                    harapan = _harapan_mandiri(acuan, target, jenis)
+                    hasil = vikunja.cocok_tanggal_kata("tolong selesaikan " + frasa, acuan)
+                    self.assertEqual(hasil, harapan, "%s | acuan %s (%s)" % (frasa, acuan, NAMA_HARI_UJI[acuan.weekday()]))
+                    self.assertEqual(hasil.weekday(), target)
+                    jumlah += 1
+        self.assertEqual(jumlah, 294)
+
+    def test_depan_selalu_di_minggu_kalender_berikutnya(self):
+        # Sifat umum: hasil 'X depan' selalu 1..13 hari setelah acuan, dan senin-nya tepat 7 hari
+        # setelah Senin minggu acuan.
+        for k in range(21):
+            acuan = dt.date(2026, 10, 1) + dt.timedelta(days=k)
+            senin_acuan = acuan - dt.timedelta(days=acuan.weekday())
+            for nama in NAMA_HARI_UJI[:6]:
+                hasil = vikunja.cocok_tanggal_kata(nama + " depan", acuan)
+                self.assertEqual(hasil - dt.timedelta(days=hasil.weekday()), senin_acuan + dt.timedelta(days=7))
+                self.assertTrue(1 <= (hasil - acuan).days <= 13)
+
+    def test_nama_hari_polos_tidak_pernah_hari_ini(self):
+        for k in range(7):
+            acuan = dt.date(2026, 10, 12) + dt.timedelta(days=k)
+            hasil = vikunja.cocok_tanggal_kata("Jumat", acuan)
+            self.assertTrue(1 <= (hasil - acuan).days <= 7)
+
+    def test_hari_minggu_polos_sabtu_17_okt(self):
+        self.assertEqual(vikunja.cocok_tanggal_kata("hari Minggu", self.SABTU), dt.date(2026, 10, 18))
+
+    def test_hari_minggu_depan_bentuk_panjang(self):
+        # 'Rabu minggu depan' / 'Rabu pekan depan' sama dengan 'Rabu depan'; dulu jatuh ke '+7 hari'
+        # (Sabtu 17 Okt -> Sabtu 24 Okt, hari salah).
+        c = vikunja.cocok_tanggal_kata
+        self.assertEqual(c("Rabu minggu depan", self.SABTU), dt.date(2026, 10, 21))
+        self.assertEqual(c("rapat Rabu pekan depan", self.SABTU), dt.date(2026, 10, 21))
+        self.assertEqual(c("Jumat di minggu depan", self.SABTU), dt.date(2026, 10, 23))
+        self.assertEqual(c("Rabu minggu ini", dt.date(2026, 10, 19)), dt.date(2026, 10, 21))
+
+    def test_minggu_ini_bukan_hari_minggu_terdekat_dan_minggu_depan_tetap(self):
+        # 'minggu ini' = batas akhir minggu kalender ini (Minggu); 'minggu depan' tetap +7 hari.
+        senin = dt.date(2026, 10, 19)
+        self.assertEqual(vikunja.cocok_tanggal_kata("selesai minggu ini", senin), dt.date(2026, 10, 25))
+        self.assertEqual(vikunja.cocok_tanggal_kata("selesai minggu ini", self.SABTU), dt.date(2026, 10, 18))
+        self.assertEqual(vikunja.cocok_tanggal_kata("minggu depan", self.SABTU), dt.date(2026, 10, 24))
+
+    def test_kata_lain_tidak_berubah(self):
+        c = vikunja.cocok_tanggal_kata
+        self.assertEqual(c("besok", self.SABTU), dt.date(2026, 10, 18))
+        self.assertEqual(c("lusa", self.SABTU), dt.date(2026, 10, 19))
+        self.assertEqual(c("3 hari lagi", self.SABTU), dt.date(2026, 10, 20))
+        self.assertEqual(c("25/10", self.SABTU), dt.date(2026, 10, 25))
+        self.assertEqual(c("rapat Kamis", self.SABTU), dt.date(2026, 10, 22))
+        self.assertIsNone(c("nanti deh", self.SABTU))
+
+    def test_parse_tenggat_rabu_depan(self):
+        # jalur perintah 'tambah --tenggat "Rabu depan"': 21 Okt 17:00 WIB = 10:00 UTC
+        iso, tgl = vikunja.parse_tenggat("Rabu depan", self.SABTU, "WIB")
+        self.assertEqual(tgl, dt.date(2026, 10, 21))
+        self.assertEqual(iso, "2026-10-21T10:00:00Z")
+        iso, tgl = vikunja.parse_tenggat("Rabu depan jam 09:30", self.SABTU, "WIB")
+        self.assertEqual((tgl, iso), (dt.date(2026, 10, 21), "2026-10-21T02:30:00Z"))
+
+    def test_dari_teks_notulen_rabu_depan(self):
+        notulen = ("- Budi: follow up supplier bata Rabu depan\n"
+                   "- Siti: kirim invoice sebelum hari Rabu\n"
+                   "- Andi: rapat evaluasi Jumat depan\n"
+                   "- Beli semen 50 sak")
+        draf, _ = vikunja.urai_dari_teks(notulen, self.SABTU)
+        self.assertEqual([d["tenggat"] for d in draf], ["2026-10-21", "2026-10-21", "2026-10-23", None])
+
+    def test_dari_teks_keluaran_menyebut_nama_hari_dan_acuan(self):
+        # Jawaban ke pengguna wajib bisa menyebut tanggal + nama hari: keluaran dari-teks memuatnya.
+        import argparse
+        import contextlib
+        import io
+        asli = vikunja.sekarang
+        vikunja.sekarang = lambda tz: dt.datetime(2026, 10, 17, 9, 0, tzinfo=vikunja.zona(tz))
+        try:
+            with tempfile.TemporaryDirectory() as d:
+                args = argparse.Namespace(file=None, teks="- Budi: follow up supplier Rabu depan\n- Beli semen",
+                                          anggota=None, keluaran=os.path.join(d, "draf.json"), tz="WIB", json=False)
+                buf = io.StringIO()
+                with contextlib.redirect_stdout(buf):
+                    kode = vikunja.cmd_dari_teks(args, None)
+                keluar = buf.getvalue()
+                self.assertEqual(kode, 0)
+                self.assertIn("tenggat: Rabu, 21 Oktober 2026", keluar)
+                self.assertNotIn("2026-10-21", keluar)       # tidak lagi tanggal mentah ISO di teks
+                self.assertIn("Sabtu, 17 Oktober 2026", keluar)  # acuan hari ini disebut
+                with open(os.path.join(d, "draf.json"), encoding="utf-8") as f:
+                    tersimpan = json.load(f)
+                self.assertEqual(tersimpan[0]["tenggat"], "2026-10-21")  # JSON tetap ISO untuk --batch
+        finally:
+            vikunja.sekarang = asli
 
 
 # ============================================================ 2. dari-teks (draf lokal)
@@ -534,6 +686,18 @@ class TesUjungKeUjung(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("TERSIMPAN", r.stdout)
         self.assertEqual(len(self.srv.keadaan.tugas), 3)
+
+    def test_tambah_pratinjau_tenggat_hari_depan_menyebut_nama_hari(self):
+        # v1.0.14: pratinjau menyebut tanggal + nama hari; tenggat yang sudah lewat diberi peringatan.
+        r = self.jalankan(["tambah", "--proyek", "2", "--judul", "Tugas uji", "--tenggat", "Rabu depan"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertRegex(r.stdout, r"Tenggat: Rabu, \d{1,2} \w+ 2\d{3}")
+        self.assertNotIn("SUDAH LEWAT", r.stdout)
+        r = self.jalankan(["tambah", "--proyek", "2", "--judul", "Tugas uji", "--tenggat", "2020-01-15"])
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("Tenggat: Rabu, 15 Januari 2020", r.stdout)
+        self.assertIn("SUDAH LEWAT", r.stdout)
+        self.assertEqual(len(self.srv.keadaan.tugas), 2)
 
     def test_tambah_token_baca_saja_ditolak(self):
         r = self.jalankan(["tambah", "--proyek", "2", "--judul", "Tugas uji", "--ya"], token="tk_bacasajarahasia1")

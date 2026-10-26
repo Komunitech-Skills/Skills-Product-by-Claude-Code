@@ -4,6 +4,8 @@
 
 *Diuji AI penguji independen di OpenClaw: 7,5 → 9 dari 10 (angka sama-sama benar; dengan skill laporan lebih lengkap: persentase tiap produk, rata-rata harian, dan saran yang bisa dijalankan).*
 
+*Jujur soal uji terakhir: pada uji di bot Telegram 17 Okt 2026 (versi 1.2.5), skill ini belum lulus, karena ada kalimat saran yang salah. Versi 1.2.6 dan 1.2.7 memperbaikinya, tetapi versi 1.2.7 belum diuji ulang di bot asli.*
+
 > **Yang Anda butuhkan:** AI agent yang mendukung skill (OpenClaw, Claude Code, Codex, atau Cursor — langganan AI-nya ditanggung sendiri) di komputer Windows/Mac/Linux. Python 3 (bawaan Mac/Linux, unduh gratis di Windows) untuk menjalankan skrip pendukung skill ini; tanpa Python skill tetap berjalan, AI mengerjakannya langsung tetapi hasil angka sebaiknya Anda cek ulang. Tidak perlu API key atau akun tambahan dari Komunitech.
 
 ## Manfaat
@@ -23,7 +25,7 @@
 
 **Sesudah (cukup ketik):** "File ekspor Shopee September sudah ada di folder (penjualan-september.csv). Tolong direkap: omzet sebulan berapa, produk paling laku apa, hari paling ramai kapan?"
 
-*Cuplikan balasan chat versi 1.2.6: keluaran skrip untuk chat, pada data fiktif yang angkanya sama dengan uji bot 17 Okt (produk peringkat 2–3 dipotong). Versi ini belum diuji ulang di bot Telegram.*
+*Cuplikan balasan chat versi 1.2.7: keluaran skrip untuk chat, pada data fiktif yang angkanya sama dengan uji bot 17 Okt (produk peringkat 2–3 dipotong). Versi ini belum diuji ulang di bot Telegram.*
 ```
 Rekap penjualan 1 Sep 2026 – 30 Sep 2026
 
@@ -39,8 +41,9 @@ Produk terlaris menurut omzet:
 Terlaris menurut jumlah: Tote Bag Natural, 23 pcs
 
 Hari paling ramai:
-Omzet tertinggi 5 Sep 2026 (Rp 549.000); terendah 18 Sep 2026 (Rp 35.000)
-Pesanan terbanyak: 1 Sep 2026 dan 5 Sep 2026 (5 pesanan per hari, seri)
+Omzet tertinggi Sabtu, 5 Sep 2026 (Rp 549.000); terendah Jumat, 18 Sep 2026 (Rp 35.000)
+Pesanan terbanyak: Selasa, 1 Sep 2026 dan Sabtu, 5 Sep 2026 (5 pesanan per hari, seri)
+Pola hari dalam minggu (omzet hari itu dibagi jumlah hari itu di periode; hari tanpa penjualan dihitung Rp 0): tertinggi Senin Rp 288.750; terendah Kamis Rp 113.750.
 ```
 Contoh saran sesuai aturan skill (setiap saran menyebut angka dari rekap di atas): "Tote Bag Natural paling banyak terjual (23 pcs) tapi harga jualnya termurah (Rp 35.000/pcs). Coba jual paket dengan Kaos Oversize Abu (Rp 79.000/pcs, terlaris menurut omzet) supaya nilai per pesanan naik."
 
@@ -80,6 +83,8 @@ Kedua sisi menghitung omzet Rp5.519.000 dari 66 pesanan selesai, produk terlaris
 
 Catatan jujur: kesalahan ini ada pada kalimat saran, bukan pada hitungan omzet. Perbaikannya (lihat Riwayat perubahan) belum diuji ulang di bot Telegram; sampai itu, cocokkan setiap kalimat saran dengan daftar angka di atasnya. Ini satu pesan uji per sisi, bukan uji berulang.
 
+Versi 1.2.7 memperbaiki temuan-temuan di atas dan belum diuji ulang di bot Telegram asli.
+
 ## FAQ
 **Apakah data saya dikirim ke internet?**
 Script berjalan di komputer Anda sendiri. Isi data tetap dibaca oleh AI agent yang Anda pakai.
@@ -94,4 +99,4 @@ Baris yang rusak dilewati, lalu jumlah dan alasannya dilaporkan.
 
 ## Riwayat perubahan
 
-Versi terkini: **1.2.6** (17 Okt 2026): saran kini hanya ditulis bila ada angka hitungan yang mendukung, produk terlaris ditampilkan menurut omzet dan menurut jumlah, tanpa istilah "margin" bila tidak ada data modal, balasan chat lebih ringkas (tanpa judul, satu rata-rata), dan file tanpa kolom jumlah tidak lagi ditulis seolah-olah jumlah pcs. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.2.7** (26 Okt 2026): rekap kini menulis nama hari bersama tanggal (mis. "Sabtu, 5 Sep 2026"), menambah satu baris pola hari dalam minggu (hanya bila data minimal 14 hari, dihitung skrip), memasukkan setiap peringatan data ke bagian "Catatan data" dengan bahasa sehari-hari, dan menyebut berapa baris tanpa jumlah yang dihitung 1 pcs. Angka lainnya sama dengan 1.2.6. Sebelumnya, versi 1.2.6 (17 Okt 2026): saran kini hanya ditulis bila ada angka hitungan yang mendukung, produk terlaris ditampilkan menurut omzet dan menurut jumlah, tanpa istilah "margin" bila tidak ada data modal, balasan chat lebih ringkas (tanpa judul, satu rata-rata), dan file tanpa kolom jumlah tidak lagi ditulis seolah-olah jumlah pcs. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

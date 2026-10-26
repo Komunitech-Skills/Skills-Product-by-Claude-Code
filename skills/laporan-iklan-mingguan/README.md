@@ -95,6 +95,14 @@ Catatan jujur berikutnya: uji awal di bot Telegram asli (v1.0.11) mendapat skor 
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji sebelum/sesudah otomatis agent, 2026-10-01; uji muat CLI) dan Claude Code (simulasi agent). Satu laporan iklan terjadwal sekali jalan terkirim ke grup uji Telegram Komunitech pada 13 Okt 2026 (tiba tepat waktu, angka cocok dengan hitungan terpisah); jadwal berulang tiap Senin belum diuji. Codex dan Cursor belum kami uji langsung.
 
+## Bukti uji di bot Telegram
+
+Uji terbaru: 21 Oktober 2026, versi 1.0.12, di bot OpenClaw asli (grup uji Komunitech), pesan yang sama untuk tanpa skill dan dengan skill: pemilik toko hijab mengirim data iklan minggu ini dan minggu lalu (belanja Rp4,2 juta, 114 chat WA) dan bertanya iklan mana yang sebaiknya dimatikan. Skor 1–10 dari penilai independen: tanpa skill **7,5** → dengan skill **8,5** (selisih +1), **belum memenuhi acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Jujurnya: tanpa skill pun bot sudah cukup baik. Angkanya benar dan sarannya sama, yaitu mematikan iklan Hijab Instan Baru (Rp91.667 per chat, sekitar 2,5 kali rata-rata). Dengan skill laporannya lebih rapi dan lengkap (CPC, CPM, CTR, catatan PPN, iklan kunjungan tidak disarankan dimatikan hanya karena 0 chat), tetapi bedanya belum cukup besar untuk kami promosikan.
+
+Catatan jujur: penjelasan istilah CPC/CPM/CTR tidak ikut terkirim, rata-rata biaya per chat ikut menghitung iklan kunjungan sehingga kenaikannya tampak lebih ringan (untuk iklan WA saja naik sekitar 50%), dan iklan yang baru tayang belum ditandai. Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Data iklan saya dikirim ke internet?**
 Tidak. Perhitungan berjalan di komputer Anda sendiri lewat script Python. Yang diproses AI agent

@@ -72,3 +72,6 @@ Image Docker resmi, Windows/macOS, jadwal OpenClaw sungguhan ke Telegram, Kanboa
 
 ## Uji ulang OpenClaw v1.0.5 (2026-10-02)
 Skenario U1 (token ditempel + pindah kartu, server tiruan): SEBELUM 4 -> SESUDAH 9, VERDIK LULUS. Tidak ada gema token, pratinjau ditampilkan dulu, saran ganti token di akhir, kartu tidak dipindah sebelum "ya". Rinci: `00-openclaw-sebelum-sesudah.md`.
+
+## Catatan 1.0.7 (2026-10-17)
+Temuan uji bot Telegram asli (gelombang 27, v1.0.6, dengan skill 4,5 vs tanpa skill 5): saat token ditempel padahal kunci sudah tersimpan, agent memakai templat "kunci belum tersimpan" tanpa memanggil Kanboard dan membocorkan perintah/path/"folder skill" ke pemilik. Perbaikan 1.0.7: urutan aturan dibalik jadi cek kunci tersimpan dulu (`status-kunci` baru), kerjakan permintaan lalu saran mencabut kunci di paragraf terakhir; kalimat pemilik tanpa istilah teknis; contoh `11-u1-token-ditempel-kunci-tersimpan.md`. Diverifikasi hanya dengan uji regresi (server tiruan) dan pemeriksaan teks SKILL.md; **belum diuji ulang di bot Telegram asli**, jadi belum ada skor baru.

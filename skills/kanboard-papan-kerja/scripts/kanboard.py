@@ -7,6 +7,8 @@ Komunitech tidak berafiliasi dengan proyek Kanboard.
 
 Perintah:
   simpan-kunci   simpan nama pengguna + token API ke file lokal (izin 600; token dibaca tersembunyi)
+  status-kunci   cek SAJA apakah kunci sudah tersimpan (YA/TIDAK + nama pengguna); token tidak
+                 pernah ditampilkan dan Kanboard tidak dihubungi
   atur           simpan alamat Kanboard default & (opsional) daftarkan host server sendiri
   cek            cek koneksi, versi, mode akses, zona waktu
   daftar-papan   daftar papan (project) yang bisa dilihat
@@ -45,7 +47,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI_SKRIP = "1.0.1"
+VERSI_SKRIP = "1.0.7"
 KANBOARD_TERUJI = ("v1.2.54", "1.2.54")
 URL_DEFAULT = "http://127.0.0.1:8080"
 FOLDER_KONF = os.path.join(os.path.expanduser("~"), ".komunitech")
@@ -375,32 +377,71 @@ def cmd_simpan_kunci(args):
     return 0
 
 
-def ambil_kunci(args):
+def _kunci_dan_sumber(args):
+    """-> (pengguna, token, sumber). Urutan: --kunci-file, ENV pasangan, ENV file, file default."""
     if args.kunci_file:
-        return _baca_kunci(os.path.abspath(os.path.expanduser(args.kunci_file)), "--kunci-file")
+        u, t = _baca_kunci(os.path.abspath(os.path.expanduser(args.kunci_file)), "--kunci-file")
+        return u, t, "file yang ditunjuk --kunci-file"
     u, t = os.environ.get("KANBOARD_USER", "").strip(), os.environ.get("KANBOARD_TOKEN", "").strip()
     if u and t:
-        return u, t
+        return u, t, "variabel lingkungan KANBOARD_USER + KANBOARD_TOKEN"
     if bool(u) != bool(t):
         raise Gagal("KANBOARD_USER dan KANBOARD_TOKEN harus diisi berpasangan (salah satunya kosong).", K_FILE,
                     saran="Isi keduanya, atau kosongkan keduanya dan pakai file kunci (simpan-kunci).")
     if os.environ.get("KANBOARD_KUNCI_FILE"):
-        return _baca_kunci(os.path.expanduser(os.environ["KANBOARD_KUNCI_FILE"]), "ENV KANBOARD_KUNCI_FILE")
-    return _baca_kunci(KUNCI_DEFAULT, "file kunci default")
+        u, t = _baca_kunci(os.path.expanduser(os.environ["KANBOARD_KUNCI_FILE"]), "ENV KANBOARD_KUNCI_FILE")
+        return u, t, "file yang ditunjuk KANBOARD_KUNCI_FILE"
+    u, t = _baca_kunci(KUNCI_DEFAULT, "file kunci default")
+    return u, t, "file kunci default di komputer ini"
+
+
+def ambil_kunci(args):
+    u, t, _ = _kunci_dan_sumber(args)
+    return u, t
+
+
+def cmd_status_kunci(args):
+    """Hanya-baca: ada/tidaknya kunci tersimpan. TIDAK menampilkan token, TIDAK menghubungi Kanboard."""
+    try:
+        pengguna, token, sumber = _kunci_dan_sumber(args)
+    except Gagal as e:
+        teks = ["KUNCI TERSIMPAN: TIDAK", "Alasan: " + str(e).split(": ")[0],
+                "UNTUK AGEN SAJA (jangan disalin ke chat): pakai templat B di SKILL.md (bahasa awam, tanpa "
+                "perintah/folder/path); jangan memakai kunci yang ditempel pengguna."]
+        cetak({"teks": samarkan("\n".join(teks)), "kunci_tersimpan": False}, args)
+        return K_FILE
+    _RAHASIA.append(token)
+    konf = baca_konfig()
+    try:
+        alamat = cek_url(args.url or os.environ.get("KANBOARD_URL") or konf.get("url") or URL_DEFAULT,
+                         konf.get("host_izin", []))[0]
+    except Gagal as e:
+        alamat = "belum valid (" + str(e) + ")"
+    teks = ["KUNCI TERSIMPAN: YA", f"Pengguna: {pengguna}", f"Sumber: {sumber}", f"Alamat Kanboard: {alamat}",
+            "Token tidak ditampilkan dan Kanboard belum dihubungi. UNTUK AGEN SAJA (jangan disalin ke chat): "
+            "lanjutkan pekerjaan dengan kunci ini (perintah baca dulu, lalu pratinjau + tanya 'ya')."]
+    cetak({"teks": samarkan("\n".join(teks)), "kunci_tersimpan": True, "pengguna": pengguna,
+           "sumber": sumber, "alamat": alamat}, args)
+    return 0
 
 
 def _baca_kunci(path, sumber):
     if not os.path.isfile(path):
         raise Gagal(f"File kunci ({sumber}) tidak ditemukan: {path}", K_FILE,
-                    saran="Pengguna menjalankan SENDIRI di terminalnya: python3 scripts/kanboard.py simpan-kunci "
-                          "(lihat docs/panduan-kanboard.md bagian 5). Jangan tempel token di chat.")
+                    saran="UNTUK AGEN SAJA (jangan disalin ke chat pemilik): beri tahu pemilik dengan kalimat "
+                          "awam (SKILL.md, templat B) bahwa kunci akses belum tersimpan; penyimpanannya "
+                          "dilakukan pemilik/teknisinya sendiri lewat 'simpan-kunci' atau panduan Kanboard "
+                          "bagian 5. Jangan minta token ditempel di chat.")
     cek_izin_file(path)
     try:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
         u, t = str(data["pengguna"]).strip(), str(data["token"]).strip()
     except (ValueError, KeyError, TypeError, OSError):
-        raise Gagal(f"File kunci ({sumber}) rusak: {path}", K_FILE, saran="Simpan ulang dengan 'simpan-kunci --ya'.")
+        raise Gagal(f"File kunci ({sumber}) rusak: {path}", K_FILE,
+                    saran="UNTUK AGEN SAJA (jangan disalin ke chat pemilik): kunci perlu disimpan ulang oleh "
+                          "pemilik/teknisinya ('simpan-kunci --ya'); beri tahu pemilik dengan kalimat awam "
+                          "(SKILL.md, templat B).")
     if not u or not t:
         raise Gagal(f"File kunci ({sumber}) kosong: {path}", K_FILE)
     return u, t
@@ -550,8 +591,11 @@ class Kanboard:
             raise Gagal("Jawaban Kanboard terlalu besar (>20 MB). Dihentikan demi keamanan.", K_KONEKSI)
         if status == 401:
             raise Gagal("401 dari Kanboard: nama pengguna atau token salah.", K_AUTH,
-                        saran="Cek token di Kanboard (Profil saya > API, atau Pengaturan > API untuk 'jsonrpc'), "
-                              "lalu simpan ulang: simpan-kunci --ya. Akun dengan 2FA wajib memakai token, bukan sandi.")
+                        saran="UNTUK AGEN SAJA (jangan disalin ke chat pemilik): kunci tersimpan ditolak Kanboard; "
+                              "beri tahu pemilik dengan kalimat awam (SKILL.md, templat C). Pemilik/teknisinya "
+                              "membuat token baru di Kanboard (Profil saya > API, atau Pengaturan > API untuk "
+                              "'jsonrpc') lalu menyimpannya ulang ('simpan-kunci --ya'). Akun dengan 2FA wajib "
+                              "memakai token, bukan sandi.")
         try:
             data = json.loads(mentah.decode("utf-8"))
         except (ValueError, UnicodeDecodeError):
@@ -872,7 +916,7 @@ def cmd_buat_papan(kb, args):
     teks += [f"  {i}. {k[0]}" + (f" (batas {k[1]} kartu)" if k[1] else "") + f" - {k[2]}"
              for i, k in enumerate(t["kolom"], 1)]
     if not args.ya:
-        teks.append("Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.")
+        teks.append("Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak)")
         cetak({"teks": "\n".join(teks), "pratinjau": True}, args)
         return 0
     keterangan = f"Template {args.jenis} (Komunitech)"
@@ -966,7 +1010,7 @@ def cmd_tambah_kartu(kb, args):
         raise Gagal(f"Sudah ada kartu terbuka berjudul sama di papan ini (#{kembar[0]['id']}). Tidak dibuat ganda.",
                     K_GANDA, saran="Bila memang kartu berbeda, ulangi dengan --boleh-ganda atau ubah judulnya.")
     if not args.ya:
-        ringkas.append("Belum disimpan. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.")
+        ringkas.append("Belum disimpan. Simpan ke Kanboard? (ya/tidak)")
         cetak({"teks": "\n".join(ringkas), "pratinjau": True, "params": params}, args)
         return 0
     tid = kb.rpc("createTask", params)
@@ -994,7 +1038,7 @@ def cmd_pindah_kartu(kb, args):
         raise Gagal(f"Kartu #{t['id']} sudah DITUTUP di Kanboard; buka kembali lewat layar Kanboard bila perlu.",
                     K_INPUT)
     if not args.ya:
-        teks.append("Belum dipindah. Lanjut? (ya/tidak) - ulangi dengan --ya bila ya.")
+        teks.append("Belum dipindah. Lanjut? (ya/tidak)")
         cetak({"teks": "\n".join(teks), "pratinjau": True}, args)
         return 0
     ok = kb.rpc("moveTaskPosition", {"project_id": pid, "task_id": int(t["id"]), "column_id": int(tujuan["id"]),
@@ -1025,6 +1069,10 @@ def buat_parser():
     p = sub.add_parser("simpan-kunci", allow_abbrev=False)
     p.add_argument("--kunci-file", dest="kunci_file", default=None)
     p.add_argument("--ya", action="store_true")
+    p = sub.add_parser("status-kunci", allow_abbrev=False)
+    p.add_argument("--url", default=None)
+    p.add_argument("--kunci-file", dest="kunci_file", default=None)
+    p.add_argument("--json", action="store_true")
     p = sub.add_parser("atur", allow_abbrev=False)
     p.add_argument("--url", required=True)
     p.add_argument("--izinkan-host", dest="izinkan_host", action="store_true")
@@ -1075,6 +1123,8 @@ def main(argv=None):
             raise Gagal("--timeout harus lebih dari 0.", K_INPUT)
         if args.perintah == "simpan-kunci":
             return cmd_simpan_kunci(args)
+        if args.perintah == "status-kunci":
+            return cmd_status_kunci(args)
         if args.perintah == "atur":
             return cmd_atur(args)
         if args.perintah == "template":

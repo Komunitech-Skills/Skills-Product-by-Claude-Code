@@ -27,7 +27,7 @@ Tanyakan dulu apakah pengguna memisahkan rekening usaha & pribadi. Bila satu rek
 | | Dana Darurat | (diisi anggaran, bukan dari mutasi) |
 
 ## Selalu masuk daftar "perlu dicek" (kategori dikosongkan)
-- **Setor tunai** (SETOR TUNAI, CASH DEPOSIT): ditanyakan. Hasil jualan tunai yang belum tercatat → kategori
+- **Setor tunai** (SETOR TUNAI, CASH DEPOSIT): diberi usulan (mis. hasil jualan tunai) dalam satu konfirmasi. Hasil jualan tunai yang belum tercatat → kategori
   pemasukan; uang dari laci/dompet yang sudah tercatat di akun Actual lain → transfer. Setoran yang jelas hasil
   usaha (SETORAN PENJUALAN/HASIL/OMZET, QRIS, SETTLEMENT/MERCHANT, EDC) langsung diusulkan "Pendapatan Usaha".
 - **Pindah dana milik sendiri**: TARIK TUNAI/TARIKAN ATM, TOP UP/GOPAY/OVO/DANA/SHOPEEPAY/FLAZZ,

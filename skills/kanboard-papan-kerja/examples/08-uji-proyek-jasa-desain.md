@@ -65,7 +65,7 @@ Papan: Proyek Studio Desain Kirana (id 3)
 Kolom: Prospek/Brief
 Judul: Tes PIC
 PIC: Sari Wulandari
-Belum disimpan. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum disimpan. Simpan ke Kanboard? (ya/tidak)
 (kode keluar 0)
 $ papan ambigu "Pro"
 GAGAL: Nama papan 'Pro' cocok lebih dari satu: Produksi Konveksi Mekar Jaya (id 1); Proyek Studio Desain Kirana (id 3). Sebutkan id-nya.

@@ -72,3 +72,8 @@ Kualitas draf, keseimbangan klausul, dan penanganan kasus berisiko sudah setara 
 - Skor sebelum → sesudah: sewa kios 5,5 → 9; jebakan utang + BPKB 3 → 9; varian titip jual (sesudah saja) 9. Rata-rata berpasangan 4,25 → 9,0 (selisih +4,75).
 - Tiga cacat tampilan Telegram gelombang 5 sudah teratasi: naskah utuh tampil di chat (dipecah Bagian 1/4–4/4), beban biaya (PBB pemilik; listrik/air/iuran pasar penyewa) konsisten antar pasal & asumsi, pengakhiran bertahap tanpa pengosongan sepihak. Disclaimer ada; angka sewa, jaminan, dan jadwal bayar terverifikasi Python.
 - **VERDIK: LULUS** (acuan pemilik 2026-10-03: sesudah ≥ 8, selisih ≥ 1,5). Cacat tersisa minor: "pemilik sah" di latar belakang saat status hak kios belum diketahui, satu butir checklist meterai kurang jelas, satu bagian chat ±4.090 karakter.
+
+## Catatan revisi 1.0.9 (2026-10-26)
+- Pemicu: pra-cek konteks Telegram Akun A 21 Okt 2026 (v1.0.8) skor 7,5 TIDAK SIAP. Isi dan angka benar; yang gagal hanya cara kirim di chat: jalur berkas disebut, kata "script" muncul, naskah 13.664 karakter dalam satu blok kode, dua gaya isian.
+- Perbaikan: larangan jalur berkas (kalimat baku "Balas 'kirim file'"), larangan kata script/skrip/tool/exec/python, naskah teks biasa per "Bagian 1/N" < 3.800 karakter dipotong antar-pasal (perintah `bagi`), pemeriksa balasan (`cek-balasan`), satu gaya isian `[isi: ...]`. Isi pasal/angka tidak berubah.
+- Uji: `scripts/uji_regresi.py` lulus (termasuk uji baru untuk tiap aturan; `bagi` diuji pada ketujuh template: tiap bagian ≤ 3.800, label urut, potongan selalu di awal pasal/lampiran/penutup, jumlah pasal, ayat, dan nominal tetap sama). Skor 8 di atas tetap; belum diuji ulang di bot Telegram asli maupun `uji-tg.sh`.

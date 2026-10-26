@@ -1,5 +1,7 @@
 # 02 — Sewa kios pasar 1 tahun, bayar 2 tahap, deposit
 
+> **Catatan 1.0.9:** isian di contoh ini diseragamkan ke gaya `[isi: ...]` dan kalimat "dicek script" di jawaban diganti "sudah dihitung ulang". Naskah di bawah ditampilkan dalam format berkas/terminal (judul `#`, tabel). Di kanal chat (Telegram/WhatsApp) sejak 1.0.9 naskah yang sama dikirim sebagai teks biasa per "Bagian 1/N" (< 3.800 karakter, dipotong antar-pasal) hasil `perjanjian.py bagi`, tanpa jalur berkas dan tanpa kata script.
+
 ## Skenario
 S2, permintaan normal. Pemilik kios menyewakan kiosnya ke pedagang pulsa. Pembayaran dua tahap dan ada deposit. Info cukup lengkap, kecuali NIK, alamat, nomor sertifikat, dan rekening.
 
@@ -12,7 +14,7 @@ S2, permintaan normal. Pemilik kios menyewakan kiosnya ke pedagang pulsa. Pembay
 1. Saring batasan: sewa tempat 1 tahun, Rp 18 juta → dalam cakupan (bukan jual beli tanah, < Rp500 juta, ≤ 5 tahun).
 2. Template `templates/sewa-tempat.md`. Peringatan wajib di PANDUAN AGENT ditampilkan (harta bersama, PPh sewa).
 3. Script: `tanggal 2026-10-05` (Senin); `termin --total "18 juta" --persen 50,50` → Rp 9.000.000 + Rp 9.000.000, cek total cocok; `terbilang 1.500.000`; `denda --nilai "Rp 9.000.000" --persen-per-hari 0,1 --hari 30 --maks-persen 5` → contoh denda 30 hari Rp 270.000, maksimum Rp 450.000.
-4. `cek` → PERLU PERBAIKAN hanya karena isian `[[...]]`; **4/4 nominal-terbilang cocok**; 10 pasal urut; 1 pasal ⚠.
+4. `cek` → PERLU PERBAIKAN hanya karena isian `[isi: ...]`; **4/4 nominal-terbilang cocok**; 10 pasal urut; 1 pasal ⚠.
 
 ### Jawaban ke pengguna
 
@@ -26,22 +28,22 @@ Dua hal penting sebelum lanjut:
 
 # PERJANJIAN SEWA-MENYEWA TEMPAT USAHA
 
-Nomor: [[NOMOR PERJANJIAN]]
+Nomor: [isi: NOMOR PERJANJIAN]
 
 Pada hari ini, Senin, tanggal lima bulan Oktober tahun dua ribu dua puluh enam (05-10-2026), bertempat di Yogyakarta, kami yang bertanda tangan di bawah ini:
 
 1. **Nama**: Sri Wahyuni (fiktif)
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]]
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT]
    Bertindak untuk diri sendiri selaku pemilik objek sewa, selanjutnya disebut **"PIHAK PERTAMA"** atau **"Pemilik"**.
 
 2. **Nama**: Joko Santoso (fiktif)
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]]
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT]
    Bertindak untuk diri sendiri, selanjutnya disebut **"PIHAK KEDUA"** atau **"Penyewa"**.
 
 Para Pihak terlebih dahulu menerangkan:
-a. PIHAK PERTAMA adalah pemilik sah atas 1 (satu) unit kios yang terletak di Pasar Fiktif Blok B Nomor 12, [[KELURAHAN/KECAMATAN]], Kota Yogyakarta, dengan luas kurang lebih 12 m² (3 x 4 meter), berdasarkan Sertifikat Hak Milik Nomor [[NOMOR SHM]] atas nama Sri Wahyuni (fiktif) (selanjutnya disebut **"Objek Sewa"**);
+a. PIHAK PERTAMA adalah pemilik sah atas 1 (satu) unit kios yang terletak di Pasar Fiktif Blok B Nomor 12, [isi: KELURAHAN/KECAMATAN], Kota Yogyakarta, dengan luas kurang lebih 12 m² (3 x 4 meter), berdasarkan Sertifikat Hak Milik Nomor [isi: NOMOR SHM] atas nama Sri Wahyuni (fiktif) (selanjutnya disebut **"Objek Sewa"**);
 b. PIHAK KEDUA bermaksud menyewa Objek Sewa untuk kegiatan usaha penjualan pulsa, kartu perdana, dan aksesoris telepon seluler;
 c. Para Pihak sepakat membuat Perjanjian Sewa-Menyewa dengan ketentuan sebagai berikut.
 
@@ -58,7 +60,7 @@ c. Para Pihak sepakat membuat Perjanjian Sewa-Menyewa dengan ketentuan sebagai b
 ## Pasal 3
 ### Harga Sewa dan Pembayaran
 (1) Harga sewa adalah Rp 18.000.000 (delapan belas juta rupiah) untuk seluruh jangka waktu sewa.
-(2) Harga sewa dibayar bertahap sesuai jadwal pada ayat (3) melalui transfer ke rekening [[BANK]] nomor [[NOMOR REKENING]] atas nama [[NAMA PEMILIK REKENING]]. Setiap pembayaran dibuatkan kuitansi.
+(2) Harga sewa dibayar bertahap sesuai jadwal pada ayat (3) melalui transfer ke rekening [isi: BANK] nomor [isi: NOMOR REKENING] atas nama [isi: NAMA PEMILIK REKENING]. Setiap pembayaran dibuatkan kuitansi.
 (3) Jadwal pembayaran:
    a. pembayaran pertama 50% sebesar Rp 9.000.000 (sembilan juta rupiah) pada saat penandatanganan Perjanjian ini, 5 Oktober 2026;
    b. pembayaran kedua 50% sebesar Rp 9.000.000 (sembilan juta rupiah) paling lambat 5 April 2027.
@@ -132,15 +134,15 @@ Saksi-saksi (opsional): 1. ______________________  2. ______________________
 ### Lampiran 1: Berita Acara Kondisi dan Fasilitas Objek Sewa
 | No | Bagian/Fasilitas | Kondisi saat serah terima | Keterangan/foto |
 |---|---|---|---|
-| 1 | [[mis. Pintu rolling door]] | [[baik/rusak ringan]] | [[...]] |
-| 2 | [[Listrik: daya ... VA, meter no. ...]] | [[...]] | [[angka meter awal]] |
-| 3 | [[Air: PDAM/sumur, meter no. ...]] | [[...]] | [[angka meter awal]] |
-Kunci diserahkan: [[jumlah]] buah. Ditandatangani Para Pihak pada saat serah terima.
+| 1 | [isi: mis. Pintu rolling door] | [isi: baik/rusak ringan] | [isi: ...] |
+| 2 | [isi: Listrik: daya ... VA, meter no. ...] | [isi: ...] | [isi: angka meter awal] |
+| 3 | [isi: Air: PDAM/sumur, meter no. ...] | [isi: ...] | [isi: angka meter awal] |
+Kunci diserahkan: [isi: jumlah] buah. Ditandatangani Para Pihak pada saat serah terima.
 
 ---
 
 ### Yang masih perlu dilengkapi
-- `[[NOMOR PERJANJIAN]]`, `[[NIK]]`/`[[ALAMAT]]` kedua pihak, `[[KELURAHAN/KECAMATAN]]`, `[[NOMOR SHM]]`, `[[BANK]]`/`[[NOMOR REKENING]]`/`[[NAMA PEMILIK REKENING]]`.
+- `[isi: NOMOR PERJANJIAN]`, `[isi: NIK]`/`[isi: ALAMAT]` kedua pihak, `[isi: KELURAHAN/KECAMATAN]`, `[isi: NOMOR SHM]`, `[isi: BANK]`/`[isi: NOMOR REKENING]`/`[isi: NAMA PEMILIK REKENING]`.
 - Lampiran 1 (kondisi kios, angka meter listrik/air, jumlah kunci) diisi bersama saat serah terima.
 
 ### Pasal yang sebaiknya ditinjau pengacara
@@ -156,7 +158,7 @@ Kunci diserahkan: [[jumlah]] buah. Ditandatangani Para Pihak pada saat serah ter
 - [ ] Cocokkan KTP Pak Joko dengan data di perjanjian.
 - [ ] Siapkan fotokopi SHM (nama pemilik = Ibu Sri). Bila kios harta bersama, pasangan ikut tanda tangan di baris "Menyetujui".
 - [ ] Cek aturan pengelola pasar: apakah kios boleh disewakan ke pihak lain dan apakah perlu izin/lapor ke pengelola.
-- [ ] Angka dan terbilang sama persis (dicek script: 4/4 cocok).
+- [ ] Angka dan terbilang sama persis (sudah dihitung ulang: 4/4 cocok).
 - [ ] Rekening tujuan atas nama Ibu Sri.
 - [ ] Isi Lampiran 1 bersama saat serah terima kunci, termasuk angka meter listrik awal, lalu foto kondisi kios.
 - [ ] Buat kuitansi untuk pembayaran Rp 9.000.000 dan deposit Rp 1.500.000. Kuitansi > Rp5.000.000 wajib bermeterai Rp10.000.

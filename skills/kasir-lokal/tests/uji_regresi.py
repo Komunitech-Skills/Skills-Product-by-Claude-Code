@@ -326,7 +326,7 @@ class UjiReturVoidKas(Dasar):
         self.assertIn("KURANG Rp 900", t["teks"])
         self.assertEqual(t["per_metode"].get("QRIS"), 0)
         self.assertIn("backup", t)
-        self.assertIn("Tidak ada kasir", self.gagal("tutup-kasir", "--kas-fisik", "0", "--ya")["error"])
+        self.assertIn("Kasir belum dibuka", self.gagal("tutup-kasir", "--kas-fisik", "0", "--ya")["error"])
 
     def test_31_buka_kasir_mundur_mengikutkan_nota(self):
         self.jual("1 kopi hitam, bayar pas", "2026-09-24 08:00")
@@ -419,7 +419,7 @@ class UjiRekapStrukEkspor(Dasar):
             rows = list(csv.DictReader(f, delimiter=";"))
         self.assertEqual({r["Status"] for r in rows if r["Nomor Pesanan"] == "N-260924-0001"}, {"Dibatalkan"})
         self.assertTrue(all(float(r["Jumlah"].replace(",", ".")) > 0 for r in rows))   # tanpa qty minus
-        self.assertTrue(any("retur-pembeli" in p for p in o["peringatan"]))
+        self.assertTrue(any("retur pembeli" in p for p in o["peringatan"]))
         stok = os.path.join(AKAR, "..", "buku-stok", "scripts", "stok.py")
         if os.path.isfile(stok):
             import subprocess
@@ -492,11 +492,11 @@ class UjiDataRusak(Dasar):
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             self.assertEqual(K.main(["info", "--db", p, "--json"]), 1)
-        self.assertIn("bukan database", json.loads(buf.getvalue())["error"])
+        self.assertIn("bukan buku kasir", json.loads(buf.getvalue())["error"])
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             self.assertEqual(K.main(["info", "--db", os.path.join(self.dir, "tidak-ada.db"), "--json"]), 1)
-        self.assertIn("belum ada", json.loads(buf.getvalue())["error"])
+        self.assertIn("belum dibuat", json.loads(buf.getvalue())["error"])
 
     def test_43_lokasi_db_env(self):
         lama = {k: os.environ.pop(k, None) for k in ("KOMUNITECH_KASIR_DB", "KOMUNITECH_DATA")}
@@ -757,12 +757,12 @@ class UjiV118(Dasar):
         return self.ok(*(argv + list(extra)))
 
     def test_70_version_sama_di_semua_berkas(self):
-        self.assertEqual(K.VERSI, "1.1.8")
+        self.assertEqual(K.VERSI, "1.1.10")
         spec = importlib.util.spec_from_file_location("rekap_nota", os.path.join(AKAR, "scripts", "rekap_nota.py"))
         rn = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(rn)
         self.assertEqual(rn.VERSI, K.VERSI)
-        self.assertIn("## Catatan revisi %s (2026-10-17)" % K.VERSI, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
+        self.assertIn("## Catatan revisi %s (2026-10-26)" % K.VERSI, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
         self.assertIn("Versi terkini: **%s**" % K.VERSI, isi_file(os.path.join(AKAR, "README.md")))
 
     def test_71_jual_tersimpan_memuat_struk_teks_58mm(self):
@@ -950,9 +950,9 @@ class UjiV118(Dasar):
         for perintah in (["info"], ["jual", "--pesan", PESAN_BOT]):
             kode, out = self.run_cli(*perintah)
             self.assertEqual(kode, 1, out)
-            self.assertIn("Buku kasir belum ada", out["error"])
-            self.assertIn("mulai --produk FILE", out["error"])
-            self.assertNotIn("Jalankan dulu: kasir.py init", out["error"])
+            self.assertIn("Buku kasir belum dibuat", out["error"])
+            self.assertIn("mulai --produk FILE", out["catatan_agent"])      # petunjuk agent pindah ke field sendiri
+            self.assertNotIn("mulai", out["error"])
             self.assertNotIn("Database", out["error"])
         self.assertFalse(os.path.exists(os.path.dirname(self.db)))
 
@@ -991,6 +991,381 @@ class UjiV118(Dasar):
     def test_87_changelog_menyebut_jumlah_uji_v118_dengan_benar(self):
         jumlah = len([n for n in UjiV118.__dict__ if n.startswith("test_")])
         self.assertIn("`UjiV118` (%d uji)" % jumlah, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
+
+
+POLA_FLAG = re.compile(r"--[a-z]")
+KATA_AGEN = ("kasir.py", "perintah yang sama", "produk impor", "produk ubah", ".db", ".html", ".csv", "backup-kasir")
+
+
+class UjiV119(Dasar):
+    """v1.1.9: field yang ditempel agent ke chat bebas dari instruksi agent, nama perintah/opsi, dan jalur berkas;
+    awalan 'catat penjualan:' tidak lagi memakan nama produk seperti 'masuk angin' / 'input data'."""
+
+    def bersih(self, teks, msg=""):
+        self.assertIsInstance(teks, str)
+        self.assertIsNone(POLA_FLAG.search(teks), (msg, teks))
+        for kata in KATA_AGEN + (self.dir, tempfile.gettempdir()):
+            self.assertNotIn(kata, teks, (msg, teks))
+
+    def baru(self):
+        self.dir2 = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.dir2, ignore_errors=True)
+        self.db = os.path.join(self.dir2, "data", "kasir.db")
+        self.csv = os.path.join(self.dir2, "produk.csv")
+        with open(self.csv, "w", encoding="utf-8", newline="") as f:
+            f.write(PRODUK_BOT_CSV)
+
+    def mulai(self, *extra):
+        return self.ok("mulai", "--produk", self.csv, "--nama-toko", "Warung Kopi", "--pesan", PESAN_BOT, *extra)
+
+    def test_90_pratinjau_berakhir_balas_ya_tanpa_instruksi_agen(self):
+        o = self.ok("jual", "--pesan", PESAN_BOT, "--waktu", "2026-09-24 10:00")
+        self.assertEqual(o["mode"], "pratinjau")
+        self.assertTrue(o["teks"].rstrip().endswith('Simpan? Balas "ya".'), o["teks"])
+        self.bersih(o["teks"])
+        self.assertIn("--ya", o["catatan_agent"])                      # petunjuk agent ada, tapi di field terpisah
+        self.jual("2 kopi hitam, bayar pas")
+        o = self.ok("void", "--nota", "N-260924-0001", "--alasan", "salah input", "--waktu", "2026-09-24 11:00")
+        self.assertTrue(o["teks"].rstrip().endswith('Simpan? Balas "ya".'), o["teks"])
+        self.bersih(o["teks"])
+
+    def test_91_jual_tersimpan_dan_struk_tanpa_jalur_berkas(self):
+        o = self.jual(PESAN_BOT, "2026-09-24 10:00", "--struk", "58")
+        self.bersih(o["teks"])
+        self.bersih(o["struk_teks"])
+        self.assertTrue(os.path.isfile(o["berkas_struk"]))              # jalur ada, tapi di field terpisah
+        self.assertEqual(o["berkas_struk"], o["struk"])
+        self.assertEqual((o["total"], o["kembalian"]), (45900, 54100))   # angka sama dengan 1.1.8
+        s = self.ok("struk", "--nota", o["no"], "--kertas", "80")
+        self.bersih(s["teks"])
+        self.assertTrue(os.path.isfile(s["berkas_struk"]))
+        self.assertIn("berkas_struk", s["catatan_agent"])
+        t = self.ok("struk", "--nota", o["no"], "--teks")
+        self.bersih(t["teks"])
+
+    def test_92_mulai_pratinjau_dan_tersimpan_bersih_jalur_di_field_terpisah(self):
+        self.baru()
+        o = self.mulai()
+        self.assertEqual(o["mode"], "pratinjau")
+        for kunci in ("teks", "struk_teks"):
+            self.bersih(o[kunci], kunci)
+            self.bersih(o[kunci].replace(self.dir2, ""), kunci)
+            self.assertNotIn(self.dir2, o[kunci])
+        self.assertIn('Balas "ya"', o["teks"])
+        self.assertEqual(o["lokasi_buku"], self.db)
+        self.assertEqual((o["total"], o["kembalian"]), (35100, 64900))
+        o = self.mulai("--ya")
+        for kunci in ("teks", "struk_teks"):
+            self.assertNotIn(self.dir2, o[kunci])
+            self.assertIsNone(POLA_FLAG.search(o[kunci]), o[kunci])
+        self.assertNotIn("kasir.db", o["teks"])
+        self.assertEqual((o["total"], o["kembalian"]), (35100, 64900))
+
+    def test_93_mulai_buku_sudah_ada_pesan_kata_awam(self):
+        self.baru()
+        self.mulai("--ya")
+        kode, out = self.run_cli("mulai", "--produk", self.csv, "--nama-toko", "Warung Kopi", "--pesan", PESAN_BOT)
+        self.assertEqual(kode, 1)
+        for kata in ("produk impor", "kasir.py", "--"):
+            self.assertNotIn(kata, out["error"])
+        self.assertIsNone(re.search(r"\bjual\b", out["error"]))
+        self.assertNotIn(self.dir2, out["error"])
+        self.assertIn("sudah ada", out["error"])
+        self.assertIn("produk impor", out["catatan_agent"])
+        self.assertEqual(out["lokasi_buku"], self.db)
+
+    def test_94_pesan_galat_tanpa_opsi_atau_jalur(self):
+        """Galat yang bisa sampai ke pemilik: nama opsi dan perintah dipindah ke catatan_agent."""
+        kasus = [
+            ("void", "--nota", "N-260924-0001"),                         # alasan kosong
+            ("kas",),                                                     # masuk/keluar kosong
+            ("kas", "--keluar", "5rb"),                                   # catatan kosong
+            ("tutup-kasir", "--kas-fisik", "0"),                          # kasir belum dibuka
+            ("jual", "--pesan", "bayar tunai 5rb"),                      # tidak ada barang
+            ("jual", "--pesan", "2 kopi hitam @9rb"),                    # harga di pesanan
+            ("init", "--nama-toko", "X", "--pajak", "pbjt-belum"),       # tarif PBJT kosong
+            ("atur",),                                                    # tak ada yang diubah
+            ("stok", "--kode", "KH"),                                     # jumlah kosong
+        ]
+        for argv in kasus:
+            try:
+                kode, out = self.run_cli(*argv)
+            except SystemExit:    # salah tulis opsi oleh agent (bukan galat untuk pemilik)
+                continue
+            if kode == 0:      # perintah yang butuh buku baru bisa lolos; hanya galat yang diperiksa
+                continue
+            self.bersih(out["error"], argv)
+            self.assertTrue(out.get("catatan_agent") or "--" not in out["error"], argv)
+        self.jual("2 kopi hitam, bayar pas")
+        kode, out = self.run_cli("jual", "--pesan", "2 kopi hitam, bayar pas", "--waktu", "2026-09-24 10:03", "--ya")
+        self.assertEqual(kode, 1)
+        self.bersih(out["error"])
+        self.assertIn("--izinkan-duplikat", out["catatan_agent"])
+        o = self.ok("jual", "--pesan", "2 kopi hitam, bayar pas", "--waktu", "2026-09-24 10:04")
+        for p in o["peringatan"]:
+            self.bersih(p)
+
+    def test_95_backup_info_ekspor_rekap_tanpa_jalur_di_teks(self):
+        self.jual("2 kopi hitam, bayar pas")
+        self.bersih(self.ok("info")["teks"])
+        b = self.ok("backup")
+        self.bersih(b["teks"])
+        self.assertTrue(os.path.isfile(b["berkas_backup"]))
+        d = self.ok("backup", "--daftar")
+        self.bersih(d["teks"])
+        self.assertEqual(len(d["berkas_backup"]), len(d["backup"]))
+        r = self.ok("restore", "--dari", b["berkas_backup"])
+        self.bersih(r["teks"])
+        self.assertTrue(r["teks"].rstrip().endswith('Simpan? Balas "ya".'))
+        r = self.ok("restore", "--dari", b["berkas_backup"], "--ya")
+        self.bersih(r["teks"])
+        for fmt in ("penjualan", "buku-stok"):
+            e = self.ok("ekspor", "--format", fmt, "--tanggal", "2026-09-24", "--csv", os.path.join(self.dir, "e.csv"))
+            self.bersih(e["teks"], fmt)
+            self.assertTrue(os.path.isfile(e["berkas_csv"]))
+        rk = self.ok("rekap", "--tahun", "2026", "--csv", os.path.join(self.dir, "r.csv"),
+                     "--csv-produk", os.path.join(self.dir, "p.csv"))
+        self.bersih(rk["teks"])
+        self.assertTrue(os.path.isfile(rk["berkas_csv"]) and os.path.isfile(rk["berkas_csv_produk"]))
+        self.assertIn("perintah_pph_final", rk)
+
+    def test_96_awalan_hanya_dibuang_bila_jelas_awalan(self):
+        pecah = K.pecah_pesan
+        for tak_dibuang in ("masuk angin=2", "input data 1", "Masuk Angin 2, bayar pas", "masuk-angin 2",
+                            "Rekam Jejak 1", "masukkan angin 2"):
+            self.assertEqual(pecah(tak_dibuang)[0].lower(), tak_dibuang.split(",")[0].lower(), tak_dibuang)
+        for kalimat, hasil in (("Tolong catat penjualan: 2 kopi", "2 kopi"), ("catat penjualan 2 kopi", "2 kopi"),
+                               ("catat: 2 kopi", "2 kopi"), ("input transaksi hari ini: 1 roti", "1 roti"),
+                               ("masukkan pesanan baru: 2 teh", "2 teh"), ("rekam nota 2 kopi", "2 kopi"),
+                               ("penjualan 2 kopi", "2 kopi"), ("catat - 2 kopi", "2 kopi"),
+                               ("coba catatkan penjualan: 2 kopi, bayar pas", "2 kopi"),
+                               ("catatan: meja 4, 2 kopi", "catatan: meja 4"),
+                               ("catat 2 kopi hitam, bayar pas", "2 kopi hitam"), ("input 3 teh", "3 teh")):
+            self.assertEqual(pecah(kalimat)[0], hasil, kalimat)
+
+    def test_97_produk_bernama_mirip_awalan_tetap_terjual(self):
+        self.ok("produk", "tambah", "--kode", "MA", "--nama", "Masuk Angin", "--harga", "4000", "--satuan", "sachet", "--ya")
+        self.ok("produk", "tambah", "--kode", "ID", "--nama", "Input Data", "--harga", "7000", "--satuan", "pcs", "--ya")
+        for pesan, kode, total in (("masuk angin 2, bayar pas", "MA", 8000), ("input data 1, bayar pas", "ID", 7000),
+                                   ("Tolong catat penjualan: masuk angin 3, bayar pas", "MA", 12000),
+                                   ("catat: input data x2, bayar pas", "ID", 14000), ("MA=2, bayar pas", "MA", 8000),
+                                   ("masuk angin x2, bayar pas", "MA", 8000)):
+            o = self.ok("jual", "--pesan", pesan, "--waktu", "2026-09-24 10:00")
+            self.assertEqual(([b["kode"] for b in o["baris"]], o["total"]), ([kode], total), pesan)
+
+    def test_98_angka_tidak_berubah_dari_118(self):
+        o = self.jual("2 kopi susu gula aren, 1 roti bakar, diskon 10%, bayar tunai 100rb")
+        self.assertEqual((o["total"], o["kembalian"]), (45900, 54100))
+        o = self.jual("1,5 kg gula pasir, 3 es teh manis, bayar tunai 50rb", "2026-09-24 11:00")
+        self.assertEqual((o["total"], o["kembalian"]), (42750, 7250))
+
+    def test_98b_skill_md_satu_aturan_berkas_dan_frontmatter(self):
+        t = isi_file(os.path.join(AKAR, "SKILL.md"))
+        self.assertLess(len(t.splitlines()), 300)
+        kepala = t.split("---")[1]
+        self.assertEqual(sorted(l.split(":")[0] for l in kepala.strip().splitlines()), ["description", "name"])
+        self.assertIn("tersimpan di komputer ini", t)
+        self.assertIn("catatan_agent", t)
+        self.assertNotIn("jangan menulis file baru tanpa menyebut lokasinya", t)     # bertentangan dengan aturan chat
+        self.assertEqual(t.count("Satu aturan untuk semua berkas"), 1)
+
+    def test_99_changelog_menyebut_jumlah_uji_v119_dengan_benar(self):
+        jumlah = len([n for n in UjiV119.__dict__ if n.startswith("test_")])
+        self.assertIn("`UjiV119` (%d uji)" % jumlah, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
+
+
+class UjiV1110(Dasar):
+    """v1.1.10 (temuan verifikator atas draf 1.1.9): galat `error` tanpa nama perintah/jalur berkas, frasa
+    'catat 2 kopi hitam' dipahami lagi, klaim penutup pratinjau jujur, dokumen disamakan."""
+
+    KATA_PERINTAH = ("buka-kasir", "tutup-kasir", "kasir.py", "database", "restore", "produk impor", "mulai --")
+
+    def bersih_error(self, teks, msg=""):
+        self.assertIsNone(POLA_FLAG.search(teks), (msg, teks))
+        self.assertNotIn(self.dir, teks)
+        self.assertNotIn(tempfile.gettempdir(), teks)
+        self.assertIsNone(re.search(r"(?i)\bfile\b", teks), (msg, teks))
+        for kata in self.KATA_PERINTAH + (".db", ".csv", ".html"):
+            self.assertNotIn(kata, teks, (msg, teks))
+
+    def main_json(self, *argv):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            kode = K.main(list(argv) + ["--json"])
+        return kode, json.loads(buf.getvalue())
+
+    def test_100_kas_sebelum_kasir_dibuka_galat_awam(self):
+        kode, o = self.run_cli("kas", "--keluar", "20rb", "--catatan", "es batu")
+        self.assertEqual(kode, 1)
+        self.bersih_error(o["error"])
+        self.assertIn("belum dibuka", o["error"])
+        self.assertIn("buka-kasir", o["catatan_agent"])
+
+    def test_101_buka_kasir_dua_kali_galat_awam(self):
+        self.ok("buka-kasir", "--kas-awal", "100rb", "--ya")
+        kode, o = self.run_cli("buka-kasir", "--kas-awal", "100rb", "--ya")
+        self.assertEqual(kode, 1)
+        self.bersih_error(o["error"])
+        self.assertIn("sudah dibuka", o["error"])
+        self.assertIn("tutup-kasir", o["catatan_agent"])
+
+    def test_102_galat_berkas_tanpa_jalur_jalur_di_field_terpisah(self):
+        hilang = os.path.join(self.dir, "tidakada.csv")
+        kode, o = self.run_cli("produk", "impor", hilang, "--ya")
+        self.assertEqual(kode, 1)
+        self.bersih_error(o["error"], "csv hilang")
+        self.assertEqual(o["berkas_csv_produk"], hilang)
+        kosong = self.file("kosong.csv", "")
+        kode, o = self.run_cli("produk", "impor", kosong, "--ya")
+        self.assertEqual(kode, 1)
+        self.bersih_error(o["error"], "csv kosong")
+        self.assertEqual(o["berkas_csv_produk"], kosong)
+        bukan = self.file("lain.db", "ini bukan buku kasir")
+        kode, o = self.main_json("info", "--db", bukan)
+        self.assertEqual(kode, 1)
+        self.bersih_error(o["error"], "bukan buku kasir")
+        self.assertIn("bukan buku kasir", o["error"])
+        self.assertEqual(o["lokasi_buku"], bukan)
+        lain = os.path.join(self.dir, "lain2.db")
+        sqlite3.connect(lain).execute("CREATE TABLE meta(kunci TEXT, nilai TEXT)").connection.close()
+        kode, o = self.main_json("info", "--db", lain)
+        self.assertEqual(kode, 1)
+        self.bersih_error(o["error"], "db asing")
+        self.assertEqual(o["lokasi_buku"], lain)
+        gaib = os.path.join(self.dir, "gaib.db")
+        kode, o = self.run_cli("restore", "--dari", gaib)
+        self.assertEqual(kode, 1)
+        self.bersih_error(o["error"], "restore")
+        self.assertEqual(o["berkas_backup"], gaib)
+
+    def test_103_semua_galat_di_kode_tanpa_nama_perintah_dan_jalur(self):
+        """Sapuan statis: kalimat pertama setiap `Gagal(...)` tidak boleh memuat nama perintah, opsi, atau 'File %s'."""
+        import ast
+        src = isi_file(os.path.join(AKAR, "scripts", "kasir.py"))
+        diperiksa = 0
+        for n in ast.walk(ast.parse(src)):
+            if isinstance(n, ast.Call) and getattr(n.func, "id", "") == "Gagal" and n.args:
+                seg = ast.get_source_segment(src, n.args[0])
+                diperiksa += 1
+                for kata in ("-kasir", "--", "database", "kasir.py", "File %s", "File backup", "produk impor", "mulai --"):
+                    self.assertNotIn(kata, seg, (n.lineno, seg))
+                self.assertIsNone(re.search(r"\b(?:restore|init)\b", seg), (n.lineno, seg))
+        self.assertGreater(diperiksa, 80)
+
+    def test_104_catat_kata_kerja_plus_angka_dipahami_seperti_118(self):
+        self.ok("produk", "tambah", "--kode", "MA", "--nama", "Masuk Angin", "--harga", "4000", "--satuan", "sachet", "--ya")
+        self.ok("produk", "tambah", "--kode", "ID", "--nama", "Input Data", "--harga", "7000", "--satuan", "pcs", "--ya")
+        for pesan, kode, total in (("catat 2 kopi hitam, bayar pas", "KH", None), ("input 3 kopi hitam, bayar pas", "KH", None),
+                                   ("MA=2, bayar pas", "MA", 8000), ("input data 1, bayar pas", "ID", 7000),
+                                   ("masuk angin 2, bayar pas", "MA", 8000)):
+            kode_cli, o = self.run_cli("jual", "--pesan", pesan, "--waktu", "2026-09-24 10:00")
+            if kode == "KH" and kode_cli == 1:
+                self.fail((pesan, o))                          # produk Kopi Hitam ada di katalog contoh bila dikenal
+            self.assertEqual(kode_cli, 0, (pesan, o))
+            self.assertEqual([b["kode"] for b in o["baris"]], [kode if kode != "KH" else o["baris"][0]["kode"]], pesan)
+            if total:
+                self.assertEqual(o["total"], total, pesan)
+        self.assertEqual(K.pecah_pesan("catat 2 kopi hitam, bayar pas")[0], "2 kopi hitam")
+
+    def test_109_catat_angka_kata_dan_qty_di_belakang(self):
+        """Temuan verifikator: 'catat dua kopi hitam' (angka kata) dan 'catat kopi hitam 2' (qty di akhir) harus terbaca;
+        nama barang 'masuk angin' / 'input data' tetap utuh; kerusakan sqlite non-kunci memberi catatan_agent."""
+        self.ok("produk", "tambah", "--kode", "MA", "--nama", "Masuk Angin", "--harga", "4000", "--satuan", "sachet", "--ya")
+        self.ok("produk", "tambah", "--kode", "ID", "--nama", "Input Data", "--harga", "7000", "--satuan", "pcs", "--ya")
+        self.assertEqual(K.pecah_pesan("catat dua kopi hitam, bayar pas")[0], "dua kopi hitam")
+        self.assertEqual(K.pecah_pesan("masuk angin=2")[0], "masuk angin=2")
+        self.assertEqual(K.pecah_pesan("input data 1")[0], "input data 1")
+        for pesan in ("catat dua kopi hitam, bayar pas", "catat kopi hitam 2, bayar pas", "input kopi hitam x2, bayar pas"):
+            kode_cli, o = self.run_cli("jual", "--pesan", pesan, "--waktu", "2026-09-24 10:00")
+            self.assertEqual(kode_cli, 0, (pesan, o))
+            self.assertEqual(len(o["baris"]), 1, pesan)
+            self.assertEqual(o["baris"][0]["qty"] in (2, "2", 2.0) or str(o["baris"][0]["qty"]).startswith("2"), True, pesan)
+        for pesan, kode in (("masuk angin=2, bayar pas", "MA"), ("input data 1, bayar pas", "ID"),
+                            ("catat masuk angin 2, bayar pas", "MA")):
+            kode_cli, o = self.run_cli("jual", "--pesan", pesan, "--waktu", "2026-09-24 10:00")
+            self.assertEqual(kode_cli, 0, (pesan, o))
+            self.assertEqual([b["kode"] for b in o["baris"]], [kode], pesan)
+
+    def test_110_galat_sqlite_permanen_tidak_bilang_sementara(self):
+        import io, contextlib
+        asli = K.buat_parser
+        class P:
+            def parse_args(self, argv):
+                class A:
+                    json = True
+                    @staticmethod
+                    def fungsi(a):
+                        raise K.sqlite3.OperationalError("no such table: nota")
+                return A()
+        K.buat_parser = lambda: P()
+        try:
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                self.assertEqual(K.main([]), 1)
+        finally:
+            K.buat_parser = asli
+        o = json.loads(buf.getvalue())
+        self.assertNotIn("sementara", o["error"])
+        self.assertNotIn("no such table", o["error"])
+        self.assertIn("no such table", o["catatan_agent"])
+
+    def test_111_skill_md_tidak_menyebut_aturan_lama(self):
+        md = isi_file(os.path.join(AKAR, "SKILL.md"))
+        self.assertLess(len(md.splitlines()), 300)
+        self.assertNotIn("tidak lagi dipahami", md)
+
+    def test_105_klaim_penutup_pratinjau_sesuai_kenyataan(self):
+        jual = self.ok("jual", "--pesan", "2 kopi hitam, bayar pas", "--waktu", "2026-09-24 10:00")
+        self.assertTrue(jual["teks"].rstrip().endswith('Simpan? Balas "ya".'))
+        d2 = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, d2, ignore_errors=True)
+        berkas = os.path.join(d2, "produk.csv")
+        with open(berkas, "w", encoding="utf-8", newline="") as f:
+            f.write(PRODUK_BOT_CSV)
+        kode, o = self.main_json("mulai", "--db", os.path.join(d2, "k.db"), "--produk", berkas, "--nama-toko", "Warung",
+                                 "--pesan", PESAN_BOT)
+        self.assertEqual(kode, 0, o)
+        self.assertTrue(o["teks"].rstrip().endswith('(mis. "sudah PKP", "kertas 80 mm", "bayarnya QRIS").'), o["teks"][-200:])
+        self.assertIn('Balas "ya" kalau sudah sesuai.', o["teks"])
+        for nama in ("SKILL.md", "README.md", "CHANGELOG.md"):
+            t = isi_file(os.path.join(AKAR, nama))
+            self.assertNotIn("pratinjau selalu berakhir", t.lower(), nama)
+        self.assertIn('berakhir `Balas "ya" kalau sudah sesuai.`', isi_file(os.path.join(AKAR, "SKILL.md")))
+
+    def test_106_ekspor_petunjuk_retur_pembeli_di_catatan_agent(self):
+        n = self.jual("3 kopi hitam, bayar tunai 100rb")
+        self.ok("retur", "--nota", n["no"], "--item", "1 kopi hitam", "--alasan", "salah rasa", "--refund", "tunai",
+                "--waktu", "2026-09-24 12:00", "--ya")
+        o = self.ok("ekspor", "--format", "buku-stok", "--tanggal", "2026-09-24", "--csv", os.path.join(self.dir, "bs.csv"))
+        self.assertTrue(o["peringatan"])
+        for p in o["peringatan"]:
+            self.assertNotIn("retur-pembeli", p)
+            self.assertIsNone(POLA_FLAG.search(p), p)
+        self.assertIn("retur-pembeli", o["catatan_agent"])
+        self.assertNotIn("retur-pembeli", o["teks"])
+
+    def test_107_dokumen_disamakan(self):
+        self.assertNotIn("Lokasi DB", isi_file(os.path.join(AKAR, "references", "perintah.md")))
+        skill = isi_file(os.path.join(AKAR, "SKILL.md"))
+        self.assertIn("(kecuali pemilik memintanya atau jelas di komputer yang sama)", skill)
+        self.assertLess(len(skill.splitlines()), 300)
+        kepala = skill.split("---")[1]
+        self.assertEqual(sorted(l.split(":")[0] for l in kepala.strip().splitlines()), ["description", "name"])
+        self.assertIn("Buku kasir ada dan terbaca", self.ok("info")["teks"])
+        self.assertNotIn(self.dir, self.ok("info")["teks"])
+        readme = isi_file(os.path.join(AKAR, "README.md"))
+        self.assertEqual(readme.count("## Bukti uji di bot Telegram"), 1)
+        self.assertIn("belum diuji ulang di bot asli", readme)
+
+    def test_108_changelog_menyebut_jumlah_uji_dengan_benar(self):
+        jumlah = len([n for n in UjiV1110.__dict__ if n.startswith("test_")])
+        t = isi_file(os.path.join(AKAR, "CHANGELOG.md"))
+        self.assertIn("`UjiV1110` (%d uji)" % jumlah, t)
+        total = 0
+        for nama, kls in list(globals().items()):
+            if isinstance(kls, type) and issubclass(kls, unittest.TestCase) and kls.__module__ == __name__:
+                total += len([n for n in dir(kls) if n.startswith("test_")]) if kls is not Dasar else 0
+        self.assertIn("Total %d uji di `uji_regresi.py`" % total, t)
 
 
 class UjiSingkatanFlag(unittest.TestCase):

@@ -72,9 +72,9 @@ for f in gw-cek.sh mk-home.sh uji.sh uji-tg.sh run-uji.sh run-uji-tg.sh; do
   chmod +x "$R/$f"
 done
 mkdir -p "$R/pilot" && cp "$ALAT"/brief/*.md "$R/" 2>/dev/null || true
-for f in "$ALAT"/pilot/*; do
-  sed -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g" "$f" > "$R/pilot/$(basename "$f")"
-done
+cp -r "$ALAT"/pilot/. "$R/pilot/"
+find "$R/pilot" -type f \( -name '*.py' -o -name '*.sh' -o -name '*.json' -o -name '*.md' \) -print0 | \
+  xargs -0 sed -i -e "s#/tmp/claude-0/-home-user-Skills/d777d314-a309-56aa-81f9-6ad58561dd1c/scratchpad/openclaw-real#$R#g"
 
 # 5b. Plugin pencarian web tanpa kunci (keputusan pemilik 2026-10-10 / C2)
 if [ -d "$H/extensions/duckduckgo" ] || HOME="$R/home" "$BASE/openclaw-prod/node_modules/.bin/openclaw" plugins list 2>/dev/null | grep -q duckduckgo; then

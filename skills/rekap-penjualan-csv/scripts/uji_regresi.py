@@ -327,7 +327,7 @@ class UjiSorotanProdukSeptember(unittest.TestCase):
             self.assertNotIn("|", baris)
             self.assertNotIn("**", baris)
             self.assertFalse(baris.startswith("_"), baris)
-        self.assertEqual(teks.lower().count("rata-rata"), 1)
+        self.assertEqual(teks.lower().count("rata-rata"), 1)   # baris pola hari sengaja tanpa kata "rata-rata"
         self.assertIn("Rata-rata per hari: Rp 183.967 (omzet dibagi 30 hari kalender; 29 hari ada penjualan)", teks)
         self.assertNotIn("190.310", teks)                     # rata-rata kedua (hari berjualan) tidak tampil
         self.assertEqual(self.h["rata_rata_harian"]["dasar"], "hari kalender")
@@ -338,8 +338,8 @@ class UjiSorotanProdukSeptember(unittest.TestCase):
                      "4. Topi Baseball: Rp 990.000 (17,9%), 22 pcs × Rp 45.000",
                      "5. Tote Bag Natural: Rp 805.000 (14,6%), 23 pcs × Rp 35.000",
                      "Terlaris menurut jumlah: Tote Bag Natural, 23 pcs",
-                     "Omzet tertinggi 5 Sep 2026 (Rp 549.000); terendah 18 Sep 2026 (Rp 35.000)",
-                     "Pesanan terbanyak: 1 Sep 2026 dan 5 Sep 2026 (5 pesanan per hari, seri)"):
+                     "Omzet tertinggi Sabtu, 5 Sep 2026 (Rp 549.000); terendah Jumat, 18 Sep 2026 (Rp 35.000)",
+                     "Pesanan terbanyak: Selasa, 1 Sep 2026 dan Sabtu, 5 Sep 2026 (5 pesanan per hari, seri)"):
             self.assertIn(kata, teks)
         self.assertLess(len(teks), 1200)
         self.assertIn("Paling banyak terjual menurut jumlah: Tote Bag Natural (23 pcs).",
@@ -456,7 +456,7 @@ class UjiTanpaKolomJumlah(unittest.TestCase):
                       "3 produk).", h["fakta_produk"])
 
     def test_opsi_satu_baris_tidak_mengubah_kolom_qty(self):
-        isi = "Tanggal,Produk,Qty,Total\n01/09/2026,Kopi,3,30.000\n01/09/2026,Teh,2,10.000\n"
+        isi = "Tanggal,Produk,Qty,Total\n13/09/2026,Kopi,3,30.000\n13/09/2026,Teh,2,10.000\n"
         _, a = rekap(isi, "--kolom-qty", "Qty")
         _, b = rekap(isi, "--kolom-qty", "Qty", "--satu-baris-satu-pcs")
         self.assertEqual(a["produk_terlaris"], b["produk_terlaris"])
@@ -468,8 +468,8 @@ class UjiStatusBelumFinal(unittest.TestCase):
     # Temuan verifikator 1.2.6: bila hanya SATU status dihitung dan belum final (mis. semua "Sedang Dikirim"),
     # rekap_chat tidak menyebut "belum final", padahal SKILL.md menyuruh rekap_chat ditempel apa adanya.
     ISI = ("No,Tanggal,Produk,Qty,Total,Status\n"
-           "P1,01/09/2026,Kaos,2,100.000,Sedang Dikirim\nP2,02/09/2026,Topi,1,45.000,Sedang Dikirim\n"
-           "P3,02/09/2026,Kaos,1,50.000,Dibatalkan\n")
+           "P1,13/09/2026,Kaos,2,100.000,Sedang Dikirim\nP2,14/09/2026,Topi,1,45.000,Sedang Dikirim\n"
+           "P3,14/09/2026,Kaos,1,50.000,Dibatalkan\n")
 
     def test_satu_status_belum_final_disebut_di_rekap_chat(self):
         _, h = rekap(self.ISI, "--kolom-qty", "Qty", "--kolom-status", "Status", "--kolom-pesanan", "No")
@@ -488,15 +488,15 @@ class UjiVersi(unittest.TestCase):
     def test_versi_sama_di_script_dan_dokumen(self):
         sys.path.insert(0, os.path.dirname(SCRIPT))
         import rekap as modul
-        self.assertEqual(modul.VERSI, "1.2.6")
+        self.assertEqual(modul.VERSI, "1.2.7")
         r = subprocess.run([sys.executable, SCRIPT, "--versi"], capture_output=True, text=True)
-        self.assertIn("1.2.6", r.stdout + r.stderr)
+        self.assertIn("1.2.7", r.stdout + r.stderr)
         _, h = rekap(CSV)
-        self.assertEqual(h["versi_script"], "1.2.6")
+        self.assertEqual(h["versi_script"], "1.2.7")
         folder = os.path.dirname(os.path.dirname(SCRIPT))
         for nama in ("SKILL.md", "README.md", "CHANGELOG.md"):
             with open(os.path.join(folder, nama), encoding="utf-8") as f:
-                self.assertTrue("1.2.6" in f.read(), nama)
+                self.assertTrue("1.2.7" in f.read(), nama)
 
     def test_contoh_readme_sama_dengan_keluaran_rekap_chat(self):
         # Temuan verifikator 1.2.6: cuplikan README masih format lama (judul ##, tabel, dua rata-rata).
@@ -519,6 +519,250 @@ class UjiVersi(unittest.TestCase):
         for baris in blok.splitlines():
             self.assertFalse(baris.lstrip().startswith("#"), baris)
             self.assertNotIn("|", baris)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# 1.2.7: nama hari, pola hari dalam minggu, peringatan dalam bahasa awam, baris tanpa jumlah.
+import datetime
+from fractions import Fraction
+
+HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+BLN = ["", "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
+
+
+def hari_independen(iso):
+    d = datetime.date.fromisoformat(iso)
+    return "{}, {} {} {}".format(HARI[d.weekday()], d.day, BLN[d.month], d.year)
+
+
+def csv_harian(awal, hari, nilai_per_hari):
+    """CSV satu baris per hari (tanggal ISO) dari `awal` sepanjang `hari` hari; nilai 0 = tidak ada penjualan."""
+    baris = ["Tanggal,Produk,Total"]
+    for i in range(hari):
+        d = awal + datetime.timedelta(days=i)
+        v = nilai_per_hari(d)
+        if v:
+            baris.append("{},Kopi,{}".format(d.isoformat(), v))
+    return "\n".join(baris) + "\n"
+
+
+class UjiNamaHari(unittest.TestCase):
+    def test_hari_pada_tanggal_penting(self):
+        h = rekap_september()
+        # 5 Sep 2026 Sabtu, 18 Sep 2026 Jumat, 1 Sep 2026 Selasa (dicek lewat datetime, bukan rekap.py)
+        self.assertEqual(hari_independen("2026-09-05"), "Sabtu, 5 Sep 2026")
+        chat, ring = h["rekap_chat"], h["ringkasan_siap_tempel"]
+        for teks in (chat, ring):
+            self.assertIn("Sabtu, 5 Sep 2026", teks)
+            self.assertIn("Jumat, 18 Sep 2026", teks)
+            self.assertIn("Selasa, 1 Sep 2026", teks)
+        self.assertIn("Omzet tertinggi Sabtu, 5 Sep 2026 (Rp 549.000); terendah Jumat, 18 Sep 2026 (Rp 35.000)", chat)
+        self.assertIn("Pesanan terbanyak: Selasa, 1 Sep 2026 dan Sabtu, 5 Sep 2026", chat)
+
+    def test_tanggal_batal_retur_di_ringkasan_pakai_hari(self):
+        h = rekap_september()
+        self.assertTrue(h["dibuang_per_tanggal"])
+        for x in h["dibuang_per_tanggal"]:
+            self.assertIn("{} {} pesanan ({})".format(hari_independen(x["tanggal"]), x["jumlah_pesanan"],
+                                                        x["status"]), h["ringkasan_siap_tempel"])
+
+    def test_judul_periode_tanpa_nama_hari(self):
+        h = rekap_september()
+        self.assertTrue(h["rekap_chat"].startswith("Rekap penjualan 1 Sep 2026 – 30 Sep 2026\n"))
+        self.assertIn("Rekap penjualan 1 Sep 2026 sampai 30 Sep 2026:", h["ringkasan_siap_tempel"])
+
+    def test_json_tanggal_dengan_hari(self):
+        h = rekap_september()
+        peta = h["tanggal_dengan_hari"]
+        wajib = {h["hari_terbaik"]["tanggal"], h["hari_terendah"]["tanggal"],
+                 *h["hari_transaksi_terbanyak"]["semua_tanggal_seri"],
+                 *(x["tanggal"] for x in h["dibuang_per_tanggal"])}
+        self.assertEqual(set(peta), wajib)
+        for iso, teks in peta.items():
+            self.assertEqual(teks, hari_independen(iso))
+
+
+def pola_independen(csv_teks):
+    """Rata-rata omzet per hari dalam minggu, dihitung ulang dari CSV dengan Fraction (tanpa rekap.py)."""
+    import csv as _csv, io as _io
+    harian = {}
+    for r in _csv.DictReader(_io.StringIO(csv_teks)):
+        harian[r["Tanggal"]] = harian.get(r["Tanggal"], 0) + int(r["Total"])
+    tgl = sorted(datetime.date.fromisoformat(k) for k in harian)
+    n = (tgl[-1] - tgl[0]).days + 1
+    muncul, total = [0] * 7, [0] * 7
+    for i in range(n):
+        muncul[(tgl[0] + datetime.timedelta(days=i)).weekday()] += 1
+    for k, v in harian.items():
+        total[datetime.date.fromisoformat(k).weekday()] += v
+    return [Fraction(total[i], muncul[i]) for i in range(7)], muncul, n
+
+
+class UjiPolaHari(unittest.TestCase):
+    def rp(self, f):
+        bulat = int(f + Fraction(1, 2))   # nilai tak negatif: setengah ke atas
+        return "Rp {:,}".format(bulat).replace(",", ".")
+
+    def test_september_5_selasa_5_rabu_dan_hari_kosong_dihitung(self):
+        # 1-30 Sep 2026: 5 Selasa (1,8,15,22,29) dan 5 Rabu (2,9,16,23,30). Selasa hanya laku 2x (hari kosong = 0).
+        def nilai(d):
+            if d.weekday() == 1:
+                return 100000 if d.day in (1, 8) else 0
+            if d.weekday() == 2:
+                return 50000
+            return 20000 if d.weekday() == 5 else 30000
+        isi = csv_harian(datetime.date(2026, 9, 1), 30, nilai)
+        _, h = rekap(isi)
+        rata, muncul, n = pola_independen(isi)
+        self.assertEqual((n, muncul[1], muncul[2]), (30, 5, 5))
+        pola = h["pola_hari_dalam_minggu"]
+        per = {x["hari"]: x for x in pola["per_hari"]}
+        self.assertEqual(per["Selasa"]["jumlah_kemunculan"], 5)
+        self.assertEqual(per["Selasa"]["total_omzet"], 200000)
+        self.assertEqual(per["Selasa"]["rata_rata_omzet"], 40000)   # 200.000 / 5, bukan / 2 hari yang laku
+        self.assertEqual(per["Rabu"]["rata_rata_omzet"], 50000)     # 250.000 / 5
+        for i, nama in enumerate(HARI):
+            self.assertEqual(Fraction(str(per[nama]["rata_rata_omzet"])), rata[i], nama)
+        maks, mini = max(rata), min(rata)
+        self.assertEqual([x["hari"] for x in pola["tertinggi"]], [HARI[i] for i in range(7) if rata[i] == maks])
+        self.assertEqual([x["hari"] for x in pola["terendah"]], [HARI[i] for i in range(7) if rata[i] == mini])
+        for teks in (h["rekap_chat"], h["ringkasan_siap_tempel"]):
+            self.assertIn(pola["kalimat"], teks)
+        self.assertIn("tertinggi {} {}; terendah {} {}.".format(
+            " dan ".join(x["hari"] for x in pola["tertinggi"]), self.rp(maks),
+            " dan ".join(x["hari"] for x in pola["terendah"]), self.rp(mini)), pola["kalimat"])
+
+    def test_nama_dan_rupiah_hari_tertinggi_terendah(self):
+        # Rata-rata Senin = (90.000 + 30.000)/2 = 60.000 tertinggi; Kamis 10.000 terendah; sisanya 20.000.
+        def nilai(d):
+            return {0: 90000 if d.day == 7 else 30000, 3: 10000}.get(d.weekday(), 20000)
+        isi = csv_harian(datetime.date(2026, 9, 7), 14, nilai)    # Senin 7 Sep s.d. Minggu 20 Sep: tiap hari 2x
+        _, h = rekap(isi)
+        self.assertIn("tertinggi Senin Rp 60.000; terendah Kamis Rp 10.000.", h["pola_hari_dalam_minggu"]["kalimat"])
+        self.assertIn("tertinggi Senin Rp 60.000; terendah Kamis Rp 10.000.", h["rekap_chat"])
+
+    def test_seri_disebut_semua(self):
+        _, h = rekap(csv_harian(datetime.date(2026, 9, 1), 14, lambda d: 10000))
+        self.assertIn("sama untuk semua hari, Rp 10.000.", h["pola_hari_dalam_minggu"]["kalimat"])
+        _, h = rekap(csv_harian(datetime.date(2026, 9, 1), 14, lambda d: 5000 if d.weekday() in (0, 1) else 1000))
+        self.assertEqual([x["hari"] for x in h["pola_hari_dalam_minggu"]["tertinggi"]], ["Senin", "Selasa"])
+        self.assertIn("tertinggi Senin dan Selasa Rp 5.000;", h["rekap_chat"])
+
+    def test_batas_14_hari_kalender(self):
+        _, h14 = rekap(csv_harian(datetime.date(2026, 9, 1), 14, lambda d: 1000 + d.day))
+        _, h13 = rekap(csv_harian(datetime.date(2026, 9, 1), 13, lambda d: 1000 + d.day))
+        self.assertEqual(h14["periode"]["jumlah_hari_kalender"], 14)
+        self.assertIsNotNone(h14["pola_hari_dalam_minggu"])
+        self.assertIsNone(h13["pola_hari_dalam_minggu"])
+        self.assertIn("Pola hari dalam minggu", h14["rekap_chat"])
+        for teks in (h13["rekap_chat"], h13["ringkasan_siap_tempel"]):
+            self.assertNotIn("Pola hari", teks)
+        # 14 hari kalender dihitung dari tanggal pertama sampai terakhir yang ADA penjualan, bukan jumlah hari ada data
+        _, h = rekap("Tanggal,Produk,Total\n2026-09-01,Kopi,1000\n2026-09-14,Kopi,2000\n")
+        self.assertIsNotNone(h["pola_hari_dalam_minggu"])
+
+    def test_pola_tidak_mengubah_angka_lain(self):
+        isi = csv_harian(datetime.date(2026, 9, 1), 20, lambda d: 1000 * (d.day % 5 + 1))
+        _, h = rekap(isi)
+        self.assertEqual(h["total_omzet"], sum(1000 * ((d % 5) + 1) for d in range(1, 21)))
+
+
+class UjiPeringatanAwam(unittest.TestCase):
+    def test_tanggal_ambigu_masuk_catatan_data(self):
+        r, h = rekap("Tanggal,Produk,Total\n01/09/2026,Kopi,10.000\n02/09/2026,Teh,5.000\n")
+        self.assertEqual(len(h["peringatan"]), 1)
+        self.assertEqual(len(h["peringatan_awam"]), len(h["peringatan"]))
+        self.assertIn("Catatan data: ", h["rekap_chat"])
+        self.assertIn(h["peringatan_awam"][0], h["rekap_chat"])
+        self.assertIn("hari/bulan/tahun", h["peringatan_awam"][0])
+        for kata in ("--urutan", "mdy", "dmy", "encoding"):
+            self.assertNotIn(kata, h["rekap_chat"])
+
+    def test_tanggal_pasti_tanpa_peringatan(self):
+        _, h = rekap("Tanggal,Produk,Qty,Total\n13/09/2026,Kopi,1,10.000\n", "--kolom-qty", "Qty")
+        self.assertEqual((h["peringatan"], h["peringatan_awam"]), ([], []))
+        self.assertNotIn("Catatan data", h["rekap_chat"])
+
+    def test_encoding_lama_masuk_catatan_data(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "jual.csv")
+            with open(path, "wb") as f:
+                f.write("Tanggal;Produk;Total\n13/09/2026;Café Latte;15.000\n".encode("cp1252"))
+            r = subprocess.run([sys.executable, SCRIPT, path, "--kolom-tanggal", "Tanggal", "--kolom-produk",
+                                "Produk", "--kolom-total", "Total"], capture_output=True, text=True, encoding="utf-8")
+        h = json.loads(r.stdout)
+        self.assertEqual(len(h["peringatan"]), 1)
+        self.assertEqual(len(h["peringatan_awam"]), 1)
+        self.assertIn("Catatan data: ", h["rekap_chat"])
+        self.assertIn(h["peringatan_awam"][0], h["rekap_chat"])
+        self.assertNotIn("UTF-8", h["rekap_chat"])
+        self.assertNotIn("encoding", h["rekap_chat"])
+
+    def test_dua_peringatan_keduanya_masuk(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "jual.csv")
+            with open(path, "wb") as f:
+                f.write("Tanggal;Produk;Total\n01/09/2026;Café;15.000\n".encode("cp1252"))
+            r = subprocess.run([sys.executable, SCRIPT, path, "--kolom-tanggal", "Tanggal", "--kolom-produk",
+                                "Produk", "--kolom-total", "Total"], capture_output=True, text=True, encoding="utf-8")
+        h = json.loads(r.stdout)
+        self.assertEqual(len(h["peringatan_awam"]), 2)
+        for teks in h["peringatan_awam"]:
+            self.assertIn(teks, h["rekap_chat"])
+
+
+class UjiBarisTanpaJumlah(unittest.TestCase):
+    ISI = "Tanggal,Produk,Qty,Total\n13/09/2026,Kopi,2,20.000\n13/09/2026,Teh,,5.000\n14/09/2026,Kopi,,10.000\n"
+
+    def test_sel_qty_kosong_dihitung_dan_dilaporkan(self):
+        _, h = rekap(self.ISI, "--kolom-qty", "Qty")
+        self.assertEqual(h["baris_tanpa_jumlah"], 2)
+        self.assertIn("Catatan data: 2 baris tanpa jumlah dihitung 1 pcs", h["rekap_chat"])
+        # angka tidak berubah: Kopi 2 + 1 = 3 pcs, Teh 1 pcs, omzet 35.000
+        self.assertEqual({x["produk"]: x["qty"] for x in h["produk_terlaris"]}, {"Kopi": 3, "Teh": 1})
+        self.assertEqual(h["total_omzet"], 35000)
+
+    def test_tanpa_sel_kosong_tidak_ada_catatan(self):
+        _, h = rekap("Tanggal,Produk,Qty,Total\n13/09/2026,Kopi,2,20.000\n", "--kolom-qty", "Qty")
+        self.assertEqual(h["baris_tanpa_jumlah"], 0)
+        self.assertNotIn("tanpa jumlah", h["rekap_chat"])
+
+    def test_tanpa_kolom_qty_tidak_dihitung_sebagai_sel_kosong(self):
+        _, h = rekap("Tanggal,Produk,Total\n13/09/2026,Kopi,20.000\n")
+        self.assertEqual(h["baris_tanpa_jumlah"], 0)
+        self.assertNotIn("dihitung 1 pcs", h["rekap_chat"])
+
+    def test_baris_dibuang_status_tidak_dihitung(self):
+        isi = "Tanggal,Produk,Qty,Total,Status\n13/09/2026,Kopi,,10.000,Selesai\n13/09/2026,Teh,,5.000,Batal\n"
+        _, h = rekap(isi, "--kolom-qty", "Qty", "--kolom-status", "Status")
+        self.assertEqual(h["baris_tanpa_jumlah"], 1)
+
+
+class UjiDokumen127(unittest.TestCase):
+    def baca(self, nama):
+        with open(os.path.join(os.path.dirname(os.path.dirname(SCRIPT)), nama), encoding="utf-8") as f:
+            return f.read()
+
+    def test_skill_md_aturan_pola_hari_dan_batas_panjang(self):
+        skill = self.baca("SKILL.md")
+        self.assertLess(len(skill.splitlines()), 300)
+        self.assertIn("pola_hari_dalam_minggu", skill)
+        self.assertIn("tanggal_dengan_hari", skill)
+        depan = skill.split("---")[1]
+        self.assertEqual([b.split(":")[0] for b in depan.strip().splitlines()], ["name", "description"])
+
+    def test_readme_jujur_soal_uji_terakhir(self):
+        isi = self.baca("README.md")
+        awal = isi.split("## Manfaat", 1)[0]
+        self.assertIn("belum lulus", awal.lower())
+        self.assertIn("1.2.5", awal)
+        self.assertIn("1.2.7", awal)
+        bukti = isi.split("## Bukti uji di bot Telegram", 1)[1].split("\n## ", 1)[0]
+        self.assertIn("1.2.7", bukti)
+        self.assertIn("belum diuji ulang di bot", bukti)
+
+    def test_changelog_mencatat_1_2_7(self):
+        self.assertIn("## Catatan revisi 1.2.7", self.baca("CHANGELOG.md"))
 
 
 if __name__ == "__main__":

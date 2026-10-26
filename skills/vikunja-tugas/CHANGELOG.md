@@ -2,6 +2,13 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.14 (2026-10-22)
+- Perbaikan bug tanggal (temuan pra-cek Telegram Akun A, 2026-10-17): `<hari> depan` menambah 7 hari berlebih ("Rabu depan" diucapkan Sabtu 17 Okt 2026 menjadi 28 Okt, seharusnya Rabu 21 Okt; "Jumat depan" menjadi 30 Okt, seharusnya 23 Okt). Aturan yang benar, minggu kalender dimulai Senin: `<hari> depan` (juga `<hari> minggu depan`/`pekan depan`) = hari itu di minggu kalender berikutnya (dari Sabtu 17 Okt: Rabu 21 Okt; dari Senin 19 Okt: Rabu 28 Okt); `<hari> ini` (juga `<hari> minggu ini`) = hari itu di minggu yang sama (bisa sudah lewat); `<hari>` tanpa keterangan = kejadian berikutnya SETELAH hari ini (hari ini sendiri tidak dihitung lagi; sebelumnya "Sabtu" diucapkan Sabtu berarti hari ini; untuk hari ini pakai `hari ini` atau `Sabtu ini`). `minggu ini`/`pekan ini` = hari Minggu penutup minggu ini; `minggu depan` tetap 7 hari dari hari ini.
+- Keluaran `dari-teks` kini menyebut tenggat dengan nama hari ("tenggat: Rabu, 21 Oktober 2026") dan tanggal acuan hari ini; file draf tetap berisi tanggal ISO untuk `tambah --batch`. Pratinjau `tambah` memberi PERINGATAN bila tanggal tenggat sudah lewat.
+- SKILL.md: aturan "Cara menjawab pengguna" - jawaban tidak boleh memuat kata "skill"/"mode", nama perintah/opsi, "script"/"JSON", atau nama berkas draf; aturan "Tanggal" - tenggat relatif wajib ditulis lengkap dengan nama hari dan acuan hari ini sebagai asumsi tertulis. Frasa "skill ini" yang mudah terkutip ke pengguna diganti.
+- Templat peringatan token di SKILL.md tidak lagi memuat "dari folder skill ini" (diganti "dari folder tempat paket ini dipasang"); frasa serupa di references/ dan examples/ diperiksa dan disesuaikan. "minggu depan" = +7 hari dari hari ini (tidak berubah, hanya didokumentasikan).
+- Uji regresi 72 menjadi 85: 294 kombinasi (14 hari acuan x 7 hari target x depan/ini/polos, harapan dihitung mandiri dengan menyusuri kalender), kasus Sabtu 17 Okt dan Senin 19 Okt, `<hari> minggu depan`, `minggu ini`, `dari-teks` notulen "Rabu depan", keluaran bernama hari, dan pratinjau tenggat lewat. Dua uji lama yang menetapkan perilaku keliru ("Jumat depan" = +7 hari berlebih; nama hari polos = hari ini) diperbarui.
+
 ## Catatan revisi 1.0.13 (2026-10-02)
 - Aturan token yang tertempel di chat diperketat: agent tidak boleh menulis ulang token secara utuh, sebagian, atau sebagai awalan/akhiran (mis. "tk_7f3a9..."), apa pun alasannya.
 

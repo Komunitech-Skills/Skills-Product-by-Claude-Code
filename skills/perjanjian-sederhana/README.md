@@ -71,6 +71,8 @@ Diuji di bot OpenClaw asli (grup uji internal Komunitech, 3 Okt 2026) dengan pes
 
 Kekurangan itu diperbaiki di versi 1.0.5 dan 1.0.6 (naskah utuh tampil di chat, biaya dicek konsisten, tanpa pengosongan sepihak sebagai bawaan). Sesudah perbaikan, skill diuji ulang di OpenClaw lokal (3 Okt 2026, versi 1.0.6) dengan hasil 4,25 → 9,0, tetapi belum diuji ulang di bot Telegram.
 
+Versi 1.0.9 memperbaiki temuan pra-cek 21 Okt 2026 (naskah dikirim sebagai teks biasa per bagian di bawah 3.800 karakter, tanpa menyebut lokasi berkas atau istilah teknis, satu gaya isian `[isi: ...]`); versi ini belum diuji ulang di bot Telegram asli.
+
 ## FAQ
 **Apakah perjanjian ini sah secara hukum?**
 Perjanjian sah jika memenuhi 4 syarat Pasal 1320 KUHPerdata: sepakat, cakap, objek jelas, dan sebab yang halal. Skill ini membantu agar keempatnya tertulis jelas. Hasilnya tetap draf, bukan nasihat hukum. Untuk nilai besar atau kasus rumit, mintalah pengacara meninjaunya.
@@ -83,4 +85,4 @@ Sebaiknya jangan. Transaksi seperti jual beli tanah, investasi atau saham, kerja
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

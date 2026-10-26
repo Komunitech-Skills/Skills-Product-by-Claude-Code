@@ -32,7 +32,7 @@ from collections import OrderedDict, defaultdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-VERSI = "1.0.8"
+VERSI = "1.0.9"
 ACTUAL_DIUJI = "26.9.0"
 NOL = Decimal(0)
 SERATUS = Decimal(100)
@@ -354,16 +354,18 @@ def baca_mutasi(path, opsi):
         ket = " ".join(row[i].strip().strip("'\"").strip() for i in ket_idx if i < len(row) and row[i].strip())
         ket = re.sub(r"^[=+@]+", "", ket)  # cegah teks dibaca sebagai rumus di spreadsheet
         ket = re.sub(r"\s+", " ", ket).strip()
+        nom_mentah = " / ".join(x for x in (ambil(row, "nominal"), ambil(row, "masuk"), ambil(row, "keluar")) if x)
+        ciri = " | ".join(x for x in (t, ket[:60], nom_mentah) if x)
         if not t or re.match(r"(?i)(saldo|mutasi|total|jumlah|opening|closing|ending|beginning)\b", t):
             lewati.append((no, "baris ringkasan (saldo/total), bukan transaksi", ",".join(row)[:70]))
             continue
         if t.upper().startswith("PEND"):
-            lewati.append((no, "transaksi PENDING (belum final) - impor setelah muncul tanggalnya", ket[:70]))
+            lewati.append((no, "transaksi PENDING (belum final) - impor setelah muncul tanggalnya", ciri))
             continue
         try:
             tgl = rakit_tanggal(pecah_tanggal(t), urutan, opsi.tahun)
         except (ValueError, Gagal):
-            lewati.append((no, "tanggal tidak dikenali: '{}'".format(t), ket[:70]))
+            lewati.append((no, "tanggal tidak dikenali: '{}'".format(t), ciri))
             continue
         try:
             if "masuk" in peta:
@@ -373,7 +375,7 @@ def baca_mutasi(path, opsi):
             else:
                 v, dk = parse_nominal(ambil(row, "nominal"), desimal)
                 if v is None:
-                    lewati.append((no, "jumlah kosong", ket[:70]))
+                    lewati.append((no, "jumlah kosong", ciri))
                     continue
                 penanda = ambil(row, "dk").upper().strip(". ")
                 if penanda in ("CR", "C", "K", "KR", "KREDIT", "CREDIT", "MASUK", "+"):
@@ -388,16 +390,16 @@ def baca_mutasi(path, opsi):
                                 .format(no))
                 masuk, keluar = (abs(v), NOL) if dk == "CR" else (NOL, abs(v))
         except ValueError as e:
-            lewati.append((no, "angka tidak jelas ({})".format(e), ket[:70]))
+            lewati.append((no, "angka tidak jelas ({})".format(e), ciri))
             continue
         if masuk and keluar:
-            lewati.append((no, "kolom masuk dan keluar sama-sama terisi", ket[:70]))
+            lewati.append((no, "kolom masuk dan keluar sama-sama terisi", ciri))
             continue
         if not masuk and not keluar:
-            lewati.append((no, "jumlah 0/kosong", ket[:70]))
+            lewati.append((no, "jumlah 0/kosong", ciri))
             continue
         if max(masuk, keluar) > MAKS_NOMINAL:
-            lewati.append((no, "jumlah tidak wajar (> Rp 1 triliun) - cek format angka", ket[:70]))
+            lewati.append((no, "jumlah tidak wajar (> Rp 1 triliun) - cek format angka", ciri))
             continue
         saldo = None
         if "saldo" in peta and ambil(row, "saldo"):
@@ -678,6 +680,53 @@ def susun_pertanyaan(ragu, kategori_db):
     return hasil
 
 
+def usulan_transaksi(grup, kat_awal, jumlah, ket, alasan, kategori_db):
+    """Usulan terbaik + alasan singkat (bahasa awam) untuk satu transaksi yang perlu dikonfirmasi.
+    -> (usulan, alasan_singkat). Selalu mengembalikan usulan konkret, tidak pernah kosong."""
+    teks = ket.upper()
+    masuk = jumlah > 0
+
+    def ada(nama):
+        if kategori_db is None:
+            return nama
+        if nama in kategori_db:
+            return nama
+        nama_db, _, pilihan = cocokkan_kategori(nama, kategori_db, masuk)
+        if nama_db:
+            return nama_db
+        return "{} (belum ada, buat dulu)".format(nama)
+
+    if grup == "pindah":
+        return ("pindah dana ke akun sendiri (tanpa kategori)",
+                "uang cuma pindah dompet/rekening milik sendiri, bukan pengeluaran usaha")
+    if grup == "setor":
+        return (ada(KATEGORI_MASUK_DEFAULT) + " (pemasukan)",
+                "dianggap hasil jualan tunai yang belum tercatat; kalau ini uang laci yang sudah dicatat, "
+                "bilang saja 'pindah dana'")
+    if grup == "kategori":
+        m = re.search(r"cocok dengan beberapa kategori di budget Anda: (.+?)\. Pilih", alasan or "")
+        if m:
+            return (m.group(1).split(" / ")[0], "paling dekat dengan jenis transaksinya")
+        m = re.search(r"Kategori usulan '(.+?)' (belum ada|cocok)", alasan or "")
+        nama = kat_awal or (m.group(1) if m else None)
+        if nama:
+            return (ada(nama), "paling cocok menurut keterangan transaksinya")
+    if re.search(r"REFUND|RETUR|PENGEMBALIAN|REVERSAL|KOREKSI", teks):
+        return ("kategori pengeluaran asalnya (mengurangi pengeluaran, bukan pendapatan)",
+                "uang kembali dari belanja sebelumnya")
+    if masuk and re.search(r"PENCAIRAN|PINJAMAN|KREDIT MASUK|LOAN", teks):
+        return ("pindah dana dari akun pinjaman (bukan pendapatan)", "pinjaman bukan hasil usaha")
+    if re.search(r"TOKOPEDIA|SHOPEE|LAZADA|BLIBLI|BUKALAPAK|TIKTOK ?SHOP", teks):
+        return (ada("Perlengkapan Usaha"), "belanja online paling sering untuk bahan/peralatan usaha")
+    if re.search(r"INDOMARET|ALFAMART|SUPERINDO|HYPERMART|TRANSMART|GIANT|LOTTE|HERO", teks):
+        return (ada("Kebutuhan Pribadi"), "belanja minimarket biasanya keperluan harian; bilang bila untuk usaha")
+    if grup == "cek":
+        return ("pakai apa adanya", "nominal wajar; bila baris identik memang dobel, hapus salah satunya")
+    if masuk:
+        return (ada(KATEGORI_MASUK_DEFAULT), "uang masuk umumnya hasil usaha")
+    return (ada("Biaya Lain-lain"), "belum ada kata kunci yang cocok, ditaruh sementara di biaya umum")
+
+
 def cmd_konversi(a):
     if a.desimal and a.desimal not in ("koma", "titik"):
         raise Gagal("--desimal harus 'koma' (1.500.000,00) atau 'titik' (1,500,000.00).")
@@ -687,7 +736,7 @@ def cmd_konversi(a):
     rows, lewati, info = baca_mutasi(a.mutasi, a)
     if not rows:
         raise Gagal("Tidak ada baris transaksi yang terbaca. Baris yang dilewati: " +
-                    "; ".join("baris {}: {}".format(n, r) for n, r, _ in lewati[:5]))
+                    "; ".join("{}: {}".format(i, r) for _, r, i in lewati[:5]))
     aturan = (muat_peta(a.peta) if a.peta else []) + ATURAN_BAWAAN
     kategori_db = None
     riwayat = {}
@@ -722,6 +771,7 @@ def cmd_konversi(a):
     for r in rows:
         kat, alasan, pola = usul_kategori(r["ket"], r["jumlah"], aturan)
         grup = None
+        kat_awal = kat
         if alasan:
             grup = ("pindah" if alasan == PINDAH else "setor" if alasan == SETOR else
                     "kategori" if pola is None else "lain")
@@ -768,11 +818,13 @@ def cmd_konversi(a):
             alasan = (alasan + " " + tambahan) if alasan else tambahan
             grup = grup or "cek"
         hasil.append([r["tanggal"].isoformat(), payee, r["ket"], kat or "", format_angka_csv(r["jumlah"])])
-        per_kat[kat or "(kosong - perlu dipilih)"][0] += 1
-        per_kat[kat or "(kosong - perlu dipilih)"][1] += r["jumlah"]
+        per_kat[kat or "(menunggu konfirmasi usulan)"][0] += 1
+        per_kat[kat or "(menunggu konfirmasi usulan)"][1] += r["jumlah"]
         if alasan:
             ragu.append([r["no"], r["tanggal"].isoformat(), r["ket"], format_angka_csv(r["jumlah"]), kat or "", alasan,
-                         grup or "lain"])
+                         grup or "lain",
+                         usulan_transaksi(grup or "lain", kat_awal if grup == "kategori" or not kat else None, r["jumlah"],
+                                          r["ket"], alasan, kategori_db)])
 
     keluar_path.parent.mkdir(parents=True, exist_ok=True)
     with open(keluar_path, "w", newline="", encoding="utf-8") as f:
@@ -796,10 +848,11 @@ def cmd_konversi(a):
                                        if saldo else None),
         "per_kategori": {k: {"baris": v[0], "jumlah": str(v[1])} for k, v in per_kat.items()},
         "ragu": [{"baris": x[0], "tanggal": x[1], "keterangan": x[2], "jumlah": x[3], "kategori": x[4],
-                  "alasan": x[5], "kelompok": x[6]} for x in ragu],
+                  "alasan": x[5], "kelompok": x[6],
+                  "usulan": x[7][0], "alasan_usulan": x[7][1]} for x in ragu],
         "pertanyaan": susun_pertanyaan(ragu, kategori_db),
         "kategori_dipetakan": dict(dipetakan), "dari_riwayat": dari_riwayat,
-        "dilewati": [{"baris": n, "alasan": al, "isi": isi} for n, al, isi in lewati],
+        "dilewati": [{"alasan": al, "isi": isi} for _, al, isi in lewati],
         "kategori_dicek_ke_budget": kategori_db is not None,
     }
     if a.json:
@@ -836,25 +889,36 @@ def cmd_konversi(a):
                    "namanya SAMA PERSIS (huruf besar/kecil juga). Jalankan ulang dengan --db agar dicek.")
     if ragu:
         out.append("")
-        out.append("PERLU DICEK ({} baris, juga di {}):".format(len(ragu), ragu_path.name))
-        for x in ragu[:20]:
-            out.append("- Baris {} | {} | {} | {}: {}".format(x[0], x[1], x[2][:45], rp(Decimal(x[3])), x[5]))
-        if len(ragu) > 20:
-            out.append("- ... {} baris lain di file ragu".format(len(ragu) - 20))
+        out.append("PERLU KONFIRMASI ({} transaksi, daftar teknis juga di {}):".format(len(ragu), ragu_path.name))
+        out.append("Usulan saya per transaksi (sebut tanggal + keterangan + nominal, jangan nomor baris):")
+        tampil = OrderedDict()                     # baris identik digabung jadi satu butir "(Nx)"
+        for x in ragu:
+            tampil.setdefault((x[1], x[2], x[3], x[7]), []).append(x)
+        for (tg, ket, jml, us), grp in list(tampil.items())[:20]:
+            kali = " (muncul {}x, identik)".format(len(grp)) if len(grp) > 1 else ""
+            out.append("- {} | {} | {}{} -> usulan: {} - {}".format(
+                tgl_id(dt.date.fromisoformat(tg)), ket[:60], rp(Decimal(jml)), kali, us[0], us[1]))
+        if len(tampil) > 20:
+            out.append("- ... {} butir lain di file {}".format(len(tampil) - 20, ragu_path.name))
         out.append("")
-        out.append("PERTANYAAN UNTUK PENGGUNA (kelompok, tanyakan sekaligus dalam satu pesan):")
-        for i, q in enumerate(susun_pertanyaan(ragu, kategori_db), 1):
-            out.append("{}. {}: baris {}".format(i, q["pertanyaan"], ", ".join(str(n) for n in q["baris"])))
+        out.append("SATU PERTANYAAN UNTUK PENGGUNA: balas 'ya' untuk memakai semua usulan di atas, "
+                   "atau sebut transaksi yang mau diganti (tanggal/keterangan) beserta kategori yang diinginkan.")
+        if kategori_db:
+            out.append("Kategori yang ada di budget: " + ", ".join(
+                n for n, v in kategori_db.items() if not v["is_income"])[:300])
     if lewati:
         out.append("")
         out.append("DILEWATI ({} baris, tidak masuk file hasil):".format(len(lewati)))
-        for n, al, isi in lewati[:15]:
-            out.append("- Baris {}: {} | {}".format(n, al, isi))
+        for _, al, isi in lewati[:15]:
+            out.append("- {} -> {}".format(isi, al))
+        if len(lewati) > 15:
+            out.append("- ... {} baris lain".format(len(lewati) - 15))
     out.append("")
     out.append("File hasil: {}".format(keluar_path))
     out.append("Cara impor di Actual: buka akun bank -> Import -> pilih file hasil -> pastikan kolom Date/Payee/"
                "Notes/Category/Amount terpasang, format tanggal 'YYYY MM DD', pemisah koma, opsi 'Split amount' "
-               "dan 'Flip amount' MATI -> cek pratinjau -> Import.")
+               "(memecah kolom jumlah jadi masuk/keluar) dan 'Flip amount' (membalik tanda plus/minus) "
+               "dua-duanya MATI -> cek pratinjau -> Import.")
     print("\n".join(out))
     return K_OK
 

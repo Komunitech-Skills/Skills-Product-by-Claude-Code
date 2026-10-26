@@ -1,7 +1,9 @@
 # 03 — "Bikinin dong": kontrak freelance desain feed Instagram
 
+> **Catatan 1.0.9:** isian di contoh ini diseragamkan ke gaya `[isi: ...]` dan kalimat "dicek script" di jawaban diganti "sudah dihitung ulang". Naskah di bawah ditampilkan dalam format berkas/terminal (judul `#`, tabel). Di kanal chat (Telegram/WhatsApp) sejak 1.0.9 naskah yang sama dikirim sebagai teks biasa per "Bagian 1/N" (< 3.800 karakter, dipotong antar-pasal) hasil `perjanjian.py bagi`, tanpa jalur berkas dan tanpa kata script.
+
 ## Skenario
-S3, permintaan singkat/malas. Pengguna (freelancer desain) hanya menyebut pekerjaan, lama, dan harga. Tidak ada identitas, kota, atau jadwal bayar. Sesuai SKILL.md, karena pengguna ingin cepat, agent memakai default template, membiarkan data pribadi sebagai `[[...]]`, dan mencantumkan asumsi.
+S3, permintaan singkat/malas. Pengguna (freelancer desain) hanya menyebut pekerjaan, lama, dan harga. Tidak ada identitas, kota, atau jadwal bayar. Sesuai SKILL.md, karena pengguna ingin cepat, agent memakai default template, membiarkan data pribadi sebagai `[isi: ...]`, dan mencantumkan asumsi.
 
 ## Input pengguna
 > bikinin dong surat perjanjian freelance, aku desain feed IG buat klien kafe 3 bulan, 4,5jt. cepet ya
@@ -11,7 +13,7 @@ S3, permintaan singkat/malas. Pengguna (freelancer desain) hanya menyebut pekerj
 ### Langkah agent
 - Template `templates/jasa-freelance.md`. Pengguna = freelancer = **PIHAK KEDUA**; klien kafe = PIHAK PERTAMA.
 - Script: `tanggal 2026-09-23` (tanggal hari ini sebagai asumsi); `termin --total 4,5jt --persen 50,50 --nama "Uang muka,Pelunasan"` → Rp 2.250.000 + Rp 2.250.000 (cocok).
-- `cek` → PERLU PERBAIKAN karena 13 isian `[[...]]`; **3/3 nominal-terbilang cocok**; 11 pasal urut.
+- `cek` → PERLU PERBAIKAN karena 13 isian `[isi: ...]`; **3/3 nominal-terbilang cocok**; 11 pasal urut.
 
 ### Jawaban ke pengguna
 
@@ -30,29 +32,29 @@ S3, permintaan singkat/malas. Pengguna (freelancer desain) hanya menyebut pekerj
 
 # PERJANJIAN JASA DESAIN KONTEN INSTAGRAM
 
-Nomor: [[NOMOR PERJANJIAN]]
+Nomor: [isi: NOMOR PERJANJIAN]
 
-Pada hari ini, Rabu, tanggal dua puluh tiga bulan September tahun dua ribu dua puluh enam (23-09-2026), bertempat di [[KOTA]], kami yang bertanda tangan di bawah ini:
+Pada hari ini, Rabu, tanggal dua puluh tiga bulan September tahun dua ribu dua puluh enam (23-09-2026), bertempat di [isi: KOTA], kami yang bertanda tangan di bawah ini:
 
-1. **Nama**: [[NAMA PIHAK PERTAMA]]
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]]
-   Bertindak untuk diri sendiri selaku pemilik kafe [[NAMA KAFE]], selanjutnya disebut **"PIHAK PERTAMA"** atau **"Klien"**.
+1. **Nama**: [isi: NAMA PIHAK PERTAMA]
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT]
+   Bertindak untuk diri sendiri selaku pemilik kafe [isi: NAMA KAFE], selanjutnya disebut **"PIHAK PERTAMA"** atau **"Klien"**.
 
-2. **Nama**: [[NAMA PIHAK KEDUA]]
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]]
-   **No. WhatsApp/Email**: [[KONTAK]]
+2. **Nama**: [isi: NAMA PIHAK KEDUA]
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT]
+   **No. WhatsApp/Email**: [isi: KONTAK]
    Bertindak untuk diri sendiri selaku penyedia jasa lepas, selanjutnya disebut **"PIHAK KEDUA"** atau **"Penyedia Jasa"**.
 
 Para Pihak terlebih dahulu menerangkan:
-a. PIHAK PERTAMA membutuhkan jasa desain konten feed Instagram untuk akun Instagram kafe [[NAMA KAFE]];
+a. PIHAK PERTAMA membutuhkan jasa desain konten feed Instagram untuk akun Instagram kafe [isi: NAMA KAFE];
 b. PIHAK KEDUA memiliki keahlian dan bersedia mengerjakan jasa tersebut secara mandiri;
 c. Para Pihak sepakat membuat Perjanjian Jasa dengan ketentuan sebagai berikut.
 
 ## Pasal 1
 ### Lingkup Pekerjaan
-(1) PIHAK KEDUA mengerjakan dan menyerahkan hasil pekerjaan sebagaimana diuraikan dalam **Lampiran 1** (selanjutnya disebut **"Pekerjaan"**), yaitu: 36 (tiga puluh enam) desain feed Instagram selama 3 (tiga) bulan, yaitu 12 (dua belas) desain per bulan, ukuran 1080 x 1350 piksel, file PNG siap unggah beserta file kerja terbuka [[YA/TIDAK]].
+(1) PIHAK KEDUA mengerjakan dan menyerahkan hasil pekerjaan sebagaimana diuraikan dalam **Lampiran 1** (selanjutnya disebut **"Pekerjaan"**), yaitu: 36 (tiga puluh enam) desain feed Instagram selama 3 (tiga) bulan, yaitu 12 (dua belas) desain per bulan, ukuran 1080 x 1350 piksel, file PNG siap unggah beserta file kerja terbuka [isi: YA/TIDAK].
 (2) Pekerjaan di luar Lampiran 1 dianggap pekerjaan tambahan dan dikerjakan setelah disepakati tertulis mengenai biaya dan waktunya.
 (3) PIHAK KEDUA mengerjakan Pekerjaan secara mandiri, dengan menentukan sendiri cara, waktu, dan alat kerjanya, sepanjang memenuhi jadwal pada Pasal 4.
 
@@ -60,7 +62,7 @@ c. Para Pihak sepakat membuat Perjanjian Jasa dengan ketentuan sebagai berikut.
 ### Hak dan Kewajiban PIHAK PERTAMA
 (1) PIHAK PERTAMA berhak menerima hasil Pekerjaan sesuai Lampiran 1 dan mengajukan revisi sesuai Pasal 5.
 (2) PIHAK PERTAMA wajib:
-   a. menyerahkan bahan, data, akses, dan keterangan yang diperlukan paling lambat [[TANGGAL/HARI]] dan menjamin bahan tersebut boleh digunakan secara sah;
+   a. menyerahkan bahan, data, akses, dan keterangan yang diperlukan paling lambat [isi: TANGGAL/HARI] dan menjamin bahan tersebut boleh digunakan secara sah;
    b. memberikan tanggapan atau persetujuan atas hasil kerja paling lambat 5 (lima) hari kerja sejak diterima;
    c. membayar biaya jasa sesuai Pasal 3.
 
@@ -70,7 +72,7 @@ c. Para Pihak sepakat membuat Perjanjian Jasa dengan ketentuan sebagai berikut.
 (2) Pembayaran dilakukan secara bertahap:
    a. uang muka 50% sebesar Rp 2.250.000 (dua juta dua ratus lima puluh ribu rupiah) paling lambat saat Perjanjian ditandatangani;
    b. pelunasan 50% sebesar Rp 2.250.000 (dua juta dua ratus lima puluh ribu rupiah) paling lambat 3 (tiga) hari kerja setelah seluruh desain bulan ketiga disetujui.
-(3) Pembayaran ditransfer ke rekening [[BANK]] nomor [[NOMOR REKENING]] atas nama [[NAMA PEMILIK REKENING]].
+(3) Pembayaran ditransfer ke rekening [isi: BANK] nomor [isi: NOMOR REKENING] atas nama [isi: NAMA PEMILIK REKENING].
 (4) Biaya pihak ketiga (misalnya font/foto berlisensi, domain, hosting, cetak) tidak termasuk dan ditanggung PIHAK PERTAMA setelah disetujui.
 (5) Masing-masing Pihak bertanggung jawab atas kewajiban perpajakannya sesuai peraturan perpajakan yang berlaku.
 
@@ -113,7 +115,7 @@ PIHAK KEDUA wajib merahasiakan bahan, data, akses akun, dan informasi usaha PIHA
 ## Pasal 10
 ### Penyelesaian Perselisihan
 (1) Perselisihan diselesaikan secara musyawarah untuk mufakat dalam waktu paling lama 14 (empat belas) hari kalender sejak pemberitahuan tertulis.
-(2) Apabila musyawarah tidak mencapai mufakat, Para Pihak sepakat memilih penyelesaian melalui Pengadilan Negeri [[KOTA]].
+(2) Apabila musyawarah tidak mencapai mufakat, Para Pihak sepakat memilih penyelesaian melalui Pengadilan Negeri [isi: KOTA].
 
 ## Pasal 11
 ### Lain-lain
@@ -128,7 +130,7 @@ Demikian Perjanjian ini dibuat dan ditandatangani oleh Para Pihak dalam keadaan 
 | PIHAK PERTAMA (Klien) | PIHAK KEDUA (Penyedia Jasa) |
 |---|---|
 | <br>[Meterai Rp10.000]<br><br> | <br>[Meterai Rp10.000]<br><br> |
-| **[[NAMA PIHAK PERTAMA]]** | **[[NAMA PIHAK KEDUA]]** |
+| **[isi: NAMA PIHAK PERTAMA]** | **[isi: NAMA PIHAK KEDUA]** |
 
 ---
 ### Lampiran 1: Rincian Pekerjaan dan Jadwal
@@ -142,7 +144,7 @@ Demikian Perjanjian ini dibuat dan ditandatangani oleh Para Pihak dalam keadaan 
 ---
 
 ### Yang masih perlu dilengkapi
-`[[NOMOR PERJANJIAN]]`, `[[KOTA]]` (tempat tanda tangan & Pengadilan Negeri), `[[NAMA PIHAK PERTAMA]]`/`[[NAMA PIHAK KEDUA]]`, `[[NIK]]`, `[[ALAMAT]]`, `[[KONTAK]]`, `[[NAMA KAFE]]`, `[[TANGGAL/HARI]]` (batas klien menyerahkan logo/foto/bahan), `[[YA/TIDAK]]` (file kerja terbuka ikut diserahkan?), `[[BANK]]`, `[[NOMOR REKENING]]`, `[[NAMA PEMILIK REKENING]]`.
+`[isi: NOMOR PERJANJIAN]`, `[isi: KOTA]` (tempat tanda tangan & Pengadilan Negeri), `[isi: NAMA PIHAK PERTAMA]`/`[isi: NAMA PIHAK KEDUA]`, `[isi: NIK]`, `[isi: ALAMAT]`, `[isi: KONTAK]`, `[isi: NAMA KAFE]`, `[isi: TANGGAL/HARI]` (batas klien menyerahkan logo/foto/bahan), `[isi: YA/TIDAK]` (file kerja terbuka ikut diserahkan?), `[isi: BANK]`, `[isi: NOMOR REKENING]`, `[isi: NAMA PEMILIK REKENING]`.
 
 ### Pasal yang sebaiknya ditinjau pengacara
 - **Pasal 6 (Hak atas Hasil Karya):** bila desain akan dipakai sebagai logo/merek terdaftar atau nilainya membesar.
@@ -157,7 +159,7 @@ Demikian Perjanjian ini dibuat dan ditandatangani oleh Para Pihak dalam keadaan 
 - [ ] Nama & NIK klien sama dengan KTP; bila atas nama PT/CV, minta bukti kewenangan (akta/surat kuasa).
 - [ ] Jumlah desain, ukuran, dan jadwal di Lampiran 1 sesuai obrolan.
 - [ ] Batas revisi & aturan "diam 5 hari = setuju" sudah dipahami klien.
-- [ ] Angka dan terbilang sama persis (dicek script: 3/3 cocok).
+- [ ] Angka dan terbilang sama persis (sudah dihitung ulang: 3/3 cocok).
 - [ ] Rekening tujuan atas nama kamu.
 - [ ] Akses akun IG klien (kalau diberi) dikembalikan setelah selesai (Pasal 7).
 - [ ] Pajak jasa (PPh 21/23) bisa dipotong bila klien badan usaha. Tanyakan ke konsultan pajak.
@@ -170,7 +172,7 @@ Surat perjanjian wajib bermeterai Rp10.000 berapa pun nilainya (UU 10/2020); 2 r
 _Disclaimer: Draf ini disusun otomatis berdasarkan informasi dari Anda, mengacu pada ketentuan yang berlaku per 23 September 2026. Ini bukan nasihat hukum dan tidak menggantikan pengacara/notaris. Untuk nilai besar atau kasus kompleks, mintalah peninjauan profesional._
 
 ## Catatan penguji
-- Bagus: tidak memaksa bertanya (pengguna minta cepat); semua asumsi tertulis; posisi pengguna disebut; `[[...]]` dibiarkan terlihat; angka termin cocok (4.500.000 × 50% = 2.250.000 ✔).
+- Bagus: tidak memaksa bertanya (pengguna minta cepat); semua asumsi tertulis; posisi pengguna disebut; `[isi: ...]` dibiarkan terlihat; angka termin cocok (4.500.000 × 50% = 2.250.000 ✔).
 - Bagus: template freelance melindungi kedua pihak (uang muka tidak kembali bila klien batal, freelancer mengembalikan uang bila gagal; tunda file akhir sampai lunas; kerahasiaan akses akun).
 - Kurang (ringan): default "50% di muka, 50% setelah selesai" kurang cocok untuk pekerjaan berulang 3 bulan. Di sini agent sendiri yang menyarankan termin bulanan; template/SKILL.md tidak mengarahkan. Saran: di PANDUAN AGENT `jasa-freelance.md`, sarankan termin per bulan untuk kontrak retainer > 1 bulan.
-- Kurang (ringan): judul template "PERJANJIAN JASA [[JENIS JASA]]" sulit diisi mulus untuk proyek berulang, tetapi tetap terbaca baik.
+- Kurang (ringan): judul template "PERJANJIAN JASA [isi: JENIS JASA]" sulit diisi mulus untuk proyek berulang, tetapi tetap terbaca baik.

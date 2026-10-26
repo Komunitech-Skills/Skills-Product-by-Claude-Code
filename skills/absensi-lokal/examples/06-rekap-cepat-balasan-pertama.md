@@ -4,7 +4,7 @@
 
 **Yang diuji:** balasan PERTAMA sudah berisi rekap (bukan daftar pertanyaan), semua yang disebut pengguna dipakai sebagai pengaturan (bukan ditulis "anggapan saya"), pertanyaan penutup paling banyak 3, tidak ada alamat file, nama database, nama script, perintah, atau kode karyawan di dalam balasan, dan pelanggan lama tidak ditanya ulang soal pengaturan yang sudah tersimpan.
 
-**Asal contoh (jujur):** keluaran di bawah adalah hasil menjalankan `rekap-cepat` (skill versi 1.0.8) pada data **fiktif** buatan pembuat skill; data September dibangkitkan oleh `tests/uji_regresi.py` (kelas `UjiRekapCepat`, 121 baris log, 3 karyawan, 1–30 September 2026). Ini bukan uji di bot OpenClaw/Telegram; bagian "Balasan agent" memperlihatkan bentuk balasan yang diminta SKILL.md, dengan isi dari script apa adanya (field `pesan`).
+**Asal contoh (jujur):** keluaran di bawah adalah hasil menjalankan `rekap-cepat` (skill versi 1.0.9) pada data **fiktif** buatan pembuat skill; data September dibangkitkan oleh `tests/uji_regresi.py` (kelas `UjiRekapCepat`, 121 baris log, 3 karyawan, 1–30 September 2026). Ini bukan uji di bot OpenClaw/Telegram; bagian "Balasan agent" memperlihatkan bentuk balasan yang diminta SKILL.md, dengan isi dari script apa adanya (field `pesan`).
 
 ## Data fiktif (pola yang disengaja)
 - Andi (ID 1), Sari (ID 2), Joko (ID 3); Senin–Jumat, masuk 07.55 dan pulang 17.05 setiap hari kerja, kecuali yang disebut di bawah.
@@ -61,7 +61,7 @@ Tanpa `info`, tanpa `init`, tanpa bertanya. Semua yang disebut pengguna (nama da
 >
 > 1) Tanggal Senin 14/09 kosong untuk semua karyawan. Apakah itu libur atau toko tutup?
 > 2) Hari tanpa catatan absen: Sari 21/09, 22/09. Itu izin, sakit, cuti, atau alpa?
-> 3) Mau saya simpan datanya supaya bulan depan tinggal tambah file baru? Balas "ya" bila mau.
+> 3) Mau saya simpan 121 catatan absen ini supaya bulan depan tinggal tambah file baru? Cukup balas "ya" bila mau; pertanyaan lain boleh dijawab nanti.
 
 (Hanya "tidak ada tanggal merah" yang tertulis sebagai anggapan, karena pengguna memang tidak menyebut libur. Daftar karyawan diberikan pengguna, jadi baris "Daftar karyawan dibaca dari isi file" tidak muncul; bila pengguna tidak menyebut nama dan ID, script membacanya dari isi file dan mencatatnya sebagai anggapan.)
 
@@ -69,9 +69,13 @@ Tanpa `info`, tanpa `init`, tanpa bertanya. Semua yang disebut pengguna (nama da
 
 > 14 itu toko tutup. Sari 21-22 izin. Iya simpan.
 
-Agent menjalankan ulang `rekap-cepat ... --libur 2026-09-14` (hasilnya di bawah), lalu mengirim **satu ringkasan** tanpa lokasi file: "Saya akan menyimpan 3 karyawan (Andi, Sari, Joko), 121 catatan scan dari file ini, jadwal 08.00–17.00 istirahat 60 menit, kelonggaran telat 10 menit, dan 14/09 sebagai hari tutup. Sari 21–22/09 dicatat izin. Betul?" Setelah pengguna membalas "ya", agent menyimpan dan merekap ulang (Sari: Izin 2, tanpa keterangan 0).
+Agent menjalankan ulang `rekap-cepat ... --libur 2026-09-14` (hasilnya di bawah). Karena pengguna sudah menulis "Iya simpan" di pesan yang sama, agent **langsung menyimpan** (A0 langkah 4): satu "ya" atas tawaran "simpan 121 catatan absen" adalah persetujuannya. Agent tidak mengirim ringkasan baru, tidak bertanya "Betul?", dan tidak menunggu "ya" kedua. Urutan kerjanya (tidak ditampilkan): jadwal, kelonggaran telat 10 menit, ketiga karyawan, 14/09 sebagai hari tutup, file dimasukkan, Sari izin 21-22/09. Balasan akhir satu kalimat, tanpa lokasi file atau perintah, tanpa rekap ulang:
 
-Hasil `--libur 2026-09-14` (balasan sebelum disimpan; pertanyaan tentang libur tidak ditanyakan lagi):
+> 121 catatan sudah tersimpan: Andi 41, Sari 38, Joko 42. Tanggal 14/09 dicatat tutup dan Sari izin 21-22/09.
+
+(Rekap ulang baru dikirim bila pengguna memintanya; bila diminta, Sari: Izin 2, tanpa keterangan 0.) Bila pengguna hanya membalas "ya" pada balasan pertama tanpa jawaban lain, hasilnya sama: simpan sekarang, hari kosong tetap "tanpa keterangan", pertanyaan samping yang belum dijawab dibiarkan.
+
+Hasil `--libur 2026-09-14` (HANYA UNTUK AGENT, TIDAK DIKIRIM ke pengguna; ini rekap yang dihitung sebelum menyimpan, dan pertanyaan penutup di dalamnya tidak boleh ditanyakan lagi):
 
 > Sudah saya rekap dari file Anda.
 >
@@ -110,7 +114,7 @@ Hasil `--libur 2026-09-14` (balasan sebelum disimpan; pertanyaan tentang libur t
 >
 > 1) Hari tanpa catatan absen: Sari 21/09, 22/09. Itu izin, sakit, cuti, atau alpa?
 > 2) Andi 25/09 hanya ada jam masuk (07.55). Jam pulangnya berapa?
-> 3) Mau saya simpan datanya supaya bulan depan tinggal tambah file baru? Balas "ya" bila mau.
+> 3) Mau saya simpan 121 catatan absen ini supaya bulan depan tinggal tambah file baru? Cukup balas "ya" bila mau; pertanyaan lain boleh dijawab nanti.
 
 ## Varian A — toko 6 hari, Sabtu pulang 13.00
 
@@ -121,7 +125,7 @@ Pesan pengguna: "Ini file absen Agustus. Senin–Sabtu jam 8–4, Sabtu sampai j
 
 ## Varian B — pelanggan lama, bulan berikutnya
 
-Buku absensi sudah ada dari alur simpan di atas (kelonggaran telat 10 menit, 14/09 tutup, Sari izin 21–22/09). Pada bulan berikutnya pengguna cukup mengirim file baru: "Ini file absen Oktober, tolong direkap." Agent tetap menjalankan `rekap-cepat absen-okt.csv --json` tanpa opsi dan tanpa `info`; script memakai pengaturan yang tersimpan sehingga tidak ada nilai bawaan yang menimpa (bila buku yang sudah ada diabaikan, rekap memakai "tanpa kelonggaran" dan izin Sari terhitung bolong: Joko 4x/83 menit, bukan 3x/75 menit; dicegah oleh `test_13` di `tests/uji_regresi.py`). File Oktober fiktif memuat satu orang yang belum terdaftar (ID 9 "Tamu"):
+Buku absensi sudah ada dari alur simpan di atas (kelonggaran telat 10 menit, 14/09 tutup, Sari izin 21–22/09). Pada bulan berikutnya pengguna cukup mengirim file baru: "Ini file absen Oktober, tolong direkap." Agent tetap menjalankan `rekap-cepat absen-okt.csv --json` tanpa opsi dan tanpa `info`; script memakai pengaturan yang tersimpan sehingga tidak ada nilai bawaan yang menimpa (bila buku yang sudah ada diabaikan, rekap memakai "tanpa kelonggaran" dan izin Sari terhitung bolong: Joko 4x/83 menit, bukan 3x/75 menit; dicegah oleh `test_13` di `tests/uji_regresi.py`). File Oktober fiktif (dibangkitkan oleh `buat_csv_okt` di `tests/uji_regresi.py`: 22 hari kerja sungguhan, Andi telat 08.41 sekali, Joko 08.14 dan 08.07, Sari kosong 12-13/10, 128 catatan dari tiga karyawan) memuat satu orang yang belum terdaftar (ID 9 "Tamu"). Keluaran di bawah disalin dari `pesan` hasil menjalankan `test_14a`:
 
 > Sudah saya rekap dari file Anda, dengan pengaturan yang sudah tersimpan di buku absensi.
 >
@@ -130,8 +134,8 @@ Buku absensi sudah ada dari alur simpan di atas (kelonggaran telat 10 menit, 14/
 >
 > 1. Andi
 >    Hadir 22 dari 22 hari kerja
->    Terlambat 1x (31 menit) | Pulang cepat 0x (0 menit)
->    Jam kerja 179 jam 4 menit
+>    Terlambat 1x (41 menit) | Pulang cepat 0x (0 menit)
+>    Jam kerja 178 jam 54 menit
 >
 > 2. Sari
 >    Hadir 20 dari 22 hari kerja | Tanpa keterangan 2
@@ -153,15 +157,15 @@ Buku absensi sudah ada dari alur simpan di atas (kelonggaran telat 10 menit, 14/
 > - Daftar karyawan dari buku absensi Anda (3 orang)
 >
 > Catatan dari file:
-> - 1 baris dari orang yang tidak ada di buku absensi tidak dihitung: ID 9 / nama Tamu.
+> - 1 baris dari orang yang tidak ada di buku absensi tidak dihitung: Tamu (ID 9).
 >
 > Ini hitungan dari file yang dikirim dengan pengaturan yang sudah tersimpan; file ini belum dimasukkan ke buku absensi Anda.
 >
-> 1) Ada catatan dari ID 9 / nama Tamu yang tidak ada di buku absensi. Kalau itu karyawan baru, sebutkan nama dan nomor ID-nya di mesin.
+> 1) Ada catatan dari Tamu (ID 9) yang tidak ada di buku absensi. Kalau itu karyawan baru, sebutkan nama dan nomor ID-nya di mesin.
 > 2) Hari tanpa catatan absen: Sari 12/10, 13/10. Itu izin, sakit, cuti, atau alpa?
-> 3) Mau saya masukkan file ini ke buku absensi Anda, supaya tercatat bersama bulan-bulan sebelumnya? Balas "ya" bila mau.
+> 3) Mau saya masukkan 128 catatan absen dari file ini ke buku absensi Anda, supaya tercatat bersama bulan-bulan sebelumnya? Cukup balas "ya" bila mau; pertanyaan lain boleh dijawab nanti.
 
-Penutup tidak lagi menawarkan "simpan supaya bulan depan tinggal tambah file", karena buku sudah ada; yang ditawarkan adalah memasukkan file ini ke buku. Bila pengguna membalas "ya", agent memasukkan file itu (`impor-absen`, ditampilkan dulu sebagai rencana) lalu merekap ulang dari buku.
+Penutup tidak lagi menawarkan "simpan supaya bulan depan tinggal tambah file", karena buku sudah ada; yang ditawarkan adalah memasukkan file ini ke buku. Bila pengguna membalas "ya" (boleh bersama jawaban lain, mis. "12 dan 13 Sari izin, iya masukkan"), agent **langsung memasukkan file itu** dengan satu "ya" tadi sebagai persetujuan: tanpa pratinjau kedua, tanpa ringkasan baru, tanpa "Betul?", tanpa rekap ulang. Karyawan yang terdaftar disimpan; Tamu tidak menghentikan penyimpanan dan hanya disebut singkat di kalimat penutup, mis.: "128 catatan sudah masuk: Andi 44, Sari 40, Joko 44. Catatan Tamu (ID 9) belum saya simpan karena belum terdaftar; sebutkan namanya bila ingin ditambahkan." Sari izin 12-13/10 dicatat bila sudah dijawab.
 
 ## Verifikasi (dihitung di luar script)
 | Hal | Hitungan manual | Hasil script |
@@ -176,7 +180,8 @@ Penutup tidak lagi menawarkan "simpan supaya bulan depan tinggal tambah file", k
 | Andi hari tidak lengkap | 25/09 tanpa jam pulang | 1 hari, tidak dihitung jam kerjanya ✓ |
 | Varian A, Andi jam kerja | 20 hari × 430 + 5 Sabtu × 307 = 10.135 menit | 168 jam 55 menit ✓ |
 | Varian A tanpa opsi Sabtu | 20 × 430 + 5 × (307 − 60) = 9.835 menit; pulang cepat 5 × 178 = 890 menit | 163 jam 55 menit; 5x (14 jam 50 menit) ✓ |
-| Varian B, Andi / Joko (Oktober) | Andi 21 × 490 + 454 = 10.744 menit; Joko 20 × 490 + 471 + 478 = 10.749 menit; telat Andi 31, Joko 14 menit (08.07 di bawah batas) | 179 jam 4 menit / 179 jam 9 menit; 1x (31 menit) / 1x (14 menit) ✓ |
+| Varian B, Andi / Joko (Oktober) | Andi 21 × 490 + (17.05 − 08.41 − 60 = 444) = 10.734 menit; Joko 20 × 490 + 471 + 478 = 10.749 menit; telat Andi 41, Joko 14 menit (08.07 di bawah batas) | 178 jam 54 menit / 179 jam 9 menit; 1x (41 menit) / 1x (14 menit) ✓ |
+| Varian B, jumlah catatan | (22 + 20 + 22 hari) × 2 scan = 128; baris Tamu tidak dihitung | 128 ✓ (`test_14a`) |
 | Tidak ada file/database dibuat | folder database tidak terbentuk dan buku yang sudah ada tidak berubah (ukuran dan waktu ubah sama) | dicek di `tests/uji_regresi.py` (kelas `UjiRekapCepat`) ✓ |
 
 ## Perbedaan dengan alur lama

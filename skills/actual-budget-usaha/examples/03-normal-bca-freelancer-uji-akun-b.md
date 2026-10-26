@@ -16,7 +16,7 @@ Kerja, Internet, Makan, Kos, Tabungan Pajak) dan `bca-agu.csv` (cp1252, 11 trans
 Terbaca: 11 transaksi | Dilewati: 5 | Perlu dicek: 8
 Total masuk: Rp 9.801.234,56 | Total keluar: Rp 7.885.247,40
 Cek saldo bank: COCOK (saldo awal Rp 3.000.000 -> saldo akhir Rp 4.915.987,16)
-- (kosong - perlu dipilih): 6 baris, -Rp 4.609.012,35
+- (menunggu konfirmasi usulan): 6 baris, -Rp 4.609.012,35
 - Kos: 1 baris, -Rp 2.250.000 | Software: 1 baris, -Rp 850.000,49 | Makan: 2 baris, -Rp 175.000 | Honor Klien: Rp 9.800.000
 PERLU DICEK: TOP UP GOPAY & TARIKAN ATM (PINDAH DANA → transfer), 2x CAFÉ BENGAWAN (baris sama persis 2x),
   TOKOPEDIA TABLET (marketplace), BIAYA ADM / BUNGA / PAJAK BUNGA (kategori usulan belum ada)

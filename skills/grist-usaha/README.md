@@ -98,6 +98,14 @@ Kalau info yang diberikan kurang (mis. belum tahu nama dokumen Grist-nya), agent
 
 **Status uji (jujur):** skill ini berstatus **beta**. Yang teruji baru OpenClaw; Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama). **Belum diuji** terhadap Grist Desktop/Docker sungguhan (termasuk jalur sambungan otomatis: buat tabel & impor CSV) dan pemasangannya di Windows/Mac; itu akan diuji ulang oleh tim Komunitech sebelum rilis ke pembeli.
 
+## Bukti uji di bot Telegram
+
+Uji terbaru: 21 Oktober 2026, versi 1.0.10, di bot OpenClaw asli (grup uji Komunitech), pesan yang sama untuk tanpa skill dan dengan skill: pemilik warung minta ringkasan stok dari berkas Grist untuk belanja besok. Skor 1–10 dari penilai independen: tanpa skill **8** → dengan skill **8,5** (selisih +0,5), **belum memenuhi acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Jujurnya: untuk tugas membaca stok ini, bot tanpa skill pun sudah benar. Kedua sisi sama: 2 barang habis, 5 menipis, nilai stok Rp2.698.000. Dengan skill ada tambahan batas minimum dan catatan asal angka, tetapi bedanya terlalu kecil untuk dirasakan. Kekuatan khas skill ini (membuat tabel dari kalimat biasa dengan pratinjau, menulis rumus, impor CSV berantakan) belum diuji di bot Telegram asli.
+
+Catatan jujur: bot dengan skill memakai istilah agak teknis ("tabel", "kolom rumus") dan belum memberi daftar belanja siap pakai. Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **1. Data saya aman, kan?** Data tetap di file `.grist` di komputer Anda (atau server
 Docker di jaringan kantor Anda sendiri), dan skill ini tidak mengunggahnya ke server

@@ -1,5 +1,7 @@
 # 00 — Uji A/B: S1 (reseller sambal + harga minimum) dengan skill vs tanpa skill
 
+> **Catatan 1.0.9:** berkas ini rekaman uji versi lama dan dibiarkan apa adanya sebagai bukti. Gaya isian `[[...]]` di dalamnya sudah tidak dipakai; sejak 1.0.9 satu gaya isian saja: `[isi: ...]`.
+
 **Permintaan:** sama persis dengan `01-reseller-sambal-harga-minimum.md`. Pengguna meminta reseller **wajib** menjual minimal Rp 25.000 + denda Rp 5 juta bila "banting harga".
 
 **Metode tanpa skill:** penguji menjawab sebagai AI agent biasa tanpa membaca skill apa pun. Agent menulis draf perjanjian dari pengetahuan umum dan mengikuti permintaan pengguna apa adanya.

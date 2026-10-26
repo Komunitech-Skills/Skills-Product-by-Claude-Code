@@ -1,6 +1,6 @@
 # Contoh 01 — Mutasi BCA September → CSV impor Actual
 
-Hasil nyata `scripts/actual_budget.py` v1.0.0 (dijalankan pembuat, 26 September 2026). Data **fiktif**:
+Hasil nyata `scripts/actual_budget.py` v1.0.9 (dijalankan ulang 22 Oktober 2026). Data **fiktif**:
 mutasi `tests/fixtures/mutasi/bca-sep-2026.csv` dan budget Actual 26.9.0 asli "Studio Rina (fiktif)".
 
 ## Permintaan pengguna
@@ -31,7 +31,7 @@ Cek saldo bank: COCOK (saldo awal Rp 5.000.000 -> saldo akhir Rp 7.242.376,54)
 
 RINGKASAN PER KATEGORI USULAN
 - Iklan: 1 baris, -Rp 3.200.000
-- (kosong - perlu dipilih): 5 baris, -Rp 2.487.500
+- (menunggu konfirmasi usulan): 5 baris, -Rp 2.487.500
 - Sewa Coworking: 1 baris, -Rp 1.500.000
 - Transportasi: 1 baris, -Rp 450.000
 - Internet & Pulsa: 1 baris, -Rp 380.000
@@ -39,22 +39,26 @@ RINGKASAN PER KATEGORI USULAN
 - Pendapatan Lain: 1 baris, Rp 12.345,67
 - Pendapatan Proyek: 2 baris, Rp 10.250.000
 
-PERLU DICEK (5 baris, juga di mutasi-bca-sep-actual-ragu.csv):
-- Baris 8 | 2026-09-02 | BIAYA ADM | -Rp 10.000: Kategori usulan 'Biaya Bank' belum ada di budget Actual Anda. Buat kategorinya di Actual, atau pilih kategori lain yang sudah ada.
-- Baris 9 | 2026-09-03 | TRSF E-BANKING DB 0309/FTFVA/WS95051 70001/PL | -Rp 502.500: Kategori usulan 'Listrik & Air' belum ada di budget Actual Anda. Buat kategorinya di Actual, atau pilih kategori lain yang sudah ada.
-- Baris 12 | 2026-09-10 | TARIKAN ATM 10/09 ATM BCA | -Rp 1.000.000: Sepertinya PINDAH DANA milik sendiri (tarik/setor tunai, top up e-wallet, bayar kartu kredit, antar rekening). Di Actual catat sebagai TRANSFER: pilih Payee = nama akun tujuan, tanpa kategori.
-- Baris 15 | 2026-09-18 | KARTU DEBIT TOKOPEDIA | -Rp 700.000: Belanja marketplace: bisa bahan usaha, peralatan, atau keperluan pribadi. Pilih kategorinya.
-- Baris 17 | 2026-09-24 | QRIS TOKO XYZ 99231 | -Rp 275.000: Belum ada kata kunci yang cocok. Pilih kategori pengeluarannya.
+PERLU KONFIRMASI (5 transaksi, daftar teknis juga di mutasi-bca-sep-actual-ragu.csv):
+Usulan saya per transaksi (sebut tanggal + keterangan + nominal, jangan nomor baris):
+- 2 September 2026 | BIAYA ADM | -Rp 10.000 -> usulan: Biaya Bank (belum ada, buat dulu) - paling cocok menurut keterangan transaksinya
+- 3 September 2026 | TRSF E-BANKING DB 0309/FTFVA/WS95051 70001/PLN PRABAYAR | -Rp 502.500 -> usulan: Listrik & Air (belum ada, buat dulu) - paling cocok menurut keterangan transaksinya
+- 10 September 2026 | TARIKAN ATM 10/09 ATM BCA | -Rp 1.000.000 -> usulan: pindah dana ke akun sendiri (tanpa kategori) - uang cuma pindah dompet/rekening milik sendiri, bukan pengeluaran usaha
+- 18 September 2026 | KARTU DEBIT TOKOPEDIA | -Rp 700.000 -> usulan: Perlengkapan Usaha (belum ada, buat dulu) - belanja online paling sering untuk bahan/peralatan usaha
+- 24 September 2026 | QRIS TOKO XYZ 99231 | -Rp 275.000 -> usulan: Biaya Lain-lain (belum ada, buat dulu) - belum ada kata kunci yang cocok, ditaruh sementara di biaya umum
+
+SATU PERTANYAAN UNTUK PENGGUNA: balas 'ya' untuk memakai semua usulan di atas, atau sebut transaksi yang mau diganti (tanggal/keterangan) beserta kategori yang diinginkan.
+Kategori yang ada di budget: Arsip Lama, Iklan, Transportasi, Software & Langganan, Internet & Pulsa, Sewa Coworking, Belanja Rumah, Makan, Dana Darurat, Pajak
 
 DILEWATI (5 baris, tidak masuk file hasil):
-- Baris 20: transaksi PENDING (belum final) - impor setelah muncul tanggalnya | TRSF E-BANKING DB 3009 SHOPEE
-- Baris 21: baris ringkasan (saldo/total), bukan transaksi | Saldo Awal,=,5,000,000.00
-- Baris 22: baris ringkasan (saldo/total), bukan transaksi | Mutasi Kredit,=,10,262,345.67,3
-- Baris 23: baris ringkasan (saldo/total), bukan transaksi | Mutasi Debet,=,8,019,969.13,10
-- Baris 24: baris ringkasan (saldo/total), bukan transaksi | Saldo Akhir,=,7,242,376.54
+- PEND | TRSF E-BANKING DB 3009 SHOPEE | 150,000.00 -> transaksi PENDING (belum final) - impor setelah muncul tanggalnya
+- Saldo Awal,=,5,000,000.00 -> baris ringkasan (saldo/total), bukan transaksi
+- Mutasi Kredit,=,10,262,345.67,3 -> baris ringkasan (saldo/total), bukan transaksi
+- Mutasi Debet,=,8,019,969.13,10 -> baris ringkasan (saldo/total), bukan transaksi
+- Saldo Akhir,=,7,242,376.54 -> baris ringkasan (saldo/total), bukan transaksi
 
 File hasil: mutasi-bca-sep-actual.csv
-Cara impor di Actual: buka akun bank -> Import -> pilih file hasil -> pastikan kolom Date/Payee/Notes/Category/Amount terpasang, format tanggal 'YYYY MM DD', pemisah koma, opsi 'Split amount' dan 'Flip amount' MATI -> cek pratinjau -> Import.
+Cara impor di Actual: buka akun bank -> Import -> pilih file hasil -> pastikan kolom Date/Payee/Notes/Category/Amount terpasang, format tanggal 'YYYY MM DD', pemisah koma, opsi 'Split amount' (memecah kolom jumlah jadi masuk/keluar) dan 'Flip amount' (membalik tanda plus/minus) dua-duanya MATI -> cek pratinjau -> Import.
 ```
 
 ## 3. File hasil `mutasi-bca-sep-actual.csv`
@@ -75,16 +79,17 @@ Date,Payee,Notes,Category,Amount
 2026-09-30,PAJAK BUNGA,PAJAK BUNGA,Pajak,-2469.13
 ```
 
-## 4. Pertanyaan lanjutan agent (satu pesan)
-> Ada 5 transaksi yang perlu Anda pilihkan:
-> 1. 2 Sep — BIAYA ADM Rp 10.000 → kategori "Biaya Bank" belum ada. Buat kategori itu, atau masukkan ke "Internet & Pulsa"/lainnya?
-> 2. 3 Sep — PLN PRABAYAR Rp 502.500 → "Listrik & Air" belum ada. Buat, atau pakai kategori lain?
-> 3. 10 Sep — TARIKAN ATM Rp 1.000.000 → ini pindah uang ke dompet sendiri. Di Actual pilih Payee = akun "Kas Tunai" (transfer), tanpa kategori. Setuju?
-> 4. 18 Sep — TOKOPEDIA Rp 700.000 → untuk usaha (Software & Langganan?) atau rumah (Belanja Rumah)?
-> 5. 24 Sep — QRIS TOKO XYZ Rp 275.000 → kategori apa?
+## 4. Balasan agent (usulan + satu konfirmasi, satu pesan)
+> Sudah saya konversi: 13 transaksi terbaca, saldo cocok (Rp 7.242.376,54). 5 transaksi belum pasti, ini usulan saya:
+> 1. 2 Sep, BIAYA ADM Rp 10.000 → "Biaya Bank" (kategori ini belum ada di Actual, buat dulu).
+> 2. 3 Sep, PLN PRABAYAR Rp 502.500 → "Listrik & Air" (belum ada, buat dulu).
+> 3. 10 Sep, TARIKAN ATM Rp 1.000.000 → pindah uang ke dompet sendiri, dicatat sebagai transfer tanpa kategori.
+> 4. 18 Sep, TOKOPEDIA Rp 700.000 → "Perlengkapan Usaha" (belum ada, buat dulu).
+> 5. 24 Sep, QRIS TOKO XYZ Rp 275.000 → "Biaya Lain-lain" (belum ada, buat dulu).
 >
-> Setelah itu impor lewat Actual: buka akun **BCA Usaha** → Import → pilih file hasil → tanggal "YYYY MM DD" → Import.
-> Saldo akhir BCA di Actual harus **Rp 7.242.376,54** (sesuai mutasi).
+> Balas "ya" kalau usulan ini cocok, atau sebut yang mau diganti. Lima baris dilewati (satu transaksi PENDING dan empat baris saldo/total), tidak ikut diimpor.
+>
+> Impor: buka akun **BCA Usaha** → Import → pilih file hasil → tanggal "YYYY MM DD" → Import. Saldo akhir di Actual harus **Rp 7.242.376,54**.
 
 ## Catatan verifikasi
 File hasil ini sudah diurai dengan parser CSV server Actual 26.9.0 dan diimpor ke salinan budget lewat API resmi:

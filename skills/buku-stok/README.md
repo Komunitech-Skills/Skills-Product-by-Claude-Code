@@ -79,6 +79,14 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. File pesanan marketplace yang dipakai uji adalah tiruan yang meniru format ekspor Seller Center; nama kolom TikTok Shop versi Indonesia belum dicocokkan dengan file ekspor asli (AI selalu menampilkan kolom yang dipakai supaya Anda cek dulu). Jadwal laporan harian ke Telegram: diuji di bot Telegram uji pada 13 Okt 2026 (jadwal sekali jalan 5 menit ke depan; pesan tiba tepat waktu dan angka omzet, HPP, serta nilai persediaan cocok dengan hitungan terpisah; lihat `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`; uji itu dilakukan pada versi 1.1.6, sedangkan 1.1.7 hanya menambah kalimat "bila gagal" pada pesan jadwal).
 
+## Bukti uji di bot Telegram
+
+Uji terbaru: 17 Oktober 2026, versi 1.1.7, di bot OpenClaw asli (grup uji Komunitech), pesan yang sama untuk tanpa skill dan dengan skill: pemilik toko kaos dan tote bag mencatat barang datang kaos hitam M 50 pcs harga Rp34.000 plus ongkir Rp25.000, lalu membalas "ya". Skor 1–10 dari penilai independen: tanpa skill **5** → dengan skill **9** (selisih +4), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Dengan skill, Anda melihat dulu ringkasan yang akan disimpan (ongkir ikut masuk modal, jadi Rp34.500 per pcs; stok 24 → 74; modal rata-rata per barang Rp35.000 → Rp34.662), dan data baru disimpan setelah Anda membalas "ya". Setelah itu bot menyebut nilai stok Rp3.825.000. Semua angka dicek ulang dan benar. Tanpa skill, bot langsung menyimpan tanpa bertanya dan menampilkan nama berkas.
+
+Catatan jujur: tanpa skill, angka modal rata-rata dan stok 74 juga benar. Sisi tanpa skill sempat menyebut "sisa 3 pcs" dan letak rak yang tidak pernah Anda tulis; kemungkinan berasal dari sisa data uji lain di komputer bot, jadi selisihnya mungkin sedikit lebih besar dari semestinya (walau begitu tetap di atas acuan kami). Margin per barang belum ditampilkan dan penutup belum memberi contoh kalimat untuk mencatat penjualan. Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Apakah stok di Shopee/TikTok ikut berubah otomatis?**
 Tidak. Alat ini membaca file pesanan yang Anda unduh dari Seller Center. Alat ini tidak login ke marketplace dan tidak mengubah stok di sana. Stok di marketplace tetap Anda perbarui sendiri, dan laporan stok bisa diekspor ke Excel untuk membantu. Jika Anda butuh sinkron otomatis banyak toko secara real-time, layanan omnichannel berbayar tetap pilihan yang tepat.

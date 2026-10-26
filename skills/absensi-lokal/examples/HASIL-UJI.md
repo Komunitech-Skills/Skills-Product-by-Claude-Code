@@ -97,3 +97,6 @@ Tidak ada cacat berat: semua angka uang & jam benar, dasar hukum cocok dengan te
 
 ## Catatan koordinator — v1.0.1
 3 cacat SEDANG + semua cacat RINGAN diperbaiki pembuat; 38/38 tes regresi lulus (dicek ulang koordinator). Pengingat makan Pasal 29 memakai ambang teks pasal (lembur ≥ 4 jam). Status tetap lulus (perbaikan disertai tes regresi, tidak mengubah angka lembur yang sudah diverifikasi).
+
+## Catatan revisi 1.0.9 (2026-10-26)
+Uji Telegram asli gelombang A8 (1.0.8): skor 6,5 menjadi 7,5, verdik BELUM. Penyebab: setelah pengguna membalas "ya" untuk menyimpan, bot bertanya ulang dan tidak menyimpan. Perbaikan 1.0.9: satu "ya" (juga "iya", "boleh", "ok", "simpan") langsung menyimpan seluruh rangkaian, pertanyaan samping yang belum dijawab dibiarkan, balasan akhir satu kalimat dengan jumlah catatan dari script; pertanyaan simpan di rekap kini memuat jumlah catatan. Dicek lewat uji otomatis; belum diuji ulang di bot Telegram asli, jadi skor 7,5 belum berubah.

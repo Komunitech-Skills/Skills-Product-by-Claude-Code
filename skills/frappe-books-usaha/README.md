@@ -77,6 +77,14 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam paket be
 
 **Status uji (jujur):** sudah diuji OpenClaw (sebelum/sesudah otomatis dengan data contoh 2026-10-02). Aplikasi Frappe Books asli diuji penguji di Linux; uji OpenClaw memakai database contoh, bukan file Frappe Books milik pengguna sungguhan, dan uji manusia di komputer pembeli sungguhan (Windows/Mac) belum dilakukan. Belum uji bot Telegram/jadwal untuk skill ini. Codex, Claude Code, Cursor belum uji platform asli penuh. Komunitech tidak berafiliasi dengan Frappe Technologies.
 
+## Bukti uji di bot Telegram
+
+Uji terbaru: 21 Oktober 2026, versi 1.0.10, di bot OpenClaw asli (grup uji Komunitech), pesan yang sama untuk tanpa skill dan dengan skill: pemilik toko minta ringkasan penjualan, laba, dan siapa saja yang belum bayar dari buku Frappe Books September (data fiktif). Skor 1–10 dari penilai independen: tanpa skill **5** → dengan skill **8,5** (selisih +3,5), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Dengan skill, semua angka benar, dan bot menemukan piutang Agustus Rp843.600 yang sudah telat 32 hari sehingga total belum dibayar Rp3.231.100 (3 invoice) diurutkan dari yang paling telat. Draf dan invoice batal tidak ikut dihitung. Tanpa skill, penjualan dan laba benar, tetapi bot hanya melihat September (piutang Rp2.387.500) sehingga penunggak terlama terlewat.
+
+Catatan jujur: istilah "DPP" belum dijelaskan, format tebal belum siap diteruskan ke grup WA (bot baru menawarkannya), dan pembelian semen tidak dijelaskan sebagai bukan beban. Data yang dipakai berkas contoh, bukan pembukuan pembeli sungguhan. Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Apakah AI bisa merusak atau mengubah pembukuan saya?**
 Tidak lewat skill ini. File data dibuka dalam mode baca-saja yang dikunci, dan script tidak punya perintah menulis ke file itu.

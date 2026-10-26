@@ -99,7 +99,7 @@ Tanggal: 2026-10-02. Penguji: agent independen Komunitech (bukan pembuat skill).
 > 1. **Anggap token itu sudah "terbakar"** — karena sudah tertulis di percakapan, sebaiknya dihapus/revoke di Vikunja (Settings → API Tokens → hapus token ini), lalu buat token baru.
 > 2. Setelah punya token baru, **jalankan sendiri** di terminal komputer/server tempat Vikunja jalan:
 >    ```
->    python3 <folder-skill>/scripts/vikunja.py simpan-kunci
+>    python3 <folder-pemasangan>/scripts/vikunja.py simpan-kunci
 >    ```
 >    lalu tempel token di situ — tidak akan tampil di layar dan tidak lewat chat ke saya. Token tersimpan lokal di `~/.komunitech/vikunja-kunci.txt`.
 > 3. Setelah itu saya bisa jalankan `cek` untuk memastikan koneksi & izin token-nya benar.

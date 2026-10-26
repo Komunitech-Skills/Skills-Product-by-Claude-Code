@@ -27,7 +27,7 @@ Kolom:
   4. Dikirim - Sudah diserahkan ke kurir; isi nomor resi di deskripsi
   5. Retur/Komplain - Perlu ditindaklanjuti
   6. Diterima - Sampai di pelanggan (kolom terakhir = beres)
-Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum ada yang dibuat. Simpan ke Kanboard? (ya/tidak)
 (kode keluar 0)
 $ [dimas] ... --pribadi --ya
 PAPAN DIBUAT: Order Toko Hijab Nadia (id 2)
@@ -101,7 +101,7 @@ $ pindah-kartu --id 15 --ke-kolom Dikirim (pratinjau)
 PRATINJAU PINDAH KARTU #15: ORD-1002 Kak Sinta - bergo 2
 Dari: Dikemas
 Ke: Dikirim
-Belum dipindah. Lanjut? (ya/tidak) - ulangi dengan --ya bila ya.
+Belum dipindah. Lanjut? (ya/tidak)
 (kode keluar 0)
 $ --ya
 KARTU DIPINDAH #15: ORD-1002 Kak Sinta - bergo 2
