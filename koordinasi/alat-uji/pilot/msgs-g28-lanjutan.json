@@ -1,0 +1,38 @@
+[
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sebelum",
+  "topic": null,
+  "text": "ya",
+  "balas": true,
+  "gel": "G28-lanjutan",
+  "catatan": "lanjutan SATU kata 'ya' di topik kasir-lokal sebelum; kirim SEGERA setelah balasan giliran 1 sisi itu selesai (state buku kasir/absensi belum di-reset). Di luar kuota 10 pesan G28: perlu persetujuan/keputusan otomatis terpisah (maks 10 pesan per gelombang tetap berlaku untuk msgs-g28.json). kirim-urut2.py memakai 'balas': true -> membalas pesan bot terakhir di topik itu."
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "topic": null,
+  "text": "ya",
+  "balas": true,
+  "gel": "G28-lanjutan",
+  "catatan": "lanjutan SATU kata 'ya' di topik kasir-lokal sesudah; kirim SEGERA setelah balasan giliran 1 sisi itu selesai (state buku kasir/absensi belum di-reset). Di luar kuota 10 pesan G28: perlu persetujuan/keputusan otomatis terpisah (maks 10 pesan per gelombang tetap berlaku untuk msgs-g28.json). kirim-urut2.py memakai 'balas': true -> membalas pesan bot terakhir di topik itu."
+ },
+ {
+  "skill": "absensi-lokal",
+  "sisi": "sebelum",
+  "topic": null,
+  "text": "ya",
+  "balas": true,
+  "gel": "G28-lanjutan",
+  "catatan": "lanjutan SATU kata 'ya' di topik absensi-lokal sebelum; kirim SEGERA setelah balasan giliran 1 sisi itu selesai (state buku kasir/absensi belum di-reset). Di luar kuota 10 pesan G28: perlu persetujuan/keputusan otomatis terpisah (maks 10 pesan per gelombang tetap berlaku untuk msgs-g28.json). kirim-urut2.py memakai 'balas': true -> membalas pesan bot terakhir di topik itu."
+ },
+ {
+  "skill": "absensi-lokal",
+  "sisi": "sesudah",
+  "topic": null,
+  "text": "ya",
+  "balas": true,
+  "gel": "G28-lanjutan",
+  "catatan": "lanjutan SATU kata 'ya' di topik absensi-lokal sesudah; kirim SEGERA setelah balasan giliran 1 sisi itu selesai (state buku kasir/absensi belum di-reset). Di luar kuota 10 pesan G28: perlu persetujuan/keputusan otomatis terpisah (maks 10 pesan per gelombang tetap berlaku untuk msgs-g28.json). kirim-urut2.py memakai 'balas': true -> membalas pesan bot terakhir di topik itu."
+ }
+]
