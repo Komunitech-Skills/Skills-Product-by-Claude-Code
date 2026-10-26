@@ -5,6 +5,7 @@
 Jalankan: python3 uji_regresi.py  -> keluar 0 bila semua lulus.
 """
 import json
+import re
 import os
 import shutil
 import subprocess
@@ -13,7 +14,27 @@ import tempfile
 
 SINI = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(SINI, "perjanjian.py")
-TEMPLATES = os.path.join(os.path.dirname(SINI), "templates")
+SKILL_DIR = os.path.dirname(SINI)
+TEMPLATES = os.path.join(SKILL_DIR, "templates")
+VERSI_HARAP = "1.0.9"
+KALIMAT_BERKAS = "Draf juga sudah saya simpan sebagai berkas. Balas 'kirim file' bila mau dikirim sebagai dokumen."
+
+# Balasan bot gelombang pra-cek 2026-10-21 (dipendekkan): harus PERLU PERBAIKAN
+BALASAN_BURUK = {
+    "jalur berkas": "Draf juga saya simpan di file: `/opt/ochome/.openclaw/workspace/draft_sewa_kios.md`",
+    "nama berkas": "Sudah saya simpan sebagai draft_sewa_kios_sri_mulyani.md ya.",
+    "istilah script": "(saya hitung pakai script biar angka & terbilangnya akurat)",
+    "istilah skrip": "Angka sudah dicek skrip, aman.",
+    "istilah exec/tool": "Saya jalankan exec dan tool pemeriksa dulu.",
+    "blok kode": "Bagian 1/2\n```\nPERJANJIAN SEWA\n```",
+    "judul markdown": "Bagian 1/2\n# PERJANJIAN SEWA-MENYEWA TEMPAT USAHA\n## Pasal 1",
+    "tabel pipa": "LAMPIRAN 1\n| No | Bagian | Kondisi |\n|---|---|---|\n| 1 | Pintu | baik |",
+    "isian lama": "NIK: [[NIK PIHAK PERTAMA]]",
+    "terlalu panjang": "PASAL 1\n" + "Kalimat isi pasal yang panjang sekali. " * 360,
+}
+BALASAN_BAIK = ("Bagian 1/1\n\nPERJANJIAN SEWA\nPASAL 1 — OBJEK\n(1) Denda 0,1%/hari, Rp 9.000/hari, ditanggung dan/atau "
+                "dibayar penyewa. Kondisi baik/rusak ringan.\nNIK: [isi: NIK]\n\nAngka & terbilang sudah dihitung ulang.\n"
+                + KALIMAT_BERKAS)
 
 # Draf berisiko dari penguji independen (harus RUJUK PROFESIONAL)
 DRAF_RISIKO = {
@@ -46,6 +67,13 @@ Jual beli tanah seluas 200 m2 senilai Rp 750.000.000 (tujuh ratus lima puluh jut
 }
 KATA_RUJUK = {"investasi": "investasi", "kavling": "PPAT", "pinjam_bpkb": "jaminan", "harga_minimum": "UU 5/1999",
               "banting_harga": "UU 5/1999", "tanah_besar": "PPAT"}
+
+
+def tulis(folder, nama, isi):
+    f = os.path.join(folder, nama)
+    with open(f, "w", encoding="utf-8") as fh:
+        fh.write(isi)
+    return f
 
 
 def jalan(args, kode=0):
@@ -174,6 +202,90 @@ def main():
             d = jalan(["cek", os.path.join(TEMPLATES, n)])
             cek("template tanpa pengosongan sepihak default: " + n,
                 not any("sepihak" in m for m in d["masalah"] + d["info"]), d["masalah"] + d["info"])
+        # --- v1.0.9: versi
+        p = subprocess.run([sys.executable, SCRIPT, "--versi"], capture_output=True, text=True, encoding="utf-8")
+        cek("versi script " + VERSI_HARAP, p.returncode == 0 and VERSI_HARAP in p.stdout, p.stdout + p.stderr)
+        with open(os.path.join(SKILL_DIR, "README.md"), encoding="utf-8") as fh:
+            readme = fh.read()
+        cek("versi README " + VERSI_HARAP, "Versi terkini: **{}**".format(VERSI_HARAP) in readme)
+        with open(os.path.join(SKILL_DIR, "CHANGELOG.md"), encoding="utf-8") as fh:
+            cek("versi CHANGELOG " + VERSI_HARAP, "revisi {} ".format(VERSI_HARAP) in fh.read())
+        # --- v1.0.9: satu gaya isian [isi: ...] di SKILL.md, templates, references, contoh 01-05
+        with open(os.path.join(SKILL_DIR, "SKILL.md"), encoding="utf-8") as fh:
+            skill = fh.read()
+        cek("SKILL.md < 300 baris", len(skill.splitlines()) < 300)
+        cek("SKILL.md kalimat berkas tanpa jalur", KALIMAT_BERKAS in skill)
+        cek("SKILL.md aturan < 3.800 karakter & teks biasa", "3.800" in skill and "BUKAN di dalam blok kode" in skill)
+        cek("SKILL.md larangan kata script/skrip/tool/exec", "script, skrip, tool, exec" in skill)
+        sisa = []
+        for folder in ("templates", "references", "examples"):
+            for n in sorted(os.listdir(os.path.join(SKILL_DIR, folder))):
+                if folder == "examples" and not n[:2] in ("01", "02", "03", "04", "05"):
+                    continue  # 00-* & HASIL-UJI = rekaman uji lama, dibiarkan apa adanya
+                with open(os.path.join(SKILL_DIR, folder, n), encoding="utf-8") as fh:
+                    isi = re.sub(r"`\[\[\.\.\.\]\]`", "", fh.read())  # penyebutan aturan, bukan isian
+                if re.search(r"\[\[[^\]]+\]\]", isi):
+                    sisa.append(folder + "/" + n)
+        skill_isian = re.sub(r"`\[\[\.\.\.\]\]`", "", skill)
+        if re.search(r"\[\[[^\]]+\]\]", skill_isian):
+            sisa.append("SKILL.md")
+        cek("satu gaya isian [isi: ...]", not sisa, sisa)
+        # --- v1.0.9: bagi -> teks biasa, Bagian i/N, < 3.800 karakter, potong antar-pasal
+        for n in sorted(os.listdir(TEMPLATES)):
+            f = os.path.join(TEMPLATES, n)
+            with open(f, encoding="utf-8") as fh:
+                asli = fh.read()
+            d = jalan(["bagi", f])
+            bag = d["bagian"]
+            gabung = "\n".join(bag)
+            nm = d["jumlah_bagian"]
+            cek("bagi {}: tiap bagian <= 3800".format(n), all(len(b) <= 3800 for b in bag), d["panjang"])
+            cek("bagi {}: label Bagian i/{}".format(n, nm),
+                all(b.startswith("Bagian {}/{}\n".format(i + 1, nm)) for i, b in enumerate(bag)))
+            cek("bagi {}: potong hanya antar-pasal".format(n),
+                all(re.match(r"(?i)(pasal \d+|lampiran|demikian)", b.split("\n", 2)[2]) for b in bag[1:]),
+                [b.split("\n", 2)[2][:40] for b in bag[1:]])
+            pasal_asli = len(re.findall(r"(?im)^#+\s*pasal\s+\d+", asli))
+            pasal_baru = len(re.findall(r"(?m)^PASAL \d+", gabung))
+            cek("bagi {}: jumlah pasal utuh ({})".format(n, pasal_asli), pasal_asli == pasal_baru, pasal_baru)
+            for ayat in re.findall(r"(?m)^\(\d+\) .{20,60}", asli):
+                if "**" not in ayat and "[[" not in ayat:
+                    if ayat not in gabung:
+                        raise AssertionError("GAGAL: bagi {} kehilangan ayat: {}".format(n, ayat))
+            cek("bagi {}: nominal/meterai tetap".format(n),
+                re.findall(r"Rp ?[\d.]+", re.sub(r"<!--[\s\S]*?-->", "", asli)) == re.findall(r"Rp ?[\d.]+", gabung))
+            b = jalan(["cek-balasan", tulis(tmp, "balas-" + n, ("\n\n<<<PESAN BERIKUTNYA>>>\n\n").join(bag))])
+            cek("bagi {}: lolos cek-balasan".format(n), b["status"] == "SIAP KIRIM", b["masalah"])
+        # pasal sangat panjang -> dipotong di batas ayat, tetap <= maks
+        panjang = "# PERJANJIAN UJI\n\n## Pasal 1\n### Isi\n" + "".join(
+            "({}) {}\n".format(i, "Ketentuan ayat yang cukup panjang untuk uji. " * 8) for i in range(1, 30)) + \
+            "\n## Pasal 2\n### Penutup\n(1) Selesai.\n"
+        d = jalan(["bagi", tulis(tmp, "panjang.md", panjang)])
+        cek("bagi pasal > maks: dipotong di ayat + catatan", all(len(b) <= 3800 for b in d["bagian"]) and d["catatan"]
+            and all(re.match(r"\(\d+\)|PASAL", b.split("\n", 2)[2]) for b in d["bagian"][1:]), d["panjang"])
+        d = jalan(["bagi", "--maks", "2000", os.path.join(TEMPLATES, "sewa-tempat.md")])
+        cek("bagi --maks 2000", all(len(b) <= 2000 for b in d["bagian"]) and d["jumlah_bagian"] >= 4, d["panjang"])
+        jalan(["bagi", "--maks", "100", os.path.join(TEMPLATES, "sewa-tempat.md")], kode=1)
+        cek("bagi --maks terlalu kecil ditolak", True)
+        # tabel tanda tangan & lampiran -> baris pendek, isian lama diseragamkan
+        d = jalan(["bagi", tulis(tmp, "lama.md", "# PERJANJIAN\n## Pasal 1\nNIK: [[NIK]]\n\n| PIHAK PERTAMA | PIHAK KEDUA |\n"
+                                                  "|---|---|\n| <br>[Meterai Rp10.000]<br> | <br>[Meterai Rp10.000]<br> |\n"
+                                                  "| **[[NAMA A]]** | **[[NAMA B]]** |\n\n### Lampiran 1\n| No | Bagian | Kondisi |\n"
+                                                  "|---|---|---|\n| 1 | Pintu | baik |\n")])
+        t = "\n".join(d["bagian"])
+        cek("bagi: tanpa [[ ]], |, #, **", not re.search(r"\[\[|\||^#|\*\*", t, re.M), t)
+        cek("bagi: tanda tangan per pihak", "PIHAK PERTAMA\n[Meterai Rp10.000]\n[isi: NAMA A]" in t, t)
+        cek("bagi: lampiran baris pendek", "1. Bagian: Pintu; Kondisi: baik" in t, t)
+        d = jalan(["cek", tulis(tmp, "lama2.md", "# P\n## Pasal 1\nNIK [[NIK]]\n")])
+        cek("cek: info gaya isian [[...]]", any("[isi: ...]" in x for x in d["info"]), d["info"])
+        # --- v1.0.9: cek-balasan
+        for nama, isi in BALASAN_BURUK.items():
+            d = jalan(["cek-balasan", tulis(tmp, "buruk.txt", isi)])
+            cek("cek-balasan menolak: " + nama, d["status"] == "PERLU PERBAIKAN", d)
+        d = jalan(["cek-balasan", tulis(tmp, "baik.txt", BALASAN_BAIK)])
+        cek("cek-balasan menerima balasan bersih (dan/atau, Rp/hari, baik/rusak)", d["status"] == "SIAP KIRIM", d["masalah"])
+        d = jalan(["cek-balasan", tulis(tmp, "dua.txt", "Bagian 1/2\n" + "a " * 1800 + "\nBagian 2/2\n" + "b " * 1800)])
+        cek("cek-balasan: hitung per Bagian", d["status"] == "SIAP KIRIM" and d["jumlah_pesan"] == 2, d)
         kosong = os.path.join(tmp, "kosong.md")
         open(kosong, "w").close()
         jalan(["cek", kosong], kode=1)

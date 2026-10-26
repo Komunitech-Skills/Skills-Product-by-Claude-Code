@@ -12,8 +12,9 @@ import sys
 from collections import defaultdict
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
+from fractions import Fraction
 
-VERSI = "1.2.6"
+VERSI = "1.2.7"
 
 BULAN = {
     "jan": 1, "januari": 1, "january": 1,
@@ -39,6 +40,9 @@ PENGECUALIAN_STATUS = ["ditolak", "rejected", "dibatalkan pembatalannya"]
 # Status yang dianggap sudah final (uang aman). Status lain yang tetap dihitung (mis. "Sedang Dikirim")
 # ditandai "belum final" di ringkasan karena masih bisa batal/retur.
 STATUS_FINAL = ["selesai", "completed", "complete", "diterima", "delivered"]
+
+NAMA_HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]  # date.weekday(): 0 = Senin
+MIN_HARI_POLA = 14   # pola hari dalam minggu hanya bila periode >= 14 hari kalender
 
 BULAN_PENDEK = ["", "Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
 
@@ -170,6 +174,54 @@ def tgl_id(iso):
     return "{} {} {}".format(d.day, BULAN_PENDEK[d.month], d.year)
 
 
+def tgl_hari(iso):
+    """'Sabtu, 5 Sep 2026' (nama hari + tanggal). Bila bukan tanggal valid, dikembalikan apa adanya."""
+    try:
+        d = date.fromisoformat(iso)
+    except ValueError:
+        return iso
+    return "{}, {}".format(NAMA_HARI[d.weekday()], tgl_id(iso))
+
+
+def hitung_pola_hari(omzet_harian, awal, akhir):
+    """Rata-rata omzet per hari dalam minggu = total omzet pada hari itu / jumlah kemunculan hari itu di periode
+    (hari tanpa penjualan tetap dihitung sebagai kemunculan dengan omzet 0). None bila periode < 14 hari kalender.
+    Perbandingan memakai pecahan eksak (tanpa galat float); seri disebut semua."""
+    jumlah_hari = (akhir - awal).days + 1
+    if jumlah_hari < MIN_HARI_POLA:
+        return None
+    muncul = [0] * 7
+    for i in range(jumlah_hari):
+        muncul[date.fromordinal(awal.toordinal() + i).weekday()] += 1
+    total = [Fraction(0)] * 7
+    for iso, v in omzet_harian.items():
+        total[date.fromisoformat(iso).weekday()] += Fraction(str(round(v, 2)))
+    rata = [total[i] / muncul[i] for i in range(7)]   # setiap hari muncul >= 2 kali bila periode >= 14 hari
+    maks, mini = max(rata), min(rata)
+
+    def rp(frac):
+        return rupiah(Decimal(frac.numerator) / Decimal(frac.denominator))
+
+    def sebut(nilai):
+        return [{"hari": NAMA_HARI[i], "jumlah_kemunculan": muncul[i], "rata_rata_omzet": float(round(rata[i], 2)),
+                 "total_omzet": float(total[i])} for i in range(7) if rata[i] == nilai]
+    tinggi, rendah = sebut(maks), sebut(mini)
+    dasar = ("rata-rata omzet per hari dalam minggu = total omzet pada hari itu dibagi jumlah hari itu di periode; "
+             "hari tanpa penjualan dihitung Rp 0")
+    if maks == mini:
+        kalimat = ("Pola hari dalam minggu (omzet hari itu dibagi jumlah hari itu di periode; hari tanpa penjualan dihitung Rp 0): "
+                   "sama untuk semua hari, {}.".format(rp(maks)))
+    else:
+        kalimat = ("Pola hari dalam minggu (omzet hari itu dibagi jumlah hari itu di periode; hari tanpa penjualan dihitung Rp 0): "
+                   "tertinggi {} {}; terendah {} {}.".format(
+                       gabung_daftar(x["hari"] for x in tinggi), rp(maks),
+                       gabung_daftar(x["hari"] for x in rendah), rp(mini)))
+    return {"dasar": dasar, "minimal_hari_kalender": MIN_HARI_POLA, "jumlah_hari_kalender": jumlah_hari,
+            "per_hari": [{"hari": NAMA_HARI[i], "jumlah_kemunculan": muncul[i], "total_omzet": float(total[i]),
+                          "rata_rata_omzet": float(round(rata[i], 2))} for i in range(7)],
+            "tertinggi": tinggi, "terendah": rendah, "kalimat": kalimat}
+
+
 def angka_qty(q):
     return str(int(q)) if float(q).is_integer() else ("%s" % round(q, 2)).replace(".", ",")
 
@@ -209,7 +261,7 @@ def susun_ringkasan(h, ada_status, satuan_pesanan):
             bagian.append(teks)
         kal.append("Rincian per status: " + "; ".join(bagian) + ".")
         if h["dibuang_per_tanggal"]:
-            bagian = ["{} {} {} ({})".format(tgl_id(x["tanggal"]), x["jumlah_pesanan"], satuan_pesanan, x["status"])
+            bagian = ["{} {} {} ({})".format(tgl_hari(x["tanggal"]), x["jumlah_pesanan"], satuan_pesanan, x["status"])
                       for x in h["dibuang_per_tanggal"]]
             kal.append("Pesanan yang tidak dihitung menurut tanggal pesanan: " + "; ".join(bagian) + ".")
         else:
@@ -230,11 +282,13 @@ def susun_ringkasan(h, ada_status, satuan_pesanan):
     if not mode_pcs:
         kal.append("Catatan: file tanpa kolom jumlah, jadi jumlah pcs yang terjual tidak diketahui.")
     kal.append("Omzet tertinggi pada {} ({}) dan terendah pada {} ({}).".format(
-        tgl_id(h["hari_terbaik"]["tanggal"]), rupiah(h["hari_terbaik"]["omzet"]),
-        tgl_id(h["hari_terendah"]["tanggal"]), rupiah(h["hari_terendah"]["omzet"])))
+        tgl_hari(h["hari_terbaik"]["tanggal"]), rupiah(h["hari_terbaik"]["omzet"]),
+        tgl_hari(h["hari_terendah"]["tanggal"]), rupiah(h["hari_terendah"]["omzet"])))
     t = h["hari_transaksi_terbanyak"]
     kal.append("Transaksi terbanyak: {} {} per hari, pada {}.".format(
-        t["jumlah"], satuan_pesanan, gabung_daftar(tgl_id(x) for x in t["semua_tanggal_seri"])))
+        t["jumlah"], satuan_pesanan, gabung_daftar(tgl_hari(x) for x in t["semua_tanggal_seri"])))
+    if h["pola_hari_dalam_minggu"]:
+        kal.append(h["pola_hari_dalam_minggu"]["kalimat"])
     if h["baris_dilewati"]:
         kal.append("Catatan: {} baris tidak terbaca dan tidak dihitung.".format(h["baris_dilewati"]))
     return "RINGKASAN SIAP TEMPEL\n" + "\n".join(kal)
@@ -402,12 +456,14 @@ def susun_rekap_chat(h, ada_status, satuan_pesanan, top):
     t = h["hari_transaksi_terbanyak"]
     bar += ["", "Hari paling ramai:",
             "Omzet tertinggi {} ({}); terendah {} ({})".format(
-                tgl_id(h["hari_terbaik"]["tanggal"]), rupiah(h["hari_terbaik"]["omzet"]),
-                tgl_id(h["hari_terendah"]["tanggal"]), rupiah(h["hari_terendah"]["omzet"])),
+                tgl_hari(h["hari_terbaik"]["tanggal"]), rupiah(h["hari_terbaik"]["omzet"]),
+                tgl_hari(h["hari_terendah"]["tanggal"]), rupiah(h["hari_terendah"]["omzet"])),
             "{} terbanyak: {} ({} {} per hari{})".format(
                 "Pesanan" if satuan_pesanan == "pesanan" else "Transaksi",
-                gabung_daftar(tgl_id(x) for x in t["semua_tanggal_seri"]), t["jumlah"], satuan_pesanan,
+                gabung_daftar(tgl_hari(x) for x in t["semua_tanggal_seri"]), t["jumlah"], satuan_pesanan,
                 ", seri" if len(t["semua_tanggal_seri"]) > 1 else "")]
+    if h["pola_hari_dalam_minggu"]:
+        bar.append(h["pola_hari_dalam_minggu"]["kalimat"])
 
     catatan = []
     if not mode_pcs:
@@ -415,12 +471,15 @@ def susun_rekap_chat(h, ada_status, satuan_pesanan, top):
                        "(yang dihitung jumlah baris transaksi per produk)")
     elif h["sorotan_produk"].get("catatan") == CATATAN_SATU_BARIS:
         catatan.append("tiap baris dihitung 1 pcs (sesuai konfirmasi Anda)")
+    if h["baris_tanpa_jumlah"]:
+        catatan.append("{} baris tanpa jumlah dihitung 1 pcs".format(h["baris_tanpa_jumlah"]))
     if h["baris_dilewati"]:
         catatan.append("{} baris tidak terbaca dan tidak dihitung ({})".format(
             h["baris_dilewati"], "; ".join("{}: {}".format(k, v) for k, v in h["alasan_dilewati"].items())))
     for utama, varian in h["nama_produk_digabung"].items():
         catatan.append("nama produk {} digabung menjadi \"{}\"".format(
             gabung_daftar('"{}"'.format(v) for v in varian), utama))
+    catatan += h["peringatan_awam"]   # setiap isi 'peringatan', dalam bahasa awam
     if catatan:
         bar += ["", "Catatan data: " + "; ".join(catatan)]
     return "\n".join(bar)
@@ -506,6 +565,7 @@ def main():
     dilewati = defaultdict(int)
     dibuang_status = defaultdict(int)
     total, n = 0.0, 0
+    tanpa_jumlah = 0   # baris dihitung yang selisih kolom jumlahnya kosong (dihitung 1 pcs)
 
     # Per status (dihitung & dibuang): baris, pesanan unik, nilai. Dibuang per tanggal pesanan.
     per_status = {}
@@ -556,6 +616,8 @@ def main():
         if a.kolom_status:
             catat_status(st or "(kosong)", "dihitung", no, nilai)
         pesanan_dihitung.add(no)
+        if a.kolom_qty and not teks_qty:
+            tanpa_jumlah += 1
         asli = " ".join((r.get(a.kolom_produk) or "").split()) or "(tanpa nama)"
         kunci = asli.casefold()
         nama_tampil.setdefault(kunci, asli)
@@ -612,11 +674,17 @@ def main():
     hari_kalender = (akhir - awal).days + 1
 
     peringatan = []
+    peringatan_awam = []   # padanan tiap peringatan dalam bahasa sehari-hari, untuk "Catatan data" di rekap_chat
     if ambigu and any(POLA_ANGKA_3.match((r.get(a.kolom_tanggal) or "").strip()) for r in baris):
         peringatan.append("Urutan tanggal ambigu (tidak ada tanggal > 12); dianggap hari/bulan/tahun. "
                           "Konfirmasi ke pengguna; jika format AS, jalankan ulang dengan --urutan-tanggal mdy.")
+        peringatan_awam.append("urutan tanggal di file belum pasti (semua tanggal bisa dibaca hari/bulan atau "
+                               "bulan/hari), jadi dianggap hari/bulan/tahun seperti kebiasaan di Indonesia; mohon "
+                               "dicek apakah benar")
     if encoding != "utf-8-sig":
         peringatan.append(f"File dibaca dengan encoding {encoding} (bukan UTF-8).")
+        peringatan_awam.append("file ini disimpan dengan format huruf Excel lama, jadi huruf bertanda atau simbol "
+                               "khusus pada nama produk mungkin tampil kurang tepat; angkanya tidak terpengaruh")
 
     hasil = {
         "periode": {"awal": hari[0][0], "akhir": hari[-1][0],
@@ -644,7 +712,11 @@ def main():
         "nama_produk_digabung": {nama_tampil[k]: sorted(v) for k, v in varian_nama.items() if len(v) > 1},
         "urutan_tanggal_dipakai": urutan,
         "peringatan": peringatan,
+        "peringatan_awam": peringatan_awam,
+        "baris_tanpa_jumlah": tanpa_jumlah,
+        "pola_hari_dalam_minggu": hitung_pola_hari(per_hari, awal, akhir),
     }
+
     hasil["jumlah_pesanan_dihitung"] = len(pesanan_dihitung)
     hasil["satuan_pesanan"] = "pesanan unik" if a.kolom_pesanan else "baris"
     hasil["per_status"] = {
@@ -661,6 +733,10 @@ def main():
          "nilai": round(v["nilai"], 2)}
         for (t, st), v in sorted(dibuang_tgl.items())
     ]
+    # Nama hari untuk semua tanggal yang disebut di teks (pakai persis ini, jangan menebak hari sendiri)
+    tgl_perlu = {hasil["hari_terbaik"]["tanggal"], hasil["hari_terendah"]["tanggal"], *tgl_maks_trx,
+                 *(x["tanggal"] for x in hasil["dibuang_per_tanggal"])}
+    hasil["tanggal_dengan_hari"] = {t: tgl_hari(t) for t in sorted(tgl_perlu)}
     hasil["satuan_jumlah_produk"] = "pcs" if mode_pcs else SATUAN_BARIS
     hasil["sorotan_produk"], hasil["fakta_produk"] = susun_sorotan(semua_produk, total, mode_pcs)
     if not a.kolom_qty:

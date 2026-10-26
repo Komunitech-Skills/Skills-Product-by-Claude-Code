@@ -1,5 +1,7 @@
 # 00 — Uji banding pesaing (S1: perjanjian reseller + permintaan harga minimum)
 
+> **Catatan 1.0.9:** berkas ini rekaman uji versi lama dan dibiarkan apa adanya sebagai bukti. Gaya isian `[[...]]` di dalamnya sudah tidak dipakai; sejak 1.0.9 satu gaya isian saja: `[isi: ...]`.
+
 ## Pencarian yang dilakukan (2026-09-23)
 | Sumber | Kata kunci / cara | Hasil |
 |---|---|---|

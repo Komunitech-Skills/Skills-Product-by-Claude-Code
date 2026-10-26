@@ -2,6 +2,16 @@
 
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
+## Catatan revisi 1.2.7 (2026-10-26)
+- Status jujur: uji bot Telegram asli 17 Okt 2026 (v1.2.5) belum lulus; 1.2.6 dan 1.2.7 memperbaiki temuannya, tetapi **1.2.7 belum diuji ulang di bot asli** (belum ada uji OpenClaw/Telegram untuk revisi ini). Angka (omzet, produk, hari, jumlah) identik dengan 1.2.6 pada data yang sama; yang berubah hanya teks.
+- Nama hari: tanggal hari omzet tertinggi/terendah, hari transaksi terbanyak, dan tanggal pesanan batal/retur kini ditulis bersama harinya ("Sabtu, 5 Sep 2026") di `rekap_chat` dan `ringkasan_siap_tempel`; judul periode tetap tanpa nama hari. Kolom JSON baru `tanggal_dengan_hari` (tanggal ISO → teks).
+- Pola hari dalam minggu: rata-rata omzet per hari dalam minggu = total omzet pada hari itu ÷ jumlah hari itu di periode (hari tanpa penjualan dihitung Rp 0; September 2026 punya 5 Selasa dan 5 Rabu), hanya bila periode ≥ 14 hari kalender. Hari tertinggi dan terendah disebut dengan nilai Rupiah (seri disebut semua), di `rekap_chat`, `ringkasan_siap_tempel`, dan JSON `pola_hari_dalam_minggu`. SKILL.md: agen hanya boleh menyebut pola hari dari baris skrip itu. Perbandingan memakai pecahan eksak.
+- Setiap isi `peringatan` (urutan tanggal ambigu, encoding bukan UTF-8) kini ikut ke "Catatan data" di `rekap_chat` dalam bahasa sehari-hari (JSON `peringatan_awam`; `peringatan` teknis tetap ada).
+- Kolom jumlah ada tetapi sebagian sel kosong: skrip menghitung barisnya (`baris_tanpa_jumlah`) dan "Catatan data" menulis "N baris tanpa jumlah dihitung 1 pcs". Angkanya tidak berubah (perilaku "kosong = 1" sudah ada sebelumnya, kini dilaporkan).
+- README: kalimat jujur soal uji 17 Okt di bagian atas; cuplikan contoh diperbarui; satu baris di "Bukti uji di bot Telegram" bahwa versi ini belum diuji ulang di bot asli.
+- Uji regresi `scripts/uji_regresi.py` kini 47 tes (tambahan: nama hari dicek lewat `datetime`, pola hari dihitung ulang dengan Fraction termasuk hari kosong dan batas 13/14 hari, peringatan awam, sel jumlah kosong, aturan SKILL.md/README/CHANGELOG).
+- Belum: contoh `examples/01`–`08` masih keluaran format lama; uji ulang di OpenClaw/bot Telegram belum dijalankan.
+
 ## Catatan revisi 1.2.6 (2026-10-17)
 - Temuan uji bot Telegram asli 17 Okt 2026 (gelombang A5, ekspor gaya Shopee September 72 baris): tanpa skill 8,0 → dengan skill 6,5, BELUM. Angka utama benar, tetapi (1) satu kalimat insight dikarang dan bertentangan dengan daftar produk ("Topi Baseball paling banyak terjual … paling murah"; yang benar Tote Bag Natural 23 pcs, Rp 35.000/pcs); (2) memakai istilah "margin per unit" padahal data tidak memuat modal; (3) produk terlaris menurut jumlah tidak disebut; (4) balasan chat terlalu berat (judul `##`, dua jenis rata-rata).
 - Script kini menghitung semua perbandingan produk: `sorotan_produk` (terlaris menurut omzet, terlaris menurut jumlah, harga jual per pcs termurah/termahal, termasuk seri), `produk_terlaris_qty`, `harga_per_pcs` + `peringkat_omzet`/`peringkat_qty` per produk, dan `fakta_produk` (kalimat fakta siap pakai sebagai dasar saran).

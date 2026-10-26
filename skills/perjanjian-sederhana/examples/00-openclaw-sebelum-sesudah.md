@@ -1,5 +1,7 @@
 # Uji OpenClaw SEBELUM vs SESUDAH — perjanjian-sederhana
 
+> **Catatan 1.0.9:** berkas ini rekaman uji versi lama dan dibiarkan apa adanya sebagai bukti. Gaya isian `[[...]]` di dalamnya sudah tidak dipakai; sejak 1.0.9 satu gaya isian saja: `[isi: ...]`.
+
 ## Cara uji
 - **Tanggal:** 2026-10-01. Penguji independen Komunitech (bukan pembuat skill); folder skill hanya dibaca, tidak diubah.
 - **Agent:** OpenClaw **2026.9.6** lokal (`openclaw agent --local`, tanpa Telegram/gateway), model router Komunitech **claude-sonnet-5** (sama dengan bot member), TZ Asia/Jakarta.

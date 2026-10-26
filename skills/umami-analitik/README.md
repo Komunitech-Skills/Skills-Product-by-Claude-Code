@@ -83,6 +83,14 @@ Komunitech tidak berafiliasi dengan Umami Software, Inc. Umami (lisensi MIT) tid
 
 **Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis agent, server tiruan) dan pada Umami asli oleh penguji independen; **kiriman terjadwal ke Telegram** diuji satu kali (sekali jalan, data contoh) di bot Telegram uji pada 13 Okt 2026 (`examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Codex, Claude Code, dan Cursor belum diuji langsung (format skill-nya sama). Windows/macOS belum diuji langsung.
 
+## Bukti uji di bot Telegram
+
+Uji terbaru: 21 Oktober 2026, versi 1.0.6, di bot OpenClaw asli (grup uji Komunitech), pesan yang sama untuk tanpa skill dan dengan skill: pemilik toko keripik bertanya apakah pengunjung webnya minggu lalu naik atau turun, halaman apa yang paling banyak dibuka, dan dari mana asalnya. Data dari Umami tiruan berisi rekaman fiktif, bukan Umami hidup. Skor 1–10 dari penilai independen: tanpa skill **3** → dengan skill **8,5** (selisih +5,5), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Dengan skill, bot langsung membuka Umami dan menjawab ketiga pertanyaan dalam satu pesan: pengunjung naik dari 4 jadi 11 (+175%), halaman teratas beserta persennya, dan separuh kunjungan dari media sosial. Semua angka dicek ulang dan cocok. Tanpa skill, bot mengaku belum punya akses lalu meminta alamat, token, bahkan kata sandi.
+
+Catatan jujur: Anda menyebut WA, tetapi bot dengan skill menulis klik dari WA tidak terbaca sumbernya, padahal datanya mencatat 2 pengunjung dari WhatsApp. Kenaikan tayangan juga belum diberi persen. Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Kenapa "rata-rata lama" bisa beberapa detik lebih kecil dari perkiraan saya?**
 Angka itu mengikuti hitungan Umami sendiri: jarak waktu antara pencatatan pertama dan terakhir dalam satu kunjungan. Waktu setelah pencatatan terakhir (mis. menutup halaman) tidak terhitung, dan kunjungan 1 halaman dihitung 0 detik. Skill menampilkan angka yang sama dengan layar Umami dan menyertakan catatan ini di setiap laporan.

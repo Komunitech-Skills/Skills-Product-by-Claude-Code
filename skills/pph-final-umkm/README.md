@@ -68,6 +68,14 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 **Status uji (jujur):** versi 1.0.5 lulus uji ulang penguji AI independen di OpenClaw 2026.10.2 pada 16 Oktober 2026 (6,8 → 8,8; 5 skenario termasuk yang dengan pengaturan seperti bot Telegram (bukan bot sungguhan); tanpa salah angka). Belum diuji manusia dan belum melalui program beta. Versi lama pernah diuji di Claude Code (simulasi agent); Codex dan Cursor belum diuji langsung (format skill-nya sama). Aturan pajak dicek ke naskah resmi pada 14 Oktober 2026; pembulatan belum dicocokkan dengan Coretax.
 
+## Bukti uji di bot Telegram
+
+Uji terbaru: 17 Oktober 2026 (dikirim ulang 21 Oktober), versi 1.0.6, di bot OpenClaw asli (grup uji Komunitech), pesan yang sama untuk tanpa skill dan dengan skill: penjual orang pribadi dengan omzet Rp587,5 juta sampai September, sebagian dipotong marketplace Shopee, minta dihitung PPh final dan berapa yang masih harus disetor. Skor 1–10 dari penilai independen: tanpa skill **6,5** → dengan skill **9** (selisih +2,5), **lulus acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Angka sama benar di kedua sisi: kurang setor September Rp165.000 dan batas setor 15 Oktober sudah lewat. Bedanya di aturan: tanpa skill, bot keliru menyebut 2026 tahun terakhir tarif 0,5% dan menyuruh bersiap pindah tarif normal 2027, padahal batas 7 tahun sudah dihapus PP 20/2026. Dengan skill, aturan itu benar, ada ringkasan total, sisa batas Rp4,8 miliar (Rp4.212.500), cara mengajukan pengembalian kelebihan pungut, dan pengingat surat pernyataan ke Shopee.
+
+Catatan jujur: kalimat pembuka bot dengan skill sempat membingungkan, langkah setor praktis (e-Billing) dan sanksi bunga belum disebut, dan bot belum menanyakan kapan potongan Shopee mulai berlaku. Pembulatan belum dicocokkan dengan Coretax. Ini satu pesan uji per sisi, bukan uji berulang.
+
 ## FAQ
 **Apakah hasil ini bisa langsung dipakai untuk setor pajak?**
 Hasilnya adalah hitungan bantu. Setoran dan pelaporan tetap lewat Coretax (sistem pajak online) atau DJP. Untuk kasus khusus, konfirmasi ke DJP (Kring Pajak 1500200) atau konsultan pajak.

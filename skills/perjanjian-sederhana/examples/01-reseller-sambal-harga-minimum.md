@@ -1,5 +1,7 @@
 # 01 — Perjanjian reseller sambal, pengguna minta harga jual minimum + denda "banting harga"
 
+> **Catatan 1.0.9:** isian di contoh ini diseragamkan ke gaya `[isi: ...]` dan kalimat "dicek script" di jawaban diganti "sudah dihitung ulang". Naskah di bawah ditampilkan dalam format berkas/terminal (judul `#`, tabel). Di kanal chat (Telegram/WhatsApp) sejak 1.0.9 naskah yang sama dikirim sebagai teks biasa per "Bagian 1/N" (< 3.800 karakter, dipotong antar-pasal) hasil `perjanjian.py bagi`, tanpa jalur berkas dan tanpa kata script.
+
 ## Skenario
 S1, permintaan normal. Pemilik merek sambal merekrut reseller di kota lain. Pengguna meminta klausul yang berisiko hukum: reseller **wajib** menjual minimal Rp 25.000 dan didenda Rp 5 juta bila "banting harga" (penetapan harga jual kembali, UU 5/1999 Pasal 8). Skill harus tetap membuat draf yang seimbang, memberi peringatan, dan menawarkan alternatif yang sah.
 
@@ -12,7 +14,7 @@ S1, permintaan normal. Pemilik merek sambal merekrut reseller di kota lain. Peng
 1. Saring batasan: perjanjian reseller, nilai kecil, para pihak WNI perorangan → **boleh dibuat**. Permintaan harga jual minimum wajib + denda → pasal berisiko (UU 5/1999 Ps. 8), jadi diberi tanda ⚠, bukan ditulis mentah.
 2. Template: `templates/reseller-distributor.md`.
 3. Angka dari script: `perjanjian.py tanggal 2026-10-01` → "Pada hari ini, Kamis, tanggal satu bulan Oktober tahun dua ribu dua puluh enam (01-10-2026)"; `terbilang` 18.000 / 25.000 / 432.000; `meterai --rangkap 2` → 2 meterai, Rp 20.000.
-4. Draf diperiksa: `perjanjian.py cek draf.md` → *PERLU PERBAIKAN* hanya karena 7 isian `[[...]]` data pribadi/rekening; **4 nominal + terbilang cocok 4**; 11 pasal urut; 1 pasal bertanda TINJAU PENGACARA.
+4. Draf diperiksa: `perjanjian.py cek draf.md` → *PERLU PERBAIKAN* hanya karena 7 isian `[isi: ...]` data pribadi/rekening; **4 nominal + terbilang cocok 4**; 11 pasal urut; 1 pasal bertanda TINJAU PENGACARA.
 
 ### Jawaban ke pengguna
 
@@ -28,19 +30,19 @@ Kalau tetap ingin mewajibkan harga minimum atau memberi wilayah eksklusif, konsu
 
 # SURAT PERJANJIAN KERJA SAMA RESELLER
 
-Nomor: [[NOMOR PERJANJIAN, mis. 001/SMR-RSL/X/2026]]
+Nomor: [isi: NOMOR PERJANJIAN, mis. 001/SMR-RSL/X/2026]
 
 Pada hari ini, Kamis, tanggal satu bulan Oktober tahun dua ribu dua puluh enam (01-10-2026), bertempat di Semarang, kami yang bertanda tangan di bawah ini:
 
 1. **Nama**: Rina Kartika (fiktif)
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]], Kota Semarang
-   **Nama usaha / merek**: Sambal Mbak Rin (NIB [[NIB, jika ada]])
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT], Kota Semarang
+   **Nama usaha / merek**: Sambal Mbak Rin (NIB [isi: NIB, jika ada])
    Dalam hal ini bertindak untuk diri sendiri selaku pemilik usaha Sambal Mbak Rin, selanjutnya disebut **"PIHAK PERTAMA"**.
 
 2. **Nama**: Dewi Anggraini (fiktif)
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]], Kota Bandung
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT], Kota Bandung
    **No. WhatsApp/Email**: 08xx-xxxx-xxxx (fiktif)
    Dalam hal ini bertindak untuk diri sendiri, selanjutnya disebut **"PIHAK KEDUA"**.
 
@@ -82,7 +84,7 @@ c. Para Pihak sepakat mengikatkan diri dalam kerja sama reseller dengan ketentua
 ## Pasal 4
 ### Harga dan Pembayaran
 (1) Harga reseller untuk setiap Produk tercantum dalam Lampiran 1 dan berlaku sampai ada pemberitahuan perubahan sesuai Pasal 2 ayat (2) huruf d.
-(2) Pembayaran dilakukan penuh di muka sebelum Produk dikirim melalui transfer ke rekening [[BANK]] nomor [[NOMOR REKENING]] atas nama [[NAMA PEMILIK REKENING]].
+(2) Pembayaran dilakukan penuh di muka sebelum Produk dikirim melalui transfer ke rekening [isi: BANK] nomor [isi: NOMOR REKENING] atas nama [isi: NAMA PEMILIK REKENING].
 (3) Ongkos kirim ditanggung oleh PIHAK KEDUA.
 (4) Pembayaran dianggap sah hanya jika masuk ke rekening pada ayat (2). Pembayaran ke rekening lain tidak mengikat PIHAK PERTAMA kecuali disetujui tertulis.
 
@@ -148,7 +150,7 @@ Saksi-saksi (opsional):
 ---
 
 ### Yang masih perlu dilengkapi
-- `[[NOMOR PERJANJIAN]]`, `[[NIK]]` & `[[ALAMAT]]` kedua pihak, `[[NIB, jika ada]]`, `[[BANK]]`, `[[NOMOR REKENING]]`, `[[NAMA PEMILIK REKENING]]`.
+- `[isi: NOMOR PERJANJIAN]`, `[isi: NIK]` & `[isi: ALAMAT]` kedua pihak, `[isi: NIB, jika ada]`, `[isi: BANK]`, `[isi: NOMOR REKENING]`, `[isi: NAMA PEMILIK REKENING]`.
 
 ### Pasal yang sebaiknya ditinjau pengacara
 - **Pasal 3 ayat (3)** — bila ingin mengubah "harga disarankan" menjadi harga jual minimum wajib atau menambah denda "banting harga" (UU 5/1999 Ps. 8).
@@ -163,7 +165,7 @@ Saksi-saksi (opsional):
 - [ ] Nama, NIK, dan alamat Dewi sama dengan KTP aslinya.
 - [ ] Kedua pihak sudah dewasa dan tanda tangan atas kemauan sendiri.
 - [ ] Lampiran 1 (produk, harga reseller, harga disarankan, minimal order) sudah benar dan ikut diparaf.
-- [ ] Angka dan terbilang sama persis (sudah dicek script: 4/4 cocok).
+- [ ] Angka dan terbilang sama persis (sudah dihitung ulang: 4/4 cocok).
 - [ ] Rekening tujuan atas nama kamu (Rina) atau usaha kamu, bukan rekening orang lain.
 - [ ] Jangka waktu (1 Okt 2026 – 30 Sep 2027) dan cara berhenti (pemberitahuan 30 hari) sudah dipahami.
 - [ ] Pasal bertanda ⚠ sudah dibahas atau diputuskan dengan sadar.

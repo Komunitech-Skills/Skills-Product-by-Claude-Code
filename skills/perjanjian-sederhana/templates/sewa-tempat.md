@@ -8,52 +8,52 @@ Peringatan wajib ditampilkan ke pengguna:
 - Jika yang menyewakan BUKAN pemilik di sertifikat → minta surat kuasa/izin pemilik; jika sewa ulang (sublet) → minta izin tertulis pemilik asli.
 - Jika objek harta bersama suami-istri → persetujuan tertulis pasangan pemilik.
 - Kios/los di PASAR, MAL, atau pusat belanja sering berstatus hak pakai/sewa dari pengelola (PD Pasar, pengelola gedung). Orang yang "menyewakan" mungkin hanya pemegang hak pakai: minta bukti hak pakai/kartu kios dan IZIN TERTULIS pengelola untuk menyewakan ulang; cek juga aturan pengelola (jam buka, jenis usaha, iuran). Ganti huruf a latar belakang: "pemegang hak pakai atas kios ... berdasarkan ... dari [pengelola]" dan lampirkan izin pengelola.
-- Tanggal berakhir sewa dihitung dengan: perjanjian.py sampai YYYY-MM-DD --tahun 1 (atau --bulan N).
+- Tanggal berakhir sewa dihitung dengan: perjanjian.py sampai YYYY-MM-DD --tahun 1 (atau --bulan N). Jadwal termin (Pasal 4 ayat 3) dengan: perjanjian.py termin.
 - Sewa > 5 tahun, nilai >= Rp500 juta, sewa tanah untuk dibangun penyewa (bangun-guna-serah), atau ada opsi membeli → rujuk pengacara/notaris.
 - Ada ketentuan PPh atas sewa tanah/bangunan; jangan hitung, arahkan ke konsultan pajak/DJP.
 -->
 # PERJANJIAN SEWA-MENYEWA TEMPAT USAHA
 
-Nomor: [[NOMOR PERJANJIAN]]
+Nomor: [isi: NOMOR PERJANJIAN]
 
-[[KALIMAT PEMBUKA TANGGAL]], bertempat di [[KOTA]], kami yang bertanda tangan di bawah ini:
+[isi: KALIMAT PEMBUKA TANGGAL], bertempat di [isi: KOTA], kami yang bertanda tangan di bawah ini:
 
-1. **Nama**: [[NAMA PIHAK PERTAMA]]
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]]
-   Bertindak untuk diri sendiri selaku pemilik objek sewa [[atau: selaku kuasa dari ... berdasarkan Surat Kuasa tanggal ...]], selanjutnya disebut **"PIHAK PERTAMA"** atau **"Pemilik"**.
+1. **Nama**: [isi: NAMA PIHAK PERTAMA]
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT]
+   Bertindak untuk diri sendiri selaku pemilik objek sewa [isi: atau: selaku kuasa dari ... berdasarkan Surat Kuasa tanggal ...], selanjutnya disebut **"PIHAK PERTAMA"** atau **"Pemilik"**.
 
-2. **Nama**: [[NAMA PIHAK KEDUA]]
-   **NIK**: [[NIK]]
-   **Alamat**: [[ALAMAT]]
+2. **Nama**: [isi: NAMA PIHAK KEDUA]
+   **NIK**: [isi: NIK]
+   **Alamat**: [isi: ALAMAT]
    Bertindak untuk diri sendiri, selanjutnya disebut **"PIHAK KEDUA"** atau **"Penyewa"**.
 
 Para Pihak terlebih dahulu menerangkan:
-a. PIHAK PERTAMA adalah pemilik sah atas [[JENIS BANGUNAN, mis. 1 (satu) unit kios]] yang terletak di [[ALAMAT LENGKAP OBJEK]], dengan luas kurang lebih [[LUAS]] m², berdasarkan [[JENIS & NOMOR BUKTI HAK, mis. SHM No. ... atas nama ...]] (selanjutnya disebut **"Objek Sewa"**);
-b. PIHAK KEDUA bermaksud menyewa Objek Sewa untuk kegiatan usaha [[JENIS USAHA]];
+a. PIHAK PERTAMA adalah pemilik sah atas [isi: JENIS BANGUNAN, mis. 1 (satu) unit kios] yang terletak di [isi: ALAMAT LENGKAP OBJEK], dengan luas kurang lebih [isi: LUAS] m², berdasarkan [isi: JENIS & NOMOR BUKTI HAK, mis. SHM No. ... atas nama ...] (selanjutnya disebut **"Objek Sewa"**);
+b. PIHAK KEDUA bermaksud menyewa Objek Sewa untuk kegiatan usaha [isi: JENIS USAHA];
 c. Para Pihak sepakat membuat Perjanjian Sewa-Menyewa dengan ketentuan sebagai berikut.
 
 ## Pasal 1
 ### Objek Sewa dan Peruntukan
 (1) PIHAK PERTAMA menyewakan kepada PIHAK KEDUA Objek Sewa beserta fasilitas sebagaimana tercantum dalam **Lampiran 1** (berita acara kondisi dan fasilitas), dan PIHAK KEDUA menerima sewa tersebut.
-(2) Objek Sewa hanya digunakan untuk usaha [[JENIS USAHA]] dan tidak boleh digunakan untuk kegiatan yang melanggar hukum, kesusilaan, atau ketertiban lingkungan.
+(2) Objek Sewa hanya digunakan untuk usaha [isi: JENIS USAHA] dan tidak boleh digunakan untuk kegiatan yang melanggar hukum, kesusilaan, atau ketertiban lingkungan.
 
 ## Pasal 2
 ### Jangka Waktu
-(1) Sewa berlangsung selama [[1]] ([[satu]]) tahun, terhitung sejak [[TANGGAL MULAI]] sampai dengan [[TANGGAL BERAKHIR]].
-(2) PIHAK KEDUA mendapat prioritas memperpanjang sewa dengan menyampaikan permohonan tertulis paling lambat [[60]] ([[enam puluh]]) hari sebelum sewa berakhir. Harga dan syarat perpanjangan disepakati kemudian secara tertulis.
+(1) Sewa berlangsung selama [isi: 1] ([isi: satu]) tahun, terhitung sejak [isi: TANGGAL MULAI] sampai dengan [isi: TANGGAL BERAKHIR].
+(2) PIHAK KEDUA mendapat prioritas memperpanjang sewa dengan menyampaikan permohonan tertulis paling lambat [isi: 60] ([isi: enam puluh]) hari sebelum sewa berakhir. Harga dan syarat perpanjangan disepakati kemudian secara tertulis.
 
 ## Pasal 3
 ### Harga Sewa dan Pembayaran
-(1) Harga sewa adalah [[Rp ... (terbilang)]] untuk seluruh jangka waktu sewa.
-(2) Harga sewa dibayar [[PILIH: sekaligus di muka paling lambat pada tanggal ... / bertahap sesuai jadwal pada ayat (3)]] melalui transfer ke rekening [[BANK]] nomor [[NOMOR REKENING]] atas nama [[NAMA PEMILIK REKENING]]. Setiap pembayaran dibuatkan kuitansi.
-(3) [[JADWAL TERMIN, jika bertahap. Hitung dengan: perjanjian.py termin]]
-(4) PIHAK KEDUA menyerahkan uang jaminan (deposit) sebesar [[Rp ... (terbilang)]] pada saat penandatanganan. Uang jaminan dikembalikan tanpa bunga paling lambat [[14]] ([[empat belas]]) hari setelah Objek Sewa diserahkan kembali, setelah dikurangi biaya perbaikan kerusakan dan tagihan yang belum dibayar PIHAK KEDUA (dengan rincian tertulis).
+(1) Harga sewa adalah [isi: Rp ... (terbilang)] untuk seluruh jangka waktu sewa.
+(2) Harga sewa dibayar [isi: PILIH: sekaligus di muka paling lambat pada tanggal ... / bertahap sesuai jadwal pada ayat (3)] melalui transfer ke rekening [isi: BANK] nomor [isi: NOMOR REKENING] atas nama [isi: NAMA PEMILIK REKENING]. Setiap pembayaran dibuatkan kuitansi.
+(3) [isi: JADWAL TERMIN, jika bertahap]
+(4) PIHAK KEDUA menyerahkan uang jaminan (deposit) sebesar [isi: Rp ... (terbilang)] pada saat penandatanganan. Uang jaminan dikembalikan tanpa bunga paling lambat [isi: 14] ([isi: empat belas]) hari setelah Objek Sewa diserahkan kembali, setelah dikurangi biaya perbaikan kerusakan dan tagihan yang belum dibayar PIHAK KEDUA (dengan rincian tertulis).
 (5) Kewajiban pajak yang timbul dari sewa ini dipenuhi oleh Pihak yang diwajibkan sesuai peraturan perpajakan yang berlaku.
 
 ## Pasal 4
 ### Hak dan Kewajiban PIHAK PERTAMA
-(1) PIHAK PERTAMA berhak menerima harga sewa tepat waktu dan memeriksa kondisi Objek Sewa dengan pemberitahuan terlebih dahulu paling lambat [[1]] ([[satu]]) hari sebelumnya.
+(1) PIHAK PERTAMA berhak menerima harga sewa tepat waktu dan memeriksa kondisi Objek Sewa dengan pemberitahuan terlebih dahulu paling lambat [isi: 1] ([isi: satu]) hari sebelumnya.
 (2) PIHAK PERTAMA wajib:
    a. menyerahkan Objek Sewa dalam keadaan baik dan dapat digunakan pada tanggal mulai sewa;
    b. menjamin bahwa Objek Sewa tidak dalam sengketa, tidak sedang dijaminkan dengan cara yang dapat mengganggu penyewaan, dan PIHAK KEDUA dapat menikmati Objek Sewa dengan tenteram selama masa sewa;
@@ -71,7 +71,7 @@ c. Para Pihak sepakat membuat Perjanjian Sewa-Menyewa dengan ketentuan sebagai b
    e. tidak menyewakan kembali atau mengalihkan Objek Sewa kepada pihak lain tanpa persetujuan tertulis PIHAK PERTAMA;
    f. mengurus sendiri izin usaha yang diperlukan untuk kegiatan usahanya;
    g. menyerahkan kembali Objek Sewa pada akhir masa sewa dalam keadaan seperti semula, kecuali aus karena pemakaian wajar.
-(3) Barang tambahan yang dipasang PIHAK KEDUA dengan persetujuan boleh dibongkar dan dibawa pada akhir sewa, dengan mengembalikan kondisi seperti semula. Barang yang tertinggal lebih dari [[7]] ([[tujuh]]) hari setelah sewa berakhir dianggap ditinggalkan dan dapat disingkirkan PIHAK PERTAMA atas biaya PIHAK KEDUA.
+(3) Barang tambahan yang dipasang PIHAK KEDUA dengan persetujuan boleh dibongkar dan dibawa pada akhir sewa, dengan mengembalikan kondisi seperti semula. Barang yang tertinggal lebih dari [isi: 7] ([isi: tujuh]) hari setelah sewa berakhir dianggap ditinggalkan dan dapat disingkirkan PIHAK PERTAMA atas biaya PIHAK KEDUA.
 
 ## Pasal 6
 ### Pengalihan Kepemilikan
@@ -79,22 +79,22 @@ Apabila Objek Sewa dijual atau dialihkan selama masa sewa, sewa tetap berlaku sa
 
 ## Pasal 7
 ### Wanprestasi dan Pengakhiran
-(1) Suatu Pihak dianggap wanprestasi apabila tidak melaksanakan kewajibannya dan tetap tidak memperbaikinya dalam waktu [[14]] ([[empat belas]]) hari kalender setelah menerima teguran tertulis.
-(2) Keterlambatan pembayaran sewa bertahap dikenakan denda [[0,1]]% ([[nol koma satu persen]]) per hari dari jumlah yang terlambat, paling banyak [[5]]% ([[lima persen]]).
-(3) Apabila PIHAK KEDUA tetap wanprestasi setelah teguran tertulis dan tenggat pada ayat (1) lewat, PIHAK PERTAMA dapat menyampaikan pemberitahuan tertulis pengakhiran sewa, dan PIHAK KEDUA diminta mengosongkan serta menyerahkan kembali Objek Sewa paling lambat [[14]] ([[empat belas]]) hari setelah pemberitahuan tersebut diterima. Sisa uang sewa yang telah dibayar untuk periode setelah pengakhiran dikembalikan secara proporsional setelah dikurangi tunggakan dan denda yang sah.
+(1) Suatu Pihak dianggap wanprestasi apabila tidak melaksanakan kewajibannya dan tetap tidak memperbaikinya dalam waktu [isi: 14] ([isi: empat belas]) hari kalender setelah menerima teguran tertulis.
+(2) Keterlambatan pembayaran sewa bertahap dikenakan denda [isi: 0,1]% ([isi: nol koma satu persen]) per hari dari jumlah yang terlambat, paling banyak [isi: 5]% ([isi: lima persen]).
+(3) Apabila PIHAK KEDUA tetap wanprestasi setelah teguran tertulis dan tenggat pada ayat (1) lewat, PIHAK PERTAMA dapat menyampaikan pemberitahuan tertulis pengakhiran sewa, dan PIHAK KEDUA diminta mengosongkan serta menyerahkan kembali Objek Sewa paling lambat [isi: 14] ([isi: empat belas]) hari setelah pemberitahuan tersebut diterima. Sisa uang sewa yang telah dibayar untuk periode setelah pengakhiran dikembalikan secara proporsional setelah dikurangi tunggakan dan denda yang sah.
 (4) Apabila PIHAK KEDUA tidak menyerahkan kembali Objek Sewa dalam tenggat ayat (3), Para Pihak menyelesaikannya secara musyawarah sesuai Pasal 9; bila musyawarah tidak berhasil, PIHAK PERTAMA menempuh jalur hukum sesuai Pasal 9. PIHAK PERTAMA tidak akan mengunci, menyegel, membongkar, mengambil alih Objek Sewa, atau memindahkan barang PIHAK KEDUA tanpa persetujuan PIHAK KEDUA atau putusan/penetapan pengadilan.
 (5) Apabila PIHAK PERTAMA wanprestasi sehingga Objek Sewa tidak dapat digunakan, PIHAK KEDUA berhak mengakhiri sewa dan menerima kembali sisa uang sewa secara proporsional beserta uang jaminan.
 
 ## Pasal 8
 ### Keadaan Memaksa
 (1) Keadaan memaksa adalah keadaan di luar kendali dan kesalahan Para Pihak yang tidak dapat diperkirakan sebelumnya, antara lain bencana alam, kebakaran yang bukan karena kelalaian Para Pihak, banjir, wabah yang ditetapkan pemerintah, huru-hara, atau kebijakan pemerintah yang secara langsung melarang penggunaan Objek Sewa.
-(2) Pihak yang mengalami keadaan memaksa wajib memberitahukan secara tertulis paling lambat [[7]] ([[tujuh]]) hari kalender sejak kejadian.
-(3) Apabila Objek Sewa tidak dapat digunakan karena keadaan memaksa lebih dari [[30]] ([[tiga puluh]]) hari, Para Pihak bermusyawarah mengenai perpanjangan masa sewa sebagai pengganti atau pengembalian sisa uang sewa secara proporsional.
+(2) Pihak yang mengalami keadaan memaksa wajib memberitahukan secara tertulis paling lambat [isi: 7] ([isi: tujuh]) hari kalender sejak kejadian.
+(3) Apabila Objek Sewa tidak dapat digunakan karena keadaan memaksa lebih dari [isi: 30] ([isi: tiga puluh]) hari, Para Pihak bermusyawarah mengenai perpanjangan masa sewa sebagai pengganti atau pengembalian sisa uang sewa secara proporsional.
 
 ## Pasal 9
 ### Penyelesaian Perselisihan
-(1) Perselisihan diselesaikan secara musyawarah untuk mufakat dalam waktu paling lama [[30]] ([[tiga puluh]]) hari kalender sejak pemberitahuan tertulis.
-(2) Apabila musyawarah tidak mencapai mufakat, Para Pihak sepakat memilih penyelesaian melalui Pengadilan Negeri [[KOTA LOKASI OBJEK SEWA]].
+(1) Perselisihan diselesaikan secara musyawarah untuk mufakat dalam waktu paling lama [isi: 30] ([isi: tiga puluh]) hari kalender sejak pemberitahuan tertulis.
+(2) Apabila musyawarah tidak mencapai mufakat, Para Pihak sepakat memilih penyelesaian melalui Pengadilan Negeri [isi: KOTA LOKASI OBJEK SEWA].
 
 ## Pasal 10
 ### Lain-lain
@@ -108,7 +108,7 @@ Demikian Perjanjian ini dibuat dan ditandatangani oleh Para Pihak dalam keadaan 
 | PIHAK PERTAMA (Pemilik) | PIHAK KEDUA (Penyewa) |
 |---|---|
 | <br>[Meterai Rp10.000]<br><br> | <br>[Meterai Rp10.000]<br><br> |
-| **[[NAMA PIHAK PERTAMA]]** | **[[NAMA PIHAK KEDUA]]** |
+| **[isi: NAMA PIHAK PERTAMA]** | **[isi: NAMA PIHAK KEDUA]** |
 
 Menyetujui (bila Objek Sewa harta bersama): ______________________ (suami/istri Pemilik)
 
@@ -118,7 +118,7 @@ Saksi-saksi (opsional): 1. ______________________  2. ______________________
 ### Lampiran 1: Berita Acara Kondisi dan Fasilitas Objek Sewa
 | No | Bagian/Fasilitas | Kondisi saat serah terima | Keterangan/foto |
 |---|---|---|---|
-| 1 | [[mis. Pintu rolling door]] | [[baik/rusak ringan]] | [[...]] |
-| 2 | [[Listrik: daya ... VA, meter no. ...]] | [[...]] | [[angka meter awal]] |
-| 3 | [[Air: PDAM/sumur, meter no. ...]] | [[...]] | [[angka meter awal]] |
-Kunci diserahkan: [[jumlah]] buah. Ditandatangani Para Pihak pada saat serah terima.
+| 1 | [isi: mis. Pintu rolling door] | [isi: baik/rusak ringan] | [isi: ...] |
+| 2 | [isi: Listrik: daya ... VA, meter no. ...] | [isi: ...] | [isi: angka meter awal] |
+| 3 | [isi: Air: PDAM/sumur, meter no. ...] | [isi: ...] | [isi: angka meter awal] |
+Kunci diserahkan: [isi: jumlah] buah. Ditandatangani Para Pihak pada saat serah terima.

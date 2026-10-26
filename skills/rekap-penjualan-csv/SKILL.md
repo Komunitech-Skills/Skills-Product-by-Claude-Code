@@ -42,7 +42,8 @@ Mengubah data penjualan mentah menjadi ringkasan yang mudah dipahami pemilik usa
      hari/bulan (Indonesia) atau bulan/hari (AS); jika AS, jalankan ulang dengan `--urutan-tanggal mdy`.
    - Jika Python tidak tersedia, hitung manual langkah demi langkah dan beri tahu pengguna bahwa hasil belum diverifikasi script.
 3. **Tulis rekap untuk chat** dari `rekap_chat`: tempel **apa adanya** (sudah berisi omzet, satu rata-rata,
-   batal/retur, produk terlaris menurut omzet **dan** menurut jumlah, harga jual per pcs, hari ramai, catatan data;
+   batal/retur, produk terlaris menurut omzet **dan** menurut jumlah, harga jual per pcs, hari ramai (dengan
+   nama hari), pola hari dalam minggu bila datanya ≥ 14 hari, catatan data;
    untuk file tanpa kolom jumlah: jumlah baris transaksi, tanpa pcs/harga per pcs).
    Boleh diawali satu kalimat pembuka yang menjawab pertanyaan pengguna, memakai angka dari `rekap_chat` saja.
 4. **Beri maksimal 3 saran** dari `fakta_produk` (lihat "Aturan saran" di bawah). Lebih baik 1 saran benar
@@ -106,6 +107,13 @@ Bila pengguna meminta laporan untuk dicetak/file dokumen, tabel boleh dipakai, d
 
 ## Aturan & batasan
 
+- **Nama hari** hanya dari skrip: tanggal ditulis bersama harinya ("Sabtu, 5 Sep 2026"); ambil dari
+  `tanggal_dengan_hari` (tanggal ISO → teks). Jangan menebak hari dari tanggal lain. Judul periode tetap tanpa nama hari.
+- **Pola hari dalam minggu** ("hari apa biasanya paling laris/sepi") hanya boleh disebut dari baris
+  "Pola hari dalam minggu …" di `rekap_chat`/`ringkasan_siap_tempel` (JSON `pola_hari_dalam_minggu`, ada bila
+  periode ≥ 14 hari). Skrip menghitung omzet per hari itu (total omzet hari itu ÷ jumlah hari itu di
+  periode; hari tanpa penjualan dihitung Rp 0). Bila `pola_hari_dalam_minggu` kosong (periode < 14 hari), katakan
+  datanya terlalu pendek untuk pola; jangan menghitung atau menebak sendiri.
 - Pertanyaan "hari paling rame/ramai" dijawab dari **dua sisi**: omzet (`hari_terbaik`) **dan** jumlah transaksi
   (`hari_transaksi_terbanyak`, sebut satuannya: pesanan unik atau baris). Bila tanggalnya berbeda, jelaskan bedanya.
 
@@ -120,7 +128,9 @@ Bila pengguna meminta laporan untuk dicetak/file dokumen, tabel boleh dipakai, d
   sebutkan nilainya persis dari `per_status` dan bahwa angka itu bisa turun bila ada batal/retur (keterangan
   "belum final" sudah ada di `rekap_chat`; jangan dihapus).
 - Jika script melaporkan baris yang dilewati (`baris_dilewati` > 0) atau `dibuang_karena_status`, sebutkan jumlah dan alasannya.
-- Sampaikan setiap isi `peringatan` dari script kepada pengguna.
+- Sampaikan setiap isi `peringatan` dari script kepada pengguna. Padanannya dalam bahasa sehari-hari
+  (`peringatan_awam`) sudah ada di bagian "Catatan data" pada `rekap_chat`; jangan dihapus saat menempel. Bila file
+  punya kolom jumlah tetapi sebagian selnya kosong, "Catatan data" juga menulis "N baris tanpa jumlah dihitung 1 pcs".
 - Jika memakai `--kolom-status`, tampilkan ke pengguna status yang **dihitung** (`status_dihitung`) dan yang **dibuang**
   (`dibuang_karena_status`), agar pengguna bisa mengoreksi bila ada status yang salah golongan
   (mis. jalankan ulang dengan `--abaikan-status` berisi daftar sendiri).
@@ -154,4 +164,4 @@ Ekspor marketplace sering memuat nama penerima, nomor telepon, dan alamat. Scrip
     jelas oleh pemilik, dan sebutkan lokasi file bila memang dibuat.
 
 ---
-Versi **1.2.6** (2026-10-17). Rincian tiap versi ada di `CHANGELOG.md`.
+Versi **1.2.7** (2026-10-26). Rincian tiap versi ada di `CHANGELOG.md`.

@@ -12,6 +12,8 @@ Subperintah:
   retainer    Jadwal bayar bulanan:       retainer --per-bulan "Rp 3.000.000" --bulan 6 --mulai 2026-10-01 --tanggal-bayar 5
   meterai     Kebutuhan bea meterai:      meterai --rangkap 2
   cek         Periksa draf (.md/.txt):    cek draf.md
+  bagi        Naskah siap kirim di chat:  bagi draf.md --maks 3800   (teks biasa, "Bagian 1/N", potong antar-pasal)
+  cek-balasan Periksa balasan chat:       cek-balasan balasan.txt    (jalur berkas, istilah proses, format kanal)
 
 Hanya library standar Python 3.8+. Tanpa akses jaringan.
 Pembulatan: semua nominal dibulatkan ke rupiah terdekat (0,5 ke atas); sisa pembulatan
@@ -25,6 +27,8 @@ import sys
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, ROUND_FLOOR
 
+VERSI = "1.0.9"
+MAKS_PESAN = 3800              # batas aman per pesan chat (Telegram memotong di 4.096 karakter)
 TARIF_METERAI = 10000          # UU 10/2020 Pasal 5 (berlaku per 2026-09-23)
 BATAS_DOKUMEN_UANG = 5000000   # dokumen penerimaan uang > Rp5.000.000 kena meterai
 BATAS_RUJUK_PROFESIONAL = 500000000  # patokan kebijakan skill (bukan aturan hukum)
@@ -565,6 +569,8 @@ def cmd_cek(a):
     if placeholder:
         masalah.append("Masih ada {} isian kosong: {}".format(len(placeholder), ", ".join(placeholder[:15]) +
                                                               (" ..." if len(placeholder) > 15 else "")))
+    if re.search(r"\[\[[^\]]+\]\]", teks):
+        info.append("Gaya isian [[...]] ditemukan. Pakai satu gaya saja: [isi: ...] (perintah 'bagi' mengubahnya otomatis).")
     kosong = len(re.findall(r"_{5,}|\.{8,}", teks))
     tinjau = len(re.findall(r"TINJAU PENGACARA", teks))
     if tinjau:
@@ -636,6 +642,197 @@ def cmd_cek(a):
 
 
 # ---------------------------------------------------------------------------
+# v1.0.9: naskah untuk kanal chat (Telegram/WhatsApp) & pemeriksa balasan
+PEMISAH_PESAN = "<<<PESAN BERIKUTNYA>>>"
+POLA_ISIAN_LAMA = re.compile(r"\[\[(.+?)\]\]")
+POLA_BATAS = re.compile(r"(?i)^\s*(pasal\s+\d+\b|lampiran\b|demikian\b)")
+POLA_AYAT = re.compile(r"^\s*\(\d+\)")
+
+
+def baca_teks(path):
+    if not os.path.isfile(path):
+        raise GalatInput("File '{}' tidak ditemukan.".format(path))
+    with open(path, "rb") as f:
+        data = f.read()
+    if not data.strip():
+        raise GalatInput("File kosong.")
+    if data[:2] == b"PK":
+        raise GalatInput("File ini .docx/ZIP. Simpan sebagai .md atau .txt dulu.")
+    if b"\x00" in data[:4096]:
+        raise GalatInput("File tidak bisa dibaca sebagai teks.")
+    try:
+        return data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return data.decode("latin-1")
+
+
+def seragamkan_isian(teks):
+    """[[X]] -> [isi: X] (satu gaya isian)."""
+    return POLA_ISIAN_LAMA.sub(lambda m: "[isi: {}]".format(m.group(1).strip()), teks)
+
+
+def _kapital(teks):
+    """Huruf kapital, kecuali isi [isi: ...] dan [Meterai ...]."""
+    bagian = re.split(r"(\[[^\]]*\])", teks)
+    return "".join(b if b.startswith("[") else b.upper() for b in bagian)
+
+
+def _bersih_sel(sel):
+    sel = re.sub(r"(?i)<br\s*/?>", " ", sel)
+    return re.sub(r"\s+", " ", sel.replace("**", "")).strip()
+
+
+def _tabel_ke_baris(baris_tabel):
+    sel = [[_bersih_sel(c) for c in b.strip().strip("|").split("|")] for b in baris_tabel
+           if not re.match(r"^\s*\|?\s*:?-{2,}", b)]
+    if not sel:
+        return []
+    kepala, isi = sel[0], sel[1:]
+    if all(h.upper().startswith("PIHAK") for h in kepala if h):
+        # tabel tanda tangan -> per pihak, berurutan ke bawah
+        out = []
+        for i, h in enumerate(kepala):
+            out.append(h)
+            out.extend(r[i] for r in isi if i < len(r) and r[i])
+            out.append("")
+        return out[:-1]
+    out = []
+    for r in isi:
+        no = r[0] if kepala and kepala[0].lower() in ("no", "no.", "nomor") else ""
+        pasangan = [(h, v) for h, v in zip(kepala, r) if v and not (no and h == kepala[0])]
+        teks = "; ".join("{}: {}".format(h, v) if h else v for h, v in pasangan)
+        out.append("{}. {}".format(no, teks) if no else "- " + teks)
+    return out
+
+
+def ke_teks_chat(teks):
+    """Markdown draf -> teks biasa untuk chat: tanpa blok kode, tanpa judul #, tanpa tabel pipa."""
+    teks = seragamkan_isian(re.sub(r"<!--[\s\S]*?-->", "", teks))
+    hasil, tabel = [], []
+    for b in teks.splitlines() + [""]:
+        if re.match(r"^\s*\|.*\|\s*$", b):
+            tabel.append(b)
+            continue
+        if tabel:
+            hasil.extend(_tabel_ke_baris(tabel))
+            tabel = []
+        if re.match(r"^\s*(```|~~~)", b) or re.match(r"^\s*(-{3,}|\*{3,}|_{3,})\s*$", b):
+            continue
+        m = re.match(r"^\s*#{1,6}\s*(.*)$", b)
+        if m:
+            judul = _kapital(m.group(1).replace("**", "").strip())
+            if hasil and re.match(r"^PASAL \d+$", hasil[-1]) and not re.match(r"^PASAL \d+", judul):
+                hasil[-1] += " — " + judul
+            else:
+                hasil.append(judul)
+            continue
+        b = re.sub(r"^\s*>\s?", "", b).replace("**", "")
+        hasil.append(b.rstrip())
+    out = re.sub(r"\n{3,}", "\n\n", "\n".join(hasil)).strip()
+    return out
+
+
+def _potong_blok(blok, batas):
+    """Blok terlalu panjang -> potong di batas ayat, lalu di batas baris (cadangan)."""
+    baris = blok.split("\n")
+    potongan, kini = [], []
+    for b in baris:
+        calon = "\n".join(kini + [b])
+        if kini and len(calon) > batas and (POLA_AYAT.match(b) or len("\n".join(kini)) > batas * 0.5):
+            potongan.append("\n".join(kini))
+            kini = [b]
+        else:
+            kini.append(b)
+    potongan.append("\n".join(kini))
+    hasil = []
+    for p in potongan:
+        while len(p) > batas:
+            hasil.append(p[:batas])
+            p = p[batas:]
+        hasil.append(p)
+    return hasil
+
+
+def bagi_pesan(teks, maks=MAKS_PESAN):
+    if maks < 500:
+        raise GalatInput("--maks terlalu kecil (minimal 500 karakter).")
+    teks = ke_teks_chat(teks)
+    blok, kini = [], []
+    for b in teks.split("\n"):
+        if POLA_BATAS.match(b) and len(b) < 120 and kini:
+            blok.append("\n".join(kini).strip())
+            kini = []
+        kini.append(b)
+    blok.append("\n".join(kini).strip())
+    blok = [x for x in blok if x]
+    ruang = maks - len("Bagian 99/99\n\n")
+    catatan, siap = [], []
+    for x in blok:
+        if len(x) > ruang:
+            catatan.append("Satu pasal/bagian lebih dari {} karakter; dipotong di batas ayat: {}".format(
+                ruang, x.split("\n", 1)[0][:60]))
+            siap.extend(_potong_blok(x, ruang))
+        else:
+            siap.append(x)
+    pesan, kini = [], ""
+    for x in siap:
+        calon = (kini + "\n\n" + x) if kini else x
+        if kini and len(calon) > ruang:
+            pesan.append(kini)
+            kini = x
+        else:
+            kini = calon
+    if kini:
+        pesan.append(kini)
+    n = len(pesan)
+    pesan = ["Bagian {}/{}\n\n{}".format(i + 1, n, p) for i, p in enumerate(pesan)]
+    return {"jumlah_bagian": n, "maks_karakter": maks, "panjang": [len(p) for p in pesan],
+            "total_karakter": len(teks), "bagian": pesan, "catatan": catatan}
+
+
+def cmd_bagi(a):
+    return bagi_pesan(baca_teks(a.file), a.maks)
+
+
+POLA_BALASAN = [
+    (r"(?:(?<=\s)|^|(?<=[`(\"']))(?:~|[A-Za-z]:)?[/\\](?:[\w.\-]+[/\\])+[\w.\-]*",
+     "Menyebut jalur berkas/folder. Ganti dengan: \"Draf juga sudah saya simpan sebagai berkas. Balas 'kirim file' "
+     "bila mau dikirim sebagai dokumen.\""),
+    (r"\b[\w\-]+\.(?:md|txt|docx|pdf|json|py|html)\b", "Menyebut nama berkas. Jangan sebut nama/jalur berkas di chat."),
+    (r"(?i)\b(?:workspace|folder kerja|direktori)\b", "Menyebut folder/workspace. Jangan sebut lokasi berkas di chat."),
+    (r"(?i)\b(?:script|scripts|skrip|tool|tools|exec|python3?)\b",
+     "Memakai istilah proses (script/skrip/tool/exec/python). Contoh pengganti: \"angka & terbilang sudah dihitung ulang\"."),
+    (r"(?m)^\s*(?:```|~~~)", "Ada blok kode. Kirim naskah sebagai teks biasa, bukan di dalam blok kode."),
+    (r"(?m)^\s*#{1,6}\s", "Ada judul Markdown (#/##). Pakai judul huruf kapital biasa, mis. PASAL 3 — HARGA SEWA."),
+    (r"(?m)^\s*\|.*\|\s*$", "Ada tabel pipa (|). Ubah jadi baris pendek, mis. \"1. Pintu: baik\"."),
+    (r"\[\[[^\]]+\]\]", "Ada isian gaya [[...]]. Pakai satu gaya saja: [isi: ...]."),
+]
+
+
+def periksa_balasan(teks, maks=MAKS_PESAN):
+    masalah = []
+    for pola, pesan in POLA_BALASAN:
+        temu = sorted(set(m.group(0).strip() for m in re.finditer(pola, teks)))
+        if temu:
+            masalah.append("{} Ditemukan: {}".format(pesan, ", ".join(temu[:5])))
+    pesan_list = [p.strip() for p in teks.split(PEMISAH_PESAN)] if PEMISAH_PESAN in teks else None
+    if pesan_list is None:
+        potong = re.split(r"(?m)^(?=\**\s*Bagian \d+/\d+)", teks)
+        pesan_list = [p.strip() for p in potong if p.strip()]
+    panjang = [len(p) for p in pesan_list]
+    for i, n in enumerate(panjang):
+        if n > maks:
+            masalah.append("Pesan/bagian ke-{} panjangnya {} karakter (> {}). Pecah per pasal: \"Bagian 1/N\".".format(
+                i + 1, n, maks))
+    return {"status": "SIAP KIRIM" if not masalah else "PERLU PERBAIKAN", "masalah": masalah,
+            "jumlah_pesan": len(pesan_list), "panjang_pesan": panjang, "maks_karakter": maks}
+
+
+def cmd_cek_balasan(a):
+    return periksa_balasan(baca_teks(a.file), a.maks)
+
+
+# ---------------------------------------------------------------------------
 def cetak_teks(perintah, h):
     o = []
     if perintah == "terbilang":
@@ -695,6 +892,14 @@ def cetak_teks(perintah, h):
         if h["nominal_diperiksa"]:
             o.append("Nominal + terbilang diperiksa: {} (cocok {})".format(
                 len(h["nominal_diperiksa"]), sum(1 for n in h["nominal_diperiksa"] if n["cocok"])))
+    elif perintah == "bagi":
+        o.append(("\n\n" + PEMISAH_PESAN + "\n\n").join(h["bagian"]))
+        if h["catatan"]:
+            sys.stderr.write("".join("Catatan: " + c + "\n" for c in h["catatan"]))
+    elif perintah == "cek-balasan":
+        o.append("Status balasan: {} ({} pesan; panjang {})".format(
+            h["status"], h["jumlah_pesan"], ", ".join(str(x) for x in h["panjang_pesan"])))
+        o.extend("- " + m for m in h["masalah"])
     return "\n".join(o)
 
 
@@ -714,6 +919,7 @@ def main(argv=None):
     induk.add_argument("--format", choices=["teks", "json"], default=argparse.SUPPRESS)
     p = ParserID(description="Alat bantu angka & pemeriksaan draf perjanjian sederhana.")
     p.add_argument("--format", choices=["teks", "json"], default="teks")
+    p.add_argument("--versi", action="version", version="perjanjian.py " + VERSI)
     sub = p.add_subparsers(dest="perintah", parser_class=ParserID)
     s = sub.add_parser("terbilang", parents=[induk]); s.add_argument("nominal")
     s = sub.add_parser("tanggal", parents=[induk]); s.add_argument("tanggal", nargs="?")
@@ -740,13 +946,17 @@ def main(argv=None):
     s.add_argument("--mulai", required=True); s.add_argument("--tanggal-bayar", type=int, default=5)
     s.add_argument("--bayar", choices=["di-muka", "di-belakang"], default="di-muka")
     s = sub.add_parser("cek", parents=[induk]); s.add_argument("file")
+    s = sub.add_parser("bagi", parents=[induk]); s.add_argument("file")
+    s.add_argument("--maks", type=int, default=MAKS_PESAN, help="maks. karakter per pesan (default 3800)")
+    s = sub.add_parser("cek-balasan", parents=[induk]); s.add_argument("file")
+    s.add_argument("--maks", type=int, default=MAKS_PESAN)
     a = p.parse_args(argv)
     if not a.perintah:
         p.print_help()
         return 2
     fungsi = {"terbilang": cmd_terbilang, "tanggal": cmd_tanggal, "termin": cmd_termin, "bagihasil": cmd_bagihasil,
               "denda": cmd_denda, "meterai": cmd_meterai, "cek": cmd_cek, "sampai": cmd_sampai,
-              "retainer": cmd_retainer}[a.perintah]
+              "retainer": cmd_retainer, "bagi": cmd_bagi, "cek-balasan": cmd_cek_balasan}[a.perintah]
     try:
         h = fungsi(a)
     except GalatInput as e:

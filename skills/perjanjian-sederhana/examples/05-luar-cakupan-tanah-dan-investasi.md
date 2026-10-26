@@ -1,5 +1,7 @@
 # 05 — Di luar cakupan: jual beli tanah kavling & "investasi" imbal hasil pasti
 
+> **Catatan 1.0.9:** isian di contoh ini diseragamkan ke gaya `[isi: ...]`. Di kanal chat, balasan tidak menyebut jalur berkas maupun kata script/skrip/tool/exec.
+
 ## Skenario
 S5, di luar cakupan. Dua permintaan berisiko yang sesuai brief harus ditolak/dirujuk:
 - **5a.** Perjanjian jual beli tanah kavling (harus lewat PPAT).
@@ -32,7 +34,7 @@ Untuk jual beli tanah, saya **tidak menyusun draf perjanjiannya**. Pengalihan ha
    - Berapa BPHTB, PPh penjual, dan biaya PPAT, dan siapa yang menanggung?
    - Apakah sertifikat bersih (tidak diblokir, tidak dijaminkan, sesuai tata ruang)?
 3. **Ringkasan kesepakatan (bukan perjanjian)** untuk dibawa saat konsultasi:
-   > Objek: tanah kavling ±120 m², Sleman, SHM No. [[...]] a.n. (alm.) [[...]]. Penjual: ahli waris [[...]], diwakili Pak Hendra (fiktif). Pembeli: [[...]]. Harga Rp 150.000.000 (seratus lima puluh juta rupiah); DP Rp 50.000.000 (lima puluh juta rupiah); sisa Rp 100.000.000 (seratus juta rupiah) dicicil 10 bulan. Status: belum ada dokumen yang ditandatangani.
+   > Objek: tanah kavling ±120 m², Sleman, SHM No. [isi: ...] a.n. (alm.) [isi: ...]. Penjual: ahli waris [isi: ...], diwakili Pak Hendra (fiktif). Pembeli: [isi: ...]. Harga Rp 150.000.000 (seratus lima puluh juta rupiah); DP Rp 50.000.000 (lima puluh juta rupiah); sisa Rp 100.000.000 (seratus juta rupiah) dicicil 10 bulan. Status: belum ada dokumen yang ditandatangani.
 
 Bila biaya menjadi kendala, cari Lembaga Bantuan Hukum (LBH) atau layanan konsultasi hukum kampus di kota Anda.
 
