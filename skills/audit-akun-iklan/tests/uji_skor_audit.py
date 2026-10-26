@@ -480,6 +480,128 @@ class UjiRevisi101(unittest.TestCase):
         self.assertIn("ganti password", out)
 
 
+class UjiRevisi108(unittest.TestCase):
+    """Regresi aturan teks SKILL.md v1.0.8 (verdik satu label, tindakan nyambung, larangan kata proses)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.skill = (SINI / "SKILL.md").read_text(encoding="utf-8")
+        cls.fm = cls.skill.split("---")[1]
+        cls.badan = cls.skill.split("---", 2)[2]
+
+    def blok_kode(self):
+        return [b for i, b in enumerate(self.skill.split("```")) if i % 2 == 1]
+
+    def test_41_versi_seragam(self):
+        self.assertEqual(m.VERSI, "1.0.8")
+        self.assertIn("Versi 1.0.8 ", self.skill)
+        self.assertIn("**1.0.8**", self.skill)
+        self.assertIn("1.0.8", (SINI / "CHANGELOG.md").read_text(encoding="utf-8").split("\n## ")[1])
+        self.assertIn("**1.0.8**", (SINI / "README.md").read_text(encoding="utf-8"))
+        self.assertEqual(jalan("--help")[0], 0)
+
+    def test_42_frontmatter_hanya_name_description_dan_ringkas(self):
+        kunci = [l.split(":")[0] for l in self.fm.strip().splitlines() if l and not l.startswith(" ")]
+        self.assertEqual(kunci, ["name", "description"])
+        self.assertLess(len(self.skill.splitlines()), 300)
+
+    def test_43_verdik_satu_label_tanpa_belum_bisa_dipastikan(self):
+        for lab in ("BONCOS", "RAWAN BONCOS", "TIPIS", "SEHAT"):
+            self.assertIn(lab, self.badan)
+        for b in self.blok_kode():
+            self.assertNotIn("BELUM BISA DIPASTIKAN", b)
+        # penyebutan hanya sebagai larangan ("Jangan pernah menulis ...")
+        self.assertIn('Jangan pernah menulis\n   "BELUM BISA DIPASTIKAN"', self.skill)
+
+    def test_44_aturan_label_sementara(self):
+        self.assertIn("ROAS impas ≥ 2,5", self.skill)
+        self.assertIn("RAWAN BONCOS (sementara)", self.skill)
+        self.assertIn("TIPIS (sementara)", self.skill)
+        self.assertIn("SEHAT tidak pernah diberikan tanpa ROAS aktual", self.skill)
+        self.assertIn("label terburuk", self.skill)
+        self.assertIn("ROAS 7 hari terakhir", self.skill)
+
+    def test_45_tindakan_mengurangi_rugi_dan_juga_cek(self):
+        self.assertIn("langsung mengurangi kerugian", self.skill)
+        for kata in ("anggaran", "komisi afiliasi", "ROAS impas"):
+            self.assertIn(kata, self.skill)
+        self.assertIn("Juga cek:", self.skill)
+        self.assertIn("bukan** tindakan", self.skill)
+
+    def test_46_larangan_file_kerja_dan_kata_proses(self):
+        for b in self.blok_kode():
+            self.assertNotIn("File kerja", b)
+        self.assertIn("balas *kirim file*", self.skill)
+        for kata in ("file", "berkas", "script", "skrip", "path", "folder", "tool"):
+            self.assertIn(kata, self.skill.split("**Di balasan chat dilarang**")[1][:200])
+        # contoh balasan di examples tidak memuat kalimat larangan
+        ex = (SINI / "examples" / "01-toko-skincare-tiktok-uji-akun-b.md").read_text(encoding="utf-8")
+        balasan = ex.split("format audit pendahuluan v1.0.8")[1].split("```")[1]
+        self.assertNotIn("File kerja", balasan)
+        self.assertNotIn("BELUM BISA DIPASTIKAN", balasan)
+        self.assertIn("VERDIK – RAWAN BONCOS (sementara)", balasan)
+        for kata in ("file", "berkas", "script", "skrip", "path", "folder", "tool"):
+            self.assertNotRegex(balasan.lower(), r"\b" + kata + r"\b")
+
+    def test_48_contoh_pertama_sesuai_aturan_baru(self):
+        c1 = self.skill.split("## Contoh")[1].split("**Data sebagian")[0]
+        self.assertIn("TIPIS (sementara)", c1)
+        self.assertNotIn("pengaman cepat", self.skill)
+        self.assertIn("Juga cek", c1)
+        self.assertNotIn("BELUM BISA DIPASTIKAN", c1)
+
+    def test_49_jalan_keluar_harga_modal_belum_ada(self):
+        self.assertIn("Bila harga/modal belum ada", self.skill)
+        self.assertIn("tanpa angka karangan", self.skill)
+
+    def test_50_daftar_periksa_sebelum_kirim(self):
+        self.assertIn("Daftar periksa sebelum kirim", self.skill)
+        bag = self.skill.split("Daftar periksa sebelum kirim")[1][:500]
+        for k in ("satu label", "Juga cek", "File kerja", "maks. 5"):
+            self.assertIn(k, bag)
+
+    def test_51_minta_bukti_tanpa_kata_file(self):
+        self.assertIn('"ekspor CSV"', self.skill)
+        self.assertIn("unduhan laporan", self.skill)
+        ref = (SINI / "references" / "bukti-per-platform.md").read_text(encoding="utf-8")
+        self.assertNotIn("screenshot, file ekspor", ref)
+        ex4 = (SINI / "examples" / "04-input-tidak-lengkap-uji-akun-b.md").read_text(encoding="utf-8")
+        self.assertIn("Catatan v1.0.8", ex4)
+
+    def test_52_tindakan_a_dua_cabang_roas_aktual(self):
+        t = self.skill.split("5. **Tiga tindakan prioritas")[1].split("Jangan menyarankan menaikkan")[0]
+        self.assertIn("ROAS aktual per jalur sudah ada", t)
+        self.assertIn("ditandai RUGI oleh script", t)
+        self.assertIn("jalur UNTUNG jangan dikurangi", t)
+        self.assertIn("ROAS aktual belum ada", t)
+        self.assertIn("ROAS impas tertinggi", t)
+        self.assertLess(t.index("ditandai RUGI"), t.index("ROAS impas tertinggi"))
+        self.assertNotIn("pindahkan/kurangi", t)
+
+    def test_53_tidak_menambah_jalur_tanpa_bukti_dan_ambang_persis(self):
+        self.assertNotIn("geser ke website", self.skill)
+        self.assertIn("hanya setelah ROAS 7 hari website terbukti di atas impasnya", self.skill)
+        self.assertIn("angka impas persis sebelum dibulatkan", self.skill)
+        ex = (SINI / "examples" / "01-toko-skincare-tiktok-uji-akun-b.md").read_text(encoding="utf-8")
+        self.assertNotIn("geser sebagian", ex)
+        self.assertIn("hanya setelah ROAS 7 hari website terbukti", ex)
+
+    def test_54_contoh_gamis_tanpa_afiliasi(self):
+        c1 = self.skill.split("## Contoh")[1].split("**Data sebagian")[0]
+        self.assertNotIn("afiliasi", c1)
+        self.assertIn("jeda kata kunci/iklan terburuk", c1)
+        self.assertIn("hanya bila afiliasi disebut pemilik", self.skill)
+
+    def test_47_angka_contoh_tetap_sama(self):
+        c, out, _ = jalan("roas-impas", "--harga", "89rb", "--modal", "32rb", "--biaya-persen", "24,5", "--biaya-lain", "1.500")
+        self.assertEqual(c, 0)
+        self.assertIn("33.695", out)
+        self.assertIn("2,65", out)
+        c, out, _ = jalan("roas-impas", "--harga", "89rb", "--modal", "32rb", "--biaya-lain", "1.500")
+        self.assertIn("55.500", out)
+        self.assertIn("1,61", out)
+
+
 def jalan_jawaban(jw, *extra):
     with tempfile.TemporaryDirectory() as d:
         p = Path(d) / "j.csv"

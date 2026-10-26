@@ -177,3 +177,12 @@ Penyegaran dokumentasi, **bukan uji ulang**: skor dan verdik di atas tidak berub
 - `01`–`05` diberi bagian "Penyegaran v1.0.7 (2026-10-17)". `01` kini memuat balasan pertama berformat **audit pendahuluan** ("jawab dulu, tanya kemudian", pertanyaan di akhir maks. 5); `04` memangkas pertanyaan dari 8 menjadi 5; `02`, `03`, `05` hanya catatan kesesuaian.
 - Skrip `skor_audit.py` v1.0.7 dijalankan ulang: `roas-impas` (impas 2,65 / laba Rp33.695; 1,61 / Rp55.500; 1,60 / Rp750.000; ROI 2 → RUGI ±Rp10.805/pesanan) dan `hitung` data sebagian skenario 01 (bukti TikTok Shop 10,3%, skor tidak diberikan). Semua angka dicek ulang dengan Decimal dan cocok.
 - **Pra-cek konteks Telegram v1.0.7:** `koordinasi/pracek-telegram-akun-a-2026-10-16.md` — **6,5, TIDAK SIAP** (tidak dikirim ke bot asli). Angka benar; temuan terbuka: verdik "BELUM BISA DIPASTIKAN" saat ROAS aktual belum ada, dan tindakan yang kurang nyambung ke keluhan boncos.
+
+---
+## Catatan revisi v1.0.8 (2026-10-26)
+Revisi isi skill setelah pra-cek Telegram 21 Okt (`koordinasi/pracek-telegram-akun-a-2026-10-21.md`, v1.0.7, **6,5 TIDAK SIAP**). Skor dan verdik uji di atas tidak diubah; versi ini **belum diuji ulang** di bot asli.
+- Verdik: tepat satu label BONCOS / RAWAN BONCOS / TIPIS / SEHAT. Tanpa ROAS aktual: impas jalur >= 2,5 dan pemilik merasa rugi -> "RAWAN BONCOS (sementara)", selain itu "TIPIS (sementara)"; SEHAT tidak pernah tanpa ROAS aktual; beberapa jalur -> label terburuk. "BELUM BISA DIPASTIKAN" dihapus.
+- Tiga tindakan harus langsung menekan rugi (bila ROAS aktual ada: kurangi/jeda jalur RUGI dulu; bila belum: kurangi jalur impas tertinggi, tambah ke jalur lain hanya setelah ROAS 7 harinya terbukti di atas impasnya; target ROAS >= impas, cek komisi afiliasi/jeda iklan terburuk); 2FA dan iklan ditolak hanya baris "Juga cek" kecuali dikeluhkan pemilik.
+- Dilarang di chat: kalimat "File kerja: ..." dan kata file, berkas, script, skrip, path, folder, tool (pengecualian: menawarkan "balas kirim file").
+- Pemeriksaan independen: contoh toko gamis di SKILL.md disesuaikan (TIPIS sementara, tindakan tanpa pengaman cepat, jalan keluar saat harga/modal belum ada), daftar periksa sebelum kirim, "ekspor CSV" menggantikan kata file di chat, catatan v1.0.8 di contoh 04. Masih belum diuji ulang di bot asli.
+- Angka tidak berubah (skrip hanya ganti VERSI 1.0.8); contoh `01` diperbarui; tes regresi `UjiRevisi108` ditambahkan.

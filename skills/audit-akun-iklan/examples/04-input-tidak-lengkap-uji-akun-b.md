@@ -53,3 +53,6 @@ Siap, saya bantu cek. Supaya bisa langsung saya hitung, jawab singkat saja (bole
 
 Jawab nomor 2 dan 3 saja pun cukup — saya langsung hitung titik impas dan verdik boncos/tipis/sehat. Screenshot daftar kampanye juga boleh. Jangan kirim password/OTP.
 ```
+
+## Catatan v1.0.8 (2026-10-26)
+> Balasan di atas (v1.0.7) **tidak diubah** dan belum diuji ulang di bot asli. Sejak v1.0.8: verdik selalu satu label (BONCOS / RAWAN BONCOS / TIPIS / SEHAT; "(sementara)" bila ROAS aktual belum ada), jadi kalimat "verdik boncos/tipis/sehat" di atas kini berarti satu label itu. Di chat jangan menulis kata "file": minta "ekspor CSV" atau "unduhan laporan" (balasan asli di atas masih memakai kata "file").

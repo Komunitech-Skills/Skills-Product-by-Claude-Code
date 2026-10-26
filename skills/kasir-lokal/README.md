@@ -87,7 +87,7 @@ Diuji di bot OpenClaw asli (grup uji Komunitech, data fiktif) pada 17 Oktober 20
 
 Angka kedua sisi sama-sama benar: subtotal Rp39.000, diskon Rp3.900, total Rp35.100, kembalian Rp64.900. Dengan skill, penjualan benar-benar tersimpan di buku kasir di komputer bot dengan nomor nota urut, ada cadangan otomatis sebelum daftar menu dimasukkan, "roti bakar" dibaca sebagai Roti Bakar Coklat dan hal itu disampaikan, dan Anda diingatkan bahwa kasir belum dibuka hari itu. Namun **struk yang diminta tidak dikirim ke chat**: struk hanya dibuat sebagai file di komputer bot (tidak bisa dibuka dari Telegram), dan teks struknya baru ditawarkan. Pesan pertama juga belum mencatat apa pun karena menunggu konfirmasi daftar menu, dan pengaturan toko (tanpa pajak, kertas 58 mm) ditulis seolah sudah Anda jawab. Tanpa skill, bot langsung memberi struk teks rapi selebar kertas 58 mm di pesan pertama, walau pencatatannya seadanya (file buatan sendiri, nomor nota tidak dijamin urut, tanpa buka/tutup kasir).
 
-Catatan jujur: istilah seperti "database", "dipetakan", dan "struk HTML" juga masih muncul. Perbaikan struk di chat (lihat Riwayat perubahan) belum diuji ulang di bot Telegram. Ini satu percakapan uji per sisi, bukan uji berulang.
+Catatan jujur: istilah seperti "database", "dipetakan", dan "struk HTML" juga masih muncul. Perbaikan struk di chat (lihat Riwayat perubahan) belum diuji ulang di bot Telegram. Ini satu percakapan uji per sisi, bukan uji berulang. Versi 1.1.10 memperbaiki temuan di atas (instruksi agent, nama perintah, dan jalur berkas tidak lagi ikut ke chat) tetapi belum diuji ulang di bot asli.
 
 ## FAQ
 **Apakah data saya dikirim ke internet?**
@@ -104,6 +104,8 @@ Kasir ini sengaja hanya mencatat penjualan yang sudah dibayar. Kalau ada pelangg
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+Yang berubah di 1.1.10 (26 Okt 2026): pesan galat yang bisa sampai ke chat (kasir belum/sudah dibuka, berkas tidak ketemu, bukan buku kasir) kini berbahasa sehari-hari tanpa nama perintah dan tanpa lokasi berkas. Balasan ke chat tidak lagi memuat perintah teknis atau lokasi berkas di komputer; pesan konfirmasi penjualan, batal, retur, dan pulihkan cadangan berakhir dengan "Simpan? Balas \"ya\"." (pratinjau pemakaian pertama berakhir dengan "Balas \"ya\" kalau sudah sesuai."). Nama barang seperti "Masuk Angin" atau "Input Data" tidak lagi salah dibaca sebagai awalan kalimat, dan kalimat "catat 2 kopi hitam, bayar pas" tetap dipahami. Hitungan angka tidak berubah.
 
 Yang berubah di 1.1.8 (17 Okt 2026): di Telegram/WhatsApp, struk sekarang langsung dikirim sebagai teks di chat yang sama begitu nota tersimpan (tidak perlu minta lagi). Pemakaian pertama (kirim daftar produk sekaligus minta catat penjualan) cukup satu pesan konfirmasi berisi daftar produk, pengaturan toko yang diasumsikan, dan struknya, lalu Anda membalas "ya" sekali. Kalimat seperti "Tolong catat penjualan: ..." dan ucapan penutup "kirim struknya ke sini ya" kini dipahami.

@@ -73,7 +73,7 @@ Uji terakhir: 16 Okt 2026, versi 1.0.6, di bot OpenClaw asli (grup uji internal 
 
 Bedanya yang terasa: versi dengan skill menghitung titik impas kedua jalur iklan (ROAS impas website 1,61 dan GMV Max 2,65), lalu mengajukan 8 pertanyaan soal pengaturan akun (pemasangan pixel, tujuan kampanye, keamanan 2 langkah, jumlah video iklan) tanpa memberi skor, urutan perbaikan, atau rencana. Versi tanpa skill langsung menghitung untung per botol dan titik impas, memberi 3 saran, dan bertanya satu hal, jadi untuk satu kalimat curhat jawabannya justru lebih berguna.
 
-Catatan jujur: bila Anda hanya menulis satu kalimat tanpa data pengaturan akun, versi 1.0.6 berhenti di titik impas lalu meminta 8 jawaban sebelum skor keluar, sehingga pembeli awam bisa merasa belum dibantu. Skor kesehatan, prioritas, dan rencana 7 hari baru muncul setelah Anda menjawab atau menempelkan bukti. Versi 1.0.7 (16 Okt 2026) mengubah urutannya, yaitu audit pendahuluan lebih dulu baru pertanyaan lanjutan maksimal 5, tetapi perubahan ini belum punya hasil uji ulang di bot Telegram.
+Catatan jujur: bila Anda hanya menulis satu kalimat tanpa data pengaturan akun, versi 1.0.6 berhenti di titik impas lalu meminta 8 jawaban sebelum skor keluar, sehingga pembeli awam bisa merasa belum dibantu. Skor kesehatan, prioritas, dan rencana 7 hari baru muncul setelah Anda menjawab atau menempelkan bukti. Versi 1.0.7 (16 Okt 2026) mengubah urutannya, yaitu audit pendahuluan lebih dulu baru pertanyaan lanjutan maksimal 5, tetapi perubahan ini belum punya hasil uji ulang di bot Telegram. Versi 1.0.8 (26 Okt 2026) memperbaiki temuan uji coba sebelumnya (verdik satu label, tindakan yang langsung mengurangi rugi, tanpa kalimat "File kerja") dan belum diuji ulang di bot asli.
 
 ## FAQ
 **Apakah saya harus memberikan password atau akses akun iklan?**
@@ -90,4 +90,4 @@ Sebagian metode skor diadaptasi dari proyek open-source claude-ads (MIT). Tidak 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.7** (16 Okt 2026): data sebagian kini langsung mendapat audit pendahuluan (titik impas, verdik, 3 tindakan hari ini, skor sementara) sebelum pertanyaan lanjutan. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.8** (26 Okt 2026): verdik selalu satu label (BONCOS / RAWAN BONCOS / TIPIS / SEHAT, sementara bila ROAS aktual belum ada), 3 tindakan hari ini langsung mengurangi rugi, tanpa kalimat "File kerja" di chat. Sejak 1.0.7 (16 Okt 2026): data sebagian langsung mendapat audit pendahuluan sebelum pertanyaan lanjutan. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

@@ -14,6 +14,7 @@ import contextlib
 import io
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -826,6 +827,44 @@ class UjiRekapCepat(unittest.TestCase):
             self.assertNotIn(terlarang, out["balasan"], terlarang)
         self.assertEqual((os.path.getsize(db), os.path.getmtime(db)), sebelum)     # buku tidak disentuh
 
+    def buat_csv_okt(self):
+        """Oktober 2026 yang sungguhan (22 hari kerja Senin-Jumat): masuk 07.55, pulang 17.05, kecuali Andi 08.41
+       , Joko 08.14 dan 08.07 (tidak dihitung telat), Sari kosong 12-13/10, ditambah satu
+        baris orang tak dikenal (ID 9 Tamu). Total baris yang dikenal: 22*2 + 20*2 + 22*2 = 128."""
+        import datetime as dt
+        telat = {("Andi", 14): "08:41", ("Joko", 7): "08:14", ("Joko", 21): "08:07"}
+        baris = ["No.,AC-No.,Nama,Waktu,Status"]
+        n = 0
+        for tgl in range(1, 32):
+            d = dt.date(2026, 10, tgl)
+            if d.weekday() >= 5:
+                continue
+            for idm, nm in self.ORANG:
+                if nm == "Sari" and tgl in (12, 13):
+                    continue
+                for jam, st in ((telat.get((nm, tgl), "07:55"), "C/In"), ("17:05", "C/Out")):
+                    n += 1
+                    baris.append("%d,%s,%s,%s %s:00,%s" % (n, idm, nm, d.strftime("%d/%m/%Y"), jam, st))
+        baris.append("%d,9,Tamu,05/10/2026 08:00:00,C/In" % (n + 1))
+        p = os.path.join(self.dir, "absen-okt.csv")
+        with open(p, "w", encoding="utf-8") as f:
+            f.write("\n".join(baris) + "\n")
+        return p
+
+    def test_14a_contoh_oktober_examples_06(self):
+        """Angka varian B di examples/06 (dihitung dari file Oktober sungguhan, bukan September yang diganti bulannya)."""
+        db = self.siapkan_buku()
+        out = self.jalan_buku(db, self.buat_csv_okt(), sekarang="2026-11-02 09:00")
+        k = self.per_nama(out)
+        self.assertEqual(out["dibaca"]["catatan"], 128)
+        self.assertEqual((k["Andi"]["hadir"], k["Andi"]["hari_terjadwal"], k["Andi"]["terlambat_kali"],
+                          k["Andi"]["terlambat_menit"], k["Andi"]["menit_kerja"]), (22, 22, 1, 41, 10734))
+        self.assertEqual((k["Joko"]["terlambat_kali"], k["Joko"]["terlambat_menit"], k["Joko"]["menit_kerja"]),
+                         (1, 14, 10749))
+        self.assertEqual((k["Sari"]["hadir"], k["Sari"]["tanpa_keterangan"]), (20, 2))
+        self.assertIn("masukkan 128 catatan absen", out["pertanyaan"][-1])
+        self.assertIn("Tamu", " ".join(out["pertanyaan"]))
+
     def test_14_bulan_berikutnya_orang_baru_dan_tawaran_masukkan_file(self):
         db = self.siapkan_buku()
         okt = os.path.join(self.dir, "absen-okt.csv")
@@ -839,8 +878,9 @@ class UjiRekapCepat(unittest.TestCase):
         self.assertEqual({k["nama"] for k in out["karyawan"]}, {"Andi", "Sari", "Joko"})
         q = " ".join(out["pertanyaan"])
         self.assertIn("Tamu", q)                                                   # kemungkinan karyawan baru
-        self.assertEqual(out["pertanyaan"][-1], "Mau saya masukkan file ini ke buku absensi Anda, supaya tercatat "
-                                                "bersama bulan-bulan sebelumnya? Balas \"ya\" bila mau.")
+        self.assertEqual(out["pertanyaan"][-1], "Mau saya masukkan %d catatan absen dari file ini ke buku absensi "
+                         "Anda, supaya tercatat bersama bulan-bulan sebelumnya? Cukup balas \"ya\" bila mau; "
+                         "pertanyaan lain boleh dijawab nanti." % out["dibaca"]["catatan"])
         self.assertLessEqual(len(out["pertanyaan"]), 3)
         self.assertEqual(out["dibaca"]["sudah_ada"], 0)
         self.assertIn("file ini belum dimasukkan ke buku absensi Anda", out["teks"])
@@ -958,6 +998,122 @@ class UjiRekapCepat(unittest.TestCase):
             self.assertIn("## Catatan revisi %s (" % A.VERSI, fh.read())
         with open(os.path.join(AKAR, "README.md"), encoding="utf-8") as fh:
             self.assertIn("Versi terkini: **%s**" % A.VERSI, fh.read())
+
+
+class UjiYaTunggalSimpan(unittest.TestCase):
+    """1.0.9: pertanyaan simpan memuat jumlah catatan dan satu kata 'ya' cukup (aturan juga dijaga di SKILL.md)."""
+
+    ORANG = UjiRekapCepat.ORANG
+    TELAT = UjiRekapCepat.TELAT
+    setUp = UjiRekapCepat.setUp
+    tearDown = UjiRekapCepat.tearDown
+    buat_csv = UjiRekapCepat.buat_csv
+    jalan = UjiRekapCepat.jalan
+
+    def baca_skill(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as fh:
+            return fh.read()
+
+    def test_01_pertanyaan_simpan_buku_baru_memuat_jumlah(self):
+        out = self.jalan(self.csv, "--daftar", "Andi=1; Sari=2; Joko=3")
+        q = out["pertanyaan"][-1]
+        jumlah = int(re.search(r"simpan (\d+) catatan absen", q).group(1))
+        self.assertGreater(jumlah, 0)
+        self.assertEqual(jumlah, out["dibaca"]["catatan"])
+        self.assertTrue(q.endswith('Cukup balas "ya" bila mau; pertanyaan lain boleh dijawab nanti.'), q)
+        self.assertEqual(sum(1 for x in out["pertanyaan"] if x.count("?")), len(out["pertanyaan"]))
+        self.assertLessEqual(len(out["pertanyaan"]), 3)
+        self.assertIn(q, out["pesan"][-1] if isinstance(out["pesan"], list) else out["pesan"])
+        for terlarang in (".db", "--", "absensi.py", "database", "script"):
+            self.assertNotIn(terlarang, q)
+
+    def test_02_pertanyaan_simpan_hanya_satu_dan_di_akhir(self):
+        out = self.jalan(self.csv, "--daftar", "Andi=1; Sari=2; Joko=3")
+        simpan = [x for x in out["pertanyaan"] if "simpan" in x or "masukkan" in x]
+        self.assertEqual(len(simpan), 1)
+        self.assertIs(out["pertanyaan"][-1], simpan[0])
+
+    def test_03_aturan_ya_tunggal_ada_di_skill(self):
+        s = self.baca_skill()
+        for kata in ('"ya", "iya", "boleh", "ok", "simpan"', "SIMPAN sekarang", "ya yang mana",
+                     "satu \"ya\" mencakup seluruh rangkaian", "tanpa keterangan", "satu kalimat"):
+            self.assertIn(kata, s, kata)
+
+    def test_04_skill_tetap_ringkas_dan_frontmatter_dua_field(self):
+        s = self.baca_skill()
+        self.assertLess(len(s.splitlines()), 300)
+        kepala = s.split("---")[1]
+        kunci = [l.split(":")[0] for l in kepala.strip().splitlines() if re.match(r"^[a-z_-]+:", l)]
+        self.assertEqual(kunci, ["name", "description"])
+
+    def test_05_tidak_ada_persetujuan_kedua_di_jalur_a0(self):
+        s = self.baca_skill()
+        a = s.index("### A0.")
+        b = s.index("### A. Mulai")
+        blok = s[a:b]
+        self.assertIn("jangan kirim ringkasan baru dan jangan minta", blok)
+        self.assertNotIn('"Ya" atas ringkasan itu', blok)
+        self.assertNotIn("berhenti dan tanya lagi", blok)
+        self.assertNotIn("lalu rekap ulang (bagian D)", blok)
+        self.assertIn("jangan berhenti dan jangan bertanya", blok)
+        self.assertIn("hanya bila pengguna memintanya", blok)
+        self.assertIn("kecuali jalur A0 langkah 4", s)
+        self.assertIn("tidak dipakai di A0 langkah 4", s)
+
+    def test_07_a0_buku_sudah_ada_satu_ya_langsung_impor(self):
+        s = self.baca_skill()
+        blok = s[s.index("### A0."):s.index("### A. Mulai")]
+        self.assertIn("satu \"ya\" atas tawaran memasukkan file mencakup impor ini", blok)
+        self.assertIn("`impor-absen <file> --ya`", blok)
+        self.assertIn("jangan ikuti pratinjau + persetujuan kedua di alur C", blok)
+        self.assertIn("tidak perlu didaftarkan dulu", blok)
+        self.assertNotIn("cukup alur C untuk file ini", blok)
+        self.assertNotIn('"ya" → alur C', s)
+        self.assertIn('"ya" → A0 langkah 4', s)
+        with open(os.path.join(AKAR, "examples", "06-rekap-cepat-balasan-pertama.md"), encoding="utf-8") as fh:
+            self.assertIn("TIDAK DIKIRIM ke pengguna", fh.read())
+        # alur C sendiri menyebut pengecualian A0
+        c = s[s.index("### C. Impor"):s.index("### D.")]
+        self.assertIn("Di A0 langkah 4 tidak dipakai", c)
+        self.assertIn("tanpa berhenti untuk orang tak dikenal", c)
+
+    def test_08_aturan_wajib_dan_checklist_punya_pengecualian_a0(self):
+        s = self.baca_skill()
+        wajib = s[s.index("## Aturan keamanan data"):s.index("## Cara bicara di chat")]
+        self.assertNotIn("ringkasan gabungan", s)
+        self.assertNotIn("Data karyawan dipratinjau dan dijawab \"ya\" sebelum disimpan;", s)
+        self.assertIn("Satu pengecualian, hanya di A0 langkah 4", wajib)
+        self.assertIn("tanpa pratinjau dan tanpa persetujuan kedua", wajib)
+        cek = s[s.index("## Checklist sebelum menjawab"):s.index("## Batasan & penanganan error")]
+        for baris in cek.splitlines():
+            if "sebelum `--ya`" in baris or "dijawab \"ya\" sebelum disimpan" in baris:
+                self.assertIn("A0 langkah 4", baris, baris)
+
+    def test_09_ya_bersama_jawaban_samping_simpan_saat_itu_juga(self):
+        s = self.baca_skill()
+        blok = s[s.index("### A0."):s.index("### A. Mulai")]
+        self.assertIn("simpan saat itu juga", blok)
+        self.assertIn("jangan kirim rekap baru atau pertanyaan baru dulu", blok)
+
+    def test_10_examples_06_sesuai_alur_baru(self):
+        with open(os.path.join(AKAR, "examples", "06-rekap-cepat-balasan-pertama.md"), encoding="utf-8") as fh:
+            e = fh.read()
+        for lama in ("lalu mengirim **satu ringkasan**", "Setelah pengguna membalas \"ya\", agent menyimpan dan merekap ulang",
+                     "ditampilkan dulu sebagai rencana", "121 catatan absen dari file ini ke buku", "179 jam 4 menit"):
+            self.assertNotIn(lama, e, lama)
+        self.assertIn("langsung menyimpan", e)
+        self.assertIn("tidak bertanya \"Betul?\"", e)
+        self.assertIn("masukkan 128 catatan absen dari file ini", e)   # sama dengan keluaran test_14a
+
+    def test_06_kata_kemarin_untuk_pertanyaan_baru_dilarang(self):
+        self.assertIn('jangan disebut "kemarin"', self.baca_skill())
+        out = self.jalan(self.csv, "--daftar", "Andi=1; Sari=2; Joko=3")
+        self.assertNotIn("kemarin", " ".join(out["pertanyaan"]).lower())
+
+    def test_05_contoh_skill_memakai_kalimat_baru(self):
+        s = self.baca_skill()
+        self.assertIn('Cukup balas "ya" bila mau; pertanyaan lain boleh dijawab nanti.', s)
+        self.assertNotIn('supaya bulan depan tinggal tambah file baru? Balas "ya" bila mau.', s)
 
 
 class UjiBahasaChat(Dasar):

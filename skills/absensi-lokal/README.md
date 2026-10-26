@@ -74,11 +74,19 @@ Panduan lengkap (termasuk Windows): lihat `CARA-INSTAL.md` di dalam paket.
 - Tugas (diringkas dari pesan uji): lembur Joko dihitung dari jam pulang saja (gaji pokok Rp4.200.000, pulang pukul 21.00), dan gaji Andi dipotong Rp50.000 tiap telat (3 kali telat = Rp150.000). Tanpa skill, AI langsung menurut: lembur dihitung tanpa cek persetujuan dan gaji dipotong tanpa aturan tertulis. Dengan skill, AI menanyakan persetujuan lembur, menolak potongan yang belum diatur tertulis, lalu menghitung lembur sah 4 jam = Rp182.081 plus pengingat wajib makan (PP 35/2021 Pasal 29).
 - Jujur: untuk rekap sekali jalan, hasil tanpa skill juga benar dan lebih cepat. Keunggulan skill ada di kepatuhan aturan dan data yang tersimpan permanen. Setup pertama butuh satu kali konfirmasi tambahan demi keamanan data.
 
-**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal rekap harian ke Telegram: diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Alur "rekap langsung di balasan pertama" (versi 1.0.8), termasuk pelanggan lama, toko 6 hari dengan Sabtu pulang awal, dan pemecahan pesan panjang, baru diuji lewat 64 uji otomatis dan contoh di `examples/06-rekap-cepat-balasan-pertama.md` (angka dihitung ulang dari file mentah); belum diuji ulang di OpenClaw atau Telegram.
+**Status uji (jujur):** sudah diuji di OpenClaw (uji otomatis oleh agen AI, bukan oleh manusia) dan Claude Code (simulasi agen penguji). Codex dan Cursor memakai format SKILL.md yang sama, tetapi belum kami uji langsung. Jadwal rekap harian ke Telegram: diuji langsung di Telegram (Oktober 2026; rincian di `examples/UJI-JADWAL-TELEGRAM-2026-10-13.md`). Alur "rekap langsung di balasan pertama" (versi 1.0.8, kalimat simpan diperbarui di 1.0.9), termasuk pelanggan lama, toko 6 hari dengan Sabtu pulang awal, dan pemecahan pesan panjang, baru diuji lewat 76 uji otomatis dan contoh di `examples/06-rekap-cepat-balasan-pertama.md` (angka dihitung ulang dari file mentah); belum diuji ulang di OpenClaw atau Telegram. Uji di bot Telegram asli (Oktober 2026) menemukan bot bertanya ulang setelah pengguna membalas "ya" untuk menyimpan; versi 1.0.9 memperbaiki temuan itu (satu "ya" langsung menyimpan), tetapi belum diuji ulang di bot Telegram asli.
 
 ## Catatan penting
 - Alat bantu hitung, **bukan nasihat hukum**. Dasar aturan: PP 35/2021 (waktu kerja dan upah lembur; pasal yang dipakai tercantum di `references/dasar-hukum-lembur.md`), berlaku per 24 September 2026. Aturan perusahaan Anda (Peraturan Perusahaan/Perjanjian Kerja/Perjanjian Kerja Bersama) yang lebih menguntungkan pekerja tetap berlaku.
 - Untuk sektor khusus, golongan jabatan tertentu, atau sengketa lembur, konsultasikan ke Disnaker setempat atau konsultan ketenagakerjaan.
+
+## Bukti uji di bot Telegram
+
+Uji terbaru: 17 Oktober 2026 (dikirim ulang 21 Oktober), versi 1.0.8, di bot OpenClaw asli (grup uji Komunitech), pesan yang sama untuk tanpa skill dan dengan skill: pemilik toko mengirim file absen September tiga karyawan (121 catatan), minta rekap telat dan hari bolong, lalu membalas "ya" untuk menyimpan. Skor 1–10 dari penilai independen: tanpa skill **6,5** → dengan skill **7,5** (selisih +1), **belum memenuhi acuan kami** (dengan skill minimal 8 dan selisih minimal 1,5).
+
+Yang unggul dengan skill: rekap lengkap dan benar semua (Andi telat 3x total 1 jam 6 menit, Joko 3x total 1 jam 15 menit, jam kerja per orang), dan Andi tanggal 25/09 yang hanya tap masuk ditandai "perlu dicek". Tanpa skill, jumlah telat dan hari kosong juga benar, tetapi total menit telat tidak ada dan Andi 25/09 terlewat.
+
+Catatan jujur: setelah Anda membalas "ya" untuk menyimpan, bot dengan skill malah bertanya ulang dan tidak menyimpan apa pun, jadi pengguna awam bisa bingung. Perbaikan (satu "ya" langsung menyimpan) sudah ada di versi terbaru, tetapi belum diuji ulang di bot asli. Ini satu pesan uji per sisi, bukan uji berulang.
 
 ## FAQ
 **Apakah bisa menarik data langsung dari mesin fingerprint lewat jaringan?**
@@ -92,4 +100,4 @@ Rumusnya mengikuti PP 35/2021 Pasal 31–33 (dikutip lengkap dengan pasalnya) da
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.8**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

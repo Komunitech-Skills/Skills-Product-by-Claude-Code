@@ -10,7 +10,7 @@ Waktu: `2026-09-24 10:15` atau `24/09/2026 10.15`. Tanggal: `hari-ini`, `kemarin
 | `init` (tulis) | Buat database. Jika sudah ada, tidak mengubah apa pun | `--nama-toko` (wajib) `--alamat --telp --footer --npwp --pajak tanpa\|ppn-belum\|ppn-termasuk\|pbjt-belum\|pbjt-termasuk --pkp ya\|tidak --tarif-pbjt N --service-charge N --sc-kena-pajak ya\|tidak --zona WIB\|WITA\|WIT --stok tidak\|kasir\|buku-stok --kertas 58\|80` |
 | `mulai` (tulis) | **Pemakaian pertama, satu konfirmasi:** `init` + `produk impor` + `jual` dalam satu perintah. Tanpa `--ya` = pratinjau gabungan (daftar produk, pengaturan toko dengan bagian "Saya anggap", nota + struk teks); dicoba dulu di salinan sementara sehingga bila gagal buku kasir asli tidak tersentuh. Ditolak bila buku kasir sudah ada. JSON: `asumsi`, `produk_baru`, `no`, `total`, `kembalian`, `struk_teks`, `struk_baris`, `nota` | `--produk FILE` (wajib) `--nama-toko` (wajib) `--pesan "..."` (opsional; tanpa ini tidak ada nota) `--kasir --catatan` + semua opsi toko seperti `init` |
 | `atur` (tulis) | Ubah pengaturan (berlaku untuk nota berikutnya) | sama seperti `init` |
-| `info` | Lokasi DB, pengaturan, jumlah produk/nota, sesi kasir, backup terakhir; peringatan bila zona jam komputer ≠ zona toko | — |
+| `info` | Pengaturan, jumlah produk/nota, sesi kasir, backup terakhir; peringatan bila zona jam komputer ≠ zona toko | — |
 | `produk tambah` (tulis) | Tambah produk | `--kode --nama --harga` wajib; `--varian --satuan --stok` |
 | `produk ubah` (tulis) | Ubah produk | `--kode` + `--nama --varian --harga --satuan --stok --kode-baru --tanpa-stok --nonaktif --aktif` |
 | `produk cari [kata]` | Cari produk | `--semua` (termasuk nonaktif) |

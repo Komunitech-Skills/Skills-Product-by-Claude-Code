@@ -92,9 +92,9 @@ Skor gabungan: BELUM BISA DIBERIKAN - bukti kurang dari 60%.
 CEK DULU: T01, T02, T03, T13, TS08
 ```
 
-Balasan pertama (format audit pendahuluan v1.0.7, kanal chat, tanpa tabel):
+Balasan pertama (format audit pendahuluan v1.0.8, kanal chat, tanpa tabel; contoh susunan, bukan hasil uji bot):
 ```
-AUDIT PENDAHULUAN – Serum 20 ml, TikTok Ads + TikTok Shop (17 Okt 2026)
+AUDIT PENDAHULUAN – Serum 20 ml, TikTok Ads + TikTok Shop (26 Okt 2026)
 Dari angka yang Anda kirim; pengaturan akun belum diperiksa.
 
 1. TITIK IMPAS
@@ -102,16 +102,18 @@ Dari angka yang Anda kirim; pengaturan akun belum diperiksa.
 - GMV Max (TikTok Shop): laba kotor Rp33.695/pesanan (37,9%), ROI impas 2,65, perlu ±179 pesanan/bulan untuk belanja Rp6 jt. Ini jalur paling rawan.
 Asumsi: potongan 14,5% + afiliasi 10% dihitung dari harga jual; belum termasuk ongkir, diskon/voucher, dan retur.
 
-2. VERDIK – BELUM BISA DIPASTIKAN, karena ROAS aktual per jalur belum Anda sebut.
+2. VERDIK – RAWAN BONCOS (sementara)
+GMV Max butuh ROI minimal 2,65 (di atas 2,5) dan Anda sudah merasa boncos; iklan website TIPIS (sementara). Label terburuk yang dipakai. Angka yang memastikan: ROAS 7 hari terakhir tiap jalur dari halaman laporan iklan.
 - Website: boncos di bawah 1,61; tipis 1,61–1,94; sehat di atas 1,94.
 - GMV Max: boncos di bawah 2,65; tipis 2,65–3,18; sehat di atas 3,18.
 
 3. TIGA TINDAKAN HARI INI
-1. Catat ROAS 7 hari terakhir per jalur, lalu pasang target ROI GMV Max minimal 2,65 — di bawah itu tiap pesanan rugi (contoh: ROI 2 = biaya iklan ±Rp44.500/pesanan, rugi ±Rp10.805). Jangan menaikkan anggaran dulu. ±15 menit.
-2. Cocokkan jumlah pesanan yang tercatat iklan (Complete Payment) dengan pesanan nyata minggu ini — kalau selisihnya besar, angka ROAS yang Anda lihat tidak bisa dipercaya. ±20 menit.
-3. Cek siapa saja yang punya akses akun iklan dan nyalakan verifikasi 2 langkah — akun yang dibajak bisa menghabiskan anggaran. ±10 menit.
+1. Kurangi anggaran GMV Max: butuh ROI 2,65, tiap pesanan di bawah itu rugi. Tambah ke iklan website hanya setelah ROAS 7 hari website terbukti di atas impasnya 1,61. Jangan menaikkan total anggaran. ±10 menit.
+2. Pasang target ROI GMV Max minimal 2,65. Contoh: ROI 2 = biaya iklan ±Rp44.500/pesanan, rugi ±Rp10.805/pesanan. ±5 menit.
+3. Cek persen komisi afiliasi: sekarang 10% (Rp8.900/pesanan); tiap turun 1 poin laba naik Rp890/pesanan. ±10 menit.
+Juga cek: verifikasi 2 langkah dan iklan yang ditolak.
 
-4. SKOR KESEHATAN SEMENTARA – belum bisa dihitung, baru ±10% cek terjawab (TikTok Shop 10,3%, TikTok Ads 0%). Skor lengkap 0–100 dan rencana 7 hari keluar setelah pertanyaan di bawah dijawab.
+4. SKOR KESEHATAN SEMENTARA – belum bisa dihitung, baru ±10% cek terjawab. Skor lengkap 0–100 dan rencana 7 hari keluar setelah pertanyaan di bawah dijawab.
 
 5. PERTANYAAN (jawab sebagian pun cukup)
 1. ROAS/ROI rata-rata 7–14 hari terakhir per jalur (website dan GMV Max)?
@@ -120,7 +122,8 @@ Asumsi: potongan 14,5% + afiliasi 10% dihitung dari harga jual; belum termasuk o
 4. Siapa saja yang punya akses akun iklan, dan verifikasi 2 langkah sudah aktif?
 5. Ada iklan/video ditolak atau poin pelanggaran 30 hari terakhir?
 ```
+(Aturan v1.0.8: satu label verdik; tindakan langsung menekan rugi; tanpa kalimat "File kerja" dan tanpa kata file/berkas/script/skrip/path/folder/tool di chat. 1 poin komisi = 1% dari Rp89.000 = Rp890.)
 
 Angka dihitung ulang (Decimal, 2026-10-17): 89.000 × 24,5% = 21.805; 89.000 − 32.000 − 21.805 − 1.500 = 33.695 (37,9%); 89.000 − 32.000 − 1.500 = 55.500 (62,4%); 89.000 ÷ 33.695 = 2,641 → 2,65 dan 89.000 ÷ 55.500 = 1,604 → 1,61 (dibulatkan ke atas); 6.000.000 ÷ 33.695 = 178,07 → 179 pesanan; 4.500.000 ÷ 55.500 = 81,08 → 82 pesanan; batas tipis 2,65 × 1,2 = 3,18 dan 1,61 × 1,2 = 1,932 → 1,94; ROI 2 → 89.000 ÷ 2 = 44.500, rugi 44.500 − 33.695 = 10.805. Semua cocok dengan skrip.
 
-Rujukan pra-cek konteks Telegram v1.0.7 (skenario yang sama): `koordinasi/pracek-telegram-akun-a-2026-10-16.md` — **6,5, TIDAK SIAP** (tidak dikirim ke bot). Angka di sana benar dan audit pendahuluan muncul di balasan pertama; temuan yang masih terbuka: verdik "BELUM BISA DIPASTIKAN" dinilai kurang tegas, dan 2 dari 3 tindakan (2 langkah, pelanggaran) dinilai tidak nyambung ke keluhan boncos. Contoh di atas memakai tindakan pelacakan (dari CEK DULU) sebagai tindakan 2 agar lebih nyambung, tetapi perilaku skill belum diuji ulang.
+Rujukan pra-cek konteks Telegram v1.0.7 (skenario yang sama): `koordinasi/pracek-telegram-akun-a-2026-10-16.md` — **6,5, TIDAK SIAP** (tidak dikirim ke bot). Angka di sana benar dan audit pendahuluan muncul di balasan pertama; temuan yang masih terbuka: verdik "BELUM BISA DIPASTIKAN" dinilai kurang tegas, dan 2 dari 3 tindakan (2 langkah, pelanggaran) dinilai tidak nyambung ke keluhan boncos. Catatan v1.0.8: ketiga temuan itu diperbaiki di SKILL.md dan contoh di atas; belum diuji ulang di bot asli.

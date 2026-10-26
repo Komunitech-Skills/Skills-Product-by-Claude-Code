@@ -5,7 +5,7 @@ description: Aplikasi kasir (POS) UMKM satu outlet di komputer pemilik (SQLite l
 
 # Kasir Lokal (POS satu outlet)
 
-> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; jangan menulis file baru tanpa menyebut lokasinya, dan simpan hasil di folder kerja yang disepakati (bukan /tmp).
+> **Aturan kerja:** Jangan menginstal paket/aplikasi (mis. `pip install`) — bila perlu, tunjukkan caranya dan biarkan pengguna yang memasang; jangan membuka atau mencari file selain yang diberikan pengguna, isi folder skill ini, dan file yang disebut di langkah kerja; simpan hasil di folder kerja yang disepakati (bukan /tmp). Soal menyebut lokasi file ke pengguna, hanya satu aturan yang berlaku: lihat **Cara bicara ke pengguna**, poin 2.
 
 ## Tujuan
 Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua transaksi ada di **satu file database di komputernya sendiri**, dan kamu (agent) yang mengoperasikannya lewat `scripts/kasir.py`. Hasil: nota bernomor urut, struk siap cetak, uang laci tercocokkan, rekap harian siap kirim, dan omzet bulanan siap untuk pajak.
@@ -38,7 +38,8 @@ Menjadi "aplikasi kasir" pemilik toko/warung/kedai tanpa biaya bulanan: semua tr
 ## Cara bicara ke pengguna di chat (WAJIB)
 Pengguna awam dan hanya melihat chat (Telegram/WhatsApp), bukan komputer tempat skill berjalan.
 1. **Struk ikut di balasan.** Begitu nota tersimpan, balasan yang SAMA memuat `struk_teks` (blok kode; 32 kolom untuk kertas 58 mm, 48 untuk 80 mm). Jangan hanya menawarkan struk atau menunda ke pesan berikutnya.
-2. **File struk siap cetak (HTML) jarang perlu disebut.** Sebut hanya bila pengguna minta cetak atau jelas memakai komputer yang sama dengan agent. Tanpa jalur file (path) dan tanpa nama file (pengecualian dari aturan kerja di atas: pengguna chat tidak bisa membuka file di komputer agent). Di kanal chat: lampirkan file bila kanal mendukung; bila tidak, jangan sebut lokasinya dan tawarkan "balas 'kirim file'".
+2. **Satu aturan untuk semua berkas** (struk siap cetak, buku kasir, cadangan, CSV): di chat cukup katakan "tersimpan di komputer ini". Jalur atau nama berkas hanya diberikan bila pengguna memintanya atau jelas memakai komputer yang sama dengan agent. Pengguna chat tidak bisa membuka berkas di komputer agent: lampirkan berkas bila kanal mendukung; bila tidak, jangan sebut lokasinya dan tawarkan "balas 'kirim file'". Jalur berkas ada di field `lokasi_buku`, `berkas_struk`, `berkas_backup`, `berkas_csv`, `berkas_csv_produk` (juga `db`, `backup`, `struk`, `file`): jangan ditempel ke chat.
+2a. **Tempel hanya `teks` dan `struk_teks`**, yang sudah bebas instruksi, nama perintah, dan jalur berkas (pratinjau `jual`, `void`, `retur`, dan `restore` berakhir `Simpan? Balas "ya".`; pratinjau `mulai` berakhir `Balas "ya" kalau sudah sesuai.`). Field `catatan_agent` adalah petunjuk untukmu, bukan untuk pemilik: baca, ikuti, jangan dikutip. Galat di `error` juga boleh disampaikan apa adanya: sudah berbahasa awam, tanpa nama perintah, opsi, atau jalur berkas (semua itu ada di `catatan_agent` dan field `lokasi_buku`/`berkas_*`).
 3. **Asumsi bukan fakta.** Pengaturan yang belum diucapkan pengguna (pajak, ukuran kertas, stok, jam toko, cara bayar) ditulis sebagai "Saya anggap … — koreksi bila beda", jangan "sudah saya buat tanpa pajak". Setelah pengguna menjawab, baru jadi fakta.
 4. **Bahasa sehari-hari.** Katakan "buku kasir", "daftar produk dimasukkan", "struk siap cetak". Jangan pakai kata database, dipetakan, sistem kasir, struk HTML, file lokal, JSON, atau nama perintah/opsi (`--ya`, `buka-kasir`).
 5. **Pengingat kasir belum dibuka:** satu kalimat pendek dari script (`peringatan`), tanpa nama perintah.
@@ -48,7 +49,7 @@ Path relatif terhadap folder berisi SKILL.md ini (Windows: ganti `python3` denga
 ```bash
 python3 <folder-skill-ini>/scripts/kasir.py <perintah> [opsi] --json
 ```
-- Pakai `--json`; field penting: `ok`, `mode` (`pratinjau`/`tersimpan`/`baca`), `perlu_konfirmasi`, `peringatan`, `error`, `teks` (teks siap tempel), `struk_teks` (struk dalam blok kode, ada di `jual` dan `mulai`), `asumsi` (hanya `mulai`). Exit code 1 = gagal (pesan di `error`), 2 = perintah salah tulis.
+- Pakai `--json`; field penting: `ok`, `mode` (`pratinjau`/`tersimpan`/`baca`), `perlu_konfirmasi`, `peringatan`, `error`, `teks` (teks siap tempel), `catatan_agent` (petunjuk untuk agent, jangan ditempel), `lokasi_buku`/`berkas_*` (jalur berkas, jangan ditempel), `struk_teks` (struk dalam blok kode, ada di `jual` dan `mulai`), `asumsi` (hanya `mulai`). Exit code 1 = gagal (pesan di `error`), 2 = perintah salah tulis.
 - Database default `~/KomunitechData/kasir/kasir.db`; bisa diganti `--db PATH` (ditulis **setelah** nama perintah) atau ENV `KOMUNITECH_KASIR_DB` / `KOMUNITECH_DATA`. Pakai lokasi yang sama di semua perintah.
 - Semua opsi: `references/perintah.md`. Pajak: `references/pajak.md`. Jadwal Telegram OpenClaw: `references/openclaw-jadwal.md`.
 
@@ -96,7 +97,7 @@ Jika info wajib kurang, tanyakan **sekali** dalam satu pesan bernomor (maks. 5 p
 
 ### C. Struk
 - **Di chat (default):** struk teks sudah ikut di balasan saat nota tersimpan. Untuk nota lama atau cetak ulang teks: `struk --nota N-260924-0001 --teks` (kirim blok kodenya).
-- **Cetak ke printer thermal (hanya bila diminta):** `struk --nota ... [--kertas 58|80]` membuat file HTML di folder `struk` pada data kasir di komputer itu. Sampaikan seperlunya: dibuka di browser → Ctrl+P (Mac: Cmd+P) → printer thermal → margin None → skala 100% → matikan header/footer. Aturan penyebutan file: lihat **Cara bicara ke pengguna**. Cetak ulang otomatis bertanda "SALINAN".
+- **Cetak ke printer thermal (hanya bila diminta):** `struk --nota ... [--kertas 58|80]` membuat file HTML di folder `struk` pada data kasir di komputer itu. Sampaikan seperlunya (hanya bila pengguna ada di komputer yang sama; langkahnya juga ada di `catatan_agent`): berkas dibuka di browser → Ctrl+P (Mac: Cmd+P) → printer thermal → margin None → skala 100% → matikan header/footer. Aturan penyebutan berkas: lihat **Cara bicara ke pengguna**, poin 2. Cetak ulang otomatis bertanda "SALINAN".
 
 ### D. Retur & void
 - Seluruh nota batal/salah input: `void --nota N-... --alasan "salah input"`. Uang dikembalikan per metode aslinya.
@@ -191,7 +192,7 @@ Produk terlaris (penjualan bersih):
 - [ ] Perintah tulis sudah dipratinjau & disetujui sebelum `--ya`
 - [ ] Setelah nota tersimpan, `struk_teks` ada di balasan yang sama (bukan hanya ditawarkan)
 - [ ] Pemakaian pertama: satu pesan konfirmasi (produk + toko + penjualan + struk); asumsi ditandai "Saya anggap"
-- [ ] Tidak ada kata database/dipetakan/sistem kasir/HTML/file lokal dan tidak ada jalur file di chat
+- [ ] Tidak ada kata database/dipetakan/sistem kasir/HTML/file lokal dan tidak ada jalur/nama berkas atau nama perintah/opsi di chat (kecuali pemilik memintanya atau jelas di komputer yang sama)
 - [ ] Produk yang "dibaca sebagai" dan asumsi cara bayar disampaikan
 - [ ] Semua `peringatan` script disampaikan (kasir belum dibuka, duplikat, stok minus, dsb.)
 - [ ] Rupiah ditulis `Rp 1.250.000`, dari script

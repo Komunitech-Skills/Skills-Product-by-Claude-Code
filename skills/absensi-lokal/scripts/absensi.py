@@ -36,7 +36,7 @@ from datetime import date, datetime, time, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-VERSI = "1.0.8"
+VERSI = "1.0.9"
 SKEMA = 1
 APLIKASI = "absensi-lokal"
 PEMBAGI_UPAH_SEJAM = Decimal(173)          # PP 35/2021 Pasal 32 ayat (2)
@@ -2726,10 +2726,12 @@ def cmd_rekap_cepat(args):
             pertanyaan.append("%s %s: %s. Jam yang benar berapa?" % (m["nama"], tgl_m, m["pesan"]))
     pertanyaan = pertanyaan[:2]
     if not dari_buku:
-        pertanyaan.append("Mau saya simpan datanya supaya bulan depan tinggal tambah file baru? Balas \"ya\" bila mau.")
+        pertanyaan.append("Mau saya simpan %d catatan absen ini supaya bulan depan tinggal tambah file baru? "
+                          "Cukup balas \"ya\" bila mau; pertanyaan lain boleh dijawab nanti." % imp["tap_baru"])
     elif imp["tap_baru"]:
-        pertanyaan.append("Mau saya masukkan file ini ke buku absensi Anda, supaya tercatat bersama bulan-bulan "
-                          "sebelumnya? Balas \"ya\" bila mau.")
+        pertanyaan.append("Mau saya masukkan %d catatan absen dari file ini ke buku absensi Anda, supaya tercatat "
+                          "bersama bulan-bulan sebelumnya? Cukup balas \"ya\" bila mau; pertanyaan lain boleh "
+                          "dijawab nanti." % imp["tap_baru"])
 
     teks = [teks_rekap, "", "Yang saya pakai untuk menghitung:"]
     teks += ["- %s%s" % (t, " (anggapan saya, bisa diubah)" if anggapan else "") for t, anggapan in pengaturan_dipakai]
