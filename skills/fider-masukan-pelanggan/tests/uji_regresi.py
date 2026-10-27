@@ -634,6 +634,36 @@ class UjiAturanBalasan(unittest.TestCase):
         self.assertIn("Versi " + fider.VERSI, self.skill)
         self.assertIn("**" + fider.VERSI + "**", self.readme)
 
+    def test_ringkasan_diminta_tidak_ditunda(self):
+        a = self.skill
+        self.assertIn("Ringkasan yang diminta tidak boleh ditunda", a)
+        self.assertIn("balasan PERTAMA", a)
+        self.assertIn("5 teratas", a)
+        self.assertIn("total suara", a)
+        self.assertIn("Jangan menjanjikan", a)
+
+    def test_ringkasan_angka_dari_script_bukan_kemungkinan(self):
+        self.assertIn("bukan dikira-kira", self.skill)
+        self.assertIn('tanpa kata "kemungkinan"', self.skill)
+
+    def test_ringkasan_tetap_patuh_aturan_privasi(self):
+        i = self.skill.index("10. **Ringkasan")
+        r = self.skill[i:self.skill.index("\n", i)]
+        for k in ("tanpa nama pelanggan", "tanpa persen karangan", "tanpa `**`", "tanpa kata \"impor\"", "tanpa perintah terminal"):
+            self.assertIn(k, r)
+
+    def test_tak_ada_aturan_lama_yang_menunda_ringkasan(self):
+        a = self.skill
+        self.assertNotIn("ringkasan menyusul", a.replace("Jangan menjanjikan \"ringkasannya menyusul\"", ""))
+        self.assertIn("aturan 10", a)  # bagian C merujuk aturan baru
+        self.assertIn("ringkasan (bagian C) lebih dulu", a)  # bagian A
+
+    def test_script_ringkasan_memuat_angka_yang_diminta(self):
+        # angka yang harus dilaporkan agent berasal dari keluaran script
+        src = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "fider.py"), encoding="utf-8").read()
+        for k in ("total {angka(total_suara)} suara", "TOP {len(top)} SUARA TERBANYAK", "minggu ini)"):
+            self.assertIn(k, src)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

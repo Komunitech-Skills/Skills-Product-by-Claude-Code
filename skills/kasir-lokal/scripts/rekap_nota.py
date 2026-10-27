@@ -33,7 +33,7 @@ import sys
 from collections import OrderedDict
 from decimal import ROUND_HALF_UP, Decimal
 
-VERSI = "1.1.10"
+VERSI = "1.1.12"
 
 METODE_LABEL = OrderedDict([
     ("tunai", "Tunai"), ("qris", "QRIS"), ("transfer", "Transfer"), ("debit", "Kartu debit/kredit"),

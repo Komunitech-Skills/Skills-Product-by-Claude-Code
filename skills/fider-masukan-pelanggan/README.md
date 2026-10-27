@@ -63,7 +63,13 @@ Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, ada 
 
 ## Bukti uji di bot Telegram
 
-Uji terakhir: 12 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), dengan server Fider tiruan berisi data contoh di komputer uji dan pesan yang sama di kedua sisi. Tanpa skill skor **8** → dengan skill skor **5** (selisih −3): belum lulus acuan kami, dan hasil ini belum bisa dipakai sebagai ukuran nilai tambah skill.
+Uji terbaru: 27 Oktober 2026, versi 1.0.10, di bot OpenClaw asli (grup uji internal Komunitech, server Fider tiruan berisi data contoh), dengan pesan yang sama untuk kedua sisi: masukkan empat catatan pelanggan dari WA ke papan saran, lalu beri ringkasan usulan yang paling banyak diminta, tanpa menulis ke Fider sebelum dijawab. Skor 1-10 dari penilai independen: tanpa skill **7** → dengan skill **6** (selisih -1): **belum lulus acuan kami** (dengan skill di bawah 8, dan di uji ini skill kalah).
+
+Dengan skill, kunci akses yang sudah tersimpan terbaca (masalah di uji sebelumnya teratasi), nomor HP pelanggan dibuang dari usulan, usulan QRIS yang mirip dengan yang sudah ada ditahan untuk Anda putuskan, dan tidak ada yang ditulis sebelum Anda menjawab. Namun bagian ringkasan usulan paling banyak diminta tidak dikerjakan: usulan QRIS (14 suara) hanya disebut "kemungkinan" terbanyak, tanpa urutan suara. Tanpa skill, bot memberi ringkasan peringkat usulan lengkap dengan jumlah suara dan tiga draf usulan baru, juga tanpa menulis apa pun.
+
+Catatan jujur: satu pesan uji per sisi. Di sisi tanpa skill, bot sempat memakai berkas sisa uji lama di komputer uji (bukan folder skill), jadi pembandingnya agak lebih mudah dari kondisi pembeli sungguhan. Perbaikan ringkasan suara (versi 1.0.11) belum diuji ulang di bot Telegram.
+
+Uji sebelumnya: 12 Okt 2026, di bot OpenClaw asli (grup uji internal Komunitech), dengan server Fider tiruan berisi data contoh di komputer uji dan pesan yang sama di kedua sisi. Tanpa skill skor **8** → dengan skill skor **5** (selisih −3): belum lulus acuan kami, dan hasil ini belum bisa dipakai sebagai ukuran nilai tambah skill.
 
 Yang terjadi: bot dengan skill hanya membalas petunjuk menyimpan kunci akses, padahal kunci uji sudah tersimpan di komputer uji. Kunci itu tidak terbaca saat skill aktif, jadi pratinjau impor dan ringkasan usulan tidak keluar. Bot tanpa skill justru sempat memberi pratinjau impor dan ringkasan usulan QRIS (14 suara).
 
@@ -78,4 +84,4 @@ Catatan jujur: sesudah uji itu skill diperbaiki agar mencari dan membaca kunci s
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.11**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

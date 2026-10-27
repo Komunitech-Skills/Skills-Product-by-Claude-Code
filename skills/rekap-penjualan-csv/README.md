@@ -77,13 +77,17 @@ Panduan lengkap (termasuk Windows): lihat `docs/instalasi.md` (di dalam ZIP bern
 
 ## Bukti uji di bot Telegram
 
-Diuji di bot OpenClaw asli (grup uji Komunitech, data fiktif) pada 17 Oktober 2026, versi 1.2.5, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): pemilik toko online kaos dan aksesori menulis bahwa file ekspor penjualan September dari Shopee (72 baris: 66 selesai, 4 batal, 2 pengembalian dana) sudah ada di folder kerja, lalu minta direkap: omzet sebulan berapa, produk paling laku apa, dan hari paling ramai kapan. Skor 1–10 dari penilai independen: tanpa skill **8** → dengan skill **6,5** (selisih −1,5): **belum lulus acuan kami** (dengan skill di bawah 8, dan di uji ini skill kalah); pemeriksa kedua setuju.
+Uji terbaru: 27 Oktober 2026, versi 1.2.7, di bot OpenClaw asli (grup uji internal Komunitech, data fiktif), dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): pemilik toko kaos dan aksesori minta rekap file penjualan September dari Shopee (72 baris), berapa omzetnya, produk paling laku, dan hari paling ramai. Skor 1-10 dari penilai independen: tanpa skill **7** → dengan skill **9** (selisih +2): **lulus acuan kami** (dengan skill 8 atau lebih, selisih 1,5 atau lebih); pemeriksa kedua setuju.
+
+Perbedaannya konkret. Kedua sisi menghitung omzet Rp5.519.000 dengan benar, tetapi dengan skill Anda juga langsung mendapat: 4 pesanan batal (Rp238.000) dan 2 pengembalian dana (Rp272.000) yang dipisahkan, porsi tiap produk dalam persen (Kaos Oversize Abu 30,1%), dan hari ditulis lengkap ("Sabtu, 5 September 2026"). Sarannya kali ini cocok dengan angka (tidak ada lagi salah menyebut produk terlaris seperti pada uji sebelumnya). Tanpa skill hanya ada daftar lima produk dan dua hari tersibuk.
+
+Catatan jujur: satu pesan uji per sisi, bukan uji berulang, data fiktif satu toko; selisihnya baru di satu kasus. Ekspor marketplace lain belum diuji di bot Telegram.
+
+Uji sebelumnya: diuji di bot OpenClaw asli (grup uji Komunitech, data fiktif) pada 17 Oktober 2026, versi 1.2.5, dengan pesan yang sama untuk kedua sisi (tanpa skill dan dengan skill): pemilik toko online kaos dan aksesori menulis bahwa file ekspor penjualan September dari Shopee (72 baris: 66 selesai, 4 batal, 2 pengembalian dana) sudah ada di folder kerja, lalu minta direkap: omzet sebulan berapa, produk paling laku apa, dan hari paling ramai kapan. Skor 1–10 dari penilai independen: tanpa skill **8** → dengan skill **6,5** (selisih −1,5): **belum lulus acuan kami** (dengan skill di bawah 8, dan di uji ini skill kalah); pemeriksa kedua setuju.
 
 Kedua sisi menghitung omzet Rp5.519.000 dari 66 pesanan selesai, produk terlaris menurut omzet (Kaos Oversize Abu), dan hari tertinggi dengan benar. Dengan skill, Anda juga mendapat nilai pesanan batal dan pengembalian dana serta persentase tiap produk. Namun bagian saran (insight) salah: Topi Baseball disebut paling banyak terjual dan paling murah, padahal yang paling banyak terjual (23 pcs) dan paling murah (Rp35.000) adalah Tote Bag, sehingga saran "cek apakah harga topi kurang kompetitif" menyesatkan. Istilah "margin per unit" juga keliru, karena data tidak memuat modal. Tanpa skill, semua angkanya benar, ringkas, dan membedakan produk terlaris menurut omzet dan menurut jumlah terjual.
 
 Catatan jujur: kesalahan ini ada pada kalimat saran, bukan pada hitungan omzet. Perbaikannya (lihat Riwayat perubahan) belum diuji ulang di bot Telegram; sampai itu, cocokkan setiap kalimat saran dengan daftar angka di atasnya. Ini satu pesan uji per sisi, bukan uji berulang.
-
-Versi 1.2.7 memperbaiki temuan-temuan di atas dan belum diuji ulang di bot Telegram asli.
 
 ## FAQ
 **Apakah data saya dikirim ke internet?**

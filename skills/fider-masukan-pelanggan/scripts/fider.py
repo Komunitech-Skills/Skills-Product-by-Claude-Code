@@ -27,7 +27,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.10"
+VERSI = "1.0.11"
 FOLDER_RAHASIA = os.path.join(os.path.expanduser("~"), ".komunitech")
 KUNCI_DEFAULT = os.path.join(FOLDER_RAHASIA, "fider-kunci.txt")
 ALAMAT_DEFAULT_FILE = os.path.join(FOLDER_RAHASIA, "fider-alamat.txt")

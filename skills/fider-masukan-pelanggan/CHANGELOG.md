@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.11 (2026-10-27)
+- Dari uji Telegram 1.0.10 (dengan skill 6, tanpa skill 7): saat pemilik meminta ringkasan suara mingguan bersamaan dengan memasukkan catatan WA, bot hanya menulis "kemungkinan QRIS teratas" tanpa angka dan menundanya. SKILL.md kini mewajibkan ringkasan (usulan aktif, total suara, 5 teratas, perubahan minggu ini) di balasan pertama, angka dari script, tidak ditunda. Script tidak berubah selain nomor versi. Uji regresi ditambah (64). Belum diuji ulang di bot Telegram.
+
 ## Catatan revisi 1.0.10 (2026-10-27)
 - Versi dinaikkan (patch) dari 1.0.9 yang sudah dirilis. Dari pra-cek Telegram: balasan memakai "seorang pelanggan" (tidak mengulang nama/nomor dari catatan), duplikat ditulis "mirip dengan #nomor" tanpa persentase karangan, tanpa `**` dan tanpa kata "impor" di chat. Contoh/README yang bertentangan diperbaiki; uji regresi ditambah (59). Susulan: agent tidak lagi menyodorkan perintah terminal ke pengguna; pratinjau script tidak memuat kata "impor"/persentase dan disusun ulang untuk chat; penomoran aturan dirapikan; transkrip contoh dikembalikan apa adanya dengan catatan. Susulan verifikator: GALAT kunci belum ada/ditolak (kode 3) kini memuat penanda "UNTUK AGEN SAJA" tanpa perintah untuk pengguna, dan Batasan/Persiapan 3/aturan 3 diselaraskan (panduan atau teknisi, tanpa perintah); pratinjau script tanpa opsi teknis di bagian terlihat (`--ya`/`--tetap` hanya di baris agen); contoh README memakai "seorang pelanggan"; contoh 01/02 ditandai format lama.
 
