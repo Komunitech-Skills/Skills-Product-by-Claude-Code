@@ -1306,5 +1306,14 @@ class UjiSingkatanFlag(unittest.TestCase):
             self.assertFalse(os.path.exists(os.path.join(t, "a.db")), "singkatan flag tidak boleh menulis apa pun")
 
 
+class UjiTanpaNarasiProses(unittest.TestCase):
+    """Pra-cek G28: satu run membuka balasan dengan narasi Inggris tentang proses ('Got the rekap...')."""
+
+    def test_aturan_balasan_hanya_isi_pesan(self):
+        sk = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "SKILL.md"), encoding="utf-8").read()
+        self.assertIn("balasanmu HANYA isi `pesan`", sk)
+        self.assertIn("Jangan menulis pembuka, narasi, atau catatan tentang proses", sk)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
