@@ -757,7 +757,7 @@ class UjiV118(Dasar):
         return self.ok(*(argv + list(extra)))
 
     def test_70_version_sama_di_semua_berkas(self):
-        self.assertEqual(K.VERSI, "1.1.12")
+        self.assertEqual(K.VERSI, "1.1.13")
         spec = importlib.util.spec_from_file_location("rekap_nota", os.path.join(AKAR, "scripts", "rekap_nota.py"))
         rn = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(rn)
@@ -1424,7 +1424,7 @@ class UjiV1111(Dasar):
         self.assertIn("jangan dua kali", md)
 
     def test_116_versi_dan_dokumen_disamakan(self):
-        self.assertEqual(K.VERSI, "1.1.12")
+        self.assertEqual(K.VERSI, "1.1.13")
         self.assertIn("**1.1.12**", isi_file(os.path.join(AKAR, "README.md")))
         self.assertIn("## Catatan revisi 1.1.12", isi_file(os.path.join(AKAR, "CHANGELOG.md")))
         self.assertLess(len(self.skill().splitlines()), 300)

@@ -104,7 +104,9 @@ Kasir ini sengaja hanya mencatat penjualan yang sudah dibayar. Kalau ada pelangg
 
 ## Riwayat perubahan
 
-Versi terkini: **1.1.12**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.1.13**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+
+Yang berubah di 1.1.13 (27 Okt 2026): satu kalimat petunjuk internal yang di uji gelombang 29 masih sempat ikut tertulis ke chat setelah balasan "ya" kini diberi penanda agar tidak dikutip. Hitungan angka tidak berubah. Belum diuji ulang di bot asli.
 
 Yang berubah di 1.1.12 (27 Okt 2026): petunjuk internal untuk AI dirapikan supaya tidak ada lagi kalimat yang mudah ikut tertulis ke chat, dan struk tidak lagi bisa muncul dua kali. Belum diuji ulang di bot asli.
 

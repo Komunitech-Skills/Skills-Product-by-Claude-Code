@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.1.13 (2026-10-27)
+Uji Telegram gelombang 29 pada 1.1.12: 6,5 → 7,5 (BELUM); satu pesan internal ("jalankan dengan argumen identik plus --ya") bocor lagi setelah balasan "ya". `CATATAN_PRATINJAU` kini diawali penanda "CATATAN INTERNAL, jangan dikutip" dan tanpa kalimat perintah. Angka tidak diubah. BELUM diuji ulang di bot asli.
+
 ## Catatan revisi 1.1.12 (2026-10-27)
 Memperbaiki temuan verifikator atas 1.1.11. BELUM diuji ulang di bot Telegram asli; hanya uji otomatis. Angka tidak diubah.
 - `kasir.py`: `CATATAN_PRATINJAU` dan catatan pemakaian pertama ditulis netral (tanpa "setuju" dan tanpa kalimat "jalankan perintah sama persis + --ya") karena catatan itu dikirim di setiap pratinjau dan bisa ditiru model.

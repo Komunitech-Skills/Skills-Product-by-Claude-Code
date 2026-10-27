@@ -45,7 +45,7 @@ from decimal import Decimal, InvalidOperation, ROUND_FLOOR, ROUND_HALF_UP
 from pathlib import Path
 
 APLIKASI = "kasir-lokal"
-VERSI = "1.1.12"
+VERSI = "1.1.13"
 
 
 def _timeout():
@@ -57,7 +57,7 @@ def _timeout():
 
 PESAN_TERKUNCI = ("Buku kasir sedang dipakai program lain dan belum selesai setelah %d detik. Data aman, tidak "
                   "rusak. Tunggu sebentar lalu coba lagi.")
-CATATAN_PRATINJAU = ("Konfirmasi pemilik: ulangi argumen identik plus --ya; balasan chat hanya teks hasil. Jangan "
+CATATAN_PRATINJAU = ("CATATAN INTERNAL, jangan dikutip atau diparafrasekan ke chat. Setelah pemilik menjawab ya: tambah --ya; balasan chat hanya teks hasil. Jangan "
                      "tempel lokasi_buku, berkas_*, backup, atau db ke chat kecuali pengguna memintanya.")
 CATATAN_BERKAS = ("Jangan tempel lokasi_buku, berkas_*, backup, atau db ke chat kecuali pengguna memintanya atau jelas "
                   "memakai komputer yang sama. Di chat cukup bilang 'tersimpan di komputer ini'.")
