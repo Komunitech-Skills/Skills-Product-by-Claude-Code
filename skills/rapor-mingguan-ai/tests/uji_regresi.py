@@ -6,6 +6,7 @@ import os
 import sys
 import tempfile
 import unittest
+from decimal import ROUND_HALF_UP, Decimal
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
@@ -73,7 +74,8 @@ class Uji(unittest.TestCase):
         self.assertNotIn("3456", s)
         self.assertNotIn("rina@mail.com", s)
         self.assertNotIn("Rina", s)
-        self.assertIn("0812-xxxx-7788", s)
+        self.assertIn("[nomor]", s)
+        self.assertNotIn("7788", s)  # 1.0.3: 4 digit akhir juga ditutup
         self.assertNotIn("1234567890123456", s)
         self.assertEqual(r.samarkan("halo Wulan", ["Wulan"]), "halo [nama]")
 
@@ -201,7 +203,8 @@ class UjiPerKriteria(unittest.TestCase):
             self.assertLessEqual(h["percakapan_bersih"], min(c["lolos"] for c in h["kriteria"]))
             for c in h["kriteria"]:
                 self.assertEqual(c["lolos"] + c["gagal"], n)
-                self.assertEqual(c["lolos_persen"], round(100.0 * c["lolos"] / n, 1))
+                harap = Decimal(100 * c["lolos"]) / Decimal(n)
+                self.assertEqual(c["lolos_persen"], float(harap.quantize(Decimal("0.1"), ROUND_HALF_UP)))
 
     def test_cek_konsistensi_menangkap_angka_salah(self):
         matriks = [[], ["nyambung", "panjang"], ["janji", "fakta"], ["teknis"], ["konteks"], ["bocor"], ["nada"], [], [], []]
@@ -250,13 +253,16 @@ class UjiPerKriteria(unittest.TestCase):
         self.assertEqual(r.persen_id(90.0), "90%")
 
     def test_versi(self):
-        self.assertEqual(r.VERSI, "1.0.2")
-        self.assertIn("1.0.2", (RAKIT / "CHANGELOG.md").read_text(encoding="utf-8"))
-        self.assertIn("**1.0.2**", (RAKIT / "README.md").read_text(encoding="utf-8"))
+        self.assertEqual(r.VERSI, "1.0.3")
+        self.assertIn("1.0.3", (RAKIT / "CHANGELOG.md").read_text(encoding="utf-8"))
+        self.assertIn("**1.0.3**", (RAKIT / "README.md").read_text(encoding="utf-8"))
+        _, h, _ = jalan_nilai("P1=lolos")
+        self.assertEqual(h["versi"], "1.0.3")
 
 
 class UjiFormatRingkas(unittest.TestCase):
-    """1.0.2: contoh format ringkas untuk chat (Telegram) <= 3.000 karakter, tabel <= 3 kolom, tanpa nama skill."""
+    """Contoh format ringkas untuk chat (Telegram): <= 3.000 karakter, tabel <= 3 kolom, tanpa nama skill.
+    1.0.3: contoh memakai data 02 (persen berbeda-beda) dan lolos cek_balasan."""
 
     def ambil(self, tanda):
         teks = (RAKIT / "examples/06-format-ringkas-chat.md").read_text(encoding="utf-8")
@@ -279,7 +285,7 @@ class UjiFormatRingkas(unittest.TestCase):
 
     def test_angka_contoh_sama_dengan_hitungan(self):
         import re
-        _, h, _ = jalan_nilai(MATRIKS_01)
+        _, h, _ = jalan_nilai(MATRIKS_02, "--tahap", "bulan2+", "--lama-jawaban", LAMA_02)
         pendek = {"Fakta": "fakta", "Nyambung": "nyambung", "Konteks": "konteks", "Panjang": "panjang",
                   "Nada": "nada", "Janji": "janji", "Data pribadi": "bocor", "Kata teknis": "teknis"}
         per = {c["kode"]: c for c in h["kriteria"]}
@@ -294,9 +300,435 @@ class UjiFormatRingkas(unittest.TestCase):
                 self.assertEqual(m.group(5), c["nilai"])
                 ketemu += 1
         self.assertEqual(ketemu, 8)
-        self.assertIn("4 dari 10", b)
+        self.assertRegex(b, r"(?<![\d.,])7 dari 12(?!\d|[.,]\d)")  # angka utuh, bukan "17 dari 120"
         self.assertIn("nilai umum **%s**" % h["nilai_umum"], b)
+        self.assertIn(h["baris_tren"], b)
+        self.assertGreater(len(set(h["lolos_persen"].values())), 1)  # contoh tidak lagi "semua 90%"
 
+    def test_contoh_lolos_cek_balasan(self):
+        _, h, _ = jalan_nilai(MATRIKS_02, "--tahap", "bulan2+", "--lama-jawaban", LAMA_02)
+        cs = r.parse_teks((RAKIT / "examples/data/02-klinik-bulan2.txt").read_text(encoding="utf-8"), set(), [])
+        nomor = [m.group(0) for c in cs for _, t in c["turn"] for m in r.RE_HP.finditer(t)]
+        self.assertEqual(r.cek_balasan(self.ambil("balasan pertama"), h, r.nama_terdeteksi(cs), nomor), [])
+
+
+MATRIKS_02 = ("P1=lolos; P2=lolos; P3=fakta,janji; P4=lolos; P5=fakta,janji; P6=lolos; P7=lolos; P8=konteks; "
+              "P9=lolos; P10=lolos; P11=bocor; P12=teknis")
+LAMA_02 = ("Rapor minggu lalu: fakta 100%, nyambung 90%, ingat konteks 85%, panjang 95%, nada 90%, janji 100%, "
+           "data pribadi 100%, teknis 90%.")
+
+
+def draf_baik(h, ekstra=""):
+    """Draf minimal yang benar untuk hitungan h; tes menyisipkan satu kesalahan lewat ekstra."""
+    pendek = {"fakta": "Fakta", "nyambung": "Nyambung", "konteks": "Konteks", "panjang": "Panjang", "nada": "Nada",
+              "janji": "Janji", "bocor": "Data pribadi", "teknis": "Kata teknis"}
+    baris = ["**Rapor bot minggu ini:** %d percakapan dinilai, %d dari %d bersih." % (h["dinilai"], h["percakapan_bersih"], h["dinilai"]),
+             "", "| Kriteria | Lolos | Nilai |", "|---|---|---|"]
+    for c in h["kriteria"]:
+        baris.append("| %s | %s (%d/%d) | %s |" % (pendek[c["kode"]], r.persen_id(c["lolos_persen"]), c["lolos"], c["dinilai"], c["nilai"]))
+    baris += ["", h["baris_tren"], "", ekstra, "", "Mau rincian per percakapan dan cara cek tiap PR? Balas 'rinci'."]
+    return "\n".join(baris)
+
+
+class Uji103(unittest.TestCase):
+    """1.0.3: aturan pra-cek Telegram dijadikan pemeriksaan draf + regresi per aturan."""
+
+    def setUp(self):
+        _, self.h, _ = jalan_nilai(MATRIKS_02, "--lama-jawaban", LAMA_02)
+
+    def masalah(self, ekstra="", teks=None, nama=("Sari", "Rina"), nomor=("0813-1111-2222",)):
+        return r.cek_balasan(teks if teks is not None else draf_baik(self.h, ekstra), self.h, nama, nomor)
+
+    def test_draf_baik_lolos(self):
+        self.assertEqual(self.masalah(), [])
+
+    # Aturan 1: tanpa nama/inisial pelanggan di mana pun, termasuk pertanyaan & asumsi.
+    def test_nama_di_pertanyaan_ditolak(self):
+        m = self.masalah("**Asumsi:** minggu 2-4. Pertanyaan: (1) Apakah pesanan Sari sudah dikirim?")
+        self.assertTrue(any("Sari" in x for x in m), m)
+
+    def test_nama_di_asumsi_huruf_kecil_ditolak(self):
+        self.assertTrue(self.masalah("**Asumsi:** keluhan rina dianggap selesai."))
+
+    def test_inisial_dan_sapaan_ditolak(self):
+        self.assertTrue(any("inisial" in x for x in self.masalah("Pertanyaan: (1) Kak S. sudah dihubungi?")))
+        self.assertTrue(any("sapaan" in x for x in self.masalah("Pertanyaan: (1) Bu Hartini mau refund?", nama=())))
+
+    def test_pelanggan_di_p_nomor_boleh(self):
+        self.assertEqual(self.masalah("Pertanyaan: (1) Pelanggan di P3 sudah dihubungi staf?"), [])
+
+    # Aturan 3: a/n (atas nama).
+    def test_atas_nama_disamarkan_dan_ditolak_di_draf(self):
+        self.assertEqual(r.samarkan("transfer a/n Budi Santoso, atau a.n. Rina; atas nama: Dewi"),
+                         "transfer a/n [nama], atau a.n. [nama]; atas nama [nama]")
+        self.assertTrue(any("a/n" in x for x in self.masalah("Rekening a/n Joko belum dicek.", nama=())))
+        self.assertEqual(self.masalah("Tulis 'a/n [nama]' saja."), [])
+        self.assertEqual(r.bersih_nama("a/n Budi Santoso"), "Budi Santoso")
+        cs = r.parse_teks("Pelanggan (Sari, 0813-1111-2222): transfer a/n Joko Widodo sudah\nBot: ok\n", set(), [])
+        nama = r.nama_terdeteksi(cs)
+        for n in ("Sari", "Joko", "Widodo"):
+            self.assertIn(n, nama)
+
+    def test_kode_berisi_nama_dibuang(self):
+        k, h, _ = jalan_nilai("P1 (Sari)=fakta; P2 a/n Budi=lolos")
+        self.assertEqual(k, 0)
+        self.assertEqual([c["gagal_di"] for c in h["kriteria"] if c["kode"] == "fakta"][0], ["P1"])
+        self.assertNotIn("Sari", json.dumps(h))
+        self.assertNotIn("Budi", json.dumps(h))
+
+    # Aturan 2: tabel <= 3 kolom, baris pemisah benar.
+    def test_tabel_salah_ditolak(self):
+        t = draf_baik(self.h)
+        self.assertTrue(self.masalah(teks=t.replace("|---|---|---|\n", "")))
+        self.assertTrue(self.masalah(teks=t.replace("|---|---|---|", "|---|---|")))
+        self.assertTrue(self.masalah(teks=t.replace("|---|---|---|", "|--|--|--|")))
+        self.assertTrue(self.masalah(teks=t.replace("| Kriteria | Lolos | Nilai |\n|---|---|---|",
+                                                    "| Kriteria | Lolos | Nilai | Tren |\n|---|---|---|---|")))
+        dua = t.replace("| Nada |", "|---|---|---|\n| Nada |")
+        self.assertTrue(any("pemisah ganda" in x for x in self.masalah(teks=dua)))
+
+    # Aturan 3 (lanjutan): --lama-jawaban.
+    def test_lama_jawaban_berbagai_bentuk(self):
+        self.assertEqual(r.baca_lama_teks(LAMA_02), {"fakta": 100.0, "nyambung": 90.0, "konteks": 85.0, "panjang": 95.0,
+                                                     "nada": 90.0, "janji": 100.0, "bocor": 100.0, "teknis": 90.0})
+        tabel = "| Fakta | 83,3% (10/12) | D |\n| Data pribadi | 91,7% (11/12) | C |\n| Kata teknis | 75% (9/12) | C |"
+        self.assertEqual(r.baca_lama_teks(tabel), {"fakta": 83.3, "bocor": 91.7, "teknis": 75.0})
+        self.assertEqual(r.baca_lama_teks("- Fakta: 80% (8/10), D\n- Ingat konteks: 70%"), {"fakta": 80.0, "konteks": 70.0})
+        # baris tren diutamakan; 'P3' dan 'turun 16,7 poin' tidak terbaca sebagai persen
+        teks = ("Fakta salah (P3): turun 16,7 poin\n| Fakta | 50% (5/10) | D |\n" + self.h["baris_tren"])
+        self.assertEqual(r.baca_lama_teks(teks), self.h["lolos_persen"])
+        self.assertEqual(r.baca_lama_teks("fakta=80; nada: 90"), {"fakta": 80.0, "nada": 90.0})
+        p = []
+        self.assertEqual(r.baca_lama_teks("minggu lalu bagus", p), {})
+        self.assertTrue(p)
+
+    def test_lama_jawaban_sama_dengan_lama(self):
+        _, a, _ = jalan_nilai(MATRIKS_02, "--lama-jawaban", LAMA_02)
+        _, b, _ = jalan_nilai(MATRIKS_02, "--lama", "fakta=100,nyambung=90,konteks=85,panjang=95,nada=90,janji=100,bocor=100,teknis=90")
+        self.assertEqual([c.get("selisih_poin") for c in a["kriteria"]], [c.get("selisih_poin") for c in b["kriteria"]])
+        _, c, _ = jalan_nilai(MATRIKS_02, "--lama-jawaban", LAMA_02, "--lama", "fakta=50")
+        self.assertEqual(c["kriteria"][0]["lama_persen"], 50.0)
+        self.assertTrue(any("dua kali" in x for x in c["peringatan"]))
+
+    def test_tren_putar_balik(self):
+        # baris tren minggu ini ditempel minggu depan -> selisih 0 semua bila data sama
+        _, h2, _ = jalan_nilai(MATRIKS_02, "--lama-jawaban", "rapor lalu...\n" + self.h["baris_tren"])
+        self.assertTrue(all(c["selisih_poin"] == 0 for c in h2["kriteria"]))
+
+    def test_lama_jawaban_stdin(self):
+        out = io.StringIO()
+        with redirect_stdout(out), redirect_stderr(io.StringIO()):
+            lama_stdin = sys.stdin
+            sys.stdin = io.StringIO(LAMA_02)
+            try:
+                kode = r.main(["--nilai", MATRIKS_02, "--lama-jawaban", "-", "--json"])
+            finally:
+                sys.stdin = lama_stdin
+        self.assertEqual(kode, 0)
+        self.assertTrue(json.loads(out.getvalue())["ada_rapor_lama"])
+
+    # Aturan 4: cepat untuk 1.000+ percakapan.
+    def test_kinerja_1000_lebih(self):
+        import random
+        import time
+        acak = random.Random(3)
+        nilai = "; ".join("P%d=%s" % (i, ",".join(k for k in r.KRITERIA if acak.random() < 0.1) or "lolos") for i in range(1, 2001))
+        teks = "".join(blok("P%d" % i, "Saya Kak Sari%d 0813-1111-%04d, pesanan a/n Budi belum sampai" % (i, i),
+                            "Pasti dijamin sampai hari ini juga " * 20, "lolos") for i in range(1500))
+        mulai = time.perf_counter()
+        k1, h1, _ = jalan_nilai(nilai)
+        k2, out, _ = jalan(teks)
+        draf = draf_baik(h1, "Catatan: " + "kalimat biasa. " * 200)
+        r.cek_balasan(draf, h1, ["Sari%d" % i for i in range(1500)], ["0813-1111-%04d" % i for i in range(1500)])
+        lama = time.perf_counter() - mulai
+        self.assertEqual((k1, k2), (0, 0))
+        self.assertEqual(h1["dinilai"], 2000)
+        self.assertEqual(json.loads(out)["dinilai"], 1500)
+        self.assertLess(lama, 10.0)
+        teks_blok = io.StringIO()
+        with redirect_stdout(teks_blok):
+            r.main(["--nilai", nilai])
+        self.assertIn("lainnya)", teks_blok.getvalue())  # daftar 'gagal di' diringkas
+
+    # Aturan 5: panjang, penutup, tanpa kata proses, tanpa digit nomor.
+    def test_panjang_dan_penutup(self):
+        self.assertTrue(any("panjang" in x for x in self.masalah("isi " * 1000)))
+        self.assertTrue(any("rinci" in x for x in self.masalah(teks=draf_baik(self.h) + "\nTerima kasih.")))
+
+    def test_kata_proses_ditolak(self):
+        for kata in ("Dihitung dengan skrip.", "lihat rapor.py", "berkas /home/user/x", "tempel ke AGENTS.md",
+                     "jalankan --nilai", "pakai cek-privasi-openclaw", "hasil exec tool"):
+            self.assertTrue(self.masalah(kata), kata)
+
+    def test_digit_nomor_ditolak(self):
+        for x in ("nomor 0813-1111-2222", "nomor 0813-xxxx-2222", "akhiran 2222 bocor", "+62 813 1111 2222",
+                  "nomor xxxx-2222"):
+            self.assertTrue(self.masalah(x), x)
+        self.assertEqual(self.masalah("Jam buka 08.00-21.00, ongkir gratis min. Rp200.000."), [])
+
+    # Aturan 6: baris tren wajib & sama dengan hitungan.
+    def test_baris_tren_wajib(self):
+        t = draf_baik(self.h)
+        self.assertTrue(any("Angka tren" in x for x in self.masalah(teks=t.replace(self.h["baris_tren"], ""))))
+        salah = t.replace(self.h["baris_tren"], self.h["baris_tren"].replace("fakta 83,3%", "fakta 90%"))
+        self.assertTrue(any("baris tren" in x for x in self.masalah(teks=salah)))
+        self.assertTrue(self.h["baris_tren"].startswith(r.TANDA_TREN + ": fakta "))
+        out = io.StringIO()
+        with redirect_stdout(out):
+            r.main(["--nilai", "P1=lolos"])
+        self.assertIn("Angka tren (tempel minggu depan): fakta 100%", out.getvalue())
+
+    # Aturan 7: persen mengikuti data, bukan "semua 90%".
+    def test_semua_90_ditolak_bila_data_beda(self):
+        t = draf_baik(self.h)
+        import re
+        semua90 = re.sub(r"\| (\d+(?:,\d)?)% \((\d+)/12\)", "| 90% (9/10)", t)
+        m = self.masalah(teks=semua90)
+        self.assertTrue(any("sama persen" in x for x in m), m)
+        self.assertTrue(any("fakta tertulis 90%" in x for x in m), m)
+        kurang = "\n".join(b for b in t.splitlines() if not b.startswith("| Nada"))
+        self.assertTrue(any("belum tertulis: nada" in x for x in self.masalah(teks=kurang)))
+        self.assertTrue(any("bersih" in x for x in self.masalah(teks=t.replace("7 dari 12", "8 dari 12"))))
+
+    def test_cli_cek_balasan(self):
+        with tempfile.TemporaryDirectory() as d:
+            baik, buruk = os.path.join(d, "a.txt"), os.path.join(d, "b.txt")
+            Path(baik).write_text(draf_baik(self.h), encoding="utf-8")
+            Path(buruk).write_text(draf_baik(self.h, "Pertanyaan: Sari sudah transfer?"), encoding="utf-8")
+            for path, kode_harap in ((baik, 0), (buruk, 1)):
+                out = io.StringIO()
+                with redirect_stdout(out), redirect_stderr(io.StringIO()):
+                    kode = r.main(["--nilai", MATRIKS_02, "--lama-jawaban", LAMA_02, "--samarkan-nama", "Sari",
+                                   "--cek-balasan", path])
+                self.assertEqual(kode, kode_harap, out.getvalue())
+            # nama terbaca otomatis dari berkas percakapan walau angka dari --nilai
+            data = os.path.join(d, "p.txt")
+            Path(data).write_text("---\nPelanggan (Sari, 0813-1111-2222): halo\nBot: halo\n", encoding="utf-8")
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                self.assertEqual(r.main([data, "--nilai", MATRIKS_02, "--lama-jawaban", LAMA_02, "--cek-balasan", buruk]), 1)
+                self.assertEqual(r.main(["--nilai", "P1=lolos", "--cek-balasan", os.path.join(d, "tidak-ada.txt")]), 2)
+
+
+class Uji103b(unittest.TestCase):
+    """1.0.3 putaran 2: temuan pemeriksa independen, satu tes per temuan."""
+
+    def setUp(self):
+        _, self.h, _ = jalan_nilai(MATRIKS_02, "--lama-jawaban", LAMA_02)
+
+    def masalah(self, ekstra="", teks=None, nama=(), nomor=(), angka=()):
+        return r.cek_balasan(teks if teks is not None else draf_baik(self.h, ekstra), self.h, nama, nomor, angka)
+
+    # Temuan 1: hitungan ditulis sebelum persen; label bermakna gagal.
+    def test_lama_hitungan_sebelum_persen(self):
+        _, h, _ = jalan_nilai("P1=lolos; P2=fakta", "--lama-jawaban", "Fakta: 10 dari 12 (83,3%)")
+        fakta = h["kriteria"][0]
+        self.assertEqual(fakta["lama_persen"], 83.3)
+        self.assertEqual(fakta["selisih_poin"], -33.3)
+        self.assertEqual(r.baca_lama_teks("Konteks: 11/12 (91,7%)"), {"konteks": 91.7})
+        self.assertEqual(r.baca_lama_teks("Fakta: 10 dari 12"), {"fakta": 83.3})
+        self.assertEqual(r.baca_lama_teks("Tidak nyambung: 2 percakapan (P2, P4); nyambung 83,3%"), {"nyambung": 83.3})
+        self.assertEqual(r.baca_lama_teks("Nyambung naik dari 90% ke 100%"), {"nyambung": 100.0})
+        # baris blok hitungan sendiri ("lolos 10 dari 12 (83,3%) | ... target 90% ...")
+        out = io.StringIO()
+        with redirect_stdout(out):
+            r.main(["--nilai", MATRIKS_02])
+        self.assertEqual(r.baca_lama_teks(out.getvalue().split("--- JSON ---")[0]), self.h["lolos_persen"])
+
+    def test_lama_label_gagal_tidak_dipakai(self):
+        p = []
+        self.assertEqual(r.baca_lama_teks("Fakta salah: 16,7% percakapan", p), {})
+        self.assertTrue(any("bermakna gagal" in x for x in p), p)
+        p = []
+        self.assertEqual(r.baca_lama_teks("Tidak janji berlebihan 83,3%; janji berlebihan 16,7%", p), {"janji": 83.3})
+        self.assertTrue(any("bermakna gagal" in x for x in p))
+
+    # Temuan 2: teks tambahan panjang di kode P; nama masuk pemeriksaan draf.
+    def test_kode_p_dengan_nama_panjang(self):
+        k, h, _ = jalan_nilai("P1=lolos; P2 (Ibu Sari Wulandari)=fakta; P3 (Sari)=janji")
+        self.assertEqual(k, 0)
+        self.assertEqual(h["dinilai"], 3)
+        self.assertEqual(h["lolos_persen"]["fakta"], 66.7)
+        self.assertNotIn("Wulandari", json.dumps(h))
+        self.assertNotIn("Sari", json.dumps(h))
+        nama = []
+        r.parse_nilai("P2 (Ibu Sari Wulandari)=fakta; P4 (H.)=lolos; P5 a/n Budi Santoso: nada", [], nama)
+        for n in ("Sari Wulandari", "Sari", "Wulandari", "H.", "Budi Santoso"):
+            self.assertIn(n, nama)
+
+    def test_nama_dari_kode_p_dicek_di_draf(self):
+        with tempfile.TemporaryDirectory() as d:
+            draf = os.path.join(d, "d.txt")
+            Path(draf).write_text(draf_baik(self.h, "Pertanyaan: Sari sudah dihubungi?"), encoding="utf-8")
+            with redirect_stdout(io.StringIO()):
+                kode = r.main(["--nilai", MATRIKS_02.replace("P3=", "P3 (Sari)="), "--cek-balasan", draf])
+            self.assertEqual(kode, 1)
+
+    # Temuan 3: nama tanpa sapaan / inisial di depan kode P, tanpa berkas.
+    def test_nama_tersirat_dan_inisial_p(self):
+        self.assertTrue(any("Hendra" in x for x in self.masalah("Pertanyaan: (1) Apakah Hendra jadi pindah Kamis?")))
+        self.assertTrue(any("inisial" in x for x in self.masalah("Pertanyaan: (1) Apakah H. (P4) jadi pindah?")))
+        self.assertTrue(any("Hendra" in x for x in self.masalah("Asumsi: keluhan Hendra (P4) selesai.")))
+        self.assertTrue(any("inisial" in x for x in self.masalah("Pertanyaan: H. sudah bayar?", nama=("H.",))))
+        for aman in ("Pertanyaan: (1) Apakah Anda punya daftar harga resmi?", "Apakah Senin tetap buka?",
+                     "Nilai umum C. Pelanggan di P4 belum dihubungi."):
+            self.assertEqual(self.masalah(aman, nama=("C.",)), [], aman)
+
+    # Temuan 4: positif palsu rekening usaha & persen di kalimat ringkasan.
+    def test_rekening_usaha_dan_ringkasan_tidak_ditolak(self):
+        self.assertEqual(self.masalah("PR: sebut 'Rekening a/n Klinik Senyum Sehat'."), [])
+        self.assertEqual(self.masalah("PR: transfer ke Rekening BCA 1234567890."), [])
+        self.assertEqual(self.masalah("Nyambung naik dari 90% ke 100% dibanding minggu lalu."), [])
+        # rekening yang berasal dari pesan pelanggan tetap ditolak; nomor HP tetap ditolak
+        self.assertTrue(self.masalah("Rekening BCA 1234567890 milik P3.", angka=("1234567890",)))
+        self.assertTrue(self.masalah("Rekening 081311112222."))
+        self.assertTrue(self.masalah("Rekening a/n Joko belum dicek."))
+        # persen salah di baris tabel/butir tetap tertangkap
+        self.assertTrue(any("fakta tertulis" in x for x in self.masalah("- Fakta: 90% (9/10), A")))
+
+    # Temuan 5: percakapan bersih dicocokkan sebagai angka utuh.
+    def test_bersih_bukan_substring(self):
+        t = draf_baik(self.h).replace("7 dari 12", "17 dari 120")
+        self.assertTrue(any("bersih" in x for x in self.masalah(teks=t)))
+
+    # Temuan 6: pembulatan setengah ke atas, sama dengan hitung manual.
+    def test_pembulatan_setengah_ke_atas(self):
+        _, h, _ = jalan_nilai("; ".join("P%d=%s" % (i, "nada" if i <= 3 else "lolos") for i in range(1, 17)))
+        self.assertEqual(h["lolos_persen"]["nada"], 81.3)  # 13/16 = 81,25
+        self.assertEqual(r.bulat1(-16.75), -16.8)
+        import random
+        acak = random.Random(11)
+        for _ in range(3000):
+            n = acak.randint(1, 400)
+            a = acak.randint(0, n)
+            harap = (Decimal(100 * a) / Decimal(n)).quantize(Decimal("0.1"), ROUND_HALF_UP)
+            self.assertEqual(r.persen(a, n), float(harap), (a, n))
+
+    # Temuan 7: checklist tidak bertentangan dengan baris tren wajib.
+    def test_checklist_tren_selaras(self):
+        sk = (RAKIT / "SKILL.md").read_text(encoding="utf-8")
+        self.assertFalse("Tren hanya ada bila rapor lama diberikan;" in sk)
+        self.assertIn("tetap selalu ada", sk)
+        self.assertLess(len(sk.splitlines()), 300)
+
+
+
+class Uji103c(unittest.TestCase):
+    """1.0.3 putaran 3: temuan pemeriksa independen berikutnya, satu tes per temuan."""
+
+    def setUp(self):
+        _, self.h, _ = jalan_nilai(MATRIKS_02, "--lama-jawaban", LAMA_02)
+
+    def masalah(self, teks, nama=()):
+        return r.cek_balasan(teks, self.h, nama, ())
+
+    def ganti_ringkasan(self, kalimat):
+        baris = draf_baik(self.h).splitlines()
+        baris[0] = kalimat
+        return "\n".join(baris)
+
+    # Temuan sedang: "x dari n" diikuti titik/koma tidak boleh dianggap belum tertulis.
+    def test_bersih_diikuti_titik_atau_koma(self):
+        for kal in ("**Rapor:** percakapan bersih 7 dari 12, nilai umum C.",
+                    "**Rapor:** 12 percakapan dinilai, percakapan bersih 7 dari 12.",
+                    "**Rapor:** bersih 7 dari 12 percakapan."):
+            self.assertFalse(any("bersih" in x for x in self.masalah(self.ganti_ringkasan(kal))), kal)
+        for salah in ("**Rapor:** bersih 7 dari 12,5 persen.", "**Rapor:** bersih 17 dari 120.",
+                      "**Rapor:** bersih 7 dari 120.", "**Rapor:** bersih 1,7 dari 12."):
+            self.assertTrue(any("bersih" in x for x in self.masalah(self.ganti_ringkasan(salah))), salah)
+
+    def test_rapor_lama_hitungan_diikuti_tanda_baca(self):
+        self.assertEqual(r.baca_lama_teks("Fakta: 10 dari 12."), {"fakta": 83.3})
+        self.assertEqual(r.baca_lama_teks("Konteks: 1 dari 2, nada: 1 dari 2 percakapan."), {"konteks": 50.0, "nada": 50.0})
+        self.assertEqual(r.baca_lama_teks("Fakta: 1 dari 2."), {"fakta": 50.0})
+        self.assertEqual(r.baca_lama_teks("Fakta: 1 dari 2,"), {"fakta": 50.0})
+        self.assertEqual(r.baca_lama_teks("Fakta: 1 dari 2 percakapan."), {"fakta": 50.0})
+        self.assertEqual(r.baca_lama_teks("Fakta = 90."), {"fakta": 90.0})
+        # desimal tetap tidak dipotong jadi hitungan
+        self.assertEqual(r.baca_lama_teks("Fakta: 1 dari 2,5 jam"), {}, )
+        self.assertTrue(r.RE_HITUNGAN.search("1 dari 2."))
+        self.assertTrue(r.RE_HITUNGAN.search("1 dari 2,"))
+        self.assertIsNone(r.RE_HITUNGAN.search("1 dari 2.5"))
+
+    # Temuan ringan: nama marketplace/layanan bukan nama pelanggan.
+    def test_merek_bukan_nama(self):
+        for kal in ("Apakah Shopee sudah mengirim?", "Keluhan Tokopedia (P4) soal ongkir.", "pesanan Lazada telat",
+                    "Apakah Gojek bisa antar?", "pelanggan Grab menunggu", "Apakah Bpjs diterima?"):
+            self.assertEqual(self.masalah(draf_baik(self.h, kal)), [], kal)
+        cs = r.parse_teks("---\nPelanggan: pesanan Shopee saya belum datang, dengan Gojek bisa?\nBot: bisa\n", set(), [])
+        self.assertEqual(r.nama_terdeteksi(cs), [])
+        # nama sungguhan tetap tertangkap
+        self.assertTrue(self.masalah(draf_baik(self.h, "Apakah Hendra jadi datang?")))
+
+    # Temuan ringan: nama tanpa sapaan ("Kak, ini Yuni", "dengan Dimas") terbaca otomatis dari tempelan.
+    def test_nama_ini_dan_dengan(self):
+        cs = r.parse_teks("---\nPelanggan: Kak, ini Yuni mau tanya stok\nBot: halo\n---\n"
+                          "Pelanggan: Saya bicara dengan Dimas kemarin\nBot: baik\n", set(), [])
+        nama = r.nama_terdeteksi(cs)
+        self.assertIn("Yuni", nama)
+        self.assertIn("Dimas", nama)
+        self.assertTrue(any("Yuni" in x for x in self.masalah(draf_baik(self.h, "Catatan: Yuni minta stok."), nama)))
+        self.assertNotIn("Harga", r.nama_terdeteksi(r.parse_teks("---\nPelanggan: ini Harga berapa\nBot: x\n", set(), [])))
+
+    # Temuan ringan: --nilai dari stdin ('-') dan berkas ('@berkas'), untuk daftar sangat panjang.
+    def test_nilai_stdin_dan_berkas(self):
+        besar = "; ".join("P%d=%s" % (i, "nada" if i % 4 == 0 else "lolos") for i in range(1, 12001))
+        self.assertGreater(len(besar.encode()), 131072)
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, "nilai.txt")
+            Path(f).write_text(besar, encoding="utf-8")
+            out = io.StringIO()
+            with redirect_stdout(out), redirect_stderr(io.StringIO()):
+                self.assertEqual(r.main(["--nilai", "@" + f, "--json"]), 0)
+            h = json.loads(out.getvalue())
+            self.assertEqual(h["dinilai"], 12000)
+            self.assertEqual(h["lolos_persen"]["nada"], 75.0)
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                self.assertEqual(r.main(["--nilai", "@" + os.path.join(d, "tidak-ada.txt")]), 2)
+        lama_stdin = sys.stdin
+        try:
+            sys.stdin = io.StringIO("P1=lolos\nP2=fakta\n")
+            out = io.StringIO()
+            with redirect_stdout(out), redirect_stderr(io.StringIO()):
+                self.assertEqual(r.main(["--nilai", "-", "--json"]), 0)
+            self.assertEqual(json.loads(out.getvalue())["lolos_persen"]["fakta"], 50.0)
+            sys.stdin = io.StringIO("")
+            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                self.assertEqual(r.main(["--nilai", "-", "--cek-balasan", "-"]), 2)
+        finally:
+            sys.stdin = lama_stdin
+        self.assertIn("--nilai @", (RAKIT / "SKILL.md").read_text(encoding="utf-8"))
+
+    # Temuan ringan: aturan/dokumen usang yang bertentangan.
+    def test_aturan_usang_hilang(self):
+        import re
+        ref = (RAKIT / "references/rubrik-dan-tahap.md").read_text(encoding="utf-8")
+        sk = (RAKIT / "SKILL.md").read_text(encoding="utf-8")
+        readme = (RAKIT / "README.md").read_text(encoding="utf-8")
+        self.assertNotIn("pelanggan A", ref)
+        self.assertIn("pelanggan di P3", ref)
+        self.assertIn("pelanggan di P3", sk)
+        self.assertNotIn("pelanggan A", sk)
+        self.assertEqual(len(re.findall(r"versi terkini", readme.split("Versi terkini:")[0])), 1)
+        self.assertIn("v1.0.3 (versi terkini", readme)
+        self.assertLess(len(sk.splitlines()), 300)
+        for nama in ("02-klinik-bulan2-rapor-lama.md", "03-konsultan-minggu1.md"):
+            teks = (RAKIT / "examples" / nama).read_text(encoding="utf-8")
+            if re.search(r"^\|([^|]*\|){4,}\s*$", teks, re.M):
+                self.assertIn("FORMAT LAMA", teks, nama)
+            self.assertNotIn("cek-privasi-openclaw", teks, nama)
+
+    def test_contoh_01_format_terkini(self):
+        teks = (RAKIT / "examples/01-skincare-minggu2.md").read_text(encoding="utf-8")
+        b = teks.split("<!-- awal balasan pertama -->", 1)[1].split("<!-- akhir balasan pertama -->", 1)[0].strip()
+        data = (RAKIT / "examples/data/01-skincare-minggu2.txt").read_text(encoding="utf-8")
+        cs = r.parse_teks(data, set(), [])
+        h = r.hitung(cs, "minggu2-4", {}, 700, [], [])
+        nomor = [m.group(0) for c in cs for _, t in c["turn"] for m in r.RE_HP.finditer(t)]
+        self.assertEqual(r.cek_balasan(b, h, r.nama_terdeteksi(cs), nomor), [])
+        self.assertTrue(h["semua_kriteria_sama_persen"])
+        self.assertIn("kebetulan sama persen", b)
+        self.assertIn("jangan menyalin angka dari contoh ini", teks)
+        self.assertNotIn("cek-privasi-openclaw", teks)
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

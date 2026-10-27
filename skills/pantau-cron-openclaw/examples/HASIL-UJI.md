@@ -48,3 +48,13 @@
 3. Di PENUTUP BAKU larang pertanyaan yang mengulang info pengguna (contoh Telegram: "hanya dua jadwal ini?") dan jaga "Catatan jujur" hanya sekali.
 4. Wajibkan perintah edit lengkap per job (tanpa "...") dan ganti frasa "dari toleransi 30 menit" dengan "dari jadwal (toleransi 30 menit)".
 5. Script: tolak atau abaikan ping bertanggal di masa depan (> sekarang + 5 menit).
+
+## Harapan uji ulang PC4 (versi 1.0.6, BELUM dijalankan)
+Kondisi bot uji kedua sesudah PC3 (sengaja dibiarkan, keputusan otomatis 110): kedua jadwal sudah memuat "Aturan penutup" terbaru, keduanya sudah ada di pantauan lokal, dan ada pengawas dobel: satu set ke obrolan uji ini (dipasang saat PC3) dan satu set lama ke topik lain. Pesan uji sama dengan PC3 (dikirim di obrolan yang sama), lalu "ya", lalu "Job mana yang terlambat hari ini?". Yang diharapkan, sesuai SKILL.md 1.0.6:
+- Rencana menyebut kedua set dengan label berbeda ("obrolan ini" dan "topik lain"; bila ada set ketiga ke tujuan berbeda lagi: "topik lain lagi") dan memakai varian **rapikan**: pakai set di obrolan ini, hapus set ke topik lain; balas "biarkan" = tidak ada yang dihapus. Tidak ada pengawas ketiga yang dipasang.
+- Kedua jadwal disebut "sudah ada di pantauan sejak <tanggal>" dan "sudah ada langkah lapor selesai terbaru, tidak saya ubah". Karena pesan jadwal sudah memuat teks terbaru, riwayat dan hitungan lama dipertahankan: **tidak ada** kalimat "hitungannya saya mulai ulang" (atau sejenisnya) dan tidak ada `--mulai-ulang`.
+- Penutup: tanpa pertanyaan (a), karena pemilik sudah menyebut nama dan jam kedua jadwal; "Catatan jujur" sekali.
+- Karena tidak ada pengawas yang dipasang atau dipindah (bawaan "ya" = rapikan), baris "Uji peringatan" **tidak ada**, dan baris "Tujuan kabar" memakai varian "obrolan ini (pengawas yang sudah ada di sini)".
+- Sesudah "ya": tidak ada pengawas baru yang dipasang; daftar dibaca ulang, set di obrolan ini terlihat utuh, baru set ke topik lain dihapus, lalu daftar dibaca ulang lagi sebelum menulis "sudah terhapus". Hasil akhir: tinggal satu set. Daftar tidak terbaca utuh -> persis "Daftar jadwal OpenClaw Anda tidak terbaca utuh, jadi saya tidak mengubah apa pun."
+- Galat bukan soal izin -> baca ulang daftar dulu, sebelum mendaftarkan apa pun ke pantauan lokal.
+Acuan lulus tetap: dengan skill >= 8 dan selisih >= 1,5.

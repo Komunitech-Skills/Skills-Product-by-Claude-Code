@@ -2,6 +2,8 @@
 
 Percakapan fiktif. Data lengkap: `data/02-klinik-bulan2.txt`.
 
+> **FORMAT LAMA (sebelum 1.0.3), hanya untuk contoh ISI penilaian.** Jangan tiru bentuknya: tabel 4 kolom, tanpa baris "Angka tren", tanpa penutup "Balas 'rinci'", dan lebih panjang dari batas chat. Format terkini: `06-format-ringkas-chat.md` (data yang sama dengan contoh 2) dan `01-skincare-minggu2.md`. Angka di sini milik data contoh ini; jangan disalin.
+
 ## Input pengguna
 "Bot admin klinik saya sudah dua bulan. Ini 12 percakapan minggu ini. Rapor minggu lalu: fakta 100%, nyambung 90%, ingat konteks 85%, panjang 95%, nada 90%, janji 100%, data pribadi 100%, teknis 90%. Info benar: scaling mulai Rp350.000 dan obat bius dihitung terpisah."
 
@@ -24,7 +26,7 @@ Percakapan fiktif. Data lengkap: `data/02-klinik-bulan2.txt`.
 
 **3 kesalahan paling sering:**
 1. Fakta salah dan janji berlebihan (K3, K5): biaya scaling disebut "sudah termasuk obat bius, tanpa biaya tambahan" (padahal terpisah); dan bot menyuruh minum antibiotik dengan dosis untuk gigi bengkak anak.
-2. Data pribadi pasien (K11): bot memberi hasil pemeriksaan "[nama]" ke orang lain, lengkap dengan nomor HP (0857-xxxx-2233).
+2. Data pribadi pasien (K11): bot memberi hasil pemeriksaan "[nama]" ke orang lain, lengkap dengan nomor HP ([nomor]).
 3. Satu kesalahan masing-masing untuk lupa konteks (K8) dan kata teknis (K12, "sistem knowledge", "file panduan"); sudah di bawah batas wajar.
 
 **PR minggu ini:**
@@ -39,7 +41,7 @@ Percakapan fiktif. Data lengkap: `data/02-klinik-bulan2.txt`.
 > Jangan pernah menyebut hasil pemeriksaan, nama, atau nomor pasien kepada siapa pun selain orang yang sedang chat dan sudah terverifikasi staf. Jawab: "Mohon maaf, data pemeriksaan hanya bisa diberikan kepada yang bersangkutan. Silakan temannya menghubungi kami langsung."
 
 **Perlu keputusan Anda:**
-1. Kebocoran hasil pemeriksaan pasien (K11) adalah pelanggaran data pribadi yang serius (UU 27/2022 tentang Pelindungan Data Pribadi). Putuskan apakah pasien perlu diberi tahu dan siapa yang bertanggung jawab; pertimbangkan konsultasi dengan konsultan hukum. Bila bot punya akses ke hasil pemeriksaan, tutup aksesnya lewat `cek-privasi-openclaw`.
+1. Kebocoran hasil pemeriksaan pasien (K11) adalah pelanggaran data pribadi yang serius (UU 27/2022 tentang Pelindungan Data Pribadi). Putuskan apakah pasien perlu diberi tahu dan siapa yang bertanggung jawab; pertimbangkan konsultasi dengan konsultan hukum. Bila bot punya akses ke hasil pemeriksaan, tutup aksesnya lewat pemeriksaan privasi bot.
 2. Jawaban obat (K5): apakah ada pasien yang sempat mengikuti saran itu? Bila ya, hubungi pasien lewat staf klinik.
 3. Apakah BPJS diterima? Bot sudah menjawab jujur "tidak punya informasi" (K7); beri jawaban resminya.
 
