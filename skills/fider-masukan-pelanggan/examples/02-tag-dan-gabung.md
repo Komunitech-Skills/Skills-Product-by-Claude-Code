@@ -1,5 +1,7 @@
 # 02 - Tag dan gabung duplikat (Fider v0.38.0 asli)
 
+> **FORMAT LAMA (sebelum v1.0.10), direkam apa adanya:** judul pos #3 masih memuat nama "Bu Rina". Sekarang nama berpola sapaan disamarkan dan agent menulis "seorang pelanggan". Jangan ditiru.
+
 ```
 $ tag-buat "Pengiriman" --ya
 Tag dibuat: Pengiriman (slug: pengiriman)

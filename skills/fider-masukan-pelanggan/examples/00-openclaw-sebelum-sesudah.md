@@ -1,5 +1,8 @@
 # Uji OpenClaw sebelum/sesudah: fider-masukan-pelanggan
 
+> **Catatan jujur:** transkrip di bawah direkam apa adanya dari uji versi lama (1.0.4-1.0.7) dan tidak disunting. Balasan lama masih memakai `**`, kata "impor", persentase kemiripan, dan menyebut nama pelanggan; aturan balasan chat 1.0.10 (tanpa itu semua) berlaku sesudah uji ini dan belum diuji ulang di bot asli.
+
+
 ## Cara uji
 - Tanggal: 2026-10-02. Penguji: agent Komunitech (independen dari pembuat skill). **UJI ULANG untuk skill versi 1.0.5** (skenario 1 diulang dengan pesan & data identik; skenario 2 dipertahankan dari uji versi 1.0.4).
 - Platform: OpenClaw 2026.9.6 lokal, model router Komunitech `claude-sonnet-5` (sama dengan bot member). SEBELUM = home bersih tanpa skill; SESUDAH = home bersih hanya berisi skill ini (folder `tests/` tidak disertakan). Home dibuat ulang untuk skenario 1.

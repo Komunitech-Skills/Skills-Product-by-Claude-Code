@@ -10,6 +10,7 @@ import io
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import threading
@@ -539,6 +540,99 @@ class UjiUnit(unittest.TestCase):
         self.assertEqual(fider.slug_tag("Fitur Baru!"), "fitur-baru")
         with self.assertRaises(fider.Gagal):
             fider.nomor_valid("1; DROP")
+
+class UjiAturanBalasan(unittest.TestCase):
+    def setUp(self):
+        d = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.skill = open(os.path.join(d, "SKILL.md"), encoding="utf-8").read()
+        self.readme = open(os.path.join(d, "README.md"), encoding="utf-8").read()
+        self.ex = open(os.path.join(d, "examples", "00-openclaw-sebelum-sesudah.md"), encoding="utf-8").read()
+
+    def test_aturan_seorang_pelanggan(self):
+        self.assertIn("seorang pelanggan", self.skill)
+        self.assertIn("JANGAN mengulang nama", self.skill)
+
+    def test_aturan_tanpa_persen_karangan(self):
+        self.assertNotIn("kemiripan 100%", self.readme)
+        self.assertNotIn("100% mirip", self.readme)
+        self.assertNotIn("100% mirip", self.readme)
+
+    def test_aturan_tanpa_bold_dan_impor_di_chat(self):
+        self.assertIn("kata \"impor\"", self.skill)
+        self.assertIn("`**`", self.skill)
+
+    def test_contoh_sesudah_tanpa_nama(self):
+        # transkrip uji lama direkam apa adanya; yang dijaga: catatan jujur ada di awal berkas
+        self.assertIn("tidak disunting", self.ex[:1200])
+
+    def test_tanpa_perintah_terminal_untuk_pengguna(self):
+        self.assertNotIn("ketik sendiri", self.skill)
+        self.assertNotIn("minta pengguna menjalankan", self.skill)
+        self.assertNotIn("satu perintah yang memang harus diketik", self.skill)
+
+    def test_pratinjau_script_tanpa_impor_dan_persen(self):
+        src = open(fider.__file__, encoding="utf-8").read()
+        self.assertNotIn("RENCANA IMPOR", src)
+        self.assertNotIn("m['skor'] * 100", src)
+        self.assertIn("disusun ulang", self.skill)
+
+    def test_penomoran_aturan_berurutan(self):
+        import re
+        nomor = [int(n) for n in re.findall(r"^(\d+)\. \*\*", self.skill.split("## Kapan digunakan")[0], re.M)]
+        self.assertEqual(nomor, sorted(nomor))
+
+    def test_jumlah_uji_di_dokumen_sinkron(self):
+        import re
+        src = open(__file__, encoding="utf-8").read()
+        n = len(re.findall(r"^    def test_", src, re.M))
+        self.assertIn("%d uji regresi" % n, self.skill)
+
+    def test_readme_tanpa_impor_di_contoh(self):
+        blok = self.readme.split("```")[1]
+        self.assertNotIn("IMPOR", blok)
+
+    def test_batasan_tanpa_aturan_lama_galat_apa_adanya(self):
+        self.assertNotIn("ditulis apa adanya ke pengguna", self.skill)
+        self.assertNotIn("Jangan meminta `simpan-kunci`", self.skill)
+        self.assertNotIn("Hanya bila script menjawab `GALAT` kunci belum ada (kode 3)", self.skill)
+        self.assertIn("UNTUK AGEN SAJA", self.skill)
+        self.assertIn("kunci ditolak", self.skill.lower())
+
+    def test_galat_kunci_tanpa_perintah_untuk_pengguna(self):
+        src = open(fider.__file__, encoding="utf-8").read()
+        self.assertNotIn("Jalankan SENDIRI", src)
+        env = {k: v for k, v in os.environ.items() if not k.startswith("FIDER_")}
+        env["HOME"] = env["USERPROFILE"] = self.tmp_kosong()
+        r = subprocess.run([sys.executable, fider.__file__, "daftar", "--url", "http://127.0.0.1:9"],
+                           capture_output=True, text=True, env=env)
+        self.assertEqual(r.returncode, fider.K_KUNCI)
+        self.assertIn("UNTUK AGEN SAJA", r.stderr)
+
+    def tmp_kosong(self):
+        import tempfile
+        return tempfile.mkdtemp()
+
+    def test_pratinjau_terlihat_tanpa_opsi_teknis(self):
+        for baris in (fider.PRATINJAU + "\n" + "x").splitlines():
+            if "--" in baris:
+                self.assertIn("UNTUK AGEN SAJA", baris)
+
+    def test_contoh_pratinjau_tanpa_nama_pelanggan(self):
+        import re, glob
+        d = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        pola = re.compile(r"\b(Pak|Bu|Ibu|Bapak|Kak|Mas|Mbak)\s+[A-Z][a-z]+")
+        self.assertIsNone(pola.search(self.readme), pola.search(self.readme))
+        for f in glob.glob(os.path.join(d, "examples", "*.md")):
+            t = open(f, encoding="utf-8").read()
+            if "FORMAT LAMA" in t[:600] or "tidak disunting" in t[:1200]:
+                continue
+            m = pola.search(t)
+            self.assertIsNone(m, (f, m and m.group(0)))
+
+    def test_skill_ringkas_dan_versi_sinkron(self):
+        self.assertLess(len(self.skill.splitlines()), 300)
+        self.assertIn("Versi " + fider.VERSI, self.skill)
+        self.assertIn("**" + fider.VERSI + "**", self.readme)
 
 
 if __name__ == "__main__":

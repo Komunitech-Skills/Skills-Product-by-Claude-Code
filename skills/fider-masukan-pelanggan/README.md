@@ -27,14 +27,14 @@ Diuji AI penguji independen di OpenClaw (dengan server Fider tiruan berisi data 
 
 **Sesudah:** ketik *"Masukkan catatan WA ini ke papan saran."*
 ```
-RENCANA IMPOR dari catatan.txt: 4 butir
-1. [BUAT  ] Pelanggan minta bisa bayar pakai QRIS (Bu Rina [nomor disembunyikan])
-      1 nomor HP/email disembunyikan (papan Fider biasanya publik)
+RENCANA MASUKKAN KE PAPAN dari catatan.txt: 4 butir
+1. [BUAT  ] Seorang pelanggan minta bisa bayar pakai QRIS
+      (nama dan nomor HP dari catatan tidak ikut ditulis; papan Fider biasanya publik)
 2. [BUAT  ] Tolong ada notifikasi WA kalau pesanan sudah dikirim, minta 3 orang
 3. [BUAT  ] Ongkir ke luar Jawa sering salah hitung. Kontak: [email disembunyikan]
 4. [TAHAN] Tambah pembayaran QRIS
-      mirip dengan #1 "Tambah pembayaran QRIS" (kemiripan 100%)
-PRATINJAU - BELUM ADA YANG DITULIS ke Fider. ...
+      MIRIP dengan #1 "Tambah pembayaran QRIS" (hanya petunjuk) - ditahan: tanyakan pemilik
+PRATINJAU - BELUM ADA YANG DITULIS ke Fider. Tunggu persetujuan Anda dulu.
 ```
 Balas "ya" → dibuat. Lalu: *"Gabungkan #3 ke #1"*, *"Apa yang paling banyak disuka minggu ini?"*, *"#5 sudah selesai, buatkan kabarnya."* (Contoh dengan data fiktif, dipersingkat dari format keluaran skill. Keluaran hasil uji, termasuk dari Fider v0.38.0 asli yang dijalankan pembuat skill, ada di folder `examples/`.)
 
@@ -78,4 +78,4 @@ Catatan jujur: sesudah uji itu skill diperbaiki agar mencari dan membaca kunci s
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.9**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.10**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

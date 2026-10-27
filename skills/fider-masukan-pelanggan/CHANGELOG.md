@@ -2,6 +2,9 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.0.10 (2026-10-27)
+- Versi dinaikkan (patch) dari 1.0.9 yang sudah dirilis. Dari pra-cek Telegram: balasan memakai "seorang pelanggan" (tidak mengulang nama/nomor dari catatan), duplikat ditulis "mirip dengan #nomor" tanpa persentase karangan, tanpa `**` dan tanpa kata "impor" di chat. Contoh/README yang bertentangan diperbaiki; uji regresi ditambah (59). Susulan: agent tidak lagi menyodorkan perintah terminal ke pengguna; pratinjau script tidak memuat kata "impor"/persentase dan disusun ulang untuk chat; penomoran aturan dirapikan; transkrip contoh dikembalikan apa adanya dengan catatan. Susulan verifikator: GALAT kunci belum ada/ditolak (kode 3) kini memuat penanda "UNTUK AGEN SAJA" tanpa perintah untuk pengguna, dan Batasan/Persiapan 3/aturan 3 diselaraskan (panduan atau teknisi, tanpa perintah); pratinjau script tanpa opsi teknis di bagian terlihat (`--ya`/`--tetap` hanya di baris agen); contoh README memakai "seorang pelanggan"; contoh 01/02 ditandai format lama.
+
 ## Catatan revisi 1.0.9 (2026-10-13)
 - Balasan ke pengguna tidak lagi memakai kata teknis internal (token, gateway, nama perintah atau berkas konfigurasi); diganti bahasa sehari-hari seperti "kunci akses", "bot", "jadwal", "pengaturan". Perintah teknis hanya ditampilkan bila pengguna memintanya.
 - Rujukan ke panduan Fider di bagian batasan disederhanakan (nama berkas disebut hanya bila pengguna perlu membukanya). Konstanta versi di script disamakan dengan katalog.
