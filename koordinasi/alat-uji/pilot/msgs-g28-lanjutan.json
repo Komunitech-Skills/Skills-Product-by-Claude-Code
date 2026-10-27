@@ -2,7 +2,7 @@
  {
   "skill": "kasir-lokal",
   "sisi": "sebelum",
-  "topic": null,
+  "topic": 2279,
   "text": "ya",
   "balas": true,
   "gel": "G28-lanjutan",
@@ -11,7 +11,7 @@
  {
   "skill": "kasir-lokal",
   "sisi": "sesudah",
-  "topic": null,
+  "topic": 2280,
   "text": "ya",
   "balas": true,
   "gel": "G28-lanjutan",

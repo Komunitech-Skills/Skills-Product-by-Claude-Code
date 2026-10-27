@@ -1,12 +1,10 @@
 {
- "rekap-penjualan-csv|sebelum": null,
- "rekap-penjualan-csv|sesudah": null,
- "kasir-lokal|sebelum": null,
- "kasir-lokal|sesudah": null,
- "absensi-lokal|sebelum": null,
- "absensi-lokal|sesudah": null,
- "fider-masukan-pelanggan|sebelum": null,
- "fider-masukan-pelanggan|sesudah": null,
- "kanboard-papan-kerja|sebelum": null,
- "kanboard-papan-kerja|sesudah": null
+ "rekap-penjualan-csv|sebelum": 2277,
+ "rekap-penjualan-csv|sesudah": 2278,
+ "kasir-lokal|sebelum": 2279,
+ "kasir-lokal|sesudah": 2280,
+ "fider-masukan-pelanggan|sebelum": 2281,
+ "fider-masukan-pelanggan|sesudah": 2282,
+ "kanboard-papan-kerja|sebelum": 2283,
+ "kanboard-papan-kerja|sesudah": 2284
 }

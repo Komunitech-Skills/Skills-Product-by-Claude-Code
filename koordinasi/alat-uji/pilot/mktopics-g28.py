@@ -14,7 +14,7 @@ V = {
     "rekap-penjualan-csv": "1.2.7",
     "kasir-lokal": "1.1.10",
     "absensi-lokal": "1.0.9",
-    "fider-masukan-pelanggan": "1.0.9",
+    "fider-masukan-pelanggan": "1.0.10",
     "kanboard-papan-kerja": "1.0.7",
 }
 sk = sys.argv[1:] or list(V)
