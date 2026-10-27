@@ -3,6 +3,38 @@
 Catatan teknis per versi (dipindah dari README agar halaman pembeli ringkas).
 
 ## Riwayat versi
+- **Catatan revisi 1.0.12 (2026-10-27)** — tindak lanjut uji Telegram G25 (17 Okt: total, sisa koin,
+  dan PPh benar, tetapi rincian per transaksi yang ditulis bot mengurangkan fee dua kali dan memakai
+  istilah Inggris). Draf putaran sebelumnya hilang saat kontainer di-reset; revisi ini disusun ulang
+  dari 1.0.11. (1) `scripts/hitung_pl_jurnal.py --keluaran teks` kini **menyusun teks chat sendiri**
+  (JSON: `teks_bagian`): "hasil jual bersih (sudah dipotong fee) − modal = untung", sisa koin, PPh per
+  transaksi, dua kemungkinan untung setelah pajak, tanpa tabel/istilah Inggris; agent diminta mengirim
+  apa adanya. Kolom opsional `platform` per baris (mis. satu jual di bursa luar negeri) — data G25
+  kini keluar Rp982.910 / PPh Rp420.786 / Rp562.124 / Rp676.910 dalam satu pesan (2.052 karakter;
+  dikunci di `tests/data/g25-teks.txt`). (2) Hitungan memakai pecahan eksak (tanpa float), berapa
+  pun digit desimalnya. (3) Jumlah koin "12.000" dibaca dua belas ribu hanya bila kolom jumlah koin
+  bergaya Indonesia; selain itu dibaca 12 dan diberi catatan "Perhatian" (angka tanpa pemisah +
+  terbilang, mis. "dibaca 1,5 koin, satu koma lima"), untung setelah pajak ditahan. (4) Harga/biaya
+  "0.152", ".152", "Rp. 850", "rp850", "IDR 850" dibaca persis; biaya di bawah Rp1 yang ditulis
+  dengan "Rp" diberi catatan "periksa nominal"; nan/inf/"1_000"/format Rupiah campur aduk ditolak.
+  (5) Beli yang ditolak untuk koin yang kemudian dijual, jual yang ditolak, tanggal tak terbaca, atau
+  jual melebihi stok → `status_hasil: "BELUM LENGKAP"`; ada baris ditolak/ragu → PPh disebut
+  "sementara" (bukan "tetap"). (6) Teks > 3.800 karakter: mode ringkas hanya bila memang lebih pendek,
+  lalu dipecah di batas baris dengan penanda "––– kirim sebagai pesan terpisah: bagian N dari M –––".
+  (7) Kesalahan tak terduga/pilihan perintah salah → pesan biasa, tanpa traceback. (8) Kalimat PPN:
+  "Penyerahan aset kripto tidak dikenai PPN (Pasal 2 ayat (1))" PMK 50/2025 (dicek 27 Okt 2026 ke
+  artikel DJP); panduan paket VIP menulis "Auto-trading: tidak termasuk paket ini" tanpa menyebut nama
+  skill lain. (9) Putaran 2 (temuan pemeriksa independen): baris ditolak yang aksinya tidak terbaca
+  ("Buy", "pembelian", kosong) kini selalu membuat hasil BELUM LENGKAP (bisa beli atau jual); beli
+  dengan kolom koin kosong membuat BELUM LENGKAP bila ada penjualan sesudahnya; kalimat lama "(tidak
+  memengaruhi untung/rugi)" diganti "tidak ada penjualan sesudahnya yang terpengaruh; sisa koin bisa
+  kurang". Rupiah dengan spasi ribuan ("1 500 000", "Rp 1 500 000") kembali terbaca seperti 1.0.11
+  (sempat ditolak di draf awal 1.0.12). Harga/biaya "1,500" (dibaca Rp1,5) kini diberi catatan
+  "Perhatian" dan untung setelah pajak ditahan. Persen untung tidak ditampilkan bila modal atau
+  untungnya Rp0 setelah dibulatkan. Baris tunggal > 3.800 karakter dipotong di spasi, bukan di tengah
+  kata. Saran "bila maksudnya RpX" untuk biaya di bawah Rp1 hanya muncul bila ada 3 digit di belakang
+  pemisah (mis. "Rp 0.152"). Pilihan perintah salah dengan `--keluaran teks` kini keluar teks biasa.
+  Tes regresi 133–147 ditambahkan. **Belum diuji ulang di bot Telegram.**
 - **Catatan revisi 1.0.11 (2026-10-15)** — tindak lanjut verifikasi rujukan aturan (dicek
   15 Oktober 2026 ke pajak.go.id & ojk.go.id): (1) **pajak kripto dibatasi tanggal**: tarif
   PMK 50/2025 (0,21% / 1% atas nilai jual) kini hanya dipakai `scripts/hitung_pl_jurnal.py` untuk

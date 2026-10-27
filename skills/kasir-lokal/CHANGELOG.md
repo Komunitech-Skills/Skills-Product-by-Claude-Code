@@ -2,6 +2,21 @@
 
 Catatan teknis per versi.
 
+## Catatan revisi 1.1.13 (2026-10-27)
+Uji Telegram gelombang 29 pada 1.1.12: 6,5 → 7,5 (BELUM); satu pesan internal ("jalankan dengan argumen identik plus --ya") bocor lagi setelah balasan "ya". `CATATAN_PRATINJAU` kini diawali penanda "CATATAN INTERNAL, jangan dikutip" dan tanpa kalimat perintah. Angka tidak diubah. BELUM diuji ulang di bot asli.
+
+## Catatan revisi 1.1.12 (2026-10-27)
+Memperbaiki temuan verifikator atas 1.1.11. BELUM diuji ulang di bot Telegram asli; hanya uji otomatis. Angka tidak diubah.
+- `kasir.py`: `CATATAN_PRATINJAU` dan catatan pemakaian pertama ditulis netral (tanpa "setuju" dan tanpa kalimat "jalankan perintah sama persis + --ya") karena catatan itu dikirim di setiap pratinjau dan bisa ditiru model.
+- SKILL.md: aturan keamanan poin 2, langkah A.3, dan alur penjualan tidak lagi memuat kalimat perintah yang bisa disalin. Balasan setelah "ya" = `teks` (struk sudah di dalamnya); `struk_teks` hanya bila `teks` tidak memuatnya, tidak dua kali.
+- Uji baru: `test_120` (varian frasa di SKILL.md), `test_121` (catatan_agent bebas frasa), `test_122` (struk tidak dua kali). Versi 1.1.12 di script dan dokumen. Kelas `UjiV1111` (9 uji). Total 116 uji di `uji_regresi.py` (ditambah 7 di `uji_rekap_nota.py`).
+
+## Catatan revisi 1.1.11 (2026-10-27)
+Perbaikan dari uji bot Telegram gelombang 28 pada 1.1.10 (skor dengan skill 7,5; tanpa skill 6,5). Angka benar dan tidak diubah (subtotal 39.000, diskon 3.900, total 35.100, kembalian 64.900). Yang bocor: saat pemilik membalas "ya", bot menulis satu pesan terpisah berisi narasi proses dan opsi perintah (campuran bahasa Inggris) ke chat. Versi ini BELUM diuji ulang di bot Telegram asli; yang sudah dijalankan hanya uji otomatis.
+- SKILL.md, bagian "Cara bicara", poin 6 baru: setelah pemilik membalas "ya", penyimpanan dikerjakan diam-diam dan satu-satunya balasan adalah `teks` hasil dan `struk_teks`. Kalimat tentang perintah, opsi, persetujuan, proses, atau instruksi kerja tidak pernah ditulis ke chat. Aturannya ditulis netral, tanpa mengutip kalimat contoh yang bisa ditiru model.
+- SKILL.md langkah A.3: "hasil singkat" diganti "hanya hasilnya (`teks` + `struk_teks`)" agar tidak bertentangan dengan poin 6.
+- Ditambah uji regresi `UjiV1111` (6 uji): aturan ada, SKILL.md tanpa kalimat bocor yang bisa disalin dan tanpa aturan lama yang bertentangan, poin baru tanpa opsi teknis, hasil simpan tanpa bahasa proses, versi dan dokumen sama. Total 113 uji di `uji_regresi.py` (ditambah 7 di `uji_rekap_nota.py`).
+
 ## Catatan revisi 1.1.10 (2026-10-26)
 Memperbaiki temuan verifikator independen atas draf 1.1.9 (1.1.9 tidak pernah dirilis; isinya tetap tercatat di bawah). Versi ini BELUM diuji ulang di bot Telegram asli; yang sudah dijalankan hanya uji otomatis. Angka tidak diubah.
 - Galat `error` yang masih memuat nama perintah dibersihkan: "Kasir belum dibuka" (`kas`) dan "Kasir sudah dibuka" (`buka-kasir` dua kali) kini berbahasa awam; petunjuk perintahnya pindah ke `catatan_agent`.

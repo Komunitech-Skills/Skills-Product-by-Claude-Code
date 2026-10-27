@@ -23,7 +23,7 @@ Member VIP dan pengguna OpenClaw yang sudah punya beberapa laporan/jadwal otomat
 |---|---|
 | Baru sadar laporan mati saat dibutuhkan, berhari-hari kemudian. Asisten tanpa skill hanya menjawab "sudah terpasang dan aktif" tanpa bukti, dan tidak ada pengawas bagi jadwal yang hilang | Daftar jadwal yang dipantau, satu langkah "lapor selesai" di akhir tiap laporan, pengawas siap salin, dan peringatan Telegram hanya saat ada yang terlambat atau hilang |
 
-Versi 1.0.5. Laporan pantauan memisahkan blok **BERMASALAH** (HILANG/TERLAMBAT) dan blok **OK**.
+Versi 1.0.6. Laporan pantauan memisahkan blok **BERMASALAH** (HILANG/TERLAMBAT) dan blok **OK**.
 
 ## Contoh isi peringatan (keluaran nyata dari uji)
 Data contoh fiktif (Toko Bangunan Sinar Jaya), uji OpenClaw 12 Okt 2026; teks ini yang diteruskan ke Telegram (`examples/02-job-mana-yang-terlambat-hari-ini.md`):
@@ -70,6 +70,8 @@ Uji sebelumnya: 12 Okt 2026, tanpa skill **4** → dengan skill **8** (daftar 3 
 
 Uji ulang di bot OpenClaw asli (grup uji internal Komunitech, 17 Okt 2026, versi 1.0.5, hanya sisi dengan skill, pesan sama dengan uji 16 Okt): skor dengan skill **7,5** (tanpa skill 4 dari uji 12 Okt dengan pesan yang sedikit berbeda) — **belum lulus acuan kami**. Perbaikan versi 1.0.5 terbukti di bot asli: rencana menyebut uji jalan-sekali sebelum memasang, kedua laporan jalan sekali dan isinya sampai utuh ke grup (tanpa kalimat penutup yang menggantikan isi), laporan penutup sampai utuh, dan jawaban "job mana yang terlambat hari ini" benar. Yang belum: pengawas lama yang dipasang dari obrolan lain tidak ditawarkan untuk diganti, sehingga ada dua pengawas tiap jam dan dua ringkasan pagi; peringatan bisa masuk ke obrolan lama. Diperbaiki di versi berikutnya lalu diuji ulang.
 
+Versi 1.0.6 (27 Okt 2026) kini mengenali pengawas yang sudah ada dan memakai, memindahkan, atau merapikannya agar tinggal satu (tidak dobel); perbaikan ini belum diuji ulang di bot.
+
 ## FAQ
 **1. Apakah ini memata-matai komputer saya atau karyawan?**
 Tidak. Skill hanya mencatat "jadwal X melapor selesai pukul sekian" di komputer Anda. Ia tidak membaca layar, pesan, atau file, dan menolak dipakai untuk mengawasi orang lain diam-diam.
@@ -85,7 +87,8 @@ Bisa. Zona WIB, WITA, WIT didukung, dan jadwal otomatis seperti "tanggal 1 tiap 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.5**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.6**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
 
+- **1.0.6** -- (1) Pengawas yang sudah ada dikenali: Anda memilih memakai yang lama atau memindahkannya ke obrolan ini, tanpa pengawas dobel; riwayat pantauan tetap. (2) Jadwal berupa perintah diubah tanpa menyentuh berkas Anda, perintah lamanya tetap utuh. (3) Bila daftar jadwal tidak terbaca utuh, tidak ada yang diubah. (4) Pertanyaan penutup tidak lagi menanyakan hal yang sudah Anda sebut. (5) Berhenti memantau: hanya yang dipasang pantauan ini yang dibuang, dan dicek ulang sebelum bilang "sudah dihapus"; jadwal yang lapor selesainya ada di perintah buatan Anda tetap jalan tanpa galat dan tanpa pesan; bila nanti diawasi lagi, hitungannya mulai dari saat itu (tanpa peringatan palsu). (6) Pengawas yang belum lengkap (mis. hanya tiap jam di obrolan ini) dilengkapi, tidak dobel. Belum diuji ulang di bot.
 - **1.0.5** -- Perbaikan dari uji ulang di bot Telegram: (1) laporan jadwal tidak lagi tertimpa kalimat penutup (isi laporan wajib tetap utuh, lapor selesai jalan diam-diam); (2) rencana sebelum Anda setuju kini selalu menyebut bahwa tiap jadwal dijalankan sekali untuk uji; (3) pantauan lama yang tidak Anda minta ditawarkan untuk dihapus; (4) asisten hanya membaca berkas skill dan data pantauan, tidak membuka catatan harian Anda. Belum diuji ulang di bot.
 - **1.0.4** -- Satu "ya" sudah cukup memasang seluruh rencana, lalu hasilnya diperiksa ulang dari daftar jadwal OpenClaw.

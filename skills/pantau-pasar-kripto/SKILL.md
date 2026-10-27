@@ -124,26 +124,30 @@ description: Pantau harga kripto (BTC/ETH/SOL/dll) terhadap ambang % atau harga 
 ### D. Jurnal trading (rapikan + hitung P/L)
 1. Jurnal member: `kripto/JURNAL.csv` (format `templates/JURNAL.csv`). Kolom `alasan_rencana`
    & `tinjau_ulang_syarat` milik member -- jangan diisi opini.
-2. Jalankan (JSON dari stdout; file hasil, bila perlu, di `kripto/`, bukan `/tmp`):
+2. Jalankan -- **teks chat siap kirim** dari script (v1.0.12; file hasil, bila perlu, di `kripto/`):
    ```bash
-   python3 <folder-skill-ini>/scripts/hitung_pl_jurnal.py --jurnal kripto/JURNAL.csv \
+   python3 <folder-skill-ini>/scripts/hitung_pl_jurnal.py --jurnal kripto/JURNAL.csv --keluaran teks \
      [--platform dalam-negeri|luar-negeri] [--periode bulan-ini|tahun-ini] [--hari-ini YYYY-MM-DD]
    ```
-3. Tampilkan `realized_per_koin`, `total_realized_pl`, `posisi_tersisa` apa adanya -- jangan
-   dihitung ulang manual (FIFO sudah di script). `baris_bermasalah` → minta member memperbaiki.
-   `cek_biaya`/`cek_biaya_beli_vs_jual` → tandai baris (tanggal, koin, sisi, persen biaya) dan
-   minta dicek ke riwayat bursa; jangan menebak sebabnya. `tinjau_ulang_jatuh_tempo` → kutip
-   persis tulisan member.
+   Transaksi di bursa berbeda → kolom opsional `platform` per baris (`dalam-negeri`/`luar-negeri`),
+   mis. jual ETH di Binance = `luar-negeri`. Tanpa `--keluaran teks` keluar JSON (field sama + `teks_bagian`).
+3. **Kirim teks script APA ADANYA** -- jangan menulis ulang rincian, persamaan, atau angka (FIFO, fee,
+   persen, pajak sudah dihitung script; tulisan ulang agent pernah mengurangkan fee dua kali). Boleh
+   menambah 1 kalimat pembuka. Teks panjang sudah dipecah script: baris
+   `––– kirim sebagai pesan terpisah: bagian N dari M –––` = kirim tiap bagian sebagai pesan sendiri
+   (baris penanda itu tidak ikut dikirim). Hasil `BELUM LENGKAP` / catatan `Perhatian` (cara angka dibaca,
+   "periksa nominal", baris ditolak, biaya janggal) → minta member memperbaiki baris itu lalu hitung ulang;
+   jangan menebak maksudnya. `tinjau_ulang_jatuh_tempo` dikutip persis tulisan member.
 4. **Pajak (info, bukan nasihat) -- angka HANYA dari script; jangan menghitung pajak sendiri.**
-   Kutip `estimasi_pajak` (`ringkasan_teks`, `per_transaksi_jual`, `total_estimasi_pph`). Dasar
-   (PMK 50/2025, sejak 1 Agustus 2025, `references/regulasi.md` §4): PPh Pasal 22 final dipungut
+   Dasar (PMK 50/2025, sejak 1 Agustus 2025, `references/regulasi.md` §4): PPh Pasal 22 final dipungut
    dari penjual, basis = **nilai transaksi JUAL** saja; 0,21% di PAKD dalam negeri, 1% di bursa
-   luar negeri; PPN tidak dipungut. Sebut asumsi platform. Tarif ini hanya untuk jual **sejak
+   luar negeri (wajib disetor sendiri bila bursa itu belum memungut); penyerahan aset kripto
+   tidak dikenai PPN (Pasal 2 ayat (1)). Sebut asumsi platform. Tarif ini hanya untuk jual **sejak
    1 Agustus 2025**; jual sebelumnya (aturan lama PMK 68/PMK.03/2022) tidak diestimasi script →
-   kutip `jual_sebelum_1_agustus_2025` + `catatan_aturan_lama`, jangan menyebut tarif lama.
-   **Jangan menebak apakah PPh sudah termasuk di kolom `biaya`** -- minta dicek di riwayat bursa;
-   bila belum termasuk, P/L setelah pajak = `pl_bila_pph_belum_di_kolom_biaya`. SPT tahunan →
-   konsultan pajak/DJP.
+   `jual_sebelum_1_agustus_2025` + `catatan_aturan_lama`, jangan menyebut tarif lama.
+   **Jangan menebak apakah PPh sudah termasuk di kolom `biaya`** -- teks script sudah memuat kedua
+   kemungkinan; bila ada baris ditolak/ragu, PPh "sementara" dan untung setelah pajak ditahan. SPT
+   tahunan → konsultan pajak/DJP.
 
 ### E. Jadwal otomatis (urutan baku, tanpa improvisasi)
 1. **Tampilkan draf dulu** -- pakai default script; **jangan mengisi `--workspace` atau

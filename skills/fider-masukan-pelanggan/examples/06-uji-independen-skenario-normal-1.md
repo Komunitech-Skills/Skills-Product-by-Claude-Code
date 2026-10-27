@@ -1,5 +1,7 @@
 # 06 - Skenario normal 1: impor catatan WA (uji independen)
 
+> **FORMAT LAMA (sebelum v1.0.10), direkam apa adanya:** saat itu nama berpola sapaan belum disamarkan di pratinjau. Sekarang disamarkan dan agent menulis "seorang pelanggan".
+
 Penguji independen, Fider v0.38.0 ASLI (Docker+PostgreSQL 17), 2026-09-29. Data fiktif. Kunci tidak dicetak.
 
 ```

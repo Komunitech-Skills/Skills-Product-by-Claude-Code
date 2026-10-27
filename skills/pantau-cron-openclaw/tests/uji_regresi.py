@@ -151,7 +151,7 @@ class StatusDanToleransi(Dasar):
     def test_ganti_memulai_ulang_hitungan_terlewat(self):
         self.tambah("harian", "0 21 * * *", "2026-10-12T10:00+07:00")
         self.assertEqual(self.cek_json("2026-10-16T22:00+07:00")["harian"]["terlewat"], 5)
-        self.tambah("harian", "0 21 * * *", "2026-10-16T21:50+07:00", "--ganti")
+        self.tambah("harian", "0 21 * * *", "2026-10-16T21:50+07:00", "--ganti", "--mulai-ulang")
         j = self.cek_json("2026-10-16T22:00+07:00")["harian"]
         self.assertEqual((j["status"], j["terlewat"]), ("OK", 0))
 
@@ -371,6 +371,213 @@ class LayananLuar(Dasar):
         self.assertEqual(len(pc.baca_ping(self.f, "harian")), 1)
 
 
+class GantiMenyimpanRiwayat(Dasar):
+    """1.0.6 (a)/(d): --ganti tidak menghapus riwayat; hitungan lama tetap bila jadwal & zona sama."""
+
+    def test_ganti_jadwal_sama_mempertahankan_hitungan_dan_riwayat(self):
+        self.tambah("harian", "0 21 * * *", "2026-10-12T10:00+07:00")
+        self.ping("harian", "2026-10-13T21:01+07:00")
+        c, o, e = jalan(self.f, "tambah", "harian", "--jadwal", "0 21 * * *", "--toleransi", "45", "--ganti",
+                        "--sekarang", "2026-10-16T21:50+07:00")
+        self.assertEqual(c, 0, e)
+        self.assertIn("dipertahankan", o)
+        self.assertNotIn("mulai ulang", o.lower())
+        j = self.cek_json("2026-10-16T22:00+07:00")["harian"]
+        self.assertEqual((j["status"], j["terlewat"], j["toleransi_menit"]), ("HILANG", 3, 45))
+        self.assertEqual(len(pc.baca_ping(self.f, "harian")), 1)
+        self.assertIn("12 Okt 10.00 WIB", j["terdaftar_lokal"])
+
+    def test_ganti_jadwal_berbeda_mulai_dari_sekarang_riwayat_tetap(self):
+        self.tambah("harian", "0 21 * * *", "2026-10-12T10:00+07:00")
+        self.ping("harian", "2026-10-13T21:01+07:00")
+        self.tambah("harian", "0 22 * * *", "2026-10-16T22:30+07:00", "--ganti")
+        j = self.cek_json("2026-10-16T22:40+07:00")["harian"]
+        self.assertEqual((j["status"], j["terlewat"]), ("OK", 0))
+        self.assertEqual(len(pc.baca_ping(self.f, "harian")), 1)
+
+    def test_mulai_ulang_tanpa_job_lama_ditolak(self):
+        c, o, e = jalan(self.f, "tambah", "baru", "--jam", "21.00", "--ganti", "--mulai-ulang")
+        self.assertEqual(c, 1)
+        self.assertTrue(e.startswith("GALAT:"))
+
+
+class BungkusJobPerintah(Dasar):
+    """1.0.6 (b)/(h): argv lama utuh dengan kutip yang benar; --buang mengembalikan persis; script pemilik tak disentuh."""
+
+    ARGV = [sys.executable, "-c", "import sys; print(\"isi 'laporan' $HOME\"); sys.exit(int(sys.argv[1]))", "0", "--",
+            "--folder", "a b"]
+
+    def bungkus(self, argv, *ekstra):
+        c, o, e = jalan(self.f, "bungkus", "lap", "--argv-lama", json.dumps(argv), *ekstra)
+        self.assertEqual(c, 0, e)
+        return o.strip(), e
+
+    def test_argv_lama_utuh_dan_dikembalikan_persis(self):
+        self.tambah("lap", "0 21 * * *")
+        baru, _ = self.bungkus(self.ARGV)
+        baru = json.loads(baru)
+        self.assertEqual(baru[baru.index("--") + 1:], self.ARGV)
+        self.assertIn("jalankan", baru)
+        c, o, e = jalan(self.f, "bungkus", "--buang", "--argv-lama", json.dumps(baru))
+        self.assertEqual(c, 0, e)
+        self.assertEqual(json.loads(o), self.ARGV)
+
+    def test_perintah_edit_berkutip_benar(self):
+        import shlex
+        self.tambah("lap", "0 21 * * *")
+        o, _ = self.bungkus(self.ARGV, "--id", "id 1")
+        bagian = shlex.split(o)
+        self.assertEqual(bagian[:4], ["openclaw", "automations", "edit", "id 1"])
+        self.assertEqual(bagian[4], "--command-argv")
+        argv = json.loads(bagian[5])
+        self.assertEqual(argv[argv.index("--") + 1:], self.ARGV)
+
+    def _jalan_bungkus(self, kode):
+        argv = list(self.ARGV)
+        argv[3] = str(kode)
+        baru, _ = self.bungkus(argv)
+        return subprocess.run(json.loads(baru), capture_output=True, text=True, encoding="utf-8")
+
+    def test_jalankan_meneruskan_keluaran_dan_ping_hanya_bila_sukses(self):
+        self.tambah("lap", "0 21 * * *")
+        p = self._jalan_bungkus(0)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(p.stdout.strip(), "isi 'laporan' $HOME")       # keluaran job utuh, tanpa catatan pantauan
+        self.assertEqual(p.stderr, "")                                  # 1.0.6 putaran 2: sukses = diam total
+        self.assertEqual(len(pc.baca_ping(self.f, "lap")), 1)
+        p = self._jalan_bungkus(3)
+        self.assertEqual(p.returncode, 3)
+        self.assertEqual(len(pc.baca_ping(self.f, "lap")), 1)
+
+    def test_jalankan_dimatikan_sinyal_kode_128_plus(self):
+        if os.name == "nt":
+            self.skipTest("sinyal POSIX")
+        self.tambah("lap", "0 21 * * *")
+        baru, _ = self.bungkus([sys.executable, "-c", "import os, signal; os.kill(os.getpid(), signal.SIGTERM)"])
+        p = subprocess.run(json.loads(baru), capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(p.returncode, 128 + 15)
+        self.assertEqual(pc.baca_ping(self.f, "lap"), [])
+
+    def test_jalankan_job_tidak_terdaftar_peringatan_saja(self):
+        baru, _ = self.bungkus([sys.executable, "-c", "print('ok')"])
+        p = subprocess.run(json.loads(baru), capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual((p.returncode, p.stdout.strip()), (0, "ok"))
+        self.assertIn("Peringatan pantauan", p.stderr)
+
+    def test_perintah_tidak_ada_tidak_ping(self):
+        self.tambah("lap", "0 21 * * *")
+        baru, _ = self.bungkus(["/tidak/ada/program-xyz"])
+        p = subprocess.run(json.loads(baru), capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(p.returncode, 127)
+        self.assertEqual(pc.baca_ping(self.f, "lap"), [])
+
+    def test_tidak_dibungkus_dua_kali_dan_ping_pemilik_tidak_disentuh(self):
+        self.tambah("lap", "0 21 * * *")
+        baru, _ = self.bungkus(["python3", "/rumah/lap.py"])
+        lagi, e = self.bungkus(json.loads(baru))
+        self.assertEqual(json.loads(lagi), json.loads(baru))
+        self.assertIn("tidak dibungkus dua kali", e)
+        milik = ["sh", "-c", "python3 /rumah/lap.py && python3 /x/scripts/pantau_cron.py ping lap"]
+        for args in (["bungkus", "--buang"], ["bungkus", "lap"]):
+            c, o, e = jalan(self.f, *(args + ["--argv-lama", json.dumps(milik)]))
+            self.assertEqual(c, 1, args)
+            self.assertEqual(o, "")
+
+    def test_argv_rusak_ditolak(self):
+        for buruk in ("bukan json", "[]", '["a", 1]', '{"a": 1}', '[""]'):
+            c, o, e = jalan(self.f, "bungkus", "lap", "--argv-lama", buruk)
+            self.assertEqual(c, 1, buruk)
+            self.assertTrue(e.startswith("GALAT:"), buruk)
+
+
+class TerimaLaporTanpaPengawasan(Dasar):
+    """1.0.6 putaran 2 (h): berhenti memantau job yang ping-nya ada di perintah buatan pemilik."""
+
+    def test_hapus_biasa_membuat_ping_galat(self):
+        self.tambah("backup", "0 2 * * 0")
+        self.assertEqual(jalan(self.f, "hapus", "backup")[0], 0)
+        c, o, e = jalan(self.f, "ping", "backup")
+        self.assertEqual(c, 1)
+        self.assertIn("belum terdaftar", e)
+
+    def test_terima_lapor_ping_kode_0_tidak_dicatat_dan_tidak_diawasi(self):
+        self.tambah("backup", "0 2 * * 0", "2026-10-01T08:00+07:00")
+        self.tambah("piutang", "45 7 * * 1-5", "2026-10-01T08:00+07:00")
+        self.ping("backup", "2026-10-04T02:01+07:00")
+        c, o, e = jalan(self.f, "hapus", "backup", "--terima-lapor")
+        self.assertEqual(c, 0, e)
+        self.assertIn("tidak diawasi lagi", o)
+        c, o, e = jalan(self.f, "ping", "backup", "--sekarang", "2026-10-11T02:01+07:00")
+        self.assertEqual((c, e), (0, ""))
+        self.assertEqual(len(pc.baca_ping(self.f, "backup")), 1)     # riwayat lama tetap, ping baru tak dicatat
+        jobs = self.cek_json("2026-10-30T09:00+07:00")
+        self.assertNotIn("backup", jobs)                            # tidak pernah HILANG/TERLAMBAT lagi
+        self.assertIn("piutang", jobs)
+        c, o, e = jalan(self.f, "daftar", "--json")
+        self.assertEqual(json.loads(o)["tidak_diawasi"], ["backup"])
+        c, o, e = jalan(self.f, "cek", "--openclaw", "--sekarang", "2026-10-30T09:00+07:00")
+        self.assertNotIn("backup", o)
+
+    def test_terima_lapor_lewat_bungkus_jalankan_tetap_kode_0(self):
+        self.tambah("lap", "0 21 * * *")
+        c, baru, e = jalan(self.f, "bungkus", "lap", "--argv-lama", json.dumps([sys.executable, "-c", "print(1)"]))
+        self.assertEqual(jalan(self.f, "hapus", "lap", "--terima-lapor")[0], 0)
+        p = subprocess.run(json.loads(baru), capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual((p.returncode, p.stderr), (0, ""))
+
+    def test_diawasi_lagi_dengan_tambah(self):
+        self.tambah("backup", "0 2 * * 0")
+        jalan(self.f, "hapus", "backup", "--terima-lapor")
+        self.tambah("backup", "0 2 * * 0", "2026-10-20T08:00+07:00")   # tanpa --ganti
+        self.ping("backup", "2026-10-25T02:01+07:00")
+        self.assertEqual(len(pc.baca_ping(self.f, "backup")), 1)
+        self.assertIn("backup", self.cek_json("2026-10-25T03:00+07:00"))
+
+    def test_ping_job_dilepas_diam_total(self):
+        """1.0.6 putaran 3: ping job yang dilepas tidak mencetak apa pun (keluaran job perintah bisa ke chat)."""
+        self.tambah("backup", "0 2 * * 0")
+        jalan(self.f, "hapus", "backup", "--terima-lapor")
+        self.assertEqual(jalan(self.f, "ping", "backup", "--sekarang", "2026-10-11T02:01+07:00"), (0, "", ""))
+
+    def test_tambah_ulang_ganti_sesudah_dilepas_tanpa_hilang_palsu(self):
+        """1.0.6 putaran 3: urutan persis temuan; --ganti dengan jadwal sama tidak memakai `dibuat` lama."""
+        c, o, e = jalan(self.f, "tambah", "lap", "--jam", "21.00", "--sekarang", "2026-10-01T10:00+07:00")
+        self.assertEqual(c, 0, e)
+        self.ping("lap", "2026-10-01T21:05+07:00")
+        self.assertEqual(jalan(self.f, "hapus", "lap", "--terima-lapor")[0], 0)
+        self.ping("lap", "2026-10-05T21:05+07:00")
+        c, o, e = jalan(self.f, "tambah", "lap", "--jam", "21.00", "--ganti", "--sekarang", "2026-10-10T10:00+07:00")
+        self.assertEqual(c, 0, e)
+        self.assertNotIn("Riwayat dan hitungan lama dipertahankan", o)
+        self.assertIn("hitungan terlewat dimulai dari sekarang", o)
+        self.assertEqual(len(pc.baca_ping(self.f, "lap")), 1)        # riwayat lama tetap
+        for saat in ("2026-10-10T10:00+07:00", "2026-10-10T21:20+07:00"):
+            j = self.cek_json(saat)["lap"]
+            self.assertNotIn(j["status"], ("HILANG", "TERLAMBAT"), (saat, j))
+        c, o, e = jalan(self.f, "cek", "--openclaw", "--tanpa-catat", "--sekarang", "2026-10-10T10:00+07:00")
+        self.assertNotIn("HILANG", o)
+        self.assertEqual(self.cek_json("2026-10-11T22:00+07:00")["lap"]["status"], "HILANG")   # pengawasan hidup lagi
+
+    def test_terima_lapor_job_tidak_ada_galat(self):
+        c, o, e = jalan(self.f, "hapus", "tidak-ada", "--terima-lapor")
+        self.assertEqual(c, 1)
+        self.assertTrue(e.startswith("GALAT:"))
+
+
+class Versi(unittest.TestCase):
+    def test_versi_sama_di_semua_tempat(self):
+        def baca(*b):
+            with open(os.path.join(AKAR, *b), encoding="utf-8") as fh:
+                return fh.read()
+        self.assertEqual(pc.VERSI, "1.0.6")
+        p = subprocess.run([sys.executable, SCRIPT, "--versi"], capture_output=True, text=True)
+        self.assertEqual(p.stdout.strip(), pc.VERSI)
+        self.assertIn("_Versi skill: %s_" % pc.VERSI, baca("SKILL.md"))
+        self.assertIn("Versi terkini: **%s**" % pc.VERSI, baca("README.md"))
+        import re
+        self.assertEqual(re.search(r"## Catatan revisi (\S+)", baca("CHANGELOG.md")).group(1), pc.VERSI)
+
+
 class KonsistensiTeksPetunjuk(unittest.TestCase):
     """Teks "Aturan penutup" yang ditambahkan ke prompt jadwal harus sama di SKILL.md dan references,
     aman dipakai di --message "...", dan teks lama (penyebab isi laporan hilang) tidak boleh kembali."""
@@ -414,6 +621,143 @@ class KonsistensiTeksPetunjuk(unittest.TestCase):
         isi = self._baca("SKILL.md")
         self.assertIn("Setelah Anda balas ya, tiap jadwal saya jalankan sekali untuk uji", isi)
         self.assertIn("mau saya hapus", isi)
+
+    KALIMAT_TAK_TERBACA = "Daftar jadwal OpenClaw Anda tidak terbaca utuh, jadi saya tidak mengubah apa pun."
+
+    def test_c_kalimat_daftar_tak_terbaca_seragam(self):
+        sk = self._baca("SKILL.md")
+        ref = self._baca("references", "openclaw-jadwal.md")
+        self.assertIn(self.KALIMAT_TAK_TERBACA, sk)
+        bag1b = ref.split("## 1b.", 1)[1].split("\n## ", 1)[0]
+        self.assertIn(self.KALIMAT_TAK_TERBACA, bag1b)
+        for isi in (sk, ref):   # tidak ada variasi lain dari kalimat itu
+            self.assertEqual(isi.count("tidak terbaca utuh, jadi"), isi.count(self.KALIMAT_TAK_TERBACA))
+
+    def test_a_f_pengawas_lama_dikenali_dan_label_berbeda(self):
+        sk = self._baca("SKILL.md")
+        for frasa in ("Pengawas yang SUDAH ada di daftar jadwal OpenClaw", "topik lain lagi", "pakai yang lama",
+                      "pindahkan ke obrolan ini", "tidak pernah ditambah dobel", "--mulai-ulang"):
+            self.assertIn(frasa, sk)
+        self.assertIn("topik lain lagi", self._baca("references", "openclaw-jadwal.md"))
+
+    def test_b_job_perintah_lewat_bungkus(self):
+        for bagian in (("SKILL.md",), ("references", "openclaw-jadwal.md")):
+            isi = self._baca(*bagian)
+            self.assertIn("bungkus", isi)
+            self.assertIn("UTUH", isi)
+        self.assertNotIn("tambahkan `ping` sebagai perintah terakhir di script", self._baca("SKILL.md"))
+
+    def test_a2_pengawas_dobel_dirapikan(self):
+        sk = self._baca("SKILL.md")
+        for frasa in ("**Ada set ke obrolan ini DAN set lain**", "bawaan **rapikan**", "**biarkan**",
+                      "  - rapikan: \"pakai pengawas yang sudah ada di obrolan ini", "Rapikan/lengkapi: sesudah set di obrolan ini terlihat utuh",
+                      "Balas ya = pakai yang di obrolan ini dan hapus yang ke <label>", "pakai yang lama, rapikan, atau biarkan"):
+            self.assertIn(frasa, sk)
+        self.assertNotIn("set yang sudah mengarah ke obrolan ini dipakai; bila tidak ada", sk)
+        self.assertIn("rapikan", self._baca("references", "openclaw-jadwal.md").split("## 1b.", 1)[1].split("\n## ", 1)[0])
+
+    def test_d2_pc4_bawaan_rapikan_bukan_pindah(self):
+        pc4 = self._baca("examples", "HASIL-UJI.md").split("Harapan uji ulang PC4", 1)[1]
+        self.assertIn("**rapikan**", pc4)
+        self.assertNotIn("bawaan \"ya\" = pindah", pc4)
+        self.assertNotIn("set baru terpasang", pc4)
+        self.assertIn("tidak ada pengawas baru yang dipasang", pc4)
+
+    def test_ganti_jadwal_berbeda_tidak_diklaim_hitungan_tetap(self):
+        sk = self._baca("SKILL.md")
+        self.assertNotIn("bila jadwal/toleransi berbeda cukup", sk)
+        self.assertIn("Jadwal atau zona berbeda -> `tambah <nama> --jadwal \"<jadwal baru>\" --ganti`: script otomatis memulai", sk)
+
+    def test_g2_tidak_ada_tiga_pertanyaan_wajib(self):
+        sk = self._baca("SKILL.md")
+        self.assertNotIn("tiga pertanyaan)", sk)
+        self.assertNotIn("bila tiga pertanyaan tidak dijawab", sk)
+
+    def test_h2_berhenti_memantau_perintah_pemilik_terima_lapor(self):
+        sk = self._baca("SKILL.md")
+        self.assertIn("`hapus <nama> --terima-lapor` (BUKAN `hapus <nama>` biasa", sk)
+        self.assertNotIn("Tanpa pengawas, langkah itu tidak mengirim kabar apa pun", sk)
+        self.assertIn("--terima-lapor", self._baca("references", "openclaw-jadwal.md"))
+        ex = self._baca("examples", "05-berhenti-memantau-dan-jawaban-tidak.md")
+        self.assertNotIn("Tanpa pengawas", ex)
+        b = ex.split("## B.", 1)[1].split("## C.", 1)[0]
+        self.assertIn("--terima-lapor", b)
+        self.assertLess(b.index("Backup mingguan"), b.index("**Pemilik:** ya"))   # disebut di rencananya sendiri
+
+    def test_d_harapan_pc4_sesuai_skill(self):
+        h = self._baca("examples", "HASIL-UJI.md")
+        self.assertIn("Harapan uji ulang PC4", h)
+        pc4 = h.split("Harapan uji ulang PC4", 1)[1]
+        for baris in pc4.splitlines():
+            if "mulai ulang" in baris:
+                self.assertIn("tidak ada", baris, baris[:80])
+        self.assertIn("JANGAN menulis kalimat \"hitungannya saya mulai ulang\"", self._baca("SKILL.md"))
+
+    def test_e_baris_uji_peringatan_bersyarat_dan_varian_tujuan(self):
+        sk = self._baca("SKILL.md")
+        self.assertIn("baris ini HANYA bila pengawas dipasang baru, dipindah, atau diubah", sk)
+        self.assertIn("- Tujuan kabar: SATU varian saja:", sk)
+        self.assertIn("pakai yang lama: \"tetap ke <label>", sk)
+        self.assertIn("(pakai yang lama: \"Tujuan kabar saat ini: tetap ke <label>", sk)
+
+    def test_g_penutup_tidak_menanyakan_yang_sudah_disebut(self):
+        sk = self._baca("SKILL.md")
+        self.assertNotIn("Tepat tiga pertanyaan", sk)
+        self.assertIn("Paling banyak tiga pertanyaan", sk)
+        self.assertIn("SUDAH disebut pemilik DIHAPUS", sk)
+        self.assertIn("Tidak ada pertanyaan lagi; balas ya untuk mulai.", sk)
+
+    def test_h_berhenti_memantau(self):
+        sk = self._baca("SKILL.md")
+        self.assertIn("JANGAN PERNAH mengubah berkas script/perintah milik pemilik", sk)
+        self.assertIn("baca ulang daftar jadwal SEBELUM menulis \"sudah dihapus\"", sk)
+        self.assertIn("bungkus --buang", sk)
+        ex = self._baca("examples", "05-berhenti-memantau-dan-jawaban-tidak.md")
+        self.assertIn("**Pemilik:** tidak", ex)
+        self.assertIn("tidak ada yang saya ubah", ex)
+
+    def test_p3_mode_terblokir_tanpa_daftar_lokal_saat_tak_terbaca(self):
+        sk = self._baca("SKILL.md")
+        mt = sk.split("## Mode terblokir", 1)[1].split("\n## ", 1)[0]
+        self.assertNotIn("Pekerjaan lokal tetap jalan (daftar job", mt)   # aturan lama tanpa pengecualian
+        self.assertIn("Pekerjaan lokal tetap jalan HANYA untuk galat izin", mt)
+        self.assertIn("daftar tidak terbaca utuh atau galat bukan soal izin -> TIDAK ada pendaftaran lokal sama sekali", mt)
+        bag1b = self._baca("references", "openclaw-jadwal.md").split("## 1b.", 1)[1].split("\n## ", 1)[0]
+        self.assertIn("jangan mendaftarkan apa pun ke pantauan lokal", bag1b)
+
+    def test_p3_uji_alarm_selalu_hapus_riwayat(self):
+        for isi in (self._baca("SKILL.md"), self._baca("references", "openclaw-jadwal.md")):
+            self.assertEqual(isi.count("hapus uji-alarm"), isi.count("hapus uji-alarm --hapus-riwayat"))
+
+    def test_p3_set_pengawas_tidak_utuh(self):
+        sk = self._baca("SKILL.md")
+        for frasa in ("**Set tidak utuh**", "Bawaan **lengkapi**", "  - lengkapi: \"", "Pengawas belum lengkap:",
+                      "Rapikan/lengkapi: sesudah set di obrolan ini terlihat utuh"):
+            self.assertIn(frasa, sk)
+        self.assertIn("set tidak utuh", self._baca("references", "openclaw-jadwal.md").split("## 1b.", 1)[1].split("\n## ", 1)[0])
+
+    def test_p3_aturan_ganti_jadwal_berubah_dan_job_dilepas(self):
+        sk = self._baca("SKILL.md")
+        ref = self._baca("references", "openclaw-jadwal.md")
+        for isi in (sk, ref):
+            self.assertNotRegex(isi, r"(jadwal|Jadwal)[^.\n]{0,20}toleransi berbeda[^.\n]{0,40}--ganti[^.\n]{0,60}hitungan (lama )?tetap")
+        self.assertIn("Jadwal atau zona berubah -> script otomatis memulai hitungan dari sekarang", ref)
+        self.assertIn("**tidak diawasi** (pernah dilepas dengan `hapus --terima-lapor`)", sk)
+        self.assertIn("didaftarkan lagi -> hitungan selalu dimulai dari sekarang", ref)
+        self.assertIn("tidak dicatat, dan tidak mengirim kabar apa pun", sk)   # kalimat ke pemilik tetap benar (ping diam)
+
+    def test_i_galat_lain_baca_ulang_sebelum_daftar_lokal(self):
+        sk = self._baca("SKILL.md")
+        self.assertIn("baca ulang (5c) dulu, sebelum mendaftarkan lokal (5a)", sk)
+        self.assertIn("a. **Catat ke pantauan lokal**", sk)
+        self.assertIn("c. **Baca ulang**", sk)
+        self.assertIn("(SKILL.md 5c) DULU, sebelum mendaftarkan lokal (5a)", self._baca("references", "openclaw-jadwal.md"))
+
+    def test_skill_ringkas_dan_frontmatter(self):
+        sk = self._baca("SKILL.md")
+        self.assertLess(len(sk.splitlines()), 300)
+        fm = sk.split("---", 2)[1]
+        self.assertEqual([b.split(":", 1)[0] for b in fm.strip().splitlines()], ["name", "description"])
 
     def test_larangan_membuka_catatan_harian(self):
         for bagian in (("SKILL.md",), ("references", "openclaw-jadwal.md")):

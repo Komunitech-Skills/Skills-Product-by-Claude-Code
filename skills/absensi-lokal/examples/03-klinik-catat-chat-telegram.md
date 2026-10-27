@@ -19,6 +19,8 @@
 (Akhir bulan) 
 > rekap september + masukin lemburnya ke file gaji saya ini (gaji-september.csv) buat slip
 
+> **Catatan 1.0.10:** rekap versi terbaru menambah baris "Tanggal telat: ..." di bawah "Terlambat ..." bagi karyawan yang telatnya 1-5 kali. Contoh di bawah dibuat sebelum itu dan baris tersebut tidak ditampilkan; angka lain tidak berubah.
+
 ## Output (mengikuti SKILL.md)
 
 **"Andi masuk 08.12"** → `catat --karyawan Andi --masuk 08.12`:

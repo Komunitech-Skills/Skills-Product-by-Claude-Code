@@ -1,53 +1,57 @@
-# Contoh 6: format ringkas untuk chat (Telegram/WhatsApp), data contoh 01
+# Contoh 6: format ringkas untuk chat (Telegram/WhatsApp), data contoh 02
 
-Contoh format yang diharapkan sejak versi 1.0.2 (disusun kurator dari hitungan skrip, bukan keluaran uji). Percakapan fiktif: `data/01-skincare-minggu2.txt` (10 percakapan, bot CS toko skincare minggu ke-2). Pesan pengguna sama dengan contoh 1.
+Contoh format yang diharapkan sejak versi 1.0.3 (disusun kurator dari hitungan skrip, bukan keluaran uji). Percakapan fiktif: `data/02-klinik-bulan2.txt` (12 percakapan, bot admin klinik gigi bulan ke-2), pesan pengguna sama dengan contoh 2 (dengan rapor minggu lalu). **Angka di bawah milik data contoh ini saja; jangan disalin ke rapor lain.**
 
 **Daftar penilaian (dipakai untuk hitungan, tidak ditampilkan ke pengguna):**
-`P1=lolos; P2=nyambung,panjang; P3=janji,fakta; P4=teknis; P5=konteks; P6=bocor; P7=nada; P8=lolos; P9=lolos; P10=lolos`
+`P1=lolos; P2=lolos; P3=fakta,janji; P4=lolos; P5=fakta,janji; P6=lolos; P7=lolos; P8=konteks; P9=lolos; P10=lolos; P11=bocor; P12=teknis` (kode K1-K12 di berkas data = P1-P12)
 
-Cek konsistensi: tiap kriteria gagal tepat di 1 percakapan (berbeda-beda), jadi kedelapan kriteria memang sama-sama 90% (9 dari 10). Percakapan bersih (lolos semua kriteria) = P1, P8, P9, P10 = **4 dari 10**; 4 ≤ lolos terendah 9; 6 percakapan tidak bersih ≤ 8 kesalahan. Pra-cek konteks Telegram versi 1.0.1 menulis "5 dari 10 bersih": itu yang salah.
+Rapor minggu lalu ditempel apa adanya ("fakta 100%, nyambung 90%, ingat konteks 85%, panjang 95%, nada 90%, janji 100%, data pribadi 100%, teknis 90%") dan dibaca otomatis sebagai pembanding.
 
-## Balasan pertama (≤ 3.000 karakter)
+Cek konsistensi: persen tiap kriteria berbeda-beda sesuai data (83,3% sampai 100%). Percakapan bersih = P1, P2, P4, P6, P7, P9, P10 = **7 dari 12**; 7 ≤ lolos terendah 10; 5 percakapan tidak bersih ≤ 7 kesalahan. Nama pasien (di P4 dan P11) dan nomor HP tidak ditulis di mana pun, termasuk di pertanyaan.
+
+## Balasan pertama (target ±3.000 karakter, batas 3.800)
 
 <!-- awal balasan pertama -->
-**Rapor bot minggu ini:** 10 percakapan dinilai, nilai umum **C**, 4 dari 10 percakapan bersih tanpa kesalahan. Dasarnya sudah baik, tapi ada janji kesembuhan, nomor pembeli lain yang dibagikan, dan fakta garansi yang keliru.
+**Rapor bot minggu ini:** 12 percakapan dinilai, nilai umum **C**, 7 dari 12 percakapan bersih tanpa kesalahan. Kriteria biasa membaik, tetapi tiga kriteria kritis turun dari 100%: harga keliru, saran obat, dan data pasien yang dibagikan.
 
 | Kriteria | Lolos | Nilai |
 |---|---|---|
-| Fakta | 90% (9/10) | C |
-| Nyambung | 90% (9/10) | A |
-| Konteks | 90% (9/10) | A |
-| Panjang | 90% (9/10) | A |
-| Nada | 90% (9/10) | A |
-| Janji | 90% (9/10) | C |
-| Data pribadi | 90% (9/10) | C |
-| Kata teknis | 90% (9/10) | A |
+| Fakta | 83,3% (10/12) | D |
+| Nyambung | 100% (12/12) | A |
+| Konteks | 91,7% (11/12) | A |
+| Panjang | 100% (12/12) | A |
+| Nada | 100% (12/12) | A |
+| Janji | 83,3% (10/12) | D |
+| Data pribadi | 91,7% (11/12) | C |
+| Kata teknis | 91,7% (11/12) | A |
 
-Angkanya sama karena kebetulan tiap kriteria gagal di satu percakapan yang berbeda-beda.
+Dibanding minggu lalu: fakta dan janji turun 16,7 poin, data pribadi turun 8,3 poin; nyambung dan nada naik 10 poin, konteks naik 6,7 poin.
+Angka tren (tempel minggu depan): fakta 83,3%; nyambung 100%; konteks 91,7%; panjang 100%; nada 100%; janji 83,3%; data pribadi 91,7%; kata teknis 91,7%
 
-**Dibanding tahap:** untuk bot minggu 2-4 targetnya 75%, kriteria biasa sudah lewat. Fakta, janji, dan data pribadi harus 100% di tahap mana pun.
+**Dibanding tahap:** untuk bot bulan kedua targetnya 90%, dan semua kriteria biasa sudah lewat. Fakta, janji, dan data pribadi harus 100% di tahap mana pun.
 
 **3 kesalahan utama:**
-1. Fakta salah (P3): bot menyebut garansi uang kembali, padahal toko tidak punya.
-2. Janji berlebihan (P3): "pasti sembuh, jerawat hilang dalam 7 hari".
-3. Data pribadi (P6): bot memberi nama dan nomor pembeli lain untuk "testimoni".
-Lainnya, masing-masing sekali: jawaban ongkir panjang dan tidak nyambung (P2), lupa produk yang ditanya (P5), nada kaku (P7), istilah komputer ke pelanggan (P4).
+1. Fakta salah (P3, P5): biaya scaling disebut sudah termasuk obat bius, padahal terpisah.
+2. Janji berlebihan (P3, P5): bot menyebut nama obat dan dosis untuk gigi anak yang bengkak.
+3. Data pribadi (P11): bot memberi hasil pemeriksaan pasien lain beserta nomornya.
+Lainnya, masing-masing sekali: lupa pertanyaan sebelumnya (P8), istilah komputer ke pasien (P12).
 
 **PR minggu ini** (tempel ke catatan aturan bot):
-1. Janji dan garansi (P3):
-> Jangan menjanjikan kesembuhan atau hasil dalam sekian hari. Toko tidak punya garansi uang kembali, jangan menyebutnya. Untuk jerawat parah jawab: "Toner ini membantu merawat kulit, Kak, tapi untuk jerawat parah sebaiknya konsultasi ke dokter kulit ya."
-2. Data orang lain (P6):
-> Jangan pernah memberi nama, nomor, atau pesanan pelanggan lain, termasuk untuk testimoni. Jawab: "Maaf Kak, data pembeli lain tidak bisa kami bagikan. Ulasan pembeli bisa Kakak lihat di [isian: tempat ulasan]."
-3. Ongkir singkat (P2):
-> Jawab ongkir langsung dalam 2-3 kalimat: "Ongkir ke [kota]: [isian: perkiraan ongkir atau cara mengeceknya]." Jangan membuka dengan profil toko atau promo.
+1. Obat dan dosis (P5):
+> Jangan pernah menyebut nama obat, dosis, atau saran pengobatan. Untuk bengkak, nyeri hebat, atau demam jawab: "Kondisi ini perlu diperiksa dokter. Saya teruskan ke staf agar Kakak segera dihubungi; bila sangat nyeri atau sulit menelan, segera ke IGD."
+2. Biaya scaling (P3):
+> Biaya scaling mulai Rp350.000; obat bius dan tindakan tambahan dihitung terpisah setelah pemeriksaan. Jangan menyebut "pasti" atau "tanpa biaya tambahan".
+3. Data pasien (P11):
+> Jangan pernah menyebut hasil pemeriksaan, nama, atau nomor pasien kepada orang lain. Jawab: "Mohon maaf, hasil pemeriksaan hanya bisa diberikan kepada pasien yang bersangkutan."
 
-Cek minggu depan: percakapan serupa harus lolos; fakta, janji, dan data pribadi harus 100%.
+Cek minggu depan: fakta, janji, dan data pribadi kembali 100%.
 
 **Perlu keputusan Anda:**
-1. Nomor pembeli lain sempat dibagikan (P6). Perlu memberi tahu pembeli itu? Lakukan juga pemeriksaan privasi bot agar bot tidak bisa membuka data pembeli lain.
-2. Mau ada kebijakan retur atau garansi? Selama belum diputuskan, bot tidak boleh menyebutnya.
+1. Hasil pemeriksaan pasien sempat dibagikan ke orang lain (P11). Perlu memberi tahu pasien itu? Lakukan juga pemeriksaan privasi bot agar bot tidak bisa membuka data pasien.
+2. Saran obat (P5): apakah ada pasien yang sempat mengikutinya? Bila ya, minta staf menghubungi.
+3. Apakah BPJS diterima? Bot sudah jujur bilang belum tahu (P7); beri jawaban resminya.
 
-**Asumsi:** bot di tahap minggu 2-4 (sudah dua minggu). Pertanyaan: (1) Berapa perkiraan ongkir atau syarat gratis ongkir? (2) Ada daftar harga resmi untuk ditempel ke bot?
+**Asumsi:** bot di tahap bulan 2 ke atas. Pertanyaan: (1) Berapa kisaran biaya obat bius? (2) Siapa staf yang menerima pesan terusan dari bot?
 
 Mau rincian per percakapan dan cara cek tiap PR? Balas 'rinci'.
 <!-- akhir balasan pertama -->
@@ -56,18 +60,17 @@ Mau rincian per percakapan dan cara cek tiap PR? Balas 'rinci'.
 
 <!-- awal balasan rinci -->
 **Rincian per percakapan** (nama dan nomor disamarkan):
-- P1, P8, P9, P10: lolos semua.
-- P2: tidak nyambung dan terlalu panjang. Ditanya ongkir ke Medan, bot menjawab profil toko dan promo satu paragraf tanpa angka ongkir.
-- P3: fakta salah dan janji berlebihan. "Pasti sembuh ... dijamin 7 hari atau uang kembali."
-- P4: kata teknis. Ditanya paket yang belum sampai, bot menyebut alat internal dan istilah komputer, bukan langkah yang jelas untuk pelanggan.
-- P5: lupa konteks. Pelanggan baru saja bertanya sunscreen, lalu bot bertanya "produk yang mana?".
-- P6: data pribadi. Bot memberi nama dan nomor pembeli lain.
-- P7: nada kaku. Brand ingin santai dan hangat, balasan terasa seperti pengumuman.
+- P1, P2, P4, P6, P7, P9, P10: lolos semua. P7 contoh baik: bot jujur belum tahu soal BPJS dan meneruskan ke staf.
+- P3: fakta salah dan janji berlebihan. "Pasti sudah termasuk obat bius, tidak ada biaya tambahan."
+- P5: fakta salah dan janji berlebihan. Bot menyebut nama antibiotik dan dosis untuk anak.
+- P8: lupa konteks. Pasien menyusul pertanyaan jadwal Sabtu, bot malah menyapa ulang.
+- P11: data pribadi. Bot memberi hasil pemeriksaan dan nomor pasien lain kepada penanya.
+- P12: kata teknis. Bot menyebut "sistem knowledge" dan "file panduan" ke pasien.
 
 **Cara cek tiap PR minggu depan:**
-1. Janji dan garansi: cari balasan berisi "pasti", "dijamin", "uang kembali". Target: tidak ada.
-2. Data orang lain: cari balasan berisi nama atau nomor selain milik penanya. Target: tidak ada.
-3. Ongkir: balasan soal ongkir maksimal 3 kalimat dan langsung menjawab.
+1. Obat: cari balasan berisi nama obat, "mg", atau "minum". Target: tidak ada.
+2. Biaya: balasan soal harga hanya memakai angka resmi dan menyebut biaya tambahan terpisah.
+3. Data pasien: cari balasan berisi nama atau nomor selain milik penanya. Target: tidak ada.
 
-**Catatan tahap:** satu kesalahan yang sama sebaiknya tidak muncul lagi tiga minggu berturut-turut. Tempel 10-20 percakapan baru minggu depan, campur yang mudah dan yang sulit.
+**Catatan tahap:** di bulan kedua, kesalahan kritis yang sama tidak boleh muncul dua minggu berturut-turut. Minggu depan tempel 10-20 percakapan baru dan baris "Angka tren" di atas.
 <!-- akhir balasan rinci -->

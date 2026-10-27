@@ -27,7 +27,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-VERSI = "1.0.9"
+VERSI = "1.0.11"
 FOLDER_RAHASIA = os.path.join(os.path.expanduser("~"), ".komunitech")
 KUNCI_DEFAULT = os.path.join(FOLDER_RAHASIA, "fider-kunci.txt")
 ALAMAT_DEFAULT_FILE = os.path.join(FOLDER_RAHASIA, "fider-alamat.txt")
@@ -108,8 +108,10 @@ def ambil_kunci(args):
         return _baca_file(os.path.expanduser(os.environ["FIDER_API_KEY_FILE"]), "FIDER_API_KEY_FILE")
     if os.path.isfile(KUNCI_DEFAULT):
         return _baca_file(KUNCI_DEFAULT, "file kunci")
-    raise Gagal("Kunci API Fider belum ada. Jalankan SENDIRI: python3 scripts/fider.py simpan-kunci "
-                "(kunci dibuat di Fider: menu profil > Settings > API Key).", K_KUNCI)
+    raise Gagal("Kunci API Fider belum ada. UNTUK AGEN SAJA (jangan disalin ke chat, jangan beri perintah ke pengguna): "
+                "katakan dengan kalimat awam bahwa kunci akses Fider belum tersimpan, arahkan ke panduan Fider "
+                "(bagian kunci akses) atau teknisi mereka. Untuk teknisi: simpan-kunci; kunci dibuat di Fider "
+                "(menu profil > Settings > API Key).", K_KUNCI)
 
 
 def samarkan(teks, kunci):
@@ -264,7 +266,9 @@ class Klien:
                         "Periksa alamat (mungkin harus https://).", K_JARINGAN)
         if e.code == 400 and "API Key" in pesan:
             raise Gagal("Kunci API ditolak Fider (salah/sudah diganti). Buat kunci baru di Fider "
-                        "(Settings > API Key) lalu jalankan simpan-kunci --ya.", K_KUNCI)
+                        "(Settings > API Key) lalu simpan ulang. UNTUK AGEN SAJA (jangan disalin ke chat, jangan beri perintah "
+                            "ke pengguna): katakan dengan kalimat awam bahwa kunci akses ditolak/sudah diganti, "
+                            "arahkan ke panduan Fider atau teknisi mereka. Untuk teknisi: simpan-kunci --ya.", K_KUNCI)
         if e.code in (401, 403):
             raise Gagal("Akses ditolak. Akun pemilik kunci harus berperan Collaborator/Administrator "
                         "(beberapa aksi, mis. tag baru, hanya untuk Administrator).", K_IZIN)
@@ -482,7 +486,8 @@ def cetak(hasil, args, teks):
         print(samarkan(out, k))
 
 
-PRATINJAU = "PRATINJAU - BELUM ADA YANG DITULIS ke Fider. Setelah pemilik setuju, ulangi perintah yang sama dengan --ya."
+PRATINJAU = ("PRATINJAU - BELUM ADA YANG DITULIS ke Fider. Tunggu persetujuan pemilik dulu.\n"
+             "(UNTUK AGEN SAJA, jangan disalin ke chat: setelah pemilik menjawab ya, ulangi perintah yang sama dengan --ya.)")
 
 
 # ---------------------------------------------------------------- perintah baca
@@ -819,7 +824,7 @@ def cmd_impor(k, args):
     rencana = siapkan_impor(butir, args.sumber, ada, parse_tetap(args.tetap, len(butir)))
     tag_ada = {t["slug"] for t in daftar_tag(k)}
     tag_hilang = sorted({slug_tag(t) for r in rencana for t in r["tag"]} - tag_ada)
-    baris = [f"RENCANA IMPOR dari {os.path.basename(args.berkas)}: {len(rencana)} butir"]
+    baris = [f"RENCANA MASUKKAN KE PAPAN dari {os.path.basename(args.berkas)}: {len(rencana)} butir"]
     for r in rencana:
         cap = "BUAT  " if r["aksi"] == "buat" else "TAHAN "
         baris.append(f"{r['no']}. [{cap}] {r['judul']}")
@@ -828,9 +833,10 @@ def cmd_impor(k, args):
         if r["mirip_dengan"]:
             m = r["mirip_dengan"]
             acuan = f"#{m['nomor']}" if m["nomor"] else "butir lain di berkas ini"
-            baris.append(f"      MIRIP dengan {acuan} \"{m['judul']}\" (skor {int(m['skor'] * 100)}%, hanya petunjuk) - "
-                         + ("ditahan: tanyakan pemilik, sama maksudnya atau beda? Bila beda/tetap dibuat: --tetap "
-                            f"{r['no']}" if r["aksi"] == "tahan" else "tetap dibuat (dipilih lewat --tetap)"))
+            baris.append(f"      MIRIP dengan {acuan} \"{m['judul']}\" (hanya petunjuk) - "
+                         + ("ditahan: tanyakan pemilik, sama maksudnya atau beda? (UNTUK AGEN SAJA, jangan disalin ke chat: "
+                            f"bila pemilik bilang beda/tetap dibuat, tambahkan --tetap {r['no']})" if r["aksi"] == "tahan"
+                            else "tetap dibuat atas pilihan pemilik"))
         if r["klaim_pelanggan"]:
             baris.append(f"      klaim \"{angka(r['klaim_pelanggan'])} pelanggan\" berasal dari isi berkas (tidak diverifikasi); "
                          "pastikan benar dari catatan asli")
@@ -1064,7 +1070,9 @@ def main(argv=None):
         kunci = ambil_kunci(args)
         _KUNCI_AKTIF[0] = kunci
         if re.search(r"\s", kunci):
-            raise Gagal("Kunci API berisi spasi/baris baru; simpan ulang dengan simpan-kunci --ya.", K_KUNCI)
+            raise Gagal("Kunci API berisi spasi/baris baru; kunci perlu disimpan ulang. UNTUK AGEN SAJA (jangan disalin ke chat, "
+                         "jangan beri perintah ke pengguna): arahkan ke panduan Fider atau teknisi mereka. "
+                         "Untuk teknisi: simpan-kunci --ya.", K_KUNCI)
         if getattr(args, "batas", 1) < 1 or getattr(args, "hari", 1) < 1 or getattr(args, "top", 1) < 1:
             raise Gagal("--batas/--hari/--top minimal 1.", K_INPUT)
         return PERINTAH[args.perintah](Klien(url, kunci), args)

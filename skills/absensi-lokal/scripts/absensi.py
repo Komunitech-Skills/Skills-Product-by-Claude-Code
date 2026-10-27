@@ -36,7 +36,7 @@ from datetime import date, datetime, time, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
-VERSI = "1.0.9"
+VERSI = "1.0.11"
 SKEMA = 1
 APLIKASI = "absensi-lokal"
 PEMBAGI_UPAH_SEJAM = Decimal(173)          # PP 35/2021 Pasal 32 ayat (2)
@@ -1139,6 +1139,7 @@ def ringkas_karyawan(k, hari, lemb):
     r["tanggal_tanpa_keterangan"] = [h["tanggal"] for h in hari if h["status"] == "tanpa keterangan"]
     r["terlambat_kali"] = sum(1 for h in hari if h["terlambat_menit"] > 0)
     r["terlambat_menit"] = sum(h["terlambat_menit"] for h in hari)
+    r["tanggal_terlambat"] = [h["tanggal"] for h in hari if h["terlambat_menit"] > 0]
     r["pulang_cepat_kali"] = sum(1 for h in hari if h["pulang_cepat_menit"] > 0)
     r["pulang_cepat_menit"] = sum(h["pulang_cepat_menit"] for h in hari)
     r["menit_kerja"] = sum(h["menit_kerja"] or 0 for h in hari)
@@ -2257,6 +2258,9 @@ def cmd_rekap(args, conn=None):
         baris.append(s)
         baris.append("   Terlambat %dx (%s) | Pulang cepat %dx (%s)" % (
             r["terlambat_kali"], fmenit(r["terlambat_menit"]), r["pulang_cepat_kali"], fmenit(r["pulang_cepat_menit"])))
+        if 0 < len(r["tanggal_terlambat"]) <= 5:
+            baris.append("   Tanggal telat: " + ", ".join(
+                ftgl(date.fromisoformat(t))[:5] for t in r["tanggal_terlambat"]))
         s = "   Jam kerja %s" % fmenit(r["menit_kerja"])
         if r["hari_tidak_lengkap"]:
             s += " (+%d hari data tidak lengkap, belum dihitung)" % r["hari_tidak_lengkap"]

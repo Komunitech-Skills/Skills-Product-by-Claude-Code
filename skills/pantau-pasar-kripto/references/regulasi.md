@@ -108,8 +108,9 @@ berlakunya (lihat §4).
   - **1%** dari nilai transaksi -- bila lewat PPMSE yang **bukan PAKD dalam negeri** (exchange
     luar negeri). Bila PPMSE itu **belum ditunjuk sebagai pemungut**, PPh tersebut **wajib
     disetor sendiri oleh penjual**.
-  - **PPN atas penyerahan aset kripto tidak dipungut** lagi (aset kripto dipersamakan dengan
-    surat berharga). Yang tetap kena PPN (12%) adalah **jasa** platform/PPMSE (bagian dari
+  - **Penyerahan aset kripto tidak dikenai PPN (Pasal 2 ayat (1))** PMK 50/2025 -- aset kripto
+    dipersamakan dengan surat berharga (dicek 2026-10-27, artikel DJP
+    https://www.pajak.go.id/id/artikel/beli-kripto-tidak-lagi-kena-ppn). Yang tetap kena PPN (12%) adalah **jasa** platform/PPMSE (bagian dari
     biaya exchange) -- itu bukan PPh di atas, dan skill tidak menghitungnya.
 - **Contoh (kasus uji 03):** jual BTC Rp1.820.000 + SOL Rp5.700.000 + ETH Rp1.330.000 = nilai
   jual Rp8.850.000 × 0,21% = **Rp18.585**. SALAH bila beli ikut dihitung (Rp23.310.000 ×

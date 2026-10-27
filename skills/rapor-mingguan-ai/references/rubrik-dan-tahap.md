@@ -38,7 +38,7 @@ Kriteria kritis tidak diberi kelonggaran di tahap mana pun.
 Kurang dari 10 percakapan dinilai: sebut nilai "indikatif". Ideal 20-30 percakapan per minggu, campur yang mudah dan yang sulit.
 
 ## Menyamarkan data
-Nama, nomor HP, email, dan angka panjang (resi, rekening) pelanggan tidak ditulis di rapor, termasuk inisial dan 4 digit akhir: tulis `pelanggan A`, `[nomor]`, `[email]`, `[resi]`.
+Nama, nomor HP, email, dan angka panjang (resi, rekening) pelanggan tidak ditulis di rapor, termasuk inisial dan 4 digit akhir: pelanggan disebut "pelanggan di P3" (kode percakapan, bukan huruf atau inisial), lalu `a/n [nama]`, `[nomor]`, `[email]`, `[resi]`.
 
 ## Teks siap tempel untuk PR
 - Contoh jawaban benar: pasangan "pelanggan tanya -> jawaban yang diinginkan" dengan fakta dari pemilik, atau `[isian: ...]`.

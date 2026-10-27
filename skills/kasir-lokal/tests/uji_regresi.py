@@ -757,12 +757,12 @@ class UjiV118(Dasar):
         return self.ok(*(argv + list(extra)))
 
     def test_70_version_sama_di_semua_berkas(self):
-        self.assertEqual(K.VERSI, "1.1.10")
+        self.assertEqual(K.VERSI, "1.1.13")
         spec = importlib.util.spec_from_file_location("rekap_nota", os.path.join(AKAR, "scripts", "rekap_nota.py"))
         rn = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(rn)
         self.assertEqual(rn.VERSI, K.VERSI)
-        self.assertIn("## Catatan revisi %s (2026-10-26)" % K.VERSI, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
+        self.assertIn("## Catatan revisi %s (2026-10-27)" % K.VERSI, isi_file(os.path.join(AKAR, "CHANGELOG.md")))
         self.assertIn("Versi terkini: **%s**" % K.VERSI, isi_file(os.path.join(AKAR, "README.md")))
 
     def test_71_jual_tersimpan_memuat_struk_teks_58mm(self):
@@ -1361,6 +1361,78 @@ class UjiV1110(Dasar):
         jumlah = len([n for n in UjiV1110.__dict__ if n.startswith("test_")])
         t = isi_file(os.path.join(AKAR, "CHANGELOG.md"))
         self.assertIn("`UjiV1110` (%d uji)" % jumlah, t)
+
+
+class UjiV1111(Dasar):
+    """v1.1.11 (temuan uji Telegram gelombang 28): setelah "ya", chat hanya berisi hasil untuk pemilik."""
+
+    def skill(self):
+        return isi_file(os.path.join(AKAR, "SKILL.md"))
+
+    def test_112_aturan_balasan_setelah_ya_ada(self):
+        md = self.skill()
+        self.assertIn("Setelah pengguna membalas \"ya\", chat hanya berisi hasil untuk pemilik", md)
+        self.assertIn("Kalimat tentang perintah, opsi, persetujuan, proses, atau instruksi kerja tidak pernah ditulis ke chat", md)
+        self.assertIn("**Cara bicara**, poin 6", md)
+
+    def test_113_skill_md_tanpa_kalimat_bocor_yang_bisa_disalin(self):
+        md = self.skill().lower()
+        for frasa in ("user setuju", "jalankan perintah sama persis", "perintah sama persis + --ya",
+                      "lalu balas: hasil singkat"):
+            self.assertNotIn(frasa, md, frasa)
+
+    def test_114_aturan_baru_tidak_menyebut_opsi_teknis(self):
+        md = self.skill()
+        a = md.index("6. **Setelah pengguna membalas")
+        poin = md[a:md.index("\n", a)]
+        self.assertNotIn("--", poin)
+        self.assertNotIn("`ya`", poin)
+
+    def test_115_hasil_simpan_tidak_memuat_bahasa_proses(self):
+        self.ok("buka-kasir", "--kas-awal", "100rb", "--ya")
+        o = self.ok("jual", "--pesan", "2 kopi hitam, bayar pas", "--waktu", "2026-09-24 10:00", "--ya")
+        for f in ("teks", "struk_teks"):
+            tx = o.get(f, "")
+            self.assertIsNone(POLA_FLAG.search(tx), tx)
+            for kata in ("user setuju", "setuju", "persis", "perintah", "instruksi"):
+                self.assertNotIn(kata, tx.lower(), (f, kata))
+
+    def test_120_skill_md_tanpa_frasa_perintah_salin_varian(self):
+        import re
+        md = re.sub(r"[`*]", "", self.skill().lower())
+        for pola in (r"perintah\s+(yang\s+)?sama(\s+persis)?\s*\+\s*--ya", r"jalankan\s+ulang\s+perintah",
+                     r"jalankan\s+perintah\s+sama", r"perintah\s+sama\s*\+"):
+            self.assertIsNone(re.search(pola, md), pola)
+
+    def test_121_catatan_agent_bebas_frasa_salin(self):
+        import re
+        self.ok("init", "--nama-toko", "Warung Uji", "--ya")
+        teks = [K.CATATAN_PRATINJAU, K.CATATAN_BERKAS, K.CATATAN_TERKUNCI]
+        o = self.ok("jual", "--pesan", "1 kopi hitam, bayar pas", "--waktu", "2026-09-24 10:00")
+        teks.append(o.get("catatan_agent", ""))
+        for t in teks:
+            tl = t.lower()
+            self.assertIsNone(re.search(r"jalankan\W+.{0,40}sama\W+persis", tl), t)
+            self.assertNotIn("setuju", tl, t)
+            self.assertNotIn("sama persis + --ya", tl, t)
+        self.assertNotIn("setuju", open(os.path.join(AKAR, "scripts", "kasir.py"), encoding="utf-8").read()
+                         .split("CATATAN_PRATINJAU = (")[1].split("CATATAN_BERKAS")[0].lower())
+
+    def test_122_struk_tidak_diminta_dua_kali(self):
+        md = self.skill()
+        self.assertNotIn("`teks` + `struk_teks`", md)
+        self.assertIn("jangan dua kali", md)
+
+    def test_116_versi_dan_dokumen_disamakan(self):
+        self.assertEqual(K.VERSI, "1.1.13")
+        self.assertIn("**1.1.13**", isi_file(os.path.join(AKAR, "README.md")))
+        self.assertIn("## Catatan revisi 1.1.13", isi_file(os.path.join(AKAR, "CHANGELOG.md")))
+        self.assertLess(len(self.skill().splitlines()), 300)
+
+    def test_117_changelog_menyebut_jumlah_uji_dengan_benar(self):
+        jumlah = len([n for n in UjiV1111.__dict__ if n.startswith("test_")])
+        t = isi_file(os.path.join(AKAR, "CHANGELOG.md"))
+        self.assertIn("`UjiV1111` (%d uji)" % jumlah, t)
         total = 0
         for nama, kls in list(globals().items()):
             if isinstance(kls, type) and issubclass(kls, unittest.TestCase) and kls.__module__ == __name__:

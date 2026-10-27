@@ -1,5 +1,7 @@
 # 01 - Impor catatan WA menjadi usulan (dijalankan pada Fider v0.38.0 asli, 2026-09-29)
 
+> **FORMAT LAMA (sebelum v1.0.10), direkam apa adanya.** Saat itu nama berpola sapaan (mis. "Bu Rina") belum disamarkan; sekarang skill menyamarkannya dan agent menulis "seorang pelanggan". Jangan ditiru; lihat README untuk format terkini.
+
 **Permintaan:** "Ini catatan WA minggu ini, jadikan usulan di Fider."
 
 Berkas `catatan.txt` (data fiktif):
@@ -21,4 +23,4 @@ SELESAI: 3 pos dibuat, 1 dilewati (kemungkinan duplikat).
 - #4 Tolong ada notifikasi WA kalau pesanan sudah dikirim, minta 3 orang
 - #5 Ongkir ke luar Jawa sering salah hitung. Kontak: [email disembunyikan]
 ```
-**Catatan pembuat:** nama "Bu Rina" tidak disamarkan otomatis (hanya nomor HP/email); agent seharusnya menyarankan membuang nama dari judul sebelum "ya". #3 kemudian digabung ke #1 (lihat 02).
+**Catatan pembuat (format lama):** saat itu nama "Bu Rina" tidak disamarkan otomatis (hanya nomor HP/email; sejak v1.0.10 nama berpola sapaan ikut disamarkan); agent seharusnya menyarankan membuang nama dari judul sebelum "ya". #3 kemudian digabung ke #1 (lihat 02).

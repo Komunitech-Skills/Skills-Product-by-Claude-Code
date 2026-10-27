@@ -2,6 +2,8 @@
 
 Percakapan fiktif. Data lengkap: `data/03-konsultan-minggu1.txt`.
 
+> **FORMAT LAMA (sebelum 1.0.3), hanya untuk contoh ISI penilaian.** Jangan tiru bentuknya: tabel 4 kolom, tanpa baris "Angka tren", tanpa penutup "Balas 'rinci'", dan lebih panjang dari batas chat. Format terkini: `06-format-ringkas-chat.md` (data yang sama dengan contoh 2) dan `01-skincare-minggu2.md`. Angka di sini milik data contoh ini; jangan disalin.
+
 ## Input pengguna
 "Bot saya baru dipasang kemarin untuk menerima calon klien konsultasi. Ada 7 percakapan, mohon dinilai. Tarif sesi 60 menit adalah Rp1.500.000."
 

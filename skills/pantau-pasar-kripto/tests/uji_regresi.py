@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Uji regresi pantau-pasar-kripto (v1.0.2 s/d v1.0.11) -- SEPENUHNYA OFFLINE (tanpa jaringan sungguhan;
+"""Uji regresi pantau-pasar-kripto (v1.0.2 s/d v1.0.12) -- SEPENUHNYA OFFLINE (tanpa jaringan sungguhan;
 kegagalan jaringan/timeout DIUJI lewat `unittest.mock` pada `urllib.request.urlopen`, tidak
 pernah menghubungi internet sungguhan).
 
@@ -13,12 +13,14 @@ R-1..R-6, dan uji ulang v1.0.1: S2-1, S2-2, S2-3.
 """
 
 import datetime as dt
+import io as io_mod
 import json
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
+from decimal import Decimal
 from unittest import mock
 
 SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -568,10 +570,10 @@ class UjiJurnalPL(unittest.TestCase):
         self.assertIn("kosong", str(cm.exception))
 
     def test_53_parse_jumlah_koin_titik_S6(self):
-        self.assertAlmostEqual(hitung_pl_jurnal.parse_jumlah_koin("0.005"), 0.005)
+        self.assertEqual(hitung_pl_jurnal.parse_jumlah_koin("0.005"), Decimal("0.005"))  # v1.0.12: eksak
 
     def test_54_parse_jumlah_koin_koma_S6(self):
-        self.assertAlmostEqual(hitung_pl_jurnal.parse_jumlah_koin("0,005"), 0.005)
+        self.assertEqual(hitung_pl_jurnal.parse_jumlah_koin("0,005"), Decimal("0.005"))  # v1.0.12: eksak
 
     def test_55_parse_jumlah_koin_titik_dan_koma_ditolak_jelas(self):
         with self.assertRaises(ValueError) as cm:
@@ -1753,7 +1755,7 @@ class UjiV110PratinjauDraftDanDokumen(unittest.TestCase):
         blok = teks.split("## Aturan kripto Komunitech (wajib)")[1].split("```")[0]
         aturan8 = [l for l in blok.splitlines() if l.startswith("8. ")][0]
         kutipan = aturan8.split(': "', 1)[1].rsplit('"', 1)[0]
-        for kata in ("tanpa izin tarik dana", "bot-trading-kripto", "ditunda",
+        for kata in ("tanpa izin tarik dana", "Auto-trading: tidak termasuk paket ini",  # v1.0.12
                      "limit/stop order bawaan aplikasi bursa resmi", "POJK 27/2024", "PAKD terdaftar/berizin OJK",
                      "Satgas PASTI"):
             self.assertIn(kata, kutipan)
@@ -1836,6 +1838,310 @@ class UjiV1011BatasTanggalPmk50(unittest.TestCase):
         self.assertIn("PMK 68/PMK.03/2022", reg)
         self.assertIn("https://www.pajak.go.id/id/artikel/aspek-pajak-transaksi-kripto-dulu-dan-sekarang", reg)
         self.assertIn("jual_sebelum_1_agustus_2025", skill)
+
+
+def _jalankan_jurnal_isi(isi, *tambahan, hari_ini="2026-10-01"):
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "JURNAL.csv")
+        tulis_teks(path, isi)
+        return jalankan_jurnal(["--jurnal", path, "--hari-ini", hari_ini] + list(tambahan))
+
+
+def _jurnal_json(isi, *tambahan):
+    kode, out, err = _jalankan_jurnal_isi(isi, *tambahan)
+    assert kode == 0, (kode, out, err)
+    return json.loads(out)
+
+
+class UjiV1012TeksChatDanPembacaan(unittest.TestCase):
+    """v1.0.12 -- putaran 5 (uji Telegram G25: rincian tulisan agent mengurangkan fee dua kali).
+    Skrip kini menyusun teks chat sendiri. Hitung independen G25 (Decimal, tanpa skrip):
+      BTC 5 Agu: 17.050.000 - 51.150 = 16.998.850 ; modal 0,010 x (1.520.000.000 + 54.720/0,012) = 15.245.600
+      P/L 1.753.250 / 1.220.600 / -2.781.200 / 790.260 -> total 982.910
+      PPh 35.805 + 306.000 (ETH Binance 1%) + 60.690 + 18.291 = 420.786 ; 982.910 - 420.786 = 562.124 ;
+      982.910 - 306.000 = 676.910
+    """
+
+    DATA = os.path.join(SKILL_DIR, "tests", "data")
+
+    def test_133_g25_teks_identik_byte_dan_angka(self):
+        kode, out, err = jalankan_jurnal(["--jurnal", os.path.join(self.DATA, "g25-jurnal.csv"),
+                                          "--hari-ini", "2026-10-01", "--keluaran", "teks"])
+        self.assertEqual(kode, 0, err)
+        with open(os.path.join(self.DATA, "g25-teks.txt"), encoding="utf-8", newline="") as f:
+            self.assertEqual(out, f.read())   # byte-identik dengan keluaran terkunci
+        for angka in ("+Rp982.910", "Rp420.786", "= Rp562.124", "= Rp676.910", "+Rp1.753.250", "+Rp1.220.600",
+                      "-Rp2.781.200", "+Rp790.260", "0,003 @ Rp1.614.830.000", "0,3 @ Rp58.575.200",
+                      "15 @ Rp3.159.450"):
+            self.assertIn(angka, out)
+        self.assertNotIn("kirim sebagai pesan terpisah", out)    # satu pesan
+        self.assertLessEqual(len(out), 3800)
+        # persamaan per baris cocok (fee tidak dikurangkan dua kali)
+        self.assertIn("hasil jual bersih Rp16.998.850 (sudah dipotong fee Rp51.150) - modal Rp15.245.600 = "
+                      "+Rp1.753.250", out)
+        for istilah in ("proceeds", "cost basis", "realized", "sinyal", "API key", "beli sekarang"):
+            self.assertNotIn(istilah, out)
+        self.assertIn("Informasi, bukan nasihat investasi. Keputusan & risiko sepenuhnya milik Anda.", out)
+        self.assertIn("Angka PPh ini tetap", out)
+        d = json.loads(jalankan_jurnal(["--jurnal", os.path.join(self.DATA, "g25-jurnal.csv"),
+                                        "--hari-ini", "2026-10-01"])[1])
+        self.assertEqual(d["total_realized_pl"], 982910)
+        self.assertEqual(d["estimasi_pajak"]["total_estimasi_pph"], 420786)
+        self.assertEqual(d["estimasi_pajak"]["pl_bila_pph_belum_di_kolom_biaya"], 562124)
+        self.assertEqual(d["estimasi_pajak"]["pl_bila_pph_dalam_negeri_sudah_di_kolom_biaya"], 676910)
+        self.assertEqual(d["jumlah_bagian"], 1)
+        self.assertEqual(d["teks_bagian"][0] + "\n", out)
+        self.assertEqual(d["status_hasil"], "LENGKAP")
+
+    def test_134_jumlah_koin_ribuan_hanya_bila_kolom_gaya_indonesia(self):
+        # kolom bergaya Indonesia (koma desimal, tanpa titik desimal) -> "12.000" = dua belas ribu
+        d = _jurnal_json("tanggal;koin;aksi;jumlah_koin;harga_satuan;biaya\n"
+                         "2026-08-01;DOGE;beli;12.000;1.500;0\n2026-08-02;DOGE;jual;0,5;2.000;0\n")
+        self.assertEqual(d["gaya_jumlah_koin"], "id")
+        self.assertEqual(d["posisi_tersisa"]["DOGE"]["jumlah_tersisa_teks"], "11999,5")
+        self.assertTrue(any("dibaca 12000 koin, dua belas ribu" in c for c in d["catatan_perhatian"]))
+        self.assertFalse(d["untung_setelah_pajak_ditahan"])
+        # kolom bertitik desimal -> "12.000" dibaca 12, diberi catatan, untung setelah pajak ditahan
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         "2026-08-01,DOGE,beli,12.000,1500,0\n2026-08-02,DOGE,jual,0.5,2000,0\n")
+        self.assertEqual(d["gaya_jumlah_koin"], "titik")
+        self.assertEqual(d["posisi_tersisa"]["DOGE"]["jumlah_tersisa_teks"], "11,5")
+        self.assertTrue(any("dibaca 12 koin, dua belas" in c for c in d["catatan_perhatian"]))
+        self.assertEqual(d["baris_ragu"], [2])
+        self.assertTrue(d["untung_setelah_pajak_ditahan"])
+        self.assertEqual(d["sifat_angka_pph"], "sementara")
+        teks = d["teks_bagian"][0]
+        self.assertIn("Perhatian:", teks)
+        self.assertIn("ditahan dulu", teks)
+        self.assertNotIn("Bila PPh belum ada di kolom biaya", teks)
+        self.assertIn("Angka PPh ini sementara", teks)
+        # "1,500" di kolom bertitik desimal -> 1,5 + terbilang
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         "2026-08-01,ETH,beli,0.5,1000,0\n2026-08-01,ETH,beli,\"1,500\",1000,0\n")
+        self.assertTrue(any("dibaca 1,5 koin, satu koma lima" in c for c in d["catatan_perhatian"]))
+        self.assertEqual(hitung_pl_jurnal.terbilang("1,5"), "satu koma lima")
+        self.assertEqual(hitung_pl_jurnal.terbilang("12000"), "dua belas ribu")
+        self.assertEqual(hitung_pl_jurnal.terbilang("1250000"), "satu juta dua ratus lima puluh ribu")
+
+    def test_135_harga_dan_biaya_dibaca_persis(self):
+        f = hitung_pl_jurnal.parse_angka_id
+        self.assertEqual(f("0.152"), Decimal("0.152"))
+        self.assertEqual(f(".152"), Decimal("0.152"))
+        self.assertEqual(f("Rp. 850"), Decimal(850))
+        self.assertEqual(f("rp850"), Decimal(850))
+        self.assertEqual(f("IDR 850"), Decimal(850))
+        self.assertEqual(f("1.500"), Decimal(1500))
+        self.assertEqual(f("Rp 1.500.000,50"), Decimal("1500000.50"))
+        self.assertIsInstance(f("1500000"), Decimal)
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         "2026-08-01,PEPE,beli,1000000,0.152,Rp0.152\n")
+        self.assertEqual(d["posisi_tersisa"]["PEPE"]["harga_rata_rata_perolehan"], 0)
+        self.assertTrue(any("periksa nominal" in c and "Rp152" in c for c in d["catatan_perhatian"]))
+        self.assertEqual(d["baris_ragu"], [2])
+        # biaya kecil TANPA awalan Rp tidak ditandai
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n2026-08-01,PEPE,beli,1000000,0.152,0.5\n")
+        self.assertEqual(d["catatan_perhatian"], [])
+
+    def test_136_desimal_panjang_eksak_dan_error_tak_terduga(self):
+        j = "0.1234567890123456789012345"   # 25 desimal
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         f"2026-08-01,BTC,beli,{j},1000000000,0\n"
+                         "2026-08-02,BTC,jual,0.1234567890123456789012344,1000000000,0\n")
+        self.assertEqual(d["posisi_tersisa"]["BTC"]["jumlah_tersisa_teks"], "0,0000000000000000000000001")
+        self.assertEqual(d["baris_bermasalah"], [])
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         f"2026-08-01,BTC,beli,{j},1000000000,0\n2026-08-02,BTC,jual,{j},1100000000,0\n")
+        self.assertEqual(d["posisi_tersisa"], {})
+        self.assertEqual(d["total_realized_pl"], 12345679)     # 0,1234567890123... x 100.000.000
+        # error tak terduga -> pesan biasa, tanpa traceback
+        import contextlib
+        buf = io_mod.StringIO()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "J.csv")
+            tulis_teks(path, "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n2026-08-01,BTC,beli,1,1,0\n")
+            with mock.patch.object(hitung_pl_jurnal, "hitung_fifo", side_effect=RuntimeError("x")), \
+                    contextlib.redirect_stdout(buf):
+                kode = hitung_pl_jurnal.main(["--jurnal", path])
+        self.assertEqual(kode, 1)
+        pesan = json.loads(buf.getvalue())["pesan"]
+        self.assertIn("kesalahan tak terduga", pesan)
+        self.assertNotIn("Traceback", buf.getvalue())
+        kode, out, err = jalankan_jurnal(["--jurnal", "x.csv", "--platform", "mars"])
+        self.assertEqual(kode, 1)
+        self.assertEqual(err, "")
+
+    def test_137_baris_ditolak_membuat_belum_lengkap(self):
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         "2026-08-01,ETH,beli,satu,1000,0\n2026-08-02,ETH,beli,1,1000,0\n"
+                         "2026-08-03,ETH,jual,1,1200,0\n")
+        self.assertEqual(d["status_hasil"], "BELUM LENGKAP")
+        self.assertTrue(any("beli ETH" in a for a in d["alasan_belum_lengkap"]))
+        self.assertEqual(d["sifat_angka_pph"], "sementara")
+        self.assertIn("BELUM LENGKAP", d["teks_bagian"][0])
+        self.assertIn("sementara", d["teks_bagian"][0])
+        self.assertNotIn("tetap untuk data", d["teks_bagian"][0])
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         "kemarin,BTC,beli,1,1000,0\n2026-08-03,ETH,beli,1,1200,0\n")
+        self.assertEqual(d["status_hasil"], "BELUM LENGKAP")
+        self.assertTrue(any("tanggalnya tidak terbaca" in a for a in d["alasan_belum_lengkap"]))
+        # beli ditolak untuk koin yang TIDAK dijual -> tetap lengkap, tapi PPh "sementara"
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         "2026-08-01,SOL,beli,x,1000,0\n2026-08-02,ETH,beli,1,1000,0\n2026-08-03,ETH,jual,1,1200,0\n")
+        self.assertEqual(d["status_hasil"], "LENGKAP")
+        self.assertEqual(d["sifat_angka_pph"], "sementara")
+        self.assertIn("Angka PPh ini sementara", d["teks_bagian"][0])
+
+    def test_138_nan_inf_garis_bawah_dan_format_rusak_ditolak(self):
+        for nilai in ("nan", "NaN", "inf", "Infinity", "1_000", "1,500,000.50", "1.50.000", "Rp 1 50", "15 00 000",
+                      "1.500,", "Rp", "--5", "1e5"):
+            with self.assertRaises(ValueError, msg=nilai):
+                hitung_pl_jurnal.parse_angka_id(nilai)
+        for nilai in ("nan", "inf", "1_000", "1e3", "1.000.000"):
+            with self.assertRaises(ValueError, msg=nilai):
+                hitung_pl_jurnal.parse_jumlah_koin(nilai)
+        d = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+                         "2026-08-01,BTC,beli,nan,1000,0\n2026-08-01,BTC,beli,1,inf,0\n2026-08-01,BTC,beli,1,1_000,0\n")
+        self.assertEqual(len(d["baris_bermasalah"]), 3)
+
+    def test_139_ringkas_hanya_bila_lebih_pendek_dan_pecah_pesan(self):
+        baris = ["tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya", "2026-08-01,BTC,beli,100,1000000,1000"]
+        for i in range(60):
+            baris.append(f"2026-09-{1 + i % 28:02d},BTC,jual,1,{1100000 + i},1100")
+        d = _jurnal_json("\n".join(baris) + "\n")
+        self.assertEqual(d["mode_teks"], "ringkas")
+        lengkap = hitung_pl_jurnal.susun_teks(d)
+        self.assertLess(len("\n\n".join(d["teks_bagian"])), len(lengkap))
+        for b in d["teks_bagian"]:
+            self.assertLessEqual(len(b), 3800)
+        # pecah di batas baris: setiap baris bagian adalah baris utuh dari teks gabungan
+        semua_baris = set(hitung_pl_jurnal.susun_teks(d, ringkas=True).split("\n"))
+        for b in d["teks_bagian"]:
+            for ln in b.split("\n"):
+                self.assertIn(ln, semua_baris)
+        # data pendek -> mode lengkap, satu bagian
+        d2 = _jurnal_json("tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n2026-08-01,BTC,beli,1,1000,0\n")
+        self.assertEqual((d2["mode_teks"], d2["jumlah_bagian"]), ("lengkap", 1))
+        # pemecah langsung + penanda bagian
+        teks = "\n".join(f"baris nomor {i} " + "x" * 80 for i in range(120))
+        bag = hitung_pl_jurnal.pecah_teks(teks)
+        self.assertGreater(len(bag), 1)
+        self.assertTrue(all(len(b) <= 3800 for b in bag))
+        self.assertEqual("\n".join(bag), teks)
+        gab = hitung_pl_jurnal.gabung_bagian(bag)
+        self.assertIn(f"––– kirim sebagai pesan terpisah: bagian 1 dari {len(bag)} –––", gab)
+        self.assertIn(f"––– kirim sebagai pesan terpisah: bagian {len(bag)} dari {len(bag)} –––", gab)
+
+    def test_140_ppn_panduan_dan_versi(self):
+        baca = lambda *b: open(os.path.join(SKILL_DIR, *b), encoding="utf-8").read()
+        self.assertEqual(hitung_pl_jurnal.VERSI, "1.0.12")
+        kode, out, _ = jalankan_jurnal(["--versi"])
+        self.assertEqual((kode, out.strip()), (0, "hitung_pl_jurnal.py 1.0.12"))
+        self.assertIn("Versi terkini: **1.0.12**", baca("README.md"))
+        self.assertIn("1.0.12", baca("CHANGELOG.md").split("## Riwayat versi")[1][:400])
+        self.assertIn("1.0.12", baca("SKILL.md"))
+        self.assertIn("tidak dikenai PPN (Pasal 2 ayat (1))", hitung_pl_jurnal.KALIMAT_PPN)
+        for teks in (baca("SKILL.md"), baca("references", "regulasi.md")):
+            self.assertIn("tidak dikenai PPN (Pasal 2 ayat (1))", teks)
+        panduan = open(os.path.join(SKILL_DIR, "..", "..", "solusi-vip", "kripto-keuangan", "PANDUAN.md"),
+                       encoding="utf-8").read()
+        self.assertIn("Auto-trading: tidak termasuk paket ini", panduan)
+        self.assertNotIn("bot-trading-kripto", panduan)
+        skill = baca("SKILL.md")
+        self.assertLess(len(skill.splitlines()), 300)
+        self.assertIn("--keluaran teks", skill)
+
+
+class UjiV1012Putaran2(unittest.TestCase):
+    """v1.0.12 putaran 2 -- temuan pemeriksa independen."""
+    H = "tanggal,koin,aksi,jumlah_koin,harga_satuan,biaya\n"
+
+    def test_141_beli_dengan_aksi_tak_terbaca_membuat_belum_lengkap(self):
+        # lot FIFO pertama ditulis 'Buy' -> ditolak; BTC dijual sesudahnya -> BELUM LENGKAP, untung ditahan
+        isi = self.H + ("2026-08-01,BTC,Buy,0.01,500000000,500\n2026-08-02,BTC,beli,0.01,1000000000,1000\n"
+                        "2026-08-10,BTC,jual,0.01,1100000000,1100\n")
+        d = _jurnal_json(isi)
+        self.assertEqual(d["status_hasil"], "BELUM LENGKAP")
+        self.assertTrue(any("aksinya tidak terbaca ('buy')" in a for a in d["alasan_belum_lengkap"]))
+        self.assertTrue(d["untung_setelah_pajak_ditahan"])
+        teks = d["teks_bagian"][0]
+        self.assertNotIn("tidak memengaruhi", teks)
+        self.assertIn("Untung setelah pajak: ditahan dulu", teks)
+        # aksi tak terbaca selalu dianggap memengaruhi (bisa jadi jual), walau tidak ada jual sesudahnya
+        for aksi in ("pembelian", "Sell", ""):
+            d = _jurnal_json(self.H + f"2026-08-01,ETH,beli,1,1000,0\n2026-08-02,ETH,jual,1,1200,0\n"
+                                      f"2026-08-03,ETH,{aksi},1,1300,0\n")
+            self.assertEqual(d["status_hasil"], "BELUM LENGKAP", aksi)
+
+    def test_142_beli_dengan_koin_kosong(self):
+        isi = self.H + "2026-08-01,,beli,1,1000,0\n2026-08-02,ETH,beli,1,1000,0\n2026-08-03,ETH,jual,1,1200,0\n"
+        d = _jurnal_json(isi)
+        self.assertEqual(d["status_hasil"], "BELUM LENGKAP")
+        self.assertTrue(any("kolom koin kosong" in a for a in d["alasan_belum_lengkap"]))
+        # tidak ada jual sesudahnya -> lengkap, kalimat jujur soal sisa koin
+        isi = self.H + "2026-08-01,ETH,beli,1,1000,0\n2026-08-02,ETH,jual,1,1200,0\n2026-08-05,,beli,1,1000,0\n"
+        d = _jurnal_json(isi)
+        self.assertEqual(d["status_hasil"], "LENGKAP")
+        self.assertIn("tidak ada penjualan sesudahnya yang terpengaruh", d["teks_bagian"][0])
+        self.assertEqual(d["sifat_angka_pph"], "sementara")
+
+    def test_143_rupiah_dengan_spasi_ribuan(self):
+        p = hitung_pl_jurnal.parse_angka_id
+        for nilai, harap in (("1 500 000", "1500000"), ("Rp 1 500 000", "1500000"), ("Rp1\u00a0500\u00a0000", "1500000"),
+                             ("1 500 000,50", "1500000.50"), ("850", "850")):
+            self.assertEqual(p(nilai), Decimal(harap), nilai)
+        for nilai in ("1 50", "15 00 000", "1  500", "01 500"):
+            with self.assertRaises(ValueError, msg=nilai):
+                p(nilai)
+        d = _jurnal_json(self.H + "2026-08-01,BTC,beli,1,Rp 1 500 000,0\n2026-08-02,BTC,jual,1,1 600 000,0\n")
+        self.assertEqual((d["status_hasil"], d["total_realized_pl"]), ("LENGKAP", 100000))
+
+    def test_144_persen_tidak_tampil_bila_modal_atau_pl_rp0(self):
+        isi = self.H + "2026-08-01,BTC,beli,0.0000000001,1000,0\n2026-08-02,BTC,jual,0.0000000001,2000,0\n"
+        d = _jurnal_json(isi)
+        r = d["realized_per_koin"]["BTC"][0]
+        self.assertEqual((r["cost_basis"], r["pl"], r["pl_persen"]), (0, 0, None))
+        self.assertNotIn("%)", d["teks_bagian"][0].split("Total untung")[0].split("Untung/rugi")[1])
+        self.assertEqual(hitung_pl_jurnal._persen(5.0, 0), "")
+        self.assertEqual(hitung_pl_jurnal._persen(5.0, 10), " (+5,00%)")
+
+    def test_145_baris_panjang_dipotong_di_spasi(self):
+        baris = " ".join(f"kata{i:05d}" for i in range(1200))   # > 3.800 karakter, satu baris
+        bag = hitung_pl_jurnal.pecah_teks(baris)
+        self.assertGreater(len(bag), 1)
+        self.assertTrue(all(len(b) <= 3800 for b in bag))
+        kata = set(baris.split(" "))
+        for b in bag:
+            for k in b.split():
+                self.assertIn(k, kata)   # tidak ada kata yang terpotong di tengah
+        self.assertEqual(" ".join(" ".join(bag).split()), baris)
+        # tanpa spasi sama sekali -> tetap dipotong di batas (tidak macet)
+        bag = hitung_pl_jurnal.pecah_teks("x" * 8000)
+        self.assertEqual("".join(bag), "x" * 8000)
+
+    def test_146_catatan_biaya_kecil_dan_harga_koma_tiga_digit(self):
+        d = _jurnal_json(self.H + "2026-08-01,BTC,beli,1,1000,Rp 0.5\n")
+        c = " ".join(d["catatan_perhatian"])
+        self.assertIn("periksa nominal", c)
+        self.assertNotIn("Rp5", c)
+        d = _jurnal_json(self.H + "2026-08-01,BTC,beli,1,1000,Rp 0.152\n")
+        self.assertIn("bila maksudnya Rp152", " ".join(d["catatan_perhatian"]))
+        # harga '1,500' dibaca Rp1,5 -> ada catatan Perhatian + untung setelah pajak ditahan
+        d = _jurnal_json(self.H + "2026-08-01,BTC,beli,1,\"1,500\",0\n2026-08-02,BTC,jual,1,2000,0\n")
+        c = " ".join(d["catatan_perhatian"])
+        self.assertIn("harga_satuan '1,500' dibaca Rp1,500", c)
+        self.assertIn("Rp1.500", c)
+        self.assertTrue(d["untung_setelah_pajak_ditahan"])
+        self.assertIn(2, d["baris_ragu"])
+
+    def test_147_pilihan_salah_dengan_keluaran_teks_tanpa_json(self):
+        kode, out, _ = jalankan_jurnal(["--jurnal", "x.csv", "--keluaran", "teks", "--salah"])
+        self.assertEqual(kode, 1)
+        self.assertTrue(out.startswith("Pilihan perintah tidak dikenali"))
+        self.assertNotIn("{", out)
+        kode, out, _ = jalankan_jurnal(["--jurnal", "x.csv", "--keluaran=teks", "--periode", "kemarin"])
+        self.assertTrue(out.startswith("Pilihan perintah tidak dikenali"))
+        kode, out, _ = jalankan_jurnal(["--jurnal", "x.csv", "--salah"])
+        self.assertEqual(json.loads(out)["status"], "error")
 
 
 if __name__ == "__main__":

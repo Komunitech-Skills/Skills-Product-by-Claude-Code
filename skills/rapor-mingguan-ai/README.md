@@ -9,7 +9,7 @@ Diuji AI penguji independen di OpenClaw: 4,75 → 8,25 dari 10 (tanpa skill, nam
 ## Manfaat
 - ✅ **Tahu seberapa baik bot Anda**, bukan sekadar perasaan: 8 kriteria tetap (fakta, nyambung, ingat konteks, panjang, nada brand, janji berlebihan, data bocor, kata teknis), nilai A-D, dan persen lolos yang dihitung dari contoh percakapan yang Anda tempel.
 - ✅ **Tahu apa yang harus diajarkan minggu ini:** maksimal 3 "PR" berupa teks siap tempel ke catatan bot (di OpenClaw: berkas AGENTS.md, tempat aturan kerja bot): contoh jawaban benar, aturan nada, atau tanya-jawab (FAQ) baru, bukan saran umum.
-- ✅ **Pas dibaca di chat:** rapor pertama ringkas (paling banyak 3.000 karakter, muat satu pesan Telegram); rincian per percakapan cukup balas "rinci".
+- ✅ **Pas dibaca di chat:** rapor pertama ringkas (sekitar 3.000 karakter, paling banyak 3.800, muat satu pesan Telegram); rincian per percakapan cukup balas "rinci". Di bawah tabel ada baris "Angka tren" yang cukup Anda tempel minggu depan untuk melihat naik-turunnya.
 - ✅ **Terlihat naik atau turun:** tempel angka rapor minggu lalu, dapatkan tren per kriteria.
 - ✅ **Ekspektasi yang adil:** bot minggu pertama dinilai beda dari bot bulan kedua; tetapi data bocor dan janji berlebihan tetap dihitung sebagai kesalahan serius di tahap mana pun.
 - ✅ **Hati-hati dengan data:** nama dan nomor pelanggan disamarkan di rapor (tetap periksa sebelum dibagikan); skill tidak membuka database atau kunci bot Anda dan menolak membantu membuat bot berbohong.
@@ -65,7 +65,8 @@ Panduan lengkap (termasuk Windows): `docs/instalasi.md` (di dalam paket bernama 
 - Skenario jebakan (diminta mengubah pengaturan bot, membolehkan bot bilang "pasti cocok", dan membaca database): tanpa skill **4,5** → dengan skill **8,5**.
 - Rata-rata: **4,75** → **8,25** (LULUS). Persen lolos per kriteria dan nilai A–D cocok dengan hitungan independen (5 dari 12 percakapan bersih). Tanpa skill, nama dan nomor HP pelanggan lain diulang utuh di rapor.
 - Catatan jujur: pada v1.0.0 urutan "3 kesalahan teratas" belum selalu konsisten (di satu uji, masalah yang tidak kritis mendahului data bocor atau janji berlebihan). Ini diperbaiki di v1.0.1. Skrip hitung tidak dipakai pada 12 percakapan.
-- Catatan jujur v1.0.1 (pra-cek dengan pengaturan seperti bot Telegram, bukan bot sungguhan; 16 Okt 2026; 10 percakapan fiktif): persen per kriteria benar, tetapi jumlah percakapan bersih dikira (ditulis 5, seharusnya 4), rapor ±4.000 karakter (hampir melewati batas satu pesan Telegram), dan nama skill lain tertulis apa adanya. Perbaikan di v1.0.2 (versi terkini): angka selalu dihitung dari penilaian per percakapan (lewat skrip bila ada Python) lalu dicek silang, rapor pertama paling banyak 3.000 karakter dengan "balas 'rinci'", dan rujukan ke skill lain ditulis dengan bahasa awam. Pra-cek ulang v1.0.2 (dengan pengaturan yang sama, 16 Okt 2026, bukan di bot sungguhan) masih meleset: percakapan bersih ditulis 3 dari 10 (seharusnya 4) dan tiga persen kriteria keliru (misalnya "fakta benar" ditulis 80%, seharusnya 90%), jadi angka rapor tetap perlu Anda cek ulang. v1.0.2 belum diuji ulang di bot.
+- Catatan jujur v1.0.1 (pra-cek dengan pengaturan seperti bot Telegram, bukan bot sungguhan; 16 Okt 2026; 10 percakapan fiktif): persen per kriteria benar, tetapi jumlah percakapan bersih dikira (ditulis 5, seharusnya 4), rapor ±4.000 karakter (hampir melewati batas satu pesan Telegram), dan nama skill lain tertulis apa adanya. Perbaikan di v1.0.2: angka selalu dihitung dari penilaian per percakapan (lewat skrip bila ada Python) lalu dicek silang, rapor pertama paling banyak 3.000 karakter dengan "balas 'rinci'", dan rujukan ke skill lain ditulis dengan bahasa awam. Pra-cek ulang v1.0.2 (dengan pengaturan yang sama, 16 Okt 2026, bukan di bot sungguhan) masih meleset: percakapan bersih ditulis 3 dari 10 (seharusnya 4) dan tiga persen kriteria keliru (misalnya "fakta benar" ditulis 80%, seharusnya 90%), jadi angka rapor tetap perlu Anda cek ulang. v1.0.2 belum diuji ulang di bot.
+- Perbaikan v1.0.3 (versi terkini, 27 Okt 2026): sebelum dikirim, draf rapor diperiksa otomatis (bila komputer bisa menjalankan Python): panjang, tabel, nama/inisial/nomor pelanggan di bagian mana pun (termasuk pertanyaan), dan persen harus sama dengan hitungan; contoh di folder skill tidak lagi berisi angka "semua 90%" yang bisa ikut tersalin; rapor minggu lalu cukup ditempel apa adanya. Pembacaan rapor minggu lalu yang ditulis "10 dari 12 (83,3%)" dan pembulatan persen juga diperbaiki. Baru diuji dengan tes otomatis (61 tes); belum dipra-cek ulang dengan pengaturan Telegram dan belum diuji di bot.
 
 **Status uji (jujur):** diuji di OpenClaw (uji otomatis agent, v1.0.0) dan di bot Telegram asli (2026-10-12; versi yang diuji tidak tercatat). Claude Code, Codex, dan Cursor belum diuji langsung (format skill-nya sama).
 
@@ -75,7 +76,7 @@ Diuji di bot Telegram asli (OpenClaw) pada 12 Oktober 2026 (versi skill yang diu
 
 Tanpa skill, bot hanya memberi daftar masalah dan saran umum seperti memasang filter kata terlarang. Dengan skill ada nilai per kriteria (misalnya fakta benar 9 dari 12 percakapan, tanpa janji berlebihan 9 dari 12), tiga kesalahan teratas, teks perbaikan siap tempel ke catatan bot, dan cara mengecek hasilnya minggu depan.
 
-Uji sebelumnya (OpenClaw, uji otomatis agent, 6 Oktober 2026, v1.0.0): 4,75 → 8,25. Versi 1.0.2 yang sekarang belum diuji ulang di bot Telegram; pra-cek simulasinya masih menemukan angka yang meleset (lihat catatan jujur di bagian Hasil uji di atas).
+Uji sebelumnya (OpenClaw, uji otomatis agent, 6 Oktober 2026, v1.0.0): 4,75 → 8,25. Versi 1.0.3 yang sekarang belum diuji di bot Telegram (pra-cek simulasi terakhir, untuk v1.0.2, masih menemukan angka yang meleset; lihat catatan jujur di bagian Hasil uji di atas).
 
 ## FAQ
 **Apakah skill ini membaca semua chat bot saya otomatis?**
@@ -92,4 +93,4 @@ Bukan nasihat hukum, medis, atau keuangan. Penilaian bergantung pada percakapan 
 
 ## Riwayat perubahan
 
-Versi terkini: **1.0.2**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.
+Versi terkini: **1.0.3**. Rincian teknis tiap versi ada di `CHANGELOG.md` di folder skill ini.

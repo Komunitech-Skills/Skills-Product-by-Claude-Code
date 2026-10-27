@@ -10,7 +10,13 @@ variabel lingkungan PANTAU_CRON_DIR):
   alarm.json       ingatan alarm yang sudah dikabarkan (supaya tidak berulang-ulang)
   healthchecks.json (opsional, dibuat pengguna sendiri) nama-job -> URL ping layanan luar
 
-Perintah: tambah, hapus, daftar, ping, cek, riwayat.   Resolusi waktu: 1 menit.
+Perintah: tambah, hapus, daftar, ping, cek, riwayat, bungkus, jalankan.   Resolusi waktu: 1 menit.
+  bungkus  : (job-perintah OpenClaw) susun --command-argv baru yang menjalankan argv LAMA UTUH lalu
+             lapor selesai; --buang mengembalikan argv lama persis. Berkas script milik pemilik tidak disentuh.
+  jalankan : dipakai oleh argv hasil bungkus: jalankan argv lama tanpa shell, teruskan keluaran & kode
+             keluarnya, catat lapor selesai diam-diam hanya bila kode keluar 0.
+  hapus --terima-lapor : berhenti mengawasi job, tetapi lapor selesai dari perintah buatan pemilik
+             tetap diterima (kode keluar 0, tidak dicatat, tidak ke layanan luar) agar jadwalnya tidak gagal.
 Zona: WIB (UTC+7), WITA (UTC+8), WIT (UTC+9), UTC. Indonesia tidak memakai jam musim panas.
 """
 import argparse
@@ -18,10 +24,13 @@ import datetime as dt
 import json
 import os
 import re
+import shlex
+import subprocess
 import sys
 import unicodedata
 import urllib.request
 
+VERSI = "1.0.6"
 ZONA = {"WIB": 7, "WITA": 8, "WIT": 9, "UTC": 0}
 ALIAS_ZONA = {"ASIA/JAKARTA": "WIB", "ASIA/PONTIANAK": "WIB", "ASIA/MAKASSAR": "WITA",
               "ASIA/JAYAPURA": "WIT", "ETC/UTC": "UTC", "GMT": "UTC"}
@@ -449,16 +458,50 @@ def cmd_tambah(a):
     if tol < 1 or tol > MAKS_DUR_TOLERANSI:
         raise GalatPantau("Toleransi harus 1 sampai %d menit." % MAKS_DUR_TOLERANSI)
     data = muat_job(folder)
-    if nama in data["jobs"] and not a.ganti:
+    lama = data["jobs"].get(nama)
+    dilepas = _tidak_diawasi(lama)
+    if dilepas and not a.ganti:
+        lama = None   # job yang dilepas (hapus --terima-lapor) boleh diawasi lagi tanpa --ganti
+    if lama is not None and not a.ganti:
         raise GalatPantau("Job '%s' sudah terdaftar. Tambahkan --ganti bila ingin menimpa pengaturannya." % nama)
-    data["jobs"][nama] = {"jadwal": spec["teks"], "zona": zona, "toleransi_menit": tol, "dibuat": iso_utc(sekarang)}
+    dibuat = iso_utc(sekarang)
+    catatan_riwayat = None
+    if lama is not None:
+        # Riwayat lapor selesai (berkas ping) TIDAK pernah dihapus oleh --ganti.
+        # Hitungan terlewat dipertahankan bila jadwal & zona sama, kecuali --mulai-ulang.
+        sama = isinstance(lama, dict) and lama.get("jadwal") == spec["teks"] and lama.get("zona") == zona
+        try:
+            dibuat_lama = iso_utc(baca_waktu_utc(lama.get("dibuat"))) if isinstance(lama, dict) else None
+        except GalatPantau:
+            dibuat_lama = None
+        if dilepas:
+            # Selama dilepas, lapor selesai sengaja tidak dicatat: hitungan lama tidak boleh dipakai
+            # (akan menimbulkan HILANG palsu untuk seluruh masa tidak diawasi), walau jadwal sama.
+            catatan_riwayat = ("Job ini sempat tidak diawasi: hitungan terlewat dimulai dari sekarang; "
+                               "riwayat lapor selesai tetap disimpan.")
+        elif sama and dibuat_lama and not a.mulai_ulang:
+            dibuat = dibuat_lama
+            catatan_riwayat = "Riwayat dan hitungan lama dipertahankan (jadwal sama)."
+        elif a.mulai_ulang:
+            catatan_riwayat = "Hitungan terlewat dimulai ulang dari sekarang; riwayat lapor selesai tetap disimpan."
+        else:
+            catatan_riwayat = "Jadwal/zona berubah: hitungan terlewat dimulai dari sekarang; riwayat lapor selesai tetap disimpan."
+    elif a.mulai_ulang:
+        raise GalatPantau("--mulai-ulang hanya untuk job yang sudah terdaftar (bersama --ganti).")
+    data["jobs"][nama] = {"jadwal": spec["teks"], "zona": zona, "toleransi_menit": tol, "dibuat": dibuat}
     simpan_job(folder, data)
     print("Terdaftar: %s | jadwal \"%s\" %s | toleransi %d menit | jadwal berikutnya %s"
           % (nama, spec["teks"], zona, tol, fmt_waktu(n1, zona, now.year)))
+    if catatan_riwayat:
+        print(catatan_riwayat)
     if tol >= jarak:
         print("Peringatan: toleransi (%d menit) >= jarak antar jadwal (%d menit); kecilkan toleransi agar keterlambatan terdeteksi."
               % (tol, jarak))
     print("Berikutnya: tambahkan langkah \"lapor selesai\" di akhir job %s agar pantauan tahu job ini sukses." % nama)
+
+
+def _tidak_diawasi(j):
+    return isinstance(j, dict) and j.get("diawasi") is False
 
 
 def cmd_hapus(a):
@@ -467,6 +510,19 @@ def cmd_hapus(a):
     data = muat_job(folder)
     if nama not in data["jobs"]:
         raise GalatPantau("Job '%s' tidak ada. Lihat daftar dengan perintah daftar." % nama)
+    if a.terima_lapor:
+        # Lapor selesai ada di perintah buatan pemilik: job dilepas dari pengawasan, tetapi `ping`
+        # tetap diterima (kode keluar 0) supaya jadwal/rantai perintah pemilik tidak tercatat gagal.
+        j = data["jobs"][nama]
+        if not isinstance(j, dict):
+            j = {}
+        j["diawasi"] = False
+        data["jobs"][nama] = j
+        simpan_job(folder, data)
+        if a.hapus_riwayat and os.path.exists(_path_log(folder, nama)):
+            os.remove(_path_log(folder, nama))
+        print("Job '%s' tidak diawasi lagi; lapor selesai dari perintahnya tetap diterima tanpa galat dan tanpa kabar." % nama)
+        return
     del data["jobs"][nama]
     simpan_job(folder, data)
     p = _path_log(folder, nama)
@@ -486,29 +542,124 @@ def _url_luar(folder, nama):
     return None
 
 
-def cmd_ping(a):
-    folder = folder_data(a.folder)
-    nama = slug(a.nama)
+def _lapor_selesai(folder, nama, w, catatan="", tanpa_luar=False, keluar=sys.stdout):
+    """Catat lapor selesai + (opsional) kabar ke layanan luar milik pengguna. Pesan ke `keluar` (None = diam)."""
+    if keluar is None:
+        with open(os.devnull, "w") as diam:
+            return _lapor_selesai(folder, nama, w, catatan, tanpa_luar, diam)
     data = muat_job(folder)
     if nama not in data["jobs"]:
         raise GalatPantau("Job '%s' belum terdaftar, lapor selesai tidak dicatat. Daftarkan dulu dengan perintah tambah (nama, jadwal, zona)."
                           % nama)
-    w = sekarang_utc(a.sekarang)
-    catat_ping(folder, nama, w, a.catatan)
+    if _tidak_diawasi(data["jobs"][nama]):
+        # Diam total (kode keluar 0): keluaran job perintah bisa sampai ke chat.
+        return
+    catat_ping(folder, nama, w, catatan)
     zona = normal_zona(data["jobs"][nama].get("zona"))
-    print("Lapor selesai dicatat: %s pada %s" % (nama, fmt_waktu(ke_lokal(w, zona), zona)))
-    url = None if a.tanpa_luar else _url_luar(folder, nama)
+    print("Lapor selesai dicatat: %s pada %s" % (nama, fmt_waktu(ke_lokal(w, zona), zona)), file=keluar)
+    url = None if tanpa_luar else _url_luar(folder, nama)
     if url:
         try:
             urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "pantau-cron"}), timeout=8).read(64)
-            print("Kabar ke layanan luar milik Anda: terkirim.")
+            print("Kabar ke layanan luar milik Anda: terkirim.", file=keluar)
         except Exception:   # jaringan mati tidak boleh membuat job utama gagal
             print("Peringatan: kabar ke layanan luar gagal (jaringan/alamat). Catatan di komputer Anda tetap tersimpan.", file=sys.stderr)
 
 
+def cmd_ping(a):
+    _lapor_selesai(folder_data(a.folder), slug(a.nama), sekarang_utc(a.sekarang), a.catatan, a.tanpa_luar)
+
+
+# ---------------------------------------------------------------- job-perintah (--command-argv)
+def _argv_dari_teks(teks):
+    if teks == "-":
+        teks = sys.stdin.read()
+    try:
+        argv = json.loads(teks)
+    except ValueError:
+        raise GalatPantau("Isi --argv-lama harus daftar JSON persis seperti di daftar jadwal, mis. "
+                          "[\"python3\", \"/rumah/laporan.py\", \"--hari\", \"ini\"].")
+    if not isinstance(argv, list) or not argv or not all(isinstance(x, str) for x in argv) or argv[0] == "":
+        raise GalatPantau("--argv-lama harus daftar JSON berisi teks (minimal satu, yang pertama tidak kosong).")
+    return argv
+
+
+def _posisi_bungkus(argv):
+    """Indeks '--' pemisah bila argv adalah hasil `bungkus` (… pantau_cron.py jalankan <nama> … -- <argv lama>)."""
+    for i in range(len(argv) - 1):
+        if argv[i].replace("\\", "/").endswith("pantau_cron.py") and argv[i + 1] == "jalankan":
+            if "--" in argv[i + 2:]:
+                return argv.index("--", i + 2)
+    return None
+
+
+def _ada_ping_milik_pemilik(argv):
+    return any("pantau_cron.py" in x and re.search(r"\bping\b", x) for x in argv) or (
+        any(x.replace("\\", "/").endswith("pantau_cron.py") for x in argv) and "ping" in argv)
+
+
+def cmd_bungkus(a):
+    argv = _argv_dari_teks(a.argv_lama)
+    pos = _posisi_bungkus(argv)
+    if a.buang:
+        if pos is None:
+            if _ada_ping_milik_pemilik(argv):
+                raise GalatPantau("Lapor selesai di job ini ada di dalam perintah atau berkas milik Anda sendiri, bukan bungkus "
+                                  "pantauan. Saya tidak mengubahnya; bila ingin dihapus, ubah sendiri bagian itu.")
+            print("Job ini tidak dibungkus pantauan; perintahnya dibiarkan apa adanya.", file=sys.stderr)
+            hasil = argv
+        else:
+            hasil = argv[pos + 1:]
+            if not hasil:
+                raise GalatPantau("Bungkus pantauan tidak berisi perintah lama; tidak ada yang bisa dikembalikan.")
+    else:
+        nama = slug(a.nama or "")
+        if pos is not None:
+            print("Job ini sudah dibungkus pantauan; tidak dibungkus dua kali.", file=sys.stderr)
+            hasil = argv
+        elif _ada_ping_milik_pemilik(argv):
+            raise GalatPantau("Perintah job ini sudah memuat lapor selesai sendiri; jangan ditambah lagi (tercatat dua kali).")
+        else:
+            hasil = [a.python or sys.executable or "python3", os.path.abspath(__file__), "jalankan", nama]
+            if a.folder or os.environ.get("PANTAU_CRON_DIR"):
+                hasil += ["--folder", folder_data(a.folder)]
+            hasil += ["--"] + argv
+            try:
+                if nama not in muat_job(folder_data(a.folder))["jobs"]:
+                    print("Peringatan: job '%s' belum terdaftar di pantauan; daftarkan dengan perintah tambah." % nama, file=sys.stderr)
+            except GalatPantau:
+                pass
+    teks = json.dumps(hasil, ensure_ascii=False)
+    if a.id:
+        print("openclaw automations edit %s --command-argv %s" % (shlex.quote(a.id), shlex.quote(teks)))
+    else:
+        print(teks)
+
+
+def cmd_jalankan(a):
+    argv = list(a.argv)
+    if not argv:
+        raise GalatPantau("Tidak ada perintah yang dijalankan (tulis setelah --).")
+    sys.stdout.flush()
+    try:
+        kode = subprocess.run(argv).returncode
+    except OSError as e:
+        print("GALAT: perintah job tidak bisa dijalankan (%s). Lapor selesai tidak dicatat." % e.strerror, file=sys.stderr)
+        return 127
+    if kode < 0:
+        kode = 128 - kode   # dimatikan sinyal: ikuti kebiasaan shell (128 + nomor sinyal), bukan angka negatif
+    if kode == 0:
+        try:   # keluaran job tetap milik job: sukses = diam total (tidak ada teks pantauan di stdout/stderr)
+            _lapor_selesai(folder_data(a.folder), slug(a.nama), sekarang_utc(a.sekarang), "", False, keluar=None)
+        except GalatPantau as e:
+            print("Peringatan pantauan: %s" % e, file=sys.stderr)
+    return kode
+
+
 def _hitung_semua(folder, sekarang):
     data = muat_job(folder)
-    hasil = [evaluasi(n, j, baca_ping(folder, n), sekarang) for n, j in sorted(data["jobs"].items())]
+    hasil = [evaluasi(n, j, baca_ping(folder, n), sekarang) for n, j in sorted(data["jobs"].items())
+             if not _tidak_diawasi(j)]
     return hasil
 
 
@@ -519,10 +670,13 @@ def cmd_daftar(a):
     hasil = _hitung_semua(folder, sekarang)
     for h in hasil:
         h["layanan_luar"] = _url_luar(folder, h["nama"]) is not None
+    dilepas = sorted(n for n, j in data["jobs"].items() if _tidak_diawasi(j))
     if a.json:
-        print(json.dumps({"folder": folder, "jobs": hasil}, ensure_ascii=False, indent=2))
+        print(json.dumps({"folder": folder, "jobs": hasil, "tidak_diawasi": dilepas}, ensure_ascii=False, indent=2))
         return
     print("Folder data Anda: %s" % ("(folder pilihan Anda)" if a.folder or os.environ.get("PANTAU_CRON_DIR") else "(folder bawaan di komputer Anda)"))
+    if dilepas:
+        print("Tidak diawasi lagi (lapor selesai tetap diterima tanpa galat): %s" % ", ".join(dilepas))
     if not hasil:
         print("Belum ada job terdaftar. Tambahkan dengan perintah tambah (nama + jadwal, mis. tiap hari 21.00).")
         return
@@ -608,6 +762,7 @@ def bangun_parser():
     umum.add_argument("--folder", help="folder data (default ~/pantau-cron atau PANTAU_CRON_DIR)")
     umum.add_argument("--sekarang", help="(uji/simulasi) waktu ISO, mis. 2026-10-12T21:40+07:00; tanpa offset = WIB")
     p = argparse.ArgumentParser(description="Pantau job terjadwal ala dead man's switch (data lokal).")
+    p.add_argument("--versi", action="version", version=VERSI)
     sub = p.add_subparsers(dest="perintah", required=True)
 
     s = sub.add_parser("tambah", parents=[umum], help="daftarkan job")
@@ -616,12 +771,18 @@ def bangun_parser():
     s.add_argument("--jam", help="jalan tiap hari pada jam ini, mis. 21.00 (alternatif --jadwal)")
     s.add_argument("--zona", default="WIB", help="WIB (default), WITA, WIT, UTC")
     s.add_argument("--toleransi", type=int, help="menit boleh terlambat (default 30, atau separuh jarak jadwal bila rapat)")
-    s.add_argument("--ganti", action="store_true", help="timpa job yang sudah ada")
+    s.add_argument("--ganti", action="store_true",
+                   help="timpa pengaturan job yang sudah ada; riwayat lapor selesai selalu disimpan, hitungan lama "
+                        "dipertahankan bila jadwal & zona sama (job yang sempat dilepas selalu mulai dari sekarang)")
+    s.add_argument("--mulai-ulang", action="store_true",
+                   help="(bersama --ganti) mulai ulang hitungan terlewat dari sekarang; riwayat tetap disimpan")
     s.set_defaults(f=cmd_tambah)
 
     s = sub.add_parser("hapus", parents=[umum], help="berhenti memantau job")
     s.add_argument("nama")
     s.add_argument("--hapus-riwayat", action="store_true")
+    s.add_argument("--terima-lapor", action="store_true",
+                   help="lapor selesai ada di perintah buatan pemilik: lepas dari pengawasan, tetapi ping tetap diterima (kode 0)")
     s.set_defaults(f=cmd_hapus)
 
     s = sub.add_parser("daftar", parents=[umum], help="tampilkan semua job")
@@ -645,6 +806,21 @@ def bangun_parser():
     s.add_argument("--json", action="store_true")
     s.set_defaults(f=cmd_cek)
 
+    s = sub.add_parser("bungkus", parents=[umum],
+                       help="susun --command-argv baru: argv lama utuh + lapor selesai (atau --buang untuk mengembalikan)")
+    s.add_argument("nama", nargs="?", help="nama job di pantauan (wajib kecuali --buang)")
+    s.add_argument("--argv-lama", required=True, help="argv job sekarang, daftar JSON persis dari daftar jadwal; '-' = baca stdin")
+    s.add_argument("--buang", action="store_true", help="kembalikan argv lama persis (berhenti memantau job ini)")
+    s.add_argument("--id", help="cetak perintah edit OpenClaw lengkap dengan kutip yang benar (shell POSIX)")
+    s.add_argument("--python", help="program Python untuk argv baru (default: Python yang menjalankan perintah ini)")
+    s.set_defaults(f=cmd_bungkus)
+
+    s = sub.add_parser("jalankan", parents=[umum],
+                       help="(dipakai argv hasil bungkus) jalankan argv lama, lapor selesai bila kode keluar 0")
+    s.add_argument("nama")
+    s.add_argument("argv", nargs="*", help="tulis sesudah --: argv lama job, utuh")
+    s.set_defaults(f=cmd_jalankan)
+
     s = sub.add_parser("riwayat", parents=[umum], help="ping terakhir sebuah job")
     s.add_argument("nama")
     s.add_argument("-n", type=int, default=20)
@@ -659,13 +835,24 @@ def main(argv=None):
             st.reconfigure(encoding="utf-8", errors="replace")
         except Exception:
             pass
+    argv = list(sys.argv[1:] if argv is None else argv)
+    sisa = None
+    if argv[:1] == ["jalankan"] and "--" in argv:
+        # semua sesudah '--' pertama = argv lama job, dilewatkan utuh tanpa ditafsirkan
+        i = argv.index("--")
+        argv, sisa = argv[:i], argv[i + 1:]
     a = bangun_parser().parse_args(argv)
+    if sisa is not None:
+        a.argv = sisa
+    if a.perintah == "bungkus" and not a.buang and not a.nama:
+        print("GALAT: nama job wajib diisi (kecuali --buang).", file=sys.stderr)
+        return 1
     try:
-        a.f(a)
+        kode = a.f(a)
     except GalatPantau as e:
         print("GALAT: %s" % e, file=sys.stderr)
         return 1
-    return 0
+    return kode if isinstance(kode, int) else 0
 
 
 if __name__ == "__main__":

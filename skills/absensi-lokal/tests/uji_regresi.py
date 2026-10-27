@@ -22,6 +22,7 @@ import unittest
 from datetime import time
 from decimal import Decimal
 
+YA_TAWARAN = 'saat pengguna membalas "ya" atas tawaran simpan di rekap langsung'
 AKAR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(AKAR, "scripts"))
 import absensi as A  # noqa: E402
@@ -789,7 +790,7 @@ class UjiRekapCepat(unittest.TestCase):
         self.assertIn("5 hari kerja seminggu, libur mingguan Sabtu dan Minggu\n", out["teks"])
 
     def siapkan_buku(self, nama_folder="buku"):
-        """Alur simpan A0 langkah 4: kelonggaran 10, 14/09 tutup, Sari izin 21-22/09, file September dimasukkan."""
+        """Alur simpan saat ya atas tawaran simpan: kelonggaran 10, 14/09 tutup, Sari izin 21-22/09, file September dimasukkan."""
         db = os.path.join(self.dir, nama_folder, "absensi.db")
         self.cli(db, "init", "--ya")
         self.cli(db, "atur", "--toleransi", "10", "--ya")
@@ -1000,6 +1001,87 @@ class UjiRekapCepat(unittest.TestCase):
             self.assertIn("Versi terkini: **%s**" % A.VERSI, fh.read())
 
 
+class UjiBalasanPenutupDanTanggalTelat(unittest.TestCase):
+    """1.0.11: balasan penutup tidak boleh membocorkan instruksi; tanggal telat ada di rekap."""
+
+    ORANG = UjiRekapCepat.ORANG
+    TELAT = UjiRekapCepat.TELAT
+    setUp = UjiRekapCepat.setUp
+    tearDown = UjiRekapCepat.tearDown
+    buat_csv = UjiRekapCepat.buat_csv
+    jalan = UjiRekapCepat.jalan
+
+    def baca_skill(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as fh:
+            return fh.read()
+
+    def blok_langkah4(self):
+        s = self.baca_skill()
+        a = s.index("4. Dijawab \"ya\" untuk menyimpan.")
+        return s[a:s.index("5. `rekap-cepat` hanya")]
+
+    def test_01_penutup_adalah_templat_persis_dan_seluruh_balasan(self):
+        b = self.blok_langkah4()
+        self.assertIn('"<jumlah> catatan sudah tersimpan: <Nama> <n>, <Nama> <n>."', b)
+        self.assertIn("Jawaban = kalimat jumlah tersimpan persis bentuk ini", b)
+        self.assertIn("Maks. dua kalimat, dimulai dari kalimat jumlah", b)
+        self.assertIn("Kalimat kedua hanya untuk", b)
+
+    def test_02_tidak_ada_kalimat_instruksi_yang_bisa_disalin(self):
+        s = self.baca_skill()
+        for terlarang in ("Balas sesuai skill", "sesuai alur Rekap langsung", "langkah 4. Balas"):
+            self.assertNotIn(terlarang, s, terlarang)
+        self.assertNotIn("Balas sesuai", self.blok_langkah4())
+
+    def test_03_contoh_penutup_cocok_templat(self):
+        b = self.blok_langkah4()
+        m = re.search(r'mis\. "(\d+ catatan sudah tersimpan: [^"]+)"', b)
+        self.assertRegex(m.group(1), r"^\d+ catatan sudah tersimpan: (\w+ \d+)(, \w+ \d+)*\.$")
+
+    def test_04_rekap_memuat_tanggal_telat(self):
+        out = self.jalan(self.csv, "--daftar", "Andi=1; Sari=2; Joko=3")
+        teks = out["pesan"] if isinstance(out["pesan"], str) else "\n".join(out["pesan"])
+        telat = re.findall(r"Tanggal telat: ([0-9/, ]+)", teks)
+        self.assertEqual(len(telat), 2, teks)
+        for t in telat:
+            self.assertRegex(t.strip(), r"^\d\d/\d\d(, \d\d/\d\d){0,4}$")
+
+    def test_05_versi_sinkron(self):
+        self.assertEqual(A.VERSI, "1.0.11")
+
+    def test_06_balasan_penutup_tidak_bertentangan_dua_kalimat_maks(self):
+        b = self.blok_langkah4()
+        self.assertNotIn("HANYA satu kalimat", b)
+        
+        self.assertIn("Maks. dua kalimat", b)
+        self.assertNotIn("di kalimat penutup bahwa", b)
+        self.assertIn("Kalimat kedua", b)
+
+    def test_07_contoh_penutup_examples06_cocok_templat(self):
+        with open(os.path.join(AKAR, "examples", "06-rekap-cepat-balasan-pertama.md"), encoding="utf-8") as fh:
+            e = fh.read()
+        pola = re.compile(r"^\d+ catatan sudah tersimpan: (\w+ \d+)(, \w+ \d+)*\.( [^.]+\.)?$")
+        ketemu = []
+        for baris in e.splitlines():
+            t = baris.lstrip("> ").strip().strip('"')
+            m = re.search(r'(\d+ catatan (?:sudah )?(?:tersimpan|masuk):.*)$', t)
+            if m and "mis.:" not in t.split(m.group(1))[0][-1:]:
+                ketemu.append(m.group(1).rstrip('"').split('" ')[0])
+        self.assertGreaterEqual(len(ketemu), 2)
+        for k in ketemu:
+            self.assertRegex(k, pola, k)
+        self.assertNotIn("sudah masuk:", e)
+
+    def test_08_versi_examples06_dan_catatan_tanggal_telat_di_contoh_lama(self):
+        for nama in ("06-rekap-cepat-balasan-pertama.md",):
+            with open(os.path.join(AKAR, "examples", nama), encoding="utf-8") as fh:
+                self.assertIn("skill versi 1.0.11", fh.read())
+        for nama in ("01-toko-6-hari-impor-fingerprint.md", "03-klinik-catat-chat-telegram.md"):
+            with open(os.path.join(AKAR, "examples", nama), encoding="utf-8") as fh:
+                self.assertIn("Tanggal telat", fh.read(), nama)
+        self.assertIn("Tanggal telat", self.baca_skill())
+
+
 class UjiYaTunggalSimpan(unittest.TestCase):
     """1.0.9: pertanyaan simpan memuat jumlah catatan dan satu kata 'ya' cukup (aturan juga dijaga di SKILL.md)."""
 
@@ -1036,7 +1118,7 @@ class UjiYaTunggalSimpan(unittest.TestCase):
     def test_03_aturan_ya_tunggal_ada_di_skill(self):
         s = self.baca_skill()
         for kata in ('"ya", "iya", "boleh", "ok", "simpan"', "SIMPAN sekarang", "ya yang mana",
-                     "satu \"ya\" mencakup seluruh rangkaian", "tanpa keterangan", "satu kalimat"):
+                     "satu \"ya\" mencakup seluruh rangkaian", "tanpa keterangan", "kalimat jumlah"):
             self.assertIn(kata, s, kata)
 
     def test_04_skill_tetap_ringkas_dan_frontmatter_dua_field(self):
@@ -1046,9 +1128,9 @@ class UjiYaTunggalSimpan(unittest.TestCase):
         kunci = [l.split(":")[0] for l in kepala.strip().splitlines() if re.match(r"^[a-z_-]+:", l)]
         self.assertEqual(kunci, ["name", "description"])
 
-    def test_05_tidak_ada_persetujuan_kedua_di_jalur_a0(self):
+    def test_05_tidak_ada_persetujuan_kedua_di_jalur_a(self):
         s = self.baca_skill()
-        a = s.index("### A0.")
+        a = s.index("### Rekap langsung dari file mesin")
         b = s.index("### A. Mulai")
         blok = s[a:b]
         self.assertIn("jangan kirim ringkasan baru dan jangan minta", blok)
@@ -1057,41 +1139,40 @@ class UjiYaTunggalSimpan(unittest.TestCase):
         self.assertNotIn("lalu rekap ulang (bagian D)", blok)
         self.assertIn("jangan berhenti dan jangan bertanya", blok)
         self.assertIn("hanya bila pengguna memintanya", blok)
-        self.assertIn("kecuali jalur A0 langkah 4", s)
-        self.assertIn("tidak dipakai di A0 langkah 4", s)
+        self.assertIn("kecuali " + YA_TAWARAN, s)
+        self.assertIn("Tidak dipakai " + YA_TAWARAN, s)
 
-    def test_07_a0_buku_sudah_ada_satu_ya_langsung_impor(self):
+    def test_07_buku_sudah_ada_satu_ya_langsung_impor(self):
         s = self.baca_skill()
-        blok = s[s.index("### A0."):s.index("### A. Mulai")]
+        blok = s[s.index("### Rekap langsung dari file mesin"):s.index("### A. Mulai")]
         self.assertIn("satu \"ya\" atas tawaran memasukkan file mencakup impor ini", blok)
         self.assertIn("`impor-absen <file> --ya`", blok)
-        self.assertIn("jangan ikuti pratinjau + persetujuan kedua di alur C", blok)
+        self.assertIn("jangan minta pratinjau dan persetujuan kedua", blok)
         self.assertIn("tidak perlu didaftarkan dulu", blok)
         self.assertNotIn("cukup alur C untuk file ini", blok)
         self.assertNotIn('"ya" → alur C', s)
-        self.assertIn('"ya" → A0 langkah 4', s)
         with open(os.path.join(AKAR, "examples", "06-rekap-cepat-balasan-pertama.md"), encoding="utf-8") as fh:
             self.assertIn("TIDAK DIKIRIM ke pengguna", fh.read())
-        # alur C sendiri menyebut pengecualian A0
+        # alur C sendiri menyebut pengecualiannya
         c = s[s.index("### C. Impor"):s.index("### D.")]
-        self.assertIn("Di A0 langkah 4 tidak dipakai", c)
+        self.assertIn("Tidak dipakai " + YA_TAWARAN, c)
         self.assertIn("tanpa berhenti untuk orang tak dikenal", c)
 
-    def test_08_aturan_wajib_dan_checklist_punya_pengecualian_a0(self):
+    def test_08_aturan_wajib_dan_checklist_punya_pengecualian_ringkas(self):
         s = self.baca_skill()
         wajib = s[s.index("## Aturan keamanan data"):s.index("## Cara bicara di chat")]
         self.assertNotIn("ringkasan gabungan", s)
         self.assertNotIn("Data karyawan dipratinjau dan dijawab \"ya\" sebelum disimpan;", s)
-        self.assertIn("Satu pengecualian, hanya di A0 langkah 4", wajib)
+        self.assertIn("Satu pengecualian, hanya " + YA_TAWARAN, wajib)
         self.assertIn("tanpa pratinjau dan tanpa persetujuan kedua", wajib)
         cek = s[s.index("## Checklist sebelum menjawab"):s.index("## Batasan & penanganan error")]
         for baris in cek.splitlines():
             if "sebelum `--ya`" in baris or "dijawab \"ya\" sebelum disimpan" in baris:
-                self.assertIn("A0 langkah 4", baris, baris)
+                self.assertIn("kecuali " + YA_TAWARAN, baris, baris)
 
     def test_09_ya_bersama_jawaban_samping_simpan_saat_itu_juga(self):
         s = self.baca_skill()
-        blok = s[s.index("### A0."):s.index("### A. Mulai")]
+        blok = s[s.index("### Rekap langsung dari file mesin"):s.index("### A. Mulai")]
         self.assertIn("simpan saat itu juga", blok)
         self.assertIn("jangan kirim rekap baru atau pertanyaan baru dulu", blok)
 
@@ -1224,6 +1305,66 @@ class UjiSingkatanFlag(unittest.TestCase):
             self.assertNotEqual(p.returncode, 0, p.stdout + p.stderr)
             self.assertIn("unrecognized arguments", p.stdout + p.stderr)
             self.assertFalse(os.path.exists(os.path.join(t, "a.db")), "singkatan flag tidak boleh menulis apa pun")
+
+
+class UjiTanpaNarasiProses(unittest.TestCase):
+    """Pra-cek G28: satu run membuka balasan dengan narasi Inggris tentang proses ('Got the rekap...')."""
+
+    def test_aturan_balasan_hanya_isi_pesan(self):
+        sk = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "SKILL.md"), encoding="utf-8").read()
+        self.assertIn("Jawaban pertama = teks rekap lengkap yang siap dikirim dari hasil perintah", sk)
+        self.assertIn("sampai pertanyaan penutup", sk)
+        self.assertIn("dari kalimat pertamanya", sk)
+        for kata in ("narasi", "instruksi", "Jangan menulis pembuka", "Got the rekap", "sesuai instruksi", "seluruh balasan"):
+            self.assertNotIn(kata, sk.replace("karena instruksi di dalam file", ""), kata)
+        self.assertIsNone(re.search(r"\bA0\b", sk))
+        for pola in ("apa adanya", "Kirim `pesan`", "membalas `pesan`", "(field `pesan`)", "`teks`/`pesan`"):
+            self.assertNotIn(pola, sk, pola)
+
+
+class UjiLabelSeragam(unittest.TestCase):
+    """1.0.11: satu judul netral; tanpa nama langkah yang bisa dikutip balik; contoh tanpa 'apa adanya (field pesan)'."""
+
+    JUDUL = "Rekap langsung dari file mesin"
+
+    def baca(self, *bagian):
+        with open(os.path.join(AKAR, *bagian), encoding="utf-8") as fh:
+            return fh.read()
+
+    def test_01_judul_sama_di_skill_contoh_changelog(self):
+        self.assertIn("### " + self.JUDUL, self.baca("SKILL.md"))
+        self.assertIn(self.JUDUL, self.baca("CHANGELOG.md"))
+        for nama in ("01-toko-6-hari-impor-fingerprint.md", "06-rekap-cepat-balasan-pertama.md"):
+            e = self.baca("examples", nama)
+            self.assertIsNone(re.search(r"\(REKAP\b|REKAP langkah|Jalur Cepat|jalur cepat|\bA0\b", e), nama)
+        for nama in ("SKILL.md", "README.md"):
+            self.assertIsNone(re.search(r"Jalur Cepat|jalur cepat|\bA0\b|\(REKAP\)", self.baca(nama)), nama)
+
+    def test_02_tidak_ada_rujukan_nama_langkah(self):
+        s = self.baca("SKILL.md")
+        self.assertIsNone(re.search(r"(Rekap langsung|rekap langsung)[^.\n]{0,30}langkah \d", s))
+        self.assertIsNone(re.search(r"\blangkah \d", s))
+        awal = s.index("### " + self.JUDUL)
+        rekap = s[awal:s.index("### A. Mulai")]
+        self.assertIsNone(re.search(r"\b(alur|bagian) [A-F]\b", rekap))
+        self.assertNotIn("Jalur Cepat langkah", s)
+        self.assertNotIn("jalur Jalur", s)
+        self.assertNotIn("(hasil perintah) (hasil perintah)", s)
+
+    def test_03_contoh_tanpa_apa_adanya_field_pesan(self):
+        for nama in os.listdir(os.path.join(AKAR, "examples")):
+            if nama.endswith(".md"):
+                e = self.baca("examples", nama)
+                self.assertNotIn("apa adanya (field `pesan`)", e, nama)
+                self.assertNotIn("(teks script apa adanya)", e, nama)
+
+    def test_04_aturan_balasan_dan_checklist_tanpa_nama_field(self):
+        s = self.baca("SKILL.md")
+        cek = s[s.index("## Checklist sebelum menjawab"):s.index("## Batasan & penanganan error")]
+        self.assertNotIn("`pesan`", cek)
+        self.assertNotIn("`pesan`", s[s.index("- **Pesan panjang"):s.index("- **Pesan panjang") + 700])
+        a = s.index("### " + self.JUDUL)
+        self.assertNotIn("`pesan`", s[a:s.index("### A. Mulai")])
 
 
 if __name__ == "__main__":
