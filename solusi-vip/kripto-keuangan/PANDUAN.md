@@ -25,7 +25,7 @@ punya **cara cek berhasil** dan **kalau gagal**.
 
 | Bisa (**[VIP]** = butuh `pantau-pasar-kripto`) | Tidak (sengaja, keputusan Komunitech) |
 |---|---|
-| Ringkasan pagi: harga + berita **bertautan sumber** | Auto-trading **di paket ini** (tersedia terpisah lewat `bot-trading-kripto`, belum masuk paket, lihat Bab 0) |
+| Ringkasan pagi: harga + berita **bertautan sumber** | Auto-trading: tidak termasuk paket ini (lihat Bab 0) |
 | Notifikasi bila harga menyentuh ambang **yang Anda tetapkan sendiri** | Rekomendasi beli/jual/tahan, target harga, sinyal entry/exit |
 | Checklist riset proyek (fakta, tim, audit, tokenomics, tanda penipuan) | Skill di paket ini menyimpan API key exchange atau mengeksekusi order |
 | Jurnal trading: rapikan catatan, hitung untung/rugi (dihitung script) | Sinyal/strategi buatan Komunitech, janji profit |
@@ -34,15 +34,15 @@ punya **cara cek berhasil** dan **kalau gagal**.
 
 ---
 
-## 0. Auto-trading: hanya lewat `bot-trading-kripto`, dengan syarat ketat
+## 0. Auto-trading: tidak termasuk paket ini
 
 **Status (2026-10-01):** auto-trading **diizinkan** (keputusan pemilik Komunitech 2026-09-29)
-dan disediakan oleh skill terpisah **`bot-trading-kripto`**. Skill itu **belum masuk paket VIP
-ini** sampai uji testnet selesai (ditunda pemilik). Skill di paket ini (`pantau-pasar-kripto`
+lewat skill terpisah yang **belum masuk paket VIP ini** sampai uji testnet selesai (ditunda
+pemilik). Skill di paket ini (`pantau-pasar-kripto`
 dkk.) tetap **tidak** mengeksekusi order dan tetap menolak permintaan auto-trading; bila Anda
 memintanya, agent akan menjelaskan status ini.
 
-Saat `bot-trading-kripto` tersedia, syaratnya **wajib semua**:
+Bila skill auto-trading terpisah itu kelak tersedia, syaratnya **wajib semua**:
 1. **Aturan milik Anda sendiri** (mis. DCA, grid, take-profit/stop-loss, rebalancing) di
    **akun bursa Anda sendiri**. Komunitech **tidak** memberi sinyal, rekomendasi beli/jual,
    strategi "pasti cuan", atau janji profit.
@@ -158,7 +158,7 @@ Berlaku di SETIAP percakapan, juga saat tidak ada skill yang dibuka. Jelaskan al
 5. Berita diambil dengan SATU perintah `scripts/ambil_berita.py <KODE koin>` (skill pantau-pasar-kripto; daftar final ber-URL artikel asli). Bukan redirect agregator (mis. news.google.com/rss/...); berita tanpa tautan asli tidak dimasukkan. Angka/jumlah hanya yang dihitung script atau perintah atas data yang diambil — tanpa hitungan, jangan sebut angka. Hemat: per pesan maks. ±6 pengambilan web dan ±20 tool call; anggaran habis → kirim hasil yang ada + daftar yang belum dicek.
 6. Tanpa sinyal/rekomendasi beli-jual-tahan, target harga, atau janji profit; proyeksi dari artikel (harga, kapitalisasi/peringkat, "flippening") TIDAK ditampilkan sama sekali, bukan sekadar diberi label. Penolakan menyebut OJK (POJK 27/2024), cek PAKD berizin di ojk.go.id, Satgas PASTI / OJK 157, dan diakhiri: "Informasi, bukan nasihat investasi. Keputusan & risiko sepenuhnya milik Anda."
 7. API key/secret/seed phrase yang ditempel tidak diulang (sebagian maupun utuh) dan tidak disimpan; sarankan segera dicabut (revoke) dan dibuat ulang tanpa izin tarik dana.
-8. Auto-trading/bot eksekusi order/sinyal: tolak dengan kalimat ini, kata per kata, lalu disclaimer: "Maaf, saya tidak menjalankan order otomatis dan tidak memberi sinyal beli/jual. Bila Anda membuat API key baru di bursa, buat tanpa izin tarik dana dan jangan ditempel ke chat; key yang sudah pernah ditempel sebaiknya dicabut (revoke). Bot trading otomatis ada di skill terpisah `bot-trading-kripto` yang statusnya masih ditunda (belum termasuk paket ini) — sementara itu pakai fitur limit/stop order bawaan aplikasi bursa resmi yang Anda pasang dan pantau sendiri. Perdagangan aset kripto diawasi OJK (POJK 27/2024): cek bursa Anda di daftar PAKD terdaftar/berizin OJK di ojk.go.id, dan laporkan tawaran 'pasti cuan' ke Satgas PASTI / Kontak OJK 157."
+8. Auto-trading/bot eksekusi order/sinyal: tolak dengan kalimat ini, kata per kata, lalu disclaimer: "Maaf, saya tidak menjalankan order otomatis dan tidak memberi sinyal beli/jual. Bila Anda membuat API key baru di bursa, buat tanpa izin tarik dana dan jangan ditempel ke chat; key yang sudah pernah ditempel sebaiknya dicabut (revoke). Auto-trading: tidak termasuk paket ini — sementara itu pakai fitur limit/stop order bawaan aplikasi bursa resmi yang Anda pasang dan pantau sendiri. Perdagangan aset kripto diawasi OJK (POJK 27/2024): cek bursa Anda di daftar PAKD terdaftar/berizin OJK di ojk.go.id, dan laporkan tawaran 'pasti cuan' ke Satgas PASTI / Kontak OJK 157."
 ```
 
 - **Cara cek berhasil:** sesi baru, ketik "apa aturan kripto Komunitech?" — AI menyebut 8 aturan di atas.
@@ -258,8 +258,7 @@ membeli aset tertentu.
   dan kanal lapor Satgas PASTI / Kontak OJK 157; lalu ditawari data, checklist riset, jurnal,
   notifikasi ambang Anda.
 - Diminta "buatkan bot trading" → skill di paket ini tidak mengeksekusi order; agent menjelaskan
-  bahwa auto-trading hanya lewat `bot-trading-kripto` dengan syarat di Bab 0, dan skill itu
-  belum termasuk paket ini.
+  bahwa auto-trading tidak termasuk paket ini (syaratnya bila kelak tersedia: Bab 0).
 - Paket ini bukan pengganti perencana keuangan, konsultan pajak, atau penasihat investasi
   berizin. Untuk keputusan besar, temui profesional berizin.
 - Data harga berasal dari sumber publik pihak ketiga dan bisa tertunda atau gagal; skill akan

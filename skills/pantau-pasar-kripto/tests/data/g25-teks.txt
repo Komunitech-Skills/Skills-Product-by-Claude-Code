@@ -1,0 +1,30 @@
+Rekap jurnal kripto (FIFO, dari angka yang Anda catat)
+Hasil: LENGKAP -- 8 baris dihitung, tidak ada baris ditolak.
+
+Untung/rugi yang sudah dijual (fee beli masuk modal, fee jual memotong hasil jual):
+• BTC jual 5 Agu 2026 (0,01 BTC): hasil jual bersih Rp16.998.850 (sudah dipotong fee Rp51.150) - modal Rp15.245.600 = +Rp1.753.250 (+11,50%)
+• ETH jual 19 Agu 2026 (0,5 ETH): hasil jual bersih Rp30.508.200 (sudah dipotong fee Rp91.800) - modal Rp29.287.600 = +Rp1.220.600 (+4,17%)
+• SOL jual 2 Sep 2026 (10 SOL): hasil jual bersih Rp28.813.300 (sudah dipotong fee Rp86.700) - modal Rp31.594.500 = -Rp2.781.200 (-8,80%)
+• BTC jual 25 Sep 2026 (0,005 BTC): hasil jual bersih Rp8.683.870 (sudah dipotong fee Rp26.130) - modal Rp7.893.610 = +Rp790.260 (+10,01%)
+Total untung/rugi (sebelum pajak): +Rp982.910
+
+Sisa koin & rata-rata modal (termasuk fee beli):
+• BTC: 0,003 @ Rp1.614.830.000
+• ETH: 0,3 @ Rp58.575.200
+• SOL: 15 @ Rp3.159.450
+
+Pajak (PMK 50/2025, untuk jual sejak 1 Agustus 2025):
+• PPh Pasal 22 final dihitung dari nilai JUAL (jumlah x harga, sebelum fee); beli tidak kena PPh. Penyerahan aset kripto tidak dikenai PPN (Pasal 2 ayat (1)).
+• BTC 5 Agu 2026, dalam negeri 0,21% x Rp17.050.000 = Rp35.805
+• ETH 19 Agu 2026, luar negeri 1% x Rp30.600.000 = Rp306.000
+• SOL 2 Sep 2026, dalam negeri 0,21% x Rp28.900.000 = Rp60.690
+• BTC 25 Sep 2026, dalam negeri 0,21% x Rp8.710.000 = Rp18.291
+Total estimasi PPh: Rp420.786 (dalam negeri Rp114.786, dipungut exchange; luar negeri Rp306.000, wajib disetor sendiri bila exchange itu belum memungut)
+Angka PPh ini tetap untuk data di atas.
+
+Untung setelah pajak (apakah PPh sudah masuk kolom biaya tidak diketahui -- cek riwayat transaksi exchange):
+• Bila PPh belum ada di kolom biaya: Rp982.910 - Rp420.786 = Rp562.124
+• Bila PPh dalam negeri sudah dipotong exchange & masuk kolom biaya: Rp982.910 - Rp306.000 = Rp676.910 (tinggal PPh luar negeri)
+
+Bukan perhitungan SPT/nasihat pajak; kepastian ke konsultan pajak/DJP.
+Informasi, bukan nasihat investasi. Keputusan & risiko sepenuhnya milik Anda.
