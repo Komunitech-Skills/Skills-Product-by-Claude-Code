@@ -1000,6 +1000,86 @@ class UjiRekapCepat(unittest.TestCase):
             self.assertIn("Versi terkini: **%s**" % A.VERSI, fh.read())
 
 
+class UjiBalasanPenutupDanTanggalTelat(unittest.TestCase):
+    """1.0.10: balasan penutup tidak boleh membocorkan instruksi; tanggal telat ada di rekap."""
+
+    ORANG = UjiRekapCepat.ORANG
+    TELAT = UjiRekapCepat.TELAT
+    setUp = UjiRekapCepat.setUp
+    tearDown = UjiRekapCepat.tearDown
+    buat_csv = UjiRekapCepat.buat_csv
+    jalan = UjiRekapCepat.jalan
+
+    def baca_skill(self):
+        with open(os.path.join(AKAR, "SKILL.md"), encoding="utf-8") as fh:
+            return fh.read()
+
+    def blok_langkah4(self):
+        s = self.baca_skill()
+        a = s.index("4. Dijawab \"ya\" untuk menyimpan.")
+        return s[a:s.index("5. `rekap-cepat` hanya")]
+
+    def test_01_penutup_adalah_templat_persis_dan_seluruh_balasan(self):
+        b = self.blok_langkah4()
+        self.assertIn('"<jumlah> catatan sudah tersimpan: <Nama> <n>, <Nama> <n>."', b)
+        self.assertIn("seluruh balasan", b)
+        self.assertIn("tanpa menyebut nama langkah, alur, aturan, atau instruksi ini", b)
+
+    def test_02_tidak_ada_kalimat_instruksi_yang_bisa_disalin(self):
+        s = self.baca_skill()
+        for terlarang in ("Balas sesuai skill", "sesuai alur A0", "langkah 4. Balas"):
+            self.assertNotIn(terlarang, s, terlarang)
+        self.assertNotIn("Balas sesuai", self.blok_langkah4())
+
+    def test_03_contoh_penutup_cocok_templat(self):
+        b = self.blok_langkah4()
+        m = re.search(r'mis\. "(\d+ catatan sudah tersimpan: [^"]+)"', b)
+        self.assertRegex(m.group(1), r"^\d+ catatan sudah tersimpan: (\w+ \d+)(, \w+ \d+)*\.$")
+
+    def test_04_rekap_memuat_tanggal_telat(self):
+        out = self.jalan(self.csv, "--daftar", "Andi=1; Sari=2; Joko=3")
+        teks = out["pesan"] if isinstance(out["pesan"], str) else "\n".join(out["pesan"])
+        telat = re.findall(r"Tanggal telat: ([0-9/, ]+)", teks)
+        self.assertEqual(len(telat), 2, teks)
+        for t in telat:
+            self.assertRegex(t.strip(), r"^\d\d/\d\d(, \d\d/\d\d){0,4}$")
+
+    def test_05_versi_sinkron_1_0_10(self):
+        self.assertEqual(A.VERSI, "1.0.10")
+
+    def test_06_balasan_penutup_tidak_bertentangan_dua_kalimat_maks(self):
+        b = self.blok_langkah4()
+        self.assertNotIn("HANYA satu kalimat", b)
+        
+        self.assertIn("maks. dua kalimat", b)
+        self.assertNotIn("di kalimat penutup bahwa", b)
+        self.assertIn("kalimat kedua", b)
+
+    def test_07_contoh_penutup_examples06_cocok_templat(self):
+        with open(os.path.join(AKAR, "examples", "06-rekap-cepat-balasan-pertama.md"), encoding="utf-8") as fh:
+            e = fh.read()
+        pola = re.compile(r"^\d+ catatan sudah tersimpan: (\w+ \d+)(, \w+ \d+)*\.( [^.]+\.)?$")
+        ketemu = []
+        for baris in e.splitlines():
+            t = baris.lstrip("> ").strip().strip('"')
+            m = re.search(r'(\d+ catatan (?:sudah )?(?:tersimpan|masuk):.*)$', t)
+            if m and "mis.:" not in t.split(m.group(1))[0][-1:]:
+                ketemu.append(m.group(1).rstrip('"').split('" ')[0])
+        self.assertGreaterEqual(len(ketemu), 2)
+        for k in ketemu:
+            self.assertRegex(k, pola, k)
+        self.assertNotIn("sudah masuk:", e)
+
+    def test_08_versi_examples06_dan_catatan_tanggal_telat_di_contoh_lama(self):
+        for nama in ("06-rekap-cepat-balasan-pertama.md",):
+            with open(os.path.join(AKAR, "examples", nama), encoding="utf-8") as fh:
+                self.assertIn("skill versi 1.0.10", fh.read())
+        for nama in ("01-toko-6-hari-impor-fingerprint.md", "03-klinik-catat-chat-telegram.md"):
+            with open(os.path.join(AKAR, "examples", nama), encoding="utf-8") as fh:
+                self.assertIn("Tanggal telat", fh.read(), nama)
+        self.assertIn("Tanggal telat", self.baca_skill())
+
+
 class UjiYaTunggalSimpan(unittest.TestCase):
     """1.0.9: pertanyaan simpan memuat jumlah catatan dan satu kata 'ya' cukup (aturan juga dijaga di SKILL.md)."""
 
