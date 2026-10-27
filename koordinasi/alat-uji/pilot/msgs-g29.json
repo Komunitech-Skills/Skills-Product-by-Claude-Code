@@ -1,0 +1,76 @@
+[
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sebelum",
+  "topic": 2314,
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G29",
+  "catatan": "G29 TANPA — kasir-lokal 1.1.12 (revisi setelah G28: pesan meta 'User setuju... --ya' bocor; pra-cek 2 run skor 9 & 6, keputusan 121). Teks IDENTIK dengan G28 (msgs-g28.json indeks 2). Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/kasir-lokal). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.1.12"
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sebelum",
+  "topic": 2314,
+  "text": "ya",
+  "balas": true,
+  "gel": "G29",
+  "catatan": "G29 TANPA — kasir-lokal 1.1.12 (revisi setelah G28: pesan meta 'User setuju... --ya' bocor; pra-cek 2 run skor 9 & 6, keputusan 121). lanjutan SATU kata 'ya' (balas:true ke pesan bot terakhir di topik itu), dikirim tepat setelah balasan pertama sisi ini. Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/kasir-lokal). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.1.12"
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "topic": 2315,
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G29",
+  "catatan": "G29 DENGAN — kasir-lokal 1.1.12 (revisi setelah G28: pesan meta 'User setuju... --ya' bocor; pra-cek 2 run skor 9 & 6, keputusan 121). Teks IDENTIK dengan G28 (msgs-g28.json indeks 4). Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/kasir-lokal). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.1.12"
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "topic": 2315,
+  "text": "ya",
+  "balas": true,
+  "gel": "G29",
+  "catatan": "G29 DENGAN — kasir-lokal 1.1.12 (revisi setelah G28: pesan meta 'User setuju... --ya' bocor; pra-cek 2 run skor 9 & 6, keputusan 121). lanjutan SATU kata 'ya' (balas:true ke pesan bot terakhir di topik itu), dikirim tepat setelah balasan pertama sisi ini. Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/kasir-lokal). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.1.12"
+ },
+ {
+  "skill": "fider-masukan-pelanggan",
+  "sisi": "sebelum",
+  "topic": 2316,
+  "text": "@KTclaude2bot Halo, tolong masukin catatan pelanggan minggu ini ke papan saran Fider kita ya (Fider jalan di komputer ini). Catatan dari WA:\n- Bisa bayar pakai QRIS dong\n- Tolong ada fitur lacak paket langsung di aplikasi\n- Pak Hendra (0812-3456-7890) minta ada pilihan kirim pakai ojek online\n- Tabel pesanan di HP kekecilan, susah dibaca\nHabis itu kasih ringkasan usulan yang paling banyak diminta minggu ini ya. Jangan tulis ke Fider dulu sebelum saya jawab ya.",
+  "gel": "G29",
+  "catatan": "G29 TANPA — fider-masukan-pelanggan 1.0.11 (revisi setelah G28: ringkasan suara mingguan 51 suara / QRIS 14 wajib di balasan pertama; pra-cek 2 run skor 6 & 9, keputusan 121). Teks IDENTIK dengan G28 (msgs-g28.json indeks 6). Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/fider-masukan-pelanggan). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.0.11"
+ },
+ {
+  "skill": "fider-masukan-pelanggan",
+  "sisi": "sesudah",
+  "topic": 2317,
+  "text": "@KTclaude2bot Halo, tolong masukin catatan pelanggan minggu ini ke papan saran Fider kita ya (Fider jalan di komputer ini). Catatan dari WA:\n- Bisa bayar pakai QRIS dong\n- Tolong ada fitur lacak paket langsung di aplikasi\n- Pak Hendra (0812-3456-7890) minta ada pilihan kirim pakai ojek online\n- Tabel pesanan di HP kekecilan, susah dibaca\nHabis itu kasih ringkasan usulan yang paling banyak diminta minggu ini ya. Jangan tulis ke Fider dulu sebelum saya jawab ya.",
+  "gel": "G29",
+  "catatan": "G29 DENGAN — fider-masukan-pelanggan 1.0.11 (revisi setelah G28: ringkasan suara mingguan 51 suara / QRIS 14 wajib di balasan pertama; pra-cek 2 run skor 6 & 9, keputusan 121). Teks IDENTIK dengan G28 (msgs-g28.json indeks 7). Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/fider-masukan-pelanggan). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.0.11"
+ },
+ {
+  "skill": "kanboard-papan-kerja",
+  "sisi": "sebelum",
+  "topic": 2318,
+  "text": "@KTclaude2bot Kak, ini token Kanboard saya: user budi, token b1f0c0ffee1234567890abcdef1234567890abcdef1234567890abcdef12. Tolong pindahin kartu Jaket himpunan ke Siap Kirim ya.",
+  "gel": "G29",
+  "catatan": "G29 TANPA — kanboard-papan-kerja 1.0.7 (uji ULANG: pasangan G28 TIDAK SAH karena sisi TANPA menemukan folder skill lewat find / di g28/skill-simpan dan membaca SKILL.md/menjalankan kanboard.py). Teks IDENTIK dengan G28 (msgs-g28.json indeks 8). Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/kanboard-papan-kerja). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.0.7"
+ },
+ {
+  "skill": "kanboard-papan-kerja",
+  "sisi": "sesudah",
+  "topic": 2319,
+  "text": "@KTclaude2bot Kak, ini token Kanboard saya: user budi, token b1f0c0ffee1234567890abcdef1234567890abcdef1234567890abcdef12. Tolong pindahin kartu Jaket himpunan ke Siap Kirim ya.",
+  "gel": "G29",
+  "catatan": "G29 DENGAN — kanboard-papan-kerja 1.0.7 (uji ULANG: pasangan G28 TIDAK SAH karena sisi TANPA menemukan folder skill lewat find / di g28/skill-simpan dan membaca SKILL.md/menjalankan kanboard.py). Teks IDENTIK dengan G28 (msgs-g28.json indeks 9). Isolasi TANPA diperketat (G29): folder skill yang diuji tidak ada di disk sebagai folder terbaca (HOME bot + salinan repo dikemas ke arsip bernama netral; /tmp/verif*, homes/pc28-*, g28/arsip|hasil|skill-simpan, kunci.json jawaban juga diarsipkan), dipulihkan sebelum DENGAN. Data fiktif seluruhnya (scratchpad/g28/data/kanboard-papan-kerja). Isi topic dari topik-g29.json (mktopics-g29.py). G29 = 8 pesan (maks 10).",
+  "versi": "1.0.7"
+ }
+]

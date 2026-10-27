@@ -4,7 +4,7 @@
 
 **Yang diuji:** balasan PERTAMA sudah berisi rekap (bukan daftar pertanyaan), semua yang disebut pengguna dipakai sebagai pengaturan (bukan ditulis "anggapan saya"), pertanyaan penutup paling banyak 3, tidak ada alamat file, nama database, nama script, perintah, atau kode karyawan di dalam balasan, dan pelanggan lama tidak ditanya ulang soal pengaturan yang sudah tersimpan.
 
-**Asal contoh (jujur):** keluaran di bawah adalah hasil menjalankan `rekap-cepat` (skill versi 1.0.10) pada data **fiktif** buatan pembuat skill; data September dibangkitkan oleh `tests/uji_regresi.py` (kelas `UjiRekapCepat`, 121 baris log, 3 karyawan, 1–30 September 2026). Ini bukan uji di bot OpenClaw/Telegram; bagian "Balasan agent" memperlihatkan bentuk balasan yang diminta SKILL.md, dengan isi dari script apa adanya (field `pesan`).
+**Asal contoh (jujur):** keluaran di bawah adalah hasil menjalankan `rekap-cepat` (skill versi 1.0.11) pada data **fiktif** buatan pembuat skill; data September dibangkitkan oleh `tests/uji_regresi.py` (kelas `UjiRekapCepat`, 121 baris log, 3 karyawan, 1–30 September 2026). Ini bukan uji di bot OpenClaw/Telegram; bagian "Balasan agent" memperlihatkan bentuk balasan yang diminta SKILL.md, dengan isi rekap dari keluaran script.
 
 ## Data fiktif (pola yang disengaja)
 - Andi (ID 1), Sari (ID 2), Joko (ID 3); Senin–Jumat, masuk 07.55 dan pulang 17.05 setiap hari kerja, kecuali yang disebut di bawah.
@@ -71,7 +71,7 @@ Tanpa `info`, tanpa `init`, tanpa bertanya. Semua yang disebut pengguna (nama da
 
 > 14 itu toko tutup. Sari 21-22 izin. Iya simpan.
 
-Agent menjalankan ulang `rekap-cepat ... --libur 2026-09-14` (hasilnya di bawah). Karena pengguna sudah menulis "Iya simpan" di pesan yang sama, agent **langsung menyimpan** (A0 langkah 4): satu "ya" atas tawaran "simpan 121 catatan absen" adalah persetujuannya. Agent tidak mengirim ringkasan baru, tidak bertanya "Betul?", dan tidak menunggu "ya" kedua. Urutan kerjanya (tidak ditampilkan): jadwal, kelonggaran telat 10 menit, ketiga karyawan, 14/09 sebagai hari tutup, file dimasukkan, Sari izin 21-22/09. Balasan akhir satu kalimat jumlah ditambah satu kalimat kedua untuk libur/izin, tanpa lokasi file atau perintah, tanpa rekap ulang:
+Agent menjalankan ulang `rekap-cepat ... --libur 2026-09-14` (hasilnya di bawah). Karena pengguna sudah menulis "Iya simpan" di pesan yang sama, agent **langsung menyimpan** (saat "ya" atas tawaran simpan): satu "ya" atas tawaran "simpan 121 catatan absen" adalah persetujuannya. Agent tidak mengirim ringkasan baru, tidak bertanya "Betul?", dan tidak menunggu "ya" kedua. Urutan kerjanya (tidak ditampilkan): jadwal, kelonggaran telat 10 menit, ketiga karyawan, 14/09 sebagai hari tutup, file dimasukkan, Sari izin 21-22/09. Balasan akhir satu kalimat jumlah ditambah satu kalimat kedua untuk libur/izin, tanpa lokasi file atau perintah, tanpa rekap ulang:
 
 > 121 catatan sudah tersimpan: Andi 41, Sari 38, Joko 42. Tanggal 14/09 dicatat tutup dan Sari izin 21-22/09.
 
@@ -129,7 +129,7 @@ Pesan pengguna: "Ini file absen Agustus. Senin–Sabtu jam 8–4, Sabtu sampai j
 
 ## Varian B — pelanggan lama, bulan berikutnya
 
-Buku absensi sudah ada dari alur simpan di atas (kelonggaran telat 10 menit, 14/09 tutup, Sari izin 21–22/09). Pada bulan berikutnya pengguna cukup mengirim file baru: "Ini file absen Oktober, tolong direkap." Agent tetap menjalankan `rekap-cepat absen-okt.csv --json` tanpa opsi dan tanpa `info`; script memakai pengaturan yang tersimpan sehingga tidak ada nilai bawaan yang menimpa (bila buku yang sudah ada diabaikan, rekap memakai "tanpa kelonggaran" dan izin Sari terhitung bolong: Joko 4x/83 menit, bukan 3x/75 menit; dicegah oleh `test_13` di `tests/uji_regresi.py`). File Oktober fiktif (dibangkitkan oleh `buat_csv_okt` di `tests/uji_regresi.py`: 22 hari kerja sungguhan, Andi telat 08.41 sekali, Joko 08.14 dan 08.07, Sari kosong 12-13/10, 128 catatan dari tiga karyawan) memuat satu orang yang belum terdaftar (ID 9 "Tamu"). Keluaran di bawah disalin dari `pesan` hasil menjalankan `test_14a`:
+Buku absensi sudah ada dari alur simpan di atas (kelonggaran telat 10 menit, 14/09 tutup, Sari izin 21–22/09). Pada bulan berikutnya pengguna cukup mengirim file baru: "Ini file absen Oktober, tolong direkap." Agent tetap menjalankan `rekap-cepat absen-okt.csv --json` tanpa opsi dan tanpa `info`; script memakai pengaturan yang tersimpan sehingga tidak ada nilai bawaan yang menimpa (bila buku yang sudah ada diabaikan, rekap memakai "tanpa kelonggaran" dan izin Sari terhitung bolong: Joko 4x/83 menit, bukan 3x/75 menit; dicegah oleh `test_13` di `tests/uji_regresi.py`). File Oktober fiktif (dibangkitkan oleh `buat_csv_okt` di `tests/uji_regresi.py`: 22 hari kerja sungguhan, Andi telat 08.41 sekali, Joko 08.14 dan 08.07, Sari kosong 12-13/10, 128 catatan dari tiga karyawan) memuat satu orang yang belum terdaftar (ID 9 "Tamu"). Keluaran di bawah disalin dari teks siap kirim hasil menjalankan `test_14a`:
 
 > Sudah saya rekap dari file Anda, dengan pengaturan yang sudah tersimpan di buku absensi.
 >

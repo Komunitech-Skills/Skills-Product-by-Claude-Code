@@ -23,7 +23,7 @@ No.,AC-No.,Nama,Waktu,Status
 
 > **Catatan revisi 1.0.8:** bagian "Langkah agent" dan "Pesan 1" ditulis ulang mengikuti SKILL.md terbaru (bahasa biasa, tanpa lokasi simpan, tanpa nama kolom/perintah). Teks rekap di bawah disesuaikan dengan keluaran skrip terbaru (kode karyawan disembunyikan, "kelonggaran telat" menggantikan "toleransi terlambat", "Libur/tutup" menggantikan "Libur resmi"); angkanya tidak berubah dari hasil uji aslinya.
 
-**Langkah agent (ringkas):** `info` → buku absensi belum ada. Pengguna mengirim file mesin **bersama** permintaan lembur, gaji, dan Sabtu pendek, jadi ini bukan jalur rekap cepat (A0) melainkan **satu pratinjau gabungan** (karyawan + jadwal + lembur). Agent tidak menanyakan lokasi simpan (memakai bawaan), kelonggaran telat (sudah disebut: 5 menit), maupun nomor ID mesin (sudah disebut: 1–6 urut nama). Pratinjau memakai bahasa biasa; nama perintah dan nama kolom tidak ditampilkan. Setelah pengguna membalas "ya": `init` → `shift tambah --kode TOKO --masuk 08.00 --pulang 16.00 --istirahat 60 --pulang-hari-pendek 13.00` → `karyawan impor karyawan.csv` (6 baris, pola 6 hari, hari pendek Sabtu, id mesin 1–6, Rudi dengan tunjangan tidak tetap 1.500.000) → `atur --toleransi 5` → `libur tambah --tanggal 2026-08-17` → `lembur --file lembur-agustus.csv` → `impor-absen log-agustus.csv`. Tiap perintah dijalankan dulu tanpa `--ya` dan baru dengan `--ya` bila pratinjaunya sama dengan ringkasan yang sudah disetujui.
+**Langkah agent (ringkas):** `info` → buku absensi belum ada. Pengguna mengirim file mesin **bersama** permintaan lembur, gaji, dan Sabtu pendek, jadi ini bukan rekap langsung dari file mesin melainkan **satu pratinjau gabungan** (karyawan + jadwal + lembur). Agent tidak menanyakan lokasi simpan (memakai bawaan), kelonggaran telat (sudah disebut: 5 menit), maupun nomor ID mesin (sudah disebut: 1–6 urut nama). Pratinjau memakai bahasa biasa; nama perintah dan nama kolom tidak ditampilkan. Setelah pengguna membalas "ya": `init` → `shift tambah --kode TOKO --masuk 08.00 --pulang 16.00 --istirahat 60 --pulang-hari-pendek 13.00` → `karyawan impor karyawan.csv` (6 baris, pola 6 hari, hari pendek Sabtu, id mesin 1–6, Rudi dengan tunjangan tidak tetap 1.500.000) → `atur --toleransi 5` → `libur tambah --tanggal 2026-08-17` → `lembur --file lembur-agustus.csv` → `impor-absen log-agustus.csv`. Tiap perintah dijalankan dulu tanpa `--ya` dan baru dengan `--ya` bila pratinjaunya sama dengan ringkasan yang sudah disetujui.
 
 **Pesan 1 — pratinjau gabungan (sebelum menyimpan apa pun):**
 
@@ -51,7 +51,7 @@ Catatan: lembur 8 jam Joko ≥ 4 jam → perusahaan wajib memberi makan-minum mi
 Simpan semuanya? Balas "ya".
 ```
 
-**Pesan 2 — rekap (teks script apa adanya) + pertanyaan:**
+**Pesan 2 — rekap (teks rekap dari script) + pertanyaan:**
 
 ```
 REKAP ABSENSI AGUSTUS 2026 - Toko Maju Jaya (fiktif)

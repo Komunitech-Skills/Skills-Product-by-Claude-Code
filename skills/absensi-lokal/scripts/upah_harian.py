@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from absensi import (PEMBAGI_UPAH_SEJAM, TANGGA_LIBUR, bulat_rp, dstr, fjam, jam_setara_hari_kerja,  # noqa: E402
                      jam_setara_libur, parse_angka, rp)
 
-VERSI = "1.0.10"
+VERSI = "1.0.11"
 KALI_POLA = {"6": 25, "5": 21}
 MAKS_LEMBUR_HARI = Decimal(4)     # PP 35/2021 Pasal 26 ayat (1)
 MAKS_LEMBUR_MINGGU = Decimal(18)  # PP 35/2021 Pasal 26 ayat (1)
