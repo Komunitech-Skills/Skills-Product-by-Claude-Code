@@ -1425,8 +1425,8 @@ class UjiV1111(Dasar):
 
     def test_116_versi_dan_dokumen_disamakan(self):
         self.assertEqual(K.VERSI, "1.1.13")
-        self.assertIn("**1.1.12**", isi_file(os.path.join(AKAR, "README.md")))
-        self.assertIn("## Catatan revisi 1.1.12", isi_file(os.path.join(AKAR, "CHANGELOG.md")))
+        self.assertIn("**1.1.13**", isi_file(os.path.join(AKAR, "README.md")))
+        self.assertIn("## Catatan revisi 1.1.13", isi_file(os.path.join(AKAR, "CHANGELOG.md")))
         self.assertLess(len(self.skill().splitlines()), 300)
 
     def test_117_changelog_menyebut_jumlah_uji_dengan_benar(self):
