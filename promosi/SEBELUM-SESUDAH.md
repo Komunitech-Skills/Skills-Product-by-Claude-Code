@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, uji terakhirnya di bot Telegram asli (bila ada) tidak gagal, dan kartu tidak sedang ditahan (uji bot lama tanpa skor angka tetap tampil dan disebut "tanpa skor angka"). Jumlah: **84 skill** dari 141 yang diuji; 80 di antaranya juga teruji di bot Telegram asli.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, uji terakhirnya di bot Telegram asli (bila ada) tidak gagal, dan kartu tidak sedang ditahan (uji bot lama tanpa skor angka tetap tampil dan disebut "tanpa skor angka"). Jumlah: **85 skill** dari 141 yang diuji; 81 di antaranya juga teruji di bot Telegram asli.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -24,74 +24,75 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 14 | Materi Pasien Rapi, Konsisten, Tanpa Repot Nulis Sendiri (`edukasi-pasien-klinik`) | Customer Service | 3 → 8 | +5 |
 | 15 | Newsletter Email Tanpa Biaya per Kontak (`listmonk-newsletter`) | Marketing & Konten | 4 → 8,7 | +4,7 |
 | 16 | InvenTree Gudang: Asisten AI Stok & Opname (`inventree-gudang`) | Produktivitas | 4,5 → 9 | +4,5 |
-| 17 | Kebijakan Privasi Sesuai UU PDP, Siap Tempel (`kebijakan-privasi-pdp`) | Legal & Dokumen | 5 → 9 | +4 |
-| 18 | Slip Gaji Rapi dengan Hitungan BPJS dan Pajak (`slip-gaji-bpjs`) | HR | 5 → 9 | +4 |
-| 19 | Loker Rapi Siap Posting, Syarat Bermasalah Dicoret (`lowongan-kerja`) | HR | 4,5 → 8,5 | +4 |
-| 20 | Dolibarr Usaha: Asisten AI untuk Dolibarr Anda (`dolibarr-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
-| 21 | hledger Usaha: Pembukuan Rapi Tanpa Biaya Bulanan (`hledger-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
-| 22 | Program Referral & Loyalitas dengan Hitungan Biaya (`program-referral-loyalitas`) | Marketing & Konten | 5,25 → 9 | +3,75 |
-| 23 | Landing Page Jadi dan Tayang Hari Ini (`landing-page-siap-tayang`) | Marketing & Konten | 4,7 → 8,4 | +3,7 |
-| 24 | Frappe Books Usaha: Pembukuan Gratis, Laporan Tinggal Tanya (`frappe-books-usaha`) | Keuangan & Akuntansi | 5,5 → 9 | +3,5 |
-| 25 | Listing Shopee, Tokopedia, TikTok Shop Sekali Jadi (`listing-marketplace`) | E-commerce/Marketplace Indonesia | 5,5 → 9 | +3,5 |
-| 26 | Luncurkan Produk Baru: Rencana T-30 sampai T+30 (`luncurkan-produk-baru`) | Marketing & Konten | 5,5 → 9 | +3,5 |
-| 27 | Kalender Pajak Biar Tidak Telat Setor & Lapor (`kalender-pajak`) | Keuangan & Akuntansi | 5 → 8,5 | +3,5 |
-| 28 | Umami Analitik: Laporan Pengunjung Web Tanpa Google (`umami-analitik`) | Marketing & Konten | 5,3 → 8,7 | +3,4 |
-| 29 | Wawancara Kerja Terstruktur, Adil dan Terukur (`panduan-wawancara-kerja`) | HR | 5,3 → 8,6 | +3,3 |
-| 30 | Proposal Kerja Sama yang Bikin Mitra Tertarik (`proposal-kerjasama`) | Sales | 5,17 → 8,33 | +3,16 |
-| 31 | Foto Nota Jadi Tabel untuk Excel, Hitungan Dicek (`ekstrak-nota-faktur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
-| 32 | Laporan Harian Otomatis Tanpa Dashboard Berbayar (`laporan-harian-usaha`) | Data & Analisis | 6 → 9 | +3 |
-| 33 | Notulen Rapat Rapi dari Catatan Berantakan (`notulen-rapat`) | Produktivitas | 6 → 9 | +3 |
-| 34 | Cek Cicilan dan Plafon KUR Sebelum Mengajukan (`pengajuan-kur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
-| 35 | Pesan Pertama ke Calon Pelanggan, Tak Terkesan Spam (`pesan-prospek-wa`) | Sales | 6 → 9 | +3 |
-| 36 | Rencana Marketing Usaha Siap Jalan (`rencana-marketing-usaha`) | Marketing & Konten | 6 → 9 | +3 |
-| 37 | Spesifikasi Produk Usaha Siap Kirim ke Maklon (`spesifikasi-produk-usaha`) | Produktivitas | 6 → 9 | +3 |
-| 38 | Uji Pasar Produk Cepat (`uji-pasar-produk-cepat`) | Produktivitas | 6 → 9 | +3 |
-| 39 | Arsip Nota Otomatis, Tanpa Langganan (`arsip-nota`) | Produktivitas | 5,75 → 8,75 | +3 |
-| 40 | Balas Ulasan Bintang 1 Tanpa Emosi (`balas-ulasan-pelanggan`) | Customer Service | 5,5 → 8,5 | +3 |
-| 41 | Cek Harga Pesaing, Hitung Harga Minimum (`riset-harga-kompetitor`) | E-commerce/Marketplace Indonesia | 5 → 8 | +3 |
-| 42 | Modul Ajar Jadi Cepat, Merujuk CP Resmi (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8,7 | +2,95 |
-| 43 | Kalkulator Klinis Nakes: Hitungan Jelas, Bersumber Jelas (`kalkulator-klinis-nakes`) | Data & Analisis | 6,1 → 9 | +2,9 |
-| 44 | Siapkan Obrolan Empat Mata dengan Karyawan (`satu-lawan-satu-dan-umpan-balik`) | HR | 5,5 → 8,4 | +2,9 |
-| 45 | Invoice & Kuitansi Rapi dalam Hitungan Menit (`buat-invoice`) | Keuangan & Akuntansi | 6 → 8,8 | +2,8 |
-| 46 | Karyawan CS AI yang Hafal Isi Toko Anda (`agen-cs-toko`) | Customer Service | 6 → 8,75 | +2,75 |
-| 47 | Strategi Merek Usaha: Nama, Penawaran, dan Promo Jujur (`strategi-merek-usaha`) | Marketing & Konten | 6 → 8,75 | +2,75 |
-| 48 | Jawab "Mahal" dan "Mikir Dulu" Tanpa Memaksa (`tangani-keberatan-pelanggan`) | Sales | 6 → 8,75 | +2,75 |
-| 49 | Actual Budget — anggaran amplop lokal via AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
-| 50 | Naskah Live Jualan Siap Baca per Menit (`naskah-live-jualan`) | E-commerce/Marketplace Indonesia | 6,17 → 8,83 | +2,66 |
-| 51 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 5,6 → 8,25 | +2,65 |
-| 52 | Tahu Kapan Restok, Berapa, ke Pemasok Mana (`rencana-restok-barang`) | E-commerce/Marketplace Indonesia | 6,1 → 8,7 | +2,6 |
-| 53 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 5,9 → 8,5 | +2,6 |
-| 54 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
-| 55 | Cek Layak Investasi Sebelum Keluar Uang (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
-| 56 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
-| 57 | Strategi Konten dan Anggaran Iklan yang Terhitung (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
-| 58 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
-| 59 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
-| 60 | Presentasi Rapi dari Chat, Tak Perlu PowerPoint (`presentasi-instan`) | Produktivitas | 6 → 8,5 | +2,5 |
-| 61 | Surat Penawaran Harga Rapi, Cepat Dibuat (`surat-penawaran-harga`) | Sales | 6 → 8,5 | +2,5 |
-| 62 | Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
-| 63 | Balas Chat Pelanggan Ramah, dengan Janji yang Dicek (`balas-chat-cs`) | Customer Service | 6,4 → 8,8 | +2,4 |
-| 64 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
-| 65 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 66 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
-| 67 | SOP Usaha Jadi Cepat, Lengkap dengan Checklist Berparaf (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 68 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
-| 69 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
-| 70 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
-| 71 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
-| 72 | Hitung Pajak UMKM 0,5% Tiap Bulan (`pph-final-umkm`) | Keuangan & Akuntansi | 6,8 → 8,8 | +2 |
-| 73 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 74 | Harga Jual Marketplace, Potongan Dihitung Satu per Satu (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
-| 75 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 76 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 77 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
-| 78 | Cek Syarat Tender Pemerintah Sebelum Dokumen Dikirim (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 79 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 80 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 81 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
-| 82 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 83 | Tahu Kapan Kas Menipis, Sebelum Terlambat (`arus-kas-13minggu`) | Keuangan & Akuntansi | 6,75 → 8,4 | +1,65 |
-| 84 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
+| 17 | Papan Saran Pelanggan Sendiri, Tanpa Biaya Bulanan (`fider-masukan-pelanggan`) | Produktivitas | 5 → 9 | +4 |
+| 18 | Kebijakan Privasi Sesuai UU PDP, Siap Tempel (`kebijakan-privasi-pdp`) | Legal & Dokumen | 5 → 9 | +4 |
+| 19 | Slip Gaji Rapi dengan Hitungan BPJS dan Pajak (`slip-gaji-bpjs`) | HR | 5 → 9 | +4 |
+| 20 | Loker Rapi Siap Posting, Syarat Bermasalah Dicoret (`lowongan-kerja`) | HR | 4,5 → 8,5 | +4 |
+| 21 | Dolibarr Usaha: Asisten AI untuk Dolibarr Anda (`dolibarr-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
+| 22 | hledger Usaha: Pembukuan Rapi Tanpa Biaya Bulanan (`hledger-usaha`) | Keuangan & Akuntansi | 5,25 → 9 | +3,75 |
+| 23 | Program Referral & Loyalitas dengan Hitungan Biaya (`program-referral-loyalitas`) | Marketing & Konten | 5,25 → 9 | +3,75 |
+| 24 | Landing Page Jadi dan Tayang Hari Ini (`landing-page-siap-tayang`) | Marketing & Konten | 4,7 → 8,4 | +3,7 |
+| 25 | Frappe Books Usaha: Pembukuan Gratis, Laporan Tinggal Tanya (`frappe-books-usaha`) | Keuangan & Akuntansi | 5,5 → 9 | +3,5 |
+| 26 | Listing Shopee, Tokopedia, TikTok Shop Sekali Jadi (`listing-marketplace`) | E-commerce/Marketplace Indonesia | 5,5 → 9 | +3,5 |
+| 27 | Luncurkan Produk Baru: Rencana T-30 sampai T+30 (`luncurkan-produk-baru`) | Marketing & Konten | 5,5 → 9 | +3,5 |
+| 28 | Kalender Pajak Biar Tidak Telat Setor & Lapor (`kalender-pajak`) | Keuangan & Akuntansi | 5 → 8,5 | +3,5 |
+| 29 | Umami Analitik: Laporan Pengunjung Web Tanpa Google (`umami-analitik`) | Marketing & Konten | 5,3 → 8,7 | +3,4 |
+| 30 | Wawancara Kerja Terstruktur, Adil dan Terukur (`panduan-wawancara-kerja`) | HR | 5,3 → 8,6 | +3,3 |
+| 31 | Proposal Kerja Sama yang Bikin Mitra Tertarik (`proposal-kerjasama`) | Sales | 5,17 → 8,33 | +3,16 |
+| 32 | Foto Nota Jadi Tabel untuk Excel, Hitungan Dicek (`ekstrak-nota-faktur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
+| 33 | Laporan Harian Otomatis Tanpa Dashboard Berbayar (`laporan-harian-usaha`) | Data & Analisis | 6 → 9 | +3 |
+| 34 | Notulen Rapat Rapi dari Catatan Berantakan (`notulen-rapat`) | Produktivitas | 6 → 9 | +3 |
+| 35 | Cek Cicilan dan Plafon KUR Sebelum Mengajukan (`pengajuan-kur`) | Keuangan & Akuntansi | 6 → 9 | +3 |
+| 36 | Pesan Pertama ke Calon Pelanggan, Tak Terkesan Spam (`pesan-prospek-wa`) | Sales | 6 → 9 | +3 |
+| 37 | Rencana Marketing Usaha Siap Jalan (`rencana-marketing-usaha`) | Marketing & Konten | 6 → 9 | +3 |
+| 38 | Spesifikasi Produk Usaha Siap Kirim ke Maklon (`spesifikasi-produk-usaha`) | Produktivitas | 6 → 9 | +3 |
+| 39 | Uji Pasar Produk Cepat (`uji-pasar-produk-cepat`) | Produktivitas | 6 → 9 | +3 |
+| 40 | Arsip Nota Otomatis, Tanpa Langganan (`arsip-nota`) | Produktivitas | 5,75 → 8,75 | +3 |
+| 41 | Balas Ulasan Bintang 1 Tanpa Emosi (`balas-ulasan-pelanggan`) | Customer Service | 5,5 → 8,5 | +3 |
+| 42 | Cek Harga Pesaing, Hitung Harga Minimum (`riset-harga-kompetitor`) | E-commerce/Marketplace Indonesia | 5 → 8 | +3 |
+| 43 | Modul Ajar Jadi Cepat, Merujuk CP Resmi (`rencana-pelajaran-guru`) | Pendidikan | 5,75 → 8,7 | +2,95 |
+| 44 | Kalkulator Klinis Nakes: Hitungan Jelas, Bersumber Jelas (`kalkulator-klinis-nakes`) | Data & Analisis | 6,1 → 9 | +2,9 |
+| 45 | Siapkan Obrolan Empat Mata dengan Karyawan (`satu-lawan-satu-dan-umpan-balik`) | HR | 5,5 → 8,4 | +2,9 |
+| 46 | Invoice & Kuitansi Rapi dalam Hitungan Menit (`buat-invoice`) | Keuangan & Akuntansi | 6 → 8,8 | +2,8 |
+| 47 | Karyawan CS AI yang Hafal Isi Toko Anda (`agen-cs-toko`) | Customer Service | 6 → 8,75 | +2,75 |
+| 48 | Strategi Merek Usaha: Nama, Penawaran, dan Promo Jujur (`strategi-merek-usaha`) | Marketing & Konten | 6 → 8,75 | +2,75 |
+| 49 | Jawab "Mahal" dan "Mikir Dulu" Tanpa Memaksa (`tangani-keberatan-pelanggan`) | Sales | 6 → 8,75 | +2,75 |
+| 50 | Actual Budget — anggaran amplop lokal via AI (`actual-budget-usaha`) | Keuangan & Akuntansi | 5,5 → 8,25 | +2,75 |
+| 51 | Naskah Live Jualan Siap Baca per Menit (`naskah-live-jualan`) | E-commerce/Marketplace Indonesia | 6,17 → 8,83 | +2,66 |
+| 52 | Dapur Aman, Checklist Siap Tempel (`checklist-keamanan-pangan-usaha`) | Produktivitas | 5,6 → 8,25 | +2,65 |
+| 53 | Tahu Kapan Restok, Berapa, ke Pemasok Mana (`rencana-restok-barang`) | E-commerce/Marketplace Indonesia | 6,1 → 8,7 | +2,6 |
+| 54 | Dari Keluhan Jadi Perbaikan Tiap Bulan (`iterasi-dari-masukan-pelanggan`) | Produktivitas | 5,9 → 8,5 | +2,6 |
+| 55 | Gaji Nggak Numpang Lewat Lagi (`atur-keuangan-pribadi`) | Kehidupan Pribadi | 6,5 → 9 | +2,5 |
+| 56 | Cek Layak Investasi Sebelum Keluar Uang (`kelayakan-investasi-usaha`) | Keuangan & Akuntansi | 6,5 → 9 | +2,5 |
+| 57 | Paket Onboarding Karyawan Baru, Siap Pakai (`sop-onboarding`) | HR | 6,5 → 9 | +2,5 |
+| 58 | Strategi Konten dan Anggaran Iklan yang Terhitung (`strategi-konten-iklan`) | Marketing & Konten | 6,5 → 9 | +2,5 |
+| 59 | Persona & Positioning Usaha: Beda, Jelas, Laku (`positioning-persona-usaha`) | Marketing & Konten | 6,25 → 8,75 | +2,5 |
+| 60 | Aplikasi Stok Tanpa Langganan, Dijalankan AI (`buku-stok`) | E-commerce/Marketplace Indonesia | 6 → 8,5 | +2,5 |
+| 61 | Presentasi Rapi dari Chat, Tak Perlu PowerPoint (`presentasi-instan`) | Produktivitas | 6 → 8,5 | +2,5 |
+| 62 | Surat Penawaran Harga Rapi, Cepat Dibuat (`surat-penawaran-harga`) | Sales | 6 → 8,5 | +2,5 |
+| 63 | Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
+| 64 | Balas Chat Pelanggan Ramah, dengan Janji yang Dicek (`balas-chat-cs`) | Customer Service | 6,4 → 8,8 | +2,4 |
+| 65 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
+| 66 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 67 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
+| 68 | SOP Usaha Jadi Cepat, Lengkap dengan Checklist Berparaf (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 69 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
+| 70 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
+| 71 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
+| 72 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
+| 73 | Hitung Pajak UMKM 0,5% Tiap Bulan (`pph-final-umkm`) | Keuangan & Akuntansi | 6,8 → 8,8 | +2 |
+| 74 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 75 | Harga Jual Marketplace, Potongan Dihitung Satu per Satu (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
+| 76 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 77 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 78 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 79 | Cek Syarat Tender Pemerintah Sebelum Dokumen Dikirim (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 80 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 81 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 82 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
+| 83 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 84 | Tahu Kapan Kas Menipis, Sebelum Terlambat (`arus-kas-13minggu`) | Keuangan & Akuntansi | 6,75 → 8,4 | +1,65 |
+| 85 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
 
 ## Rincian per skill
 
@@ -222,7 +223,7 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Tanpa skill:** Langsung memindahkan kartu tanpa pratinjau atau konfirmasi, dan tidak menyarankan mengganti kunci akses yang terlanjur ditempel di chat.
 - **Dengan skill:** Menampilkan pratinjau dulu dan menunggu 'ya', tidak mengulang kunci akses yang ditempel, menyarankan mencabut kunci itu, tidak ada perubahan sebelum persetujuan.
 - **Angka kunci:** Skor 4 -> 9; tanpa skill kartu langsung dipindah tanpa tanya, dengan skill tidak ada perubahan sebelum Anda bilang 'ya'
-- **Di bot Telegram sungguhan:** Uji 27 Okt 2026: uji ini hanya mencatat perbedaannya, tanpa skor angka. Perbandingan kali ini tidak sah, jadi tidak dihitung: AI di sisi tanpa skill sempat membaca berkas skill yang tersimpan di komputer yang sama. Sisi dengan skill berjalan sesuai harapan (kunci tersimpan dipakai, pratinjau pindah kartu #3 Jaket himpunan ke Siap Kirim, kartu tidak dipindah sebelum Anda menjawab ya, token tidak diulang di chat). Akan diuji ulang dengan pemisahan yang lebih ketat.
+- **Di bot Telegram sungguhan:** Uji 27 Okt 2026: uji ini hanya mencatat perbedaannya, tanpa skor angka. Tanpa skill bot hanya meminta alamat dan nama papan; dengan skill bot langsung menemukan kartu #3 "Jaket himpunan 40 pcs" dan menampilkan pratinjau pindah Produksi ke Siap Kirim, lalu menunggu "ya" sebelum memindahkan.
 - **Catatan jujur:** Perbandingan ini diuji pada server Kanboard tiruan (data contoh), bukan Kanboard asli; sampelnya kecil dan hasil AI bisa sedikit berbeda tiap percobaan.
 
 ### Materi Pasien Rapi, Konsisten, Tanpa Repot Nulis Sendiri — 3 → 8
@@ -252,6 +253,15 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Dengan skill:** Tidak ada yang disentuh: kunci akses diminta dicabut dan dibuat baru, penghapusan dilakukan pemilik di layar InvenTree; stok menipis dilaporkan dengan angka pasti (produksi minimal 60 bungkus).
 - **Di bot Telegram sungguhan:** Uji 17 Okt 2026: skor 5 menjadi 9. Dengan skill, laporan gudang mengelompokkan barang per bahan baku, kemasan dan produk jadi, menulis satuan kg dan L dengan benar, merinci tiap PO per baris (dipesan, diterima, sisa) dan menyebut tegas bahwa keripik siap jual perlu diproduksi minimal 60 pcs. Tanpa skill, satuan kebanyakan hilang dan singkong 200 kg malah ditulis 200 pcs.
 - **Catatan jujur:** Diuji pada InvenTree tiruan berisi data contoh, bukan InvenTree sungguhan; skill belum menawarkan alternatif yang menyimpan riwayat sebagai ganti menghapus.
+
+### Papan Saran Pelanggan Sendiri, Tanpa Biaya Bulanan — 5 → 9
+`fider-masukan-pelanggan` · Produktivitas · versi 1.0.7 · diuji 2026-10-02
+
+- **Permintaan:** Masukkan catatan pelanggan minggu ini dari WA ke papan saran Fider kita yang jalan di komputer ini.
+- **Tanpa skill:** Menulis nama pelanggan ('Pak Hendra', 'Bu Sari') apa adanya ke papan saran publik, dalam satu pos gabungan, tanpa cek duplikat.
+- **Dengan skill:** Pratinjau dulu, baru tulis setelah 'ya'; nama dan nomor diganti 'Seorang pelanggan'; dua usulan terpisah (#11 ojek online, #12 tabel pesanan di HP).
+- **Di bot Telegram sungguhan:** Uji 27 Okt 2026: uji ini hanya mencatat perbedaannya, tanpa skor angka. Dengan skill, bot langsung memberi ringkasan papan yang tepat (9 usulan aktif, 51 suara, QRIS 14 suara, +12 minggu ini) dalam bahasa awam, dan nama serta nomor HP pelanggan tidak ditulis; tanpa skill, total usulan dan suara tidak ada dan nama pelanggan tetap muncul.
+- **Catatan jujur:** Hanya 1 skenario pada server Fider tiruan (data contoh). Tanpa skill pun, nomor dan email tetap tidak ditulis. Pada uji di bot Telegram, kunci uji tidak terbaca saat skill aktif (masalah lingkungan uji), jadi hasilnya belum bisa dipakai dan perlu uji ulang.
 
 ### Kebijakan Privasi Sesuai UU PDP, Siap Tempel — 5 → 9
 `kebijakan-privasi-pdp` · Legal & Dokumen · versi 1.0.6 · diuji 2026-10-01
@@ -942,7 +952,6 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | `rangkaian-pesan-pelanggan` | 3 → 8,25 | LULUS | uji di bot Telegram asli belum lulus (7,5 → 8,75, 12 Okt 2026) |
 | `perjanjian-sederhana` | 4,25 → 9 | LULUS | uji di bot Telegram asli belum lulus (6 → 6,5, 3 Okt 2026) |
 | `aktifkan-kembali-pelanggan` | 4 → 8,6 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 10 Okt 2026) |
-| `fider-masukan-pelanggan` | 5 → 9 | LULUS | uji di bot Telegram asli belum lulus (7 → 6, 27 Okt 2026) |
 | `triase-keluhan-pelanggan` | 4,5 → 8,4 | LULUS | uji di bot Telegram asli belum lulus (7,5 → 8,5, 10 Okt 2026) |
 | `notebook-riset-lokal` | 4,5 → 8,25 | LULUS | uji di bot Telegram asli belum lulus (6,5 → 7, 12 Okt 2026) |
 | `tulisan-tanpa-kesan-ai` | 5 → 8,7 | LULUS | uji di bot Telegram asli belum lulus (5 → 7,5, 5 Okt 2026) |

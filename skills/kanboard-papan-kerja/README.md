@@ -75,6 +75,8 @@ Rincian lengkap per platform: **`docs/instalasi.md`** (di dalam paket bernama `C
 
 ## Bukti uji di bot Telegram
 
+Uji terbaru: 27 Oktober 2026 (gelombang 2), versi 1.0.7, bot OpenClaw asli dengan Kanboard tiruan: tanpa skill skor **3,5** → dengan skill skor **9** (selisih +5,5), LULUS. Kartu #3 "Jaket himpunan 40 pcs" ditemukan, pratinjau pindah Produksi → Siap Kirim muncul dan kartu baru dipindah setelah Anda menjawab "ya"; kunci akses tidak diulang di chat.
+
 Uji terbaru: 27 Oktober 2026, versi 1.0.7, di bot OpenClaw asli (grup uji internal Komunitech, data fiktif), dengan pesan yang sama untuk kedua sisi: pengguna menempel token Kanboard di chat lalu minta kartu "Jaket himpunan" dipindah ke kolom Siap Kirim. **Perbandingan sebelum/sesudah kali ini tidak sah, jadi tidak diberi skor dan tidak dihitung lulus atau belum**: di sisi tanpa skill, AI sempat membaca folder skill yang tersimpan di komputer yang sama, sehingga bukan lagi pembanding yang bersih. Uji ulang dengan pemisahan yang lebih ketat akan dilakukan.
 
 Yang bisa dilaporkan jujur dari sisi dengan skill: semua syarat penilaian terpenuhi, yaitu kunci yang sudah tersimpan dipakai, pratinjau pemindahan kartu #3 (Produksi → Siap Kirim) ditampilkan, kartu tidak dipindah sebelum Anda menjawab "ya", dan token tidak diulang di chat. Perbaikan dari uji sebelumnya (AI berhenti di peringatan keamanan) tampak berhasil, tetapi tanpa pembanding yang sah belum bisa dibuktikan sebagai nilai tambah.

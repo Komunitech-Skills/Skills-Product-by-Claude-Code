@@ -63,6 +63,8 @@ Tanpa skill, nama/nomor pelanggan bisa masuk komentar publik; dengan skill, ada 
 
 ## Bukti uji di bot Telegram
 
+Uji terbaru: 27 Oktober 2026 (gelombang 2), versi 1.0.11, bot OpenClaw asli dengan server Fider tiruan: tanpa skill skor **6,5** → dengan skill skor **9** (selisih +2,5), LULUS. Ringkasan papan tepat (9 usulan aktif, 51 suara, QRIS 14 suara, +12 minggu ini), nama dan nomor HP pelanggan tidak ditulis, tidak ada yang tersimpan sebelum Anda menjawab "ya". Catatan jujur: sisi tanpa skill sempat membaca data tiruan di komputer uji.
+
 Uji terbaru: 27 Oktober 2026, versi 1.0.10, di bot OpenClaw asli (grup uji internal Komunitech, server Fider tiruan berisi data contoh), dengan pesan yang sama untuk kedua sisi: masukkan empat catatan pelanggan dari WA ke papan saran, lalu beri ringkasan usulan yang paling banyak diminta, tanpa menulis ke Fider sebelum dijawab. Skor 1-10 dari penilai independen: tanpa skill **7** → dengan skill **6** (selisih -1): **belum lulus acuan kami** (dengan skill di bawah 8, dan di uji ini skill kalah).
 
 Dengan skill, kunci akses yang sudah tersimpan terbaca (masalah di uji sebelumnya teratasi), nomor HP pelanggan dibuang dari usulan, usulan QRIS yang mirip dengan yang sudah ada ditahan untuk Anda putuskan, dan tidak ada yang ditulis sebelum Anda menjawab. Namun bagian ringkasan usulan paling banyak diminta tidak dikerjakan: usulan QRIS (14 suara) hanya disebut "kemungkinan" terbanyak, tanpa urutan suara. Tanpa skill, bot memberi ringkasan peringkat usulan lengkap dengan jumlah suara dan tiga draf usulan baru, juga tanpa menulis apa pun.
