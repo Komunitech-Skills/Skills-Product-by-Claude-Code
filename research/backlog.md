@@ -45,3 +45,6 @@ Sumber riset: `research/sources/` (2026-09-23). Batch 1 = dikerjakan 2026-09-23/
 | 38 | `foto-produk-brief` | Marketing & Konten | 3 | 3 | 2 | 3 | 3 | **14** | 3 |  |
 
 Sudah ada sebelumnya: `caption-sosmed-umkm`, `rekap-penjualan-csv`.
+
+## Batch riset 2026-11-04
+Empat jalur riset (celah katalog, musiman/regulasi, kurasi skill publik, software pengganti SaaS) diringkas di [`research/riset-2026-11-04-ringkasan.md`](riset-2026-11-04-ringkasan.md): urutan kerja usulan, daftar skill rilis yang perlu diperbarui, dan peringatan keandalan (aturan masih dari berita, belum dari naskah resmi). Laporan rinci di `research/sources/riset-2026-11-04-*.md`.
