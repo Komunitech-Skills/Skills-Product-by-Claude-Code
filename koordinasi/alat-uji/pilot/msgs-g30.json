@@ -1,0 +1,40 @@
+[
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sebelum",
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G30",
+  "catatan": "G30 verifikasi setelah streaming.mode=off — kasir-lokal 1.1.13 (TANPA); teks identik G29",
+  "versi": "1.1.13",
+  "topic": 2343
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sebelum",
+  "text": "ya",
+  "balas": true,
+  "gel": "G30",
+  "catatan": "G30 verifikasi setelah streaming.mode=off — kasir-lokal 1.1.13 (TANPA); teks identik G29",
+  "versi": "1.1.13",
+  "topic": 2343
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G30",
+  "catatan": "G30 verifikasi setelah streaming.mode=off — kasir-lokal 1.1.13 (DENGAN); teks identik G29",
+  "versi": "1.1.13",
+  "topic": 2344
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "text": "ya",
+  "balas": true,
+  "gel": "G30",
+  "catatan": "G30 verifikasi setelah streaming.mode=off — kasir-lokal 1.1.13 (DENGAN); teks identik G29",
+  "versi": "1.1.13",
+  "topic": 2344
+ }
+]
