@@ -1,0 +1,78 @@
+[
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sebelum",
+  "topic": 2373,
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G31",
+  "catatan": "G31 formal kasir-lokal 1.1.13 (TANPA), streaming.mode off, DB bersih",
+  "versi": "1.1.13"
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sebelum",
+  "topic": 2373,
+  "text": "ya",
+  "balas": true,
+  "gel": "G31",
+  "catatan": "G31 formal kasir-lokal 1.1.13 (TANPA), streaming.mode off, DB bersih",
+  "versi": "1.1.13"
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "topic": 2374,
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G31",
+  "catatan": "G31 formal kasir-lokal 1.1.13 (DENGAN), streaming.mode off, DB bersih",
+  "versi": "1.1.13"
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "topic": 2374,
+  "text": "ya",
+  "balas": true,
+  "gel": "G31",
+  "catatan": "G31 formal kasir-lokal 1.1.13 (DENGAN), streaming.mode off, DB bersih",
+  "versi": "1.1.13"
+ },
+ {
+  "skill": "absensi-lokal",
+  "sisi": "sebelum",
+  "topic": 2375,
+  "text": "@KTclaude2bot Kak ini file dari mesin fingerprint toko aku bulan September (absen-sept.csv). Karyawan 3 orang: Andi (ID 1), Sari (ID 2), Joko (ID 3), semua kerja Senin–Jumat jam 08.00–17.00, istirahat 1 jam. Telat lebih dari 10 menit baru dihitung. Tolong rekap September: siapa aja yang telat & berapa kali, terus ada yang bolong gak absennya?",
+  "gel": "G31",
+  "catatan": "G31 formal absensi-lokal 1.0.11 (TANPA), streaming.mode off, DB bersih",
+  "versi": "1.0.11"
+ },
+ {
+  "skill": "absensi-lokal",
+  "sisi": "sebelum",
+  "topic": 2375,
+  "text": "ya",
+  "balas": true,
+  "gel": "G31",
+  "catatan": "G31 formal absensi-lokal 1.0.11 (TANPA), streaming.mode off, DB bersih",
+  "versi": "1.0.11"
+ },
+ {
+  "skill": "absensi-lokal",
+  "sisi": "sesudah",
+  "topic": 2376,
+  "text": "@KTclaude2bot Kak ini file dari mesin fingerprint toko aku bulan September (absen-sept.csv). Karyawan 3 orang: Andi (ID 1), Sari (ID 2), Joko (ID 3), semua kerja Senin–Jumat jam 08.00–17.00, istirahat 1 jam. Telat lebih dari 10 menit baru dihitung. Tolong rekap September: siapa aja yang telat & berapa kali, terus ada yang bolong gak absennya?",
+  "gel": "G31",
+  "catatan": "G31 formal absensi-lokal 1.0.11 (DENGAN), streaming.mode off, DB bersih",
+  "versi": "1.0.11"
+ },
+ {
+  "skill": "absensi-lokal",
+  "sisi": "sesudah",
+  "topic": 2376,
+  "text": "ya",
+  "balas": true,
+  "gel": "G31",
+  "catatan": "G31 formal absensi-lokal 1.0.11 (DENGAN), streaming.mode off, DB bersih",
+  "versi": "1.0.11"
+ }
+]
