@@ -1,0 +1,40 @@
+[
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G30c",
+  "catatan": "G30c run 1: ulangan sisi DENGAN untuk menguji kebocoran monolog (streaming.mode off)",
+  "versi": "1.1.13",
+  "topic": 2363
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "text": "ya",
+  "balas": true,
+  "gel": "G30c",
+  "catatan": "G30c run 1: ulangan sisi DENGAN untuk menguji kebocoran monolog (streaming.mode off)",
+  "versi": "1.1.13",
+  "topic": 2363
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "text": "@KTclaude2bot Ini warung kopi aku, Warung Kopi Mbak Sri, Jl. Melati 5 Bekasi. Daftar menunya ada di file produk.csv. Tolong catat penjualan: 2 kopi susu, 1 roti bakar, diskon 10%, bayar tunai 100rb, terus bikinin struknya ya",
+  "gel": "G30c",
+  "catatan": "G30c run 2: ulangan sisi DENGAN untuk menguji kebocoran monolog (streaming.mode off)",
+  "versi": "1.1.13",
+  "topic": 2364
+ },
+ {
+  "skill": "kasir-lokal",
+  "sisi": "sesudah",
+  "text": "ya",
+  "balas": true,
+  "gel": "G30c",
+  "catatan": "G30c run 2: ulangan sisi DENGAN untuk menguji kebocoran monolog (streaming.mode off)",
+  "versi": "1.1.13",
+  "topic": 2364
+ }
+]
