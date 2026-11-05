@@ -19,6 +19,9 @@ Versi awal bagian ini (menyebut `pph-final-umkm` "paling mendesak") **keliru**: 
 - `promo-kalender` 1.0.4 berstatus BELUM (Telegram 6) karena alasan lain, tidak terkait temuan ini.
 Sisa pekerjaan A: verifikasi naskah resmi untuk poin (1)–(3), lalu bandingkan baris per baris dengan `references/regulasi.md` tiap skill sebelum mengubah apa pun (Opus untuk skill pajak/gaji).
 
+### Hasil verifikasi naskah resmi (2026-11-05)
+`research/sources/verifikasi-aturan-2026-11-05.md`: **tidak ada perbedaan nyata** antara isi skill (`kalender-pajak`, `pph-final-umkm`, `pengajuan-kur`, `hitung-thr`, `gaji-umkm`, `slip-gaji-bpjs`) dan sumber resmi. Catatan status saja: label PERLU REVIEW untuk libur 2027 kini bisa merujuk Setneg (SKB 1205/2026); `hitung-thr` masih memperlakukan 2027 sebagai perkiraan (tepat, UMP belum ditetapkan); `slip-gaji-bpjs` mengutip PP 36/2021 tanpa menyebut perubahannya oleh PP 49/2025 (cek kecil). Dua kesalahan di laporan musiman dikoreksi di berkasnya (KUR dan "Natal 26 Des").
+
 ## B. Skill baru, urut usulan (dikerjakan hanya setelah rilis yang ada selesai; prinsip no. 28)
 | Urut | Nama usulan | Skor | Mengapa sekarang | Syarat |
 |---|---|---|---|---|

@@ -54,3 +54,11 @@ Catatan duplikasi: tutup-buku/stok-opname berdekatan dengan buku-stok, rencana-r
 
 ## D. Tidak terverifikasi / lanjut
 Naskah PP 20/2026 dan UU Pelindungan Ketenagakerjaan; SK UMP/UMK 2027; batas SPT TP2026; iuran BPJS Kesehatan 2027; PSE/PDP Komdigi 2026; biaya terbaru tiap marketplace; tanggal resmi Ramadan/Lebaran (sidang isbat).
+
+
+## KOREKSI 2026-11-05 (hasil `verifikasi-aturan-2026-11-05.md`, agen pemeriksa Opus; belum dicek ulang manusia)
+- **KUR:** butir "plafon Rp320 T, bunga flat 6%" di atas keliru. Menurut pemeriksa: Permenko 1/2026 mengatur bunga 3% (Super Mikro) dan 6% **efektif**; plafon 2026 Rp290,59 T dari cuplikan ekon.go.id (halaman 503 saat dicek). Belum ada keputusan KUR 2027.
+- **Libur 2027:** "Natal 26 Des" keliru; 26 Des adalah Isra Mikraj. Daftar resmi: SKB 1205/2026, 3/2026, 2/2026 (15 Sep 2026), 18 libur nasional + 8 cuti bersama (terverifikasi di Setneg).
+- **UU Pelindungan Ketenagakerjaan:** terverifikasi di dpr.go.id hanya pengesahan Paripurna 6 Okt 2026 (23 bab, **313 pasal**). Nomor UU, tanggal diundangkan, dan isi detail (pesangon, PKWT, lembur, THR) belum ada di sumber resmi; PP 35/2021 dan PP 36/2021 tetap berlaku sampai aturan pelaksana terbit.
+- **UMP/UMK 2027:** belum ditetapkan; aturan berlaku PP 49/2025.
+- **Wajib halal UMK:** terverifikasi BPJPH, berlaku 18 Okt 2026 (UU 33/2014, PP 42/2024).
