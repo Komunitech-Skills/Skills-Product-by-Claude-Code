@@ -11,13 +11,13 @@ Sumber rinci (semua di `research/sources/`):
 - Jalur kurasi tidak bisa memakai `gh`/API (diblokir): tanggal rilis pertama banyak yang "?", isi tiap skill belum dibaca. Catatan bahwa `anthropics/skills` (theme-factory, canvas-design, brand-guidelines) kini Apache-2.0 **bertentangan** dengan catatan 2026-09-23 ("proprietary"): wajib dibuka berkas LICENSE-nya sebelum salin-edit.
 - Jalur celah katalog hanya memeriksa duplikat lewat nama skill (file riset VIP/KPI tidak dibaca). Ide no. 8, 12, 13, 22 dekat dengan skill yang sudah ada: cek ulang.
 
-## A. Perbaikan skill yang sudah rilis (prioritas tertinggi; skill pajak/gaji = Opus + verifikasi angka)
-Syarat: naskah resmi dibaca dulu. Daftar dari jalur musiman:
-1. `pph-final-umkm`: cocokkan dengan PP 20/2026 (PPh final 0,5% tanpa batas waktu untuk OP/PT Perorangan; CV/PT biasa tarif normal).
-2. `gaji-umkm`, `slip-gaji-bpjs`, `hitung-thr`: UMP/UMK 2027 belum final (target akhir Nov); UU Pelindungan Ketenagakerjaan (disebut disahkan 6 Okt 2026, transisi 1 tahun).
-3. `kalender-pajak`, `promo-kalender`: libur 2027 (SKB 15 Sep 2026: 18 libur nasional + 8 cuti bersama), Harbolnas, Coretax.
-4. `harga-jual-marketplace`: biaya logistik/komisi marketplace berubah Mei 2026.
-5. `pengajuan-kur`: plafon/bunga KUR 2026 (flat 6%); KUR 2027 belum diputuskan.
+## A. Skill yang sudah rilis: DIKOREKSI setelah isi skill diperiksa (2026-11-05)
+Versi awal bagian ini (menyebut `pph-final-umkm` "paling mendesak") **keliru**: agen riset hanya membaca berita dan tidak memeriksa isi skill. Pemeriksaan isi (grep) menunjukkan:
+- `pph-final-umkm` 1.0.6 sudah mengacu PP 55/2022 jo. PP 20/2026 dan mencatat "dicek ke naskah resmi 14 Oktober 2026" (rincian di `references/regulasi.md`). Tidak perlu diperbarui hanya karena temuan ini.
+- `slip-gaji-bpjs` (dicek ulang 15 Okt 2026), `harga-jual-marketplace` (DJP SP-23/2026, dicek 13 Okt), `gaji-umkm` (26 Sep), `hitung-thr` (23 Sep, sudah menyebut cuti bersama), `kalender-pajak` (25 Sep), `pengajuan-kur` (23 Sep) sudah memuat dasar dan tanggal verifikasi; sebagian besar sudah menyebut 2027.
+- Yang benar-benar baru dan belum diverifikasi: (1) UMP/UMK 2027 (belum final; dasar hukumnya masih diperdebatkan), (2) UU Pelindungan Ketenagakerjaan (dikabarkan disahkan 6 Okt 2026, transisi 1 tahun; dampak ke PKWT/pesangon), (3) KUR 2027 (belum diputuskan), (4) wajib halal UMK sejak 18 Okt 2026 (belum ada skill). Tiga yang pertama hanya perlu pemeriksaan ulang dan catatan, bukan perombakan, setelah naskah resmi tersedia.
+- `promo-kalender` 1.0.4 berstatus BELUM (Telegram 6) karena alasan lain, tidak terkait temuan ini.
+Sisa pekerjaan A: verifikasi naskah resmi untuk poin (1)–(3), lalu bandingkan baris per baris dengan `references/regulasi.md` tiap skill sebelum mengubah apa pun (Opus untuk skill pajak/gaji).
 
 ## B. Skill baru, urut usulan (dikerjakan hanya setelah rilis yang ada selesai; prinsip no. 28)
 | Urut | Nama usulan | Skor | Mengapa sekarang | Syarat |
