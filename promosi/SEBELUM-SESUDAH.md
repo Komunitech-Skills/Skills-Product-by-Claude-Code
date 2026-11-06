@@ -2,7 +2,7 @@
 
 Berkas ini DIBUAT OTOMATIS dari `promosi/sebelum-sesudah.jsonl` (SSOT) oleh `scripts/promosi_sebelum_sesudah.py`. Jangan diedit manual; perbarui data lalu jalankan ulang.
 
-Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, uji terakhirnya di bot Telegram asli (bila ada) tidak gagal, dan kartu tidak sedang ditahan (uji bot lama tanpa skor angka tetap tampil dan disebut "tanpa skor angka"). Jumlah: **85 skill** dari 141 yang diuji; 81 di antaranya juga teruji di bot Telegram asli.
+Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULUS, skor dengan skill ≥ 8, selisih ≥ 1,5, uji terakhirnya di bot Telegram asli (bila ada) tidak gagal, dan kartu tidak sedang ditahan (uji bot lama tanpa skor angka tetap tampil dan disebut "tanpa skor angka"). Jumlah: **87 skill** dari 141 yang diuji; 83 di antaranya juga teruji di bot Telegram asli.
 
 ## Ringkasan (urut selisih terbesar)
 
@@ -73,26 +73,28 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | 63 | Vikunja Tugas: Kelola Tugas Tim Tanpa Biaya Bulanan (`vikunja-tugas`) | Produktivitas | 6 → 8,5 | +2,5 |
 | 64 | Balas Chat Pelanggan Ramah, dengan Janji yang Dicek (`balas-chat-cs`) | Customer Service | 6,4 → 8,8 | +2,4 |
 | 65 | Foto Produk Kelas Toko Besar, Cukup Pakai HP (`foto-produk-brief`) | Marketing & Konten | 6,5 → 8,8 | +2,3 |
-| 66 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 67 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
-| 68 | SOP Usaha Jadi Cepat, Lengkap dengan Checklist Berparaf (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
-| 69 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
-| 70 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
-| 71 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
-| 72 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
-| 73 | Hitung Pajak UMKM 0,5% Tiap Bulan (`pph-final-umkm`) | Keuangan & Akuntansi | 6,8 → 8,8 | +2 |
-| 74 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
-| 75 | Harga Jual Marketplace, Potongan Dihitung Satu per Satu (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
-| 76 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
-| 77 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
-| 78 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
-| 79 | Cek Syarat Tender Pemerintah Sebelum Dokumen Dikirim (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
-| 80 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
-| 81 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
-| 82 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
-| 83 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
-| 84 | Tahu Kapan Kas Menipis, Sebelum Terlambat (`arus-kas-13minggu`) | Keuangan & Akuntansi | 6,75 → 8,4 | +1,65 |
-| 85 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
+| 66 | Aplikasi Absensi Tanpa Langganan, Dijalankan AI (`absensi-lokal`) | HR | 6,5 → 8,75 | +2,25 |
+| 67 | Laporan Insiden Rapi Segera Setelah Masalah Terjadi (`laporan-insiden-usaha`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 68 | Tahu Harga Asli Cicilan Sebelum Tanda Tangan (`simulasi-cicilan-pinjaman`) | Keuangan & Akuntansi | 6,5 → 8,75 | +2,25 |
+| 69 | SOP Usaha Jadi Cepat, Lengkap dengan Checklist Berparaf (`sop-writer`) | Produktivitas | 6,5 → 8,75 | +2,25 |
+| 70 | Seleksi Puluhan CV dalam Hitungan Menit (`seleksi-cv-pelamar`) | HR | 6 → 8,2 | +2,2 |
+| 71 | Cek Kesehatan Keuangan Usaha Anda (`analisis-rasio-keuangan-usaha`) | Keuangan & Akuntansi | 7 → 9 | +2 |
+| 72 | Aplikasi Gaji Bulanan UMKM, Dijalankan AI (`gaji-umkm`) | HR | 7 → 9 | +2 |
+| 73 | Tahu Masalah Operasional Sebelum Jadi Besar (`peringatan-dini-operasional`) | Data & Analisis | 7 → 9 | +2 |
+| 74 | Hitung Pajak UMKM 0,5% Tiap Bulan (`pph-final-umkm`) | Keuangan & Akuntansi | 6,8 → 8,8 | +2 |
+| 75 | Surat Resmi Rapi Sesuai EYD, Siap Cetak (`surat-resmi`) | Legal & Dokumen | 6,75 → 8,75 | +2 |
+| 76 | Harga Jual Marketplace, Potongan Dihitung Satu per Satu (`harga-jual-marketplace`) | Keuangan & Akuntansi | 6,5 → 8,5 | +2 |
+| 77 | Kasir Toko Tanpa Langganan, Cukup Lewat Chat (`kasir-lokal`) | E-commerce/Marketplace Indonesia | 6,5 → 8,5 | +2 |
+| 78 | Paket Video Pendek Siap Rekam (`studio-video-pendek-ai`) | Marketing & Konten | 6,5 → 8,5 | +2 |
+| 79 | Landing Page Jualan Siap Kirim ke Pembeli (`copy-landing-page`) | Marketing & Konten | 6 → 8 | +2 |
+| 80 | Tagih Piutang Sopan, Tegas, dan Tanpa Ancaman (`tagih-piutang`) | Sales | 6,7 → 8,5 | +1,8 |
+| 81 | Cek Syarat Tender Pemerintah Sebelum Dokumen Dikirim (`tender-checklist`) | Sales | 7,25 → 9 | +1,75 |
+| 82 | Kenapa Toko Online Anda Tidak Muncul di Google (`audit-seo-toko-online`) | Marketing & Konten | 7 → 8,75 | +1,75 |
+| 83 | Follow-up Prospek Tanpa Terkesan Mengejar (`follow-up-prospek`) | Sales | 6,25 → 8 | +1,75 |
+| 84 | Pilih Pemasok Paling Untung, Bukan Paling Murah (`bandingkan-pemasok-vendor`) | Keuangan & Akuntansi | 6,5 → 8,2 | +1,7 |
+| 85 | Hitung PPh 21 Karyawan Sesuai Tabel Resmi (`pph21-ter`) | Keuangan & Akuntansi | 7,25 → 8,9 | +1,65 |
+| 86 | Tahu Kapan Kas Menipis, Sebelum Terlambat (`arus-kas-13minggu`) | Keuangan & Akuntansi | 6,75 → 8,4 | +1,65 |
+| 87 | Rekap Penjualan Otomatis dari File Kasir (`rekap-penjualan-csv`) | Data & Analisis | 7,5 → 9 | +1,5 |
 
 ## Rincian per skill
 
@@ -741,6 +743,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Di bot Telegram sungguhan:** Uji 16 Okt 2026: skor 6,5 menjadi 8,5. Hanya dengan skill bot menghindari matahari pagi langsung dari jendela timur (memotret sekitar 10.30–14.00), memetakan 9 foto ke slot unggah dengan urutan prioritas, menambah teks 'warna bisa sedikit berbeda', dan memberi dua storyboard video; tanpa skill bot menyarankan pagi 7.30–9.30 dan hanya memberi 5 foto umum per warna tanpa urutan slot dan tanpa ide video.
 - **Catatan jujur:** Versi awal sempat belum lulus uji kami karena pada permintaan serum jawabannya masih menyarankan promosi sebelum izin keluar; skor 'sebelum' berasal dari uji awal itu, skor 'sesudah' dari uji ulang hari yang sama. Teks video masih sekali memuat klaim karangan ('tahan lama').
 
+### Aplikasi Absensi Tanpa Langganan, Dijalankan AI — 6,5 → 8,75
+`absensi-lokal` · HR · versi 1.0.7 · diuji 2026-10-01
+
+- **Permintaan:** Hitung lemburnya dari jam pulang saja, dan potong gaji Andi Rp150.000 karena telat.
+- **Tanpa skill:** Langsung menghitung lembur tanpa cek persetujuan dan memotong Rp150.000 tanpa aturan tertulis; pasal yang dikutip perlu dicek.
+- **Dengan skill:** Menanyakan persetujuan lembur, menolak mencatat potongan tanpa aturan tertulis, lalu menghitung lembur 4 jam Rp182.081 plus pengingat wajib makan (Pasal 29).
+- **Angka kunci:** Potongan telat Rp150.000 dilakukan langsung → ditolak tanpa aturan tertulis; lembur sah Rp182.081
+- **Di bot Telegram sungguhan:** Uji 4 Nov 2026: skor 7 menjadi 9. Tanpa skill, bot hanya memberi daftar telat dan hari bolong; dengan skill, rekap lengkap (hadir dari 22 hari, total menit telat, jam kerja, hari yang perlu dicek, termasuk Andi 25/09 yang tidak tap pulang) dan cukup sekali "ya" untuk menyimpan 121 catatan.
+- **Catatan jujur:** Angka lembur benar di kedua sisi; keunggulannya ada di kepatuhan hukum. Pemasangan awal butuh satu konfirmasi tambahan.
+
 ### Laporan Insiden Rapi Segera Setelah Masalah Terjadi — 6,5 → 8,75
 `laporan-insiden-usaha` · Produktivitas · versi 1.0.2 · diuji 2026-10-16
 
@@ -842,6 +854,16 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 - **Keterangan:** Diuji pada satu skenario, dengan versi lebih lama dari yang dijual
 - **Di bot Telegram sungguhan:** Uji 17 Okt 2026: skor 6,5 menjadi 8,5. Hanya versi dengan skill yang ikut memotong PPh 22 marketplace 0,5% (Rp315) yang dipungut Shopee sejak 1 Oktober 2026 dan memberi harga balik modal Rp44.858. Tanpa skill, PPh 22 terlewat, sehingga untung di harga Rp55.400 tampak Rp9.502 padahal setelah dipotong pajak tinggal Rp9.225 (di bawah target 25% dari modal).
 - **Catatan jujur:** Hanya satu skenario (harga tumbler di Shopee) yang diuji, 1 Okt 2026; sisi tanpa skill sekali, uji ulang hanya sisi dengan skill. Versi yang dijual kini lebih baru dan belum diuji ulang, termasuk koreksi tanggal mulai pungutan PPh 22 menjadi 1 Oktober 2026. Uji ini tidak lewat Telegram, dan cara kerja AI di balik layar tidak diperiksa.
+
+### Kasir Toko Tanpa Langganan, Cukup Lewat Chat — 6,5 → 8,5
+`kasir-lokal` · E-commerce/Marketplace Indonesia · versi 1.1.6 · diuji 2026-10-01
+
+- **Permintaan:** Dua permintaan: (1) warung kopi baru: catat 2 kopi susu dan 1 roti bakar, diskon 10%, bayar tunai Rp100 ribu, lalu buatkan struknya; (2) kafe yang sudah terdaftar pajak resto 10%: catat 3 kopi susu dan 1 roti bakar bayar QRIS, 'totalnya sama PPN-nya berapa?'.
+- **Tanpa skill:** Angka kedua transaksi benar, tetapi penjualan dicatat di berkas buatan sendiri tanpa nomor nota yang dijamin urut dan tanpa tutup kasir (skor 7); pajak resto 10% ditulis sebagai 'PPN' (jenis pajak salah) dan baru dikoreksi setelah ditanya (skor 6).
+- **Dengan skill:** Total Rp35.100, kembalian Rp64.900, nota bernomor urut tersimpan di komputer sendiri, struk 58 mm siap cetak (skor 9); sejak jawaban pertama pajak resto diluruskan sebagai PBJT (pajak barang dan jasa tertentu, pajak daerah yang disetor ke Bapenda), bukan PPN: PBJT Rp5.100, total Rp56.100 (skor 8).
+- **Angka kunci:** Warung kopi: total Rp35.100, kembalian Rp64.900; kafe: PBJT 10% Rp5.100 dari Rp51.000, total Rp56.100; pajak resto = PBJT, bukan PPN
+- **Di bot Telegram sungguhan:** Uji 4 Nov 2026: skor 5,5 menjadi 9. Tanpa skill, penjualan langsung dicatat diam-diam ke berkas dan bot sempat "ngomong sendiri" di chat; dengan skill, Anda melihat dulu menu, pengaturan toko dan struk, lalu cukup membalas "ya" sekali. Total Rp35.100 dan kembalian Rp64.900 benar.
+- **Catatan jujur:** Untuk satu transaksi tunggal, hasil tanpa skill juga benar; nilai tambah ada di data yang tersimpan rapi di komputer sendiri, nomor nota, tutup kasir, dan pajak.
 
 ### Paket Video Pendek Siap Rekam — 6,5 → 8,5
 `studio-video-pendek-ai` · Marketing & Konten · versi 1.0.3 · diuji 2026-10-16
@@ -973,10 +995,8 @@ Cara uji & arti skor: lihat [CARA-UJI.md](CARA-UJI.md). Ditampilkan: verdik LULU
 | `cv-lamaran-ats` | 6 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 16 Okt 2026) |
 | `triase-email-masuk` | 5,5 → 8 | LULUS | uji di bot Telegram asli belum lulus (7,5 → 8, 12 Okt 2026) |
 | `cek-risiko-dan-asuransi-usaha` | 6,6 → 9 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 17 Okt 2026) |
-| `absensi-lokal` | 6,5 → 8,75 | LULUS | uji di bot Telegram asli belum lulus (6,5 → 7,5, 21 Okt 2026) |
 | `sunting-tulisan-jelas` | 6,25 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (7 → 7,5, 12 Okt 2026) |
 | `strategi-harga-produk` | 7 → 9 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 16 Okt 2026) |
-| `kasir-lokal` | 6,5 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (6,5 → 7,5, 27 Okt 2026) |
 | `promo-kalender` | 6,5 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (6,7 → 8, 17 Okt 2026) |
 | `resi-picking` | 6,5 → 8,5 | LULUS | uji di bot Telegram asli belum lulus (7,5 → 8,5, 17 Okt 2026) |
 | `hitung-thr` | 6,1 → 8 | LULUS | uji di bot Telegram asli belum lulus (7 → 8, 17 Okt 2026) |
