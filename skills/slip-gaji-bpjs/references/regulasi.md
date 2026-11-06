@@ -46,6 +46,8 @@ Status: **Terverifikasi resmi** = dibaca dari teks peraturan/surat resmi · **Te
 | Upah pokok minimal 75% dari (upah pokok + tunjangan tetap) | Sekunder | PP 36/2021 Pasal 7 ayat (2) — [11] |
 | Usaha mikro & kecil dikecualikan dari upah minimum dengan syarat tertentu | Sekunder | PP 36/2021 Pasal 36 — [11] |
 
+> Catatan (dicek 2026-11-06): PP 36/2021 telah diubah oleh PP 51/2023 dan PP 49/2025 (berlaku 17 Des 2025; JDIH Kemnaker). Apakah Pasal 7 ayat (2) dan Pasal 36 ikut berubah **belum diverifikasi** (naskah perubahan belum dibaca). Skill tidak menyimpan angka upah minimum, jadi hitungan tidak terpengaruh; peringatan 75% di script tetap berupa peringatan, bukan penghitungan.
+
 ## PPh 21
 Semua fakta PPh 21 (tabel TER, PTKP, Pasal 17, biaya jabatan, Masa Pajak Terakhir, PMK 105/2025 DTP) sama dengan skill `pph21-ter`; statusnya **terverifikasi resmi** dari PP 58/2023, PMK 168/2023, UU HPP, dan PMK 105/2025 — [7], [8]. Yang khusus relevan untuk slip gaji:
 - Premi JKK, JKM, dan iuran BPJS Kesehatan yang dibayar pemberi kerja **masuk penghasilan bruto** PPh 21 (PMK 168/2023 Pasal 5 ayat (3) huruf d–e).
